@@ -26,6 +26,7 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.NSObjectTransferItemReference;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -199,7 +200,7 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
                                                                  final NSTableColumn tableColumn, final NSObject item) {
         final String identifier = tableColumn.identifier();
         if(identifier.equals(Column.include.name())) {
-            final TransferItem file = cache.lookup(new NSObjectPathReference(item));
+            final TransferItem file = cache.lookup(new NSObjectTransferItemReference(item));
             final int state = Rococoa.cast(value, NSNumber.class).intValue();
             this.setSelected(file, state == NSCell.NSOnState);
         }
@@ -207,22 +208,22 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
 
     @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
-        return cache.lookup(new NSObjectPathReference(item)).remote.isDirectory();
+        return cache.lookup(new NSObjectTransferItemReference(item)).remote.isDirectory();
     }
 
     @Override
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, final NSObject item) {
-        return new NSInteger(this.children(null == item ? null : cache.lookup(new NSObjectPathReference(item))).size());
+        return new NSInteger(this.children(null == item ? null : cache.lookup(new NSObjectTransferItemReference(item))).size());
     }
 
     @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, final NSInteger index, final NSObject item) {
-        final AttributedList<TransferItem> children = this.get(null == item ? null : cache.lookup(new NSObjectPathReference(item)));
+        final AttributedList<TransferItem> children = this.get(null == item ? null : cache.lookup(new NSObjectTransferItemReference(item)));
         return NSObjectPathReference.get(children.get(index.intValue()).remote);
     }
 
     @Override
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, final NSObject item) {
-        return this.objectValueForItem(cache.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
+        return this.objectValueForItem(cache.lookup(new NSObjectTransferItemReference(item)), tableColumn.identifier());
     }
 }

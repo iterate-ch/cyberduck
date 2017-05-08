@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class SearchFilter implements Filter<Path> {
 
@@ -47,6 +48,11 @@ public class SearchFilter implements Filter<Path> {
             }
         }
         return false;
+    }
+
+    @Override
+    public Pattern toPattern() {
+        return Pattern.compile(input);
     }
 
     @Override

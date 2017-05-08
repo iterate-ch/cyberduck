@@ -21,7 +21,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Touch<Reply> {
 
-    void touch(Path file, TransferStatus status) throws BackgroundException;
+    Path touch(Path file, TransferStatus status) throws BackgroundException;
 
     /**
      * @param workdir Working directory

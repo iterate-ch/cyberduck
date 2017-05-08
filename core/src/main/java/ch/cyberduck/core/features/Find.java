@@ -15,8 +15,8 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Find {
@@ -28,7 +28,8 @@ public interface Find {
 
     /**
      * Decorate with cache
+     *
      * @param cache Path cache
      */
-    Find withCache(PathCache cache);
+    Find withCache(Cache<Path> cache);
 }

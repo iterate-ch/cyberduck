@@ -16,11 +16,11 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -67,13 +67,8 @@ public class DriveBatchDeleteFeatureTest {
                         }
                         return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                }, new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setVersionId("n");
         new DriveBatchDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

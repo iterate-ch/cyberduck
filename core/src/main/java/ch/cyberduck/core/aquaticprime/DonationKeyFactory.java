@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class DonationKeyFactory extends LicenseFactory {
     private static final Logger log = Logger.getLogger(DonationKeyFactory.class);
@@ -55,6 +56,11 @@ public class DonationKeyFactory extends LicenseFactory {
                 @Override
                 public boolean accept(final Local file) {
                     return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));
+                }
+
+                @Override
+                public Pattern toPattern() {
+                    return Pattern.compile(".*\\.cyberduckreceipt");
                 }
             })) {
                 final ReceiptVerifier verifier = new ReceiptVerifier(file);

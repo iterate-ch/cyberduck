@@ -87,7 +87,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Should be hidden in the browser by default
      */
-    private boolean duplicate;
+    private Boolean duplicate;
 
     /**
      * Revision number
@@ -120,6 +120,10 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private Path decrypted;
     /**
+     * Cryptomator encrypted path.
+     */
+    private Path encrypted;
+    /**
      * Unique identifier for cryptomator
      */
     private String directoryId;
@@ -142,7 +146,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(StringUtils.isNotBlank(versionId)) {
             dict.setStringForKey(versionId, "Version");
         }
-        dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
+        if(duplicate != null) {
+            dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
+        }
         if(StringUtils.isNotBlank(region)) {
             dict.setStringForKey(region, "Region");
         }
@@ -296,6 +302,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.versionId = versionId;
     }
 
+    public PathAttributes withVersionId(final String versionId) {
+        this.setVersionId(versionId);
+        return this;
+    }
+
     public String getDirectoryId() {
         return directoryId;
     }
@@ -315,12 +326,26 @@ public class PathAttributes extends Attributes implements Serializable {
         this.revision = revision;
     }
 
+    /**
+     * @return Null if path is missing flag encrypted
+     */
     public Path getDecrypted() {
         return decrypted;
     }
 
     public void setDecrypted(final Path decrypted) {
         this.decrypted = decrypted;
+    }
+
+    /**
+     * @return Null if path is missing flag decrypted
+     */
+    public Path getEncrypted() {
+        return encrypted;
+    }
+
+    public void setEncrypted(final Path encrypted) {
+        this.encrypted = encrypted;
     }
 
     public void setVault(final Path vault) {
@@ -338,7 +363,7 @@ public class PathAttributes extends Attributes implements Serializable {
      * @return True if hidden by default.
      */
     public boolean isDuplicate() {
-        return duplicate;
+        return duplicate != null && duplicate;
     }
 
     /**

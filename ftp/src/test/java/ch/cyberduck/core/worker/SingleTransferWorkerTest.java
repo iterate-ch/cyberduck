@@ -16,6 +16,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -85,8 +86,8 @@ public class SingleTransferWorkerTest {
         final FTPSession session = new FTPSession(host) {
             final FTPWriteFeature write = new FTPWriteFeature(this) {
                 @Override
-                public StatusOutputStream<Integer> write(final Path file, final TransferStatus status) throws BackgroundException {
-                    final StatusOutputStream<Integer> proxy = super.write(file, status);
+                public StatusOutputStream<Integer> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                    final StatusOutputStream<Integer> proxy = super.write(file, status, callback);
                     if(failed.get()) {
                         // Second attempt successful
                         return proxy;

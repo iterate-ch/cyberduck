@@ -210,12 +210,18 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk feature = source.getFeature(Bulk.class);
-        final Object id = feature.pre(Type.upload, files);
+        final Object id = feature.pre(Type.upload, files, callback);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }
+    }
+
+    @Override
+    public void post(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        final Bulk feature = source.getFeature(Bulk.class);
+        feature.post(Type.upload, files, callback);
     }
 
     @Override

@@ -35,8 +35,11 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
 
     @Override
     public BackgroundException map(final IOException failure) {
-        if(ExceptionUtils.getRootCause(failure) instanceof BackgroundException) {
-            return (BackgroundException) ExceptionUtils.getRootCause(failure);
+        final Throwable[] stack = ExceptionUtils.getThrowables(failure);
+        for(Throwable t : stack) {
+            if(t instanceof BackgroundException) {
+                return (BackgroundException) t;
+            }
         }
         if(failure instanceof SSLException) {
             return new SSLExceptionMappingService().map((SSLException) failure);

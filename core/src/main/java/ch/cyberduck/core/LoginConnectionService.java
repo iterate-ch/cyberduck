@@ -19,7 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.notification.NotificationService;
@@ -34,16 +33,13 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoginConnectionService implements ConnectionService {
     private static final Logger log = Logger.getLogger(LoginConnectionService.class);
 
     private final Resolver resolver = new Resolver();
-    private final AtomicBoolean canceled = new AtomicBoolean();
     private final HostKeyCallback key;
     private final ProgressListener listener;
-    private final TranscriptListener transcript;
     private final ProxyFinder proxy;
     private final LoginService login;
     private final NotificationService notification;
@@ -51,62 +47,47 @@ public class LoginConnectionService implements ConnectionService {
     public LoginConnectionService(final LoginCallback prompt,
                                   final HostKeyCallback key,
                                   final HostPasswordStore keychain,
-                                  final ProgressListener listener,
-                                  final TranscriptListener transcript) {
-        this(new KeychainLoginService(prompt, keychain), key, listener, transcript);
+                                  final ProgressListener listener) {
+        this(new KeychainLoginService(prompt, keychain), key, listener);
     }
 
     public LoginConnectionService(final LoginCallback prompt,
                                   final HostKeyCallback key,
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener,
-                                  final TranscriptListener transcript,
                                   final ProxyFinder proxy) {
-        this(new KeychainLoginService(prompt, keychain), key, listener, transcript, proxy);
+        this(new KeychainLoginService(prompt, keychain), key, listener, proxy);
+    }
+
+    public LoginConnectionService(final LoginService login,
+                                  final HostKeyCallback key,
+                                  final ProgressListener listener) {
+        this(login, key, listener, ProxyFactory.get());
     }
 
     public LoginConnectionService(final LoginService login,
                                   final HostKeyCallback key,
                                   final ProgressListener listener,
-                                  final TranscriptListener transcript) {
-        this(login, key, listener, transcript, ProxyFactory.get());
-    }
-
-    public LoginConnectionService(final LoginService login,
-                                  final HostKeyCallback key,
-                                  final ProgressListener listener,
-                                  final TranscriptListener transcript,
                                   final ProxyFinder proxy) {
-        this(login, key, listener, transcript, proxy, NotificationServiceFactory.get());
+        this(login, key, listener, proxy, NotificationServiceFactory.get());
     }
 
     public LoginConnectionService(final LoginService login,
                                   final HostKeyCallback key,
                                   final ProgressListener listener,
-                                  final TranscriptListener transcript,
                                   final ProxyFinder proxy,
                                   final NotificationService notification) {
         this.login = login;
         this.proxy = proxy;
         this.key = key;
         this.listener = listener;
-        this.transcript = transcript;
         this.notification = notification;
     }
 
-    /**
-     * Assert that the connection to the remote host is still alive.
-     * Open connection if needed.
-     *
-     * @param session Session
-     * @param cache   Cache
-     * @return True if new connection was opened. False if connection is reused.
-     * @throws BackgroundException If opening connection fails
-     */
     @Override
-    public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+    public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(StringUtils.isBlank(bookmark.getHostname())) {
+        if(bookmark.getProtocol().isHostnameConfigurable() && StringUtils.isBlank(bookmark.getHostname())) {
             throw new ConnectionCanceledException();
         }
         if(session.isConnected()) {
@@ -123,7 +104,7 @@ public class LoginConnectionService implements ConnectionService {
                             "Login {0} with username and password", "Credentials"), bookmark.getHostname()),
                     new LoginOptions(bookmark.getProtocol()));
         }
-        this.connect(session, cache);
+        this.connect(session, cache, callback);
         return true;
     }
 
@@ -141,7 +122,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
-    public void connect(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+    public void connect(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
         if(session.isConnected()) {
             this.close(session);
         }
@@ -155,7 +136,7 @@ public class LoginConnectionService implements ConnectionService {
         if(proxy.find(bookmark) == Proxy.DIRECT) {
             // Only try to resolve target hostname if direct connection
             try {
-                resolver.resolve(hostname);
+                resolver.resolve(hostname, callback);
             }
             catch(ResolveFailedException e) {
                 log.warn(String.format("DNS resolver failed for %s", hostname));
@@ -166,7 +147,7 @@ public class LoginConnectionService implements ConnectionService {
                 bookmark.getProtocol().getName(), hostname));
 
         // The IP address could successfully be determined
-        session.withListener(transcript).open(key);
+        session.open(key);
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
                 bookmark.getProtocol().getName()));
@@ -178,7 +159,7 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
-            this.authenticate(session, cache);
+            this.authenticate(session, cache, callback);
         }
         catch(BackgroundException e) {
             this.close(session);
@@ -186,32 +167,19 @@ public class LoginConnectionService implements ConnectionService {
         }
     }
 
-    private void authenticate(final Session session, final Cache<Path> cache) throws BackgroundException {
+    private void authenticate(final Session session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
         try {
-            login.authenticate(session, cache, listener, new CancelCallback() {
-                @Override
-                public void verify() throws ConnectionCanceledException {
-                    if(canceled.get()) {
-                        throw new LoginCanceledException();
-                    }
-                }
-            });
+            login.authenticate(session, cache, listener, callback);
         }
         catch(LoginFailureException e) {
             if(session.isConnected()) {
                 // Next attempt with updated credentials
-                this.authenticate(session, cache);
+                this.authenticate(session, cache, callback);
             }
             else {
                 // Reconnect and next attempt with updated credentials
-                this.connect(session, cache);
+                this.connect(session, cache, callback);
             }
         }
-    }
-
-    @Override
-    public void cancel() {
-        canceled.set(true);
-        resolver.cancel();
     }
 }

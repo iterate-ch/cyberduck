@@ -57,7 +57,7 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
                     continue;
                 }
                 if(file.isDirectory()) {
-                    final Ds3Client client = new SpectraClientBuilder().wrap(session);
+                    final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
                     client.deleteFolder(new DeleteFolderRequest(containerService.getContainer(file).getName(), containerService.getKey(file)));
                     iter.remove();
                 }
@@ -73,5 +73,10 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
         catch(SignatureException e) {
             throw new DefaultExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
     }
 }

@@ -21,7 +21,6 @@ import ch.cyberduck.core.AlertCallbackFactory;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.pool.SessionPool;
 
 public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAction<T> {
@@ -50,7 +49,7 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
     }
 
     @Override
-    public void prepare() throws ConnectionCanceledException {
+    public void prepare() {
         this.addListener(listener);
         super.prepare();
     }

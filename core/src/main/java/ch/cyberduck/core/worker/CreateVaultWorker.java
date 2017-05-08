@@ -15,51 +15,39 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.vault.VaultFactory;
-
-import org.apache.commons.lang3.StringUtils;
+import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 import java.text.MessageFormat;
 import java.util.Objects;
 
-public class CreateVaultWorker extends Worker<Boolean> {
+public class CreateVaultWorker extends Worker<Path> {
 
-    private final Path directory;
     private final String region;
-    private final PasswordStore keychain;
-    private final String passphrase;
+    private final VaultCredentials passphrase;
+    private final Vault vault;
 
-    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final String passphrase) {
-        this.directory = directory;
+    public CreateVaultWorker(final String region, final VaultCredentials passphrase, final Vault vault) {
         this.region = region;
-        this.keychain = keychain;
         this.passphrase = passphrase;
+        this.vault = vault;
     }
 
     @Override
-    public Boolean run(final Session<?> session) throws BackgroundException {
-        try {
-            VaultFactory.get(directory, keychain).create(session, region, new StaticPasswordCallback(passphrase)).close();
-        }
-        catch(LoginCanceledException e) {
-            return false;
-        }
-        return true;
+    public Path run(final Session<?> session) throws BackgroundException {
+        final Vault vault = this.vault.create(session, region, passphrase);
+        vault.close();
+        return vault.getHome();
     }
 
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                directory.getName());
+                vault.getHome());
     }
 
     @Override
@@ -67,41 +55,23 @@ public class CreateVaultWorker extends Worker<Boolean> {
         if(this == o) {
             return true;
         }
-        if(!(o instanceof CreateVaultWorker)) {
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
         final CreateVaultWorker that = (CreateVaultWorker) o;
-        return Objects.equals(directory, that.directory) &&
-                Objects.equals(region, that.region);
+        return Objects.equals(vault, that.vault);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(directory, region);
+        return Objects.hash(vault);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CreateVaultWorker{");
-        sb.append("directory=").append(directory);
-        sb.append(", region='").append(region).append('\'');
+        sb.append("vault=").append(vault);
         sb.append('}');
         return sb.toString();
-    }
-
-    private static class StaticPasswordCallback implements PasswordCallback {
-        private final String passphrase;
-
-        public StaticPasswordCallback(final String passphrase) {
-            this.passphrase = passphrase;
-        }
-
-        @Override
-        public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-            if(StringUtils.isNotBlank(credentials.getPassword())) {
-                throw new LoginCanceledException();
-            }
-            credentials.setPassword(passphrase);
-        }
     }
 }

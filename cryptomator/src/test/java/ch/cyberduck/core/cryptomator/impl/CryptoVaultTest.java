@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -54,7 +56,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -76,17 +78,26 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
-        final Path f = new Path("/", EnumSet.of((Path.Type.directory)));
+        final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         vault.load(session, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
         });
-        assertNotSame(f, vault.encrypt(session, f));
         assertEquals(Vault.State.open, vault.getState());
+        assertNotSame(home, vault.encrypt(session, home));
+        assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
+        final Path directory = new Path(home, "/dir", EnumSet.of((Path.Type.directory)));
+        assertEquals(vault.encrypt(session, directory), vault.encrypt(session, directory));
+        assertNotEquals(vault.encrypt(session, directory), vault.encrypt(session, directory, true));
+        assertEquals(vault.encrypt(session, directory).attributes().getDirectoryId(), vault.encrypt(session, directory).attributes().getDirectoryId());
+        assertEquals(vault.encrypt(session, vault.encrypt(session, directory)).attributes().getDirectoryId(), vault.encrypt(session, vault.encrypt(session, directory)).attributes().getDirectoryId());
+        assertNull(vault.encrypt(session, directory, true).attributes().getDirectoryId());
+        assertNull(vault.encrypt(session, directory, true).attributes().getDirectoryId());
+        assertNull(vault.encrypt(session, vault.encrypt(session, directory), true).attributes().getDirectoryId());
+        assertNotEquals(vault.encrypt(session, directory).attributes().getDirectoryId(), vault.encrypt(session, directory, true).attributes().getDirectoryId());
         vault.close();
         assertEquals(Vault.State.closed, vault.getState());
     }
@@ -100,7 +111,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -157,7 +168,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -204,7 +215,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -251,14 +262,16 @@ public class CryptoVaultTest {
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Directory.class) {
                     return (T) new Directory() {
+
                         @Override
-                        public void mkdir(final Path file) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                            assertTrue(folder.equals(home) || folder.isChild(home));
+                            return folder;
                         }
 
                         @Override
-                        public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public boolean isSupported(final Path workdir) {
+                            return true;
                         }
 
                         @Override
@@ -272,12 +285,7 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(
                 home, new DisabledPasswordStore());
-        vault.create(session, null, new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("pwd");
-            }
-        });
+        vault.create(session, null, new VaultCredentials("test"));
     }
 
     @Test
@@ -289,14 +297,16 @@ public class CryptoVaultTest {
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Directory.class) {
                     return (T) new Directory() {
+
                         @Override
-                        public void mkdir(final Path file) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                            assertTrue(folder.equals(home) || folder.isChild(home));
+                            return folder;
                         }
 
                         @Override
-                        public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public boolean isSupported(final Path workdir) {
+                            throw new UnsupportedOperationException();
                         }
 
                         @Override
@@ -310,12 +320,7 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(
                 home, new DisabledPasswordStore());
-        vault.create(session, null, new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("pwd");
-            }
-        });
+        vault.create(session, null, new VaultCredentials("test"));
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0);

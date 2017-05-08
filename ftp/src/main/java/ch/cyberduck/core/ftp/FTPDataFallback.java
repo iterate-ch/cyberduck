@@ -17,10 +17,10 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
@@ -97,9 +97,8 @@ public class FTPDataFallback {
                                 prompt,
                                 new DisabledHostKeyCallback(),
                                 keychain,
-                                listener,
-                                new DisabledTranscriptListener()
-                        ).connect(session, PathCache.empty());
+                                listener
+                        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
                     }
                     return this.fallback(action);
                 }

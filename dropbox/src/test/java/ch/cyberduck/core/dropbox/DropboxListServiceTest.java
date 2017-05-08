@@ -17,12 +17,12 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -31,7 +31,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -63,15 +62,16 @@ public class DropboxListServiceTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
-                    }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                }, new DisabledProgressListener())
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final AttributedList<Path> list = new DropboxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);
@@ -91,22 +91,23 @@ public class DropboxListServiceTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
-                    }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                }, new DisabledProgressListener())
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
-        new DropboxDirectoryFeature(session).mkdir(folder);
-        file.attributes().setVersionId(new DropboxIdProvider(session).getFileid(file));
-        folder.attributes().setVersionId(new DropboxIdProvider(session).getFileid(folder));
+        new DropboxTouchFeature(session).touch(file, new TransferStatus());
+        new DropboxDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        file.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(file));
+        folder.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(folder));
         final AttributedList<Path> list = new DropboxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);
         assertFalse(list.isEmpty());

@@ -131,6 +131,17 @@ public enum Scheme {
         public int getPort() {
             return 1247;
         }
+    },
+    file {
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public int getPort() {
+            return 0;
+        }
     };
 
     public abstract boolean isSecure();
@@ -144,6 +155,9 @@ public enum Scheme {
     public static boolean isURL(final String str) {
         if(StringUtils.isNotBlank(str)) {
             for(Scheme scheme : Scheme.values()) {
+                if(scheme.equals(Scheme.file)) {
+                    continue;
+                }
                 if(str.startsWith(scheme + "://")) {
                     return true;
                 }

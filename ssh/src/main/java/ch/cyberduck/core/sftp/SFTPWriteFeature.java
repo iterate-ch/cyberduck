@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -51,7 +52,7 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
     }
 
     @Override
-    public StatusOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final EnumSet<OpenMode> flags;
             if(status.isAppend()) {

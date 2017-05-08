@@ -16,6 +16,7 @@ package ch.cyberduck.core.sparkle;
  */
 
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.updater.AbstractPeriodicUpdateChecker;
 
@@ -27,7 +28,8 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
     @Outlet
     private Updater updater;
 
-    public SparklePeriodicUpdateChecker() {
+    public SparklePeriodicUpdateChecker(final Controller controller) {
+        super(controller);
         try {
             updater = Updater.create();
         }

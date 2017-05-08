@@ -23,6 +23,7 @@ public class DefaultExceptionMappingServiceTest {
     @Test
     public void testMap() throws Exception {
         assertEquals("Error", new DefaultExceptionMappingService().map(new NullPointerException()).getMessage());
-        assertEquals("Unknown runtime application error.", new DefaultExceptionMappingService().map(new NullPointerException()).getDetail());
+        assertEquals("Unknown application error.", new DefaultExceptionMappingService().map(new NullPointerException()).getDetail());
+        assertEquals("Unknown application error. R.", new DefaultExceptionMappingService().map(new NullPointerException("r")).getDetail());
     }
 }

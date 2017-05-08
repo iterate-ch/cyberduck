@@ -20,14 +20,19 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
 public class S3CopyFeature implements Copy {
+    private static final Logger log = Logger.getLogger(S3CopyFeature.class);
 
     private final S3Session session;
 
@@ -42,7 +47,7 @@ public class S3CopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         if(source.isFile() || source.isPlaceholder()) {
             // Keep same storage class
             final String storageClass = source.attributes().getStorageClass();
@@ -50,13 +55,29 @@ public class S3CopyFeature implements Copy {
             final Encryption.Algorithm encryption = source.attributes().getEncryption();
             // Apply non standard ACL
             if(null == accessControlListFeature) {
-                this.copy(source, copy, storageClass, encryption, Acl.EMPTY);
+                this.copy(source, target, storageClass, encryption, Acl.EMPTY);
             }
             else {
-                final Acl acl = accessControlListFeature.getPermission(source);
-                this.copy(source, copy, storageClass, encryption, acl);
+                Acl acl = Acl.EMPTY;
+                try {
+                    acl = accessControlListFeature.getPermission(source);
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    log.warn(String.format("Ignore failure %s", e.getDetail()));
+                }
+                this.copy(source, target, storageClass, encryption, acl);
             }
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 
     protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,

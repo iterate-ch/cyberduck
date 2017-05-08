@@ -1,8 +1,10 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -57,7 +59,7 @@ public class SwiftWriteFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         status.setMetadata(Collections.singletonMap("C", "duck"));
-        final OutputStream out = new SwiftWriteFeature(session, regionService).write(test, status);
+        final OutputStream out = new SwiftWriteFeature(session, regionService).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -69,7 +71,7 @@ public class SwiftWriteFeatureTest {
         assertTrue(append.override);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -120,9 +122,9 @@ public class SwiftWriteFeatureTest {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
                 list.set(true);
-                final Path segment1 = new Path(container, segments.name(file, 0L, 1), EnumSet.of(Path.Type.file));
+                final Path segment1 = segments.getSegment(file, 0L, 1);
                 segment1.attributes().setSize(1L);
-                final Path segment2 = new Path(container, segments.name(file, 0L, 2), EnumSet.of(Path.Type.file));
+                final Path segment2 = segments.getSegment(file, 0L, 2);
                 segment2.attributes().setSize(2L);
                 return new AttributedList<Path>(Arrays.asList(segment1, segment2));
             }
@@ -158,7 +160,7 @@ public class SwiftWriteFeatureTest {
             }
 
             @Override
-            public Find withCache(final PathCache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }, new AttributesFinder() {
@@ -168,7 +170,7 @@ public class SwiftWriteFeatureTest {
             }
 
             @Override
-            public AttributesFinder withCache(final PathCache cache) {
+            public AttributesFinder withCache(final Cache<Path> cache) {
                 return this;
             }
         }
@@ -205,7 +207,7 @@ public class SwiftWriteFeatureTest {
             }
 
             @Override
-            public Find withCache(final PathCache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }

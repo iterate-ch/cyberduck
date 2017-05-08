@@ -17,11 +17,11 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
@@ -64,7 +64,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         return writer.append(file, length, cache);
     }
 

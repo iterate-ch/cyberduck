@@ -17,11 +17,11 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -31,6 +31,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -68,21 +69,17 @@ public class DriveMoveFeatureTest {
                         }
                         return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                }, new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());
         final Path folder = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(folder);
+        new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path target = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(test));
-        assertTrue(session.getFeature(Find.class).find(target));
+        final Find find = new DefaultFindFeature(session);
+        assertFalse(find.find(test));
+        assertTrue(find.find(target));
         new DriveDeleteFeature(session).delete(Arrays.asList(target, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -112,20 +109,18 @@ public class DriveMoveFeatureTest {
                     public String getPassword(String hostname, String user) {
                         return super.getPassword(hostname, user);
                     }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                }, new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path sourceDirectory = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetDirectory = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(sourceDirectory);
+        new DriveDirectoryFeature(session).mkdir(sourceDirectory, null, new TransferStatus());
         final Path sourceFile = new Path(sourceDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(sourceFile, new TransferStatus());
         final Path targetFile = new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file));
         new DriveMoveFeature(session).move(sourceDirectory, targetDirectory, false, new Delete.DisabledCallback());
-        final Find find = session.getFeature(Find.class);
+        final Find find = new DefaultFindFeature(session);
         assertFalse(find.find(sourceDirectory));
-        assertFalse(find.find(sourceFile));
         assertTrue(find.find(targetDirectory));
-        assertTrue(find.find(targetFile));
         new DriveDeleteFeature(session).delete(Arrays.asList(targetFile, targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

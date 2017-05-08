@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 
+import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class QuartzQuickLook implements QuickLook {
+    private static final Logger log = Logger.getLogger(QuartzQuickLook.class);
 
     private final List<QLPreviewItem> previews
             = new ArrayList<QLPreviewItem>();
@@ -70,11 +72,6 @@ public final class QuartzQuickLook implements QuickLook {
     };
 
     @Override
-    public boolean isAvailable() {
-        return null != panel;
-    }
-
-    @Override
     public boolean isOpen() {
         return QLPreviewPanel.sharedPreviewPanelExists() && panel.isVisible();
     }
@@ -88,8 +85,7 @@ public final class QuartzQuickLook implements QuickLook {
     public void open() {
         panel.makeKeyAndOrderFront(null);
         if(null == panel.dataSource()) {
-            // Do not reload data yet because datasource is not yet setup.
-            // Focus has probably changed to another application since
+            log.warn("Do not reload data yet because datasource is not yet setup. Focus has probably changed to another application since");
             return;
         }
         panel.reloadData();
@@ -97,11 +93,12 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public void close() {
+        panel.setDataSource(null);
         panel.close();
     }
 
     @Override
     public void didEndQuickLook() {
-        panel.setDataSource(null);
+        previews.clear();
     }
 }

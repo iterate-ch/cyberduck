@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class FolderTransferCollection extends Collection<Transfer> {
     private static final Logger log = Logger.getLogger(FolderTransferCollection.class);
@@ -165,6 +166,11 @@ public class FolderTransferCollection extends Collection<Transfer> {
                         @Override
                         public boolean accept(final Local file) {
                             return file.getName().endsWith(".cyberducktransfer");
+                        }
+
+                        @Override
+                        public Pattern toPattern() {
+                            return Pattern.compile(".*\\.cyberducktransfer");
                         }
                     }
             );

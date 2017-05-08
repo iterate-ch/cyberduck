@@ -9,8 +9,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-
 @Ignore
 public class QuartzQuickLookTest {
 
@@ -21,10 +19,5 @@ public class QuartzQuickLookTest {
         files.add(new NullLocal("f"));
         files.add(new NullLocal("b"));
         q.select(files);
-    }
-
-    @Test
-    public void testIsAvailable() throws Exception {
-        assertTrue(new QuartzQuickLook().isAvailable());
     }
 }

@@ -15,7 +15,9 @@ package ch.cyberduck.core.updater;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.DefaultMainAction;
 
 import java.time.Duration;
 import java.util.Timer;
@@ -26,18 +28,19 @@ import java.util.logging.Logger;
 public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChecker {
     private static final Logger log = Logger.getLogger(AbstractPeriodicUpdateChecker.class.getName());
 
+    private final Controller controller;
     private final Duration delay;
-
     private final Timer timer = new Timer("updater", true);
 
     /**
      * Defaults to 24 hours
      */
-    public AbstractPeriodicUpdateChecker() {
-        this(Duration.ofSeconds(PreferencesFactory.get().getLong("update.check.interval")));
+    public AbstractPeriodicUpdateChecker(final Controller controller) {
+        this(controller, Duration.ofSeconds(PreferencesFactory.get().getLong("update.check.interval")));
     }
 
-    public AbstractPeriodicUpdateChecker(final Duration delay) {
+    public AbstractPeriodicUpdateChecker(final Controller controller, final Duration delay) {
+        this.controller = controller;
         this.delay = delay;
     }
 
@@ -56,7 +59,12 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
                     log.fine(String.format("Check for new updates after %s", delay));
                 }
                 PreferencesFactory.get().setProperty("update.check.timestamp", System.currentTimeMillis());
-                check(true);
+                controller.invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        check(true);
+                    }
+                });
             }
         }, delay.toMillis());
         return delay;

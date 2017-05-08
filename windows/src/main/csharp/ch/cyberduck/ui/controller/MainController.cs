@@ -43,14 +43,17 @@ using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.openstack;
+using ch.cyberduck.core.onedrive;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
+using ch.cyberduck.core.nio;
 using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using ch.cyberduck.core.urlhandler;
+using ch.cyberduck.core.threading;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
@@ -107,7 +110,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
-                new DropboxProtocol(), new HubicProtocol());
+                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol());
 
             if (!Debugger.IsAttached)
             {
@@ -796,6 +799,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 ApplicationShouldTerminateAfterDonationPrompt();
             }
+            DefaultBackgroundExecutor.get().shutdown();
             System.Windows.Forms.Application.Exit();
         }
 

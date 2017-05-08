@@ -95,6 +95,11 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
+    public void reload() {
+        configuration.refresh();
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("OpenSSHCredentialsConfigurator{");
         sb.append("configuration=").append(configuration);

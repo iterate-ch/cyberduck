@@ -19,13 +19,14 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
 public class WriteMetadataWorkerTest {
 
     @Test
-    public void testEmpty() throws Exception {
+    public void testRunEmpty() throws Exception {
         final List<Path> files = new ArrayList<Path>();
         WriteMetadataWorker worker = new WriteMetadataWorker(files, Collections.emptyMap(), false, new DisabledProgressListener()) {
             @Override
@@ -62,7 +63,7 @@ public class WriteMetadataWorkerTest {
     }
 
     @Test
-    public void testEqual() throws Exception {
+    public void testRunEqual() throws Exception {
         final List<Path> files = new ArrayList<Path>();
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         final Map<String, String> previous = new HashMap<String, String>();
@@ -106,7 +107,7 @@ public class WriteMetadataWorkerTest {
     }
 
     @Test
-    public void testRun() throws Exception {
+    public void testRunUpdated() throws Exception {
         final List<Path> files = new ArrayList<Path>();
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         files.add(p);
@@ -124,6 +125,7 @@ public class WriteMetadataWorkerTest {
                 fail();
             }
         };
+        final AtomicBoolean call = new AtomicBoolean();
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
@@ -146,12 +148,65 @@ public class WriteMetadataWorkerTest {
                             assertTrue(meta.containsKey("key"));
                             assertEquals("v2", meta.get("key"));
                             assertEquals("hash", meta.get("nullified"));
+                            call.set(true);
                         }
                     };
                 }
                 return super._getFeature(type);
             }
         });
+        assertTrue(call.get());
+    }
+
+    @Test
+    public void testRunAdd() throws Exception {
+        final List<Path> files = new ArrayList<Path>();
+        final Path p = new Path("a", EnumSet.of(Path.Type.file));
+        files.add(p);
+        final Map<String, String> previous = new HashMap<String, String>();
+        previous.put("k1", "v1");
+        p.attributes().setMetadata(previous);
+        final Map<String, String> updated = new HashMap<String, String>();
+        updated.put("k1", "v1");
+        updated.put("k2", "v2");
+
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
+            @Override
+            public void cleanup(final Boolean map) {
+                fail();
+            }
+        };
+        final AtomicBoolean call = new AtomicBoolean();
+        worker.run(new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Headers.class) {
+                    return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getDefault(final Local local) {
+                            return Collections.emptyMap();
+                        }
+
+                        @Override
+                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public void setMetadata(final Path file, final Map<String, String> meta) throws BackgroundException {
+                            assertTrue(meta.containsKey("k1"));
+                            assertTrue(meta.containsKey("k2"));
+                            assertEquals("v1", meta.get("k1"));
+                            assertEquals("v2", meta.get("k2"));
+                            call.set(true);
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        });
+        assertTrue(call.get());
     }
 
     @Test
@@ -188,6 +243,7 @@ public class WriteMetadataWorkerTest {
                 fail();
             }
         };
+        final AtomicBoolean call = new AtomicBoolean();
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
@@ -226,11 +282,13 @@ public class WriteMetadataWorkerTest {
                                     fail();
                                     break;
                             }
+                            call.set(true);
                         }
                     };
                 }
                 return super._getFeature(type);
             }
         });
+        assertTrue(call.get());
     }
 }

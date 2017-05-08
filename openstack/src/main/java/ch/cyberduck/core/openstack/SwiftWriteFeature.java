@@ -18,11 +18,12 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -32,7 +33,7 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -43,7 +44,6 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
@@ -82,7 +82,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService, final Find finder) {
-        this(session, regionService, listService, segmentService, finder, new DefaultAttributesFinderFeature(session));
+        this(session, regionService, listService, segmentService, finder,
+                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
@@ -99,7 +100,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     }
 
     @Override
-    public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // Submit store run to background thread
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             /**
@@ -139,13 +140,11 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(length >= preferences.getLong("openstack.upload.largeobject.threshold")) {
             if(preferences.getBoolean("openstack.upload.largeobject")) {
                 Long size = 0L;
-                final List<Path> segments = listService.list(
-                        new Path(containerService.getContainer(file), segmentService.basename(file, length), EnumSet.of(Path.Type.directory)),
-                        new DisabledListProgressListener());
+                final List<Path> segments = listService.list(segmentService.getSegmentsDirectory(file, length), new DisabledListProgressListener()).toList();
                 if(segments.isEmpty()) {
                     return Write.notfound;
                 }
@@ -174,6 +173,6 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     @Override
     public ChecksumCompute checksum() {
-        return new DisabledChecksumCompute();
+        return new MD5ChecksumCompute();
     }
 }

@@ -74,7 +74,7 @@ public class SFTPDeleteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path folder = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SFTPDirectoryFeature(session).mkdir(folder);
+        new SFTPDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path file = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(file, new TransferStatus());
         new SFTPDeleteFeature(session).delete(Arrays.asList(folder, file), new DisabledLoginCallback(), new Delete.DisabledCallback());

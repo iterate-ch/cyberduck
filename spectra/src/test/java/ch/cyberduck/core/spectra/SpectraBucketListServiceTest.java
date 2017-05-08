@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -29,7 +30,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -50,10 +50,10 @@ public class SpectraBucketListServiceTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        final List<Path> list = new S3BucketListService(session).list(
+        final AttributedList<Path> list = new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(list.contains(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
     }
 
@@ -70,10 +70,10 @@ public class SpectraBucketListServiceTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        final List<Path> list = new S3BucketListService(session).list(
+        final AttributedList<Path> list = new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(list.contains(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
     }
 }

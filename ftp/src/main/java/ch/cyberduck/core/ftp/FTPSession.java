@@ -177,6 +177,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             client.setSendDataSocketBufferSize(preferences.getInteger("connection.buffer.send"));
         }
         client.setStrictMultilineParsing(preferences.getBoolean("ftp.parser.multiline.strict"));
+        client.setStrictReplyParsing(preferences.getBoolean("ftp.parser.reply.strict"));
     }
 
     @Override
@@ -349,7 +350,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) new FTPCommandFeature(this);
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new CustomOriginCloudFrontDistributionConfiguration(host, this);
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
         }
         if(type == Home.class) {
             return (T) new FTPWorkdirService(this);

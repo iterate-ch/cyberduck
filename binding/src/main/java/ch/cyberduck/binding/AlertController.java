@@ -72,6 +72,12 @@ public abstract class AlertController extends SheetController implements SheetCa
     }
 
     @Override
+    public void invalidate() {
+        alert = null;
+        super.invalidate();
+    }
+
+    @Override
     public void loadBundle() {
         //
     }

@@ -52,8 +52,8 @@ public class FTPSessionTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+                new DisabledProgressListener());
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -81,9 +81,9 @@ public class FTPSessionTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         try {
-            c.connect(session, PathCache.empty());
+            c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(ConnectionRefusedException e) {
             assertEquals("Invalid response HTTP/1.1 403 Forbidden from HTTP proxy localhost. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", e.getDetail());
@@ -100,7 +100,7 @@ public class FTPSessionTest {
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test
@@ -277,8 +277,8 @@ public class FTPSessionTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+                new DisabledProgressListener());
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(callback.get());
         session.close();
     }

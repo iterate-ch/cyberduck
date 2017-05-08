@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.random.NonceGenerator;
 
 import org.apache.log4j.Logger;
 
@@ -153,6 +154,44 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Encrypted file header
      */
     private ByteBuffer header;
+
+    /**
+     * Chunk nonces
+     */
+    private NonceGenerator nonces;
+
+    public TransferStatus() {
+        // Default
+    }
+
+    public TransferStatus(final TransferStatus copy) {
+        this.rename.remote = copy.rename.remote;
+        this.rename.local = copy.rename.local;
+        this.displayname.local = copy.displayname.local;
+        this.displayname.remote = copy.displayname.remote;
+        this.exists = copy.exists;
+        this.append = copy.append;
+        this.segment = copy.segment;
+        this.rejected = copy.rejected;
+        this.offset.set(copy.offset.get());
+        this.length = copy.length;
+        this.canceled.set(copy.canceled.get());
+        this.complete.set(copy.complete.get());
+        this.checksum = copy.checksum;
+        this.mime = copy.mime;
+        this.remote = copy.remote;
+        this.permission = copy.permission;
+        this.acl = copy.acl;
+        this.encryption = copy.encryption;
+        this.storageClass = copy.storageClass;
+        this.timestamp = copy.timestamp;
+        this.parameters = copy.parameters;
+        this.metadata = copy.metadata;
+        this.segment = copy.segment;
+        this.part = copy.part;
+        this.header = copy.header;
+        this.nonces = copy.nonces;
+    }
 
     /**
      * Await completion
@@ -336,7 +375,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
-    public TransferStatus displayname(final Path finalname) {
+    public TransferStatus withDisplayname(final Path finalname) {
         this.displayname.remote = finalname;
         return this;
     }
@@ -349,7 +388,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @param finalname Target filename to rename temporary file to
      */
-    public TransferStatus displayname(final Local finalname) {
+    public TransferStatus withDisplayname(final Local finalname) {
         this.displayname.local = finalname;
         return this;
     }
@@ -366,7 +405,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.mime = type;
     }
 
-    public TransferStatus mime(final String type) {
+    public TransferStatus withMime(final String type) {
         this.mime = type;
         return this;
     }
@@ -379,7 +418,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.checksum = checksum;
     }
 
-    public TransferStatus checksum(final Checksum checksum) {
+    public TransferStatus withChecksum(final Checksum checksum) {
         this.setChecksum(checksum);
         return this;
     }
@@ -440,7 +479,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.parameters = parameters;
     }
 
-    public TransferStatus parameters(final Map<String, String> parameters) {
+    public TransferStatus withParameters(final Map<String, String> parameters) {
         this.parameters = parameters;
         return this;
     }
@@ -453,7 +492,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.metadata = metadata;
     }
 
-    public TransferStatus metadata(final Map<String, String> metadata) {
+    public TransferStatus withMetadata(final Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
     }
@@ -492,6 +531,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public TransferStatus withHeader(final ByteBuffer header) {
         this.setHeader(header);
+        return this;
+    }
+
+    public NonceGenerator getNonces() {
+        return nonces;
+    }
+
+    public void setNonces(final NonceGenerator nonces) {
+        this.nonces = nonces;
+    }
+
+    public TransferStatus withNonces(final NonceGenerator nonces) {
+        this.setNonces(nonces);
         return this;
     }
 

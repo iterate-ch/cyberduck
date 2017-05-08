@@ -17,6 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,7 +43,7 @@ public class FTPReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(!session.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());

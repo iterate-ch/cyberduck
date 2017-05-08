@@ -34,13 +34,11 @@ public class ProxyController extends AbstractController {
      * Free all locked resources by this controller; also remove me from all observables;
      * marks this controller to be garbage collected as soon as needed
      */
-    @Override
     public void invalidate() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Invalidate controller %s", this));
         }
         proxy.invalidate();
-        super.invalidate();
     }
 
     /**

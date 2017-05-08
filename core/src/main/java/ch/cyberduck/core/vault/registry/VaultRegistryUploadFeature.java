@@ -15,10 +15,10 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
@@ -26,14 +26,15 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
+
     private final Session<?> session;
     private final Upload<Output> proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryUploadFeature(final Session<?> session, final Upload<Output> proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryUploadFeature(final Session<?> session, final Upload<Output> proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -46,7 +47,7 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Upload.class, proxy).append(file, length, cache);
     }
 
@@ -54,5 +55,13 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
     public Upload<Output> withWriter(final Write<Output> writer) {
         proxy.withWriter(writer);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryUploadFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

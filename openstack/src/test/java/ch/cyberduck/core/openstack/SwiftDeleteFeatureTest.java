@@ -135,7 +135,7 @@ public class SwiftDeleteFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(placeholder);
+        new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
         final SwiftFindFeature find = new SwiftFindFeature(session);
         assertTrue(find.find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());

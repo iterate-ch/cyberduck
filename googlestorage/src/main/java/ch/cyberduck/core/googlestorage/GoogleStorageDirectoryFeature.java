@@ -40,18 +40,19 @@ public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+        if(containerService.isContainer(folder)) {
+            final GoogleStorageBucketCreateService service = new GoogleStorageBucketCreateService(session);
+            service.create(folder, region);
+        }
+        else {
+            super.mkdir(folder, region, status);
+        }
+        return folder;
     }
 
     @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-        if(containerService.isContainer(file)) {
-            final GoogleStorageBucketCreateService service = new GoogleStorageBucketCreateService(session);
-            service.create(file, region);
-        }
-        else {
-            super.mkdir(file, region, status);
-        }
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 }

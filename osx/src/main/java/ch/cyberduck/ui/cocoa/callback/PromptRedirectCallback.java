@@ -22,10 +22,7 @@ import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.ui.cocoa.controller.RedirectAlertController;
 
-import org.apache.log4j.Logger;
-
 public class PromptRedirectCallback implements RedirectCallback {
-    private static final Logger log = Logger.getLogger(PromptRedirectCallback.class);
 
     private final RedirectCallback preferences
             = new PreferencesRedirectCallback();

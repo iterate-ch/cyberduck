@@ -35,10 +35,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static readonly Logger Log = Logger.getLogger(typeof (AsyncController).Name);
 
-        protected AsyncController() : base(new ExceptionHandler())
-        {
-        }
-
         public virtual IView View { get; set; }
 
         public void Background(AsyncDelegate del, AsyncDelegate cleanup)

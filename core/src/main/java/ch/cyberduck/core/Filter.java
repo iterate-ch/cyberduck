@@ -18,6 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.regex.Pattern;
+
 public interface Filter<E> {
     boolean accept(E file);
+
+    Pattern toPattern();
 }

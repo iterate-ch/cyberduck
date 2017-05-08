@@ -31,6 +31,7 @@ import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3ObjectListService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -38,7 +39,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -60,8 +60,8 @@ public class SpectraObjectListServiceTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
+        final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
 //        assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
@@ -87,8 +87,8 @@ public class SpectraObjectListServiceTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
+        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
                 new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         session.close();
@@ -127,9 +127,9 @@ public class SpectraObjectListServiceTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(placeholder);
+        new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(placeholder, null, new TransferStatus());
         placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());

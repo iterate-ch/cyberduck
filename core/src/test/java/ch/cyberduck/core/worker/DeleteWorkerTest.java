@@ -42,6 +42,16 @@ public class DeleteWorkerTest {
                             assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), files.get(2));
                             assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), files.get(3));
                         }
+
+                        @Override
+                        public boolean isSupported(final Path file) {
+                            return true;
+                        }
+
+                        @Override
+                        public boolean isRecursive() {
+                            return false;
+                        }
                     };
                 }
                 return (T) super._getFeature(type);
@@ -76,12 +86,25 @@ public class DeleteWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                return (T) new Delete() {
-                    @Override
-                    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
-                        assertEquals(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)), files.get(0));
-                    }
-                };
+                if(type == Delete.class) {
+                    return (T) new Delete() {
+                        @Override
+                        public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+                            assertEquals(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)), files.get(0));
+                        }
+
+                        @Override
+                        public boolean isSupported(final Path file) {
+                            return true;
+                        }
+
+                        @Override
+                        public boolean isRecursive() {
+                            return false;
+                        }
+                    };
+                }
+                return (T) super._getFeature(type);
             }
 
             @Override

@@ -16,21 +16,24 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistrySearchFeature implements Search {
+
     private final Session<?> session;
     private final Search proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistrySearchFeature(final Session<?> session, final Search proxy, final DefaultVaultRegistry registry) {
+    private Cache<Path> cache;
+
+    public VaultRegistrySearchFeature(final Session<?> session, final Search proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -38,12 +41,27 @@ public class VaultRegistrySearchFeature implements Search {
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
-        return registry.find(session, workdir).getFeature(session, Search.class, proxy).search(workdir, regex, listener);
+        return registry.find(session, workdir).getFeature(session, Search.class, proxy)
+                .withCache(cache)
+                .search(workdir, regex, listener);
     }
 
     @Override
-    public Search withCache(final PathCache cache) {
-        proxy.withCache(cache);
+    public boolean isRecursive() {
+        return proxy.isRecursive();
+    }
+
+    @Override
+    public Search withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistrySearchFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -96,4 +96,16 @@ public class DefaultFindFeatureTest {
             }
         }).find(new Path("/a/b", EnumSet.of(Path.Type.file))));
     }
+
+    @Test
+    public void testFindByType() throws Exception {
+        final DefaultFindFeature feature = new DefaultFindFeature(new NullSession(new Host(new TestProtocol())) {
+            @Override
+            public AttributedList<Path> list(Path file, ListProgressListener listener) {
+                return new AttributedList<>(Collections.singletonList(new Path("/a", EnumSet.of(Path.Type.file))));
+            }
+        });
+        assertFalse(feature.find(new Path("/a", EnumSet.of(Path.Type.directory))));
+        assertTrue(feature.find(new Path("/a", EnumSet.of(Path.Type.file))));
+    }
 }

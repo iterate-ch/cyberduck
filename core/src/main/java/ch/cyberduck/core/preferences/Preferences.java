@@ -270,11 +270,6 @@ public abstract class Preferences {
         defaults.put("local.delimiter", File.separator);
         defaults.put("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
-        /*
-          Prompt to resolve bookmark of file outside of sandbox with choose panel
-         */
-        defaults.put("local.bookmark.resolve.prompt", String.valueOf(false));
-
         defaults.put("application.name", "Cyberduck");
         final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
         defaults.put("application.support.path", support);
@@ -409,6 +404,8 @@ public abstract class Preferences {
          */
         defaults.put("editor.bundleIdentifier", "com.apple.TextEdit");
         defaults.put("editor.alwaysUseDefault", String.valueOf(false));
+
+        defaults.put("editor.upload.permissions.change", String.valueOf(true));
         defaults.put("editor.upload.symboliclink.resolve", String.valueOf(true));
 
         /*
@@ -424,15 +421,16 @@ public abstract class Preferences {
         /*
           Default transfer connection handling
          */
-        defaults.put("queue.transfer.type.enabled", String.format("%s %s",
+        defaults.put("queue.transfer.type.enabled", String.format("%s %s %s",
                 String.valueOf(Host.TransferType.browser.name()),
+                String.valueOf(Host.TransferType.newconnection.name()),
                 String.valueOf(Host.TransferType.concurrent.name())
         ));
         defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.concurrent.name()));
         /*
           Warning when number of transfers in queue exceeds limit
          */
-        defaults.put("queue.size.warn", String.valueOf(50));
+        defaults.put("queue.size.warn", String.valueOf(20));
         /*
           Bring transfer window to front
          */
@@ -465,6 +463,8 @@ public abstract class Preferences {
         defaults.put("queue.upload.file.metadata.change", String.valueOf(true));
         defaults.put("queue.upload.file.encryption.change", String.valueOf(true));
         defaults.put("queue.upload.file.redundancy.change", String.valueOf(true));
+
+        defaults.put("queue.upload.checksum.calculate", String.valueOf(true));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
@@ -615,6 +615,7 @@ public abstract class Preferences {
         defaults.put("ftp.socket.buffer", String.valueOf(0));
 
         defaults.put("ftp.parser.multiline.strict", String.valueOf(false));
+        defaults.put("ftp.parser.reply.strict", String.valueOf(false));
 
         /*
           Send LIST -a
@@ -696,6 +697,7 @@ public abstract class Preferences {
         defaults.put("s3.upload.multipart.threshold", String.valueOf(100L * 1024L * 1024L));
         defaults.put("s3.upload.multipart.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
         // Maximum number of parts is 10'000. With 10MB segements this gives a maximum object size of 100GB
+        // Must be a multiple of org.cryptomator.cryptolib.v1.Constants.PAYLOAD_SIZE when using Cryptomator Vaults
         defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
 
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
@@ -724,6 +726,12 @@ public abstract class Preferences {
         defaults.put("hubic.oauth.secret", "IIm0EkjdyPquS9SpIZXAdNlGbcf3mL9s3UiOFLnWLeTxLosjvAHGIbomvAcBZQb2");
         defaults.put("hubic.oauth.redirecturi", "https://cyberduck.io/oauth");
 //        defaults.put("hubic.oauth.redirecturi", "x-cyberduck-action:oauth");
+
+        defaults.put("onedrive.oauth.clientid", "372770ba-bb24-436b-bbd4-19bc86310c0e");
+        defaults.put("onedrive.oauth.secret", "mJjWVkmfD9FVHNFTpbrdowv");
+        defaults.put("onedrive.oauth.redirecturi", "https://cyberduck.io/oauth/");
+
+        defaults.put("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
 
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(month));
@@ -782,11 +790,12 @@ public abstract class Preferences {
 
         defaults.put("b2.upload.largeobject", String.valueOf(true));
         defaults.put("b2.upload.largeobject.concurrency", String.valueOf(5));
-        defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
+        defaults.put("b2.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
         // When uploading files larger than 200MB, use the large files support to break up the files into parts and upload the parts in parallel.
         defaults.put("b2.upload.largeobject.threshold", String.valueOf(200 * 1024L * 1024L)); // 200MB
         // Each part can be anywhere from 100MB to 5GB in size
         defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
+        defaults.put("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
@@ -909,10 +918,9 @@ public abstract class Preferences {
 
         defaults.put("connection.hostname.default", StringUtils.EMPTY);
         /*
-          Try to resolve the hostname when entered in connection dialog
+          Convert hostname to Punycode
          */
-        defaults.put("connection.hostname.check", String.valueOf(true)); //Check hostname reachability using NSNetworkDiagnostics
-        defaults.put("connection.hostname.idn", String.valueOf(true)); //Convert hostnames to Punycode
+        defaults.put("connection.hostname.idn", String.valueOf(true));
 
         /*
           java.net.preferIPv6Addresses
@@ -1038,6 +1046,7 @@ public abstract class Preferences {
 
         defaults.put("network.interface.blacklist", StringUtils.EMPTY);
 
+        defaults.put("threading.pool.size.max", String.valueOf(20));
         defaults.put("threading.pool.keepalive.seconds", String.valueOf(60L));
 
         defaults.put("dropbox.oauth.clientid", "rjqgs45ntjp1va9");
@@ -1046,6 +1055,7 @@ public abstract class Preferences {
 //        defaults.put("dropbox.oauth.redirecturi", "x-cyberduck-action:oauth");
 
         defaults.put("cryptomator.enable", String.valueOf(true));
+        defaults.put("cryptomator.vault.autodetect", String.valueOf(true));
     }
 
     protected void setLogging() {

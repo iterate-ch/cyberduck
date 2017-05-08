@@ -17,7 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -34,12 +34,17 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.net.SocketTimeoutException;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -111,7 +116,11 @@ public class FTPListServiceTest {
         list.remove(FTPListService.Command.list);
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
-        assertTrue(list.list(new Path(new FTPWorkdirService(session).find(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        final Path home = new FTPWorkdirService(session).find();
+        final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new FTPDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
+        assertTrue(list.list(directory, new DisabledListProgressListener()).isEmpty());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -127,27 +136,11 @@ public class FTPListServiceTest {
         list.remove(FTPListService.Command.stat);
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
-        assertTrue(list.list(new Path(new FTPWorkdirService(session).find(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
-        session.close();
-    }
-
-    @Test
-    public void testPostProcessing() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
-        final AttributedList<Path> list = new AttributedList<Path>();
-        final Path l = new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
-        l.setSymlinkTarget(new Path("/test.s", EnumSet.of(Path.Type.file)));
-        list.add(l);
-        assertTrue(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
-        service.post(new Path("/", EnumSet.of(Path.Type.directory)), list, new DisabledListProgressListener());
-        assertFalse(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink))));
-        assertTrue(list.contains(new Path("/test.d", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))));
+        final Path home = new FTPWorkdirService(session).find();
+        final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new FTPDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
+        assertTrue(list.list(directory, new DisabledListProgressListener()).isEmpty());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -174,13 +167,15 @@ public class FTPListServiceTest {
             }
         });
         final Path directory = new FTPWorkdirService(session).find();
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
         assertTrue(set.get());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        assertTrue(list.contains(
-                new Path(directory, "test", EnumSet.of(Path.Type.file))));
+        assertTrue(list.contains(file));
         service.list(directory, new DisabledListProgressListener());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

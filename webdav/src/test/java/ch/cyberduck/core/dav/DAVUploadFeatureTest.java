@@ -126,7 +126,7 @@ public class DAVUploadFeatureTest {
                     new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length));
+        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

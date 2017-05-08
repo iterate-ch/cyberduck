@@ -79,8 +79,8 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     public void setToggleOptionsButton(final NSButton toggleOptionsButton) {
         this.toggleOptionsButton = toggleOptionsButton;
         this.setState(this.toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
-        this.connectmodePopup.setTarget(this.id());
-        this.connectmodePopup.setAction(Foundation.selector("toggleOptionsButtonClicked:"));
+        this.toggleOptionsButton.setTarget(this.id());
+        this.toggleOptionsButton.setAction(Foundation.selector("toggleOptionsButtonClicked:"));
     }
 
     @Action
@@ -109,7 +109,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         this.update();
     }
 
-    public void setConnectmodePopup(NSPopUpButton button) {
+    public void setConnectmodePopup(final NSPopUpButton button) {
         this.connectmodePopup = button;
         this.connectmodePopup.setTarget(this.id());
         this.connectmodePopup.setAction(Foundation.selector("connectmodePopupClicked:"));
@@ -201,8 +201,8 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     }
 
     @Action
-    public void downloadPathPopupClicked(final NSMenuItem sender) {
-        if(null == sender.representedObject()) {
+    public void downloadPathPopupClicked(final NSPopUpButton sender) {
+        if(null == sender.selectedItem().representedObject()) {
             downloadFolderOpenPanel = NSOpenPanel.openPanel();
             downloadFolderOpenPanel.setCanChooseFiles(false);
             downloadFolderOpenPanel.setCanChooseDirectories(true);
@@ -212,7 +212,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            final Local folder = LocalFactory.get(sender.representedObject());
+            final Local folder = LocalFactory.get(sender.selectedItem().representedObject());
             bookmark.setDownloadFolder(folder);
             this.update();
         }
@@ -295,11 +295,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                             if(null != favicon) {
                                 webUrlImage.setImage(favicon);
                             }
-                        }
-
-                        @Override
-                        public Object lock() {
-                            return bookmark;
                         }
                     });
                 }

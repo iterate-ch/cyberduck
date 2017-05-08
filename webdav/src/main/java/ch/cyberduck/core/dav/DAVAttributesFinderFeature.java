@@ -17,9 +17,9 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,7 +35,9 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.log4j.Logger;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +64,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
         }
         try {
             try {
-                final List<DavResource> status = session.getClient().list(new DAVPathEncoder().encode(file));
+                final List<DavResource> status = session.getClient().list(new DAVPathEncoder().encode(file), 1, Collections.<QName>emptySet());
                 for(final DavResource resource : status) {
                     if(resource.isDirectory()) {
                         if(!file.getType().contains(Path.Type.directory)) {
@@ -140,7 +142,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public AttributesFinder withCache(final PathCache cache) {
+    public AttributesFinder withCache(final Cache<Path> cache) {
         return this;
     }
 }

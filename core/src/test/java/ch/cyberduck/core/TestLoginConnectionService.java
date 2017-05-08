@@ -16,14 +16,15 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 public class TestLoginConnectionService extends LoginConnectionService {
     public TestLoginConnectionService() {
-        super(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
+        super(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
     }
 
     @Override
-    public void connect(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+    public void connect(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
         //
     }
 }

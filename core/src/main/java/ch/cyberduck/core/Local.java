@@ -227,12 +227,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public AttributedList<Local> list() throws AccessDeniedException {
-        return this.list(new Filter<String>() {
-            @Override
-            public boolean accept(final String file) {
-                return true;
-            }
-        });
+        return this.list(new NullFilter<>());
     }
 
     @Override
@@ -398,7 +393,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
     }
 
-    public Object lock() throws AccessDeniedException {
+    public Object lock(final boolean interactive) throws AccessDeniedException {
         return null;
     }
 

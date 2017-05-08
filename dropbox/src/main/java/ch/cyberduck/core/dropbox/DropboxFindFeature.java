@@ -15,8 +15,9 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
@@ -35,7 +36,7 @@ public class DropboxFindFeature implements Find {
             return true;
         }
         try {
-            return null != new DropboxIdProvider(session).getFileid(file);
+            return new DropboxAttributesFinderFeature(session).find(file) != PathAttributes.EMPTY;
         }
         catch(NotfoundException e) {
             return false;
@@ -43,7 +44,7 @@ public class DropboxFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final PathCache cache) {
+    public Find withCache(final Cache<Path> cache) {
         return this;
     }
 }

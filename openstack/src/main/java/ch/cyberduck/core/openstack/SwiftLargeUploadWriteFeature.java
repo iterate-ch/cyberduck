@@ -14,41 +14,45 @@
 
 package ch.cyberduck.core.openstack;
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.SegmentingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.threading.AbstractRetryCallable;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> {
+public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<StorageObject>> {
     private static final Logger log = Logger.getLogger(SwiftLargeUploadWriteFeature.class);
 
     private final PathContainerService containerService
@@ -86,19 +90,19 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     }
 
     @Override
-    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final LargeUploadOutputStream stream = new LargeUploadOutputStream(file, status);
-        return new HttpResponseOutputStream<List<StorageObject>>(new BufferedOutputStream(stream,
+    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
+        return new HttpResponseOutputStream<List<StorageObject>>(new SegmentingOutputStream(proxy,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
             public List<StorageObject> getStatus() throws BackgroundException {
-                return stream.getCompleted();
+                return proxy.getCompleted();
             }
         };
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
@@ -122,14 +126,15 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     }
 
     private final class LargeUploadOutputStream extends OutputStream {
-        final List<StorageObject> completed = new ArrayList<StorageObject>();
+        private final List<StorageObject> completed = new ArrayList<StorageObject>();
         private final Path file;
-        private final TransferStatus status;
+        private final TransferStatus overall;
+        private final AtomicBoolean close = new AtomicBoolean();
         private int segmentNumber;
 
         public LargeUploadOutputStream(final Path file, final TransferStatus status) {
             this.file = file;
-            this.status = status;
+            this.overall = status;
         }
 
         @Override
@@ -138,49 +143,41 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
         }
 
         @Override
-        public void write(final byte[] b, final int off, final int len) throws IOException {
+        public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
-                completed.add(new AbstractRetryCallable<StorageObject>() {
+                completed.add(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
                     @Override
                     public StorageObject call() throws BackgroundException {
+                        final TransferStatus status = new TransferStatus().length(len);
+                        status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum()
+                                .compute(new ByteArrayInputStream(content, off, len), status)
+                        );
+                        // Segment name with left padded segment number
+                        final Path segment = segmentService.getSegment(file, status.getLength(), ++segmentNumber);
+                        final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
+                        final HashMap<String, String> headers = new HashMap<>();
+                        final String checksum;
                         try {
-                            final TransferStatus status = new TransferStatus().length(len);
-                            // Segment name with left padded segment number
-                            final Path segment = new Path(containerService.getContainer(file),
-                                    segmentService.name(file, status.getLength(), ++segmentNumber), EnumSet.of(Path.Type.file));
-                            final ByteArrayEntity entity = new ByteArrayEntity(b, off, len);
-                            final HashMap<String, String> headers = new HashMap<>();
-                            final String checksum;
-                            try {
-                                checksum = session.getClient().storeObject(
-                                        regionService.lookup(file),
-                                        containerService.getContainer(segment).getName(), containerService.getKey(segment),
-                                        entity, headers, null);
-                            }
-                            catch(GenericException e) {
-                                throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
-                            }
-                            catch(IOException e) {
-                                throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-                            }
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Saved segment %s with checksum %s", segment, checksum));
-                            }
-                            final StorageObject stored = new StorageObject(containerService.getKey(segment));
-                            stored.setMd5sum(checksum);
-                            stored.setSize(status.getLength());
-                            return stored;
+                            checksum = session.getClient().storeObject(
+                                    regionService.lookup(file),
+                                    containerService.getContainer(segment).getName(), containerService.getKey(segment),
+                                    entity, headers, Checksum.NONE == status.getChecksum() ? null : status.getChecksum().hash);
                         }
-                        catch(BackgroundException e) {
-                            if(this.retry(e, new DisabledProgressListener(), status)) {
-                                return this.call();
-                            }
-                            else {
-                                throw e;
-                            }
+                        catch(GenericException e) {
+                            throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
                         }
+                        catch(IOException e) {
+                            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+                        }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Saved segment %s with checksum %s", segment, checksum));
+                        }
+                        final StorageObject stored = new StorageObject(containerService.getKey(segment));
+                        stored.setMd5sum(checksum);
+                        stored.setSize(status.getLength());
+                        return stored;
                     }
-                }.call());
+                }, overall).call());
             }
             catch(Exception e) {
                 throw new IOException(e.getMessage(), e);
@@ -192,6 +189,10 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
             // Create and upload the large object manifest. It is best to upload all the segments first and
             // then create or update the manifest.
             try {
+                if(close.get()) {
+                    log.warn(String.format("Skip double close of stream %s", this));
+                    return;
+                }
                 // Static Large Object
                 final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completed);
                 if(log.isDebugEnabled()) {
@@ -200,11 +201,14 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
                 session.getClient().createSLOManifestObject(regionService.lookup(
                         containerService.getContainer(file)),
                         containerService.getContainer(file).getName(),
-                        status.getMime(),
+                        overall.getMime(),
                         containerService.getKey(file), manifest, Collections.emptyMap());
             }
             catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
+            }
+            finally {
+                close.set(true);
             }
         }
 

@@ -31,6 +31,10 @@ import java.lang.reflect.InvocationTargetException;
 
 public class FilesystemFactory extends Factory<Filesystem> {
 
+    protected FilesystemFactory() {
+        super("factory.filesystem.class");
+    }
+
     public Filesystem create(final Controller controller, final Host bookmark, final PathCache cache) {
         final String clazz = PreferencesFactory.get().getProperty("factory.filesystem.class");
         if(null == clazz) {

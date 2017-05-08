@@ -22,7 +22,6 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.vault.registry.*;
 
@@ -66,14 +65,14 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     @Override
     public void clear() {
         if(log.isInfoEnabled()) {
-            log.info("Close vaults");
+            log.info(String.format("Close %d registered vaults", this.size()));
         }
         this.forEach(Vault::close);
         super.clear();
     }
 
     @Override
-    public Vault find(final Session session, final Path file) throws ConnectionCanceledException {
+    public Vault find(final Session session, final Path file) throws VaultUnlockCancelException {
         return this.find(session, file, true);
     }
 
@@ -83,7 +82,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
      * @param lookup  Find and load any vault
      * @return Open or disabled vault
      */
-    public Vault find(final Session session, final Path file, final boolean lookup) throws ConnectionCanceledException {
+    public Vault find(final Session session, final Path file, final boolean lookup) throws VaultUnlockCancelException {
         for(Vault vault : this) {
             if(vault.contains(file)) {
                 if(log.isDebugEnabled()) {
@@ -105,7 +104,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         return Vault.DISABLED;
     }
 
-    private Vault find(final Path directory, final LoadingVaultLookupListener listener) throws ConnectionCanceledException {
+    private Vault find(final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
         final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
         listener.found(vault);
         return vault;
@@ -144,7 +143,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             return (T) new VaultRegistryWriteFeature(session, (Write) proxy, this);
         }
         if(type == MultipartWrite.class) {
-            return (T) new VaultRegistryMultipartWriteFeature(session, (MultipartWrite) proxy, this);
+            return (T) new VaultRegistryMultipartWriteFeature(session, (Write) proxy, this);
         }
         if(type == Move.class) {
             return (T) new VaultRegistryMoveFeature(session, (Move) proxy, this);

@@ -52,7 +52,7 @@ public class DefaultSearchFeatureTest {
         });
         final PathCache cache = new PathCache(Integer.MAX_VALUE);
         feature.withCache(cache);
-        final Filter<Path> filter = new Filter<Path>() {
+        final Filter<Path> filter = new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {
                 return file.equals(f1);

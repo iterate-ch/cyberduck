@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -131,7 +130,10 @@ public final class TransferQueue {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resize queue to %d", newsize));
         }
-        running.drainTo(temporary);
+        final int drained = running.drainTo(temporary);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Drained %d elements", drained));
+        }
         running.clear();
         running = new ArrayBlockingQueue<Transfer>(newsize);
         this.poll();
@@ -144,10 +146,6 @@ public final class TransferQueue {
         if(log.isDebugEnabled()) {
             log.debug("Polling overflow queue");
         }
-        for(Iterator<Transfer> t = temporary.iterator(); t.hasNext(); ) {
-            if(running.offer(t.next())) {
-                t.remove();
-            }
-        }
+        temporary.removeIf(transfer -> running.offer(transfer));
     }
 }

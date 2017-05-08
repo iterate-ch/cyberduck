@@ -21,9 +21,11 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.serializer.PathDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,7 +46,7 @@ public class DefaultHomeFinderService implements Home {
     public Path find() throws BackgroundException {
         final Host host = session.getHost();
         if(host.getWorkdir() != null) {
-            return host.getWorkdir();
+            return new PathDictionary().deserialize(host.getWorkdir().serialize(SerializerFactory.get()));
         }
         else {
             final String path = host.getDefaultPath();

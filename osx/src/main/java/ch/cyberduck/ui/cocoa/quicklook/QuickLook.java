@@ -33,16 +33,9 @@ public interface QuickLook {
     void select(List<Local> files);
 
     /**
-     * @return QuickLook implementation found.
-     */
-    boolean isAvailable();
-
-    /**
      * @return QuickLook panel is visible
      */
     boolean isOpen();
-
-    void willBeginQuickLook();
 
     /**
      * Open QuickLook panel
@@ -54,5 +47,6 @@ public interface QuickLook {
      */
     void close();
 
+    void willBeginQuickLook();
     void didEndQuickLook();
 }

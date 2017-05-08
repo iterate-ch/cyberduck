@@ -16,11 +16,11 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -67,16 +68,10 @@ public class DriveDirectoryFeatureTest {
                         }
                         return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                }, new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(test);
-        test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
+        new DriveDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(test));
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),
                 new Delete.DisabledCallback());

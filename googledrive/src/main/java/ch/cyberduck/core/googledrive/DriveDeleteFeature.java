@@ -27,13 +27,16 @@ public class DriveDeleteFeature implements Delete {
 
     private final DriveSession session;
 
-    public DriveDeleteFeature(DriveSession session) {
+    public DriveDeleteFeature(final DriveSession session) {
         this.session = session;
     }
 
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
+            if(file.getType().contains(Path.Type.placeholder)) {
+                continue;
+            }
             callback.delete(file);
             try {
                 session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file)).execute();
@@ -42,5 +45,15 @@ public class DriveDeleteFeature implements Delete {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
+    }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        return true;
+    }
+
+    @Override
+    public boolean isRecursive() {
+        return true;
     }
 }

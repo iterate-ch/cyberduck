@@ -12,12 +12,12 @@ public class PathCacheTest {
     @Test
     public void testLookup() throws Exception {
         final PathCache cache = new PathCache(1);
-        assertNull(cache.lookup(new DefaultPathReference(new Path("/", EnumSet.of(Path.Type.directory)))));
+        assertNull(cache.lookup(new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
         list.add(file);
         cache.put(new Path("p", EnumSet.of(Path.Type.directory)), list);
-        assertNotNull(cache.lookup(new DefaultPathReference(file)));
+        assertNotNull(cache.lookup(new DefaultPathPredicate(file)));
     }
 
     @Test
@@ -34,7 +34,7 @@ public class PathCacheTest {
         final Path f = new Path("/", EnumSet.of(Path.Type.directory));
         assertFalse(cache.containsKey(f));
         cache.put(f, new AttributedList<Path>());
-        final CacheReference reference = new DefaultPathReference(new Path("/", EnumSet.of(Path.Type.directory)));
+        final CacheReference reference = new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)));
         assertTrue(cache.containsKey(f));
         assertTrue(cache.isCached(f));
     }
@@ -62,7 +62,7 @@ public class PathCacheTest {
 
     @Test
     public void testDisabledCache() throws Exception {
-        Cache<Path> cache = PathCache.empty();
+        PathCache cache = PathCache.empty();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
         cache.put(file, AttributedList.<Path>emptyList());
         assertFalse(cache.containsKey(file));
@@ -75,7 +75,7 @@ public class PathCacheTest {
         final Path parent = new Path("/", EnumSet.of(Path.Type.directory));
         final AttributedList<Path> list = new AttributedList<Path>(
                 Arrays.asList(new Path(parent, "a", EnumSet.of(Path.Type.file)), new Path(parent, "b", EnumSet.of(Path.Type.file))));
-        list.filter(new Filter<Path>() {
+        list.filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {
                 return file.equals(new Path(parent, "a", EnumSet.of(Path.Type.file)));

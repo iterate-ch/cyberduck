@@ -40,6 +40,9 @@ public final class CredentialsConfiguratorFactory {
                 if(null == instance) {
                     instance = new OpenSSHCredentialsConfigurator();
                 }
+                else {
+                    instance.reload();
+                }
                 return instance;
             }
         }
@@ -50,6 +53,11 @@ public final class CredentialsConfiguratorFactory {
         @Override
         public Credentials configure(final Host host) {
             return host.getCredentials();
+        }
+
+        @Override
+        public void reload() {
+            //
         }
     }
 }

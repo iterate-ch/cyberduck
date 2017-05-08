@@ -46,7 +46,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof(ConnectionController).FullName);
         private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
-        private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerReachability;
 
         private readonly HostPasswordStore keychain = PasswordStoreFactory.get();
@@ -474,11 +473,6 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 _controller.View.AlertIconEnabled = !_reachable;
-            }
-
-            public override object @lock()
-            {
-                return _controller._syncRootReachability;
             }
         }
     }

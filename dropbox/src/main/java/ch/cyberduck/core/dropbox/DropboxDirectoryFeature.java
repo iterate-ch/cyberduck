@@ -16,15 +16,18 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.FolderMetadata;
 
-public class DropboxDirectoryFeature implements Directory<Void> {
+public class DropboxDirectoryFeature implements Directory<String> {
 
     private final DropboxSession session;
 
@@ -33,14 +36,12 @@ public class DropboxDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            new DbxUserFilesRequests(session.getClient()).createFolder(file.getAbsolute());
+            final FolderMetadata metadata = new DbxUserFilesRequests(session.getClient()).createFolder(folder.getAbsolute());
+            return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                    new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get()))
+                            .withVersionId(metadata.getId()));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);
@@ -48,7 +49,12 @@ public class DropboxDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public DropboxDirectoryFeature withWriter(final Write<Void> writer) {
+    public boolean isSupported(final Path workdir) {
+        return true;
+    }
+
+    @Override
+    public DropboxDirectoryFeature withWriter(final Write<String> writer) {
         return this;
     }
 }

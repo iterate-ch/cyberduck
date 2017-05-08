@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public abstract class LicenseFactory extends Factory<License> {
     private static final Logger log = Logger.getLogger(LicenseFactory.class);
@@ -81,6 +82,11 @@ public abstract class LicenseFactory extends Factory<License> {
             @Override
             public boolean accept(final Local file) {
                 return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
+            }
+
+            @Override
+            public Pattern toPattern() {
+                return Pattern.compile(".*\\.cyberducklicense");
             }
         });
     }

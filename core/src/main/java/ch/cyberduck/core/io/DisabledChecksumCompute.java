@@ -15,7 +15,6 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -23,7 +22,7 @@ import java.io.InputStream;
 
 public class DisabledChecksumCompute implements ChecksumCompute {
     @Override
-    public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
         return Checksum.NONE;
     }
 }

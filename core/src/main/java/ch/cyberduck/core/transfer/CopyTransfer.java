@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -191,10 +192,10 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk download = source.getFeature(Bulk.class);
         {
-            final Object id = download.pre(Type.download, files);
+            final Object id = download.pre(Type.download, files, callback);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
             }
@@ -205,10 +206,26 @@ public class CopyTransfer extends Transfer {
             for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
                 targets.put(this.mapping.get(entry.getKey()), entry.getValue());
             }
-            final Object id = upload.pre(Type.upload, targets);
+            final Object id = upload.pre(Type.upload, targets, callback);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
             }
+        }
+    }
+
+    @Override
+    public void post(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        final Bulk download = source.getFeature(Bulk.class);
+        {
+            download.post(Type.download, files, callback);
+        }
+        final Bulk upload = destination.getFeature(Bulk.class);
+        {
+            final Map<Path, TransferStatus> targets = new HashMap<>();
+            for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
+                targets.put(this.mapping.get(entry.getKey()), entry.getValue());
+            }
+            upload.post(Type.upload, targets, callback);
         }
     }
 
@@ -223,27 +240,13 @@ public class CopyTransfer extends Transfer {
         final Path copy = mapping.get(source);
         progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
-        if(source.isFile()) {
-            if(session.getHost().equals(destination.getHost())) {
-                final Copy feature = session.getFeature(Copy.class);
-                if(feature != null) {
-                    feature.copy(source, copy);
-                    addTransferred(status.getLength());
-                }
-                else {
-                    this.copy(session, source, destination, copy, bandwidth, streamListener, status);
-                }
-            }
-            else {
-                this.copy(session, source, destination, copy, bandwidth, streamListener, status);
-            }
+        if(session.getHost().equals(destination.getHost())) {
+            final Copy feature = session.getFeature(Copy.class);
+            feature.copy(source, copy, status);
+            addTransferred(status.getLength());
         }
         else {
-            if(!status.isExists()) {
-                progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                        copy.getName()));
-                destination.getFeature(Directory.class).mkdir(copy, null, status);
-            }
+            this.copy(session, source, destination, copy, bandwidth, streamListener, status);
         }
     }
 
@@ -262,9 +265,13 @@ public class CopyTransfer extends Transfer {
         OutputStream out = null;
         try {
             if(file.isFile()) {
-                in = new ThrottledInputStream(source.getFeature(Read.class).read(file, status), throttle);
-                // Make sure to use S3MultipartWriteFeature, see #9362
-                out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
+                in = new ThrottledInputStream(source.getFeature(Read.class).read(file, status, new DisabledConnectionCallback()), throttle);
+                Write write = target.getFeature(MultipartWrite.class);
+                if(null == write) {
+                    // Fallback if multipart write is not available
+                    write = target.getFeature(Write.class);
+                }
+                out = new ThrottledOutputStream(write.write(copy, status, new DisabledConnectionCallback()), throttle);
                 new StreamCopier(status, status)
                         .withLimit(status.getLength())
                         .withListener(new DelegateStreamListener(streamListener) {
@@ -274,6 +281,9 @@ public class CopyTransfer extends Transfer {
                                 super.sent(bytes);
                             }
                         }).transfer(in, out);
+            }
+            else if(file.isDirectory()) {
+                target.getFeature(Directory.class).mkdir(copy, null, status);
             }
         }
         finally {

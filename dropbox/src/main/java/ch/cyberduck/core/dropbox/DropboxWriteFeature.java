@@ -15,9 +15,10 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -39,6 +40,7 @@ import java.util.Date;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.CommitInfo;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.UploadSessionAppendV2Uploader;
 import com.dropbox.core.v2.files.UploadSessionCursor;
 import com.dropbox.core.v2.files.UploadSessionFinishUploader;
@@ -75,7 +77,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
@@ -84,12 +86,15 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient());
             final UploadSessionStartUploader start = files.uploadSessionStart();
             new DefaultStreamCloser().close(start.getOutputStream());
             final String sessionId = start.finish().getSessionId();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Obtained session id %s for upload %s", sessionId, file));
+            }
             final UploadSessionAppendV2Uploader uploader = open(files, sessionId, 0L);
             return new SegmentingUploadProxyOutputStream(file, status, files, uploader, sessionId);
         }
@@ -112,8 +117,9 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
 
         private final Path file;
         private final TransferStatus status;
-        private final DbxUserFilesRequests files;
+        private final DbxUserFilesRequests client;
         private final String sessionId;
+        private String fileId;
 
         private Long offset = 0L;
         private Long written = 0L;
@@ -124,7 +130,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
             super(uploader.getOutputStream());
             this.file = file;
             this.status = status;
-            this.files = client;
+            this.client = client;
             this.uploader = uploader;
             this.sessionId = sessionId;
         }
@@ -147,8 +153,11 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
          * Open next chunk
          */
         private void next() throws DbxException {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Open next segment for upload session %s for file %s", sessionId, file));
+            }
             // Next segment
-            uploader = open(files, sessionId, written);
+            uploader = open(client, sessionId, written);
             // Replace stream
             out = uploader.getOutputStream();
             offset = 0L;
@@ -162,20 +171,21 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
 
         @Override
         public String getStatus() throws BackgroundException {
-            return sessionId;
+            return fileId;
         }
 
         @Override
         public void close() throws IOException {
             try {
                 DropboxWriteFeature.this.close(uploader);
-                final UploadSessionFinishUploader finish = files.uploadSessionFinish(new UploadSessionCursor(sessionId, written), CommitInfo.newBuilder(file.getAbsolute())
+                final UploadSessionFinishUploader finish = client.uploadSessionFinish(new UploadSessionCursor(sessionId, written), CommitInfo.newBuilder(file.getAbsolute())
                         .withClientModified(status.getTimestamp() != null ? new Date(status.getTimestamp()) : null)
                         .withMode(WriteMode.OVERWRITE)
                         .build()
                 );
                 finish.getOutputStream().close();
-                finish.finish();
+                final FileMetadata metadtata = finish.finish();
+                fileId = metadtata.getId();
             }
             catch(IllegalStateException e) {
                 // Already closed
@@ -190,10 +200,16 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     private UploadSessionAppendV2Uploader open(final DbxUserFilesRequests files, final String sessionId, final Long offset) throws DbxException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Open next segment for upload session %s", sessionId));
+        }
         return files.uploadSessionAppendV2(new UploadSessionCursor(sessionId, offset));
     }
 
     private void close(final UploadSessionAppendV2Uploader uploader) throws DbxException, IOException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Close uploader %s", uploader));
+        }
         uploader.getOutputStream().close();
         uploader.finish();
     }

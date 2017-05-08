@@ -107,7 +107,7 @@ public class DAVMetadataFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(test);
+        new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final String v = UUID.randomUUID().toString();
         new DAVMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
         final Map<String, String> metadata = new DAVMetadataFeature(session).getMetadata(test);

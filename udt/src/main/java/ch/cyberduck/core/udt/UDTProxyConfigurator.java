@@ -70,11 +70,8 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
      * Transparent HTTP over UDT Proxy
      */
     private UDTProxyProvider provider;
-
     private X509TrustManager trust;
-
     private X509KeyManager key;
-
     private UDTSocketCallback callback;
 
     public UDTProxyConfigurator(final Location.Name location, final UDTProxyProvider provider,
@@ -108,7 +105,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     /**
      * Configure the HTTP Session to proxy through UDT
      */
-    public HttpSession<?> configure(final HttpSession session) throws BackgroundException {
+    public HttpSession<?> configure(final HttpSession<?> session) throws BackgroundException {
         // Add X-Qloudsonic-* headers
         final List<Header> headers = provider.headers();
         if(log.isInfoEnabled()) {

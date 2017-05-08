@@ -21,7 +21,6 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.log4j.Logger;
 
@@ -78,7 +77,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     @Override
-    public void prepare() throws ConnectionCanceledException {
+    public void prepare() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prepare background task %s", this));
         }
@@ -148,12 +147,6 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     @Override
     public String getName() {
         return LocaleFactory.localizedString("Unknown");
-    }
-
-    @Override
-    public Object lock() {
-        // No synchronization with other tasks by default
-        return null;
     }
 
     @Override

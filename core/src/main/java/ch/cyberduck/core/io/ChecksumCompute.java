@@ -18,7 +18,6 @@ package ch.cyberduck.core.io;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -27,9 +26,8 @@ import java.io.InputStream;
 public interface ChecksumCompute {
 
     /**
-     * @param file May be null
      * @param in   Stream that will be closed when the checksum is computed
      * @return Calculated fingerprint
      */
-    Checksum compute(Path file, InputStream in, TransferStatus status) throws ChecksumException;
+    Checksum compute(InputStream in, TransferStatus status) throws ChecksumException;
 }

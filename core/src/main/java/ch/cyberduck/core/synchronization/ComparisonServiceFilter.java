@@ -91,7 +91,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                         progress.message(MessageFormat.format(
                                 LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                         local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
-                                .compute(file, local.getInputStream(), new TransferStatus()));
+                                .compute(local.getInputStream(), new TransferStatus()));
                         final Comparison comparison = checksum.compare(attributes, local.attributes());
                         if(!Comparison.notequal.equals(comparison)) {
                             // Decision is available

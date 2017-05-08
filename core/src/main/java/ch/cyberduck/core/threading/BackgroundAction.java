@@ -19,7 +19,6 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 public interface BackgroundAction<T> extends BackgroundActionState {
 
@@ -33,7 +32,7 @@ public interface BackgroundAction<T> extends BackgroundActionState {
      *
      * @see #run()
      */
-    void prepare() throws ConnectionCanceledException;
+    void prepare();
 
     T run() throws BackgroundException;
 
@@ -67,11 +66,6 @@ public interface BackgroundAction<T> extends BackgroundActionState {
     String getActivity();
 
     String getName();
-
-    /**
-     * @return The synchronization object. Null if no ordering is required.
-     */
-    Object lock();
 
     /**
      * @param listener A listener to be notified

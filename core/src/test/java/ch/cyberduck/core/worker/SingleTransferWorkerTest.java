@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
 
@@ -75,9 +76,9 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
-            public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
+            public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
-                    assertTrue(cache.containsKey(new TransferItem(root, local)));
+                    assertTrue(cache.isCached(new TransferItem(root, local)));
                 }
                 super.transfer(new TransferItem(item.remote, new NullLocal("l") {
                     @Override
@@ -87,10 +88,11 @@ public class SingleTransferWorkerTest {
                         return l;
                     }
                 }), action);
-                assertFalse(cache.containsKey(new TransferItem(child, local)));
+                assertFalse(cache.isCached(new TransferItem(child, local)));
+                return null;
             }
         }.run(session, session);
-        assertFalse(cache.containsKey(new TransferItem(child, local)));
+        assertFalse(cache.isCached(new TransferItem(child, local)));
     }
 
     @Test
@@ -144,15 +146,16 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
-            public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
+            public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
-                    assertTrue(cache.containsKey(new TransferItem(root, local)));
+                    assertTrue(cache.isCached(new TransferItem(root, local)));
                 }
                 super.transfer(item, action);
-                assertFalse(cache.containsKey(new TransferItem(child, local)));
+                assertFalse(cache.isCached(new TransferItem(child, local)));
+                return null;
             }
         }.run(session, session);
-        assertFalse(cache.containsKey(new TransferItem(child, local)));
+        assertFalse(cache.isCached(new TransferItem(child, local)));
         assertTrue(cache.isEmpty());
     }
 
@@ -205,9 +208,10 @@ public class SingleTransferWorkerTest {
                     }
 
                     @Override
-                    public AttributesFinder withCache(final PathCache cache) {
+                    public AttributesFinder withCache(final Cache<Path> cache) {
                         return this;
                     }
+
                 });
             }
         };
@@ -227,18 +231,19 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
-            public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
+            public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
-                    assertTrue(cache.containsKey(new TransferItem(root, local)));
+                    assertTrue(cache.isCached(new TransferItem(root, local)));
                 }
                 super.transfer(new TransferItem(item.remote, new NullLocal("l")), action);
                 if(item.remote.equals(root)) {
-                    assertFalse(cache.containsKey(new TransferItem(root, local)));
+                    assertFalse(cache.isCached(new TransferItem(root, local)));
                 }
+                return null;
             }
         };
         worker.run(session, session);
-        assertFalse(cache.containsKey(new TransferItem(child, local)));
+        assertFalse(cache.isCached(new TransferItem(child, local)));
         assertTrue(cache.isEmpty());
     }
 
@@ -270,9 +275,10 @@ public class SingleTransferWorkerTest {
             }, new DisabledTransferErrorCallback(),
                     new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty()) {
                 @Override
-                public void transfer(final TransferItem file, final TransferAction action) throws BackgroundException {
+                public Future<TransferStatus> transfer(final TransferItem file, final TransferAction action) throws BackgroundException {
                     // Expected not found
                     fail();
+                    return null;
                 }
             }.run(session, session);
         }

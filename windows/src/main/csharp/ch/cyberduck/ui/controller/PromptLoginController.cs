@@ -216,15 +216,11 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UsernameLabel = _credentials.getUsernamePlaceholder() + ":";
             View.PasswordLabel = _credentials.getPasswordPlaceholder() + ":";
             {
-                bool enable = _options.isKeychain() && !_credentials.isAnonymousLogin();
-                View.SavePasswordEnabled = enable;
-                if (!enable)
-                {
-                    View.SavePasswordState = false;
-                }
+                View.SavePasswordEnabled = _options.keychain() && !_credentials.isAnonymousLogin();;
+                View.SavePasswordState = _credentials.isSaved();
             }
-            View.AnonymousEnabled = _options.isAnonymous();
-            if (_options.isAnonymous() && _credentials.isAnonymousLogin())
+            View.AnonymousEnabled = _options.anonymous();
+            if (_options.anonymous() && _credentials.isAnonymousLogin())
             {
                 View.AnonymousState = true;
             }
@@ -232,8 +228,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.AnonymousState = false;
             }
-            View.PrivateKeyFieldEnabled = _options.isPublickey();
-            if (_options.isPublickey() && _credentials.isPublicKeyAuthentication())
+            View.PrivateKeyFieldEnabled = _options.publickey();
+            if (_options.publickey() && _credentials.isPublicKeyAuthentication())
             {
                 View.SelectedPrivateKey = _credentials.getIdentity().getAbsolute();
             }

@@ -71,7 +71,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                 if(local.attributes().getSize() == attributes.getSize()) {
                     if(Checksum.NONE != attributes.getChecksum()) {
                         final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
-                        if(compute.compute(file, local.getInputStream(), parent).equals(attributes.getChecksum())) {
+                        if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
                             if(log.isInfoEnabled()) {
                                 log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
                             }

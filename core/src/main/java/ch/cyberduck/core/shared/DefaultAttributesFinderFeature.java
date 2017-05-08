@@ -19,17 +19,18 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.log4j.Logger;
 
@@ -38,10 +39,10 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
 
     private final Session<?> session;
 
-    private PathCache cache
+    private Cache<Path> cache
             = PathCache.empty();
 
-    public DefaultAttributesFinderFeature(final Session session) {
+    public DefaultAttributesFinderFeature(final Session<?> session) {
         this.session = session;
     }
 
@@ -51,7 +52,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         final AttributedList<Path> list;
-        if(!cache.containsKey(file.getParent())) {
+        if(!cache.isCached(file.getParent())) {
             try {
                 list = session.list(file.getParent(), new DisabledListProgressListener());
                 cache.put(file.getParent(), list);
@@ -59,7 +60,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
             catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
                 log.warn(String.format("Failure listing directory %s. %s", file.getParent(), f.getMessage()));
                 // Try native implementation
-                final AttributesFinder feature = session.getFeature(AttributesFinder.class);
+                final AttributesFinder feature = session._getFeature(AttributesFinder.class);
                 if(feature instanceof DefaultAttributesFinderFeature) {
                     throw f;
                 }
@@ -69,31 +70,15 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         else {
             list = cache.get(file.getParent());
         }
-        if(list.contains(file)) {
-            return list.get(file).attributes();
-        }
-        else {
-            if(null == file.attributes().getVersionId()) {
-                // Try native implementation
-                final AttributesFinder feature = session.getFeature(AttributesFinder.class);
-                if(feature instanceof DefaultAttributesFinderFeature) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
-                final IdProvider id = session.getFeature(IdProvider.class);
-                final String version = id.getFileid(file);
-                if(version == null) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setVersionId(version);
-                return feature.find(new Path(file.getAbsolute(), file.getType(), attributes));
-            }
+        final Path result = list.find(new SimplePathPredicate(file));
+        if(null == result) {
             throw new NotfoundException(file.getAbsolute());
         }
+        return result.attributes();
     }
 
     @Override
-    public DefaultAttributesFinderFeature withCache(final PathCache cache) {
+    public DefaultAttributesFinderFeature withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

@@ -24,10 +24,10 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -40,7 +40,7 @@ public class DefaultFindFeature implements Find {
     private Cache<Path> cache
             = PathCache.empty();
 
-    public DefaultFindFeature(final Session session) {
+    public DefaultFindFeature(final Session<?> session) {
         this.session = session;
     }
 
@@ -51,14 +51,14 @@ public class DefaultFindFeature implements Find {
         }
         try {
             final AttributedList<Path> list;
-            if(!cache.containsKey(file.getParent())) {
+            if(!cache.isCached(file.getParent())) {
                 list = session.list(file.getParent(), new DisabledListProgressListener());
                 cache.put(file.getParent(), list);
             }
             else {
                 list = cache.get(file.getParent());
             }
-            final boolean found = list.contains(file);
+            final boolean found = list.find(new SimplePathPredicate(file)) != null;
             if(!found) {
                 switch(session.getCase()) {
                     case insensitive:
@@ -73,13 +73,6 @@ public class DefaultFindFeature implements Find {
                             }
                         }
                 }
-                if(null == file.attributes().getVersionId()) {
-                    final IdProvider id = session.getFeature(IdProvider.class);
-                    final String version = id.getFileid(file);
-                    if(version != null) {
-                        return true;
-                    }
-                }
             }
             return found;
         }
@@ -89,7 +82,7 @@ public class DefaultFindFeature implements Find {
     }
 
     @Override
-    public DefaultFindFeature withCache(final PathCache cache) {
+    public DefaultFindFeature withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

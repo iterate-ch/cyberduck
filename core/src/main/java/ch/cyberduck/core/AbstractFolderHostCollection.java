@@ -25,6 +25,8 @@ import ch.cyberduck.core.serializer.Writer;
 
 import org.apache.log4j.Logger;
 
+import java.util.regex.Pattern;
+
 public abstract class AbstractFolderHostCollection extends AbstractHostCollection {
     private static final Logger log = Logger.getLogger(AbstractFolderHostCollection.class);
 
@@ -127,6 +129,12 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                         public boolean accept(final Local file) {
                             return file.getName().endsWith(".duck");
                         }
+
+                        @Override
+                        public Pattern toPattern() {
+                            return Pattern.compile(".*\\.duck");
+                        }
+
                     }
             );
             for(Local next : bookmarks) {

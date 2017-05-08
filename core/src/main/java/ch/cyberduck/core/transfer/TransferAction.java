@@ -174,7 +174,7 @@ public abstract class TransferAction {
     public static final TransferAction callback = new TransferAction("ask") {
         @Override
         public String getTitle() {
-            return LocaleFactory.localizedString("Prompt", "Transfer");
+            return LocaleFactory.localizedString("Prompt", "Localizable");
         }
 
         @Override

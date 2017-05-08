@@ -18,9 +18,9 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -67,7 +67,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public AttributesFinder withCache(final PathCache cache) {
+    public AttributesFinder withCache(final Cache<Path> cache) {
         return this;
     }
 

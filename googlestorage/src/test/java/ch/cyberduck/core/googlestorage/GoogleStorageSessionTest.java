@@ -192,7 +192,7 @@ public class GoogleStorageSessionTest {
         session.close();
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test(expected = LoginCanceledException.class)
     public void testProjectIdNoAuthorization() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 "stellar-perigee-775", ""

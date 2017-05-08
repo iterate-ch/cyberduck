@@ -19,19 +19,12 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathContainerService;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
 
 public class S3PresignedUrlProvider {
-    private static final Logger log = Logger.getLogger(S3PresignedUrlProvider.class);
-
-    private PathContainerService containerService
-            = new S3PathContainerService();
-
     /**
      * Generates a signed URL string that will grant access to an S3 resource (bucket or object)
      * to whoever uses the URL up until the time specified.
@@ -52,7 +45,7 @@ public class S3PresignedUrlProvider {
         else {
             requestSignatureVersion = S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.toString();
         }
-        return new RestS3Service(new AWSCredentials(user, secret)) {
+        return new RestS3Service(new AWSCredentials(StringUtils.strip(user), StringUtils.strip(secret))) {
             @Override
             public String getEndpoint() {
                 return host.getHostname();

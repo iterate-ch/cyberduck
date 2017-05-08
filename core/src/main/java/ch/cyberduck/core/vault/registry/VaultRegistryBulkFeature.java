@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -22,17 +23,17 @@ import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.Map;
 
 public class VaultRegistryBulkFeature<R> implements Bulk<R> {
 
-    private final DefaultVaultRegistry registry;
     private final Session<?> session;
     private final Bulk<R> proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryBulkFeature(final Session<?> session, final Bulk<R> proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryBulkFeature(final Session<?> session, final Bulk<R> proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -40,16 +41,31 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(Path file : files.keySet()) {
-            return (R) registry.find(session, file).getFeature(session, Bulk.class, proxy).pre(type, files);
+            return (R) registry.find(session, file).getFeature(session, Bulk.class, proxy).pre(type, files, callback);
         }
-        return proxy.pre(type, files);
+        return proxy.pre(type, files, callback);
     }
 
     @Override
     public Bulk<R> withDelete(final Delete delete) {
         proxy.withDelete(delete);
         return this;
+    }
+
+    @Override
+    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        for(Path file : files.keySet()) {
+            registry.find(session, file).getFeature(session, Bulk.class, proxy).post(type, files, callback);
+        }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryBulkFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

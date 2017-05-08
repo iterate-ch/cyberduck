@@ -18,9 +18,9 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -51,7 +51,7 @@ public class GlobTransferItemFinder implements TransferItemFinder {
                 if(directory.isDirectory()) {
                     final PathMatcher matcher = FileSystems.getDefault().getPathMatcher(String.format("glob:%s", FilenameUtils.getName(path)));
                     final Set<TransferItem> items = new HashSet<TransferItem>();
-                    for(Local file : directory.list(new Filter<String>() {
+                    for(Local file : directory.list(new NullFilter<String>() {
                         @Override
                         public boolean accept(final String file) {
                             try {

@@ -28,6 +28,10 @@ import java.lang.reflect.InvocationTargetException;
 public class AlertCallbackFactory extends Factory<AlertCallback> {
     private static final Logger log = Logger.getLogger(AlertCallbackFactory.class);
 
+    protected AlertCallbackFactory() {
+        super("factory.alertcallback.class");
+    }
+
     public AlertCallback create(final Controller controller) {
         final String clazz = PreferencesFactory.get().getProperty("factory.alertcallback.class");
         if(null == clazz) {

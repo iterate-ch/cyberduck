@@ -28,6 +28,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
 
+import java.util.regex.Pattern;
+
 public class QloudsonicVoucherFinder extends LicenseFactory {
 
     public QloudsonicVoucherFinder() {
@@ -36,6 +38,11 @@ public class QloudsonicVoucherFinder extends LicenseFactory {
             @Override
             public boolean accept(final Local file) {
                 return "qloudsonicvoucher".equals(FilenameUtils.getExtension(file.getName()));
+            }
+
+            @Override
+            public Pattern toPattern() {
+                return Pattern.compile("qloudsonicvoucher");
             }
         });
     }

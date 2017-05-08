@@ -19,6 +19,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -36,7 +37,7 @@ public class DAVFindFeature implements Find {
 
     private final DAVSession session;
 
-    private PathCache cache;
+    private Cache<Path> cache;
 
     public DAVFindFeature(final DAVSession session) {
         this.session = session;
@@ -49,7 +50,7 @@ public class DAVFindFeature implements Find {
             return true;
         }
         final AttributedList<Path> list;
-        if(cache.containsKey(file.getParent())) {
+        if(cache.isCached(file.getParent())) {
             list = cache.get(file.getParent());
         }
         else {
@@ -86,17 +87,14 @@ public class DAVFindFeature implements Find {
             // Parent directory may not be accessible. Issue #5662
             return true;
         }
-        catch(LoginFailureException e) {
+        catch(LoginFailureException | NotfoundException e) {
             // HEAD may return 401 in G2
-            return false;
-        }
-        catch(NotfoundException e) {
             return false;
         }
     }
 
     @Override
-    public Find withCache(final PathCache cache) {
+    public Find withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

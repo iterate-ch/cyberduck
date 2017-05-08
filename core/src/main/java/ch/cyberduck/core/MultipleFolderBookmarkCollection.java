@@ -69,7 +69,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
         try {
             folder.mkdir();
             final AttributedList<Local> groups = folder.list().filter(
-                    new Filter<Local>() {
+                    new NullFilter<Local>() {
                         @Override
                         public boolean accept(final Local file) {
                             return file.isDirectory();

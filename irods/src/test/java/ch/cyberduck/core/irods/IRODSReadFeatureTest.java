@@ -84,14 +84,14 @@ public class IRODSReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(false);
-        final OutputStream out = new IRODSWriteFeature(session).write(test, status);
+        final OutputStream out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
 
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(session.getFeature(Find.class).find(test));
 
-        final InputStream in = new IRODSReadFeature(session).read(test, status);
+        final InputStream in = new IRODSReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         in.close();
 
@@ -115,7 +115,7 @@ public class IRODSReadFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        new IRODSReadFeature(session).read(test, new TransferStatus());
+        new IRODSReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
     }
 
 
@@ -146,7 +146,7 @@ public class IRODSReadFeatureTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new IRODSReadFeature(session).read(test, status);
+        final InputStream in = new IRODSReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

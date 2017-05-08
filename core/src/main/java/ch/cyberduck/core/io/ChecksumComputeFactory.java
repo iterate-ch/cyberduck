@@ -17,7 +17,6 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,7 +43,7 @@ public final class ChecksumComputeFactory {
             default:
                 return new ChecksumCompute() {
                     @Override
-                    public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
+                    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
                         return Checksum.NONE;
                     }
                 };

@@ -17,6 +17,7 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -26,6 +27,7 @@ import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.junit.Test;
@@ -43,7 +45,7 @@ public class StatelessSessionPoolTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         final StatelessSessionPool pool = new StatelessSessionPool(new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
                 return true;
             }
         }, new NullSession(new Host(new TestProtocol())) {
@@ -52,7 +54,7 @@ public class StatelessSessionPoolTest {
                 interrupt.set(true);
                 super.interrupt();
             }
-        }, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
+        }, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         pool.release(session, new BackgroundException("m", new SocketException("m")));
         assertTrue(interrupt.get());
@@ -63,7 +65,7 @@ public class StatelessSessionPoolTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         final StatelessSessionPool pool = new StatelessSessionPool(new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
                 return true;
             }
         }, new NullSession(new Host(new TestProtocol())) {
@@ -72,7 +74,7 @@ public class StatelessSessionPoolTest {
                 interrupt.set(true);
                 super.interrupt();
             }
-        }, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
+        }, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         pool.release(session, new BackgroundException("m", "d"));
         assertFalse(interrupt.get());

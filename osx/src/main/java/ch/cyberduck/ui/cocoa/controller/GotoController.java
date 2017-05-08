@@ -29,6 +29,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -117,7 +118,7 @@ public class GotoController extends AlertController {
         private final Path workdir;
 
         private final Comparator<Path> comparator = new NullComparator<Path>();
-        private final Filter<Path> filter = new Filter<Path>() {
+        private final Filter<Path> filter = new NullFilter<Path>() {
             @Override
             public boolean accept(Path p) {
                 return p.isDirectory();

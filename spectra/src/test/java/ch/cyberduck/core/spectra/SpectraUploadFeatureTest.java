@@ -73,18 +73,18 @@ public class SpectraUploadFeatureTest {
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus writeStatus = new TransferStatus().length(content.length);
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus));
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus), new DisabledConnectionCallback());
         final SpectraUploadFeature upload = new SpectraUploadFeature(session, new SpectraWriteFeature(session), new SpectraBulkService(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 writeStatus, new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        bulk.pre(Transfer.Type.download, Collections.singletonMap(test, readStatus));
-        final InputStream in = new SpectraReadFeature(session).read(test, readStatus);
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(test, readStatus), new DisabledConnectionCallback());
+        final InputStream in = new SpectraReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -127,14 +127,14 @@ public class SpectraUploadFeatureTest {
             out.close();
             status2 = new TransferStatus().length(content.length);
         }
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path test2 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final HashMap<Path, TransferStatus> files = new HashMap<>();
         files.put(test1, status1);
         files.put(test2, status2);
-        bulk.pre(Transfer.Type.upload, files);
+        bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         final SpectraUploadFeature upload = new SpectraUploadFeature(session, new SpectraWriteFeature(session), new SpectraBulkService(session));
         upload.upload(test1, local1, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status1, new DisabledConnectionCallback());

@@ -70,20 +70,27 @@ public class DropboxListService implements ListService {
     private void parse(final Path directory, final ListProgressListener listener, final AttributedList<Path> children, final ListFolderResult result)
             throws ConnectionCanceledException {
         for(Metadata md : result.getEntries()) {
-            final EnumSet<AbstractPath.Type> type;
-            if(md instanceof FileMetadata) {
-                type = EnumSet.of(Path.Type.file);
-            }
-            else if(md instanceof FolderMetadata) {
-                type = EnumSet.of(Path.Type.directory);
-            }
-            else {
-                log.warn(String.format("Skip file %s", md));
+            final Path child = this.parse(directory, md);
+            if(child == null) {
                 continue;
             }
-            final Path child = new Path(directory, PathNormalizer.name(md.getName()), type, attributes.convert(md));
             children.add(child);
             listener.chunk(directory, children);
         }
+    }
+
+    protected Path parse(final Path directory, final Metadata metadata) {
+        final EnumSet<AbstractPath.Type> type;
+        if(metadata instanceof FileMetadata) {
+            type = EnumSet.of(Path.Type.file);
+        }
+        else if(metadata instanceof FolderMetadata) {
+            type = EnumSet.of(Path.Type.directory);
+        }
+        else {
+            log.warn(String.format("Skip file %s", metadata));
+            return null;
+        }
+        return new Path(directory, PathNormalizer.name(metadata.getName()), type, attributes.convert(metadata));
     }
 }

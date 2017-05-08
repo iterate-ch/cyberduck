@@ -1,5 +1,20 @@
 package ch.cyberduck.core.threading;
 
+/*
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -31,44 +46,21 @@ public class BackgroundCallable<T> implements Callable<T> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Running background action %s", action));
         }
+        final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
         if(action.isCanceled()) {
             // Canceled action yields no result
             return null;
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Prepare background action %s", action));
+        }
+        action.prepare();
         try {
+            final T result = this.run();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Prepare background action %s", action));
+                log.debug(String.format("Return result %s from background action %s", result, action));
             }
-            action.prepare();
-            // Execute the action of the runnable
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Call background action %s", action));
-            }
-            return action.call();
-        }
-        catch(ConnectionCanceledException e) {
-            // Do not report as failed
-            log.warn(String.format("Connection canceled for background task %s", action));
-            // Canceled action yields no result
-            return null;
-        }
-        catch(BackgroundException e) {
-            this.failure(client, e);
-            // If there was any failure, display the summary now
-            if(action.alert(e)) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Retry background action %s", action));
-                }
-                // Retry
-                return this.call();
-            }
-            // Failed action yields no result
-            return null;
-        }
-        catch(Exception e) {
-            this.failure(client, e);
-            // Failed action yields no result
-            return null;
+            return result;
         }
         finally {
             try {
@@ -95,6 +87,41 @@ public class BackgroundCallable<T> implements Callable<T> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Releasing lock for background runnable %s", action));
             }
+            autorelease.operate();
+        }
+    }
+
+    protected T run() {
+        try {
+            // Execute the action of the runnable
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Call background action %s", action));
+            }
+            return action.call();
+        }
+        catch(ConnectionCanceledException e) {
+            // Do not report as failed
+            log.warn(String.format("Connection canceled for background task %s", action));
+            // Canceled action yields no result
+            return null;
+        }
+        catch(BackgroundException e) {
+            this.failure(client, e);
+            // If there was any failure, display the summary now
+            if(action.alert(e)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Retry background action %s", action));
+                }
+                // Retry
+                return this.run();
+            }
+            // Failed action yields no result
+            return null;
+        }
+        catch(Exception e) {
+            this.failure(client, e);
+            // Failed action yields no result
+            return null;
         }
     }
 

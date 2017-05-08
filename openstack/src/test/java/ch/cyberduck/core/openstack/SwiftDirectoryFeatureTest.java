@@ -93,7 +93,7 @@ public class SwiftDirectoryFeatureTest {
         container.attributes().setRegion("ORD");
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
-        feature.mkdir(placeholder);
+        feature.mkdir(placeholder, null, new TransferStatus());
         Thread.sleep(1000L);
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));

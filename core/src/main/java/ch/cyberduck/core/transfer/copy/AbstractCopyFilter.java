@@ -31,6 +31,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -86,7 +88,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     public TransferStatus prepare(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes from source
-        final PathAttributes attributes = new DefaultAttributesFinderFeature(sourceSession).withCache(sourceCache).find(source);
+        final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).withCache(sourceCache).find(source);
         if(source.isFile()) {
             // Content length
             status.setLength(attributes.getSize());
@@ -115,7 +117,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
             // Do not attempt to create a directory that already exists
             final Path target = files.get(source);
             // Look for file in target host
-            if(new DefaultFindFeature(destinationSession).withCache(destinationCache).find(target)) {
+            if(destinationSession.getFeature(Find.class, new DefaultFindFeature(destinationSession)).withCache(destinationCache).find(target)) {
                 status.setExists(true);
             }
         }

@@ -15,34 +15,36 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
-public class VaultRegistryWriteFeature implements Write {
-    private final DefaultVaultRegistry registry;
+public class VaultRegistryWriteFeature<T> implements Write<T> {
+
     private final Session<?> session;
     private final Write proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryWriteFeature(final Session<?> session, final Write proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryWriteFeature(final Session<?> session, final Write proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
     }
 
     @Override
-    public StatusOutputStream<?> write(final Path file, final TransferStatus status) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Write.class, proxy).write(file, status);
+    public StatusOutputStream<T> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Write.class, proxy).write(file, status, callback);
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Write.class, proxy).append(file, length, cache);
     }
 
@@ -59,5 +61,13 @@ public class VaultRegistryWriteFeature implements Write {
     @Override
     public ChecksumCompute checksum() {
         return proxy.checksum();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryWriteFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

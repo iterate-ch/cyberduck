@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import com.microsoft.azure.storage.LoggingOperations;
@@ -46,7 +47,16 @@ public class AzureLoggingFeature implements Logging {
     public LoggingConfiguration getConfiguration(final Path container) throws BackgroundException {
         try {
             final ServiceProperties properties = session.getClient().downloadServiceProperties(null, context);
-            return new LoggingConfiguration(!properties.getLogging().getLogOperationTypes().isEmpty());
+            final LoggingConfiguration configuration = new LoggingConfiguration(
+                    !properties.getLogging().getLogOperationTypes().isEmpty(),
+                    "$logs"
+            );
+            // When you have configured Storage Logging to log request data from your storage account, it saves the log data
+            // to blobs in a container named $logs in your storage account.
+            configuration.setContainers(Collections.singletonList(
+                    new Path("/$logs", EnumSet.of(Path.Type.volume, Path.Type.directory)))
+            );
+            return configuration;
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot read container configuration", e);
@@ -59,7 +69,7 @@ public class AzureLoggingFeature implements Logging {
             final ServiceProperties properties = session.getClient().downloadServiceProperties(null, context);
             final LoggingProperties l = new LoggingProperties();
             if(configuration.isEnabled()) {
-                l.setLogOperationTypes(EnumSet.of(LoggingOperations.DELETE, LoggingOperations.READ, LoggingOperations.WRITE));
+                l.setLogOperationTypes(EnumSet.allOf(LoggingOperations.class));
             }
             else {
                 l.setLogOperationTypes(EnumSet.noneOf(LoggingOperations.class));

@@ -16,12 +16,11 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -69,20 +69,16 @@ public class DriveTimestampFeatureTest {
                         }
                         return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                }, new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path home = new DriveHomeFinderService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());
-        test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
+        new DriveMetadataFeature(session).setMetadata(test, Collections.singletonMap("test", "t"));
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0L);
+        assertEquals(modified / 1000 * 1000, new DefaultAttributesFinderFeature(session).find(test).getModificationDate(), 0L);
+        assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session).getMetadata(test));
         new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -108,20 +104,14 @@ public class DriveTimestampFeatureTest {
                         }
                         return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                }, new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path home = new DriveHomeFinderService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(test);
-        test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
+        new DriveDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0L);
+        assertEquals(modified / 1000 * 1000, new DefaultAttributesFinderFeature(session).find(test).getModificationDate(), 0L);
         new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

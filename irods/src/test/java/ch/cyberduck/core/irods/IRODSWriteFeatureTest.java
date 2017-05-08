@@ -19,6 +19,7 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -85,21 +86,21 @@ public class IRODSWriteFeatureTest {
 
         final byte[] content = RandomUtils.nextBytes(68400);
 
-        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length));
-        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length));
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length), new DisabledConnectionCallback());
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
         // Error code received from iRODS:-23000
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
 
         {
-            final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus());
+            final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus(), new DisabledConnectionCallback());
             final byte[] buffer1 = new byte[content.length];
             IOUtils.readFully(in1, buffer1);
             in1.close();
             assertArrayEquals(content, buffer1);
         }
         {
-            final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus());
+            final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus(), new DisabledConnectionCallback());
             final byte[] buffer2 = new byte[content.length];
             IOUtils.readFully(in2, buffer2);
             in2.close();
@@ -133,8 +134,8 @@ public class IRODSWriteFeatureTest {
 
         final byte[] content = RandomUtils.nextBytes(68400);
 
-        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length));
-        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length));
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length), new DisabledConnectionCallback());
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length), new DisabledConnectionCallback());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -174,7 +175,7 @@ public class IRODSWriteFeatureTest {
             @Override
             public void run() {
                 try {
-                    final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus());
+                    final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus(), new DisabledConnectionCallback());
                     final byte[] buffer1 = new byte[content.length];
                     IOUtils.readFully(in1, buffer1);
                     in1.close();
@@ -192,7 +193,7 @@ public class IRODSWriteFeatureTest {
             @Override
             public void run() {
                 try {
-                    final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus());
+                    final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus(), new DisabledConnectionCallback());
                     final byte[] buffer2 = new byte[content.length];
                     IOUtils.readFully(in2, buffer2);
                     in2.close();
@@ -238,7 +239,7 @@ public class IRODSWriteFeatureTest {
             assertEquals(false, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
             assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
 
-            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status);
+            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             assertNotNull(out.getStatus());
 
@@ -248,7 +249,7 @@ public class IRODSWriteFeatureTest {
             final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(content.length, attributes.getSize());
 
-            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
+            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(in, buffer);
             in.close();
@@ -264,7 +265,7 @@ public class IRODSWriteFeatureTest {
             assertEquals(true, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
             assertEquals(content.length, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
 
-            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status);
+            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             assertNotNull(out.getStatus());
 
@@ -274,7 +275,7 @@ public class IRODSWriteFeatureTest {
             final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(newcontent.length, attributes.getSize());
 
-            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
+            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
             final byte[] buffer = new byte[newcontent.length];
             IOUtils.readFully(in, buffer);
             in.close();
@@ -310,7 +311,7 @@ public class IRODSWriteFeatureTest {
         assertEquals(false, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
         assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
 
-        final OutputStream out = new IRODSWriteFeature(session).write(test, status);
+        final OutputStream out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -319,7 +320,7 @@ public class IRODSWriteFeatureTest {
         final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
 
-        final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
+        final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
         IOUtils.readFully(in, buffer);
         in.close();
@@ -336,7 +337,7 @@ public class IRODSWriteFeatureTest {
         assertEquals(true, new IRODSWriteFeature(session).append(test, status_append.getLength(), PathCache.empty()).append);
         assertEquals(status.getLength(), new IRODSWriteFeature(session).append(test, status_append.getLength(), PathCache.empty()).size, 0L);
 
-        final OutputStream out_append = new IRODSWriteFeature(session).write(test, status_append);
+        final OutputStream out_append = new IRODSWriteFeature(session).write(test, status_append, new DisabledConnectionCallback());
         assertNotNull(out_append);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content_append), out_append);
@@ -345,7 +346,7 @@ public class IRODSWriteFeatureTest {
         final PathAttributes attributes_complete = new IRODSAttributesFinderFeature(session).find(test);
         assertEquals(content.length + content_append.length, attributes_complete.getSize());
 
-        final InputStream in_append = session.getFeature(Read.class).read(test, new TransferStatus());
+        final InputStream in_append = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
         final byte[] buffer_complete = new byte[content.length + content_append.length];
         IOUtils.readFully(in_append, buffer_complete);
         in_append.close();

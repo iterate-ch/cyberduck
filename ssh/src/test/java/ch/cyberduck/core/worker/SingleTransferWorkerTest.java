@@ -16,6 +16,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -85,8 +86,8 @@ public class SingleTransferWorkerTest {
         final SFTPSession session = new SFTPSession(host) {
             final SFTPWriteFeature write = new SFTPWriteFeature(this) {
                 @Override
-                public StatusOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
-                    final StatusOutputStream<Void> proxy = super.write(file, status);
+                public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                    final StatusOutputStream<Void> proxy = super.write(file, status, callback);
                     if(failed.get()) {
                         // Second attempt successful
                         return proxy;

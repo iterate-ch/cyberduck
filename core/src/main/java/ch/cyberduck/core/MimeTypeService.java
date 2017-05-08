@@ -18,5 +18,7 @@ package ch.cyberduck.core;
  */
 
 public interface MimeTypeService {
+    String DEFAULT_CONTENT_TYPE = "application/octet-stream";
+
     String getMime(String filename);
 }

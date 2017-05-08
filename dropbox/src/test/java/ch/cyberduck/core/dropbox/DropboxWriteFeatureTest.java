@@ -16,12 +16,13 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -30,7 +31,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -69,15 +69,16 @@ public class DropboxWriteFeatureTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
-                    }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                }, new DisabledProgressListener())
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final DropboxWriteFeature write = new DropboxWriteFeature(session);
 
@@ -85,15 +86,15 @@ public class DropboxWriteFeatureTest {
         final byte[] content = RandomUtils.nextBytes(66800);
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = write.write(test, status);
+        final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        test.attributes().setVersionId(new DropboxIdProvider(session).getFileid(test));
-        assertTrue(session.getFeature(Find.class).find(test));
+        test.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(test));
+        assertTrue(new DropboxFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length));
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
             in.close();
@@ -101,7 +102,7 @@ public class DropboxWriteFeatureTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L));
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];
@@ -129,15 +130,16 @@ public class DropboxWriteFeatureTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
-                    }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                }, new DisabledProgressListener())
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final DropboxWriteFeature write = new DropboxWriteFeature(session, 44000L);
 
@@ -145,15 +147,15 @@ public class DropboxWriteFeatureTest {
         final byte[] content = RandomUtils.nextBytes(290000);
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = write.write(test, status);
+        final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        test.attributes().setVersionId(new DropboxIdProvider(session).getFileid(test));
-        assertTrue(session.getFeature(Find.class).find(test));
+        test.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(test));
+        assertTrue(new DropboxFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length));
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
             in.close();
@@ -161,7 +163,7 @@ public class DropboxWriteFeatureTest {
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L));
+            final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];

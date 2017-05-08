@@ -24,6 +24,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -124,6 +125,16 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getClientId() {
+        return null;
+    }
+
+    @Override
+    public String getClientSecret() {
+        return null;
+    }
+
+    @Override
     public String getDefaultHostname() {
         // Blank by default
         return PreferencesFactory.get().getProperty("connection.hostname.default");
@@ -147,6 +158,21 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public String getAuthorization() {
         return null;
+    }
+
+    @Override
+    public String getOAuthAuthorizationUrl() {
+        return null;
+    }
+
+    @Override
+    public String getOAuthTokenUrl() {
+        return null;
+    }
+
+    @Override
+    public List<String> getScopes() {
+        return Collections.emptyList();
     }
 
     @Override

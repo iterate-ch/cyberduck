@@ -86,4 +86,14 @@ public class AzureDeleteFeature implements Delete {
             }
         }
     }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        return true;
+    }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
+    }
 }

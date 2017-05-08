@@ -21,6 +21,7 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 
@@ -121,5 +122,15 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     @Override
     public String getAuthorization() {
         return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.name();
+    }
+
+    @Override
+    public String getClientId() {
+        return PreferencesFactory.get().getProperty("googlestorage.oauth.clientid");
+    }
+
+    @Override
+    public String getClientSecret() {
+        return PreferencesFactory.get().getProperty("googlestorage.oauth.secret");
     }
 }

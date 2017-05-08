@@ -17,12 +17,12 @@ package ch.cyberduck.core.filter;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 
-public class DownloadDuplicateFilter implements Filter<Path> {
+public class DownloadDuplicateFilter extends NullFilter<Path> {
     private static final Logger log = Logger.getLogger(DownloadDuplicateFilter.class);
 
     @Override

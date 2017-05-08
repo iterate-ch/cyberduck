@@ -17,6 +17,7 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -45,7 +46,7 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
     }
 
     @Override
-    public FileDescriptorOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public FileDescriptorOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             try {
                 final IRODSFileSystemAO fs = session.getClient();

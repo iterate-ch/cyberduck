@@ -78,7 +78,7 @@ public class DAVMoveFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(test);
+        new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));

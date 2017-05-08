@@ -61,4 +61,12 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
         defaults.put("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
         defaults.put("factory.browserlauncher.class", WorkspaceBrowserLauncher.class.getName());
     }
+
+    @Override
+    protected void setDefaults() {
+        super.setDefaults();
+
+        defaults.put("connection.ssl.keystore.type", "KeychainStore");
+        defaults.put("connection.ssl.keystore.provider", "Apple");
+    }
 }

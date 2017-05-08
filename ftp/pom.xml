@@ -52,6 +52,7 @@
                     <artifactId>jcl-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

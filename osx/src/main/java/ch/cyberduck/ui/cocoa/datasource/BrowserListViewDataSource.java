@@ -70,7 +70,7 @@ public class BrowserListViewDataSource extends BrowserTableDataSource implements
     public NSObject tableView_objectValueForTableColumn_row(final NSTableView view,
                                                             final NSTableColumn column, final NSInteger row) {
         if(controller.isMounted()) {
-            final List<Path> children = this.get(controller.workdir());
+            final AttributedList<Path> children = this.get(controller.workdir());
             return super.objectValueForItem(children.get(row.intValue()), column.identifier());
         }
         return null;

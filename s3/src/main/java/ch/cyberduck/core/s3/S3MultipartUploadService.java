@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -34,8 +33,10 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.AbstractRetryCallable;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -62,6 +63,9 @@ import java.util.concurrent.Future;
 
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     private final S3Session session;
 
@@ -95,7 +99,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DefaultThreadPool<MultipartPart> pool = new DefaultThreadPool<>(concurrency, "multipart");
+        final DefaultThreadPool pool = new DefaultThreadPool("multipart", concurrency);
         try {
             MultipartUpload multipart = null;
             if(status.isAppend()) {
@@ -110,7 +114,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
                 }
-                final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService()).getDetails(containerService.getKey(file), status);
+                final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService())
+                        .getDetails(containerService.getKey(file), status);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(containerService.getContainer(file).getName(), object);
                 if(log.isDebugEnabled()) {
@@ -139,16 +144,18 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                                     log.info(String.format("Skip completed part number %d", partNumber));
                                 }
                                 skip = true;
-                                offset += c.getSize();
+                                final Long length = c.getSize();
+                                remaining -= length;
+                                offset += length;
                                 break;
                             }
                         }
                     }
                     if(!skip) {
                         // Last part can be less than 5 MB. Adjust part size.
-                        final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
+                        final Long length = Math.min(Math.max((status.getLength() + status.getOffset()) / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS, partsize), remaining);
                         // Submit to queue
-                        parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length));
+                        parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
                         remaining -= length;
                         offset += length;
                     }
@@ -164,7 +171,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     }
                     catch(ExecutionException e) {
                         log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                        status.setCanceled();
                         if(e.getCause() instanceof BackgroundException) {
                             throw (BackgroundException) e.getCause();
                         }
@@ -179,23 +185,33 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     log.info(String.format("Completed multipart upload for %s with %d parts and checksum %s",
                             complete.getObjectKey(), completed.size(), complete.getEtag()));
                 }
-                final StringBuilder concat = new StringBuilder();
-                for(MultipartPart part : completed) {
-                    concat.append(part.getEtag());
-                }
-                final String expected = String.format("%s-%d",
-                        new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
-                final String reference;
-                if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
-                    reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
+                if(file.getType().contains(Path.Type.encrypted)) {
+                    log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                 }
                 else {
-                    reference = complete.getEtag();
-                }
-                if(!expected.equals(reference)) {
-                    throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                            MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                    expected, reference));
+                    final StringBuilder concat = new StringBuilder();
+                    for(MultipartPart part : completed) {
+                        concat.append(part.getEtag());
+                    }
+                    final String expected = String.format("%s-%d",
+                            new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
+                    final String reference;
+                    if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
+                        reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
+                    }
+                    else {
+                        reference = complete.getEtag();
+                    }
+                    if(!expected.equals(reference)) {
+                        if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                            expected, reference));
+                        }
+                        else {
+                            log.warn(String.format("Mismatch between MD5 hash %s of uploaded data and ETag %s returned by the server", expected, reference));
+                        }
+                    }
                 }
                 // Mark parent status as complete
                 status.setComplete();
@@ -213,68 +229,61 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         }
     }
 
-    private Future<MultipartPart> submit(final ThreadPool<MultipartPart> pool, final Path file, final Local local,
+    private Future<MultipartPart> submit(final ThreadPool pool, final Path file, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final MultipartUpload multipart,
-                                         final int partNumber, final long offset, final long length) throws BackgroundException {
+                                         final int partNumber, final long offset, final long length, final ConnectionCallback callback) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new AbstractRetryCallable<MultipartPart>() {
+        return pool.execute(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
+                if(overall.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
                 final Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
                 final TransferStatus status = new TransferStatus()
                         .length(length)
                         .skip(offset)
-                        .parameters(requestParameters);
-                try {
-                    if(overall.isCanceled()) {
-                        throw new ConnectionCanceledException();
-                    }
-                    switch(session.getSignatureVersion()) {
-                        case AWS4HMACSHA256:
-                            status.setChecksum(writer.checksum()
-                                    .compute(file, StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
-                            );
-                            break;
-                    }
-                    status.setSegment(true);
-                    final StorageObject part = S3MultipartUploadService.super.upload(
-                            file, local, throttle, listener, status, overall, new StreamProgress() {
-                                @Override
-                                public void progress(final long bytes) {
-                                    status.progress(bytes);
-                                    // Discard sent bytes in overall progress if there is an error reply for segment.
-                                    overall.progress(bytes);
-                                }
+                        .withParameters(requestParameters);
+                status.setHeader(overall.getHeader());
+                status.setNonces(overall.getNonces());
+                switch(session.getSignatureVersion()) {
+                    case AWS4HMACSHA256:
+                        status.setChecksum(writer.checksum()
+                                .compute(StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
+                        );
+                        break;
+                }
+                status.setSegment(true);
+                final StorageObject part = S3MultipartUploadService.super.upload(
+                        file, local, throttle, listener, status, overall, new StreamProgress() {
+                            @Override
+                            public void progress(final long bytes) {
+                                status.progress(bytes);
+                                // Discard sent bytes in overall progress if there is an error reply for segment.
+                                overall.progress(bytes);
+                            }
 
-                                @Override
-                                public void setComplete() {
-                                    status.setComplete();
-                                }
-                            });
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Received response %s for part number %d", part, partNumber));
-                    }
-                    // Populate part with response data that is accessible via the object's metadata
-                    return new MultipartPart(partNumber,
-                            null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
-                            null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
-                            part.getContentLength());
+                            @Override
+                            public void setComplete() {
+                                status.setComplete();
+                            }
+                        }, callback);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Received response %s for part number %d", part, partNumber));
                 }
-                catch(BackgroundException e) {
-                    if(this.retry(e, new DisabledProgressListener(), overall)) {
-                        return this.call();
-                    }
-                    else {
-                        throw e;
-                    }
-                }
+                // Populate part with response data that is accessible via the object's metadata
+                return new MultipartPart(partNumber,
+                        null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                        null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                        part.getContentLength());
+
             }
-        });
+        }, overall));
     }
 
     @Override

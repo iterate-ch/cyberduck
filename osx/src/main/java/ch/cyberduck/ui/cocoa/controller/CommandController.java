@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSImage;
@@ -42,7 +43,7 @@ import ch.cyberduck.core.threading.WindowMainAction;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-public class CommandController extends WindowController implements TranscriptListener, NSLayoutManager.Delegate {
+public class CommandController extends SheetController implements TranscriptListener, NSLayoutManager.Delegate {
 
     @Outlet
     private NSTextField inputField;
@@ -157,5 +158,10 @@ public class CommandController extends WindowController implements TranscriptLis
     public void invalidate() {
         responseField.layoutManager().setDelegate(null);
         super.invalidate();
+    }
+
+    @Override
+    public void callback(final int returncode) {
+        //
     }
 }

@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,7 +38,7 @@ public class ContentReader {
 
     public String read(final Path file) throws BackgroundException {
         final Read read = session._getFeature(Read.class);
-        final InputStream in = read.read(file, new TransferStatus());
+        final InputStream in = read.read(file, new TransferStatus(), new DisabledConnectionCallback());
         try {
             return IOUtils.toString(in, "UTF-8");
         }

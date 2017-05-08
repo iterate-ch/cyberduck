@@ -29,7 +29,7 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.NSObjectTransferItemReference;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferItemCache;
@@ -299,7 +299,7 @@ public abstract class TransferPromptController extends SheetController implement
                     localModificationField.setStringValue(StringUtils.EMPTY);
                 }
                 else {
-                    final TransferItem item = cache.lookup(new NSObjectPathReference(
+                    final TransferItem item = cache.lookup(new NSObjectTransferItemReference(
                             browserView.itemAtRow(browserView.selectedRow())));
                     if(item.local != null) {
                         localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
@@ -351,13 +351,13 @@ public abstract class TransferPromptController extends SheetController implement
             }
 
             public String tableView_typeSelectStringForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
-                return cache.lookup(new NSObjectPathReference(browserView.itemAtRow(row))).remote.getName();
+                return cache.lookup(new NSObjectTransferItemReference(browserView.itemAtRow(row))).remote.getName();
             }
 
             public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSCell cell,
                                                                         final NSTableColumn column, final NSObject item) {
                 final String identifier = column.identifier();
-                final TransferItem file = cache.lookup(new NSObjectPathReference(item));
+                final TransferItem file = cache.lookup(new NSObjectTransferItemReference(item));
                 final TransferStatus status = browserModel.getStatus(file);
                 if(identifier.equals(TransferPromptDataSource.Column.include.name())) {
                     cell.setEnabled(!status.isRejected() && status.isExists());

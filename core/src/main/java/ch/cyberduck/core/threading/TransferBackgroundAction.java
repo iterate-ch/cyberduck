@@ -22,7 +22,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
@@ -131,7 +130,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
     }
 
     @Override
-    public void prepare() throws ConnectionCanceledException {
+    public void prepare() {
         super.prepare();
         transfer.start();
         listener.transferDidStart(transfer);

@@ -170,4 +170,14 @@ public class S3MultipleDeleteFeature implements Delete {
             throw new S3ExceptionMappingService().map("Cannot delete {0}", e, container);
         }
     }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        return true;
+    }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
+    }
 }

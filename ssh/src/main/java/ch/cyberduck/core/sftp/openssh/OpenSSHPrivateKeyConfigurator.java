@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
@@ -55,6 +56,11 @@ public class OpenSSHPrivateKeyConfigurator {
                 @Override
                 public boolean accept(final String file) {
                     return !StringUtils.endsWith(file, ".pub");
+                }
+
+                @Override
+                public Pattern toPattern() {
+                    return Pattern.compile(".*\\.pub");
                 }
             })) {
                 final KeyFormat format;

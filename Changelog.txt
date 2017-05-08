@@ -3,8 +3,58 @@ https://cyberduck.io/
 
 6.0 [https://trac.cyberduck.io/milestone/6.0]
 - [Feature] Create encrypted vault interopable with Cryptomator (#7937) (Cyptomator)
-- [Feature] Encrypt uploads on client side prior file transfer into vault (Cyptomator)
+- [Feature] Encrypt uploads into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
+- [Feature] Support for Microsoft OneDrive (OneDrive) (#9799)
+- [Feature] Browse local filesystem in browser
+- [Feature] Support ssh-rsa-cert-v01@openssh.com format for private key files (SFTP)
+- [Feature] Support ssh-dsa-cert-v01@openssh.com format for private key files (SFTP)
+- [Feature] Configure lifecycle options for buckets (Backblaze B2)
+- [Feature] Copy pre-authenticated URLs (Backblaze B2)
+
+5.4.4 [https://trac.cyberduck.io/milestone/5.4.4
+- [Bugfix] Multipart uploads do not resume (S3)
+- [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
+
+5.4.3 [https://trac.cyberduck.io/milestone/5.4.3
+- [Bugfix]  Interoperability with PROPFIND for listing folders (WebDAV)
+- [Bugfix] Failed to generate HMAC (Spectra S3)
+- [Bugfix] Quick Look only works one time (#9889)
+- [Bugfix] Set MD5 checksum in ETag request header (OpenStack Swift)
+
+5.4.2 [https://trac.cyberduck.io/milestone/5.4.2
+- [Bugfix] Updated localizations
+
+5.4.1 [https://trac.cyberduck.io/milestone/5.4.1
+- [Feature] Faster recursive delete with single operation for directories (WebDAV)
+- [Bugfix] Reload OpenSSH configuration (SFTP)
+- [Bugfix] Revert lenient server reply parsing (FTP)
+
+5.4 [https://trac.cyberduck.io/milestone/5.4
+- [Feature] Add "Open single connection" option for file transfers
+- [Bugfix] Failure enabling download distribution (CloudFront) (#9870)
+- [Bugfix] Authentication failure when using PAM (iRODS) (#9872)
+- [Bugfix] Increasing memory usage when browsing folders
+- [Bugfix] Drastically reduced initial memory usage (#9878)
+
+5.3.9 [https://trac.cyberduck.io/milestone/5.3.9
+- [Bugfix] Failure dragging files to browser for upload (Mac) (#9860)
+
+5.3.8 [https://trac.cyberduck.io/milestone/5.3.8
+- [Bugfix] NTLM authentication failure for uploads (Sharepoint) (#9855)
+- [Bugfix] Selected client certificate cleared from bookmark after opening connection (#9842)
+
+5.3.7 [https://trac.cyberduck.io/milestone/5.3.7
+- [Bugfix] Include "Shared with me" files (Google Drive)
+- [Bugfix] Unable to add new item to metadata (S3) (#9844)
+- [Bugfix] Crash in periodic background update check (#9845)
+
+5.3.6 [https://trac.cyberduck.io/milestone/5.3.6
+- [Bugfix] Crash for connections requiring TLS connection handshake (Windows CLI)
+
+5.3.5 [https://trac.cyberduck.io/milestone/5.3.5
+- [Bugfix] Freeze of browser after idle timeout (#9829)
+- [Bugfix] Crash for connections requiring TLS connection handshake (Windows Store)
 
 5.3.4 [https://trac.cyberduck.io/milestone/5.3.4
 - [Bugfix] Error duplicating folders (FTP) (#9818)
@@ -1074,7 +1124,7 @@ https://cyberduck.io/
 - [Bugfix] Warning before overwrite when moving or renaming files
 - [Bugfix] Dragging files to the Finder.app places them at the dropped position
 - [Bugfix] Always selecting parent directory as drop target when dragging to outline view
-- [Bugfix| Updated application and document icon
+- [Bugfix] Updated application and document icon
 - [Bugfix] Number of files in browser window not displayed correctly
 - [Bugfix] Don't recurse into directories when deleting symbolic links
 - [Bugfix] Overwriting group writable files

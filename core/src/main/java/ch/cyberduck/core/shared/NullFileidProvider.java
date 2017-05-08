@@ -15,6 +15,7 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -23,5 +24,10 @@ public class NullFileidProvider implements IdProvider {
     @Override
     public String getFileid(final Path file) throws BackgroundException {
         return null;
+    }
+
+    @Override
+    public IdProvider withCache(final Cache<Path> cache) {
+        return this;
     }
 }

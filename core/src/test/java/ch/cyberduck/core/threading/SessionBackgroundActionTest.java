@@ -44,7 +44,8 @@ public class SessionBackgroundActionTest {
     @Test
     public void testGetExceptionConnectionCanceledException() throws Exception {
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
-                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new DisabledAlertCallback() {
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(),
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new DisabledAlertCallback() {
         }, new DisabledProgressListener(), new DisabledTranscriptListener()) {
 
             @Override
@@ -66,7 +67,8 @@ public class SessionBackgroundActionTest {
     public void testGetExceptionFailure() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
-                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new AlertCallback() {
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(),
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -92,7 +94,8 @@ public class SessionBackgroundActionTest {
     public void testGetExceptionLoginCanceledException() throws Exception {
         final BackgroundException failure = new LoginCanceledException();
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
-                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new AlertCallback() {
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(),
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -120,7 +123,8 @@ public class SessionBackgroundActionTest {
         final BackgroundException failure = new BackgroundException(new SocketTimeoutException(""));
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
                 new TestLoginConnectionService(),
-                new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new AlertCallback() {
+                new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(),
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);

@@ -39,6 +39,11 @@ public class RegexFilter implements Filter<Path> {
     }
 
     @Override
+    public Pattern toPattern() {
+        return pattern;
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("RegexFilter{");
         sb.append("pattern=").append(pattern);

@@ -43,13 +43,13 @@ import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.auth.DigestSchemeFactory;
 import org.apache.http.impl.auth.KerberosSchemeFactory;
 import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.auth.SPNegoSchemeFactory;
+import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -72,9 +72,6 @@ public class HttpConnectionPoolBuilder {
     private final ConnectionSocketFactory socketFactory;
 
     private final ConnectionSocketFactory sslSocketFactory;
-
-    private final HttpClientBuilder builder
-            = HttpClients.custom();
 
     private final ProxyFinder proxyFinder;
 
@@ -165,6 +162,7 @@ public class HttpConnectionPoolBuilder {
     }
 
     public HttpClientBuilder build(final TranscriptListener listener) {
+        final HttpClientBuilder configuration = HttpClients.custom();
         // Use HTTP Connect proxy implementation provided here instead of
         // relying on internal proxy support in socket factory
         final Proxy proxy = proxyFinder.find(host);
@@ -173,22 +171,22 @@ public class HttpConnectionPoolBuilder {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Setup proxy %s", h));
             }
-            builder.setProxy(h);
+            configuration.setProxy(h);
         }
         if(proxy.getType() == Proxy.Type.HTTPS) {
             final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.https.name());
             if(log.isInfoEnabled()) {
                 log.info(String.format("Setup proxy %s", h));
             }
-            builder.setProxy(h);
+            configuration.setProxy(h);
         }
-        builder.setUserAgent(new PreferencesUseragentProvider().get());
+        configuration.setUserAgent(new PreferencesUseragentProvider().get());
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
-        builder.setDefaultSocketConfig(SocketConfig.custom()
+        configuration.setDefaultSocketConfig(SocketConfig.custom()
                 .setTcpNoDelay(true)
                 .setSoTimeout(timeout)
                 .build());
-        builder.setDefaultRequestConfig(RequestConfig.custom()
+        configuration.setDefaultRequestConfig(RequestConfig.custom()
                 .setRedirectsEnabled(true)
                 // Disable use of Expect: Continue by default for all methods
                 .setExpectContinueEnabled(false)
@@ -205,25 +203,26 @@ public class HttpConnectionPoolBuilder {
         else {
             encoding = host.getEncoding();
         }
-        builder.setDefaultConnectionConfig(ConnectionConfig.custom()
+        configuration.setDefaultConnectionConfig(ConnectionConfig.custom()
                 .setBufferSize(preferences.getInteger("http.socket.buffer"))
                 .setCharset(Charset.forName(encoding))
                 .build());
         if(preferences.getBoolean("http.connections.reuse")) {
-            builder.setConnectionReuseStrategy(new DefaultConnectionReuseStrategy());
+            configuration.setConnectionReuseStrategy(new DefaultClientConnectionReuseStrategy());
         }
         else {
-            builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+            configuration.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
         }
-        builder.setRetryHandler(new ExtendedHttpRequestRetryHandler(preferences.getInteger("http.connections.retry")));
+        configuration.setRetryHandler(new ExtendedHttpRequestRetryHandler(preferences.getInteger("http.connections.retry")));
+        configuration.setServiceUnavailableRetryStrategy(new DisabledServiceUnavailableRetryStrategy());
         if(!preferences.getBoolean("http.compression.enable")) {
-            builder.disableContentCompression();
+            configuration.disableContentCompression();
         }
-        builder.setRequestExecutor(new LoggingHttpRequestExecutor(listener));
+        configuration.setRequestExecutor(new LoggingHttpRequestExecutor(listener));
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
-        builder.setConnectionManager(this.pool(this.registry().build()));
-        builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
+        configuration.setConnectionManager(this.pool(this.registry().build()));
+        configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
                         Charset.forName(preferences.getProperty("http.credentials.charset"))))
                 .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
@@ -231,7 +230,7 @@ public class HttpConnectionPoolBuilder {
                 .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
                 .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
                 .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
-        return builder;
+        return configuration;
     }
 
     protected RegistryBuilder<ConnectionSocketFactory> registry() {

@@ -15,6 +15,7 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
@@ -23,7 +24,24 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.util.Map;
 
 public interface Bulk<R> {
-    R pre(Transfer.Type type, Map<Path, TransferStatus> files) throws BackgroundException;
+    /**
+     * Prior transfer is started
+     *
+     * @param type     Transfer Type
+     * @param files    Map of files with status
+     * @param callback Callback to user
+     * @return Upload Id from server
+     */
+    R pre(Transfer.Type type, Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException;
+
+    /**
+     * After transfer is complete
+     *
+     * @param type     Transfer Type
+     * @param files    Map of files with status
+     * @param callback Callback to user
+     */
+    void post(Transfer.Type type, Map<Path, TransferStatus> files, ConnectionCallback callback) throws BackgroundException;
 
     Bulk<R> withDelete(Delete delete);
 }

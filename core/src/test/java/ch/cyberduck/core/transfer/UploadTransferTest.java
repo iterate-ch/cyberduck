@@ -329,7 +329,7 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public Find withCache(PathCache cache) {
+                        public Find withCache(Cache<Path> cache) {
                             return this;
                         }
                     };
@@ -343,6 +343,11 @@ public class UploadTransferTest {
                         }
 
                         @Override
+                        public boolean isRecursive(final Path source, final Path target) {
+                            return true;
+                        }
+
+                        @Override
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
@@ -352,10 +357,6 @@ public class UploadTransferTest {
                             return this;
                         }
 
-                        @Override
-                        public Move withList(final ListService list) {
-                            return this;
-                        }
                     };
                 }
                 if(type.equals(AttributesFinder.class)) {
@@ -366,24 +367,26 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public AttributesFinder withCache(PathCache cache) {
+                        public AttributesFinder withCache(Cache<Path> cache) {
                             return this;
                         }
+
                     };
                 }
                 if(type.equals(Write.class)) {
                     return (T) new Write() {
                         @Override
-                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             fail();
                             return null;
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
                             fail();
                             return new Write.Append(0L);
                         }
+
 
                         @Override
                         public boolean temporary() {

@@ -33,7 +33,10 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.concurrent.ConcurrentUtils;
+
 import java.util.Map;
+import java.util.concurrent.Future;
 
 public class SingleTransferWorker extends AbstractTransferWorker {
 
@@ -86,8 +89,8 @@ public class SingleTransferWorker extends AbstractTransferWorker {
         //
     }
 
-    public void submit(final TransferCallable runnable) throws BackgroundException {
-        runnable.call();
+    public Future<TransferStatus> submit(final TransferCallable runnable) throws BackgroundException {
+        return ConcurrentUtils.constantFuture(runnable.call());
     }
 
     @Override

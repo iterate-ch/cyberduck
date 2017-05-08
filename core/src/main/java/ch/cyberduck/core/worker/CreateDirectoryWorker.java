@@ -21,12 +21,13 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 
-public class CreateDirectoryWorker extends Worker<Boolean> {
+public class CreateDirectoryWorker extends Worker<Path> {
 
     private final Path folder;
 
@@ -38,15 +39,17 @@ public class CreateDirectoryWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean run(final Session<?> session) throws BackgroundException {
+    public Path run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
-        feature.mkdir(folder, region, new TransferStatus());
-        return true;
+        if(!feature.isSupported(folder.getParent())) {
+            throw new UnsupportedException();
+        }
+        return feature.mkdir(folder, region, new TransferStatus());
     }
 
     @Override
-    public Boolean initialize() {
-        return false;
+    public Path initialize() {
+        return folder;
     }
 
     @Override

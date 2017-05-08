@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class HubicProtocol extends AbstractProtocol {
 
@@ -80,6 +81,12 @@ public class HubicProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isPasswordConfigurable() {
+        // Only provide account email
+        return false;
+    }
+
+    @Override
     public boolean isEnabled() {
         return false;
     }
@@ -98,5 +105,15 @@ public class HubicProtocol extends AbstractProtocol {
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         // OAuth only requires the project token
         return true;
+    }
+
+    @Override
+    public String getClientId() {
+        return PreferencesFactory.get().getProperty("hubic.oauth.clientid");
+    }
+
+    @Override
+    public String getClientSecret() {
+        return PreferencesFactory.get().getProperty("hubic.oauth.secret");
     }
 }

@@ -28,7 +28,7 @@ import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-public class DAVDirectoryFeature implements Directory<Void> {
+public class DAVDirectoryFeature implements Directory<String> {
 
     private final DAVSession session;
 
@@ -37,25 +37,26 @@ public class DAVDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            session.getClient().createDirectory(new DAVPathEncoder().encode(file));
+            session.getClient().createDirectory(new DAVPathEncoder().encode(folder));
         }
         catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new DAVExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         catch(IOException e) {
-            throw new HttpExceptionMappingService().map(e, file);
+            throw new HttpExceptionMappingService().map(e, folder);
         }
+        return folder;
     }
 
     @Override
-    public DAVDirectoryFeature withWriter(final Write<Void> writer) {
+    public boolean isSupported(final Path workdir) {
+        return true;
+    }
+
+    @Override
+    public DAVDirectoryFeature withWriter(final Write<String> writer) {
         return this;
     }
 }

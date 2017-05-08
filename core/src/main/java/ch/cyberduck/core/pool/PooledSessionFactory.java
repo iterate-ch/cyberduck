@@ -18,6 +18,7 @@ package ch.cyberduck.core.pool;
  */
 
 import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -72,7 +73,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
             log.debug(String.format("Activate session %s", session));
         }
         // Load vault to increment open count for pooled vault
-        connect.check(session, cache);
+        connect.check(session, cache, new DisabledCancelCallback());
     }
 
     @Override

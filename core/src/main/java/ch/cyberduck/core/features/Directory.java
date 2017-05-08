@@ -21,14 +21,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Directory<Reply> {
 
-    void mkdir(Path file) throws BackgroundException;
-
     /**
-     * @param file   File
+     * @param folder Directory
      * @param region Location
      * @param status Transfer status
      */
-    void mkdir(Path file, String region, TransferStatus status) throws BackgroundException;
+    Path mkdir(Path folder, String region, TransferStatus status) throws BackgroundException;
+
+    boolean isSupported(Path workdir);
 
     Directory<Reply> withWriter(Write<Reply> writer);
 }

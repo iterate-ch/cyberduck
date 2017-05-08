@@ -22,21 +22,23 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
-public class VaultRegistryTouchFeature implements Touch {
-    private final DefaultVaultRegistry registry;
+public class VaultRegistryTouchFeature<R> implements Touch<R> {
+
     private final Session<?> session;
-    private final Touch proxy;
+    private final Touch<R> proxy;
+    private final DefaultVaultRegistry registry;
 
-    public VaultRegistryTouchFeature(final Session<?> session, final Touch proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryTouchFeature(final Session<?> session, final Touch<R> proxy, final DefaultVaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        registry.find(session, file).getFeature(session, Touch.class, proxy).touch(file, status);
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Touch.class, proxy).touch(file, status);
     }
 
     @Override
@@ -45,14 +47,22 @@ public class VaultRegistryTouchFeature implements Touch {
         try {
             return registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).isSupported(workdir);
         }
-        catch(BackgroundException e) {
+        catch(VaultUnlockCancelException e) {
             return false;
         }
     }
 
     @Override
-    public Touch withWriter(final Write writer) {
+    public Touch<R> withWriter(final Write<R> writer) {
         proxy.withWriter(writer);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryTouchFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -17,9 +17,9 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
-import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -32,9 +32,6 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
     private static final Logger log = Logger.getLogger(AbstractRetryCallable.class);
 
     private final Preferences preferences = PreferencesFactory.get();
-
-    private final FailureDiagnostics<BackgroundException> diagnostics
-            = new DefaultFailureDiagnostics();
 
     /**
      * The number of times to retry a failed action
@@ -51,20 +48,6 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
     @Override
     public abstract T call() throws BackgroundException;
 
-    public boolean retry(final BackgroundException failure, final ProgressListener progress, final StreamCancelation cancel) {
-        return this.retry(failure, progress, new BackgroundActionState() {
-            @Override
-            public boolean isCanceled() {
-                return cancel.isCanceled();
-            }
-
-            @Override
-            public boolean isRunning() {
-                return true;
-            }
-        });
-    }
-
     /**
      * @param failure  Failure
      * @param progress Listener
@@ -77,6 +60,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
             return false;
         }
         int delay;
+        final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
         switch(diagnostics.determine(failure)) {
             case network:
                 delay = backoff;
@@ -103,8 +87,9 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 }
 
                 @Override
-                public void progress(final Integer delay) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds", "Status"), delay));
+                public void progress(final Integer seconds) {
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} ({1} more attempts)", "Status"),
+                            new RemainingPeriodFormatter().format(seconds), retry - count));
                 }
             }, delay);
             pause.await();

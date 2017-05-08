@@ -30,6 +30,7 @@ import ch.cyberduck.core.s3.S3HomeFinderService;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -61,7 +62,7 @@ public class SpectraDirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final SpectraDirectoryFeature feature = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session));
         final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        feature.mkdir(test);
+        feature.mkdir(test, null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -80,13 +81,14 @@ public class SpectraDirectoryFeatureTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         final AtomicBoolean b = new AtomicBoolean();
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {
                     case request:
-                        if(("PUT /test.cyberduck.ch/" + name + "/ HTTP/1.1").equals(message)) {
+                        if((String.format("PUT /%s/%s/ HTTP/1.1", container.getName(), name)).equals(message)) {
                             b.set(true);
                         }
                 }
@@ -94,9 +96,8 @@ public class SpectraDirectoryFeatureTest {
         });
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(test);
+        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(test, null, new TransferStatus());
         assertTrue(b.get());
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));

@@ -40,6 +40,9 @@ public final class HostnameConfiguratorFactory {
                 if(null == instance) {
                     instance = new OpenSSHHostnameConfigurator();
                 }
+                else {
+                    instance.reload();
+                }
                 return instance;
             }
         }
@@ -55,6 +58,11 @@ public final class HostnameConfiguratorFactory {
         @Override
         public int getPort(final String alias) {
             return -1;
+        }
+
+        @Override
+        public void reload() {
+            //
         }
     }
 }

@@ -573,19 +573,13 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                 case quicklook: {
                     item.setLabel(BrowserToolbarItem.quicklook.label());
                     item.setPaletteLabel(BrowserToolbarItem.quicklook.label());
-                    if(quicklook.isAvailable()) {
-                        final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
-                        button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
-                        button.setImage(BrowserToolbarItem.quicklook.image());
-                        button.sizeToFit();
-                        button.setTarget(controller.id());
-                        button.setAction(BrowserToolbarItem.quicklook.action());
-                        item.setView(button);
-                    }
-                    else {
-                        item.setEnabled(false);
-                        item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
-                    }
+                    final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                    button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                    button.setImage(BrowserToolbarItem.quicklook.image());
+                    button.sizeToFit();
+                    button.setTarget(controller.id());
+                    button.setAction(BrowserToolbarItem.quicklook.action());
+                    item.setView(button);
                     return item;
                 }
                 default: {

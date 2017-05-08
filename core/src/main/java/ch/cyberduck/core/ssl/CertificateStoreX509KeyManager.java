@@ -53,8 +53,6 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     private final CertificateStore callback;
 
-    private final Preferences preferences = PreferencesFactory.get();
-
     private KeyStore _keystore;
 
     public CertificateStoreX509KeyManager(final CertificateStore callback, final Host bookmark) {

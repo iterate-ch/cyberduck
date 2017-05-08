@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Location;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Set;
 
 public interface Protocol extends Comparable<Protocol> {
@@ -89,8 +90,16 @@ public interface Protocol extends Comparable<Protocol> {
                 return false;
             }
         },
+        onedrive {
+            @Override
+            public boolean validate(final Credentials credentials, final LoginOptions options) {
+                // OAuth only requires the project token
+                return true;
+            }
+        },
         irods,
-        b2;
+        b2,
+        file;
 
         /**
          * Check login credentials for validity for this protocol.
@@ -223,6 +232,21 @@ public interface Protocol extends Comparable<Protocol> {
     String getAuthorization();
 
     /**
+     * @return OAuth 2 Authorization Server URL
+     */
+    String getOAuthAuthorizationUrl();
+
+    /**
+     * @return OAuth 2 Token Server URL
+     */
+    String getOAuthTokenUrl();
+
+    /**
+     * @return Requested scopes
+     */
+    List<String> getScopes();
+
+    /**
      * @return Available regions
      */
     Set<Location.Name> getRegions();
@@ -253,4 +277,14 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Password label
      */
     String getPasswordPlaceholder();
+
+    /**
+     * @return Default OAuth 2.0 client id
+     */
+    String getClientId();
+
+    /**
+     * @return Default OAuth 2.0 client secret
+     */
+    String getClientSecret();
 }

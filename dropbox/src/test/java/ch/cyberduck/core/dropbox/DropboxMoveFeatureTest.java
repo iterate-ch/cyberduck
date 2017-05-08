@@ -16,11 +16,11 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -29,7 +29,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -61,18 +60,19 @@ public class DropboxMoveFeatureTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
-                    }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                }, new DisabledProgressListener())
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
+        new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         new DropboxMoveFeature(session).move(file, target, false, new Delete.DisabledCallback());
         assertFalse(new DropboxFindFeature(session).find(file));

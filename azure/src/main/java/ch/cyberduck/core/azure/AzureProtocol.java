@@ -24,6 +24,11 @@ import ch.cyberduck.core.Scheme;
 
 public class AzureProtocol extends AbstractProtocol {
 
+    @Override
+    public String getName() {
+        return "Azure";
+    }
+
     /**
      * URL format: Blobs are addressable using the following URL format:
      * http://<storage account>.blob.core.windows.net/<container>/<blob>

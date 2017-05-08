@@ -18,9 +18,9 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -96,7 +96,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public AttributesFinder withCache(PathCache cache) {
+    public AttributesFinder withCache(Cache<Path> cache) {
         return this;
     }
 }

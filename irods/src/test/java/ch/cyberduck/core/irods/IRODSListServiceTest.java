@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -52,6 +53,7 @@ public class IRODSListServiceTest {
     }
 
     @Test
+    @Ignore
     public void testList() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));

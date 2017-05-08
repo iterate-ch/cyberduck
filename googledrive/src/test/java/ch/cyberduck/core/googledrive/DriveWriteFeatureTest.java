@@ -15,20 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
@@ -77,19 +64,14 @@ public class DriveWriteFeatureTest {
                         }
                         return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                }, new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus();
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
-            final OutputStream out = new DriveWriteFeature(session).write(test, status);
+            final OutputStream out = new DriveWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -101,7 +83,7 @@ public class DriveWriteFeatureTest {
             assertTrue(append.override);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
-            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus());
+            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);
@@ -111,7 +93,7 @@ public class DriveWriteFeatureTest {
             status.setExists(true);
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
-            final OutputStream out = new DriveWriteFeature(session).write(test, status);
+            final OutputStream out = new DriveWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();

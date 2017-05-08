@@ -165,7 +165,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         log.warn(String.format("Skip pre transfer bulk operation for %s", files));
     }
 
@@ -218,11 +218,11 @@ public class SyncTransfer extends Transfer {
         }
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            download.pre(source, destination, Collections.singletonMap(file, status));
+            download.pre(source, destination, Collections.singletonMap(file, status), callback);
             download.transfer(source, destination, file, local, options, status, callback, progressListener, streamListener);
         }
         else if(compare.equals(Comparison.local)) {
-            upload.pre(source, destination, Collections.singletonMap(file, status));
+            upload.pre(source, destination, Collections.singletonMap(file, status), callback);
             upload.transfer(source, destination, file, local, options, status, callback, progressListener, streamListener);
         }
     }

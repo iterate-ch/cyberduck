@@ -34,6 +34,8 @@ import ch.cyberduck.core.sftp.SFTPProtocol;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 
+import java.util.regex.Pattern;
+
 public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
     private static final Logger log = Logger.getLogger(SmartFtpBookmarkCollection.class);
 
@@ -63,6 +65,11 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                     return true;
                 }
                 return "xml".equals(file.getExtension());
+            }
+
+            @Override
+            public Pattern toPattern() {
+                return Pattern.compile(".*\\.xml");
             }
         })) {
             if(child.isDirectory()) {

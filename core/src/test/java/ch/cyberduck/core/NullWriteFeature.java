@@ -31,7 +31,7 @@ public class NullWriteFeature extends AppendWriteFeature<Void> {
     }
 
     @Override
-    public StatusOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         return new VoidStatusOutputStream(new NullOutputStream());
     }
 

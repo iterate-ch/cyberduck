@@ -163,7 +163,7 @@ public abstract class AbstractEditor implements Editor {
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
                 try {
-                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(remote, local.getInputStream(), new TransferStatus());
+                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), new TransferStatus());
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Error computing checksum for %s. %s", local, e.getDetail()));
@@ -214,7 +214,7 @@ public abstract class AbstractEditor implements Editor {
         try {
             listener.message(MessageFormat.format(
                     LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
-            current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(remote, local.getInputStream(), new TransferStatus());
+            current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), new TransferStatus());
         }
         catch(BackgroundException e) {
             log.warn(String.format("Error computing checksum for %s. %s", local, e.getDetail()));

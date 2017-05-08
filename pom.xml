@@ -4,6 +4,7 @@
 
     <groupId>ch.cyberduck</groupId>
     <artifactId>parent</artifactId>
+    <name>Cyberduck</name>
     <packaging>pom</packaging>
     <version>6.0.0-SNAPSHOT</version>
 
@@ -39,6 +40,9 @@
         <module>googledrive</module>
         <module>backblaze</module>
         <module>dropbox</module>
+        <module>nio</module>
+        <module>hubic</module>
+        <module>onedrive</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
@@ -51,7 +55,6 @@
         <module>cli/linux</module>
         <module>cli/windows</module>
         <module>cli/osx</module>
-        <module>hubic</module>
     </modules>
 
     <scm>
@@ -62,6 +65,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <argLine />
     </properties>
 
     <dependencyManagement>
@@ -89,7 +93,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore</artifactId>
-                <version>4.4.5</version>
+                <version>4.4.6</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -99,7 +103,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpmime</artifactId>
-                <version>4.5.2</version>
+                <version>4.5.3</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
@@ -119,7 +123,7 @@
             <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
-                <version>3.5</version>
+                <version>3.6</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -159,47 +163,52 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.22</version>
+                <version>1.7.25</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.22</version>
+                <version>1.7.25</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>1.7.22</version>
+                <version>1.7.25</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>1.7.25</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-xml</artifactId>
-                <version>2.8.6</version>
+                <version>2.8.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.8.6</version>
+                <version>2.8.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>2.8.6</version>
+                <version>2.8.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.8.6</version>
+                <version>2.8.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
-                <version>2.8.6</version>
+                <version>2.8.8</version>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.9.7</version>
+                <version>2.9.9</version>
             </dependency>
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
@@ -214,7 +223,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.78</version>
+                <version>1.11.123</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -237,7 +246,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.1</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
@@ -324,7 +333,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.19.1</version>
                     <configuration>
-                        <argLine>-Djava.library.path=${project.build.directory}</argLine>
+                        <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -336,8 +345,9 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.19.1</version>
                     <configuration>
+                        <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         <encoding>UTF-8</encoding>
-                        <argLine>-Djava.library.path=${project.build.directory}</argLine>
+                        <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -354,7 +364,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
+                    <version>3.0.0</version>
                     <executions>
                         <execution>
                             <id>copy-dependencies-dylib-target</id>

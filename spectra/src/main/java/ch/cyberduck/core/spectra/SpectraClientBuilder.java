@@ -17,9 +17,9 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.jets3t.service.impl.rest.httpclient.RestStorageService;
 
 import java.net.URI;
 
@@ -30,22 +30,22 @@ import com.spectralogic.ds3client.models.Credentials;
 import com.spectralogic.ds3client.networking.ConnectionDetails;
 
 public class SpectraClientBuilder {
-    public Ds3Client wrap(final S3Session session) {
-        final Host host = session.getHost();
+    public Ds3Client wrap(final RestStorageService client, final Host bookmark) {
         return new Ds3ClientImpl(new NetworkClientImpl(new ConnectionDetails() {
             @Override
             public String getEndpoint() {
-                return String.format("%s:%d", host.getHostname(), host.getPort());
+                return String.format("%s:%d", bookmark.getHostname(), bookmark.getPort());
             }
 
             @Override
             public Credentials getCredentials() {
-                return new Credentials(host.getCredentials().getUsername(), host.getCredentials().getPassword());
+                return new Credentials(client.getProviderCredentials().getAccessKey(),
+                        client.getProviderCredentials().getSecretKey());
             }
 
             @Override
             public boolean isHttps() {
-                return host.getProtocol().getScheme() == Scheme.https;
+                return bookmark.getProtocol().getScheme() == Scheme.https;
             }
 
             @Override
@@ -67,6 +67,6 @@ public class SpectraClientBuilder {
             public boolean isCertificateVerification() {
                 return true;
             }
-        }, (CloseableHttpClient) session.getClient().getHttpClient()));
+        }, (CloseableHttpClient) client.getHttpClient()));
     }
 }

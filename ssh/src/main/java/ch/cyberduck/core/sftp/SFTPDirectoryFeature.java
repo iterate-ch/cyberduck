@@ -38,21 +38,22 @@ public class SFTPDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
             final FileAttributes attrs = new FileAttributes.Builder().withPermissions(
                     Integer.parseInt(new Permission(PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default")).getMode(), 8)
             ).build();
-            session.sftp().makeDir(file.getAbsolute(), attrs);
+            session.sftp().makeDir(folder.getAbsolute(), attrs);
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new SFTPExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

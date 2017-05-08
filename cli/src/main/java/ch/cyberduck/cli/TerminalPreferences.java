@@ -91,15 +91,9 @@ public class TerminalPreferences extends MemoryPreferences {
 
         switch(Factory.Platform.getDefault()) {
             case mac: {
-                defaults.put("connection.ssl.keystore.type", "KeychainStore");
-                defaults.put("connection.ssl.keystore.provider", "Apple");
-
                 break;
             }
             case windows: {
-                defaults.put("connection.ssl.keystore.type", "Windows-MY");
-                defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
-
                 break;
             }
             case linux: {

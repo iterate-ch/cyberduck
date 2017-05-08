@@ -35,7 +35,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
     public static final Acl EMPTY = new Acl();
 
-    private CanonicalUser owner;
+    private transient CanonicalUser owner;
 
     public Acl() {
         super();

@@ -21,31 +21,33 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
-import ch.cyberduck.core.threading.AbstractRetryCallable;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -61,14 +63,14 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private final PathContainerService containerService
             = new PathContainerService();
 
-    private final Long segmentSize;
-
     private final SwiftSegmentService segmentService;
-
     private final SwiftObjectListService listService;
+    private final SwiftRegionService regionService;
+
+    private final Long segmentSize;
     private final Integer concurrency;
 
-    private final SwiftRegionService regionService;
+    private Write<StorageObject> writer;
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
@@ -85,6 +87,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         super(writer);
         this.session = session;
         this.regionService = regionService;
+        this.writer = writer;
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
         this.listService = listService;
@@ -97,13 +100,11 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                 final StreamListener listener,
                                 final TransferStatus status,
                                 final ConnectionCallback callback) throws BackgroundException {
-        final DefaultThreadPool<StorageObject> pool = new DefaultThreadPool<>(concurrency, "multipart");
+        final DefaultThreadPool pool = new DefaultThreadPool("multipart", concurrency);
         final List<Path> existingSegments = new ArrayList<Path>();
         if(status.isAppend()) {
             // Get a lexicographically ordered list of the existing file segments
-            existingSegments.addAll(listService.list(
-                    new Path(containerService.getContainer(file),
-                            segmentService.basename(file, status.getLength()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+            existingSegments.addAll(listService.list(segmentService.getSegmentsDirectory(file, status.getLength()), new DisabledListProgressListener()).toList());
         }
         // Get the results of the uploads in the order they were submitted
         // this is important for building the manifest, and is not a problem in terms of performance
@@ -116,8 +117,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
             final Long length = Math.min(segmentSize, remaining);
             // Segment name with left padded segment number
-            final Path segment = new Path(containerService.getContainer(file),
-                    segmentService.name(file, length, segmentNumber), EnumSet.of(Path.Type.file));
+            final Path segment = segmentService.getSegment(file, length, segmentNumber);
             if(existingSegments.contains(segment)) {
                 final Path existingSegment = existingSegments.get(existingSegments.indexOf(segment));
                 if(log.isDebugEnabled()) {
@@ -133,7 +133,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             else {
                 // Submit to queue
-                segments.add(this.submit(pool, segment, local, throttle, listener, status, offset, length));
+                segments.add(this.submit(pool, segment, local, throttle, listener, status, offset, length, callback));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
                             segment, length, offset));
@@ -154,7 +154,6 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
         catch(ExecutionException e) {
             log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-            status.setCanceled();
             if(e.getCause() instanceof BackgroundException) {
                 throw (BackgroundException) e.getCause();
             }
@@ -195,43 +194,44 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
     }
 
-    private Future<StorageObject> submit(final ThreadPool<StorageObject> pool, final Path segment, final Local local,
+    private Future<StorageObject> submit(final ThreadPool pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
-                                         final TransferStatus overall, final Long offset, final Long length) {
-        return pool.execute(new AbstractRetryCallable<StorageObject>() {
+                                         final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) {
+        return pool.execute(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
+                if(overall.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
                 final TransferStatus status = new TransferStatus()
                         .length(length)
                         .skip(offset);
-                try {
-                    if(overall.isCanceled()) {
-                        throw new ConnectionCanceledException();
-                    }
-                    return SwiftLargeObjectUploadFeature.super.upload(
-                            segment, local, throttle, listener, status, overall, new StreamProgress() {
-                                @Override
-                                public void progress(final long bytes) {
-                                    status.progress(bytes);
-                                    // Discard sent bytes in overall progress if there is an error reply for segment.
-                                    overall.progress(bytes);
-                                }
+                status.setHeader(overall.getHeader());
+                status.setNonces(overall.getNonces());
+                status.setChecksum(writer.checksum().compute(
+                        StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status));
+                status.setSegment(true);
+                return SwiftLargeObjectUploadFeature.super.upload(
+                        segment, local, throttle, listener, status, overall, new StreamProgress() {
+                            @Override
+                            public void progress(final long bytes) {
+                                status.progress(bytes);
+                                // Discard sent bytes in overall progress if there is an error reply for segment.
+                                overall.progress(bytes);
+                            }
 
-                                @Override
-                                public void setComplete() {
-                                    status.setComplete();
-                                }
-                            });
-                }
-                catch(BackgroundException e) {
-                    if(this.retry(e, new DisabledProgressListener(), overall)) {
-                        return this.call();
-                    }
-                    else {
-                        throw e;
-                    }
-                }
+                            @Override
+                            public void setComplete() {
+                                status.setComplete();
+                            }
+                        }, callback);
             }
-        });
+        }, overall));
+    }
+
+    @Override
+    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 }

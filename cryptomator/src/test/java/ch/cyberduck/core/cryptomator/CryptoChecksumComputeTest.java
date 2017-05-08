@@ -15,20 +15,19 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.features.CryptoChecksumCompute;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -50,14 +49,16 @@ public class CryptoChecksumComputeTest {
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Directory.class) {
                     return (T) new Directory() {
+
                         @Override
-                        public void mkdir(final Path file) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                            assertTrue(folder.equals(home) || folder.isChild(home));
+                            return folder;
                         }
 
                         @Override
-                        public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public boolean isSupported(final Path workdir) {
+                            return true;
                         }
 
                         @Override
@@ -69,26 +70,22 @@ public class CryptoChecksumComputeTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("pwd");
-            }
-        });
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
         final Cryptor cryptor = vault.getCryptor();
         final ByteBuffer header = cryptor.fileHeaderCryptor().encryptHeader(cryptor.fileHeaderCryptor().create());
         // DEFAULT_PIPE_SIZE=1024
         final Path file = new Path(home, "f", EnumSet.of(Path.Type.file));
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
         final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, vault);
-        assertNotNull(compute.compute(file, new NullInputStream(1025L), new TransferStatus().withHeader(header)).hash);
-        assertNotEquals(compute.compute(file, new NullInputStream(1025L), new TransferStatus().withHeader(header)),
-                compute.compute(file, new NullInputStream(1025L), new TransferStatus().withHeader(header)));
-        assertNotNull(compute.compute(file, new NullInputStream(0L), new TransferStatus().withHeader(header)).hash);
+        final RandomNonceGenerator nonces = new RandomNonceGenerator();
+        assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)).hash);
+        assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)),
+                compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)));
+        assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header).withNonces(nonces)).hash);
         final NullInputStream input = new NullInputStream(0L);
-        assertEquals(compute.compute(file, input, new TransferStatus().withHeader(header)),
-                compute.compute(file, input, new TransferStatus().withHeader(header)));
-        assertNotEquals(compute.compute(file, new NullInputStream(0L), new TransferStatus().withHeader(header)),
-                sha.compute(file, new NullInputStream(0L), new TransferStatus()));
+        assertEquals(compute.compute(input, new TransferStatus().withHeader(header).withNonces(nonces)),
+                compute.compute(input, new TransferStatus().withHeader(header).withNonces(nonces)));
+        assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header).withNonces(nonces)),
+                sha.compute(new NullInputStream(0L), new TransferStatus()));
     }
 }
