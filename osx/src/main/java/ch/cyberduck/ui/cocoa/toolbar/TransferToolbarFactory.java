@@ -34,7 +34,6 @@ import ch.cyberduck.ui.cocoa.controller.TransferController;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
-import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.text.MessageFormat;
@@ -260,7 +259,6 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     button.setMenu(bandwidthMenu);
                     button.setTarget(controller.id());
                     button.setAction(bandwidth.action());
-                    button.selectItemAtIndex(new NSInteger(0));
                     item.setView(button);
                     return item;
                 }
