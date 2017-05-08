@@ -73,7 +73,7 @@ public class SingleTransferWorkerTest {
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[6 * 1024 * 1024];
+        final byte[] content = new byte[6 * 1024 * 1024 + 1];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
@@ -94,7 +94,7 @@ public class SingleTransferWorkerTest {
                         @Override
                         protected void beforeRead(final int n) throws IOException {
                             super.beforeRead(n);
-                            if(this.getByteCount() >= 5L * 1024L * 1024L) {
+                            if(this.getByteCount() >= 6L * 1024L * 1024L) {
                                 failed.set(true);
                                 throw new SocketTimeoutException();
                             }
@@ -128,8 +128,8 @@ public class SingleTransferWorkerTest {
 
         }.run(session, session));
         local.delete();
-        assertEquals(6L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize());
-        assertEquals(6L * 1024L * 1024L, counter.getSent(), 0L);
+        assertEquals(6L * 1024L * 1024L + 1, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(6L * 1024L * 1024L + 1, counter.getSent(), 0L);
         assertTrue(failed.get());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
