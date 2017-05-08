@@ -37,7 +37,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
@@ -62,6 +61,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferQueue;
 import ch.cyberduck.core.transfer.TransferQueueFactory;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -83,7 +83,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -107,6 +106,9 @@ public final class TransferController extends WindowController implements Transf
 
     private TranscriptController transcript;
 
+    private final BandwidthMenuDelegate bandwidthMenuDelegate
+            = new BandwidthMenuDelegate();
+
     @Outlet
     private NSProgressIndicator transferSpinner;
     @Outlet
@@ -120,16 +122,9 @@ public final class TransferController extends WindowController implements Transf
     @Outlet
     private NSImageView iconView;
     @Outlet
-    private NSStepper queueSizeStepper;
-    @Outlet
     private NSTextField filterField;
     @Outlet
     private NSDrawer logDrawer;
-    @Outlet
-    private NSPopUpButton bandwidthPopup;
-
-    @Delegate
-    private AbstractMenuDelegate bandwidthPopupDelegate;
     @Outlet
     private NSTableView transferTable;
     @Delegate
@@ -260,16 +255,13 @@ public final class TransferController extends WindowController implements Transf
         this.iconView = iconView;
     }
 
-    public void setQueueSizeStepper(final NSStepper queueSizeStepper) {
-        this.queueSizeStepper = queueSizeStepper;
-        this.queueSizeStepper.setTarget(this.id());
-        this.queueSizeStepper.setAction(Foundation.selector("queueSizeStepperChanged:"));
-    }
-
     @Action
-    public void queueSizeStepperChanged(final NSStepper sender) {
-        // Queue size propery is changed using key value observer
-        TransferQueueFactory.get().resize(sender.intValue());
+    public void connectionsPopupChanged(final NSMenuItem sender) {
+        final Integer connections = Integer.valueOf(sender.representedObject());
+        preferences.setProperty("queue.maxtransfers", connections);
+        // Queue size property is changed using key value observer
+        final TransferQueue queue = TransferQueueFactory.get();
+        queue.resize(connections);
     }
 
     public NSTextField getFilterField() {
@@ -334,31 +326,10 @@ public final class TransferController extends WindowController implements Transf
         this.logDrawer.toggle(sender);
     }
 
-    public void setBandwidthPopup(NSPopUpButton bandwidthPopup) {
-        this.bandwidthPopup = bandwidthPopup;
-        this.bandwidthPopup.setEnabled(false);
-        this.bandwidthPopup.setAllowsMixedState(true);
-        this.bandwidthPopup.setTarget(this.id());
-        this.bandwidthPopup.setAction(Foundation.selector("bandwidthPopupChanged:"));
-        this.bandwidthPopup.removeAllItems();
-        this.bandwidthPopup.addItemWithTitle(StringUtils.EMPTY);
-        this.bandwidthPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("bandwidth.tiff", 16));
-        this.bandwidthPopup.addItemWithTitle(LocaleFactory.localizedString("Unlimited Bandwidth", "Transfer"));
-        this.bandwidthPopup.lastItem().setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
-        this.bandwidthPopup.menu().addItem(NSMenuItem.separatorItem());
-        final StringTokenizer options = new StringTokenizer(preferences.getProperty("queue.bandwidth.options"), ",");
-        while(options.hasMoreTokens()) {
-            final String bytes = options.nextToken();
-            this.bandwidthPopup.addItemWithTitle(SizeFormatterFactory.get().format(Integer.parseInt(bytes)) + "/s");
-            this.bandwidthPopup.lastItem().setRepresentedObject(bytes);
-        }
-        this.bandwidthPopup.menu().setDelegate((this.bandwidthPopupDelegate = new BandwidthMenuDelegate()).id());
-    }
-
     @Action
-    public void bandwidthPopupChanged(NSPopUpButton sender) {
+    public void bandwidthPopupChanged(NSMenuItem sender) {
         final NSIndexSet selected = transferTable.selectedRowIndexes();
-        final float bandwidth = Float.valueOf(sender.selectedItem().representedObject());
+        final float bandwidth = Float.valueOf(sender.representedObject());
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = collection.get(index.intValue());
             transfer.setBandwidth(bandwidth);
@@ -375,7 +346,6 @@ public final class TransferController extends WindowController implements Transf
                 }
             }
         }
-        this.updateBandwidthPopup();
     }
 
     @Override
@@ -387,7 +357,6 @@ public final class TransferController extends WindowController implements Transf
     public void invalidate() {
         toolbar.setDelegate(null);
         transferTableModel.invalidate();
-        bandwidthPopup.menu().setDelegate(null);
         super.invalidate();
     }
 
@@ -504,7 +473,6 @@ public final class TransferController extends WindowController implements Transf
     private void updateSelection() {
         this.updateLabels();
         this.updateIcon();
-        this.updateBandwidthPopup();
         toolbar.validateVisibleItems();
     }
 
@@ -550,22 +518,6 @@ public final class TransferController extends WindowController implements Transf
         else {
             iconView.setImage(null);
         }
-    }
-
-    private void updateBandwidthPopup() {
-        final int selected = transferTable.numberOfSelectedRows().intValue();
-        bandwidthPopup.setEnabled(selected > 0);
-        final NSIndexSet set = transferTable.selectedRowIndexes();
-        for(NSUInteger index = set.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = set.indexGreaterThanIndex(index)) {
-            final Transfer transfer = transferTableModel.getSource().get(index.intValue());
-            if(transfer.getBandwidth().getRate() != BandwidthThrottle.UNLIMITED) {
-                // Mark as throttled
-                this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCacheFactory.<NSImage>get().iconNamed("turtle.tiff"));
-                return;
-            }
-        }
-        // Set the standard icon
-        this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCacheFactory.<NSImage>get().iconNamed("bandwidth.tiff", 16));
     }
 
     private void reload() {
@@ -852,12 +804,7 @@ public final class TransferController extends WindowController implements Transf
 
     @Action
     public void clearButtonClicked(final ID sender) {
-        for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext(); ) {
-            final Transfer t = iter.next();
-            if(t.isComplete()) {
-                iter.remove();
-            }
-        }
+        collection.removeIf(Transfer::isComplete);
         collection.save();
     }
 
@@ -947,14 +894,18 @@ public final class TransferController extends WindowController implements Transf
         return toolbarValidator.validate(item);
     }
 
+    public AbstractMenuDelegate getBandwidthMenuDelegate() {
+        return bandwidthMenuDelegate;
+    }
+
     private class BandwidthMenuDelegate extends AbstractMenuDelegate {
         @Override
-        public NSInteger numberOfItemsInMenu(NSMenu menu) {
-            return new NSInteger(new StringTokenizer(preferences.getProperty("queue.bandwidth.options"), ",").countTokens() + 3);
+        public NSInteger numberOfItemsInMenu(final NSMenu menu) {
+            return new NSInteger(new StringTokenizer(preferences.getProperty("queue.bandwidth.options"), ",").countTokens() + 2);
         }
 
         @Override
-        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean cancel) {
+        public boolean menuUpdateItemAtIndex(final NSMenu menu, final NSMenuItem item, final NSInteger i, final boolean cancel) {
             if(item.representedObject() != null) {
                 final int selected = transferTable.numberOfSelectedRows().intValue();
                 final int bytes = Integer.valueOf(item.representedObject());
