@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
@@ -53,7 +54,7 @@ public class CryptoReadFeature implements Read {
             final InputStream proxy = this.proxy.read(encrypted,
                     new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
             final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
-            final int read = proxy.read(headerBuffer.array());
+            final int read = IOUtils.read(proxy, headerBuffer.array());
             final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
             // Content
             return new CryptoInputStream(proxy, cryptor, header, vault.numberOfChunks(status.getOffset()));

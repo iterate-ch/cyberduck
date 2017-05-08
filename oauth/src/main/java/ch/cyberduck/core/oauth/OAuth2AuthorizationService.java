@@ -196,8 +196,13 @@ public class OAuth2AuthorizationService {
         }
         try {
             final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
-                    tokens.getRefreshToken()).setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret)).execute();
-            return new Tokens(response.getAccessToken(), response.getRefreshToken(), System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
+                    tokens.getRefreshToken())
+                    .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret)).execute();
+            final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
+            if(StringUtils.isBlank(response.getRefreshToken())) {
+                return new Tokens(response.getAccessToken(), tokens.getRefreshToken(), expiryInMilliseconds);
+            }
+            return new Tokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds);
         }
         catch(TokenResponseException e) {
             throw new OAuthExceptionMappingService().map(e);

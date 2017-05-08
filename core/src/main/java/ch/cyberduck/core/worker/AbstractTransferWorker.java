@@ -411,6 +411,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             }
                             if(this.retry(e, progress, new TransferBackgroundActionState(segment))) {
                                 // Retry immediately
+                                segment.setAppend(true);
+                                log.info(String.format("Retry %s with transfer status %s", item, segment));
                                 return call();
                             }
                             if(table.size() == 1) {
