@@ -6,9 +6,6 @@ https://cyberduck.io/
 - [Feature] Encrypt uploads into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
 - [Feature] Support for Microsoft OneDrive (OneDrive) (#9799)
-- [Feature] Search files fast without recursively listing directories (Dropbox)
-- [Feature] Search files fast without recursively listing directories (Google Drive)
-- [Feature] Search files fast using prefix (S3)
 - [Feature] Browse local filesystem in browser
 - [Feature] Support ssh-rsa-cert-v01@openssh.com format for private key files (SFTP)
 - [Feature] Support ssh-dsa-cert-v01@openssh.com format for private key files (SFTP)
