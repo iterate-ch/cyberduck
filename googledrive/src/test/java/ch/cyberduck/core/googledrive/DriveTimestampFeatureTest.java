@@ -77,7 +77,7 @@ public class DriveTimestampFeatureTest {
         new DriveMetadataFeature(session).setMetadata(test, Collections.singletonMap("test", "t"));
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals(modified / 1000 * 1000, new DefaultAttributesFinderFeature(session).find(test).getModificationDate(), 0L);
+        assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session).getMetadata(test));
         new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -111,7 +111,7 @@ public class DriveTimestampFeatureTest {
         new DriveDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals(modified / 1000 * 1000, new DefaultAttributesFinderFeature(session).find(test).getModificationDate(), 0L);
+        assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
