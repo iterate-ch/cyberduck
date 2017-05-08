@@ -16,14 +16,17 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 
+@Category(IntegrationTest.class)
 public class OneDriveFindFeatureTest extends AbstractOneDriveTest {
 
     @Test

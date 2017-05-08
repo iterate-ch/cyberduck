@@ -92,7 +92,6 @@
                     <include name="profiles/Rackspace US.cyberduckprofile"/>
                     <include name="profiles/B2.cyberduckprofile"/>
                     <include name="profiles/Microsoft OneDrive.cyberduckprofile"/>
-                    <include name="profiles/Microsoft OneDrive Business.cyberduckprofile"/>
                 </fx:fileset>
                 <!-- Localizations -->
                 <fx:fileset dir="${home}" type="data">
