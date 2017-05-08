@@ -144,14 +144,16 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                                     log.info(String.format("Skip completed part number %d", partNumber));
                                 }
                                 skip = true;
-                                offset += c.getSize();
+                                final Long length = c.getSize();
+                                remaining -= length;
+                                offset += length;
                                 break;
                             }
                         }
                     }
                     if(!skip) {
                         // Last part can be less than 5 MB. Adjust part size.
-                        final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
+                        final Long length = Math.min(Math.max((status.getLength() + status.getOffset()) / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS, partsize), remaining);
                         // Submit to queue
                         parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
                         remaining -= length;
