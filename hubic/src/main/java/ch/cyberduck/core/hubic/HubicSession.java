@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
 import ch.cyberduck.core.openstack.SwiftSession;
@@ -54,6 +55,9 @@ public class HubicSession extends SwiftSession {
             Collections.singletonList("credentials.r")
     ).withRedirectUri(PreferencesFactory.get().getProperty("hubic.oauth.redirecturi"));
 
+    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
+            authorizationService);
+
     public HubicSession(final Host host) {
         super(host);
     }
@@ -74,6 +78,7 @@ public class HubicSession extends SwiftSession {
     public Client connect(final HostKeyCallback key) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(this);
         configuration.addInterceptorLast(authorizationService);
+        configuration.setServiceUnavailableRetryStrategy(retryHandler);
         return new Client(configuration.build());
     }
 
