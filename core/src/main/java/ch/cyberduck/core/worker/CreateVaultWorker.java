@@ -46,8 +46,7 @@ public class CreateVaultWorker extends Worker<Path> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                vault.getHome());
+        return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), vault.getHome().getName());
     }
 
     @Override
