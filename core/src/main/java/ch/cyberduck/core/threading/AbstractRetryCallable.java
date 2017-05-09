@@ -98,6 +98,13 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
         if(preferences.getBoolean("connection.retry.backoff.enable")) {
             backoff *= 2;
         }
-        return true;
+        return !cancel.isCanceled();
+    }
+
+    /**
+     * @return Execution count
+     */
+    public int getCount() {
+        return count;
     }
 }

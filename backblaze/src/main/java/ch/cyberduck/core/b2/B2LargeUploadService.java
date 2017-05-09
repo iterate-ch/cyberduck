@@ -93,7 +93,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             // this is important for building the manifest, and is not a problem in terms of performance
             // because we should only continue when all segments have uploaded successfully
             final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
-            if(status.isAppend()) {
+            if(status.isAppend() || status.isRetry()) {
                 // Add already completed parts
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session);
                 final List<B2FileInfoResponse> uploads = partService.find(file);
@@ -119,7 +119,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             long offset = 0;
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 boolean skip = false;
-                if(status.isAppend()) {
+                if(status.isAppend() || status.isRetry()) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Determine if part number %d can be skipped", partNumber));
                     }
@@ -129,15 +129,13 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                                 log.info(String.format("Skip completed part number %d", partNumber));
                             }
                             skip = true;
-                            final Long length = c.getContentLength();
-                            remaining -= length;
-                            offset += length;
+                            offset += c.getContentLength();
                             break;
                         }
                     }
                 }
-                else {
-                    final Long length = Math.min(Math.max((status.getLength() + status.getOffset()) / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS, partSize), remaining);
+                if(!skip) {
+                    final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                     // Submit to queue
                     parts.add(this.submit(pool, file, local, throttle, listener, status, partNumber, offset, length, callback));
                     if(log.isDebugEnabled()) {

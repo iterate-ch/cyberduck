@@ -209,7 +209,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         // Part size from default setting of size divided by maximum number of connections
                         long partsize = Math.max(
                                 preferences.getLong("queue.download.segments.size"),
-                                status.getLength() / preferences.getInteger("queue.maxtransfers"));
+                                status.getLength() / preferences.getInteger("queue.connections.limit"));
                         // Sorted list
                         final List<TransferStatus> segments = new ArrayList<TransferStatus>();
                         final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));

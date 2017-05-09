@@ -133,8 +133,6 @@ public class UserDefaultsPreferences extends Preferences {
         _init("browser.view.autoexpand.useDelay");
         _init("browser.view.autoexpand.delay");
 
-        _init("queue.maxtransfers");
-
         _init("connection.retry");
         _init("connection.retry.delay");
         _init("connection.timeout.seconds");

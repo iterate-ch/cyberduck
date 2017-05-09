@@ -102,7 +102,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         final DefaultThreadPool pool = new DefaultThreadPool("multipart", concurrency);
         try {
             MultipartUpload multipart = null;
-            if(status.isAppend()) {
+            if(status.isAppend() || status.isRetry()) {
                 final List<MultipartUpload> list = multipartService.find(file);
                 if(!list.isEmpty()) {
                     multipart = list.iterator().next();
@@ -123,7 +123,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
             else {
-                if(status.isAppend()) {
+                if(status.isAppend() || status.isRetry()) {
                     // Add already completed parts
                     completed.addAll(multipartService.list(multipart));
                 }
@@ -134,7 +134,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 long offset = 0;
                 for(int partNumber = 1; remaining > 0; partNumber++) {
                     boolean skip = false;
-                    if(status.isAppend()) {
+                    if(status.isAppend() || status.isRetry()) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Determine if part number %d can be skipped", partNumber));
                         }
@@ -144,16 +144,14 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                                     log.info(String.format("Skip completed part number %d", partNumber));
                                 }
                                 skip = true;
-                                final Long length = c.getSize();
-                                remaining -= length;
-                                offset += length;
+                                offset += c.getSize();
                                 break;
                             }
                         }
                     }
                     if(!skip) {
                         // Last part can be less than 5 MB. Adjust part size.
-                        final Long length = Math.min(Math.max((status.getLength() + status.getOffset()) / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS, partsize), remaining);
+                        final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                         // Submit to queue
                         parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
                         remaining -= length;
