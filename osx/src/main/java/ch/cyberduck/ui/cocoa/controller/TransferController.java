@@ -258,7 +258,7 @@ public final class TransferController extends WindowController implements Transf
     @Action
     public void connectionsPopupChanged(final NSMenuItem sender) {
         final Integer connections = Integer.valueOf(sender.representedObject());
-        preferences.setProperty("queue.maxtransfers", connections);
+        preferences.setProperty("queue.connections.limit", connections);
         // Queue size property is changed using key value observer
         final TransferQueue queue = TransferQueueFactory.get();
         queue.resize(connections);

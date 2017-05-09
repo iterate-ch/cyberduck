@@ -29,7 +29,7 @@ public class DefaultTransferOptionsConfigurer {
     public TransferOptions configure(final TransferOptions options) {
         options.setPutOption(TransferOptions.PutOptions.NORMAL);
         options.setForceOption(TransferOptions.ForceOption.ASK_CALLBACK_LISTENER);
-        options.setMaxThreads(preferences.getInteger("queue.maxtransfers"));
+        options.setMaxThreads(preferences.getInteger("queue.connections.limit"));
         // Enable progress callbacks
         options.setIntraFileStatusCallbacks(true);
         options.setIntraFileStatusCallbacksNumberCallsInterval(1);
