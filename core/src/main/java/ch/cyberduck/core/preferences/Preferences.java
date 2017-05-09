@@ -415,7 +415,7 @@ public abstract class Preferences {
 
         defaults.put("queue.removeItemWhenComplete", String.valueOf(false));
         /*
-          The maximum number of concurrent transfers
+          The maximum number of concurrent transfers in transfer list
          */
         defaults.put("queue.maxtransfers", String.valueOf(2));
         /*
@@ -558,6 +558,7 @@ public abstract class Preferences {
         /*
          * Concurrent connections
          */
+        defaults.put("queue.connections.limit", String.valueOf(2));
         {
             final StringBuilder options = new StringBuilder();
             options.append(1).append(",");

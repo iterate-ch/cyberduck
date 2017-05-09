@@ -286,7 +286,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     button.setMenu(connectionsMenu);
                     button.setTarget(controller.id());
                     button.setAction(connections.action());
-                    button.selectItemAtIndex(button.indexOfItemWithRepresentedObject(preferences.getProperty("queue.maxtransfers")));
+                    button.selectItemAtIndex(button.indexOfItemWithRepresentedObject(preferences.getProperty("queue.connections.limit")));
                     item.setView(button);
                     return item;
                 }
