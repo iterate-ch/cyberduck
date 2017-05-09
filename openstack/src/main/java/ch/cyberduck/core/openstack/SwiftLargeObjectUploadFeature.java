@@ -102,7 +102,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                 final ConnectionCallback callback) throws BackgroundException {
         final DefaultThreadPool pool = new DefaultThreadPool("multipart", concurrency);
         final List<Path> existingSegments = new ArrayList<Path>();
-        if(status.isAppend()) {
+        if(status.isAppend() || status.isRetry()) {
             // Get a lexicographically ordered list of the existing file segments
             existingSegments.addAll(listService.list(segmentService.getSegmentsDirectory(file, status.getLength()), new DisabledListProgressListener()).toList());
         }
