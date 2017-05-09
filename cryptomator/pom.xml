@@ -130,7 +130,7 @@
             <groupId>org.cryptomator</groupId>
             <artifactId>cryptofs</artifactId>
             <scope>test</scope>
-            <version>1.0.0</version>
+            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.sshd</groupId>
