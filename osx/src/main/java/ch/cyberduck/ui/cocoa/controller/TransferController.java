@@ -61,8 +61,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
-import ch.cyberduck.core.transfer.TransferQueue;
-import ch.cyberduck.core.transfer.TransferQueueFactory;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.datasource.TransferTableDataSource;
@@ -259,9 +257,6 @@ public final class TransferController extends WindowController implements Transf
     public void connectionsPopupChanged(final NSMenuItem sender) {
         final Integer connections = Integer.valueOf(sender.representedObject());
         preferences.setProperty("queue.connections.limit", connections);
-        // Queue size property is changed using key value observer
-        final TransferQueue queue = TransferQueueFactory.get();
-        queue.resize(connections);
     }
 
     public NSTextField getFilterField() {
