@@ -167,7 +167,8 @@ public class OAuth2AuthorizationService {
                 // Save access key and refresh key
                 final Tokens tokens = new Tokens(
                         response.getAccessToken(), response.getRefreshToken(),
-                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
+                        null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                                System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
                 if(input.isSaved()) {
                     this.save(keychain, bookmark, tokens);
                 }
