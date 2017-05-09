@@ -102,7 +102,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         final DefaultThreadPool pool = new DefaultThreadPool("multipart", concurrency);
         try {
             MultipartUpload multipart = null;
-            if(status.isAppend()) {
+            if(status.isAppend() || status.isRetry()) {
                 final List<MultipartUpload> list = multipartService.find(file);
                 if(!list.isEmpty()) {
                     multipart = list.iterator().next();
@@ -123,7 +123,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
             else {
-                if(status.isAppend()) {
+                if(status.isAppend() || status.isRetry()) {
                     // Add already completed parts
                     completed.addAll(multipartService.list(multipart));
                 }
@@ -134,7 +134,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 long offset = 0;
                 for(int partNumber = 1; remaining > 0; partNumber++) {
                     boolean skip = false;
-                    if(status.isAppend()) {
+                    if(status.isAppend() || status.isRetry()) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Determine if part number %d can be skipped", partNumber));
                         }
