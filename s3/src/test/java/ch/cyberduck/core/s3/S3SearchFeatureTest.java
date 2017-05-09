@@ -28,10 +28,12 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -39,6 +41,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Category(IntegrationTest.class)
 public class S3SearchFeatureTest {
 
     @Test
