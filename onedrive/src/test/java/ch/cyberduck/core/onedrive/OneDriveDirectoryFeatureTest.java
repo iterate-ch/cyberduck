@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -35,6 +36,14 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testMkdir() throws Exception {
         final Path target = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
+        assertNotNull(new OneDriveAttributesFinderFeature(session).find(target).getETag());
+        new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWhitespaceMkdir() throws Exception {
+        final RandomStringService randomStringService = new AlphanumericRandomStringService();
+        final Path target = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(target).getETag());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
