@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -38,6 +39,15 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testTouch() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
+        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWhitespaceTouch() throws Exception {
+        final RandomStringService randomStringService = new AlphanumericRandomStringService();
+        final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
