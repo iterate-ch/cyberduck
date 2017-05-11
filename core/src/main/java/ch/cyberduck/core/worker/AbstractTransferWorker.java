@@ -240,7 +240,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             return this.submit(new RetryTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
-                    if(AbstractTransferWorker.this.isCanceled()) {
+                    if(parent.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
                     Session<?> source = null;
@@ -299,9 +299,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         throw e;
                     }
                     catch(BackgroundException e) {
-                        if(isCanceled()) {
-                            throw new ConnectionCanceledException(e);
-                        }
                         if(this.retry(e, progress, new TransferBackgroundActionState(parent))) {
                             // Retry immediately
                             return call();
@@ -405,14 +402,14 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             throw e;
                         }
                         catch(BackgroundException e) {
-                            segment.setFailure();
-                            if(AbstractTransferWorker.this.isCanceled()) {
-                                throw new ConnectionCanceledException(e);
-                            }
-                            if(this.retry(e, progress, new TransferBackgroundActionState(segment))) {
+                            if(this.retry(e, progress, new TransferBackgroundActionState(status))) {
+                                // Set retry count to make multipart uploads search for existing segments
+                                segment.setRetry(this.getCount());
                                 // Retry immediately
+                                log.info(String.format("Retry %s with transfer status %s", item, segment));
                                 return call();
                             }
+                            segment.setFailure();
                             if(table.size() == 1) {
                                 throw e;
                             }

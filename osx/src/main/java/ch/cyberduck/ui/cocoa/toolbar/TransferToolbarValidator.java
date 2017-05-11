@@ -15,15 +15,18 @@ package ch.cyberduck.ui.cocoa.toolbar;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.ui.cocoa.controller.TransferController;
 
 import org.rococoa.Foundation;
+import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -39,7 +42,35 @@ public class TransferToolbarValidator implements ToolbarValidator {
 
     @Override
     public boolean validate(final NSToolbarItem item) {
-        return this.validate(item.action());
+        final Selector action = item.action();
+        if(action.equals(bandwidth.action())) {
+            return this.validate(new InnerTransferValidator() {
+                @Override
+                public boolean validate(final Transfer transfer) {
+                    final NSPopUpButton popup = Rococoa.cast(item.view(), NSPopUpButton.class);
+                    popup.selectItemAtIndex(popup.indexOfItemWithRepresentedObject(String.valueOf((int) transfer.getBandwidth().getRate())));
+                    return true;
+                }
+            });
+        }
+        if(action.equals(connections.action())) {
+            return this.validate(new InnerTransferValidator() {
+                @Override
+                public boolean validate(final Transfer transfer) {
+                    final NSPopUpButton popup = Rococoa.cast(item.view(), NSPopUpButton.class);
+                    switch(transfer.getSource().getTransferType()) {
+                        case newconnection:
+                            popup.selectItemAtIndex(popup.indexOfItemWithRepresentedObject(String.valueOf(1)));
+                            break;
+                        default:
+                            popup.selectItemAtIndex(popup.indexOfItemWithRepresentedObject(PreferencesFactory.get().getProperty("queue.connections.limit")));
+                            break;
+                    }
+                    return true;
+                }
+            });
+        }
+        return this.validate(action);
     }
 
     @Override

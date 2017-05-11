@@ -76,6 +76,8 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultFactory;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
@@ -2304,9 +2306,9 @@ public class BrowserController extends WindowController
         final VaultController sheet = new VaultController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
                 feature != null ? feature.getLocations() : Collections.emptySet(), new VaultController.Callback() {
             @Override
-            public void callback(final Path folder, final String region, final String passphrase) {
+            public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
-                        new CreateVaultWorker(folder, region, PasswordStoreFactory.get(), passphrase) {
+                        new CreateVaultWorker(region, passphrase, VaultFactory.get(folder, PasswordStoreFactory.get())) {
                             @Override
                             public void cleanup(final Path vault) {
                                 reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));

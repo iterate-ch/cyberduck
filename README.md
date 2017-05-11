@@ -16,8 +16,12 @@ for Linux, OS X and Windows .
 
 ## Building
 
-* Type `mvn -DskipITs` to build without running integration tests.
+* Run `mvn package -DskipTests` to build without running any tests.
+
+## Running Tests
+
+* After packaging, run `mvn test -DskipITs` to run unit tests but skip integration tests.
 
 ## Releases
 
-Releases are tagged in SVN such as `release-2-6`. Checkout using `svn co https://svn.cyberduck.io/tags/release-2-6`.
+Releases are tagged in GIT/SVN such as `release-2-6`. Checkout using `svn co https://svn.cyberduck.io/tags/release-2-6`.

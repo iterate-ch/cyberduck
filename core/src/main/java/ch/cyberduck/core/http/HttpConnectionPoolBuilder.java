@@ -214,6 +214,7 @@ public class HttpConnectionPoolBuilder {
             configuration.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
         }
         configuration.setRetryHandler(new ExtendedHttpRequestRetryHandler(preferences.getInteger("http.connections.retry")));
+        configuration.setServiceUnavailableRetryStrategy(new DisabledServiceUnavailableRetryStrategy());
         if(!preferences.getBoolean("http.compression.enable")) {
             configuration.disableContentCompression();
         }

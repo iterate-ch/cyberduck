@@ -197,7 +197,6 @@
 		47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */; };
 		47C299A91EA4F528005D9507 /* Microsoft OneDrive.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C299A81EA4F520005D9507 /* Microsoft OneDrive.cyberduckprofile */; };
 		47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		47CAE7A31EB12E3D0069EE58 /* Microsoft OneDrive Business.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47CAE7A21EB12E310069EE58 /* Microsoft OneDrive Business.cyberduckprofile */; };
 		47CD043812DB5F2000694306 /* File.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD041612DB5F2000694306 /* File.strings */; };
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
 		47CD047E12DB5F4500694306 /* Goto.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD045C12DB5F4500694306 /* Goto.strings */; };
@@ -283,7 +282,6 @@
 			dstPath = Profiles;
 			dstSubfolderSpec = 7;
 			files = (
-				47CAE7A31EB12E3D0069EE58 /* Microsoft OneDrive Business.cyberduckprofile in CopyFiles */,
 				47C299A91EA4F528005D9507 /* Microsoft OneDrive.cyberduckprofile in CopyFiles */,
 				47DD99831CAA766100960EAF /* B2.cyberduckprofile in CopyFiles */,
 				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
@@ -1355,7 +1353,6 @@
 		47C92DB61189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/S3.strings; sourceTree = "<group>"; };
 		47C92DB91189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/Status.strings; sourceTree = "<group>"; };
 		47C92DBA1189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/Transfer.strings; sourceTree = "<group>"; };
-		47CAE7A21EB12E310069EE58 /* Microsoft OneDrive Business.cyberduckprofile */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Microsoft OneDrive Business.cyberduckprofile"; sourceTree = "<group>"; };
 		47CD041712DB5F2000694306 /* ro */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ro; path = i18n/src/main/resources/ro.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041812DB5F2000694306 /* pl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pl; path = i18n/src/main/resources/pl.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041A12DB5F2000694306 /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = de; path = i18n/src/main/resources/de.lproj/File.strings; sourceTree = "<group>"; };
@@ -1724,7 +1721,6 @@
 				4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */,
 				479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */,
 				47C299A81EA4F520005D9507 /* Microsoft OneDrive.cyberduckprofile */,
-				47CAE7A21EB12E310069EE58 /* Microsoft OneDrive Business.cyberduckprofile */,
 			);
 			path = profiles;
 			sourceTree = "<group>";

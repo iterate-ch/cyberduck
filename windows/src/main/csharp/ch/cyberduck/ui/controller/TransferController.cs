@@ -179,7 +179,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
                 View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
             };
-            View.QueueSize = _preferences.getInteger("queue.maxtransfers");
+            View.QueueSize = _preferences.getInteger("queue.connections.limit");
             View.BandwidthEnabled = false;
 
             View.ResumeEvent += View_ResumeEvent;
@@ -339,8 +339,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_QueueSizeChangedEvent()
         {
-            _preferences.setProperty("queue.maxtransfers", View.QueueSize);
-            TransferQueueFactory.get().resize(_preferences.getInteger("queue.maxtransfers"));
+            _preferences.setProperty("queue.connections.limit", View.QueueSize);
         }
 
         private void View_BandwidthChangedEvent()
