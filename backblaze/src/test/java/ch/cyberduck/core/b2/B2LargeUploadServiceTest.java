@@ -122,8 +122,9 @@ public class B2LargeUploadServiceTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
+        final B2LargeUploadService service = new B2LargeUploadService(session, new B2WriteFeature(session), 100 * 1024L * 1024L, 1);
         try {
-            new B2LargeUploadService(session, new B2WriteFeature(session), 100 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+            service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
@@ -144,7 +145,7 @@ public class B2LargeUploadServiceTest {
         assertFalse(status.isComplete());
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
-        new B2LargeUploadService(session, new B2WriteFeature(session), 100 * 1024L * 1024L, 1).upload(test, local,
+        service.upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertTrue(new B2FindFeature(session).find(test));
