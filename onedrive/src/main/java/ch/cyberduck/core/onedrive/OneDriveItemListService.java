@@ -56,7 +56,7 @@ public class OneDriveItemListService implements ListService {
                 folder = drive.getRoot();
             }
             else {
-                folder = new OneDriveFolder(session.getClient(), drive, containerService.getKey(directory));
+                folder = session.toFolder(directory);
             }
             Iterator<OneDriveItem.Metadata> iterator = folder.iterator();
             while(iterator.hasNext()) {
