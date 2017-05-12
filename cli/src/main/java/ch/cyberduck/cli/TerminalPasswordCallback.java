@@ -22,8 +22,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-import org.apache.commons.codec.binary.StringUtils;
-
 import java.util.Arrays;
 
 public class TerminalPasswordCallback implements PasswordCallback {
@@ -35,13 +33,8 @@ public class TerminalPasswordCallback implements PasswordCallback {
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
             final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
-            final char[] repeat = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
-            if(!StringUtils.equals(String.valueOf(input), String.valueOf(repeat))) {
-                this.prompt(credentials, title, reason, options);
-            }
             credentials.setPassword(String.valueOf(input));
             Arrays.fill(input, ' ');
-            Arrays.fill(repeat, ' ');
         }
         catch(ConnectionCanceledException e) {
             throw new LoginCanceledException(e);
