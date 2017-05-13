@@ -143,7 +143,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private MainController()
         {
             InitializeAppProperties();
-            SaveMySettingsOnExit = true;
+            // SaveMySettingsOnExit = true;
             Startup += ApplicationDidFinishLaunching;
             StartupNextInstance += StartupNextInstanceHandler;
             Shutdown += delegate
