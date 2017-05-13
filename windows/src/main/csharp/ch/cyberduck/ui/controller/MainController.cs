@@ -159,7 +159,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     Logger.warn("No Bonjour support available", se);
                 }
                 PreferencesFactory.get().setProperty("uses", PreferencesFactory.get().getInteger("uses") + 1);
-                PreferencesFactory.get().save();
+                try
+                {
+                    PreferencesFactory.get().save();
+                }
+                catch (UnauthorizedAccessException unauthorizedAccessException)
+                {
+                    Logger.fatal("Could not save preferences", unauthorizedAccessException);
+                }
                 if (_updater != null)
                 {
                     _updater.unregister();
