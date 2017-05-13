@@ -934,7 +934,7 @@ public class MainController extends BundleController implements NSApplication.De
                         if(log.isInfoEnabled()) {
                             log.info(String.format("New browser for saved session %s", host));
                         }
-                        final BrowserController browser = newDocument(false, host.getUuid());
+                        final BrowserController browser = newDocument(true, host.getUuid());
                         browser.mount(host);
                     }
                     sessions.clear();
