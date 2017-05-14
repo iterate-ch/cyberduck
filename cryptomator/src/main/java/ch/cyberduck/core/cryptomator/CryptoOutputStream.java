@@ -16,7 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.SegmentingOutputStream;
+import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.random.NonceGenerator;
 
@@ -36,7 +36,7 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
 
     public CryptoOutputStream(final StatusOutputStream<Reply> proxy, final Cryptor cryptor, final FileHeader header,
                               final NonceGenerator nonces, final long chunkIndexOffset) {
-        super(new SegmentingOutputStream(new EncryptingOutputStream(proxy, cryptor, header, nonces, chunkIndexOffset),
+        super(new MemorySegementingOutputStream(new EncryptingOutputStream(proxy, cryptor, header, nonces, chunkIndexOffset),
                 cryptor.fileContentCryptor().cleartextChunkSize()));
         this.proxy = proxy;
     }

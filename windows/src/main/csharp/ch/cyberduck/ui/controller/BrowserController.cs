@@ -55,6 +55,7 @@ using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
+using System.Drawing;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -2163,11 +2164,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         try
                         {
-                            View.EditIcon =
-                                IconCache.Instance.GetFileIconFromExecutable(
-                                    WindowsApplicationLauncher.GetExecutableCommand(editCommand),
-                                    IconCache.IconSize.Large).ToBitmap();
-                            return;
+                            Icon fileIconFromExecutable = IconCache.Instance.GetFileIconFromExecutable(
+                                WindowsApplicationLauncher.GetExecutableCommand(editCommand),
+                                IconCache.IconSize.Large);
+
+                            if (null != fileIconFromExecutable)
+                            {
+                                View.EditIcon = fileIconFromExecutable.ToBitmap();
+                                return;
+                            }
                         }
                         catch (ObjectDisposedException)
                         {
