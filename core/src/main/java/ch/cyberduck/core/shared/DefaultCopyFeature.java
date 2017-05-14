@@ -37,35 +37,36 @@ import java.io.OutputStream;
 
 public class DefaultCopyFeature implements Copy {
 
-    private final Session<?> session;
+    private Session<?> from;
+    private Session<?> to;
 
-    public DefaultCopyFeature(final Session<?> session) {
-        this.session = session;
+    public DefaultCopyFeature(final Session<?> from) {
+        this.from = from;
+        this.to = from;
     }
 
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         if(source.isDirectory()) {
-            if(!session.getFeature(Find.class).find(target)) {
-                session.getFeature(Directory.class).mkdir(target, null, status);
+            if(!to.getFeature(Find.class).find(target)) {
+                to.getFeature(Directory.class).mkdir(target, null, status);
             }
         }
         else {
-            if(!session.getFeature(Find.class).find(target.getParent())) {
+            if(!to.getFeature(Find.class).find(target.getParent())) {
                 this.copy(source.getParent(), target.getParent(), new TransferStatus());
             }
             InputStream in = null;
             OutputStream out = null;
             try {
-                in = new ThrottledInputStream(session.getFeature(Read.class).read(source, new TransferStatus(), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-                Write write = session.getFeature(MultipartWrite.class);
+                in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+                Write write = to.getFeature(MultipartWrite.class);
                 if(null == write) {
                     // Fallback if multipart write is not available
-                    write = session.getFeature(Write.class);
+                    write = from.getFeature(Write.class);
                 }
                 out = new ThrottledOutputStream(write.write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-                final TransferStatus progress = new TransferStatus();
-                new StreamCopier(progress, progress).transfer(in, out);
+                new StreamCopier(status, status).transfer(in, out);
             }
             finally {
                 new DefaultStreamCloser().close(in);
@@ -81,11 +82,12 @@ public class DefaultCopyFeature implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        switch(session.getHost().getProtocol().getType()) {
-            case ftp:
-            case irods:
-                return false;
-        }
         return true;
+    }
+
+    @Override
+    public DefaultCopyFeature withTarget(final Session<?> session) {
+        to = session;
+        return this;
     }
 }

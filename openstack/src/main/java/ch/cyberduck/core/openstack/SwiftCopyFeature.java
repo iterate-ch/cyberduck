@@ -21,6 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -72,5 +73,10 @@ public class SwiftCopyFeature implements Copy {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return !containerService.isContainer(source) && !containerService.isContainer(target);
+    }
+
+    @Override
+    public Copy withTarget(final Session<?> session) {
+        return this;
     }
 }

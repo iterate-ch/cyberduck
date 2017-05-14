@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -104,5 +105,10 @@ public class S3CopyFeature implements Copy {
                 throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
             }
         }
+    }
+
+    @Override
+    public Copy withTarget(final Session<?> session) {
+        return this;
     }
 }
