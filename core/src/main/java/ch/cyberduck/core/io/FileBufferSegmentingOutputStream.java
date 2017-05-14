@@ -40,6 +40,7 @@ public class FileBufferSegmentingOutputStream extends SegmentingOutputStream {
     @Override
     public void close() throws IOException {
         super.close();
+        proxy.close();
         buffer.close();
     }
 
