@@ -29,6 +29,6 @@ public class StringAppenderTest {
         assertEquals("Message.", new StringAppender().append("Message").toString());
         assertEquals("Message.", new StringAppender().append("Message.").toString());
         assertEquals("Message?", new StringAppender().append("Message?").toString());
-        assertEquals("Message)", new StringAppender().append("Message)").toString());
+        assertEquals("Message).", new StringAppender().append("Message)").toString());
     }
 }
