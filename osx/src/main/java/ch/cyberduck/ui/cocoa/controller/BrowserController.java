@@ -2986,6 +2986,7 @@ public class BrowserController extends WindowController
                                     });
                                 }
                                 else {
+                                    BrowserController.this.pool = pool;
                                     pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
                                     // Update status icon
                                     bookmarkTable.setNeedsDisplay();
