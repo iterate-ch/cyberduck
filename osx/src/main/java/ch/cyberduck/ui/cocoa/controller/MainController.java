@@ -184,7 +184,7 @@ public class MainController extends BundleController implements NSApplication.De
         final List<BrowserController> browsers = getBrowsers();
         if(!force) {
             for(BrowserController controller : browsers) {
-                if(!controller.isMounted()) {
+                if(controller.isIdle() && !controller.isMounted()) {
                     controller.window().makeKeyAndOrderFront(null);
                     return controller;
                 }

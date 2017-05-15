@@ -2613,19 +2613,18 @@ namespace Ch.Cyberduck.Ui.Controller
             Unmount(callbackDelegate);
         }
 
-        // some simple caching as _session.isConnected() throws a ConnectionCanceledException if not connected
-
         /// <summary>
         ///
         /// </summary>
         /// <returns>true if mounted and the connection to the server is alive</returns>
         public bool IsConnected()
         {
-            if (IsMounted())
-            {
-                return Session.getState() == ch.cyberduck.core.Session.State.open;
-            }
-            return false;
+            return Session.getState() == ch.cyberduck.core.Session.State.open;
+        }
+
+        public bool isIdle()
+        {
+            return this.getRegistry().isEmpty();
         }
 
         public static bool ApplicationShouldTerminate()

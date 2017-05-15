@@ -2110,7 +2110,7 @@ public class BrowserController extends WindowController
             }
             else {
                 // Browser view
-                if(isConnected()) {
+                if(this.isMounted()) {
                     statusLabel.setAttributedStringValue(
                             NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
                                     String.valueOf(getSelectedBrowserView().numberOfRows())),
@@ -2710,10 +2710,11 @@ public class BrowserController extends WindowController
      * @return true if mounted and the connection to the server is alive
      */
     public boolean isConnected() {
-        if(this.isMounted()) {
-            return pool.getState() == Session.State.open;
-        }
-        return false;
+        return pool.getState() == Session.State.open;
+    }
+
+    public boolean isIdle() {
+        return this.getRegistry().isEmpty();
     }
 
     /**
@@ -2974,7 +2975,6 @@ public class BrowserController extends WindowController
             @Override
             public void run() {
                 // The browser has no session, we are allowed to proceed
-                // Initialize the browser with the new session attaching all listeners
                 final SessionPool pool = SessionPoolFactory.create(BrowserController.this, cache, bookmark, SessionPoolFactory.Usage.browser);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
                         new MountWorker(bookmark, cache, listener) {
@@ -2982,11 +2982,7 @@ public class BrowserController extends WindowController
                             public void cleanup(final Path workdir) {
                                 super.cleanup(workdir);
                                 if(null == workdir) {
-                                    doUnmount(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            //
-                                        }
+                                    doUnmount(() -> {
                                     });
                                 }
                                 else {
@@ -3048,7 +3044,7 @@ public class BrowserController extends WindowController
         if(log.isDebugEnabled()) {
             log.debug(String.format("Unmount session %s", pool));
         }
-        if(this.isConnected() || this.isActivityRunning()) {
+        if(this.isConnected()) {
             if(preferences.getBoolean("browser.disconnect.confirm")) {
                 // Defer the unmount to the callback function
                 final NSAlert alert = NSAlert.alert(
