@@ -184,7 +184,7 @@ public class MainController extends BundleController implements NSApplication.De
         final List<BrowserController> browsers = getBrowsers();
         if(!force) {
             for(BrowserController controller : browsers) {
-                if(!controller.isMounted()) {
+                if(controller.getRegistry().isEmpty() && !controller.isMounted()) {
                     controller.window().makeKeyAndOrderFront(null);
                     return controller;
                 }
@@ -934,7 +934,7 @@ public class MainController extends BundleController implements NSApplication.De
                         if(log.isInfoEnabled()) {
                             log.info(String.format("New browser for saved session %s", host));
                         }
-                        final BrowserController browser = newDocument(true, host.getUuid());
+                        final BrowserController browser = newDocument(false, host.getUuid());
                         browser.mount(host);
                     }
                     sessions.clear();
