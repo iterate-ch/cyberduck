@@ -53,7 +53,7 @@ public class SpectraBucketListServiceTest {
         final AttributedList<Path> list = new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(list.contains(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
     }
 
@@ -73,7 +73,7 @@ public class SpectraBucketListServiceTest {
         final AttributedList<Path> list = new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(list.contains(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
     }
 }

@@ -20,6 +20,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
+import org.apache.http.HttpStatus;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -37,7 +39,7 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
             final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;
             this.append(buffer, error.getDetails().getMessage());
             switch(error.getDetails().getCode()) {
-                case 403:
+                case HttpStatus.SC_FORBIDDEN:
                     final List<GoogleJsonError.ErrorInfo> errors = error.getDetails().getErrors();
                     for(GoogleJsonError.ErrorInfo info : errors) {
                         if("usageLimits".equals(info.getDomain())) {

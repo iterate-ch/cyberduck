@@ -26,6 +26,8 @@
             border: 1px solid #cccccc;
             color: black;
         }
+
+
     </style>
 </head>
 
@@ -37,10 +39,28 @@
     explorer for Mac &amp; Windows.
 </p>
 <p class="cryptomator">
-    <strong><a href="https://trac.cyberduck.io/wiki/help/en/howto/cryptomator">Cryptomator</a></strong>. Cyberduck <a
+    <strong><a href="https://cyberduck.io/cryptomator/">Cryptomator</a></strong>. Cyberduck <a
         href="https://trac.cyberduck.io/milestone/6.0">6.0</a>
-    will support transparent <strong>client-side encryption</strong> using Cryptomator interoperable vaults.
+    supports transparent <strong>client-side encryption</strong> using Cryptomator interoperable vaults.
 </p>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/6.0.1"><strong>Version 6.0.1</strong></a>
+</p>
+<ul>
+    <li>[Bugfix] New connections do not authenticate (Dropbox) (<a
+            href="https://trac.cyberduck.io/ticket/9932">#9932</a>)
+    </li>
+    <li>[Bugfix] Large file uploads do not resume (Backblaze B2) (<a
+            href="https://trac.cyberduck.io/ticket/9935">#9935</a>)
+    </li>
+    <li>[Bugfix] Failure listing folders with whitespace (OneDrive) (<a
+            href="https://trac.cyberduck.io/ticket/9937">#9937</a>)
+    </li>
+    <li>[Bugfix] Failure duplicating files (FTP) (<a
+            href="https://trac.cyberduck.io/ticket/9933">#9933</a>)
+    </li>
+</ul>
 
 <p>
     <a href="https://trac.cyberduck.io/milestone/6.0"><strong>Version 6.0</strong></a>
@@ -48,18 +68,19 @@
 <ul>
     <li>[Feature] Create encrypted vault interopable with Cryptomator (<a
             href="https://trac.cyberduck.io/ticket/7937">#7937</a>) (Cyptomator)
+        <ul>
+            <li>[Feature] Encrypt uploads into vault</li>
+            <li>[Feature] Decrypt downloads from vault</li>
+        </ul>
     </li>
-    <li>[Feature] Encrypt uploads into vault (Cyptomator)</li>
-    <li>[Feature] Decrypt downloads from vault (Cyptomator)</li>
     <li>[Feature] Support for Microsoft OneDrive (OneDrive) (<a
             href="https://trac.cyberduck.io/ticket/9799">#9799</a>)
     </li>
-    <li>[Feature] Search files fast without recursively listing directories (Dropbox)</li>
-    <li>[Feature] Search files fast without recursively listing directories (Google Drive)</li>
-    <li>[Feature] Search files fast using prefix (S3)</li>
     <li>[Feature] Browse local filesystem in browser</li>
     <li>[Feature] Support ssh-rsa-cert-v01@openssh.com format for private key files (SFTP)</li>
     <li>[Feature] Support ssh-dsa-cert-v01@openssh.com format for private key files (SFTP)</li>
+    <li>[Feature] Configure lifecycle options for buckets (Backblaze B2)</li>
+    <li>[Feature] Copy pre-authenticated URLs (Backblaze B2)</li>
 </ul>
 
 <p>

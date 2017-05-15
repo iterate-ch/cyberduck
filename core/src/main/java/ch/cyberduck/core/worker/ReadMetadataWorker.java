@@ -25,8 +25,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 
-import org.apache.log4j.Logger;
-
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +34,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class ReadMetadataWorker extends Worker<Map<String, String>> {
-    private static final Logger log = Logger.getLogger(ReadMetadataWorker.class);
 
     /**
      * Selected files.

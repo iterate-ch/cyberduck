@@ -291,7 +291,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) new DisabledMoveFeature();
         }
         if(type == Copy.class) {
-            return (T) new DefaultCopyFeature(this.getFeature(Read.class), this.getFeature(Write.class));
+            return (T) new DefaultCopyFeature(this);
         }
         if(type == UrlProvider.class) {
             return (T) new DefaultUrlProvider(host);

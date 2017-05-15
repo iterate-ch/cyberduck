@@ -29,7 +29,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
-import ch.cyberduck.core.io.SegmentingOutputStream;
+import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
@@ -91,7 +92,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     @Override
     public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
-        return new HttpResponseOutputStream<List<StorageObject>>(new SegmentingOutputStream(proxy,
+        return new HttpResponseOutputStream<List<StorageObject>>(new MemorySegementingOutputStream(proxy,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
             public List<StorageObject> getStatus() throws BackgroundException {
@@ -125,9 +126,10 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     }
 
     private final class LargeUploadOutputStream extends OutputStream {
-        final List<StorageObject> completed = new ArrayList<StorageObject>();
+        private final List<StorageObject> completed = new ArrayList<StorageObject>();
         private final Path file;
         private final TransferStatus overall;
+        private final AtomicBoolean close = new AtomicBoolean();
         private int segmentNumber;
 
         public LargeUploadOutputStream(final Path file, final TransferStatus status) {
@@ -187,6 +189,10 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
             // Create and upload the large object manifest. It is best to upload all the segments first and
             // then create or update the manifest.
             try {
+                if(close.get()) {
+                    log.warn(String.format("Skip double close of stream %s", this));
+                    return;
+                }
                 // Static Large Object
                 final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completed);
                 if(log.isDebugEnabled()) {
@@ -200,6 +206,9 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
             }
             catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
+            }
+            finally {
+                close.set(true);
             }
         }
 

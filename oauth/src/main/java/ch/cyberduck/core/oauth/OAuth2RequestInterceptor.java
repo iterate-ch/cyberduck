@@ -53,6 +53,10 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
         this.tokens = tokens;
     }
 
+    public Tokens refresh() throws BackgroundException {
+        return super.refresh(tokens);
+    }
+
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         if(tokens.isExpired()) {

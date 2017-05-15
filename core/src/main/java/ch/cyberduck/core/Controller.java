@@ -34,9 +34,8 @@ public interface Controller extends ProgressListener, TranscriptListener, Backgr
      * @param runnable The runnable to execute in a secondary Thread
      * @return Future result
      * @see java.lang.Thread
-     * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
-    <T> Future<T> background(final BackgroundAction<T> runnable);
+    <T> Future<T> background(BackgroundAction<T> runnable);
 
     /**
      * Run on main thread. Caller thread is blocked until the selector on the main thread is called.
@@ -44,7 +43,7 @@ public interface Controller extends ProgressListener, TranscriptListener, Backgr
      * @param runnable The action to execute
      * @see #invoke(ch.cyberduck.core.threading.MainAction, boolean)
      */
-    void invoke(final MainAction runnable);
+    void invoke(MainAction runnable);
 
     /**
      * Run on main thread.
@@ -52,5 +51,5 @@ public interface Controller extends ProgressListener, TranscriptListener, Backgr
      * @param runnable The action to execute
      * @param wait     Block calling thread
      */
-    void invoke(final MainAction runnable, final boolean wait);
+    void invoke(MainAction runnable, boolean wait);
 }

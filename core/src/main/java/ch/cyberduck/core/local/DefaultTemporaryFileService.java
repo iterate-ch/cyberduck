@@ -18,7 +18,7 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultPathReference;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
@@ -72,7 +72,7 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
         final String pathFormat = "%2$s%1$s%3$s%1$s%4$s";
         final String normalizedPathFormat = pathFormat + "%1$s%5$s";
 
-        final String attributes = new DefaultPathReference(file).attributes();
+        final String attributes = new DefaultPathPredicate(file).attributes();
         final String normalizedFileName = PathNormalizer.name(file.getAbsolute());
 
         final File shortenTestPath = new File(PreferencesFactory.get().getProperty("tmp.dir"), String.format(normalizedPathFormat, delimiter, uid, "", attributes, normalizedFileName));

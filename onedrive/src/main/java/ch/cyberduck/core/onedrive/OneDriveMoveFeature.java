@@ -45,7 +45,7 @@ public class OneDriveMoveFeature implements Move {
         if(!StringUtils.equals(file.getName(), renamed.getName())) {
             patchOperation.rename(renamed.getName());
         }
-        if(file.getParent() != renamed.getParent()) {
+        if(!file.getParent().equals(renamed.getParent())) {
             patchOperation.move(session.toFolder(renamed.getParent()));
         }
         try {
@@ -60,21 +60,16 @@ public class OneDriveMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source) {
+    public boolean isRecursive(final Path source, final Path target) {
         return true;
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(source.isRoot() || source.getParent().isRoot()) {
+        if(containerService.isContainer(source)) {
             return false;
         }
-        if(target.isRoot() || target.getParent().isRoot()) {
-            return false;
-        }
-        final String sourceContainer = containerService.getContainer(source).getName();
-        final String targetContainer = containerService.getContainer(source).getName();
-        if(!StringUtils.equals(sourceContainer, targetContainer)) {
+        if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
             return false;
         }
         return true;

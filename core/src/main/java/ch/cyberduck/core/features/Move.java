@@ -22,14 +22,13 @@ public interface Move {
 
     /**
      * @param callback Progress
-     * @param file     Origin
-     * @param renamed  Target
+     * @param file     Source file or folder
+     * @param renamed  Target file or folder
      * @param exists   True if the target file exists
      */
     void move(Path file, Path renamed, boolean exists, Delete.Callback callback) throws BackgroundException;
 
-    boolean isRecursive(final Path source);
-
+    boolean isRecursive(final Path source, final Path target);
     boolean isSupported(Path source, final Path target);
 
     Move withDelete(Delete delete);

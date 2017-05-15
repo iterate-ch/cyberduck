@@ -19,9 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.shared.DefaultCopyFeature;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -32,37 +30,72 @@ public class VaultRegistryCopyFeature implements Copy {
     private final Copy proxy;
     private final DefaultVaultRegistry registry;
 
+    private Session<?> target;
+
     public VaultRegistryCopyFeature(final Session<?> session, final Copy proxy, final DefaultVaultRegistry registry) {
         this.session = session;
+        this.target = session;
         this.proxy = proxy;
         this.registry = registry;
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
-        if(registry.find(session, source).equals(registry.find(session, target))) {
-            // Move files inside vault. May use server side copy.
-            registry.find(session, source).getFeature(session, Copy.class, proxy).copy(source, target, status);
+    public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
+        if(registry.find(session, source).equals(Vault.DISABLED)) {
+            registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
+        }
+        else if(registry.find(session, copy).equals(Vault.DISABLED)) {
+            registry.find(session, source).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
         }
         else {
-            // Use default copy feature. Will need to transfer using read and write features with encryption
-            new DefaultCopyFeature(
-                    registry.find(session, source).getFeature(session, Read.class, session._getFeature(Read.class)),
-                    registry.find(session, target).getFeature(session, Write.class, session._getFeature(Write.class))
-            ).copy(source, target, status);
+            // Move files inside vault. May use server side copy.
+            proxy.copy(source, copy, status);
         }
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
+    public boolean isRecursive(final Path source, final Path copy) {
         try {
-            if(registry.find(session, source).equals(registry.find(session, target))) {
-                return proxy.isRecursive(source, target);
+            if(registry.find(session, source, false).equals(Vault.DISABLED)) {
+                return registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(target).isRecursive(source, copy);
+            }
+            else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
+                return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(target).isRecursive(source, copy);
             }
         }
         catch(VaultUnlockCancelException e) {
             // Ignore
         }
-        return false;
+        return proxy.isRecursive(source, copy);
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path copy) {
+        try {
+            if(registry.find(session, source, false).equals(Vault.DISABLED)) {
+                return registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(target).isSupported(source, copy);
+            }
+            else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
+                return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(target).isSupported(source, copy);
+            }
+        }
+        catch(VaultUnlockCancelException e) {
+            // Ignore
+        }
+        return proxy.isSupported(source, copy);
+    }
+
+    @Override
+    public Copy withTarget(final Session<?> session) {
+        this.target = session;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryCopyFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

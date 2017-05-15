@@ -28,7 +28,7 @@ public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkRes
     }
 
     @Override
-    public NSURL resolve(final Local file) throws AccessDeniedException {
+    public NSURL resolve(final Local file, final boolean interactive) throws AccessDeniedException {
         throw new LocalAccessDeniedException("Filesystem bookmark resolver disabled");
     }
 }

@@ -33,12 +33,14 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -52,7 +54,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFile;
@@ -64,7 +65,6 @@ import java.io.IOException;
 import java.util.Set;
 
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
-    private static final Logger log = Logger.getLogger(OneDriveSession.class);
 
     private final PathContainerService containerService
             = new PathContainerService();
@@ -82,6 +82,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             }
         }
     }.withRedirectUri(PreferencesFactory.get().getProperty("onedrive.oauth.redirecturi"));
+
+    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
+            authorizationService);
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -107,6 +110,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     protected OneDriveAPI connect(final HostKeyCallback key) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(this);
         configuration.addInterceptorLast(authorizationService);
+        configuration.setServiceUnavailableRetryStrategy(retryHandler);
         final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(configuration.build()) {
             @Override
             public void addAuthorizationHeader(final Set<RequestHeader> headers) {
@@ -173,6 +177,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == Write.class) {
             return (T) new OneDriveWriteFeature(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new OneDriveBufferWriteFeature(this);
         }
         if(type == Delete.class) {
             return (T) new OneDriveDeleteFeature(this);

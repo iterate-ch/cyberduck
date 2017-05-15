@@ -21,14 +21,15 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryUnixPermissionFeature implements UnixPermission {
-    private final Session<?> session;
-    private final DefaultVaultRegistry registry;
-    private final UnixPermission proxy;
 
-    public VaultRegistryUnixPermissionFeature(final Session<?> session, final UnixPermission proxy, final DefaultVaultRegistry registry) {
+    private final Session<?> session;
+    private final UnixPermission proxy;
+    private final VaultRegistry registry;
+
+    public VaultRegistryUnixPermissionFeature(final Session<?> session, final UnixPermission proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -57,5 +58,13 @@ public class VaultRegistryUnixPermissionFeature implements UnixPermission {
     @Override
     public Permission getDefault(final Local file) {
         return proxy.getDefault(file);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryUnixPermissionFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

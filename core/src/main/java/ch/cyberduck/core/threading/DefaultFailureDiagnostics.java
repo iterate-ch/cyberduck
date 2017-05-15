@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.SSLNegotiateException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
@@ -59,6 +60,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
                 return Type.network;
             }
             if(cause instanceof NoHttpResponseException) {
+                return Type.network;
+            }
+            if(cause instanceof ConnectTimeoutException) {
                 return Type.network;
             }
             if(cause instanceof SocketException

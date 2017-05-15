@@ -40,6 +40,7 @@ import java.util.Date;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.CommitInfo;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.UploadSessionAppendV2Uploader;
 import com.dropbox.core.v2.files.UploadSessionCursor;
 import com.dropbox.core.v2.files.UploadSessionFinishUploader;
@@ -118,6 +119,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         private final TransferStatus status;
         private final DbxUserFilesRequests client;
         private final String sessionId;
+        private String fileId;
 
         private Long offset = 0L;
         private Long written = 0L;
@@ -169,7 +171,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
 
         @Override
         public String getStatus() throws BackgroundException {
-            return sessionId;
+            return fileId;
         }
 
         @Override
@@ -182,7 +184,8 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
                         .build()
                 );
                 finish.getOutputStream().close();
-                finish.finish();
+                final FileMetadata metadtata = finish.finish();
+                fileId = metadtata.getId();
             }
             catch(IllegalStateException e) {
                 // Already closed

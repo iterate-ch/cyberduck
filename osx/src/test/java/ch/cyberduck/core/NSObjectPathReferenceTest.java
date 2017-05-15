@@ -33,14 +33,14 @@ public class NSObjectPathReferenceTest {
     @Test
     public void testInterchange() throws Exception {
         assertEquals(
-                new DefaultPathReference(new Path("/b", EnumSet.of(Path.Type.file))),
+                new DefaultPathPredicate(new Path("/b", EnumSet.of(Path.Type.file))),
                 new NSObjectPathReference(NSObjectPathReference.get(new Path("/b", EnumSet.of(Path.Type.file))))
         );
         assertEquals(
                 new NSObjectPathReference(NSObjectPathReference.get(new Path("/b", EnumSet.of(Path.Type.file)))),
-                new DefaultPathReference(new Path("/b", EnumSet.of(Path.Type.file)))
+                new DefaultPathPredicate(new Path("/b", EnumSet.of(Path.Type.file)))
         );
-        assertEquals(new DefaultPathReference(new Path("/b", EnumSet.of(Path.Type.file))).hashCode(),
+        assertEquals(new DefaultPathPredicate(new Path("/b", EnumSet.of(Path.Type.file))).hashCode(),
                 new NSObjectPathReference(NSObjectPathReference.get(new Path("/b", EnumSet.of(Path.Type.file)))).hashCode()
         );
     }

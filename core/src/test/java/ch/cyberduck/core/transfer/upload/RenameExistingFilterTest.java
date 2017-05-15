@@ -64,7 +64,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public boolean isRecursive(final Path source) {
+                        public boolean isRecursive(final Path source, final Path target) {
                             return true;
                         }
 
@@ -157,7 +157,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public boolean isRecursive(final Path source) {
+                        public boolean isRecursive(final Path source, final Path target) {
                             return true;
                         }
 
@@ -269,7 +269,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public boolean isRecursive(final Path source) {
+                        public boolean isRecursive(final Path source, final Path target) {
                             return true;
                         }
 

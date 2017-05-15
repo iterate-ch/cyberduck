@@ -270,11 +270,6 @@ public abstract class Preferences {
         defaults.put("local.delimiter", File.separator);
         defaults.put("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
-        /*
-          Prompt to resolve bookmark of file outside of sandbox with choose panel
-         */
-        defaults.put("local.bookmark.resolve.prompt", String.valueOf(false));
-
         defaults.put("application.name", "Cyberduck");
         final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
         defaults.put("application.support.path", support);
@@ -421,7 +416,7 @@ public abstract class Preferences {
 
         defaults.put("queue.removeItemWhenComplete", String.valueOf(false));
         /*
-          The maximum number of concurrent transfers
+          The maximum number of concurrent transfers in transfer list
          */
         defaults.put("queue.maxtransfers", String.valueOf(2));
         /*
@@ -469,6 +464,8 @@ public abstract class Preferences {
         defaults.put("queue.upload.file.metadata.change", String.valueOf(true));
         defaults.put("queue.upload.file.encryption.change", String.valueOf(true));
         defaults.put("queue.upload.file.redundancy.change", String.valueOf(true));
+
+        defaults.put("queue.upload.checksum.calculate", String.valueOf(true));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
@@ -530,25 +527,26 @@ public abstract class Preferences {
         /*
           Bandwidth throttle options
          */
-        final StringBuilder options = new StringBuilder();
-        options.append(5 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(10 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(20 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(50 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(100 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(150 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(200 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(500 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(1 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(2 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(5 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(10 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(15 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(20 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(50 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(100 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        defaults.put("queue.bandwidth.options", options.toString());
-
+        {
+            final StringBuilder options = new StringBuilder();
+            options.append(5 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(10 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(20 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(50 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(100 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(150 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(200 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(500 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(1 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(2 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(5 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(10 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(15 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(20 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(50 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(100 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            defaults.put("queue.bandwidth.options", options.toString());
+        }
         /*
           Bandwidth throttle upload stream
          */
@@ -557,6 +555,23 @@ public abstract class Preferences {
           Bandwidth throttle download stream
          */
         defaults.put("queue.download.bandwidth.bytes", String.valueOf(-1));
+
+        /*
+         * Concurrent connections
+         */
+        defaults.put("queue.connections.limit", String.valueOf(2));
+        {
+            final StringBuilder options = new StringBuilder();
+            options.append(1).append(",");
+            options.append(2).append(",");
+            options.append(3).append(",");
+            options.append(4).append(",");
+            options.append(5).append(",");
+            options.append(10).append(",");
+            options.append(15).append(",");
+            options.append(20).append(",");
+            defaults.put("queue.connections.options", options.toString());
+        }
 
         /*
           While downloading, update the icon of the downloaded file as a progress indicator
@@ -1042,6 +1057,7 @@ public abstract class Preferences {
 //        defaults.put("dropbox.oauth.redirecturi", "x-cyberduck-action:oauth");
 
         defaults.put("cryptomator.enable", String.valueOf(true));
+        defaults.put("cryptomator.vault.autodetect", String.valueOf(true));
     }
 
     protected void setLogging() {

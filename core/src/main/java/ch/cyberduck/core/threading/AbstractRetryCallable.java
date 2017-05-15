@@ -17,6 +17,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
@@ -86,8 +87,9 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 }
 
                 @Override
-                public void progress(final Integer delay) {
-                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds", "Status"), delay));
+                public void progress(final Integer seconds) {
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} ({1} more attempts)", "Status"),
+                            new RemainingPeriodFormatter().format(seconds), retry - count));
                 }
             }, delay);
             pause.await();
@@ -96,6 +98,13 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
         if(preferences.getBoolean("connection.retry.backoff.enable")) {
             backoff *= 2;
         }
-        return true;
+        return !cancel.isCanceled();
+    }
+
+    /**
+     * @return Execution count
+     */
+    public int getCount() {
+        return count;
     }
 }

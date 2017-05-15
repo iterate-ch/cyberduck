@@ -32,7 +32,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.SegmentingOutputStream;
+import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -51,6 +51,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FinishLargeFileResponse;
@@ -80,7 +81,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
     @Override
     public StatusOutputStream<List<B2UploadPartResponse>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
-        return new HttpResponseOutputStream<List<B2UploadPartResponse>>(new SegmentingOutputStream(proxy,
+        return new HttpResponseOutputStream<List<B2UploadPartResponse>>(new MemorySegementingOutputStream(proxy,
                 PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum"))) {
             @Override
             public List<B2UploadPartResponse> getStatus() throws BackgroundException {
@@ -117,6 +118,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
         final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
         private final Path file;
         private final TransferStatus overall;
+        private final AtomicBoolean close = new AtomicBoolean();
 
         private String fileid;
         private int partNumber;
@@ -186,6 +188,10 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
         @Override
         public void close() throws IOException {
             try {
+                if(close.get()) {
+                    log.warn(String.format("Skip double close of stream %s", this));
+                    return;
+                }
                 if(completed.isEmpty()) {
                     return;
                 }
@@ -206,6 +212,9 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
             }
             catch(B2ApiException e) {
                 throw new IOException(new B2ExceptionMappingService(session).map("Upload {0} failed", e, file));
+            }
+            finally {
+                close.set(true);
             }
         }
 

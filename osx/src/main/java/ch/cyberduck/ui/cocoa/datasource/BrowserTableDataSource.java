@@ -44,6 +44,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatter;
@@ -398,7 +399,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // The file should be renamed
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard) {
-                        Path renamed = new Path(destination, next.getName(), next.getType());
+                        final Path renamed = new Path(destination, next.getName(), next.getType());
                         files.put(next, renamed);
                     }
                     new MoveController(controller).rename(files);
@@ -499,6 +500,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     return NSDraggingInfo.NSDragOperationMove;
                 }
                 else {
+                    for(Path file : pasteboard) {
+                        if(!controller.getSession().getFeature(Copy.class).isSupported(file, destination)) {
+                            return NSDraggingInfo.NSDragOperationNone;
+                        }
+                    }
                     // If copying between sessions is supported
                     return NSDraggingInfo.NSDragOperationCopy;
                 }

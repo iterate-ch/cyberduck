@@ -42,6 +42,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -52,7 +53,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -67,7 +67,6 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 
 public class DriveSession extends HttpSession<Drive> {
-    private static final Logger log = Logger.getLogger(DriveSession.class);
 
     private ApacheHttpTransport transport;
 
@@ -86,6 +85,9 @@ public class DriveSession extends HttpSession<Drive> {
             Collections.singletonList(DriveScopes.DRIVE))
             .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
 
+    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
+            authorizationService);
+
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -94,6 +96,7 @@ public class DriveSession extends HttpSession<Drive> {
     protected Drive connect(final HostKeyCallback callback) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(this);
         configuration.addInterceptorLast(authorizationService);
+        configuration.setServiceUnavailableRetryStrategy(retryHandler);
         this.transport = new ApacheHttpTransport(configuration.build());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override

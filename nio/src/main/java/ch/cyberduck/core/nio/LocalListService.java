@@ -30,7 +30,6 @@ import java.nio.file.Files;
 import java.util.EnumSet;
 
 public class LocalListService implements ListService {
-
     private static final Logger log = Logger.getLogger(LocalListService.class);
 
     private final LocalSession session;

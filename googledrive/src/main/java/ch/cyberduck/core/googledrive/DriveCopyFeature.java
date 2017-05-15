@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -29,7 +30,7 @@ public class DriveCopyFeature implements Copy {
 
     private final DriveSession session;
 
-    public DriveCopyFeature(DriveSession session) {
+    public DriveCopyFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -48,5 +49,15 @@ public class DriveCopyFeature implements Copy {
     @Override
     public boolean isRecursive(final Path source, final Path target) {
         return true;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
+    public Copy withTarget(final Session<?> session) {
+        return this;
     }
 }

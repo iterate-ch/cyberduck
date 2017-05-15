@@ -17,7 +17,7 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.io.SegmentingOutputStream;
+import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -87,7 +87,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
-        return new HttpResponseOutputStream<List<MultipartPart>>(new SegmentingOutputStream(proxy,
+        return new HttpResponseOutputStream<List<MultipartPart>>(new MemorySegementingOutputStream(proxy,
                 preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
             public List<MultipartPart> getStatus() throws BackgroundException {
@@ -194,7 +194,14 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                     return;
                 }
                 if(completed.isEmpty()) {
+                    log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
+                    try {
+                        new S3TouchFeature(session).touch(file, overall);
+                    }
+                    catch(BackgroundException e) {
+                        throw new IOException(e);
+                    }
                 }
                 else {
                     final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
@@ -241,6 +248,15 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
             finally {
                 close.set(true);
             }
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("MultipartOutputStream{");
+            sb.append("multipart=").append(multipart);
+            sb.append(", file=").append(file);
+            sb.append('}');
+            return sb.toString();
         }
     }
 

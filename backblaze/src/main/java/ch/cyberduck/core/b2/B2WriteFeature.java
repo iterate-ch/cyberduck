@@ -32,6 +32,8 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,10 +42,13 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
+import synapticloop.b2.response.B2UploadPartResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> implements Write<BaseB2Response> {
@@ -58,6 +63,8 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
             = new ThreadLocal<B2GetUploadUrlResponse>();
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     public B2WriteFeature(final B2Session session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
@@ -90,10 +97,16 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                         final B2GetUploadUrlResponse uploadUrl;
                         if(null == urls.get()) {
                             uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Obtained upload URL %s for file %s", uploadUrl, file));
+                            }
                             urls.set(uploadUrl);
                         }
                         else {
                             uploadUrl = urls.get();
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Use upload URL %s for file %s", uploadUrl, file));
+                            }
                         }
                         try {
                             return session.getClient().uploadFile(uploadUrl,
@@ -141,6 +154,19 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
     @Override
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+        if(length >= preferences.getLong("b2.upload.largeobject.threshold")) {
+            if(preferences.getBoolean("b2.upload.largeobject")) {
+                final B2LargeUploadPartService partService = new B2LargeUploadPartService(session);
+                final List<B2FileInfoResponse> upload = partService.find(file);
+                if(!upload.isEmpty()) {
+                    Long size = 0L;
+                    for(B2UploadPartResponse completed : partService.list(upload.iterator().next().getFileId())) {
+                        size += completed.getContentLength();
+                    }
+                    return new Append(size);
+                }
+            }
+        }
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());

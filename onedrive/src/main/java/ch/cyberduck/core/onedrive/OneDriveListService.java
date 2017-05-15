@@ -19,17 +19,11 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 public class OneDriveListService implements ListService {
-    private static final Logger log = Logger.getLogger(OneDriveListService.class);
-
-    private final PathContainerService containerService
-            = new PathContainerService();
 
     private final OneDriveSession session;
 

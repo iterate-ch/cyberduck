@@ -26,6 +26,7 @@ import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -38,6 +39,7 @@ import static org.junit.Assert.*;
 public class OneDriveSearchFeatureTest extends AbstractOneDriveTest {
 
     @Test
+    @Ignore
     public void testSearch() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
         final Path drive = new OneDriveHomeFinderFeature(session).find();

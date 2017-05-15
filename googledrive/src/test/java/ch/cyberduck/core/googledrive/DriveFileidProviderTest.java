@@ -78,8 +78,7 @@ public class DriveFileidProviderTest {
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());
-        assertNotNull(new DriveFileidProvider(session)
-                .getFileid(test));
+        assertNotNull(new DriveFileidProvider(session).getFileid(test));
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

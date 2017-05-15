@@ -271,6 +271,7 @@ public class Terminal {
         finally {
             this.disconnect(source);
             this.disconnect(destination);
+            console.printf("%n%s", StringUtils.EMPTY);
         }
         return Exit.failure;
     }
@@ -300,7 +301,7 @@ public class Terminal {
             preferences.setProperty("s3.upload.udt.threshold", 0L);
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
-            preferences.setProperty("queue.maxtransfers",
+            preferences.setProperty("queue.connections.limit",
                     NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2));
         }
     }

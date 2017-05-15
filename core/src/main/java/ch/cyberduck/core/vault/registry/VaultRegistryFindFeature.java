@@ -17,19 +17,21 @@ package ch.cyberduck.core.vault.registry;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryFindFeature implements Find {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Find proxy;
+    private final VaultRegistry registry;
 
-    private Cache<Path> cache;
+    private Cache<Path> cache = PathCache.empty();
 
-    public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -48,4 +50,11 @@ public class VaultRegistryFindFeature implements Find {
         return this;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryFindFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

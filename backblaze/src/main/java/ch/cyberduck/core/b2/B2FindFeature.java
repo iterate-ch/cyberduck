@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -38,6 +39,8 @@ public class B2FindFeature implements Find {
 
     private final B2Session session;
 
+    private Cache<Path> cache = PathCache.empty();
+
     public B2FindFeature(final B2Session session) {
         this.session = session;
     }
@@ -55,7 +58,7 @@ public class B2FindFeature implements Find {
             }
             else {
                 try {
-                    return null != new B2FileidProvider(session).getFileid(file);
+                    return null != new B2FileidProvider(session).withCache(cache).getFileid(file);
                 }
                 catch(NotfoundException e) {
                     return false;
@@ -73,6 +76,7 @@ public class B2FindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }

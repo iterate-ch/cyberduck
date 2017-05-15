@@ -529,7 +529,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     button.setMenu(charsetMenu);
                     button.setTarget(controller.id());
                     button.setAction(encoding.action());
-                    button.selectItemWithTitle(preferences.getProperty("browser.charset.encoding"));
                     item.setView(button);
                     return item;
                 }

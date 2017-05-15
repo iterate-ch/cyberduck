@@ -30,7 +30,7 @@ public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
 
-    public DriveMoveFeature(DriveSession session) {
+    public DriveMoveFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -76,7 +76,7 @@ public class DriveMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source) {
-        return true;
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
     }
 }

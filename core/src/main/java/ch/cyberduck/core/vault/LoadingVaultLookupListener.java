@@ -26,10 +26,10 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     private static final Logger log = Logger.getLogger(LoadingVaultLookupListener.class);
 
     private final Session<?> session;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
     private final PasswordCallback prompt;
 
-    public LoadingVaultLookupListener(final Session<?> session, final DefaultVaultRegistry registry, final PasswordCallback prompt) {
+    public LoadingVaultLookupListener(final Session<?> session, final VaultRegistry registry, final PasswordCallback prompt) {
         this.session = session;
         this.registry = registry;
         this.prompt = prompt;

@@ -32,6 +32,7 @@ import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfigurat
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
@@ -49,6 +50,7 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
+import ch.cyberduck.core.shared.StatefulDefaultCopyFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -350,13 +352,16 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) new FTPCommandFeature(this);
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new CustomOriginCloudFrontDistributionConfiguration(host, this);
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
         }
         if(type == Home.class) {
             return (T) new FTPWorkdirService(this);
         }
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(new DefaultUploadFeature(new FTPWriteFeature(this)));
+        }
+        if(type == Copy.class) {
+            return (T) new StatefulDefaultCopyFeature(this);
         }
         return super._getFeature(type);
     }

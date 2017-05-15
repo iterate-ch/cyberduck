@@ -27,7 +27,7 @@ public class DriveDeleteFeature implements Delete {
 
     private final DriveSession session;
 
-    public DriveDeleteFeature(DriveSession session) {
+    public DriveDeleteFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -54,6 +54,6 @@ public class DriveDeleteFeature implements Delete {
 
     @Override
     public boolean isRecursive() {
-        return false;
+        return true;
     }
 }

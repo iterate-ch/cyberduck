@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -68,7 +69,9 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                     status.setStorageClass(redundancy.getDefault());
                 }
             }
-            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+            if(Checksum.NONE == status.getChecksum()) {
+                status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+            }
             // Add placeholder object
             status.setMime(MIMETYPE);
             folder.getType().add(Path.Type.placeholder);

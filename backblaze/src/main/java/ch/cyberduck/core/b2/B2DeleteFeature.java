@@ -49,9 +49,6 @@ public class B2DeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
-            if(file.isPlaceholder()) {
-                continue;
-            }
             if(file.getType().contains(Path.Type.upload)) {
                 new B2LargeUploadPartService(session).delete(file.attributes().getVersionId());
             }
@@ -60,12 +57,11 @@ public class B2DeleteFeature implements Delete {
                 // Delete /.bzEmpty if any
                 final String fileid;
                 try {
-                    fileid = new B2FileidProvider(session).getFileid(new Path(containerService.getContainer(file),
-                            String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), EnumSet.of(Path.Type.file)));
+                    fileid = new B2FileidProvider(session).getFileid(new Path(file, B2DirectoryFeature.PLACEHOLDER, EnumSet.of(Path.Type.file)));
                 }
                 catch(NotfoundException e) {
                     log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getDetail(), file));
-                    return;
+                    continue;
                 }
                 try {
                     session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), fileid);

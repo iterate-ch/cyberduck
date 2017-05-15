@@ -40,6 +40,7 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -58,7 +59,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
@@ -74,7 +74,6 @@ import java.io.InputStream;
 import java.util.Collections;
 
 public class GoogleStorageSession extends S3Session {
-    private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -86,6 +85,9 @@ public class GoogleStorageSession extends S3Session {
             host.getProtocol().getClientSecret(),
             Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
     ).withRedirectUri(preferences.getProperty("googlestorage.oauth.redirecturi"));
+
+    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
+            authorizationService);
 
     public GoogleStorageSession(final Host h) {
         super(h);
@@ -107,6 +109,7 @@ public class GoogleStorageSession extends S3Session {
     public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(this);
         configuration.addInterceptorLast(authorizationService);
+        configuration.setServiceUnavailableRetryStrategy(retryHandler);
         return new OAuth2RequestEntityRestStorageService(this, this.configure(), configuration);
     }
 

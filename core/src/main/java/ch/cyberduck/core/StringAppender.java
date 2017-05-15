@@ -59,10 +59,9 @@ public final class StringAppender {
         if(buffer.charAt(buffer.length() - 1) == ':') {
             buffer.deleteCharAt(buffer.length() - 1);
         }
-        buffer.append(suffix);
-//        if(StringUtils.isAlpha(String.valueOf(buffer.charAt(buffer.length() - 1)))) {
-//            buffer.append(".");
-//        }
+        if(StringUtils.isAlpha(String.valueOf(buffer.charAt(buffer.length() - 1)))) {
+            buffer.append(suffix);
+        }
         return this;
     }
 

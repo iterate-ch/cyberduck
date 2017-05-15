@@ -42,10 +42,10 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -53,7 +53,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -65,7 +64,6 @@ import com.dropbox.core.http.HttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
 
 public class DropboxSession extends HttpSession<DbxRawClientV2> {
-    private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -81,6 +79,9 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             Collections.emptyList())
             .withRedirectUri(preferences.getProperty("dropbox.oauth.redirecturi"));
 
+    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
+            authorizationService);
+
     public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -89,6 +90,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     protected DbxRawClientV2 connect(final HostKeyCallback callback) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(this);
         configuration.addInterceptorLast(authorizationService);
+        configuration.setServiceUnavailableRetryStrategy(retryHandler);
         final CloseableHttpClient client = configuration.build();
         return new DbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
                 .withAutoRetryDisabled()
@@ -148,7 +150,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             return (T) new DropboxUrlProvider(this);
         }
         if(type == IdProvider.class) {
-            return (T) new DropboxIdProvider(this);
+            return (T) new DropboxFileIdProvider(this);
         }
         if(type == Find.class) {
             return (T) new DropboxFindFeature(this);
@@ -160,7 +162,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             return (T) new DropboxQuotaFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(new DropboxUploadFeature(new DropboxWriteFeature(this)));
+            return (T) new DropboxTouchFeature(this);
         }
         if(type == Search.class) {
             return (T) new DropboxSearchFeature(this);

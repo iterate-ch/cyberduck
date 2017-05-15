@@ -31,9 +31,10 @@ public interface FilesystemBookmarkResolver<B> {
     String create(Local file) throws AccessDeniedException;
 
     /**
-     * @param file File outside of sandbox
+     * @param file        File outside of sandbox
+     * @param interactive Allow prompt
      * @return Reference to file by bookmark
      * @throws AccessDeniedException Failure resolving bookmark for file
      */
-    B resolve(Local file) throws AccessDeniedException;
+    B resolve(Local file, final boolean interactive) throws AccessDeniedException;
 }

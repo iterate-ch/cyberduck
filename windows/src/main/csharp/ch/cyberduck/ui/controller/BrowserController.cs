@@ -55,6 +55,7 @@ using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
+using System.Drawing;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -1479,9 +1480,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                // Clear open vaults
-                VaultRegistry vault = Session.getVault();
-                vault.clear();
                 // Find folders to reload
                 ISet<Path> folders = new HashSet<Path>();
                 foreach (Path path in View.VisiblePaths)
@@ -2166,11 +2164,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         try
                         {
-                            View.EditIcon =
-                                IconCache.Instance.GetFileIconFromExecutable(
-                                    WindowsApplicationLauncher.GetExecutableCommand(editCommand),
-                                    IconCache.IconSize.Large).ToBitmap();
-                            return;
+                            Icon fileIconFromExecutable = IconCache.Instance.GetFileIconFromExecutable(
+                                WindowsApplicationLauncher.GetExecutableCommand(editCommand),
+                                IconCache.IconSize.Large);
+
+                            if (null != fileIconFromExecutable)
+                            {
+                                View.EditIcon = fileIconFromExecutable.ToBitmap();
+                                return;
+                            }
                         }
                         catch (ObjectDisposedException)
                         {
@@ -2611,19 +2613,18 @@ namespace Ch.Cyberduck.Ui.Controller
             Unmount(callbackDelegate);
         }
 
-        // some simple caching as _session.isConnected() throws a ConnectionCanceledException if not connected
-
         /// <summary>
         ///
         /// </summary>
         /// <returns>true if mounted and the connection to the server is alive</returns>
         public bool IsConnected()
         {
-            if (IsMounted())
-            {
-                return Session.getState() == ch.cyberduck.core.Session.State.open;
-            }
-            return false;
+            return Session.getState() == ch.cyberduck.core.Session.State.open;
+        }
+
+        public bool isIdle()
+        {
+            return this.getRegistry().isEmpty();
         }
 
         public static bool ApplicationShouldTerminate()

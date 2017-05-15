@@ -38,7 +38,7 @@ public class DriveBatchDeleteFeature implements Delete {
 
     private final DriveSession session;
 
-    public DriveBatchDeleteFeature(DriveSession session) {
+    public DriveBatchDeleteFeature(final DriveSession session) {
         this.session = session;
     }
 

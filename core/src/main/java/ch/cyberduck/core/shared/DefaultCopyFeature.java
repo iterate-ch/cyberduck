@@ -20,6 +20,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -34,38 +37,57 @@ import java.io.OutputStream;
 
 public class DefaultCopyFeature implements Copy {
 
-    private final Read read;
-    private final Write write;
+    private Session<?> from;
+    private Session<?> to;
 
-    public <T> DefaultCopyFeature(final Read read, final Write write) {
-        this.read = read;
-        this.write = write;
-    }
-
-    public DefaultCopyFeature(final Session<?> session) {
-        this.read = session.getFeature(Read.class);
-        this.write = session.getFeature(Write.class);
+    public DefaultCopyFeature(final Session<?> from) {
+        this.from = from;
+        this.to = from;
     }
 
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            in = new ThrottledInputStream(read.read(source, new TransferStatus(), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-            out = new ThrottledOutputStream(write.write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-            final TransferStatus progress = new TransferStatus();
-            new StreamCopier(progress, progress).transfer(in, out);
-
+        if(source.isDirectory()) {
+            if(!to.getFeature(Find.class).find(target)) {
+                to.getFeature(Directory.class).mkdir(target, null, status);
+            }
         }
-        finally {
-            new DefaultStreamCloser().close(in);
-            new DefaultStreamCloser().close(out);
+        else {
+            if(!to.getFeature(Find.class).find(target.getParent())) {
+                this.copy(source.getParent(), target.getParent(), new TransferStatus());
+            }
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+                Write write = to.getFeature(MultipartWrite.class);
+                if(null == write) {
+                    // Fallback if multipart write is not available
+                    write = from.getFeature(Write.class);
+                }
+                out = new ThrottledOutputStream(write.write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+                new StreamCopier(status, status).transfer(in, out);
+            }
+            finally {
+                new DefaultStreamCloser().close(in);
+                new DefaultStreamCloser().close(out);
+            }
         }
     }
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
         return false;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
+    public DefaultCopyFeature withTarget(final Session<?> session) {
+        to = session;
+        return this;
     }
 }

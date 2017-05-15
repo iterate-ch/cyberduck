@@ -270,4 +270,9 @@ public class UploadTransfer extends Transfer {
         }
     }
 
+    @Override
+    public void stop() {
+        cache.clear();
+        super.stop();
+    }
 }

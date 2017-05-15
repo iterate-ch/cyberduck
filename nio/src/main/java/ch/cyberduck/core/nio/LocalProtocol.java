@@ -26,24 +26,35 @@ import java.net.UnknownHostException;
 
 public class LocalProtocol extends AbstractProtocol {
 
+    private static String LOCAL_HOSTNAME;
+
+    static {
+        try {
+            LOCAL_HOSTNAME = InetAddress.getLocalHost().getHostName();
+        }
+        catch(UnknownHostException e) {
+            LOCAL_HOSTNAME = LocaleFactory.localizedString("Disk");
+        }
+    }
+
     @Override
     public String getIdentifier() {
         return this.getScheme().name();
     }
 
     @Override
-    public String getPrefix() {
-        return String.format("%s.%s", LocalProtocol.class.getPackage().getName(), "Local");
+    public String getName() {
+        return LOCAL_HOSTNAME;
     }
 
     @Override
     public String getDescription() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        }
-        catch(UnknownHostException e) {
-            return LocaleFactory.localizedString("Local Filesystem");
-        }
+        return this.getName();
+    }
+
+    @Override
+    public String getPrefix() {
+        return String.format("%s.%s", LocalProtocol.class.getPackage().getName(), "Local");
     }
 
     @Override

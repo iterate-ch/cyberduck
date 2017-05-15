@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 public class S3CopyFeatureTest {
 
     @Test
-    public void testCopyZeroLength() throws Exception {
+    public void testCopyFileZeroLength() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
@@ -59,7 +59,7 @@ public class S3CopyFeatureTest {
     }
 
     @Test
-    public void testCopy() throws Exception {
+    public void testCopyFile() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
