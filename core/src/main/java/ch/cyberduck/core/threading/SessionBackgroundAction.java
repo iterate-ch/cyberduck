@@ -117,15 +117,16 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public T run() throws BackgroundException {
         final Session<?> session = pool.borrow(this).withListener(this);
+        BackgroundException failure = null;
         try {
             return this.run(session);
         }
         catch(BackgroundException e) {
-            pool.release(session.removeListener(this), e);
+            failure = e;
             throw e;
         }
         finally {
-            pool.release(session.removeListener(this), null);
+            pool.release(session.removeListener(this), failure);
         }
     }
 

@@ -65,6 +65,7 @@ public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<
             log.debug(String.format("Run worker %s", worker));
         }
         final Session<?> target = destination.borrow(this);
+        BackgroundException failure = null;
         try {
             result = worker.run(source, target);
         }
@@ -73,11 +74,11 @@ public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<
             throw e;
         }
         catch(BackgroundException e) {
-            destination.release(source, e);
+            failure = e;
             throw e;
         }
         finally {
-            destination.release(source, null);
+            destination.release(source, failure);
         }
         return result;
     }
