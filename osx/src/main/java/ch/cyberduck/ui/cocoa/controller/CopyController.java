@@ -92,7 +92,7 @@ public class CopyController extends ProxyController {
      * @param action   Background task
      */
     private void copy(final Map<Path, Path> selected, final DefaultMainAction action) {
-        if(preferences.getBoolean("browser.move.confirm")) {
+        if(preferences.getBoolean("browser.copy.confirm")) {
             StringBuilder alertText = new StringBuilder(
                     LocaleFactory.localizedString("Do you want to copy the selected files?", "Duplicate"));
             int i = 0;
