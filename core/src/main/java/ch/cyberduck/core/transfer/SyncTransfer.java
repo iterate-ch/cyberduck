@@ -170,6 +170,11 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
+    public void post(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        compareCache.clear();
+    }
+
+    @Override
     public List<TransferItem> list(final Session<?> source, final Session<?> destination, final Path directory, final Local local,
                                    final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
