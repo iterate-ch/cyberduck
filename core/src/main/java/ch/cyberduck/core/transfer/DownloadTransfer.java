@@ -224,6 +224,12 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
+    public void stop() {
+        cache.clear();
+        super.stop();
+    }
+
+    @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk feature = source.getFeature(Bulk.class);
         final Object id = feature.pre(Type.download, files, callback);
