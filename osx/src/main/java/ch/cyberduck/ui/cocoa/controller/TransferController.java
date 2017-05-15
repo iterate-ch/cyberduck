@@ -647,7 +647,7 @@ public final class TransferController extends WindowController implements Transf
                 if(transfer.isReset() && transfer.isComplete()) {
                     if(preferences.getBoolean("queue.window.open.transfer.stop")) {
                         if(!(collection.numberOfRunningTransfers() > 0)) {
-                            window.close();
+                            window.orderOut(null);
                         }
                     }
                 }
