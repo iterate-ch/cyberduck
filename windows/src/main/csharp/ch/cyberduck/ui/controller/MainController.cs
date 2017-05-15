@@ -143,7 +143,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private MainController()
         {
             InitializeAppProperties();
-            // SaveMySettingsOnExit = true;
+            // Explicitly set SaveMySettingsOnExit to false, preventing UnauthorizedAccessException after Close
+            // if no permission for writing to %AppData%
+            SaveMySettingsOnExit = false;
             Startup += ApplicationDidFinishLaunching;
             StartupNextInstance += StartupNextInstanceHandler;
             Shutdown += delegate
