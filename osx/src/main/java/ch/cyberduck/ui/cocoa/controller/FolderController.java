@@ -31,6 +31,7 @@ import ch.cyberduck.ui.browser.UploadTargetFinder;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -70,13 +71,13 @@ public class FolderController extends FileController {
         if(this.hasLocation()) {
             view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
             regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
-            for(Location.Name region : regions) {
+            regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
                 regionPopup.addItemWithTitle(region.toString());
                 regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
                 if(region.getIdentifier().equals(PreferencesFactory.get().getProperty("s3.location"))) {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }
-            }
+            });
             // Override accessory view with location menu added
             regionPopup.setFrameOrigin(new NSPoint(0, 0));
             view.addSubview(regionPopup);
