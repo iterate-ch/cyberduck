@@ -71,7 +71,7 @@ public class SyncTransfer extends Transfer {
     private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private final Map<TransferItem, Comparison> compareCache = Collections.synchronizedMap(new LRUMap<TransferItem, Comparison>(
+    private final Map<TransferItem, Comparison> comparisons = Collections.synchronizedMap(new LRUMap<TransferItem, Comparison>(
             PreferencesFactory.get().getInteger("transfer.cache.size")));
 
     public SyncTransfer(final Host host, final TransferItem item) {
@@ -157,7 +157,7 @@ public class SyncTransfer extends Transfer {
         return new SynchronizationPathFilter(
                 comparison = new CachingComparisonServiceFilter(
                         new ComparisonServiceFilter(source, source.getHost().getTimezone(), listener).withCache(cache)
-                ).withCache(compareCache),
+                ).withCache(comparisons),
                 download.filter(source, destination, TransferAction.overwrite, listener),
                 upload.filter(source, destination, TransferAction.overwrite, listener),
                 action
@@ -249,6 +249,8 @@ public class SyncTransfer extends Transfer {
     public void stop() {
         download.stop();
         upload.stop();
+        cache.clear();
+        comparisons.clear();
         super.stop();
     }
 
