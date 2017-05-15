@@ -29,9 +29,10 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class DefaultCopyFeatureTest {
+public class StatefulDefaultCopyFeatureTest {
 
     @Test
     public void testSupported() throws Exception {
@@ -41,7 +42,8 @@ public class DefaultCopyFeatureTest {
         final FTPSession session = new FTPSession(host);
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertFalse(new DefaultCopyFeature(session).isSupported(source, target));
-        session.close();
+        assertFalse(new StatefulDefaultCopyFeature(session).isSupported(source, target));
+        assertFalse(new StatefulDefaultCopyFeature(session).withTarget(session).isSupported(source, target));
+        assertTrue(new StatefulDefaultCopyFeature(session).withTarget(new FTPSession(host)).isSupported(source, target));
     }
 }

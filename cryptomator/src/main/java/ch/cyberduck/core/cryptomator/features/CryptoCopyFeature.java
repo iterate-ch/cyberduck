@@ -30,23 +30,26 @@ import org.cryptomator.cryptolib.api.FileHeader;
 public class CryptoCopyFeature implements Copy {
 
     private final Session<?> session;
-    private final Copy delegate;
+    private final Copy proxy;
     private final CryptoVault vault;
 
-    public CryptoCopyFeature(final Session<?> session, final Copy delegate, final CryptoVault vault) {
+    private Session<?> target;
+
+    public CryptoCopyFeature(final Session<?> session, final Copy proxy, final CryptoVault vault) {
         this.session = session;
-        this.delegate = delegate;
+        this.target = session;
+        this.proxy = proxy;
         this.vault = vault;
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
-        if(vault.contains(source) && vault.contains(target)) {
+    public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
+        if(vault.contains(source) && vault.contains(copy)) {
             // Copy inside vault may use server side copy
-            delegate.copy(vault.encrypt(session, source), vault.encrypt(session, target), status);
+            proxy.withTarget(target).copy(vault.encrypt(session, source), vault.encrypt(session, copy), status);
         }
         else {
-            if(vault.contains(target)) {
+            if(vault.contains(copy)) {
                 // Write header to be reused in writer
                 final Cryptor cryptor = vault.getCryptor();
                 final FileHeader header = cryptor.fileHeaderCryptor().create();
@@ -54,34 +57,40 @@ public class CryptoCopyFeature implements Copy {
                 status.setNonces(new RandomNonceGenerator());
             }
             // Copy files from or into vault requires to pass through encryption features
-            new DefaultCopyFeature(session).copy(
+            new DefaultCopyFeature(session).withTarget(target).copy(
                     vault.contains(source) ? vault.encrypt(session, source) : source,
-                    vault.contains(target) ? vault.encrypt(session, target) : target,
+                    vault.contains(copy) ? vault.encrypt(session, copy) : copy,
                     status
             );
         }
     }
 
     @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        if(vault.contains(source) && vault.contains(target)) {
-            return delegate.isRecursive(source, target);
+    public boolean isRecursive(final Path source, final Path copy) {
+        if(vault.contains(source) && vault.contains(copy)) {
+            return proxy.withTarget(target).isRecursive(source, copy);
         }
-        return new DefaultCopyFeature(session).isRecursive(source, target);
+        return new DefaultCopyFeature(session).withTarget(target).isRecursive(source, copy);
     }
 
     @Override
-    public boolean isSupported(final Path source, final Path target) {
-        if(vault.contains(source) && vault.contains(target)) {
-            return delegate.isSupported(source, target);
+    public boolean isSupported(final Path source, final Path copy) {
+        if(vault.contains(source) && vault.contains(copy)) {
+            return proxy.withTarget(target).isSupported(source, copy);
         }
-        return new DefaultCopyFeature(session).isSupported(source, target);
+        return new DefaultCopyFeature(session).withTarget(target).isSupported(source, copy);
+    }
+
+    @Override
+    public Copy withTarget(final Session<?> session) {
+        this.target = session;
+        return this;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoCopyFeature{");
-        sb.append("delegate=").append(delegate);
+        sb.append("delegate=").append(proxy);
         sb.append('}');
         return sb.toString();
     }

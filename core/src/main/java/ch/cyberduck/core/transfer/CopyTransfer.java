@@ -21,18 +21,10 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.DelegateStreamListener;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.ThrottledInputStream;
-import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.copy.ChecksumFilter;
@@ -40,8 +32,6 @@ import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 
 import org.apache.log4j.Logger;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -240,60 +230,8 @@ public class CopyTransfer extends Transfer {
         final Path copy = mapping.get(source);
         progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
-        if(session.getHost().equals(destination.getHost())) {
-            final Copy feature = session.getFeature(Copy.class);
-            if(feature.isSupported(source, copy)) {
-                feature.copy(source, copy, status);
-                addTransferred(status.getLength());
-            }
-            else {
-                this.copy(session, source, destination, copy, bandwidth, streamListener, status);
-            }
-        }
-        else {
-            this.copy(session, source, destination, copy, bandwidth, streamListener, status);
-        }
-    }
-
-    /**
-     * Default implementation using a temporary file on localhost as an intermediary
-     * with a download and upload transfer.
-     *
-     * @param copy     Destination
-     * @param throttle The bandwidth limit
-     * @param status   Transfer status
-     */
-    private void copy(final Session<?> source, final Path file, final Session<?> target, final Path copy,
-                      final BandwidthThrottle throttle, final StreamListener streamListener,
-                      final TransferStatus status) throws BackgroundException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            if(file.isFile()) {
-                in = new ThrottledInputStream(source.getFeature(Read.class).read(file, status, new DisabledConnectionCallback()), throttle);
-                Write write = target.getFeature(MultipartWrite.class);
-                if(null == write) {
-                    // Fallback if multipart write is not available
-                    write = target.getFeature(Write.class);
-                }
-                out = new ThrottledOutputStream(write.write(copy, status, new DisabledConnectionCallback()), throttle);
-                new StreamCopier(status, status)
-                        .withLimit(status.getLength())
-                        .withListener(new DelegateStreamListener(streamListener) {
-                            @Override
-                            public void sent(final long bytes) {
-                                addTransferred(bytes);
-                                super.sent(bytes);
-                            }
-                        }).transfer(in, out);
-            }
-            else if(file.isDirectory()) {
-                target.getFeature(Directory.class).mkdir(copy, null, status);
-            }
-        }
-        finally {
-            new DefaultStreamCloser().close(in);
-            new DefaultStreamCloser().close(out);
-        }
+        final Copy feature = session.getFeature(Copy.class).withTarget(destination);
+        feature.copy(source, copy, status);
+        this.addTransferred(status.getLength());
     }
 }
