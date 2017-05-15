@@ -22,8 +22,14 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Buffer;
+import ch.cyberduck.core.io.BufferInputStream;
 import ch.cyberduck.core.io.FileBufferSegmentingOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
 
 public class OneDriveBufferWriteFeature extends OneDriveWriteFeature implements MultipartWrite<Void> {
 
@@ -37,11 +43,25 @@ public class OneDriveBufferWriteFeature extends OneDriveWriteFeature implements 
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final HttpResponseOutputStream<Void> proxy = super.write(file, status, callback);
-        return new HttpResponseOutputStream<Void>(new FileBufferSegmentingOutputStream(proxy, status.getLength())) {
+        return new HttpResponseOutputStream<Void>(new FileBufferSegmentingOutputStream(status.getLength()) {
+            @Override
+            protected void copy(final Buffer buffer) throws IOException {
+                try {
+                    final HttpResponseOutputStream<Void> proxy = OneDriveBufferWriteFeature.super.write(file,
+                            new TransferStatus(status).length(buffer.length()), callback);
+                    IOUtils.copy(new BufferInputStream(buffer), proxy);
+                    // Re-use buffer
+                    buffer.truncate(0L);
+                    proxy.close();
+                }
+                catch(BackgroundException e) {
+                    throw new IOException(e);
+                }
+            }
+        }) {
             @Override
             public Void getStatus() throws BackgroundException {
-                return proxy.getStatus();
+                return null;
             }
         };
     }

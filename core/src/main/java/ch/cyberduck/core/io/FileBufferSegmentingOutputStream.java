@@ -15,38 +15,34 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
-public class FileBufferSegmentingOutputStream extends SegmentingOutputStream {
+public abstract class FileBufferSegmentingOutputStream extends SegmentingOutputStream {
     private static final Logger log = Logger.getLogger(FileBufferSegmentingOutputStream.class);
 
-    private final OutputStream proxy;
     private final Buffer buffer;
 
-    public FileBufferSegmentingOutputStream(final OutputStream proxy, final Long threshold) {
-        this(proxy, threshold, new FileBuffer());
+    public FileBufferSegmentingOutputStream(final Long threshold) {
+        this(threshold, new FileBuffer());
     }
 
-    public FileBufferSegmentingOutputStream(final OutputStream proxy, final Long threshold, final Buffer buffer) {
-        super(proxy, threshold, new BufferOutputStream(buffer));
-        this.proxy = proxy;
+    public FileBufferSegmentingOutputStream(final Long threshold, final Buffer buffer) {
+        super(new NullOutputStream(), threshold, new BufferOutputStream(buffer));
         this.buffer = buffer;
     }
 
     @Override
     public void close() throws IOException {
         super.close();
-        proxy.close();
         buffer.close();
     }
 
     protected void copy() throws IOException {
-        IOUtils.copy(new BufferInputStream(buffer), proxy);
-        // Re-use buffer
-        buffer.truncate(0L);
+        this.copy(buffer);
     }
+
+    protected abstract void copy(final Buffer buffer) throws IOException;
 }
