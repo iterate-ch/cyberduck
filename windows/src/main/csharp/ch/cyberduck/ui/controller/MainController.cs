@@ -811,7 +811,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in Browsers)
                 {
-                    if (!c.IsMounted())
+                    if (c.getRegistry().isEmpty() && !c.IsMounted())
                     {
                         c.Invoke(delegate { c.View.BringToFront(); });
 
