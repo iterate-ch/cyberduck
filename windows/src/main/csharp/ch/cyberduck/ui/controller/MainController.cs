@@ -143,7 +143,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private MainController()
         {
             InitializeAppProperties();
-            SaveMySettingsOnExit = true;
+            // Explicitly set SaveMySettingsOnExit to false, preventing UnauthorizedAccessException after Close
+            // if no permission for writing to %AppData%
+            SaveMySettingsOnExit = false;
             Startup += ApplicationDidFinishLaunching;
             StartupNextInstance += StartupNextInstanceHandler;
             Shutdown += delegate
@@ -159,7 +161,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     Logger.warn("No Bonjour support available", se);
                 }
                 PreferencesFactory.get().setProperty("uses", PreferencesFactory.get().getInteger("uses") + 1);
-                PreferencesFactory.get().save();
+                try
+                {
+                    PreferencesFactory.get().save();
+                }
+                catch (UnauthorizedAccessException unauthorizedAccessException)
+                {
+                    Logger.fatal("Could not save preferences", unauthorizedAccessException);
+                }
                 if (_updater != null)
                 {
                     _updater.unregister();
