@@ -43,9 +43,6 @@ public class VersionId {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("VersionId{");
-        sb.append("id='").append(id).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return id;
     }
 }
