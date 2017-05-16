@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
@@ -51,9 +52,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
-
-import synapticloop.b2.response.B2UploadPartResponse;
 
 import static org.junit.Assert.*;
 
@@ -74,7 +72,7 @@ public class B2LargeUploadWriteFeatureTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final CryptoWriteFeature feature = new CryptoWriteFeature<List<B2UploadPartResponse>>(session, new B2LargeUploadWriteFeature(session), cryptomator);
+        final CryptoWriteFeature feature = new CryptoWriteFeature<VersionId>(session, new B2LargeUploadWriteFeature(session), cryptomator);
         final TransferStatus writeStatus = new TransferStatus();
         final Cryptor cryptor = cryptomator.getCryptor();
         final FileHeader header = cryptor.fileHeaderCryptor().create();
