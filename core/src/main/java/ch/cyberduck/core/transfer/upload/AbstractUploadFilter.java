@@ -160,14 +160,17 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setLength(local.attributes().getSize());
             }
             if(options.temporary) {
+                final Move feature = session.getFeature(Move.class);
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
                                 file.getName(), new AlphanumericRandomStringService().random()), file.getType());
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set temporary filename %s", renamed));
+                if(feature.isSupported(file, renamed)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Set temporary filename %s", renamed));
+                    }
+                    status.temporary(renamed);
+                    status.withDisplayname(file);
                 }
-                status.temporary(renamed);
-                status.withDisplayname(file);
             }
             status.setMime(mapping.getMime(file.getName()));
         }
