@@ -284,6 +284,10 @@ public class CryptoVault implements Vault {
                 log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
                 return file;
             }
+            if(file.equals(home)){
+                log.warn(String.format("Skip vault home %s because the root has no metadata file", file));
+                return file;
+            }
             final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
             final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
