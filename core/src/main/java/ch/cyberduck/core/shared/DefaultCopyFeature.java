@@ -54,7 +54,7 @@ public class DefaultCopyFeature implements Copy {
         }
         else {
             if(!to.getFeature(Find.class).find(target.getParent())) {
-                this.copy(source.getParent(), target.getParent(), new TransferStatus());
+                this.copy(source.getParent(), target.getParent(), new TransferStatus().length(-1L));
             }
             InputStream in = null;
             OutputStream out = null;
