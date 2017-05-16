@@ -617,7 +617,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     if(!file.exists()) {
                         try {
                             LocalTouchFactory.get().touch(file);
-                            IconServiceFactory.get().set(file, new TransferStatus());
+                            IconServiceFactory.get().set(file, new TransferStatus().length(0L));
                         }
                         catch(AccessDeniedException e) {
                             log.warn(String.format("Failure creating file %s %s", file, e.getMessage()));
