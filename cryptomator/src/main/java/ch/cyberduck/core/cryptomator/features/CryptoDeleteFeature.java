@@ -44,15 +44,17 @@ public class CryptoDeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> encrypted = new ArrayList<>();
         for(Path f : files) {
-            final Path encrypt = vault.encrypt(session, f);
-            encrypted.add(encrypt);
-            if(f.isDirectory()) {
-                // Delete metadata file for directory
-                encrypted.add(vault.encrypt(session, f, true));
-            }
-            if(filenameProvider.isDeflated(encrypt.getName())) {
-                final Path metadataFile = filenameProvider.resolve(encrypt.getName());
-                encrypted.add(metadataFile);
+            if(!f.equals(vault.getHome())) {
+                final Path encrypt = vault.encrypt(session, f);
+                encrypted.add(encrypt);
+                if(f.isDirectory()) {
+                    // Delete metadata file for directory
+                    encrypted.add(vault.encrypt(session, f, true));
+                }
+                if(filenameProvider.isDeflated(encrypt.getName())) {
+                    final Path metadataFile = filenameProvider.resolve(encrypt.getName());
+                    encrypted.add(metadataFile);
+                }
             }
         }
         proxy.delete(encrypted, prompt, callback);
