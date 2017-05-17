@@ -16,8 +16,8 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
-import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentWriter;
@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -73,8 +72,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
         proxy.mkdir(encrypt, region, status);
-        final Path copy = new Path(folder.getParent(), folder.getName(), folder.getType(),
-                new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get())));
+        final Path copy = new Path(folder.getParent(), folder.getName(), folder.getType(), new PathAttributes(folder.attributes()));
         copy.getType().add(Path.Type.decrypted);
         copy.attributes().setEncrypted(encrypt);
         copy.attributes().setVault(vault.getHome());

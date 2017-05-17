@@ -109,7 +109,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * HTTP headers
      */
-    private Map<String, String> metadata;
+    private Map<String, String> metadata = Collections.emptyMap();
 
     /**
      * Cryptomator vault
@@ -129,7 +129,32 @@ public class PathAttributes extends Attributes implements Serializable {
     private String directoryId;
 
     public PathAttributes() {
-        metadata = Collections.emptyMap();
+    }
+
+    public PathAttributes(final PathAttributes copy) {
+        size = copy.size;
+        modified = copy.modified;
+        accessed = copy.accessed;
+        created = copy.created;
+        owner = copy.owner;
+        group = copy.group;
+        permission = copy.permission;
+        acl = copy.acl;
+        checksum = copy.checksum;
+        etag = copy.etag;
+        storageClass = copy.storageClass;
+        encryption = copy.encryption;
+        versionId = copy.versionId;
+        duplicate = copy.duplicate;
+        revision = copy.revision;
+        region = copy.region;
+        displayname = copy.displayname;
+        link = copy.link;
+        metadata = copy.metadata;
+        vault = copy.vault;
+        decrypted = copy.decrypted;
+        encrypted = copy.encrypted;
+        directoryId = copy.directoryId;
     }
 
     @Override

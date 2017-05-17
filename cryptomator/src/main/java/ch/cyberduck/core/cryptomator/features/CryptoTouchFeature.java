@@ -16,14 +16,13 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -50,8 +49,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         status.setNonces(new RandomNonceGenerator());
         final Path encrypt = vault.encrypt(session, file);
         proxy.touch(encrypt, status);
-        final Path copy = new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get())));
+        final Path copy = new Path(file.getParent(), file.getName(), file.getType(), new PathAttributes(file.attributes()));
         copy.getType().add(Path.Type.decrypted);
         copy.attributes().setEncrypted(encrypt);
         copy.attributes().setVault(vault.getHome());

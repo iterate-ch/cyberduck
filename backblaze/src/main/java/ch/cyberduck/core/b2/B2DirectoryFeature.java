@@ -20,8 +20,8 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -29,7 +29,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -81,8 +80,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                        new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get()))
-                                .withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
+                        new PathAttributes(folder.attributes()).withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
             }
         }
         catch(B2ApiException e) {
