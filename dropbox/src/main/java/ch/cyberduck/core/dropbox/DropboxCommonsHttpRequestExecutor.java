@@ -166,7 +166,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
                     // Ignore multiple headers with the same name
                     responseHeaders.put(header.getName(), Collections.singletonList(header.getValue()));
                 }
-                return new Response(response.getStatusLine().getStatusCode(), response.getEntity().getContent(), responseHeaders);
+                return new Response(response.getStatusLine().getStatusCode(), new HttpMethodReleaseInputStream(response), responseHeaders);
             }
         };
     }
