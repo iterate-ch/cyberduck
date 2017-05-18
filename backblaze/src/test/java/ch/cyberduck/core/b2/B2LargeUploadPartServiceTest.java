@@ -71,12 +71,18 @@ public class B2LargeUploadPartServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
+        final B2StartLargeFileResponse start1Response = session.getClient().startLargeFileUpload(
+                new B2FileidProvider(session).getFileid(bucket),
+                file.getName(), null, Collections.emptyMap());
+        final B2StartLargeFileResponse start2Response = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket),
                 file.getName(), null, Collections.emptyMap());
         final List<B2FileInfoResponse> list = new B2LargeUploadPartService(session).find(bucket);
         assertFalse(list.isEmpty());
-        session.getClient().cancelLargeFileUpload(startResponse.getFileId());
+        assertEquals(start2Response.getFileId(), list.get(0).getFileId());
+        assertEquals(start1Response.getFileId(), list.get(1).getFileId());
+        session.getClient().cancelLargeFileUpload(start1Response.getFileId());
+        session.getClient().cancelLargeFileUpload(start2Response.getFileId());
         session.close();
     }
 
