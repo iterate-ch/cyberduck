@@ -43,6 +43,14 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         concurrentExecutor = ThreadPoolFactory.get(handler);
     }
 
+    protected DefaultBackgroundExecutor(final String prefix) {
+        concurrentExecutor = ThreadPoolFactory.get(prefix, new LoggingUncaughtExceptionHandler());
+    }
+
+    protected DefaultBackgroundExecutor(final String prefix, final Thread.UncaughtExceptionHandler handler) {
+        concurrentExecutor = ThreadPoolFactory.get(prefix, handler);
+    }
+
     @Override
     public <T> Future<T> execute(final Controller controller, final BackgroundActionRegistry registry, final BackgroundAction<T> action) {
         if(log.isDebugEnabled()) {
