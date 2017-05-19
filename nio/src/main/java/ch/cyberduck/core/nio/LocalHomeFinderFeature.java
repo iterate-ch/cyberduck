@@ -15,6 +15,7 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -32,7 +33,7 @@ public class LocalHomeFinderFeature extends DefaultHomeFinderService {
     public Path find() throws BackgroundException {
         final Path home = super.find();
         if(home == DEFAULT_HOME) {
-            return new Path(PreferencesFactory.get().getProperty("local.user.home"), EnumSet.of(Path.Type.directory));
+            return new Path(LocalFactory.get(PreferencesFactory.get().getProperty("local.user.home")).getAbsolute(), EnumSet.of(Path.Type.directory));
         }
         return home;
     }
