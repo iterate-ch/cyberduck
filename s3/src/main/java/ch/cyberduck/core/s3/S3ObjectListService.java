@@ -144,8 +144,8 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final EnumSet<AbstractPath.Type> types = object.isDirectoryPlaceholder()
-                        ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+                final EnumSet<AbstractPath.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
+                        ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                 final Path file = new Path(parent, PathNormalizer.name(key), types,
                         attributes.convert(object));
                 // Copy bucket location
