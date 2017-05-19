@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -33,6 +34,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
+
+import java.util.EnumSet;
 
 public class S3DirectoryFeature implements Directory<StorageObject> {
 
@@ -55,6 +58,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
             service.create(folder, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
+            return folder;
         }
         else {
             if(null == status.getEncryption()) {
@@ -74,10 +78,11 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             }
             // Add placeholder object
             status.setMime(MIMETYPE);
-            folder.getType().add(Path.Type.placeholder);
-            new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
+            final Path placeholder = new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.placeholder),
+                    new PathAttributes(folder.attributes()));
+            new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
+            return placeholder;
         }
-        return folder;
     }
 
     @Override
