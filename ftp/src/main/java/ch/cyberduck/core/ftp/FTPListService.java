@@ -43,10 +43,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class FTPListService implements ListService {
@@ -199,11 +200,9 @@ public class FTPListService implements ListService {
                                         final ListProgressListener listener) throws BackgroundException {
         try {
             final List<Path> verified = new ArrayList<Path>();
-            for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
-                final Path file = iter.next();
+            final Set<Path> removal = new HashSet<>();
+            for(final Path file : list) {
                 if(file.isSymbolicLink()) {
-                    // Make sure we remove and add because hash code will change
-                    iter.remove();
                     final Path target = file.getSymlinkTarget();
                     if(session.getClient().changeWorkingDirectory(file.getAbsolute())) {
                         file.setType(EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
@@ -221,9 +220,13 @@ public class FTPListService implements ListService {
                             target.setType(EnumSet.of(Path.Type.file));
                         }
                     }
-                    verified.add(file);
+                    if(verified.add(file)) {
+                        // Make sure we remove and add because hash code will change
+                        removal.add(file);
+                    }
                 }
             }
+            list.removeAll(removal);
             list.addAll(verified);
             listener.chunk(directory, list);
             return list;

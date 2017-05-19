@@ -20,13 +20,14 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
@@ -194,15 +195,17 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
                 // Clear the previously set of hidden files
                 hidden.clear();
             }
-            for(Iterator<E> iter = impl.iterator(); iter.hasNext(); ) {
-                final E child = iter.next();
+            final Set<E> removal = new HashSet<>();
+            for(final E child : impl) {
                 if(!filter.accept(child)) {
                     // Child not accepted by filter; add to cached hidden files
-                    attributes.addHidden(child);
-                    // Remove hidden file from current file listing
-                    iter.remove();
+                    if(attributes.addHidden(child)) {
+                        // Remove hidden file from current file listing
+                        removal.add(child);
+                    }
                 }
             }
+            impl.removeAll(removal);
             // Saving last filter
             attributes.setFilter(filter);
             // Sort again because the list has changed
@@ -251,6 +254,10 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
 
     public boolean remove(final E e) {
         return impl.remove(e);
+    }
+
+    public boolean removeAll(final java.util.Collection<E> e) {
+        return impl.removeAll(e);
     }
 
     @Override
