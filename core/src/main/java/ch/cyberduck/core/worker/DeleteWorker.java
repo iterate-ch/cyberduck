@@ -62,18 +62,19 @@ public class DeleteWorker extends Worker<List<Path>> {
 
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
-        final Delete feature = session.getFeature(Delete.class);
+        final Delete delete = session.getFeature(Delete.class);
+        final ListService list = session.getFeature(ListService.class);
         final List<Path> recursive = new ArrayList<Path>();
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            if(!feature.isSupported(file)) {
+            if(!delete.isSupported(file)) {
                 continue;
             }
-            recursive.addAll(this.compile(session.getFeature(Delete.class), session.getFeature(ListService.class), file));
+            recursive.addAll(this.compile(delete, list, file));
         }
-        feature.delete(recursive, prompt, new Delete.Callback() {
+        delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
