@@ -249,7 +249,7 @@
         <key>CFBundleVersion</key>
         <string>${REVISION}</string>
         <key>CFBundleShortVersionString</key>
-    	<string>${VERSION}</string>
+    	<string>${VERSION}.${REVISION}</string>
         <key>LSApplicationCategoryType</key>
         <string>public.app-category.productivity</string>
         <key>Runtime</key>
