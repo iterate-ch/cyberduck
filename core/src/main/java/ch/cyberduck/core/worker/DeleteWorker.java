@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -69,10 +70,7 @@ public class DeleteWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            if(!delete.isSupported(file)) {
-                continue;
-            }
-            recursive.addAll(this.compile(delete, list, file));
+            recursive.addAll(this.compile(delete, list, new ActionListProgressListener(this, listener), file));
         }
         delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
@@ -84,23 +82,27 @@ public class DeleteWorker extends Worker<List<Path>> {
         return recursive;
     }
 
-    protected List<Path> compile(final Delete delete, final ListService list, final Path file) throws BackgroundException {
+    protected List<Path> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
         final List<Path> recursive = new ArrayList<Path>();
         if(file.isFile() || file.isSymbolicLink()) {
-            recursive.add(file);
+            if(delete.isSupported(file)) {
+                recursive.add(file);
+            }
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {
-                for(Path child : list.list(file, new ActionListProgressListener(this, listener)).filter(filter)) {
+                for(Path child : list.list(file, listener).filter(filter)) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
-                    recursive.addAll(this.compile(delete, list, child));
+                    recursive.addAll(this.compile(delete, list, listener, child));
                 }
             }
-            // Add parent after children
-            recursive.add(file);
+            if(delete.isSupported(file)) {
+                // Add parent after children
+                recursive.add(file);
+            }
         }
         return recursive;
     }
