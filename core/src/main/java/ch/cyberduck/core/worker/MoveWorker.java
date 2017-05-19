@@ -25,7 +25,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
@@ -60,7 +59,7 @@ public class MoveWorker extends Worker<List<Path>> {
             final Path source = entry.getKey();
             final Path target = entry.getValue();
             if(!move.isSupported(source, target)) {
-                throw new UnsupportedException();
+                continue;
             }
             final boolean exists;
             if(cache.isCached(target.getParent())) {
