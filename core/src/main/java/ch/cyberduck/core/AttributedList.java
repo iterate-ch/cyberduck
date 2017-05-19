@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
 /**
@@ -53,7 +54,7 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     };
 
     private final List<E> impl
-            = new ArrayList<E>();
+            = new CopyOnWriteArrayList<>();
 
     /**
      * Metadata of file listing
