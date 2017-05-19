@@ -70,7 +70,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                 }
             }
             if(Checksum.NONE == status.getChecksum()) {
-                status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+                status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
             }
             // Add placeholder object
             status.setMime(MIMETYPE);

@@ -51,7 +51,7 @@ public class AzureTouchFeature implements Touch<Void> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         if(Checksum.NONE == status.getChecksum()) {
-            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
         }
         new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
         return file;

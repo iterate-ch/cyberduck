@@ -65,7 +65,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
             }
             else {
                 if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+                    status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
                 }
                 // Add placeholder object
                 folder.getType().add(Path.Type.placeholder);
