@@ -53,7 +53,7 @@ public class LocalDeleteFeatureTest {
                 EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         new LocalDeleteFeature(session).delete(new ArrayList<>(Arrays.asList(file, folder)), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(Files.exists(session.getClient().getPath(file.getAbsolute())));
-        assertFalse(Files.exists(session.getClient().getPath(folder.getAbsolute())));
+        assertFalse(Files.exists(session.toPath(file)));
+        assertFalse(Files.exists(session.toPath(folder.getAbsolute())));
     }
 }

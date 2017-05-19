@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.InvalidPathException;
 
 public class LocalSession extends Session<FileSystem> {
     private static final Logger log = Logger.getLogger(LocalSession.class);
@@ -58,6 +59,19 @@ public class LocalSession extends Session<FileSystem> {
 
     public LocalSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h);
+    }
+
+    public java.nio.file.Path toPath(final Path file) throws LocalAccessDeniedException {
+        return this.toPath(file.getAbsolute());
+    }
+
+    public java.nio.file.Path toPath(final String path) throws LocalAccessDeniedException {
+        try {
+            return client.getPath(path);
+        }
+        catch(InvalidPathException e) {
+            throw new LocalAccessDeniedException(e.getReason(), e);
+        }
     }
 
     @Override

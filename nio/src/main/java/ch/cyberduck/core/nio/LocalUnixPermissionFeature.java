@@ -40,7 +40,7 @@ public class LocalUnixPermissionFeature extends DefaultUnixPermissionFeature {
     public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
         try {
             final UserPrincipal principal = session.getClient().getUserPrincipalLookupService().lookupPrincipalByName(owner);
-            Files.setOwner(session.getClient().getPath(file.getAbsolute()), principal);
+            Files.setOwner(session.toPath(file), principal);
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to write attributes of {0}", e, file);
@@ -51,7 +51,7 @@ public class LocalUnixPermissionFeature extends DefaultUnixPermissionFeature {
     public void setUnixGroup(final Path file, final String group) throws BackgroundException {
         try {
             final GroupPrincipal principal = session.getClient().getUserPrincipalLookupService().lookupPrincipalByGroupName(group);
-            Files.getFileAttributeView(session.getClient().getPath(file.getAbsolute()),
+            Files.getFileAttributeView(session.toPath(file),
                     PosixFileAttributeView.class, LinkOption.NOFOLLOW_LINKS).setGroup(principal);
         }
         catch(IOException e) {
@@ -67,7 +67,7 @@ public class LocalUnixPermissionFeature extends DefaultUnixPermissionFeature {
     @Override
     public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
         try {
-            Files.setPosixFilePermissions(session.getClient().getPath(file.getAbsolute()), PosixFilePermissions.fromString(permission.getSymbol()));
+            Files.setPosixFilePermissions(session.toPath(file), PosixFilePermissions.fromString(permission.getSymbol()));
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to write attributes of {0}", e, file);

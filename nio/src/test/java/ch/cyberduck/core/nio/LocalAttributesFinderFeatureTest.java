@@ -50,7 +50,7 @@ public class LocalAttributesFinderFeatureTest {
         final Path file = new Path(new Path(new TemporarySupportDirectoryFinder().find().getAbsolute(),
                 EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(file, new TransferStatus());
-        final java.nio.file.Path local = session.getClient().getPath(file.getAbsolute());
+        final java.nio.file.Path local = session.toPath(file);
         final PosixFileAttributes posixAttributes = Files.readAttributes(local, PosixFileAttributes.class);
         final LocalAttributesFinderFeature finder = new LocalAttributesFinderFeature(session);
         assertEquals(PosixFilePermissions.toString(posixAttributes.permissions()), finder.find(file).getPermission().getSymbol());

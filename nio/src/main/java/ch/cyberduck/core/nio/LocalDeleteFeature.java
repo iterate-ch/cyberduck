@@ -38,7 +38,7 @@ public class LocalDeleteFeature implements Delete {
             if(file.isFile() || file.isSymbolicLink()) {
                 callback.delete(file);
                 try {
-                    Files.delete(session.getClient().getPath(file.getAbsolute()));
+                    Files.delete(session.toPath(file));
                 }
                 catch(IOException e) {
                     throw new LocalExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -49,7 +49,7 @@ public class LocalDeleteFeature implements Delete {
             if(file.isDirectory() && !file.isSymbolicLink()) {
                 callback.delete(file);
                 try {
-                    Files.delete(session.getClient().getPath(file.getAbsolute()));
+                    Files.delete(session.toPath(file));
                 }
                 catch(IOException e) {
                     throw new LocalExceptionMappingService().map("Cannot delete {0}", e, file);
