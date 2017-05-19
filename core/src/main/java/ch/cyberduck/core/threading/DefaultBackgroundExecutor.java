@@ -35,19 +35,19 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
 
     private final ThreadPool concurrentExecutor;
 
-    protected DefaultBackgroundExecutor() {
+    public DefaultBackgroundExecutor() {
         this(new LoggingUncaughtExceptionHandler());
     }
 
-    protected DefaultBackgroundExecutor(final Thread.UncaughtExceptionHandler handler) {
+    public DefaultBackgroundExecutor(final Thread.UncaughtExceptionHandler handler) {
         concurrentExecutor = ThreadPoolFactory.get(handler);
     }
 
-    protected DefaultBackgroundExecutor(final String prefix) {
+    public DefaultBackgroundExecutor(final String prefix) {
         concurrentExecutor = ThreadPoolFactory.get(prefix, new LoggingUncaughtExceptionHandler());
     }
 
-    protected DefaultBackgroundExecutor(final String prefix, final Thread.UncaughtExceptionHandler handler) {
+    public DefaultBackgroundExecutor(final String prefix, final Thread.UncaughtExceptionHandler handler) {
         concurrentExecutor = ThreadPoolFactory.get(prefix, handler);
     }
 
