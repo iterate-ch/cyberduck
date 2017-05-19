@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -78,7 +79,9 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             }
             // Add placeholder object
             status.setMime(MIMETYPE);
-            final Path placeholder = new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.placeholder),
+            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
+            type.add(Path.Type.placeholder);
+            final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
                     new PathAttributes(folder.attributes()));
             new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
             return placeholder;

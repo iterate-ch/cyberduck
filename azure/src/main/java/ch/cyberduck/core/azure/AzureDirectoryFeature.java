@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -69,7 +70,9 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 if(Checksum.NONE == status.getChecksum()) {
                     status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
                 }
-                final Path placeholder = new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.placeholder),
+                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
+                type.add(Path.Type.placeholder);
+                final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
                         new PathAttributes(folder.attributes()));
                 new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
                 return placeholder;
