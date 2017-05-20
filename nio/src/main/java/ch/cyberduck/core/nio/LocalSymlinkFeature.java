@@ -33,8 +33,7 @@ public class LocalSymlinkFeature implements Symlink {
     @Override
     public void symlink(final Path file, final String target) throws BackgroundException {
         try {
-            Files.createSymbolicLink(
-                    session.getClient().getPath(file.getAbsolute()), session.getClient().getPath(target));
+            Files.createSymbolicLink(session.toPath(file), session.toPath(target));
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Cannot create file {0}", e, file);

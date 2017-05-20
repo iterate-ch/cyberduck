@@ -38,7 +38,7 @@ public class LocalReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileChannel channel = FileChannel.open(session.getClient().getPath(file.getAbsolute()), StandardOpenOption.READ);
+            final FileChannel channel = FileChannel.open(session.toPath(file), StandardOpenOption.READ);
             channel.position(status.getOffset());
             return Channels.newInputStream(channel);
         }
