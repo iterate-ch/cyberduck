@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -64,7 +65,7 @@ public class HostPlistReaderTest {
         assertNotNull(read);
         assertEquals(new TestProtocol(), read.getProtocol());
         assertNotNull(read.getCredentials().getIdentity());
-        assertEquals("~/.ssh/key.pem", read.getCredentials().getIdentity().getAbbreviatedPath());
+        assertEquals(String.format("~%s.ssh%skey.pem", PreferencesFactory.get().getProperty("local.delimiter"), PreferencesFactory.get().getProperty("local.delimiter")), read.getCredentials().getIdentity().getAbbreviatedPath());
     }
 
     @Test
@@ -76,7 +77,7 @@ public class HostPlistReaderTest {
         assertNotNull(read);
         assertEquals(new TestProtocol(), read.getProtocol());
         assertNotNull(read.getCredentials().getIdentity());
-        assertEquals("~/.ssh/key.pem", read.getCredentials().getIdentity().getAbbreviatedPath());
+        assertEquals(String.format("~%s.ssh%skey.pem", PreferencesFactory.get().getProperty("local.delimiter"), PreferencesFactory.get().getProperty("local.delimiter")), read.getCredentials().getIdentity().getAbbreviatedPath());
     }
 
     @Test(expected = LocalAccessDeniedException.class)
