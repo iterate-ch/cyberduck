@@ -25,7 +25,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -43,7 +42,7 @@ public class LocalSymlinkFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path workdir = new Path(new TemporarySupportDirectoryFinder().find().getAbsolute(), EnumSet.of(Path.Type.directory));
+        final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(target, new TransferStatus());
         final Path link = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));

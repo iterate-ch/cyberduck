@@ -23,7 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -44,8 +43,7 @@ public class LocalAttributesFinderFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path file = new Path(new Path(new TemporarySupportDirectoryFinder().find().getAbsolute(),
-                EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new LocalHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(file, new TransferStatus());
         final java.nio.file.Path local = session.toPath(file);
         final PosixFileAttributes posixAttributes = Files.readAttributes(local, PosixFileAttributes.class);

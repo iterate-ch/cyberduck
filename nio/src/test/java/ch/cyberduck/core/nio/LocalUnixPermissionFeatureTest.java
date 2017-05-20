@@ -25,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -45,7 +44,7 @@ public class LocalUnixPermissionFeatureTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path workdir = new Path(new TemporarySupportDirectoryFinder().find().getAbsolute(), EnumSet.of(Path.Type.directory));
+        final Path workdir = new LocalHomeFinderFeature(session).find();
         {
             final Path file = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
             new LocalTouchFeature(session).touch(file, new TransferStatus());

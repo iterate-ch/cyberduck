@@ -29,7 +29,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -49,9 +48,7 @@ public class LocalListServiceTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final String absolute = new TemporarySupportDirectoryFinder().find().getAbsolute();
-        final Path home = new Path(new Path(session.toPath(absolute).toRealPath().toString(),
-                EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path home = new LocalHomeFinderFeature(session).find();
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
@@ -92,9 +89,7 @@ public class LocalListServiceTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final String absolute = new TemporarySupportDirectoryFinder().find().getAbsolute();
-        final Path home = new Path(new Path(session.toPath(absolute).toRealPath().toString(),
-                EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path home = new LocalHomeFinderFeature(session).find();
         new LocalDirectoryFeature(session).mkdir(home, null, new TransferStatus());
         final Path f = new Path(home, "test", EnumSet.of(Path.Type.directory));
         final LocalListService service = new LocalListService(session);
