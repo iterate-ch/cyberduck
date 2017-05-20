@@ -20,6 +20,7 @@ import ch.cyberduck.core.Host;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class LocalSessionTest {
@@ -30,6 +31,8 @@ public class LocalSessionTest {
         session.open(new DisabledHostKeyCallback());
         assertNotNull(session.toPath("/Users/username"));
         assertNotNull(session.toPath("/C:\\Users\\Administrator"));
+        assertEquals("C:\\Users\\Administrator", "/C:\\Users\\Administrator".replaceFirst("^/(.:[/\\\\])", "$1"));
+        assertEquals("C:/Users/Administrator", "/C:/Users/Administrator".replaceFirst("^/(.:[/\\\\])", "$1"));
         session.close();
     }
 }
