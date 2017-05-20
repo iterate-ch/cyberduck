@@ -32,7 +32,7 @@ public class LocalFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
-        return Files.exists(session.getClient().getPath(file.getAbsolute()));
+        return Files.exists(session.toPath(file));
     }
 
     @Override

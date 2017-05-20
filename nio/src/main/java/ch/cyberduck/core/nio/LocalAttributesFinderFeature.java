@@ -41,7 +41,7 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            return this.convert(session.getClient().getPath(file.getAbsolute()));
+            return this.convert(session.toPath(file));
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to read attributes of {0}", e, file);

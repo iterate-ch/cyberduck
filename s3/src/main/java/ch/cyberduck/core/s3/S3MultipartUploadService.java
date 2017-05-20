@@ -22,9 +22,11 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -102,11 +104,16 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         final DefaultThreadPool pool = new DefaultThreadPool("multipart", concurrency);
         try {
             MultipartUpload multipart = null;
-            if(status.isAppend() || status.isRetry()) {
-                final List<MultipartUpload> list = multipartService.find(file);
-                if(!list.isEmpty()) {
-                    multipart = list.iterator().next();
+            try {
+                if(status.isAppend() || status.isRetry()) {
+                    final List<MultipartUpload> list = multipartService.find(file);
+                    if(!list.isEmpty()) {
+                        multipart = list.iterator().next();
+                    }
                 }
+            }
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
             }
             final List<MultipartPart> completed = new ArrayList<MultipartPart>();
             // Not found or new upload

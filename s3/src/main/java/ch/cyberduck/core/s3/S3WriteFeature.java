@@ -22,7 +22,9 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
@@ -156,13 +158,18 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(length >= preferences.getLong("s3.upload.multipart.threshold")) {
             if(preferences.getBoolean("s3.upload.multipart")) {
-                final List<MultipartUpload> upload = multipartService.find(file);
-                if(!upload.isEmpty()) {
-                    Long size = 0L;
-                    for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
-                        size += completed.getSize();
+                try {
+                    final List<MultipartUpload> upload = multipartService.find(file);
+                    if(!upload.isEmpty()) {
+                        Long size = 0L;
+                        for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
+                            size += completed.getSize();
+                        }
+                        return new Append(size);
                     }
-                    return new Append(size);
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
                 }
             }
         }

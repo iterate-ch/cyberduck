@@ -50,7 +50,7 @@ public class LocalListServiceTest {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final String absolute = new TemporarySupportDirectoryFinder().find().getAbsolute();
-        final Path home = new Path(new Path(session.getClient().getPath(absolute).toRealPath().toString(),
+        final Path home = new Path(new Path(session.toPath(absolute).toRealPath().toString(),
                 EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
@@ -93,7 +93,7 @@ public class LocalListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final String absolute = new TemporarySupportDirectoryFinder().find().getAbsolute();
-        final Path home = new Path(new Path(session.getClient().getPath(absolute).toRealPath().toString(),
+        final Path home = new Path(new Path(session.toPath(absolute).toRealPath().toString(),
                 EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(home, null, new TransferStatus());
         final Path f = new Path(home, "test", EnumSet.of(Path.Type.directory));
