@@ -20,12 +20,9 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 
 import org.junit.Test;
-
-import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,12 +33,7 @@ public class LocalHomeFinderFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        assertEquals(System.getProperty("user.home"), new LocalHomeFinderFeature(session).find().getAbsolute());
+        assertEquals(String.format("/%s", System.getProperty("user.home")), new LocalHomeFinderFeature(session).find().getAbsolute());
         session.close();
-    }
-
-    @Test
-    public void testFindUserHomeWindows() throws Exception {
-        assertEquals("C:\\Users\\username", new Path("C:\\Users\\username", EnumSet.of(Path.Type.directory)).getAbsolute());
     }
 }
