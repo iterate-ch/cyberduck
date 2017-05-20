@@ -4,6 +4,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -162,7 +163,8 @@ public class LocalTest {
 
     @Test
     public void testNormalize() throws Exception {
-        assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), "/"), new Local(System.getProperty("java.io.tmpdir")).getAbsolute());
+        assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"),
+                PreferencesFactory.get().getProperty("local.delimiter")), new Local(System.getProperty("java.io.tmpdir")).getAbsolute());
     }
 
     private static class WindowsLocal extends Local {
