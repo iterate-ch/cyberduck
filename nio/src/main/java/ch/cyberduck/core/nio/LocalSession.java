@@ -42,6 +42,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.nio.file.FileSystem;
@@ -67,6 +68,9 @@ public class LocalSession extends Session<FileSystem> {
 
     public java.nio.file.Path toPath(final String path) throws LocalAccessDeniedException {
         try {
+            if(path.matches("/[A-Z]:.*")) {
+                return client.getPath(StringUtils.removeStart(path, String.valueOf(Path.DELIMITER)));
+            }
             return client.getPath(path);
         }
         catch(InvalidPathException e) {
