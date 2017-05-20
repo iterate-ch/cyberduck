@@ -18,7 +18,6 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import java.util.EnumSet;
@@ -33,7 +32,7 @@ public class LocalHomeFinderFeature extends DefaultHomeFinderService {
     public Path find() throws BackgroundException {
         final Path home = super.find();
         if(home == DEFAULT_HOME) {
-            return new Path(LocalFactory.get(PreferencesFactory.get().getProperty("local.user.home")).getAbsolute(), EnumSet.of(Path.Type.directory));
+            return new Path(LocalFactory.get().getAbsolute(), EnumSet.of(Path.Type.directory));
         }
         return home;
     }
