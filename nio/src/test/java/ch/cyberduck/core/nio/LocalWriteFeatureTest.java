@@ -109,12 +109,11 @@ public class LocalWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path workdir = new LocalHomeFinderFeature(session).find();
-        assertEquals(false, new LocalWriteFeature(session).append(
-                new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        assertFalse(new LocalWriteFeature(session).append(test, 0L, PathCache.empty()).append);
         new LocalTouchFeature(session).touch(test, new TransferStatus());
-        assertEquals(true, new LocalWriteFeature(session).append(test, 0L, PathCache.empty()).append);
-        new LocalDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new LocalWriteFeature(session).append(test, 0L, PathCache.empty()).append);
+        new LocalDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
