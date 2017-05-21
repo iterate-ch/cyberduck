@@ -36,7 +36,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class LocalListServiceTest {
 
@@ -77,9 +78,9 @@ public class LocalListServiceTest {
             final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
             assertTrue(list.contains(file));
             assertTrue(list.contains(symlinkRelative));
-            assertEquals(file, list.get(symlinkRelative).getSymlinkTarget());
+            assertTrue(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
             assertTrue(list.contains(symlinkAbsolute));
-            assertEquals(file, list.get(symlinkAbsolute).getSymlinkTarget());
+            assertTrue(list.get(symlinkAbsolute).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
             new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());
             session.close();
         }
