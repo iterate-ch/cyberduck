@@ -15,7 +15,6 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -48,19 +47,9 @@ public class LocalFindFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path home = new Path(System.getProperty("user.home"), EnumSet.of(Path.Type.directory));
+        final Path home = new LocalHomeFinderFeature(session).find();
         assertTrue(new LocalFindFeature(session).find(home));
         assertTrue(new LocalFindFeature(session).find(new Path(home, ".ssh", EnumSet.of(Path.Type.directory))));
-        session.close();
-    }
-
-    @Test
-    public void testFindFile() throws Exception {
-        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path home = new Path(System.getProperty("user.home"), EnumSet.of(Path.Type.directory));
-        assertTrue(new LocalFindFeature(session).find(new Path(home, "./.bash_profile", EnumSet.of(AbstractPath.Type.file))));
         session.close();
     }
 
