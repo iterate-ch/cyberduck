@@ -53,11 +53,10 @@ public class LocalListServiceTest {
         final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(home, null, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         new LocalTouchFeature(session).touch(file, new TransferStatus());
         new LocalSymlinkFeature(session).symlink(symlinkRelative, file.getName());
         new LocalSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
-        new LocalDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
         new LocalUnixPermissionFeature(session).setUnixPermission(file, permission);
 
@@ -90,10 +89,8 @@ public class LocalListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new LocalHomeFinderFeature(session).find();
-        new LocalDirectoryFeature(session).mkdir(home, null, new TransferStatus());
-        final Path f = new Path(home, "test", EnumSet.of(Path.Type.directory));
         final LocalListService service = new LocalListService(session);
-        service.list(f, new DisabledListProgressListener());
+        service.list(new Path(home, "test", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
 }
