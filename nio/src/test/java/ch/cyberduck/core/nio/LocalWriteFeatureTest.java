@@ -54,41 +54,43 @@ public class LocalWriteFeatureTest {
     @Test
     public void testWriteSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path workdir = new LocalHomeFinderFeature(session).find();
-        final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(target, new TransferStatus());
-        assertTrue(new LocalFindFeature(session).find(target));
-        final String name = UUID.randomUUID().toString();
-        final Path symlink = new Path(workdir, name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
-        new LocalSymlinkFeature(session).symlink(symlink, target.getName());
-        assertTrue(new LocalFindFeature(session).find(symlink));
-        final TransferStatus status = new TransferStatus();
-        final byte[] content = new byte[1048576];
-        new Random().nextBytes(content);
-        status.setLength(content.length);
-        status.setExists(true);
-        final OutputStream out = new LocalWriteFeature(session).write(symlink, status, new DisabledConnectionCallback());
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        out.close();
-        {
-            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new LocalReadFeature(session).read(symlink, new TransferStatus().length(content.length), new DisabledConnectionCallback());
-            new StreamCopier(status, status).transfer(in, buffer);
-            assertArrayEquals(content, buffer.toByteArray());
+        if(session.isPosixFilesystem()) {
+            session.open(new DisabledHostKeyCallback());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+            final Path workdir = new LocalHomeFinderFeature(session).find();
+            final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+            new LocalTouchFeature(session).touch(target, new TransferStatus());
+            assertTrue(new LocalFindFeature(session).find(target));
+            final String name = UUID.randomUUID().toString();
+            final Path symlink = new Path(workdir, name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+            new LocalSymlinkFeature(session).symlink(symlink, target.getName());
+            assertTrue(new LocalFindFeature(session).find(symlink));
+            final TransferStatus status = new TransferStatus();
+            final byte[] content = new byte[1048576];
+            new Random().nextBytes(content);
+            status.setLength(content.length);
+            status.setExists(true);
+            final OutputStream out = new LocalWriteFeature(session).write(symlink, status, new DisabledConnectionCallback());
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+            {
+                final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+                final InputStream in = new LocalReadFeature(session).read(symlink, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+                new StreamCopier(status, status).transfer(in, buffer);
+                assertArrayEquals(content, buffer.toByteArray());
+            }
+            {
+                final byte[] buffer = new byte[0];
+                final InputStream in = new LocalReadFeature(session).read(target, new TransferStatus(), new DisabledConnectionCallback());
+                IOUtils.readFully(in, buffer);
+                in.close();
+                assertArrayEquals(new byte[0], buffer);
+            }
+            final AttributedList<Path> list = new LocalListService(session).list(workdir, new DisabledListProgressListener());
+            assertTrue(list.contains(new Path(workdir, name, EnumSet.of(Path.Type.file))));
+            assertFalse(list.contains(symlink));
+            new LocalDeleteFeature(session).delete(Arrays.asList(target, symlink), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
-        {
-            final byte[] buffer = new byte[0];
-            final InputStream in = new LocalReadFeature(session).read(target, new TransferStatus(), new DisabledConnectionCallback());
-            IOUtils.readFully(in, buffer);
-            in.close();
-            assertArrayEquals(new byte[0], buffer);
-        }
-        final AttributedList<Path> list = new LocalListService(session).list(workdir, new DisabledListProgressListener());
-        assertTrue(list.contains(new Path(workdir, name, EnumSet.of(Path.Type.file))));
-        assertFalse(list.contains(symlink));
-        new LocalDeleteFeature(session).delete(Arrays.asList(target, symlink), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
