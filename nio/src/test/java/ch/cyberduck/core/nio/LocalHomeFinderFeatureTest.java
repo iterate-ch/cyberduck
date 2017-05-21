@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathCache;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LocalHomeFinderFeatureTest {
 
@@ -33,7 +33,7 @@ public class LocalHomeFinderFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        assertEquals(String.format("/%s", System.getProperty("user.home")), new LocalHomeFinderFeature(session).find().getAbsolute());
+        assertTrue(new LocalHomeFinderFeature(session).find().getAbsolute().endsWith(System.getProperty("user.home")));
         session.close();
     }
 }
