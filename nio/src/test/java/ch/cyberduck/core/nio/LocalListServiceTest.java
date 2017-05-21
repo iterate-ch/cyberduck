@@ -50,13 +50,9 @@ public class LocalListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new LocalHomeFinderFeature(session).find();
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
-        final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         new LocalTouchFeature(session).touch(file, new TransferStatus());
-        new LocalSymlinkFeature(session).symlink(symlinkRelative, file.getName());
-        new LocalSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
         final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
         new LocalUnixPermissionFeature(session).setUnixPermission(file, permission);
 
@@ -64,13 +60,40 @@ public class LocalListServiceTest {
         assertTrue(list.contains(file));
         assertEquals(permission, list.get(file).attributes().getPermission());
         assertTrue(list.contains(directory));
-        assertTrue(list.contains(symlinkRelative));
-        assertEquals(file, list.get(symlinkRelative).getSymlinkTarget());
-        assertTrue(list.contains(symlinkAbsolute));
-        assertEquals(file, list.get(symlinkAbsolute).getSymlinkTarget());
 
-        new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new LocalDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
+    }
+
+    @Test
+    public void testListSymlink() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        if(session.isPosixFilesystem()) {
+            assertNotNull(session.open(new DisabledHostKeyCallback()));
+            assertTrue(session.isConnected());
+            assertNotNull(session.getClient());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+            final Path home = new LocalHomeFinderFeature(session).find();
+            final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+            final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+            final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+            new LocalTouchFeature(session).touch(file, new TransferStatus());
+            new LocalSymlinkFeature(session).symlink(symlinkRelative, file.getName());
+            new LocalSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
+            final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
+            new LocalUnixPermissionFeature(session).setUnixPermission(file, permission);
+
+            final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
+            assertTrue(list.contains(file));
+            assertEquals(permission, list.get(file).attributes().getPermission());
+            assertTrue(list.contains(symlinkRelative));
+            assertEquals(file, list.get(symlinkRelative).getSymlinkTarget());
+            assertTrue(list.contains(symlinkAbsolute));
+            assertEquals(file, list.get(symlinkAbsolute).getSymlinkTarget());
+
+            new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            session.close();
+        }
     }
 
     @Test(expected = NotfoundException.class)
