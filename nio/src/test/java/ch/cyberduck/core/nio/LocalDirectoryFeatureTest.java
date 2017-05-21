@@ -29,7 +29,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.junit.Test;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -46,9 +45,9 @@ public class LocalDirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path folder = new Path(new LocalHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
-        assertTrue(Files.exists(Paths.get(folder.getAbsolute())));
+        assertTrue(Files.exists(session.toPath(folder)));
         new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(Files.exists(Paths.get(folder.getAbsolute())));
+        assertFalse(Files.exists(session.toPath(folder)));
     }
 
     @Test(expected = AccessDeniedException.class)
