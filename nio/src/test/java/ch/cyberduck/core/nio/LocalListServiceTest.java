@@ -80,12 +80,8 @@ public class LocalListServiceTest {
             new LocalTouchFeature(session).touch(file, new TransferStatus());
             new LocalSymlinkFeature(session).symlink(symlinkRelative, file.getName());
             new LocalSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
-            final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
-            new LocalUnixPermissionFeature(session).setUnixPermission(file, permission);
-
             final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
             assertTrue(list.contains(file));
-            assertEquals(permission, list.get(file).attributes().getPermission());
             assertTrue(list.contains(symlinkRelative));
             assertEquals(file, list.get(symlinkRelative).getSymlinkTarget());
             assertTrue(list.contains(symlinkAbsolute));
