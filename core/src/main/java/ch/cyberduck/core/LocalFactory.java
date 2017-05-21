@@ -77,4 +77,8 @@ public final class LocalFactory extends Factory<Local> {
     public static Local get(final String path) {
         return new LocalFactory().create(path);
     }
+
+    public static Local get() {
+        return new LocalFactory().create();
+    }
 }

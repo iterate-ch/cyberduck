@@ -26,23 +26,19 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class LocalListServiceTest {
 
     @Test
@@ -52,32 +48,42 @@ public class LocalListServiceTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final String absolute = new TemporarySupportDirectoryFinder().find().getAbsolute();
-        final Path home = new Path(new Path(session.toPath(absolute).toRealPath().toString(),
-                EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path home = new LocalHomeFinderFeature(session).find();
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
-        final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(home, null, new TransferStatus());
-        new LocalTouchFeature(session).touch(file, new TransferStatus());
-        new LocalSymlinkFeature(session).symlink(symlinkRelative, file.getName());
-        new LocalSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
         new LocalDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
-        final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
-        new LocalUnixPermissionFeature(session).setUnixPermission(file, permission);
-
+        new LocalTouchFeature(session).touch(file, new TransferStatus());
         final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(file));
-        assertEquals(permission, list.get(file).attributes().getPermission());
         assertTrue(list.contains(directory));
-        assertTrue(list.contains(symlinkRelative));
-        assertEquals(file, list.get(symlinkRelative).getSymlinkTarget());
-        assertTrue(list.contains(symlinkAbsolute));
-        assertEquals(file, list.get(symlinkAbsolute).getSymlinkTarget());
-
-        new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new LocalDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
+    }
+
+    @Test
+    public void testListSymlink() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        if(session.isPosixFilesystem()) {
+            assertNotNull(session.open(new DisabledHostKeyCallback()));
+            assertTrue(session.isConnected());
+            assertNotNull(session.getClient());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+            final Path home = new LocalHomeFinderFeature(session).find();
+            final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+            final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+            final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+            new LocalTouchFeature(session).touch(file, new TransferStatus());
+            new LocalSymlinkFeature(session).symlink(symlinkRelative, file.getName());
+            new LocalSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
+            final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
+            assertTrue(list.contains(file));
+            assertTrue(list.contains(symlinkRelative));
+            assertTrue(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
+            assertTrue(list.contains(symlinkAbsolute));
+            assertTrue(list.get(symlinkAbsolute).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
+            new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            session.close();
+        }
     }
 
     @Test(expected = NotfoundException.class)
@@ -95,13 +101,8 @@ public class LocalListServiceTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final String absolute = new TemporarySupportDirectoryFinder().find().getAbsolute();
-        final Path home = new Path(new Path(session.toPath(absolute).toRealPath().toString(),
-                EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(home, null, new TransferStatus());
-        final Path f = new Path(home, "test", EnumSet.of(Path.Type.directory));
+        final Path home = new LocalHomeFinderFeature(session).find();
         final LocalListService service = new LocalListService(session);
-        service.list(f, new DisabledListProgressListener());
+        service.list(new Path(home, "test", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
-
 }

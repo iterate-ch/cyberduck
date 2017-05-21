@@ -15,7 +15,6 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -23,10 +22,8 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -34,7 +31,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class LocalFindFeatureTest {
 
     @Test
@@ -51,19 +47,9 @@ public class LocalFindFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path home = new Path(System.getProperty("user.home"), EnumSet.of(Path.Type.directory));
+        final Path home = new LocalHomeFinderFeature(session).find();
         assertTrue(new LocalFindFeature(session).find(home));
         assertTrue(new LocalFindFeature(session).find(new Path(home, ".ssh", EnumSet.of(Path.Type.directory))));
-        session.close();
-    }
-
-    @Test
-    public void testFindFile() throws Exception {
-        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path home = new Path(System.getProperty("user.home"), EnumSet.of(Path.Type.directory));
-        assertTrue(new LocalFindFeature(session).find(new Path(home, "./.bash_profile", EnumSet.of(AbstractPath.Type.file))));
         session.close();
     }
 
