@@ -80,7 +80,6 @@ public class LocalListServiceTest {
             assertEquals(file, list.get(symlinkRelative).getSymlinkTarget());
             assertTrue(list.contains(symlinkAbsolute));
             assertEquals(file, list.get(symlinkAbsolute).getSymlinkTarget());
-
             new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());
             session.close();
         }
@@ -105,5 +104,4 @@ public class LocalListServiceTest {
         final LocalListService service = new LocalListService(session);
         service.list(new Path(home, "test", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
-
 }
