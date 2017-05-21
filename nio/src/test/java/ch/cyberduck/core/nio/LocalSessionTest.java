@@ -15,25 +15,24 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathCache;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class LocalHomeFinderFeatureTest {
+public class LocalSessionTest {
 
     @Test
-    public void testFind() throws Exception {
+    public void toPath() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        assertTrue(new LocalHomeFinderFeature(session).find().getAbsolute().endsWith(System.getProperty("user.home")));
+        assertNotNull(session.toPath("/Users/username"));
+        assertNotNull(session.toPath("/C:\\Users\\Administrator"));
+        assertEquals("C:\\Users\\Administrator", "/C:\\Users\\Administrator".replaceFirst("^/(.:[/\\\\])", "$1"));
+        assertEquals("C:/Users/Administrator", "/C:/Users/Administrator".replaceFirst("^/(.:[/\\\\])", "$1"));
         session.close();
     }
 }
