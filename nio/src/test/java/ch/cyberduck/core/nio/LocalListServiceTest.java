@@ -26,7 +26,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,14 +52,9 @@ public class LocalListServiceTest {
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         new LocalTouchFeature(session).touch(file, new TransferStatus());
-        final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
-        new LocalUnixPermissionFeature(session).setUnixPermission(file, permission);
-
         final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(file));
-        assertEquals(permission, list.get(file).attributes().getPermission());
         assertTrue(list.contains(directory));
-
         new LocalDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
