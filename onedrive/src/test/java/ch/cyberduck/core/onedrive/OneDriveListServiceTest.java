@@ -4,11 +4,11 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -49,7 +49,10 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testListDriveChildren() throws Exception {
-        ListService listService = new OneDriveListService(session);
+        final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new OneDriveTouchFeature(session).touch(file, new TransferStatus());
+        assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
+        final OneDriveListService listService = new OneDriveListService(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final AttributedList<Path> list = listService.list(drive, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
@@ -63,6 +66,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
             assertNull(attributes.getVersionId());
             assertNotNull(attributes.getLink());
         }
+        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
