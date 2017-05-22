@@ -84,11 +84,9 @@ public class B2DeleteFeatureTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
-        final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        new B2DirectoryFeature(session).mkdir(file, null, new TransferStatus());
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path bucket = new B2DirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path directory = new B2DirectoryFeature(session).mkdir(new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
