@@ -18,6 +18,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
@@ -142,7 +143,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
             }
             if(!response.isSuccessful()) {
                 throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                        "Login {0} with username and password", "Credentials"), host.getHostname()));
+                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
             }
         }
         catch(JargonException e) {
