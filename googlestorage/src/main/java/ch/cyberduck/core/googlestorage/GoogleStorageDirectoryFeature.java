@@ -44,11 +44,11 @@ public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
         if(containerService.isContainer(folder)) {
             final GoogleStorageBucketCreateService service = new GoogleStorageBucketCreateService(session);
             service.create(folder, region);
+            return folder;
         }
         else {
-            super.mkdir(folder, region, status);
+            return super.mkdir(folder, region, status);
         }
-        return folder;
     }
 
     @Override
