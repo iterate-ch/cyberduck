@@ -96,7 +96,7 @@ public class S3DefaultDeleteFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path file) {
-        return !file.isPlaceholder();
+        return true;
     }
 
     @Override

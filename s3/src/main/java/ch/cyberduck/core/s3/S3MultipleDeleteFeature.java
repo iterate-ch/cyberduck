@@ -173,7 +173,7 @@ public class S3MultipleDeleteFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path file) {
-        return !file.isPlaceholder();
+        return true;
     }
 
     @Override
