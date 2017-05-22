@@ -96,10 +96,9 @@ public class SpectraDirectoryFeatureTest {
         });
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(test, null, new TransferStatus());
+        final Path test = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(b.get());
-        test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
