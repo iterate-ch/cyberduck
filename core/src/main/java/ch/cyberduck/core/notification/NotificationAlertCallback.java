@@ -18,6 +18,7 @@ package ch.cyberduck.core.notification;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
@@ -27,8 +28,8 @@ public class NotificationAlertCallback implements AlertCallback {
     private final NotificationService notification = NotificationServiceFactory.get();
 
     @Override
-    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        notification.notify(failure.getMessage(), host.getHostname());
+    public boolean alert(final Host bookmark, final BackgroundException failure, final StringBuilder transcript) {
+        notification.notify(failure.getMessage(), BookmarkNameProvider.toString(bookmark));
         return false;
     }
 }
