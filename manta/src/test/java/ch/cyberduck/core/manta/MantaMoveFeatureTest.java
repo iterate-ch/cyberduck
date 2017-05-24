@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -45,7 +46,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final Move move = new MantaMoveFeature(session);
         final Delete delete = new MantaDeleteFeature(session);
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
-        final Path drive = new MantaHomeFinderFeature(session).find();
+        final Path drive = new DefaultHomeFinderService(session).find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(file));
@@ -63,7 +64,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final Move move = new MantaMoveFeature(session);
         final Delete delete = new MantaDeleteFeature(session);
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
-        final Path drive = new MantaHomeFinderFeature(session).find();
+        final Path drive = new DefaultHomeFinderService(session).find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
         assertNotNull(attributesFinder.find(targetDirectory));
@@ -87,7 +88,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final Move move = new MantaMoveFeature(session);
         final Delete delete = new MantaDeleteFeature(session);
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
-        final Path drive = new MantaHomeFinderFeature(session).find();
+        final Path drive = new DefaultHomeFinderService(session).find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
         assertNotNull(attributesFinder.find(targetDirectory));

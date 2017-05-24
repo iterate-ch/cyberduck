@@ -71,7 +71,7 @@ public class MantaProtocol extends AbstractProtocol {
     @Override
     public boolean isPasswordConfigurable() {
         // TODO: password can be provided, but we're only using the key right now?
-        return false;
+        return true;
     }
 
     @Override

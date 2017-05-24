@@ -9,6 +9,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -44,13 +45,13 @@ public class MantaListServiceTest extends AbstractMantaTest {
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
         }
-        assertTrue(list.contains(new MantaHomeFinderFeature(session).find()));
+        assertTrue(list.contains(new DefaultHomeFinderService(session).find()));
     }
 
     @Test
     public void testListDriveChildren() throws Exception {
         ListService listService = new MantaListService(session);
-        final Path drive = new MantaHomeFinderFeature(session).find();
+        final Path drive = new DefaultHomeFinderService(session).find();
         final AttributedList<Path> list = listService.list(drive, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
@@ -68,7 +69,7 @@ public class MantaListServiceTest extends AbstractMantaTest {
     @Test
     public void testWhitespacedChild() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
-        final Path target = new MantaDirectoryFeature(session).mkdir(new Path(new MantaHomeFinderFeature(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
+        final Path target = new MantaDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
         final AttributedList<Path> list = new MantaListService(session).list(target, new DisabledListProgressListener());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,8 +46,8 @@ public class MantaWriteFeature implements Write<Void> {
     }
 
     /**
-     * Return an output stream that writes to Manta. {@code putAsOutputStream} requires a thread per call and is
-     * discouraged in the java-manta client documentation because it requires a thread per call.
+     * Return an output stream that writes to Manta. {@code putAsOutputStream} requires a thread per call and as
+     * a result is discouraged in the java-manta client documentation.
      *
      * {@inheritDoc}
      */
@@ -54,7 +55,7 @@ public class MantaWriteFeature implements Write<Void> {
     public HttpResponseOutputStream<Void> write(final Path file,
                                           final TransferStatus status,
                                           final ConnectionCallback callback) throws BackgroundException {
-        final OutputStream putStream = session.getClient().putAsOutputStream(session.requestPath(file));
+        final OutputStream putStream = session.getClient().putAsOutputStream(session.pathMapper.requestPath(file));
 
         return new HttpResponseOutputStream<Void>(putStream) {
             @Override
@@ -77,13 +78,11 @@ public class MantaWriteFeature implements Write<Void> {
         return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
     }
 
-    // TODO: docs
     @Override
     public boolean temporary() {
         return false;
     }
 
-    // TODO: docs
     @Override
     public boolean random() {
         return false;
@@ -92,6 +91,7 @@ public class MantaWriteFeature implements Write<Void> {
     // TODO: what does this checksum do? can we combine it with our MD5 checksum?
     @Override
     public ChecksumCompute checksum() {
-        return new DisabledChecksumCompute();
+        // TODO: verify this is actually used
+        return new MD5ChecksumCompute();
     }
 }

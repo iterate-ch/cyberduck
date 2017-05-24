@@ -42,34 +42,21 @@ public abstract class AbstractMantaTest {
 
     @Before
     public void setup() throws Exception {
+        System.out.print(">>>> test setup <<<<");
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/Microsoft Manta.cyberduckprofile"));
+                new Local("../profiles/Triton Manta.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
-        session = new MantaSession(host
-//                , new DefaultX509TrustManager(), new DefaultX509KeyManager()
-        );
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
+        session = new MantaSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        new LoginConnectionService(
+                new DisabledLoginCallback() {
                     @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.endsWith("OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("onedrive.accesstoken");
-                        }
-                        if(user.endsWith("OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("onedrive.refreshtoken");
-                        }
-                        return null;
+                    public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                        fail(reason);
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+                },
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 }

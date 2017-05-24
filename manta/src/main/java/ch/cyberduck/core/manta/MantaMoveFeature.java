@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import com.joyent.manta.exception.MantaException;
+import com.joyent.manta.exception.MantaIOException;
 
 public class MantaMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(MantaMoveFeature.class);
@@ -48,13 +49,12 @@ public class MantaMoveFeature implements Move {
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
             if(exists) {
-                MantaSession.log.error("deleting target during move: " + renamed);
                 delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
             }
 
-            session.getClient().move(session.requestPath(file), session.requestPath(renamed));
+            session.getClient().move(session.pathMapper.requestPath(file), session.pathMapper.requestPath(renamed));
         }
-        catch(MantaException e) {
+        catch(MantaException | MantaIOException e) {
             throw new MantaExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
@@ -69,7 +69,7 @@ public class MantaMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return session.isUserWritable(target);
+        return session.pathMapper.isUserWritable(target);
     }
 
     @Override

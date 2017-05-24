@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -41,7 +42,7 @@ public class MantaAttributesFinderFeatureTest extends AbstractMantaTest {
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         try {
-            new MantaAttributesFinderFeature(session).find(new Path(new MantaHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+            new MantaAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
         }
         catch(NotfoundException e) {
             assertEquals("Not Found. Item does not exist. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -51,7 +52,7 @@ public class MantaAttributesFinderFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testFindFile() throws Exception {
-        final Path file = new Path(new MantaHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         final PathAttributes attributes = new MantaAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);

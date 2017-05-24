@@ -29,10 +29,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
@@ -61,14 +59,13 @@ public class MantaSession extends SSLSession<MantaClient> {
     public static final Logger log = Logger.getLogger(MantaSession.class);
 
     static final String HEADER_KEY_STORAGE_CLASS = "Durability-Level";
-    public static final String HOME_PATH_PRIVATE = "/stor";
-    public static final String HOME_PATH_PUBLIC = "/public";
+
+    final MantaPathMapper pathMapper;
 
     private BaseChainedConfigContext config;
 
     private String keyFingerprint;
-    private String accountOwner;
-
+    String accountOwner;
 
     public MantaSession(final Host h) {
         this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -76,18 +73,17 @@ public class MantaSession extends SSLSession<MantaClient> {
 
     public MantaSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h, new ThreadLocalHostnameDelegatingTrustManager(trust, h.getHostname()), key);
+        pathMapper = new MantaPathMapper(this);
         config = new ChainedConfigContext(
                 new DefaultsConfigContext(),
                 new StandardConfigContext()
                         .setDisableNativeSignatures(true)
                         .setMantaURL("https://" + h.getHostname())
                         .setNoAuth(false));
-
     }
 
     @Override
     protected MantaClient connect(final HostKeyCallback key) throws BackgroundException {
-        keyFingerprint = null;
         return null;
     }
 
@@ -96,6 +92,7 @@ public class MantaSession extends SSLSession<MantaClient> {
                       final LoginCallback prompt,
                       final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
+        keyFingerprint = null;
         final Credentials bookmark = host.getCredentials();
         final boolean success = new MantaPublicKeyAuthentication(this, keychain).authenticate(host, prompt, cancel);
 
@@ -142,30 +139,6 @@ public class MantaSession extends SSLSession<MantaClient> {
         accountOwner = username;
     }
 
-    boolean isUserWritable(final MantaObject mantaObject) {
-        return isUserWritable(mantaObject.getPath());
-    }
-
-    boolean isUserWritable(final Path homeRelativePath) {
-        return isUserWritable(homeRelativePath.getAbsolute());
-    }
-
-    private boolean isUserWritable(final String homeRelativePath) {
-        return StringUtils.startsWithAny(homeRelativePath, HOME_PATH_PRIVATE, HOME_PATH_PUBLIC);
-    }
-
-    boolean isWorldReadable(final MantaObject mantaObject) {
-        return isWorldReadable(mantaObject.getPath());
-    }
-
-    boolean isWorldReadable(final Path homeRelativePath) {
-        return isWorldReadable(homeRelativePath.getAbsolute());
-    }
-
-    private boolean isWorldReadable(final String path) {
-        return StringUtils.startsWith(path, HOME_PATH_PUBLIC);
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
@@ -179,6 +152,7 @@ public class MantaSession extends SSLSession<MantaClient> {
             return (T) new MantaWriteFeature(this);
         }
         if(type == MultipartWrite.class) {
+            log.error("multipart write feature requested");
             return (T) new MantaBufferWriteFeature(this);
         }
         if(type == Delete.class) {
@@ -193,13 +167,11 @@ public class MantaSession extends SSLSession<MantaClient> {
         if(type == AttributesFinder.class) {
             return (T) new MantaAttributesFinderFeature(this);
         }
-        if(type == Search.class) {
-            return (T) new MantaSearchFeature(this);
+        if(type == UrlProvider.class) {
+            return (T) new MantaUrlProvider();
         }
+
         return super._getFeature(type);
     }
 
-    String requestPath(final Path homeRelativeRemote) {
-        return accountOwner + homeRelativeRemote.getAbsolute();
-    }
 }

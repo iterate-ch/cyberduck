@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -47,7 +48,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
     @Test
     public void testWrite() throws Exception {
         final MantaWriteFeature feature = new MantaWriteFeature(session);
-        final Path container = new MantaHomeFinderFeature(session).find();
+        final Path container = new DefaultHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -71,7 +72,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
     @Test(expected = InteroperabilityException.class)
     public void testWriteUnknownLength() throws Exception {
         final MantaWriteFeature feature = new MantaWriteFeature(session);
-        final Path container = new MantaHomeFinderFeature(session).find();
+        final Path container = new DefaultHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

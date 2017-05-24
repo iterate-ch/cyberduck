@@ -48,7 +48,7 @@ public class MantaListService implements ListService {
 
         final AttributedList<Path> children = new AttributedList<>();
         final MantaClient c = session.getClient();
-        final String remotePath = session.requestPath(directory);
+        final String remotePath = session.pathMapper.requestPath(directory);
 
         final Iterator<MantaObject> objectsIter;
         try {

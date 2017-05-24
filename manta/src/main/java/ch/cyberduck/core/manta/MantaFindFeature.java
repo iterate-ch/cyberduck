@@ -18,9 +18,12 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+
+import java.io.IOException;
 
 public class MantaFindFeature implements Find {
 
@@ -58,10 +61,10 @@ public class MantaFindFeature implements Find {
         // END duplicate code cache usage
 
         try {
-            new MantaAttributesFinderFeature(session).find(file);
+            final PathAttributes found = new MantaAttributesFinderFeature(session).withCache(cache).find(file);
             return true; // successfully found attributes for file
-        } catch (Exception e) {
-            // TODO: not every exception means "file not found"
+        } catch (BackgroundException e) {
+            // TODO: find out which exception is thrown when the file isn't found an split the catch
             return false;
         }
     }

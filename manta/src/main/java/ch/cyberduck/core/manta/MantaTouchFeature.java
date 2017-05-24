@@ -25,6 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 
 import com.joyent.manta.exception.MantaException;
+import com.joyent.manta.exception.MantaIOException;
 
 public class MantaTouchFeature implements Touch {
 
@@ -37,15 +38,15 @@ public class MantaTouchFeature implements Touch {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
 
-        if (!session.getClient().existsAndIsAccessible(session.requestPath(file.getParent()))) {
+        if (!session.getClient().existsAndIsAccessible(session.pathMapper.requestPath(file.getParent()))) {
             MantaSession.log.error("nyi. parent is missing, should create it");
             throw new MantaExceptionMappingService().map("Parent missing", new RuntimeException(), file.getParent());
         }
 
         try {
-            session.getClient().put(session.requestPath(file), new byte[0]);
+            session.getClient().put(session.pathMapper.requestPath(file), new byte[0]);
         }
-        catch(MantaException e) {
+        catch(MantaException | MantaIOException e) {
             throw new MantaExceptionMappingService().map("Cannot create file {0}", e, file);
         }
         catch(IOException e) {
@@ -56,12 +57,12 @@ public class MantaTouchFeature implements Touch {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return session.isUserWritable(workdir);
+        return session.pathMapper.isUserWritable(workdir);
     }
 
     @Override
     public Touch withWriter(final Write writer) {
-        // TODO: same as withCache, do we do or care?
+        // TODO: same as withCache, would it help to use the writer?
         return this;
     }
 }

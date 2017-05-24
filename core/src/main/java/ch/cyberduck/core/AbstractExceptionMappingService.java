@@ -30,9 +30,6 @@ import org.apache.log4j.Logger;
 
 import java.io.EOFException;
 import java.io.InterruptedIOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;

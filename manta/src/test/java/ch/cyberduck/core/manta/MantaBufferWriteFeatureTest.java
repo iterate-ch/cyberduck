@@ -24,6 +24,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -43,7 +44,7 @@ public class MantaBufferWriteFeatureTest extends AbstractMantaTest {
     @Test
     public void testWrite() throws Exception {
         final MantaWriteFeature feature = new MantaBufferWriteFeature(session);
-        final Path container = new MantaHomeFinderFeature(session).find();
+        final Path container = new DefaultHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -67,14 +68,14 @@ public class MantaBufferWriteFeatureTest extends AbstractMantaTest {
     @Test
     public void testWriteUnknownLength() throws Exception {
         final MantaWriteFeature feature = new MantaBufferWriteFeature(session);
-        final Path container = new MantaHomeFinderFeature(session).find();
+        final Path container = new DefaultHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
-        final byte[] buffer = new byte[1 * 1024];
+        final byte[] buffer = new byte[1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
         out.close();

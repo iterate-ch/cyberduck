@@ -15,27 +15,21 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
+/**
+ * Created by tomascelaya on 5/23/17.
+ */
+
+import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.UrlProvider;
 
-
-import java.io.IOException;
-import java.util.EnumSet;
-
-public class MantaHomeFinderFeature extends DefaultHomeFinderService {
-
-    private final MantaSession session;
-
-    public MantaHomeFinderFeature(final MantaSession session) {
-        super(session);
-        this.session = session;
-    }
-
+public class MantaUrlProvider implements UrlProvider {
     @Override
-    public Path find() throws BackgroundException {
-        return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(AbstractPath.Type.directory));
+    public DescriptiveUrlBag toUrl(final Path file) {
+        final DescriptiveUrlBag list = new DescriptiveUrlBag();
+        if(file.attributes().getLink() != null) {
+            list.add(file.attributes().getLink());
+        }
+        return list;
     }
 }

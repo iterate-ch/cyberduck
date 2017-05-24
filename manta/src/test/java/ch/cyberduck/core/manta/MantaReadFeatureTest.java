@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -49,7 +50,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         try {
-            final Path drive = new MantaHomeFinderFeature(session).find();
+            final Path drive = new DefaultHomeFinderService(session).find();
             new MantaReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
         catch(NotfoundException e) {
@@ -60,7 +61,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testReadInterrupt() throws Exception {
-        final Path drive = new MantaHomeFinderFeature(session).find();
+        final Path drive = new DefaultHomeFinderService(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(test, new TransferStatus());
         // Unknown length in status
@@ -81,7 +82,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final Path drive = new MantaHomeFinderFeature(session).find();
+        final Path drive = new DefaultHomeFinderService(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(test, new TransferStatus());
 
@@ -114,7 +115,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final Path drive = new MantaHomeFinderFeature(session).find();
+        final Path drive = new DefaultHomeFinderService(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(test, new TransferStatus());
 

@@ -16,6 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class MantaFindFeatureTest extends AbstractMantaTest {
     @Test
     public void testFindFileNotFound() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
-        assertFalse(f.find(new Path(new MantaHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertFalse(f.find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 
     @Test

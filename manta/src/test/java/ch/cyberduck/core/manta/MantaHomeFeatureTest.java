@@ -17,6 +17,7 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +31,7 @@ public class MantaHomeFeatureTest extends AbstractMantaTest{
 
     @Test
     public void testHomeFeature() throws BackgroundException {
-        final Path drive = new MantaHomeFinderFeature(session).find();
+        final Path drive = new DefaultHomeFinderService(session).find();
         assertNotNull(drive);
         assertFalse(drive.isRoot());
         assertTrue(drive.isVolume());

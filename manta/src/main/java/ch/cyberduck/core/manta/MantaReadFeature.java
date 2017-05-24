@@ -40,11 +40,11 @@ public class MantaReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final String remotePath = session.requestPath(file);
+        final String remotePath = session.pathMapper.requestPath(file);
 
         try {
             // requesting an empty file as an InputStream doesn't work, but we also don't want to
-            // perform a HEAD request for every read sooo...
+            // perform a HEAD request for every read so we'll opt to handle the exception
             return session.getClient().getAsInputStream(remotePath);
         }
         catch(UnsupportedOperationException e) {
@@ -66,11 +66,13 @@ public class MantaReadFeature implements Read {
             probablyEmptyFile = session.getClient().head(remotePath);
         }
         catch(IOException e) {
-            throw new MantaExceptionMappingService().map("what", new RuntimeException("nonempty empty file?"));
+            throw new MantaExceptionMappingService().map("Cannot read file {0}", e);
         }
 
         if(probablyEmptyFile.getContentLength() != 0) {
-            throw new MantaExceptionMappingService().map("what", new RuntimeException("nonempty empty file?"));
+            throw new MantaExceptionMappingService().map(
+                    "Cannot read file {0}",
+                    new RuntimeException("Empty file was not actually empty. Concurrent Access detected."));
         }
 
         return new NullInputStream(0);

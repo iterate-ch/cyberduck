@@ -28,14 +28,12 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 import com.joyent.manta.exception.MantaException;
+import com.joyent.manta.exception.MantaIOException;
 
 public class MantaAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(MantaAttributesFinderFeature.class);
 
     private final MantaSession session;
-
-    private final PathContainerService containerService
-            = new PathContainerService();
 
     public MantaAttributesFinderFeature(final MantaSession session) {
         this.session = session;
@@ -47,11 +45,11 @@ public class MantaAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
 
-        final String remotePath = session.requestPath(file);
+        final String remotePath = session.pathMapper.requestPath(file);
         try {
             return new MantaObjectAttributeAdapter(session).from(session.getClient().head(remotePath));
         }
-        catch(MantaException e) {
+        catch(MantaException | MantaIOException e) {
             throw new MantaExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
@@ -61,8 +59,6 @@ public class MantaAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
-        // TODO: do we care about attributes caching? protocols that seem to: b2, dav, vault, default
-
         return this;
     }
 }

@@ -53,24 +53,25 @@ public class MantaObjectAttributeAdapter {
         attributes.setOwner(pathSegments[0]);
 
         final Permission.Action userPermissions =
-                session.isUserWritable(mantaObject)
+                session.pathMapper.isUserWritable(mantaObject)
                         ? Permission.Action.all
                         : Permission.Action.read;
-
         final Permission.Action otherPermissions =
-                session.isWorldReadable(mantaObject)
+                session.pathMapper.isWorldReadable(mantaObject)
                         ? Permission.Action.read
                         : Permission.Action.none;
 
         attributes.setPermission(new Permission(userPermissions, Permission.Action.none, otherPermissions));
-
-        attributes.setOwner(pathSegments[pathSegments.length - 1]);
 
         if(mantaObject.isDirectory()) {
             return attributes;
         }
 
         // Directories return null for the remaining properties.
+
+        if(session.pathMapper.isWorldReadable(mantaObject)) {
+            populateLinkAttribute(attributes, mantaObject);
+        }
 
         attributes.setSize(mantaObject.getContentLength());
         attributes.setETag(mantaObject.getEtag());
@@ -82,7 +83,6 @@ public class MantaObjectAttributeAdapter {
         }
 
         attributes.setModificationDate(mantaObject.getLastModifiedTime().getTime());
-        populateLinkAttribute(attributes, mantaObject);
 
         attributes.setStorageClass(mantaObject.getHeaderAsString(MantaSession.HEADER_KEY_STORAGE_CLASS));
 
