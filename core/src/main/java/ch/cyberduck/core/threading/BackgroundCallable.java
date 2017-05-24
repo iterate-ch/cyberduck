@@ -121,8 +121,14 @@ public class BackgroundCallable<T> implements Callable<T> {
         }
         catch(Exception e) {
             this.failure(client, e);
-            // No retry of runtime failure
-            action.alert(new DefaultExceptionMappingService().map(e));
+            // Runtime failure
+            if(action.alert(new DefaultExceptionMappingService().map(e))) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Retry background action %s", action));
+                }
+                // Retry
+                return this.run();
+            }
             // Failed action yields no result
             return null;
         }
