@@ -61,6 +61,7 @@ public class SessionPoolFactory {
                                      final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
                                      final VaultRegistry vault, final Usage... usage) {
         switch(bookmark.getProtocol().getType()) {
+            case file:
             case s3:
             case googlestorage:
             case dropbox:
@@ -69,7 +70,7 @@ public class SessionPoolFactory {
             case dav:
             case azure:
             case b2:
-                // Statless protocol
+                // Stateless protocol
                 return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, vault);
             case ftp:
             case irods:
