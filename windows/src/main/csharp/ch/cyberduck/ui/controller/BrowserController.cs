@@ -2863,47 +2863,38 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="action"></param>
         private bool CheckCopy(IDictionary<Path, Path> selected)
         {
-            if (PreferencesFactory.get().getBoolean("browser.move.confirm"))
+            if (PreferencesFactory.get().getBoolean("browser.copy.confirm"))
             {
                 StringBuilder alertText =
-                    new StringBuilder(LocaleFactory.localizedString("Do you want to move the selected files?",
+                    new StringBuilder(LocaleFactory.localizedString("Do you want to copy the selected files?",
                         "Duplicate"));
 
                 StringBuilder content = new StringBuilder();
                 int i = 0;
-                bool rename = false;
-                IEnumerator<KeyValuePair<Path, Path>> enumerator = null;
+                IEnumerator<KeyValuePair<Path, Path>> enumerator;
                 for (enumerator = selected.GetEnumerator(); i < 10 && enumerator.MoveNext();)
                 {
                     KeyValuePair<Path, Path> next = enumerator.Current;
-                    if (next.Key.getParent().equals(next.Value.getParent()))
-                    {
-                        rename = true;
-                    }
                     // u2022 = Bullet
                     content.Append("\n" + Character.toString('\u2022') + " " + next.Key.getName());
                     i++;
                 }
                 if (enumerator.MoveNext())
                 {
-                    content.Append("\n" + Character.toString('\u2022') + " ...)");
+                    content.Append("\n" + Character.toString('\u2022') + " …)");
                 }
                 bool result = false;
                 CommandBox(
-                    rename
-                        ? LocaleFactory.localizedString("Rename", "Transfer")
-                        : LocaleFactory.localizedString("Move", "Transfer"), alertText.ToString(), content.ToString(),
+                    LocaleFactory.localizedString("Copy", "Transfer"), alertText.ToString(), content.ToString(),
                     String.Format("{0}",
-                        rename
-                            ? LocaleFactory.localizedString("Rename", "Transfer")
-                            : LocaleFactory.localizedString("Move", "Transfer")), true,
+                        LocaleFactory.localizedString("Copy", "Transfer")), true,
                     LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
                     delegate(int option, bool verificationChecked)
                     {
                         if (verificationChecked)
                         {
                             // Never show again.
-                            PreferencesFactory.get().setProperty("browser.move.confirm", false);
+                            PreferencesFactory.get().setProperty("browser.copy.confirm", false);
                         }
                         if (option == 0)
                         {
