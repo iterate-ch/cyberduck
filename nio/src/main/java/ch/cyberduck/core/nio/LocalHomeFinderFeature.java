@@ -35,12 +35,12 @@ public class LocalHomeFinderFeature extends DefaultHomeFinderService {
         final Path directory = super.find();
         if(directory == DEFAULT_HOME) {
             final String home = LocalFactory.get().getAbsolute();
-            if(StringUtils.startsWith(home, String.valueOf(Path.DELIMITER))) {
-                return new Path(home, EnumSet.of(Path.Type.directory));
-            }
-            return new Path(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory)), home, EnumSet.of(Path.Type.directory));
+            return this.toPath(home);
         }
         return directory;
     }
 
+    protected Path toPath(final String home) {
+        return new Path(StringUtils.replace(home, "\\", "/"), EnumSet.of(Path.Type.directory));
+    }
 }
