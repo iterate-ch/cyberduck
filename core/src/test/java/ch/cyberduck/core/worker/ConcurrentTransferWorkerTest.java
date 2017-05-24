@@ -149,12 +149,13 @@ public class ConcurrentTransferWorkerTest {
         ) {
 
             @Override
-            public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
+            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertNotNull(source);
                 transferred.add(file);
+                return file;
             }
 
             @Override

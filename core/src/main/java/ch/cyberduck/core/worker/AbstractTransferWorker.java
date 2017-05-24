@@ -371,11 +371,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         try {
                             source = borrow(Connection.source);
                             destination = borrow(Connection.destination);
-                            transfer.transfer(source, destination,
+                            item.remote = transfer.transfer(source, destination,
                                     segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                     segment.getRename().local != null ? segment.getRename().local : item.local,
                                     options, segment, callback, progress, stream);
-
                             // Recursive
                             if(item.remote.isDirectory()) {
                                 for(TransferItem f : cache.get(item)) {
