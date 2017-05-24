@@ -102,10 +102,13 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     private Path toDecrypted(final Path file) {
-        if(null == file.attributes().getDecrypted()) {
-            log.error(String.format("Missing decrypted reference for %s", file));
+        if(file.getType().contains(Path.Type.encrypted)) {
+            if(null == file.attributes().getDecrypted()) {
+                log.error(String.format("Missing decrypted reference for %s", file));
+            }
+            return file.attributes().getDecrypted();
         }
-        return file.attributes().getDecrypted();
+        return file;
     }
 
     @Override
