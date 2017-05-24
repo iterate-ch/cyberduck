@@ -33,7 +33,6 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
@@ -148,9 +147,6 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         }
         if(type == UrlProvider.class) {
             return (T) new DropboxUrlProvider(this);
-        }
-        if(type == IdProvider.class) {
-            return (T) new DropboxFileIdProvider(this);
         }
         if(type == Find.class) {
             return (T) new DropboxFindFeature(this);
