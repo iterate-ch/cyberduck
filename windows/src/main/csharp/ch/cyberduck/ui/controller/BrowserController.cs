@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
@@ -36,8 +37,8 @@ using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.core.worker;
 using ch.cyberduck.core.vault;
+using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
@@ -51,11 +52,11 @@ using java.util;
 using org.apache.log4j;
 using StructureMap;
 using Application = ch.cyberduck.core.local.Application;
+using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
-using System.Drawing;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -406,7 +407,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (View.CurrentView == BrowserView.Bookmark || View.CurrentView == BrowserView.History ||
                     View.CurrentView == BrowserView.Bonjour)
                 {
-                    label = String.Format("{0} {1}", View.NumberOfBookmarks, LocaleFactory.localizedString("Bookmarks"));
+                    label = String.Format("{0} {1}", View.NumberOfBookmarks,
+                        LocaleFactory.localizedString("Bookmarks"));
                 }
                 else
                 {
@@ -541,7 +543,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (p.isFile())
                 {
-                    return Utils.ConvertFromJavaList<Application>(EditorFactory.instance().getEditors(p.getName()), null);
+                    return Utils.ConvertFromJavaList<Application>(EditorFactory.instance().getEditors(p.getName()),
+                        null);
                 }
             }
             return new List<Application>();
@@ -618,8 +621,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 DescriptiveUrlBag urls =
                     ((UrlProvider) Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath)
-                        .filter(DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
-                            DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated, DescriptiveUrl.Type.torrent);
+                    .filter(DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
+                        DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated, DescriptiveUrl.Type.torrent);
                 for (int i = 0; i < urls.size(); i++)
                 {
                     DescriptiveUrl descUrl = (DescriptiveUrl) urls.toArray()[i];
@@ -666,7 +669,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (dropargs.Effect == DragDropEffects.Copy)
             {
                 Host host =
-                    new HostDictionary().deserialize(((Host) dropargs.SourceModels[0]).serialize(SerializerFactory.get()));
+                    new HostDictionary().deserialize(
+                        ((Host) dropargs.SourceModels[0]).serialize(SerializerFactory.get()));
                 host.setUuid(null);
                 AddBookmark(host, destIndex);
             }
@@ -1021,9 +1025,16 @@ namespace Ch.Cyberduck.Ui.Controller
                             // Find source browser
                             if (controller.View.Browser.Equals(dropargs.SourceListView))
                             {
-                                transfer(
-                                    new CopyTransfer(controller.Session.getHost(), Session.getHost(),
-                                        Utils.ConvertToJavaMap(files)), new List<Path>(files.Values), false);
+                                if (controller.Session.Equals(Session))
+                                {
+                                    CopyPaths(files);
+                                }
+                                else
+                                {
+                                    transfer(
+                                        new CopyTransfer(controller.Session.getHost(), Session.getHost(),
+                                            Utils.ConvertToJavaMap(files)), new List<Path>(files.Values), false);
+                                }
                                 break;
                             }
                         }
@@ -1869,14 +1880,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewFolder()
         {
             return IsMounted() &&
-                   ((ch.cyberduck.core.features.Directory) Session.getFeature(typeof(ch.cyberduck.core.features.Directory))).isSupported(
+                   ((Directory) Session.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath));
         }
 
         private bool View_ValidateNewVault()
         {
             return IsMounted() && Session.getVault() != VaultRegistry.DISABLED &&
-                   ((ch.cyberduck.core.features.Directory) Session.getFeature(typeof(ch.cyberduck.core.features.Directory))).isSupported(
+                   ((Directory) Session.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath));
         }
 
@@ -1889,7 +1900,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_NewFile()
         {
-            CreateFileController fc = new CreateFileController(ObjectFactory.GetInstance<ICreateFilePromptView>(), this);
+            CreateFileController fc =
+                new CreateFileController(ObjectFactory.GetInstance<ICreateFilePromptView>(), this);
             fc.Show();
         }
 
@@ -1968,7 +1980,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         if (null != _dropFolder)
                         {
-                            string tmpDestFile = System.IO.Path.Combine(_dropFolder, System.IO.Path.GetFileName(tmpFile));
+                            string tmpDestFile =
+                                System.IO.Path.Combine(_dropFolder, System.IO.Path.GetFileName(tmpFile));
                             if (File.Exists(tmpDestFile))
                             {
                                 File.Delete(tmpDestFile);
@@ -2353,7 +2366,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool IsMounted()
         {
-            if(Session == SessionPool.DISCONNECTED) {
+            if (Session == SessionPool.DISCONNECTED)
+            {
                 return false;
             }
             return Workdir != null;
@@ -2608,7 +2622,9 @@ namespace Ch.Cyberduck.Ui.Controller
             CallbackDelegate callbackDelegate =
                 delegate
                 {
-                    background(new MountAction(this, SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser), host, _limitListener));
+                    background(new MountAction(this,
+                        SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser), host,
+                        _limitListener));
                 };
             Unmount(callbackDelegate);
         }
@@ -2624,7 +2640,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool isIdle()
         {
-            return this.getRegistry().isEmpty();
+            return getRegistry().isEmpty();
         }
 
         public static bool ApplicationShouldTerminate()
@@ -2772,6 +2788,15 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        protected internal void CopyPaths(IDictionary<Path, Path> selected)
+        {
+            if (CheckCopy(selected))
+            {
+                CopyAction copy = new CopyAction(this, Utils.ConvertToJavaMap(selected));
+                Background(copy);
+            }
+        }
+
         /// <summary>
         /// Displays a warning dialog about files to be moved
         /// </summary>
@@ -2820,6 +2845,56 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             // Never show again.
                             PreferencesFactory.get().setProperty("browser.move.confirm", false);
+                        }
+                        if (option == 0)
+                        {
+                            result = CheckOverwrite(selected.Values);
+                        }
+                    });
+                return result;
+            }
+            return CheckOverwrite(selected.Values);
+        }
+
+        /// <summary>
+        /// Displays a warning dialog about files to be copied
+        /// </summary>
+        /// <param name="selected">The files to check for existence</param>
+        /// <param name="action"></param>
+        private bool CheckCopy(IDictionary<Path, Path> selected)
+        {
+            if (PreferencesFactory.get().getBoolean("browser.copy.confirm"))
+            {
+                StringBuilder alertText =
+                    new StringBuilder(LocaleFactory.localizedString("Do you want to copy the selected files?",
+                        "Duplicate"));
+
+                StringBuilder content = new StringBuilder();
+                int i = 0;
+                IEnumerator<KeyValuePair<Path, Path>> enumerator;
+                for (enumerator = selected.GetEnumerator(); i < 10 && enumerator.MoveNext();)
+                {
+                    KeyValuePair<Path, Path> next = enumerator.Current;
+                    // u2022 = Bullet
+                    content.Append("\n" + Character.toString('\u2022') + " " + next.Key.getName());
+                    i++;
+                }
+                if (enumerator.MoveNext())
+                {
+                    content.Append("\n" + Character.toString('\u2022') + " …)");
+                }
+                bool result = false;
+                CommandBox(
+                    LocaleFactory.localizedString("Copy", "Transfer"), alertText.ToString(), content.ToString(),
+                    String.Format("{0}",
+                        LocaleFactory.localizedString("Copy", "Transfer")), true,
+                    LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
+                    delegate(int option, bool verificationChecked)
+                    {
+                        if (verificationChecked)
+                        {
+                            // Never show again.
+                            PreferencesFactory.get().setProperty("browser.copy.confirm", false);
                         }
                         if (option == 0)
                         {
@@ -3283,6 +3358,34 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     IList<Path> moved = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
                     _controller.Reload(_controller.Workdir, moved,
+                        (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
+                }
+            }
+        }
+
+        private class CopyAction : WorkerBackgroundAction
+        {
+            public CopyAction(BrowserController controller, Map selected)
+                : base(controller, controller.Session, new InnerCopyWorker(controller, selected))
+            {
+            }
+
+            private class InnerCopyWorker : CopyWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Map _files;
+
+                public InnerCopyWorker(BrowserController controller, Map files)
+                    : base(files, new DisabledProgressListener())
+                {
+                    _controller = controller;
+                    _files = files;
+                }
+
+                public override void cleanup(object result)
+                {
+                    IList<Path> copied = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
+                    _controller.Reload(_controller.Workdir, copied,
                         (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
             }
