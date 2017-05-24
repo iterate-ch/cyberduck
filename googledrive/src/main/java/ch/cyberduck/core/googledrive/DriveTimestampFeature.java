@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         try {
-            final String fileid = new DriveFileidProvider(session).getFileid(file);
+            final String fileid = session.getFeature(IdProvider.class).getFileid(file);
             final File properties = new File();
             properties.setModifiedTime(new DateTime(modified));
             session.getClient().files().update(fileid, properties).setFields("modifiedTime").execute();
