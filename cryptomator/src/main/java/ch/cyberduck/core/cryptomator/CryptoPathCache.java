@@ -59,12 +59,7 @@ public final class CryptoPathCache implements Cache<Path> {
         // Swap with decrypted paths
         for(int i = 0; i < encrypted.size(); i++) {
             final Path f = encrypted.get(i);
-            if(f.getType().contains(Path.Type.encrypted)) {
-                list.add(i, this.toDecrypted(f));
-            }
-            else {
-                list.add(i, f);
-            }
+            list.add(i, this.toDecrypted(f));
         }
         return delegate.put(this.toDecrypted(folder), list);
     }
