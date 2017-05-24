@@ -99,7 +99,7 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public String getDefaultHostname() {
-        return StringUtils.EMPTY;
+        return LOCAL_HOSTNAME;
     }
 
     @Override

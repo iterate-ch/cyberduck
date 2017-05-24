@@ -526,7 +526,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         if(item.equals(bookmark)) {
             final NSWindow window = window();
             if(null != window) {
-                window.close();
+                window.orderOut(null);
             }
         }
     }

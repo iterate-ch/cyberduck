@@ -32,6 +32,6 @@ public class OneDriveQuotaFeatureTest extends AbstractOneDriveTest {
         final Quota quota = new OneDriveQuotaFeature(session);
         Quota.Space space = quota.get();
         assertTrue(space.available > 0);
-        assertTrue(space.used > 0);
+        assertTrue(space.used >= 0);
     }
 }

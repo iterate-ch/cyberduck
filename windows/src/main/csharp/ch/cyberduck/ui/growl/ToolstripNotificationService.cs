@@ -37,6 +37,15 @@ namespace Ch.Cyberduck.Ui.Growl
 
         public void notify(string title, string description)
         {
+			if (String.IsNullOrEmpty(title))
+			{
+			    return;
+			}
+			if (String.IsNullOrEmpty(description))
+			{
+			    // Balloon tip text must have a non-empty value
+			    return;
+			}
             _icon.ShowBalloonTip(PreferencesFactory.get().getInteger("notifications.timeout.milliseconds"), title,
                 description, ToolTipIcon.Info);
         }

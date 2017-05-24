@@ -91,10 +91,9 @@ public class GoogleStorageDirectoryFeatureTest {
                 return null;
             }
         }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new GoogleStorageDirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(test, null, new TransferStatus());
-        test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new GoogleStorageDirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(new Path(bucket,
+                UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

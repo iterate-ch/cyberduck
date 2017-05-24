@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.http.DelayedHttpEntity;
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -173,7 +174,8 @@ public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecu
         private HttpResponse response;
 
         public CommonsHttpResponse(final HttpResponse response) throws IOException {
-            super(null == response.getEntity() ? new NullInputStream(0L) : response.getEntity().getContent());
+            super(null == response.getEntity() ? new NullInputStream(0L) :
+                    new HttpMethodReleaseInputStream(response));
             this.response = response;
         }
 

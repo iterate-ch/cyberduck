@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.InvalidPathException;
 
 public class LocalSession extends Session<FileSystem> {
     private static final Logger log = Logger.getLogger(LocalSession.class);
@@ -58,6 +59,19 @@ public class LocalSession extends Session<FileSystem> {
 
     public LocalSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h);
+    }
+
+    public java.nio.file.Path toPath(final Path file) throws LocalAccessDeniedException {
+        return this.toPath(file.getAbsolute());
+    }
+
+    public java.nio.file.Path toPath(final String path) throws LocalAccessDeniedException {
+        try {
+            return client.getPath(path.replaceFirst("^/(.:[/\\\\])", "$1"));
+        }
+        catch(InvalidPathException e) {
+            throw new LocalAccessDeniedException(e.getReason(), e);
+        }
     }
 
     @Override
@@ -74,7 +88,7 @@ public class LocalSession extends Session<FileSystem> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache cache) throws BackgroundException {
         final Path home = new LocalHomeFinderFeature(this).find();
         try {
-            lock = LocalFactory.get(home.getAbsolute()).lock(true);
+            lock = LocalFactory.get(this.toPath(home).toString()).lock(true);
         }
         catch(LocalAccessDeniedException e) {
             log.debug(String.format("Ignore failure obtaining lock for %s", home));
@@ -84,7 +98,7 @@ public class LocalSession extends Session<FileSystem> {
     @Override
     protected void logout() throws BackgroundException {
         final Path home = new LocalHomeFinderFeature(this).find();
-        LocalFactory.get(home.getAbsolute()).release(lock);
+        LocalFactory.get(this.toPath(home).toString()).release(lock);
     }
 
     protected boolean isPosixFilesystem() {

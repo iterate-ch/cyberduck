@@ -140,7 +140,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
                         selected.set(LocalFactory.get(next.toString()));
                     }
                 }
-                panel.close();
+                panel.orderOut(null);
             }
         };
         proxy.invoke(action, action.lock(), true);

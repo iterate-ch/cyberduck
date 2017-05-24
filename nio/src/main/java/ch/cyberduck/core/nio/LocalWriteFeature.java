@@ -17,7 +17,6 @@ package ch.cyberduck.core.nio;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
@@ -31,21 +30,23 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
 import java.util.Set;
 
 public class LocalWriteFeature extends AppendWriteFeature<Void> {
 
-    protected LocalWriteFeature(final Session<?> session) {
+    private final LocalSession session;
+
+    protected LocalWriteFeature(final LocalSession session) {
         super(session);
+        this.session = session;
     }
 
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final java.nio.file.Path p = Paths.get(file.getAbsolute());
+            final java.nio.file.Path p = session.toPath(file);
             final Set<OpenOption> options = new HashSet<>();
             options.add(StandardOpenOption.WRITE);
             if(status.isAppend()) {
@@ -72,7 +73,7 @@ public class LocalWriteFeature extends AppendWriteFeature<Void> {
                     options.add(StandardOpenOption.CREATE_NEW);
                 }
             }
-            final FileChannel channel = FileChannel.open(Paths.get(file.getAbsolute()), options.stream().toArray(OpenOption[]::new));
+            final FileChannel channel = FileChannel.open(session.toPath(file), options.stream().toArray(OpenOption[]::new));
             channel.position(status.getOffset());
             return new VoidStatusOutputStream(Channels.newOutputStream(channel));
         }

@@ -101,7 +101,7 @@ public class LoginConnectionService implements ConnectionService {
         synchronized(login) {
             login.validate(bookmark,
                     MessageFormat.format(LocaleFactory.localizedString(
-                            "Login {0} with username and password", "Credentials"), bookmark.getHostname()),
+                            "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
                     new LoginOptions(bookmark.getProtocol()));
         }
         this.connect(session, cache, callback);
@@ -153,7 +153,7 @@ public class LoginConnectionService implements ConnectionService {
                 bookmark.getProtocol().getName()));
 
         // New connection opened
-        notification.notify("Connection opened", bookmark.getHostname());
+        notification.notify("Connection opened", BookmarkNameProvider.toString(bookmark));
 
         // Update last accessed timestamp
         bookmark.setTimestamp(new Date());

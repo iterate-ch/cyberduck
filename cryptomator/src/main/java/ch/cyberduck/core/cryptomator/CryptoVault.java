@@ -25,7 +25,6 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.features.*;
@@ -36,7 +35,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -171,8 +169,7 @@ public class CryptoVault implements Vault {
         // Nullify to avoid recursion
         home.attributes().setVault(null);
         // Mark vault as volume for lookup in registry
-        home.attributes().setVault(new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault),
-                new PathAttributesDictionary().deserialize(home.attributes().serialize(SerializerFactory.get()))));
+        home.attributes().setVault(new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault), new PathAttributes(home.attributes())));
         return this;
     }
 
@@ -284,9 +281,13 @@ public class CryptoVault implements Vault {
                 log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
                 return file;
             }
+            if(file.equals(home)) {
+                log.warn(String.format("Skip vault home %s because the root has no metadata file", file));
+                return file;
+            }
             final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
+            final PathAttributes attributes = new PathAttributes(file.attributes());
             // Translate file size
             attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
             attributes.setVersionId(null);
@@ -327,7 +328,7 @@ public class CryptoVault implements Vault {
             try {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
-                final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
+                final PathAttributes attributes = new PathAttributes(file.attributes());
                 attributes.setVersionId(null);
                 if(inflated.getName().startsWith(DIR_PREFIX)) {
                     final Permission permission = attributes.getPermission();

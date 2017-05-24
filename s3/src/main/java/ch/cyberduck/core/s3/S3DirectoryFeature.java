@@ -17,8 +17,10 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -33,6 +35,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
+
+import java.util.EnumSet;
 
 public class S3DirectoryFeature implements Directory<StorageObject> {
 
@@ -55,6 +59,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
             service.create(folder, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
+            return folder;
         }
         else {
             if(null == status.getEncryption()) {
@@ -70,14 +75,17 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                 }
             }
             if(Checksum.NONE == status.getChecksum()) {
-                status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+                status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
             }
             // Add placeholder object
             status.setMime(MIMETYPE);
-            folder.getType().add(Path.Type.placeholder);
-            new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
+            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
+            type.add(Path.Type.placeholder);
+            final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
+                    new PathAttributes(folder.attributes()));
+            new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
+            return placeholder;
         }
-        return folder;
     }
 
     @Override

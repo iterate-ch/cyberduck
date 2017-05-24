@@ -1,7 +1,7 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,11 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
-public class InvalidPathException extends LocalAccessDeniedException {
+import ch.cyberduck.core.shared.DisabledMoveFeature;
 
-    public InvalidPathException(final String detail) {
-        super(detail);
+public class NullMoveFeature extends DisabledMoveFeature {
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return true;
     }
 }

@@ -44,6 +44,7 @@ import ch.cyberduck.core.worker.MoveWorker;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -169,6 +170,7 @@ public class MoveWorkerTest {
         session.close();
     }
 
+    @Ignore
     @Test(expected = UnsupportedException.class)
     public void testMoveFileIntoVault() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
@@ -199,6 +201,7 @@ public class MoveWorkerTest {
         registry.clear();
     }
 
+    @Ignore
     @Test(expected = UnsupportedException.class)
     public void testMoveDirectoryIntoVault() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
@@ -232,6 +235,7 @@ public class MoveWorkerTest {
         registry.clear();
     }
 
+    @Ignore
     @Test(expected = UnsupportedException.class)
     public void testMoveFileOutsideVault() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
@@ -265,6 +269,7 @@ public class MoveWorkerTest {
         registry.clear();
     }
 
+    @Ignore
     @Test(expected = UnsupportedException.class)
     public void testMoveDirectoryOutsideVault() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(

@@ -41,7 +41,7 @@ public class LocalMoveFeature implements Move {
             if(exists) {
                 delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
             }
-            Files.move(session.getClient().getPath(file.getAbsolute()), session.getClient().getPath(renamed.getAbsolute()));
+            Files.move(session.toPath(file), session.toPath(renamed));
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Cannot rename {0}", e, file);

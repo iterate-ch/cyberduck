@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -29,7 +28,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -39,7 +37,6 @@ import java.io.IOException;
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
-import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2DirectoryFeature implements Directory<BaseB2Response> {
@@ -75,14 +72,12 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
             }
             else {
                 if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+                    status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
                 }
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
-                return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                        new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get()))
-                                .withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
+                return folder;
             }
         }
         catch(B2ApiException e) {

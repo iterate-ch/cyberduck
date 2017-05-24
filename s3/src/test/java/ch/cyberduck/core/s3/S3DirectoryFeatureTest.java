@@ -90,10 +90,8 @@ public class S3DirectoryFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(test, null, new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(b.get());
-        test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -110,9 +108,7 @@ public class S3DirectoryFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(test, null, new TransferStatus());
-        test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());

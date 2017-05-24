@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -66,6 +67,9 @@ public class NullSession extends Session<Void> {
         }
         if(type == Read.class) {
             return (T) new NullReadFeature();
+        }
+        if(type == Move.class) {
+            return (T) new NullMoveFeature();
         }
         return super._getFeature(type);
     }

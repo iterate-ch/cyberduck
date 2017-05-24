@@ -37,7 +37,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -128,12 +128,11 @@ public class SpectraObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(placeholder, null, new TransferStatus());
-        placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path placeholder = new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        new SpectraDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

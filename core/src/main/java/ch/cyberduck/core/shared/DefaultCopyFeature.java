@@ -49,12 +49,12 @@ public class DefaultCopyFeature implements Copy {
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         if(source.isDirectory()) {
             if(!to.getFeature(Find.class).find(target)) {
-                to.getFeature(Directory.class).mkdir(target, null, status);
+                to.getFeature(Directory.class).mkdir(target, null, new TransferStatus().length(0L));
             }
         }
         else {
             if(!to.getFeature(Find.class).find(target.getParent())) {
-                this.copy(source.getParent(), target.getParent(), new TransferStatus());
+                this.copy(source.getParent(), target.getParent(), new TransferStatus().length(0L));
             }
             InputStream in = null;
             OutputStream out = null;

@@ -43,23 +43,28 @@ public class LocalListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<ch.cyberduck.core.Path> paths = new AttributedList<>();
-        try (DirectoryStream<java.nio.file.Path> directoryStream = Files.newDirectoryStream(session.getClient().getPath(directory.getAbsolute()))) {
+        try (DirectoryStream<java.nio.file.Path> directoryStream = Files.newDirectoryStream(session.toPath(directory))) {
             for(java.nio.file.Path path : directoryStream) {
-                final PathAttributes attributes = feature.convert(path);
-                final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
-                if(Files.isDirectory(path)) {
-                    type.add(Path.Type.directory);
+                try {
+                    final PathAttributes attributes = feature.convert(path);
+                    final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
+                    if(Files.isDirectory(path)) {
+                        type.add(Path.Type.directory);
+                    }
+                    if(Files.isRegularFile(path)) {
+                        type.add(Path.Type.file);
+                    }
+                    if(Files.isSymbolicLink(path)) {
+                        type.add(Path.Type.symboliclink);
+                    }
+                    final Path file = new Path(directory, path.getFileName().toString(), type, attributes);
+                    if(this.post(path, file)) {
+                        paths.add(file);
+                        listener.chunk(directory, paths);
+                    }
                 }
-                if(Files.isRegularFile(path)) {
-                    type.add(Path.Type.file);
-                }
-                if(Files.isSymbolicLink(path)) {
-                    type.add(Path.Type.symboliclink);
-                }
-                final Path file = new Path(directory, path.getFileName().toString(), type, attributes);
-                if(this.post(path, file)) {
-                    paths.add(file);
-                    listener.chunk(directory, paths);
+                catch(IOException e) {
+                    log.warn(String.format("Failure reading attributes for %s", path));
                 }
             }
         }

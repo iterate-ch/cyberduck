@@ -60,9 +60,12 @@ public class VaultRegistryMoveFeature implements Move {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
             }
-            copy.copy(source, target, new TransferStatus());
+            copy.copy(source, target, new TransferStatus().length(source.isFile() ? -1L : 0L));
             // Delete source file after copy is complete
-            session.getFeature(Delete.class).delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
+            final Delete delete = session.getFeature(Delete.class);
+            if(delete.isSupported(source)) {
+                delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
+            }
         }
     }
 

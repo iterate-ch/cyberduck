@@ -15,10 +15,12 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
@@ -30,11 +32,15 @@ public class LocalHomeFinderFeature extends DefaultHomeFinderService {
 
     @Override
     public Path find() throws BackgroundException {
-        final Path home = super.find();
-        if(home == DEFAULT_HOME) {
-            return new Path(PreferencesFactory.get().getProperty("local.user.home"), EnumSet.of(Path.Type.directory));
+        final Path directory = super.find();
+        if(directory == DEFAULT_HOME) {
+            final String home = LocalFactory.get().getAbsolute();
+            if(StringUtils.startsWith(home, String.valueOf(Path.DELIMITER))) {
+                return new Path(home, EnumSet.of(Path.Type.directory));
+            }
+            return new Path(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory)), home, EnumSet.of(Path.Type.directory));
         }
-        return home;
+        return directory;
     }
 
 }
