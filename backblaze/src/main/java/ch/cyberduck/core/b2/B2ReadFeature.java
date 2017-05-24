@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -42,11 +43,11 @@ public class B2ReadFeature implements Read {
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 return session.getClient().downloadFileRangeByIdToStream(
-                        new B2FileidProvider(session).getFileid(file),
+                        session.getFeature(IdProvider.class).getFileid(file),
                         range.getStart(), range.getEnd()
                 );
             }
-            return session.getClient().downloadFileByIdToStream(new B2FileidProvider(session).getFileid(file));
+            return session.getClient().downloadFileByIdToStream(session.getFeature(IdProvider.class).getFileid(file));
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(session).map("Download {0} failed", e, file);

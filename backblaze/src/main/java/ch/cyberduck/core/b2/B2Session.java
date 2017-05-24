@@ -57,6 +57,8 @@ import synapticloop.b2.exception.B2ApiException;
 
 public class B2Session extends HttpSession<B2ApiClient> {
 
+    private final B2FileidProvider fileid = new B2FileidProvider(this);
+
     public B2Session(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
@@ -155,7 +157,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return (T) new B2BucketTypeFeature(this);
         }
         if(type == IdProvider.class) {
-            return (T) new B2FileidProvider(this);
+            return (T) fileid;
         }
         if(type == AttributesFinder.class) {
             return (T) new B2AttributesFinderFeature(this);

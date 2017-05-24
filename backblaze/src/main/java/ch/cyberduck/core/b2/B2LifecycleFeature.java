@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
@@ -73,7 +74,7 @@ public class B2LifecycleFeature implements Lifecycle {
     public void setConfiguration(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
         try {
             session.getClient().updateBucket(
-                    new B2FileidProvider(session).getFileid(containerService.getContainer(container)),
+                    session.getFeature(IdProvider.class).getFileid(containerService.getContainer(container)),
                     new B2BucketTypeFeature(session).convert(container.attributes().getAcl()),
                     new LifecycleRule(
                             null == configuration.getExpiration() ? null : configuration.getExpiration().longValue(),
