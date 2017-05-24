@@ -324,7 +324,7 @@ public abstract class Transfer implements Serializable {
      * @param progressListener Listener
      * @param streamListener   Listener
      */
-    public abstract void transfer(Session<?> source, Session<?> destination, Path file, Local local,
+    public abstract Path transfer(Session<?> source, Session<?> destination, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
                                   ConnectionCallback callback,
                                   ProgressListener progressListener,

@@ -60,11 +60,12 @@ public class SingleTransferWorkerTest {
         final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 //
+                return file;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol()));
@@ -120,7 +121,7 @@ public class SingleTransferWorkerTest {
         final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
@@ -130,6 +131,7 @@ public class SingleTransferWorkerTest {
                 else {
                     assertFalse(status.isExists());
                 }
+                return file;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
@@ -187,7 +189,7 @@ public class SingleTransferWorkerTest {
         };
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
@@ -197,6 +199,7 @@ public class SingleTransferWorkerTest {
                 else {
                     assertFalse(status.isExists());
                 }
+                return file;
             }
 
             @Override
