@@ -62,6 +62,7 @@ public class SessionPoolFactory {
                                      final VaultRegistry vault, final Usage... usage) {
         switch(bookmark.getProtocol().getType()) {
             case file:
+            case onedrive:
             case s3:
             case googlestorage:
             case dropbox:
