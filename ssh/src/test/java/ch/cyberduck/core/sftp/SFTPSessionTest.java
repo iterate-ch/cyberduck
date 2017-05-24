@@ -187,7 +187,7 @@ public class SFTPSessionTest {
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login failed", title);
-                assertEquals("Login test.cyberduck.ch with username and password. Please contact your web hosting service provider for assistance.", reason);
+                assertEquals("Login test.cyberduck.ch – SFTP with username and password. Please contact your web hosting service provider for assistance.", reason);
                 credentials.setUsername("u");
                 change.set(true);
                 throw new LoginCanceledException();
@@ -214,7 +214,7 @@ public class SFTPSessionTest {
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
-                assertEquals("Login test.cyberduck.ch with username and password. No login credentials could be found in the Keychain.", reason);
+                assertEquals("Login test.cyberduck.ch – SFTP with username and password. No login credentials could be found in the Keychain.", reason);
                 credentials.setUsername("u");
                 change.set(true);
                 throw new LoginCanceledException();
