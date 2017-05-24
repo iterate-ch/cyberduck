@@ -106,7 +106,7 @@ public class ConcurrentTransferWorkerTest {
         user.setHomeDirectory(new TemporaryApplicationResourcesFinder().find().getAbsolute());
         List<Authority> authorities = new ArrayList<Authority>();
         authorities.add(new WritePermission());
-        authorities.add(new ConcurrentLoginPermission(2, 2));
+        authorities.add(new ConcurrentLoginPermission(2, Integer.MAX_VALUE));
         user.setAuthorities(authorities);
         userManager.save(user);
         serverFactory.setUserManager(userManager);

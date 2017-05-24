@@ -20,9 +20,12 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.Path;
 
+import org.apache.log4j.Logger;
+
 import java.util.Set;
 
 public final class CryptoPathCache implements Cache<Path> {
+    private static final Logger log = Logger.getLogger(CryptoPathCache.class);
 
     private final Cache<Path> delegate;
 
@@ -32,17 +35,17 @@ public final class CryptoPathCache implements Cache<Path> {
 
     @Override
     public boolean isHidden(final Path file) {
-        return delegate.isHidden(file.attributes().getDecrypted());
+        return delegate.isHidden(this.toDecrypted(file));
     }
 
     @Override
     public boolean isValid(final Path file) {
-        return delegate.isValid(file.attributes().getDecrypted());
+        return delegate.isValid(this.toDecrypted(file));
     }
 
     @Override
     public boolean isCached(final Path folder) {
-        return delegate.isCached(folder.attributes().getDecrypted());
+        return delegate.isCached(this.toDecrypted(folder));
     }
 
     @Override
@@ -56,19 +59,14 @@ public final class CryptoPathCache implements Cache<Path> {
         // Swap with decrypted paths
         for(int i = 0; i < encrypted.size(); i++) {
             final Path f = encrypted.get(i);
-            if(f.getType().contains(Path.Type.encrypted)) {
-                list.add(i, f.attributes().getDecrypted());
-            }
-            else {
-                list.add(i, f);
-            }
+            list.add(i, this.toDecrypted(f));
         }
-        return delegate.put(folder.attributes().getDecrypted(), list);
+        return delegate.put(this.toDecrypted(folder), list);
     }
 
     @Override
     public AttributedList<Path> get(final Path folder) {
-        final AttributedList<Path> decrypted = delegate.get(folder.attributes().getDecrypted());
+        final AttributedList<Path> decrypted = delegate.get(this.toDecrypted(folder));
         final AttributedList<Path> list = new AttributedList<>();
         // Swap with encrypted paths
         for(int i = 0; i < decrypted.size(); i++) {
@@ -85,7 +83,7 @@ public final class CryptoPathCache implements Cache<Path> {
 
     @Override
     public AttributedList<Path> remove(final Path folder) {
-        return delegate.remove(folder.attributes().getDecrypted());
+        return delegate.remove(this.toDecrypted(folder));
     }
 
     @Override
@@ -95,7 +93,17 @@ public final class CryptoPathCache implements Cache<Path> {
 
     @Override
     public void invalidate(final Path folder) {
-        delegate.invalidate(folder.attributes().getDecrypted());
+        delegate.invalidate(this.toDecrypted(folder));
+    }
+
+    private Path toDecrypted(final Path file) {
+        if(file.getType().contains(Path.Type.encrypted)) {
+            if(null == file.attributes().getDecrypted()) {
+                log.error(String.format("Missing decrypted reference for %s", file));
+            }
+            return file.attributes().getDecrypted();
+        }
+        return file;
     }
 
     @Override

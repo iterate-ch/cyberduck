@@ -168,8 +168,6 @@ public class CryptoVault implements Vault {
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         // Nullify to avoid recursion
         home.attributes().setVault(null);
-        // Mark vault as volume for lookup in registry
-        home.attributes().setVault(new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault), new PathAttributes(home.attributes())));
         return this;
     }
 

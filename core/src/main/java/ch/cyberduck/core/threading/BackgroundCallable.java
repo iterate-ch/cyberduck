@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.log4j.Logger;
 
@@ -120,6 +121,14 @@ public class BackgroundCallable<T> implements Callable<T> {
         }
         catch(Exception e) {
             this.failure(client, e);
+            // Runtime failure
+            if(action.alert(new DefaultExceptionMappingService().map(e))) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Retry background action %s", action));
+                }
+                // Retry
+                return this.run();
+            }
             // Failed action yields no result
             return null;
         }
