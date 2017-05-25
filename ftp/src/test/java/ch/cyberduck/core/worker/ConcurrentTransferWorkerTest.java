@@ -46,6 +46,7 @@ import org.apache.ftpserver.usermanager.impl.ConcurrentLoginPermission;
 import org.apache.ftpserver.usermanager.impl.WritePermission;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -58,6 +59,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class ConcurrentTransferWorkerTest {
 
     private static int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
