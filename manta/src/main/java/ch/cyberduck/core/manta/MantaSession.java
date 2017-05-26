@@ -26,6 +26,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -51,8 +52,11 @@ import java.io.IOException;
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.config.BaseChainedConfigContext;
 import com.joyent.manta.config.ChainedConfigContext;
+import com.joyent.manta.config.ConfigContext;
 import com.joyent.manta.config.DefaultsConfigContext;
+import com.joyent.manta.config.SettableConfigContext;
 import com.joyent.manta.config.StandardConfigContext;
+import sun.security.krb5.Config;
 
 public class MantaSession extends SSLSession<MantaClient> {
 
@@ -61,12 +65,12 @@ public class MantaSession extends SSLSession<MantaClient> {
     static final String HEADER_KEY_STORAGE_CLASS = "Durability-Level";
 
     final MantaPathMapper pathMapper;
+
     final MantaExceptionMappingService exceptionMapper;
 
-    private BaseChainedConfigContext config;
+    private SettableConfigContext<BaseChainedConfigContext> config;
 
     private String keyFingerprint;
-    private final String userHomePath;
 
     public MantaSession(final Host h) {
         this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -78,13 +82,10 @@ public class MantaSession extends SSLSession<MantaClient> {
 
         final Credentials bookmark = host.getCredentials();
         pathMapper = new MantaPathMapper(this);
-        userHomePath = pathMapper.getNormalizedHomePath();
 
-        config = new ChainedConfigContext(
-                new DefaultsConfigContext(),
-                new StandardConfigContext()
+        config = new StandardConfigContext()
                         .setDisableNativeSignatures(true)
-                        .setNoAuth(false))
+                        .setNoAuth(false)
                         .setMantaURL("https://" + h.getHostname())
                         .setMantaUser(bookmark.getUsername());
     }
@@ -101,19 +102,21 @@ public class MantaSession extends SSLSession<MantaClient> {
                       final Cache<Path> cache) throws BackgroundException {
         keyFingerprint = null;
 
+        if (!host.getCredentials().getUsername().matches("[A-z0-9._]+(/[A-z0-9._]+)?")) {
+            throw new LoginFailureException("Invalid username given: " + host.getCredentials().getUsername());
+        }
+
         Validate.notNull(host);
-        final boolean success = new MantaPublicKeyAuthentication(this, keychain)
-                .authenticate(host, prompt, cancel);
+        final boolean success = new MantaPublicKeyAuthentication(this, keychain).authenticate(host, prompt, cancel);
 
         if(!success) {
-            throw exceptionMapper.map(new RuntimeException("Failed to calculate key fingerprint"));
+            throw new LoginFailureException("Failed to calculate key fingerprint");
         }
 
         Validate.notNull(keyFingerprint, "Key fingerprint missing.");
 
         config.setMantaKeyId(keyFingerprint)
                 .setMantaKeyPath(host.getCredentials().getIdentity().getAbsolute());
-        // host.getCredentials().getIdentity() _may_ throw but shouldn't since we just got a key out of it
 
         client = new MantaClient(config);
 

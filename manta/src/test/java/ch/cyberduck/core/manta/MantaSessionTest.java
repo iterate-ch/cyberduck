@@ -15,6 +15,7 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -44,5 +45,14 @@ public class MantaSessionTest {
         assertTrue(session.getFeature(UrlProvider.class) instanceof MantaUrlProviderFeature);
         assertTrue(session.getFeature(AttributesFinder.class) instanceof MantaAttributesFinderFeature);
     }
-    // TODO: WAY MORE TESTS
+
+    @Test
+    public void testUserOwnerIdentification() {
+        final MantaSession session = new MantaSession(
+                new Host(new MantaProtocol(), null, new Credentials("owner")));
+
+        // assertTrue(session);
+
+    }
+
 }
