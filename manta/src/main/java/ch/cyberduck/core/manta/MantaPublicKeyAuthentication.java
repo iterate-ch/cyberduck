@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyException;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -42,6 +43,7 @@ import java.util.Base64;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
 import com.joyent.manta.config.KeyPairFactory;
+import com.joyent.manta.exception.MantaAuthenticationException;
 import com.joyent.manta.http.signature.KeyFingerprinter;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
@@ -74,7 +76,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         log.info(String.format("Login using public key authentication with credentials %s", credentials));
 
         if(!credentials.isPublicKeyAuthentication()) {
-            throw new RuntimeException("An unexpected error has occurred");
+            throw session.exceptionMapper.map(new KeyException("Private Key Authentication is required"));
         }
 
         final Local identity = credentials.getIdentity();
@@ -87,7 +89,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                     new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), true);
         }
         catch(IOException e) {
-            throw new MantaExceptionMappingService().map(e);
+            throw session.exceptionMapper.map(e);
         }
 
         log.info(String.format("Reading private key %s with key format %s", identity, format));
@@ -155,7 +157,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
             fingerprint = KeyFingerprinter.md5Fingerprint(new KeyPair(provider.getPublic(), provider.getPrivate()));
         }
         catch(IOException e) {
-            throw new MantaExceptionMappingService().map(e);
+            throw session.exceptionMapper.map(e);
         }
 
         session.setFingerprint(fingerprint);

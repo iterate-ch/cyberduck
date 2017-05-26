@@ -34,8 +34,8 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class MantaTouchFeatureTest extends AbstractMantaTest {
-    private static final Logger log = Logger.getLogger(MantaTouchFeatureTest.class);
+public class MantaTouchFeatureIT extends AbstractMantaTest {
+    private static final Logger log = Logger.getLogger(MantaTouchFeatureIT.class);
 
     @Test
     public void testTouch() throws Exception {

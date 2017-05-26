@@ -51,7 +51,7 @@ public class MantaReadFeature implements Read {
             return emptyFileFallback(remotePath);
         }
         catch(IOException e) {
-            throw new MantaExceptionMappingService().map(e);
+            throw session.exceptionMapper.map(e);
         }
     }
 
@@ -66,11 +66,11 @@ public class MantaReadFeature implements Read {
             probablyEmptyFile = session.getClient().head(remotePath);
         }
         catch(IOException e) {
-            throw new MantaExceptionMappingService().map("Cannot read file {0}", e);
+            throw session.exceptionMapper.map("Cannot read file {0}", e);
         }
 
         if(probablyEmptyFile.getContentLength() != 0) {
-            throw new MantaExceptionMappingService().map(
+            throw session.exceptionMapper.map(
                     "Cannot read file {0}",
                     new RuntimeException("Empty file was not actually empty. Concurrent Access detected."));
         }

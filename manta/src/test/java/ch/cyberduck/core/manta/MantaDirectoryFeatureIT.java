@@ -32,7 +32,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class MantaDirectoryFeatureTest extends AbstractMantaTest {
+public class MantaDirectoryFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testMkdir() throws Exception {

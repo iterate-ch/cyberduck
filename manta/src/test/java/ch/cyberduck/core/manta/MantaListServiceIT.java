@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
  */
 
 @Category(IntegrationTest.class)
-public class MantaListServiceTest extends AbstractMantaTest {
+public class MantaListServiceIT extends AbstractMantaTest {
 
     @Test
     public void testListDrives() throws Exception {

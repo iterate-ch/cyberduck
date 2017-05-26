@@ -17,10 +17,13 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -30,14 +33,25 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.KeyException;
 
 import com.joyent.manta.exception.MantaClientException;
+import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.exception.MantaIOException;
 
 public class MantaExceptionMappingService extends AbstractExceptionMappingService<Exception> {
 
     private static final Logger log = Logger.getLogger(MantaExceptionMappingService.class);
+    private final MantaSession session;
+
+    public MantaExceptionMappingService(final MantaSession session) {
+        this.session = session;
+    }
+
+    public MantaExceptionMappingService() {
+        this.session = null;
+    }
 
     @Override
     public BackgroundException map(final Exception failure) {
@@ -51,9 +65,45 @@ public class MantaExceptionMappingService extends AbstractExceptionMappingServic
          * TODO: more fine-grained mapping
          */
 
+        if(failure instanceof KeyException) {
+            return new LoginFailureException("Could not log in.", failure);
+        }
+        if(failure instanceof MantaClientHttpResponseException) {
+            return map((MantaClientHttpResponseException) failure);
+        }
+
         if(failure instanceof MantaIOException) {
             return new DefaultIOExceptionMappingService().map((IOException) ExceptionUtils.getRootCause(failure));
         }
         return new InteroperabilityException(failure.getMessage(), failure);
+    }
+
+    private BackgroundException map(final MantaClientHttpResponseException httpFailure) {
+        switch(httpFailure.getStatusCode()) {
+            case 403:
+                return new AccessDeniedException(httpFailure.getStatusMessage());
+            default:
+                return new InteroperabilityException("Unexpected remote error", httpFailure);
+        }
+    }
+
+    BackgroundException mapLoginException(final Exception failure) {
+        if(!(failure instanceof MantaClientHttpResponseException)) {
+            return map(failure);
+        }
+
+        final MantaClientHttpResponseException httpFailure = (MantaClientHttpResponseException) failure;
+
+        switch(httpFailure.getStatusCode()) {
+            case 403:
+                String msg = LocaleFactory.localizedString("Login failed", "Credentials");
+                if(session != null && !session.userIsOwner()) {
+                    msg += ". Subusers may need to explicitly set Path";
+                }
+
+                return new LoginFailureException(msg, httpFailure);
+            default:
+                return new LoginFailureException("Unexpected error occurred while logging in", httpFailure);
+        }
     }
 }

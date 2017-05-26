@@ -28,7 +28,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
-public class MantaFindFeatureTest extends AbstractMantaTest {
+public class MantaFindFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testFindFileNotFound() throws Exception {

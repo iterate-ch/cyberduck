@@ -54,8 +54,8 @@ public class MantaListService implements ListService {
         try {
             objectsIter = c.listObjects(remotePath).iterator();
         }
-        catch(MantaException | MantaIOException me) {
-            throw new MantaExceptionMappingService().map("Listing directory {0} failed", me);
+        catch(MantaIOException me) {
+            throw session.exceptionMapper.map("Listing directory {0} failed", me);
         }
         catch(IOException ioe) {
             throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", ioe);

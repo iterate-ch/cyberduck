@@ -44,7 +44,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MantaReadFeatureTest extends AbstractMantaTest {
+public class MantaReadFeatureIT extends AbstractMantaTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {

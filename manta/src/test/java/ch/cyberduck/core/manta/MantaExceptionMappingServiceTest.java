@@ -17,13 +17,17 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
 import java.net.SocketException;
+import java.security.KeyException;
 
+import com.joyent.manta.exception.MantaAuthenticationException;
 import com.joyent.manta.exception.MantaException;
+import com.joyent.manta.exception.MantaIOException;
 
 import static org.junit.Assert.assertTrue;
 
@@ -31,11 +35,7 @@ public class MantaExceptionMappingServiceTest {
 
     @Test
     public void map() throws Exception {
-        assertTrue(new MantaExceptionMappingService().map(
-                new MantaException("The Manta API responded with too many redirects.")) instanceof InteroperabilityException);
-        assertTrue(new MantaExceptionMappingService().map(
-                new MantaException("m")) instanceof NotfoundException);
-        assertTrue(new MantaExceptionMappingService().map(
-                new MantaException("Couldn't connect to the Manta API due to a network error.", new SocketException())) instanceof ConnectionRefusedException);
+        assertTrue(new MantaExceptionMappingService().map(new KeyException("Private Key Authentication is required"))
+                instanceof LoginFailureException);
     }
 }

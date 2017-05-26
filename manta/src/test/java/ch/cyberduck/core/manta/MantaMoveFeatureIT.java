@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class MantaMoveFeatureTest extends AbstractMantaTest {
+public class MantaMoveFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testRename() throws BackgroundException {

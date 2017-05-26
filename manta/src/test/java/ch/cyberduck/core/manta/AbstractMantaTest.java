@@ -20,9 +20,22 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.bouncycastle.util.io.pem.PemObjectGenerator;
+import org.bouncycastle.util.io.pem.PemWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.spec.PKCS8EncodedKeySpec;
+
+import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
+import sun.security.rsa.RSAKeyPairGenerator;
 
 import static org.junit.Assert.fail;
 
@@ -45,7 +58,14 @@ public abstract class AbstractMantaTest {
         System.out.print(">>>> test setup <<<<");
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Triton Manta.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname());
+
+        final String keyPath = ObjectUtils.firstNonNull(System.getProperty("manta.key_path"), "");
+        final Host host = new Host(
+                profile,
+                profile.getDefaultHostname(),
+                new Credentials(System.getProperty("manta.user"))
+                        .withIdentity(new Local(keyPath)));
+
         session = new MantaSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(
                 new DisabledLoginCallback() {

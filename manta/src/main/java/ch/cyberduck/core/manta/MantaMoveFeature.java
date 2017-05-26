@@ -55,7 +55,7 @@ public class MantaMoveFeature implements Move {
             session.getClient().move(session.pathMapper.requestPath(file), session.pathMapper.requestPath(renamed));
         }
         catch(MantaException | MantaIOException e) {
-            throw new MantaExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw session.exceptionMapper.map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);

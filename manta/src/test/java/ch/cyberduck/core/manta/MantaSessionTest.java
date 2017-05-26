@@ -23,8 +23,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -33,26 +31,18 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MantaSessionTest extends AbstractMantaTest {
+public class MantaSessionTest {
 
     @Test
     public void testFeatures() throws Exception {
         final MantaSession session = new MantaSession(new Host(new MantaProtocol()));
-        assertNotNull(session.getFeature(Read.class));
-        assertNotNull(session.getFeature(Write.class));
-        assertNotNull(session.getFeature(Directory.class));
-        assertNotNull(session.getFeature(Touch.class));
-        assertNotNull(session.getFeature(Delete.class));
-        assertNotNull(session.getFeature(UrlProvider.class));
-        assertNotNull(session.getFeature(AttributesFinder.class));
+        assertTrue(session.getFeature(Read.class) instanceof MantaReadFeature);
+        assertTrue(session.getFeature(Write.class) instanceof MantaWriteFeature);
+        assertTrue(session.getFeature(Directory.class) instanceof MantaDirectoryFeature);
+        assertTrue(session.getFeature(Touch.class) instanceof MantaTouchFeature);
+        assertTrue(session.getFeature(Delete.class) instanceof MantaDeleteFeature);
+        assertTrue(session.getFeature(UrlProvider.class) instanceof MantaUrlProviderFeature);
+        assertTrue(session.getFeature(AttributesFinder.class) instanceof MantaAttributesFinderFeature);
     }
-
-    @Test
-    public void testConnect() throws Exception {
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-    }
-
     // TODO: WAY MORE TESTS
 }

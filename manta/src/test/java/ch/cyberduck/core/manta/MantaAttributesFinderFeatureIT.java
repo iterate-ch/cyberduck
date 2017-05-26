@@ -37,7 +37,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MantaAttributesFinderFeatureTest extends AbstractMantaTest {
+public class MantaAttributesFinderFeatureIT extends AbstractMantaTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {

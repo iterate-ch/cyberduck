@@ -50,7 +50,7 @@ public class MantaAttributesFinderFeature implements AttributesFinder {
             return new MantaObjectAttributeAdapter(session).from(session.getClient().head(remotePath));
         }
         catch(MantaException | MantaIOException e) {
-            throw new MantaExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw session.exceptionMapper.map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);

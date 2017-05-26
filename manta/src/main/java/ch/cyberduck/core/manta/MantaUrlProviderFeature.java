@@ -23,7 +23,7 @@ import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 
-public class MantaUrlProvider implements UrlProvider {
+public class MantaUrlProviderFeature implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
