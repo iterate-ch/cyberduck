@@ -89,7 +89,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                     new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), true);
         }
         catch(IOException e) {
-            throw session.exceptionMapper.map(e);
+            throw session.exceptionMapper.mapLoginException(e);
         }
 
         log.info(String.format("Reading private key %s with key format %s", identity, format));

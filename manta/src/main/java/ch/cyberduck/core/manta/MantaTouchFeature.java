@@ -24,8 +24,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
+import com.joyent.manta.client.MantaMetadata;
+import com.joyent.manta.exception.MantaClientException;
+import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.exception.MantaIOException;
+import com.joyent.manta.http.MantaHttpHeaders;
 
 public class MantaTouchFeature implements Touch {
 
@@ -37,16 +41,18 @@ public class MantaTouchFeature implements Touch {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-
-        if (!session.getClient().existsAndIsAccessible(session.pathMapper.requestPath(file.getParent()))) {
-            MantaSession.log.error("nyi. parent is missing, should create it");
-            throw session.exceptionMapper.map("Parent missing", new RuntimeException(), file.getParent());
-        }
-
         try {
+            if(!session.getClient().existsAndIsAccessible(file.getParent().getAbsolute())) {
+                session.getClient().putDirectory(file.getParent().getAbsolute());
+            }
+
             session.getClient().put(session.pathMapper.requestPath(file), new byte[0]);
         }
         catch(MantaException | MantaIOException e) {
+//            if (e instanceof MantaClientHttpResponseException
+//                    && ((MantaClientHttpResponseException) e).)
+
+
             throw session.exceptionMapper.map("Cannot create file {0}", e, file);
         }
         catch(IOException e) {

@@ -33,6 +33,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -46,7 +47,7 @@ public class MantaMoveFeatureIT extends AbstractMantaTest {
         final Move move = new MantaMoveFeature(session);
         final Delete delete = new MantaDeleteFeature(session);
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
-        final Path drive = new DefaultHomeFinderService(session).find();
+        final Path drive = session.pathMapper.getPrivateRoot();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(attributesFinder.find(file));
@@ -64,7 +65,7 @@ public class MantaMoveFeatureIT extends AbstractMantaTest {
         final Move move = new MantaMoveFeature(session);
         final Delete delete = new MantaDeleteFeature(session);
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
-        final Path drive = new DefaultHomeFinderService(session).find();
+        final Path drive = session.pathMapper.getPrivateRoot();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
         assertNotNull(attributesFinder.find(targetDirectory));
@@ -88,7 +89,7 @@ public class MantaMoveFeatureIT extends AbstractMantaTest {
         final Move move = new MantaMoveFeature(session);
         final Delete delete = new MantaDeleteFeature(session);
         final AttributesFinder attributesFinder = new MantaAttributesFinderFeature(session);
-        final Path drive = new DefaultHomeFinderService(session).find();
+        final Path drive = session.pathMapper.getPrivateRoot();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
         assertNotNull(attributesFinder.find(targetDirectory));

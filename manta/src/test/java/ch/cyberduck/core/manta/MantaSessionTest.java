@@ -16,8 +16,15 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -26,12 +33,13 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class MantaSessionTest {
 
     @Test
@@ -46,13 +54,34 @@ public class MantaSessionTest {
         assertTrue(session.getFeature(AttributesFinder.class) instanceof MantaAttributesFinderFeature);
     }
 
+    private void assertUsernameFailsLogin(final String username) {
+        try {
+            SessionFactory.create(new Credentials(username)).login(
+                    new DisabledPasswordStore(),
+                    new DisabledLoginCallback(),
+                    new DisabledCancelCallback(),
+                    PathCache.empty()
+            );
+        } catch (BackgroundException e) {
+            assertTrue(e instanceof LoginFailureException);
+            assertTrue(e.getMessage().contains("Login failed"));
+            assertTrue(e.getDetail().contains("Invalid username"));
+        }
+    }
+
+    @Test
+    public void testSessionRejectsBadUsernames() {
+        assertUsernameFailsLogin("");
+        assertUsernameFailsLogin("!");
+        assertUsernameFailsLogin("/subuser");
+        assertUsernameFailsLogin("login/");
+    }
+
+
     @Test
     public void testUserOwnerIdentification() {
-        final MantaSession session = new MantaSession(
-                new Host(new MantaProtocol(), null, new Credentials("owner")));
-
-        // assertTrue(session);
-
+        assertTrue(SessionFactory.create(new Credentials("theOwner")).userIsOwner());
+        assertFalse(SessionFactory.create(new Credentials("theOwner/theSubUser")).userIsOwner());
     }
 
 }

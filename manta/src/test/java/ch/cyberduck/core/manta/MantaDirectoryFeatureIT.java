@@ -16,11 +16,12 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -29,6 +30,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
@@ -36,16 +38,25 @@ public class MantaDirectoryFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testMkdir() throws Exception {
-        final Path target = new MantaDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
-        assertNotNull(new MantaAttributesFinderFeature(session).find(target).getETag());
+        final Path target = new MantaDirectoryFeature(session).mkdir(randomDirectory(), null, null);
+        final PathAttributes found = new MantaAttributesFinderFeature(session).find(target);
+        assertEquals(found.getDisplayname(), target.getName());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testWhitespaceMkdir() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
-        final Path target = new MantaDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
-        assertNotNull(new MantaAttributesFinderFeature(session).find(target).getETag());
+        final Path target = new MantaDirectoryFeature(session)
+                .mkdir(
+                        new Path(
+                                MantaPathMapper.Volume.PRIVATE.forAccount(session),
+                                String.format("%s %s", randomStringService.random(), randomStringService.random()),
+                                EnumSet.of(Path.Type.directory)
+                        ), null, null);
+        final Attributes found = new MantaAttributesFinderFeature(session).find(target);
+        assertNotNull(found.getOwner());
+        assertNotNull(found.getCreationDate());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

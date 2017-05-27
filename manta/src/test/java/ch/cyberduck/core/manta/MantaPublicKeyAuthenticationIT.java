@@ -23,6 +23,8 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -32,6 +34,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.FileReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +42,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by tomascelaya on 5/24/17.
@@ -46,35 +50,52 @@ import static org.junit.Assert.assertTrue;
 @Category(IntegrationTest.class)
 public class MantaPublicKeyAuthenticationIT {
 
-    @Test(expected = LoginFailureException.class)
-    public void testAuthenticateOpenSSHKeyWithPassword() throws Exception {
-        final Credentials credentials = new Credentials(
-                System.getProperties().getProperty("manta.user"), ""
-        );
-        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+    @Test
+    public void testAuthenticateOpenSSHKeyWithoutIdentity() throws Exception {
         try {
-            credentials.setIdentity(key);
+            final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
+            // not setting identity file, should fail since Manta REQUIRES keys
+            final Host host = new Host(new MantaProtocol(), "test.cyberduck.ch", credentials);
+            final MantaSession session = new MantaSession(host);
+            session.open(new DisabledHostKeyCallback());
+            new MantaPublicKeyAuthentication(session, new DisabledPasswordStore())
+                    .authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback());
+            assertEquals(session.getFingerprint(), System.getProperty("manta.key_id"));
+            session.close();
+        } catch (BackgroundException e) {
+            assertTrue(e instanceof LoginFailureException);
+            assertTrue(e.getMessage().contains("Login failed"));
+            assertTrue(e.getCause().getMessage().contains("Private Key Authentication is required"));
+        }
+
+    }
+
+    @Test
+    public void testAuthenticateOpenSSHKeyWithoutPassphrase() throws Exception {
+        final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        credentials.setIdentity(key);
+
+        try {
             new DefaultLocalTouchFeature().touch(key);
             IOUtils.copy(
-                    new StringReader(System.getProperties().getProperty("sftp.key.openssh.rsa")),
+                    new FileReader(System.getProperty("manta.key_path")),
                     key.getOutputStream(false),
                     StandardCharsets.UTF_8
             );
             final Host host = new Host(new MantaProtocol(), "test.cyberduck.ch", credentials);
             final MantaSession session = new MantaSession(host);
             session.open(new DisabledHostKeyCallback());
-            final AtomicBoolean p = new AtomicBoolean();
-            assertTrue(new MantaPublicKeyAuthentication(session, new DisabledPasswordStore()).authenticate(host, new DisabledLoginCallback() {
-                @Override
-                public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                    p.set(true);
-                }
-            }, new DisabledCancelCallback()));
-            assertTrue(p.get());
+            assertTrue(
+                    new MantaPublicKeyAuthentication(session, new DisabledPasswordStore())
+                            .authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback()));
+            assertEquals(session.getFingerprint(), System.getProperty("manta.key_id"));
             session.close();
         }
         finally {
             key.delete();
         }
     }
+
+    // TODO: add a test that uses the passphrase input
 }

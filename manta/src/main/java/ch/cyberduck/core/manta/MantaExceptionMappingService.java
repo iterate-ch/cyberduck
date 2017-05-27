@@ -24,8 +24,11 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
@@ -66,10 +69,11 @@ public class MantaExceptionMappingService extends AbstractExceptionMappingServic
          */
 
         if(failure instanceof KeyException) {
-            return new LoginFailureException("Could not log in.", failure);
+            return new LoginFailureException("Login failed", failure);
         }
         if(failure instanceof MantaClientHttpResponseException) {
-            return map((MantaClientHttpResponseException) failure);
+            final MantaClientHttpResponseException me = (MantaClientHttpResponseException) failure;
+            return mapHttpException(me, ObjectUtils.firstNonNull(me.getContent(), ""));
         }
 
         if(failure instanceof MantaIOException) {
@@ -78,10 +82,12 @@ public class MantaExceptionMappingService extends AbstractExceptionMappingServic
         return new InteroperabilityException(failure.getMessage(), failure);
     }
 
-    private BackgroundException map(final MantaClientHttpResponseException httpFailure) {
+    public BackgroundException mapHttpException(final MantaClientHttpResponseException httpFailure, final String path) {
         switch(httpFailure.getStatusCode()) {
             case 403:
                 return new AccessDeniedException(httpFailure.getStatusMessage());
+            case 404:
+                return new NotfoundException("Not Found. Item does not exist.");
             default:
                 return new InteroperabilityException("Unexpected remote error", httpFailure);
         }

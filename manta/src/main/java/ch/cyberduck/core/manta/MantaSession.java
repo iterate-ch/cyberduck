@@ -43,7 +43,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
@@ -52,11 +51,9 @@ import java.io.IOException;
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.config.BaseChainedConfigContext;
 import com.joyent.manta.config.ChainedConfigContext;
-import com.joyent.manta.config.ConfigContext;
 import com.joyent.manta.config.DefaultsConfigContext;
 import com.joyent.manta.config.SettableConfigContext;
 import com.joyent.manta.config.StandardConfigContext;
-import sun.security.krb5.Config;
 
 public class MantaSession extends SSLSession<MantaClient> {
 
@@ -83,11 +80,14 @@ public class MantaSession extends SSLSession<MantaClient> {
         final Credentials bookmark = host.getCredentials();
         pathMapper = new MantaPathMapper(this);
 
-        config = new StandardConfigContext()
+        config = new ChainedConfigContext(
+                new DefaultsConfigContext(),
+                new StandardConfigContext()
+                        .setHttpsProtocols(DefaultsConfigContext.DEFAULT_HTTPS_PROTOCOLS)
                         .setDisableNativeSignatures(true)
                         .setNoAuth(false)
                         .setMantaURL("https://" + h.getHostname())
-                        .setMantaUser(bookmark.getUsername());
+                        .setMantaUser(bookmark.getUsername()));
     }
 
     @Override
@@ -102,7 +102,9 @@ public class MantaSession extends SSLSession<MantaClient> {
                       final Cache<Path> cache) throws BackgroundException {
         keyFingerprint = null;
 
-        if (!host.getCredentials().getUsername().matches("[A-z0-9._]+(/[A-z0-9._]+)?")) {
+        if(host.getCredentials() != null
+                && host.getCredentials().getUsername() != null
+                && !host.getCredentials().getUsername().matches("[A-z0-9._]+(/[A-z0-9._]+)?")) {
             throw new LoginFailureException("Invalid username given: " + host.getCredentials().getUsername());
         }
 
@@ -122,7 +124,7 @@ public class MantaSession extends SSLSession<MantaClient> {
 
         try {
             // instantiation of a MantaClient does not validate credentials,
-            client.isDirectoryEmpty(pathMapper.getNormalizedHomePath());
+            client.isDirectoryEmpty(pathMapper.getNormalizedHomePath().getAbsolute());
         }
         catch(IOException e) {
             throw exceptionMapper.mapLoginException(e);
@@ -143,12 +145,16 @@ public class MantaSession extends SSLSession<MantaClient> {
         keyFingerprint = f;
     }
 
+    String getFingerprint() {
+        return keyFingerprint;
+    }
+
     boolean userIsOwner() throws IllegalStateException {
-        if(pathMapper.getAccountOwner() == null) {
+        if(pathMapper.getAccountRoot() == null) {
             throw new IllegalStateException("Account owner not set");
         }
 
-        return pathMapper.getAccountOwner().equals(host.getCredentials().getUsername());
+        return pathMapper.getAccountRoot().getName().equals(host.getCredentials().getUsername());
     }
 
     @Override

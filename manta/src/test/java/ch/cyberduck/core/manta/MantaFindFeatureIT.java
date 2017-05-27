@@ -16,7 +16,6 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -26,6 +25,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class MantaFindFeatureIT extends AbstractMantaTest {
@@ -33,12 +33,27 @@ public class MantaFindFeatureIT extends AbstractMantaTest {
     @Test
     public void testFindFileNotFound() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
-        assertFalse(f.find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertFalse(f.find(new Path(
+                MantaPathMapper.Volume.PRIVATE.forAccount(session),
+                UUID.randomUUID().toString(),
+                EnumSet.of(Path.Type.file))));
     }
 
     @Test
-    public void testFindDriveNotFound() throws Exception {
+    public void testFindPrivate() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
-        assertFalse(f.find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertTrue(f.find(new Path(
+                session.pathMapper.getAccountRoot(),
+                MantaPathMapper.HOME_PATH_PRIVATE,
+                EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testFindPublic() throws Exception {
+        final MantaFindFeature f = new MantaFindFeature(session);
+        assertTrue(f.find(new Path(
+                session.pathMapper.getAccountRoot(),
+                MantaPathMapper.HOME_PATH_PUBLIC,
+                EnumSet.of(Path.Type.directory))));
     }
 }

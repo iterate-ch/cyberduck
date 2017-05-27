@@ -17,7 +17,6 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,12 +30,31 @@ public class MantaHomeFeatureIT extends AbstractMantaTest{
 
     @Test
     public void testHomeFeature() throws BackgroundException {
-        final Path drive = new DefaultHomeFinderService(session).find();
+        final Path drive = new MantaHomeFinderService(session).find();
         assertNotNull(drive);
         assertFalse(drive.isRoot());
+        assertTrue(drive.isPlaceholder());
+        assertNotEquals("null", drive.getName());
+        assertFalse(StringUtils.isEmpty(drive.getName()));
+    }
+
+    @Test
+    public void testPrivateRoot() throws BackgroundException {
+        final Path drive = session.pathMapper.getPrivateRoot();
+        assertNotNull(drive);
         assertTrue(drive.isVolume());
         assertTrue(drive.isDirectory());
-        assertNotEquals("null", drive.getName());
+        assertEquals("stor", drive.getName());
+        assertFalse(StringUtils.isEmpty(drive.getName()));
+    }
+
+    @Test
+    public void testPublicRoot() throws BackgroundException {
+        final Path drive = session.pathMapper.getPublicRoot();
+        assertNotNull(drive);
+        assertTrue(drive.isVolume());
+        assertTrue(drive.isDirectory());
+        assertEquals("public", drive.getName());
         assertFalse(StringUtils.isEmpty(drive.getName()));
     }
 }

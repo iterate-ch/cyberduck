@@ -19,12 +19,10 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -38,8 +36,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import com.joyent.manta.exception.MantaException;
-
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -48,7 +44,7 @@ public class MantaWriteFeatureIT extends AbstractMantaTest {
     @Test
     public void testWrite() throws Exception {
         final MantaWriteFeature feature = new MantaWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -66,27 +62,27 @@ public class MantaWriteFeatureIT extends AbstractMantaTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new MantaDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testWriteUnknownLength() throws Exception {
         final MantaWriteFeature feature = new MantaWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = randomDirectory();
+        new MantaDirectoryFeature(session).mkdir(container, "", new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
+
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
-        final byte[] buffer = new byte[1 * 1024];
-        try {
-            assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
-        }
-        catch(MantaException e) {
-            final BackgroundException failure = new MantaExceptionMappingService(session).map(e);
-            assertTrue(failure.getDetail().contains("Invalid Content-Range header value."));
-            throw failure;
-        }
+        final int alloc = 1024;
+        final byte[] buffer = new byte[alloc];
+        assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
+        out.close();
+        final PathAttributes found = new MantaAttributesFinderFeature(session).find(file);
+        assertEquals(found.getSize(), content.length);
+        new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
@@ -32,6 +33,7 @@ public class MantaFindFeature implements Find {
 
     public MantaFindFeature(final MantaSession session) {
         this.session = session;
+        this.cache = PathCache.empty();
     }
 
     @Override

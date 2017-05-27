@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,19 +40,13 @@ import static org.junit.Assert.*;
  */
 public class MantaPathMapperTest {
 
-    private MantaPathMapper buildMapperWithUserAndDefaultPath(final String username, final String homePath) {
-        return new MantaSession(
-                        new Host(
-                                new MantaProtocol(),
-                                "fake.manta.test",
-                                443,
-                                homePath,
-                                new Credentials(username))).pathMapper;
+    private MantaPathMapper buildMapper(final String username, final String homePath) {
+        return SessionFactory.create(new Credentials(username), homePath).pathMapper;
     }
 
     @Test
     public void testCheckingRootFolderPermissions() {
-        final MantaPathMapper pm = buildMapperWithUserAndDefaultPath("account", "");
+        final MantaPathMapper pm = buildMapper("account", "");
 
         assertTrue(pm.isUserWritable(new MantaObjectResponse("/account/public")));
         assertTrue(pm.isWorldReadable(new MantaObjectResponse("/account/public")));
@@ -62,18 +57,18 @@ public class MantaPathMapperTest {
 
     @Test
     public void testNormalizingHomePathsForNormalAccounts() {
-        assertEquals("/account", buildMapperWithUserAndDefaultPath("account", "").getNormalizedHomePath());
-        assertEquals("/account", buildMapperWithUserAndDefaultPath("account", "~").getNormalizedHomePath());
-        assertEquals("/account", buildMapperWithUserAndDefaultPath("account", "~~").getNormalizedHomePath());
-        assertEquals("/account", buildMapperWithUserAndDefaultPath("account", "/~~").getNormalizedHomePath());
-        assertEquals("/account", buildMapperWithUserAndDefaultPath("account", "~~/").getNormalizedHomePath());
-        assertEquals("/account", buildMapperWithUserAndDefaultPath("account", "/~~/").getNormalizedHomePath());
-        assertEquals("/account/public", buildMapperWithUserAndDefaultPath("account", "~/public").getNormalizedHomePath());
-        assertEquals("/account/stor", buildMapperWithUserAndDefaultPath("account", "/~~/stor").getNormalizedHomePath());
+        assertEquals("/account", buildMapper("account", "").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account", "~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account", "~~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account", "/~~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account", "~~/").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account", "/~~/").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildMapper("account", "~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/stor", buildMapper("account", "/~~/stor").getNormalizedHomePath().getAbsolute());
     }
 
     @Test
     public void testNormalizingHomePathsForSubAccounts() {
-        assertEquals("/account", buildMapperWithUserAndDefaultPath("account/sub", "").getNormalizedHomePath());
+        assertEquals("/account", buildMapper("account/sub", "").getNormalizedHomePath().getAbsolute());
     }
 }

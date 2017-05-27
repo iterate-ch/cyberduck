@@ -16,26 +16,19 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath.Type;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.manta.MantaPathMapper.Volume;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.bouncycastle.util.io.pem.PemObjectGenerator;
-import org.bouncycastle.util.io.pem.PemWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.spec.PKCS8EncodedKeySpec;
-
-import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
-import sun.security.rsa.RSAKeyPairGenerator;
+import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.fail;
 
@@ -78,5 +71,27 @@ public abstract class AbstractMantaTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
+    }
+
+    protected Path random(Volume vol, Type type) {
+        switch(type) {
+            case directory: return randomDirectory();
+            case file: return randomFile();
+            default: throw new Error("");
+        }
+    }
+
+    protected Path randomFile() {
+        return new Path(
+                Volume.PRIVATE.forAccount(session),
+                UUID.randomUUID().toString(),
+                EnumSet.of(Type.file));
+    }
+
+    protected Path randomDirectory() {
+        return new Path(
+                Volume.PRIVATE.forAccount(session),
+                UUID.randomUUID().toString(),
+                EnumSet.of(Type.directory));
     }
 }

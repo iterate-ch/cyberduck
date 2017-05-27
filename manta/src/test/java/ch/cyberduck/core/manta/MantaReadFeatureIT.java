@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -50,7 +51,7 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         try {
-            final Path drive = new DefaultHomeFinderService(session).find();
+            final Path drive = randomDirectory();
             new MantaReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
         catch(NotfoundException e) {
@@ -61,7 +62,7 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testReadInterrupt() throws Exception {
-        final Path drive = new DefaultHomeFinderService(session).find();
+        final Path drive = randomDirectory();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(test, new TransferStatus());
         // Unknown length in status
@@ -82,7 +83,7 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final Path drive = new DefaultHomeFinderService(session).find();
+        final Path drive = randomDirectory();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(test, new TransferStatus());
 
@@ -115,7 +116,7 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final Path drive = new DefaultHomeFinderService(session).find();
+        final Path drive = randomDirectory();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(test, new TransferStatus());
 

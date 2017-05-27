@@ -43,6 +43,7 @@ public class MantaBufferWriteFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testWrite() throws Exception {
+        fail("write hangs?");
         final MantaWriteFeature feature = new MantaBufferWriteFeature(session);
         final Path container = new DefaultHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
@@ -67,6 +68,7 @@ public class MantaBufferWriteFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testWriteUnknownLength() throws Exception {
+        fail("write hangs?");
         final MantaWriteFeature feature = new MantaBufferWriteFeature(session);
         final Path container = new DefaultHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);

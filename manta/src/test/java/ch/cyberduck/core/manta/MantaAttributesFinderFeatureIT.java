@@ -42,7 +42,7 @@ public class MantaAttributesFinderFeatureIT extends AbstractMantaTest {
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         try {
-            new MantaAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+            new MantaAttributesFinderFeature(session).find(randomFile());
         }
         catch(NotfoundException e) {
             assertEquals("Not Found. Item does not exist. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -52,16 +52,13 @@ public class MantaAttributesFinderFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testFindFile() throws Exception {
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = randomFile();
         new MantaTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         final PathAttributes attributes = new MantaAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
-        assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertNull(attributes.getVersionId());
-        assertNotNull(attributes.getLink());
         new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

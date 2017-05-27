@@ -22,6 +22,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
@@ -50,7 +51,7 @@ public class MantaObjectAttributeAdapter {
         final String[] pathSegments = mantaObject.getPath().split(MantaClient.SEPARATOR);
 
         attributes.setDisplayname(pathSegments[pathSegments.length - 1]);
-        attributes.setOwner(pathSegments[0]);
+        attributes.setOwner(session.pathMapper.getAccountOwner());
 
         final Permission.Action userPermissions =
                 session.pathMapper.isUserWritable(mantaObject)
@@ -62,6 +63,11 @@ public class MantaObjectAttributeAdapter {
                         : Permission.Action.none;
 
         attributes.setPermission(new Permission(userPermissions, Permission.Action.none, otherPermissions));
+
+        if (mantaObject.getLastModifiedTime() != null) {
+            attributes.setModificationDate(mantaObject.getLastModifiedTime().getTime());
+            attributes.setCreationDate(attributes.getModificationDate());
+        }
 
         if(mantaObject.isDirectory()) {
             return attributes;
@@ -81,8 +87,6 @@ public class MantaObjectAttributeAdapter {
         if(md5Bytes != null) {
             attributes.setChecksum(new Checksum(HashAlgorithm.md5, new String(md5Bytes)));
         }
-
-        attributes.setModificationDate(mantaObject.getLastModifiedTime().getTime());
 
         attributes.setStorageClass(mantaObject.getHeaderAsString(MantaSession.HEADER_KEY_STORAGE_CLASS));
 

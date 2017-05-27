@@ -45,9 +45,9 @@ public class MantaAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
 
-        final String remotePath = session.pathMapper.requestPath(file);
         try {
-            return new MantaObjectAttributeAdapter(session).from(session.getClient().head(remotePath));
+            return new MantaObjectAttributeAdapter(session)
+                    .from(session.getClient().head(session.pathMapper.requestPath(file)));
         }
         catch(MantaException | MantaIOException e) {
             throw session.exceptionMapper.map("Failure to read attributes of {0}", e, file);
