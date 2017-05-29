@@ -31,7 +31,7 @@ mkdir -p %{buildroot}/opt
 cp -r %{_sourcedir}/duck %{buildroot}/opt
 
 %files
-%doc /opt/duck/app/LICENSE.txt
+%doc /opt/duck/app/LICENSE
 /opt/duck
 
 %post

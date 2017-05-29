@@ -3,7 +3,7 @@
 /Credits.rtf -text
 /Cyberduck[!!-~]Website.webloc -text
 /Donate.webloc -text
-/LICENSE.txt -text
+/LICENSE -text
 Spotlight[!!-~]Importer/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
 ar.lproj/Alert.strings -text svneol=unset#text/utf-16
