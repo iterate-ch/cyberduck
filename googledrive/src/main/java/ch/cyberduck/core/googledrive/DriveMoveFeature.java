@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 
 import org.apache.commons.codec.binary.StringUtils;
@@ -47,7 +48,7 @@ public class DriveMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
-            final String fileid = new DriveFileidProvider(session).getFileid(file);
+            final String fileid = session.getFeature(IdProvider.class).getFileid(file);
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 // Rename title
                 final File properties = new File();
@@ -65,7 +66,7 @@ public class DriveMoveFeature implements Move {
             }
             // Move the file to the new folder
             session.getClient().files().update(fileid, null)
-                    .setAddParents(new DriveFileidProvider(session).getFileid(renamed.getParent()))
+                    .setAddParents(session.getFeature(IdProvider.class).getFileid(renamed.getParent()))
                     .setRemoveParents(previousParents.toString())
                     .setFields("id, parents")
                     .execute();

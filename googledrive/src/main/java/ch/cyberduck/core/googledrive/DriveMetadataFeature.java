@@ -19,6 +19,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.IdProvider;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -42,7 +43,7 @@ public class DriveMetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            final String fileid = new DriveFileidProvider(session).getFileid(file);
+            final String fileid = session.getFeature(IdProvider.class).getFileid(file);
             return session.getClient().files().get(fileid).setFields("properties").execute().getProperties();
         }
         catch(IOException e) {
@@ -53,7 +54,7 @@ public class DriveMetadataFeature implements Headers {
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         try {
-            final String fileid = new DriveFileidProvider(session).getFileid(file);
+            final String fileid = session.getFeature(IdProvider.class).getFileid(file);
             final File body = new File();
             body.setProperties(metadata);
             session.getClient().files().update(fileid, body).setFields("properties").execute();
