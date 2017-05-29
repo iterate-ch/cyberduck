@@ -1,5 +1,8 @@
 # Cyberduck
 
+[![GitHub license](https://img.shields.io/badge/license-GPL-blue.svg)](https://raw.githubusercontent.com/iterate-ch/cyberduck/master/LICENSE)
+[![Twitter](https://img.shields.io/badge/twitter-@cyberduckapp-blue.svg?style=flat)](http://twitter.com/cyberduckapp)
+
 Libre FTP, SFTP, WebDAV, S3, Azure and OpenStack Swift browser for Mac and Windows. Command line interface (CLI) for Linux, OS X and Windows.
 
 ## Prerequisites
