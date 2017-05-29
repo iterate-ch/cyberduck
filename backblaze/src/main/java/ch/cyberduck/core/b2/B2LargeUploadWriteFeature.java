@@ -26,6 +26,7 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -140,7 +141,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
             try {
                 if(0 == partNumber && len < PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
-                    final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
+                    final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(session.getFeature(IdProvider.class).getFileid(containerService.getContainer(file)));
                     final Checksum checksum = overall.getChecksum();
                     final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                             file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
@@ -153,7 +154,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                 }
                 else {
                     if(0 == partNumber) {
-                        final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                        final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(session.getFeature(IdProvider.class).getFileid(containerService.getContainer(file)),
                                 containerService.getKey(file), overall.getMime(), overall.getMetadata());
                         version = new VersionId(response.getFileId());
                         if(log.isDebugEnabled()) {

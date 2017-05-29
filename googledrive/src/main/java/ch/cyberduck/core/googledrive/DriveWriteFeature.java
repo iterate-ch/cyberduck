@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -98,7 +99,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
-                        final String fileid = new DriveFileidProvider(session).getFileid(file);
+                        final String fileid = session.getFeature(IdProvider.class).getFileid(file);
                         request = new HttpPatch(String.format("%s/upload/drive/v3/files/%s", base, fileid));
                         // Upload the file
                         request.setEntity(entity);
@@ -107,7 +108,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                         request = new HttpPost(String.format("%s/upload/drive/v3/files?uploadType=resumable", base));
                         request.setEntity(new StringEntity("{\"name\": \""
                                 + file.getName() + "\", \"parents\": [\""
-                                + new DriveFileidProvider(session).getFileid(file.getParent()) + "\"]}",
+                                + session.getFeature(IdProvider.class).getFileid(file.getParent()) + "\"]}",
                                 ContentType.create("application/json", "UTF-8")));
                     }
                     if(StringUtils.isNotBlank(status.getMime())) {

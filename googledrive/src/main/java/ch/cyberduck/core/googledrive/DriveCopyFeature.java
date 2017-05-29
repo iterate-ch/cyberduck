@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -37,8 +38,8 @@ public class DriveCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         try {
-            session.getClient().files().copy(new DriveFileidProvider(session).getFileid(source), new File()
-                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(target.getParent())))
+            session.getClient().files().copy(session.getFeature(IdProvider.class).getFileid(source), new File()
+                    .setParents(Collections.singletonList(session.getFeature(IdProvider.class).getFileid(target.getParent())))
                     .setName(target.getName())).execute();
         }
         catch(IOException e) {
