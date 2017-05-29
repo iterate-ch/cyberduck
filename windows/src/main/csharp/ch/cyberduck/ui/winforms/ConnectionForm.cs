@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -347,7 +347,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void PopulateClientCertificates(List<string> keys)
         {
-            throw new NotImplementedException();
+            //
         }
 
         public void PopulateEncodings(List<string> encodings)
@@ -402,11 +402,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ChangedUsernameEvent = delegate { };
         public event VoidHandler ChangedPathEvent = delegate { };
         public event VoidHandler ChangedAnonymousCheckboxEvent = delegate { };
-        public event VoidHandler ChangedClientCertificateEvent;
+        public event VoidHandler ChangedClientCertificateEvent = delegate { };
         public event VoidHandler ChangedSavePasswordCheckboxEvent = delegate { };
+        public event VoidHandler ChangedPasswordEvent = delegate { };
         public event VoidHandler OpenUrl = delegate { };
         public event VoidHandler OpenWebUrl = delegate { };
-        public event VoidHandler OpenPrivateKeyBrowserEvent;
+        public event VoidHandler OpenPrivateKeyBrowserEvent = delegate { };
         public event VoidHandler OpenDownloadFolderBrowserEvent = delegate { };
         public event VoidHandler OpenDownloadFolderEvent = delegate { };
         public event VoidHandler LaunchNetworkAssistantEvent = delegate { };
@@ -487,6 +488,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void choosePkButton_Click(object sender, EventArgs e)
         {
             OpenPrivateKeyBrowserEvent();
+        }
+
+        private void textBoxPassword_TextChanged(object sender, EventArgs e)
+        {
+            ChangedPasswordEvent();
         }
     }
 }

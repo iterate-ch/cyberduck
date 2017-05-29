@@ -30,37 +30,47 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.log4j;
 using StructureMap;
-using Object = java.lang.Object;
 using Path = System.IO.Path;
 using TimeZone = java.util.TimeZone;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public sealed class BookmarkController : WindowController<IBookmarkView>
+    public class BookmarkController : BookmarkController<IBookmarkView>
+    {
+        private BookmarkController(Host host) : base(host)
+        {
+        }
+    }
+
+    public class BookmarkController<T> : WindowController<T> where T : IBookmarkView
     {
         private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
         public const int SmallBookmarkSize = 16;
         public const int MediumBookmarkSize = 32;
         public const int LargeBookmarkSize = 64;
         private static readonly string Default = LocaleFactory.localizedString("Default");
-        private static readonly Logger Log = Logger.getLogger(typeof(BookmarkController).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(BookmarkController<>).FullName);
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
+        protected readonly Credentials _credentials;
         private readonly Host _host;
-        private LoginOptions _options;
         private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
+        protected readonly LoginOptions _options;
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
 
-        private BookmarkController(IBookmarkView view, Host host, LoginOptions options)
+        private BookmarkController(T view, Host host, Credentials credentials, InputValidator validator,
+            LoginOptions options) : base(validator)
         {
             _host = host;
+            _credentials = credentials;
             _options = options;
             View = view;
 
@@ -68,15 +78,30 @@ namespace Ch.Cyberduck.Ui.Controller
             _ticklerFavicon = new Timer(OnFavicon, null, Timeout.Infinite, Timeout.Infinite);
 
             View.ToggleOptions += View_ToggleOptions;
-            View.OptionsVisible = PreferencesFactory.get().getBoolean("bookmark.toggle.options");
+            View.OptionsVisible = PreferencesFactory.get().getBoolean(ToggleProperty);
 
             Init();
         }
 
-        private BookmarkController(Host host) : this(ObjectFactory.GetInstance<IBookmarkView>(), host, new LoginOptions(host.getProtocol()))
+        protected BookmarkController(Host host) : this(host, host.getCredentials())
+        {
+        }
+
+        protected BookmarkController(Host host, Credentials credentials) : this(host, credentials,
+            new DisabledInputValidator(), new LoginOptions(host.getProtocol()))
+        {
+        }
+
+        protected BookmarkController(Host host, Credentials credentials, InputValidator validator,
+            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host, credentials,
+            validator, options)
         {
             _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
         }
+
+        protected virtual String ToggleProperty => "bookmark.toggle.options";
+
+        public Host Bookmark() => _host;
 
         private void OnFavicon(object state)
         {
@@ -99,7 +124,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             _ticklerReachability.Change(Timeout.Infinite, Timeout.Infinite);
             _ticklerFavicon.Change(Timeout.Infinite, Timeout.Infinite);
-            PreferencesFactory.get().setProperty("bookmark.toggle.options", View.OptionsVisible);
+            PreferencesFactory.get().setProperty(ToggleProperty, View.OptionsVisible);
             BookmarkCollection.defaultCollection().removeListener(_bookmarkCollectionListener);
             base.Invalidate();
         }
@@ -165,9 +190,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_OpenPrivateKeyBrowserEvent()
         {
             string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
-            if (null != _host.getCredentials().getIdentity())
+            if (null != _credentials.getIdentity())
             {
-                selectedKeyFile = Path.GetDirectoryName(_host.getCredentials().getIdentity().getAbsolute());
+                selectedKeyFile = Path.GetDirectoryName(_credentials.getIdentity().getAbsolute());
             }
             View.ShowPrivateKeyBrowser(selectedKeyFile);
         }
@@ -308,7 +333,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Reachable();
         }
 
-        private void ItemChanged()
+        protected virtual void ItemChanged()
         {
             BookmarkCollection.defaultCollection().collectionItemChanged(_host);
         }
@@ -328,7 +353,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         internal void View_ChangedUsernameEvent()
         {
-            _host.getCredentials().setUsername(View.Username);
+            _credentials.setUsername(View.Username);
             ItemChanged();
             Update();
         }
@@ -372,7 +397,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedClientCertificateEvent()
         {
-            _host.getCredentials().setCertificate(View.SelectedClientCertificate);
+            _credentials.setCertificate(View.SelectedClientCertificate);
             ItemChanged();
         }
 
@@ -401,7 +426,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPrivateKeyEvent(object sender, PrivateKeyArgs e)
         {
-            _host.getCredentials()
+            _credentials
                 .setIdentity(null == e.KeyFile || e.KeyFile.Equals(LocaleFactory.localizedString("None"))
                     ? null
                     : LocalFactory.get(e.KeyFile));
@@ -462,7 +487,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void InitProtocols()
         {
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
-            foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] {}))
+            foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getProvider()));
             }
@@ -496,7 +521,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             View.WindowTitle = BookmarkNameProvider.toString(_host);
             View.Hostname = _host.getHostname();
@@ -507,11 +532,11 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Port = _host.getPort().ToString();
             View.PortFieldEnabled = _host.getProtocol().isPortConfigurable();
             View.Path = _host.getDefaultPath();
-            View.Username = _host.getCredentials().getUsername();
-            View.UsernameEnabled = _options.user() && !_host.getCredentials().isAnonymousLogin();
+            View.Username = _credentials.getUsername();
+            View.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
             View.UsernameLabel = _host.getProtocol().getUsernamePlaceholder() + ":";
             View.AnonymousEnabled = _options.anonymous() && _host.getProtocol().isAnonymousConfigurable();
-            View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
+            View.AnonymousChecked = _credentials.isAnonymousLogin();
             View.SelectedProtocol = _host.getProtocol();
             View.SelectedTransferMode = _host.getTransferType();
             View.SelectedEncoding = _host.getEncoding() == null ? Default : _host.getEncoding();
@@ -523,9 +548,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.PrivateKeyFieldEnabled = _host.getProtocol().getType() == Protocol.Type.sftp;
 
-            if (_host.getCredentials().isPublicKeyAuthentication())
+            if (_credentials.isPublicKeyAuthentication())
             {
-                String key = _host.getCredentials().getIdentity().getAbsolute();
+                String key = _credentials.getIdentity().getAbsolute();
                 if (!_keys.Contains(key))
                 {
                     _keys.Add(key);
@@ -539,9 +564,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.ClientCertificateFieldEnabled = _host.getProtocol().getScheme() == Scheme.https ||
                                                  _host.getProtocol().getScheme() == Scheme.ftps;
-            if (_host.getCredentials().isCertificateAuthentication())
+            if (_credentials.isCertificateAuthentication())
             {
-                View.SelectedClientCertificate = _host.getCredentials().getCertificate();
+                View.SelectedClientCertificate = _credentials.getCertificate();
             }
             else
             {
@@ -571,17 +596,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static class Factory
         {
-            private static readonly IDictionary<Host, BookmarkController> Open =
-                new Dictionary<Host, BookmarkController>();
+            private static readonly IDictionary<Host, BookmarkController<T>> Open =
+                new Dictionary<Host, BookmarkController<T>>();
 
-            public static BookmarkController Create(Host host)
+            public static BookmarkController<T> Create(Host host)
             {
-                BookmarkController c;
+                BookmarkController<T> c;
                 if (Open.TryGetValue(host, out c))
                 {
                     return c;
                 }
-                c = new BookmarkController(host);
+                c = new BookmarkController<T>(host);
                 c.View.ViewClosedEvent += () => Open.Remove(host);
                 Open.Add(host, c);
                 return c;
@@ -590,11 +615,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class FaviconAction : AbstractBackgroundAction
         {
-            private readonly BookmarkController _controller;
+            private readonly BookmarkController<T> _controller;
             private readonly Host _host;
             private Image _favicon;
 
-            public FaviconAction(BookmarkController controller, Host host)
+            public FaviconAction(BookmarkController<T> controller, Host host)
             {
                 _controller = controller;
                 _host = host;
@@ -631,11 +656,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class ReachabilityAction : AbstractBackgroundAction
         {
-            private readonly BookmarkController _controller;
+            private readonly BookmarkController<T> _controller;
             private readonly Host _host;
             private bool _reachable;
 
-            public ReachabilityAction(BookmarkController controller, Host host)
+            public ReachabilityAction(BookmarkController<T> controller, Host host)
             {
                 _controller = controller;
                 _host = host;
@@ -655,10 +680,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class RemovedCollectionListener : AbstractCollectionListener
         {
-            private readonly BookmarkController _controller;
+            private readonly BookmarkController<T> _controller;
             private readonly Host _host;
 
-            public RemovedCollectionListener(BookmarkController controller, Host host)
+            public RemovedCollectionListener(BookmarkController<T> controller, Host host)
             {
                 _controller = controller;
                 _host = host;

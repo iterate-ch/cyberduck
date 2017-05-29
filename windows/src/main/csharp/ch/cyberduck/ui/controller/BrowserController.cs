@@ -1873,7 +1873,7 @@ namespace Ch.Cyberduck.Ui.Controller
             DialogResult result = c.View.ShowDialog(View);
             if (result == DialogResult.OK)
             {
-                Mount(c.ConfiguredHost);
+                Mount(c.Bookmark());
             }
         }
 

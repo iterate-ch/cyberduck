@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -17,18 +17,23 @@
 // 
 
 using System.Windows.Forms;
-using ch.cyberduck.core;
-using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui;
 using Ch.Cyberduck.Core.TaskDialog;
-using Ch.Cyberduck.Ui.Winforms.Threading;
-using java.lang;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public abstract class WindowController<T> : WindowController where T : IView
     {
         private T _view;
+
+        protected WindowController()
+        {
+        }
+
+        protected WindowController(InputValidator validator) : base(validator)
+        {
+        }
 
         public new T View
         {
@@ -44,6 +49,17 @@ namespace Ch.Cyberduck.Ui.Controller
     public abstract class WindowController : AsyncController
     {
         private bool _invalidated;
+
+        private readonly InputValidator _validator;
+
+        protected WindowController() : this(new DisabledInputValidator())
+        {
+        }
+
+        protected WindowController(InputValidator validator)
+        {
+            _validator = validator;
+        }
 
         /// <summary>
         /// 
@@ -84,6 +100,11 @@ namespace Ch.Cyberduck.Ui.Controller
             get { return false; }
         }
 
+        public bool validate()
+        {
+            return true;
+        }
+
         private void ViewClosingEvent(object sender, FormClosingEventArgs args)
         {
             if (View.ModalResult == DialogResult.Cancel)
@@ -104,7 +125,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public virtual bool ViewShouldClose()
         {
-            return true;
+            return _validator.validate();
         }
 
         public override void invoke(MainAction mainAction, bool wait)
@@ -200,7 +221,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public TaskDialogResult CommandBox(string title, string message, string detail, string commandButtons,
             bool showCancelButton, string verificationText, TaskDialogIcon mainIcon, DialogResponseHandler handler)
         {
-            return CommandBox(title, message, detail, commandButtons, showCancelButton, verificationText, mainIcon, null,
+            return CommandBox(title, message, detail, commandButtons, showCancelButton, verificationText, mainIcon,
+                null,
                 handler);
         }
 
@@ -224,5 +246,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return View.CommandBox(title, message, detail, null, help, verificationText, commandButtons,
                 showCancelButton, mainIcon, TaskDialogIcon.Information, handler);
         }
+    }
+
+    public class DisabledInputValidator : InputValidator
+    {
+        public bool validate() => true;
     }
 }
