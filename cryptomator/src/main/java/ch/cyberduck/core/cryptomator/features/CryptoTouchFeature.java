@@ -48,8 +48,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
         final Path encrypt = vault.encrypt(session, file);
-        proxy.touch(encrypt, status);
-        final Path copy = new Path(file.getParent(), file.getName(), file.getType(), new PathAttributes(file.attributes()));
+        final Path copy = proxy.touch(encrypt, status);
         copy.getType().add(Path.Type.decrypted);
         copy.attributes().setEncrypted(encrypt);
         copy.attributes().setVault(vault.getHome());

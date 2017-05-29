@@ -71,8 +71,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
-        proxy.mkdir(encrypt, region, status);
-        final Path copy = new Path(folder.getParent(), folder.getName(), folder.getType(), new PathAttributes(folder.attributes()));
+        final Path copy = proxy.mkdir(encrypt, region, status);
         copy.getType().add(Path.Type.decrypted);
         copy.attributes().setEncrypted(encrypt);
         copy.attributes().setVault(vault.getHome());
