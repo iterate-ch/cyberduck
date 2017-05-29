@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.IdProvider;
 
 import java.util.EnumSet;
 
@@ -37,7 +38,7 @@ public class DriveDefaultListService extends AbstractDriveListService {
     }
 
     protected String query(final Path directory) throws BackgroundException {
-        return String.format("'%s' in parents", new DriveFileidProvider(session).getFileid(directory));
+        return String.format("'%s' in parents", session.getFeature(IdProvider.class).getFileid(directory));
     }
 
     @Override

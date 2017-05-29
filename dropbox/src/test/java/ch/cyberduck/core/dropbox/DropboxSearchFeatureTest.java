@@ -78,7 +78,6 @@ public class DropboxSearchFeatureTest {
         final Path workdir = new DefaultHomeFinderService(session).find();
         final Path file = new Path(workdir, name, EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
-        file.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(file));
         final DropboxSearchFeature feature = new DropboxSearchFeature(session);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         // Supports prefix matching only

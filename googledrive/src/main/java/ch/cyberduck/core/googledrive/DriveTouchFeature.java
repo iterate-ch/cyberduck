@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -47,7 +48,7 @@ public class DriveTouchFeature implements Touch<Void> {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())
                     .setMimeType(status.getMime())
-                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(file.getParent()))));
+                    .setParents(Collections.singletonList(session.getFeature(IdProvider.class).getFileid(file.getParent()))));
             final File execute = insert.execute();
             return new Path(file.getParent(), file.getName(), file.getType(),
                     new PathAttributes(file.attributes()).withVersionId(execute.getId()));

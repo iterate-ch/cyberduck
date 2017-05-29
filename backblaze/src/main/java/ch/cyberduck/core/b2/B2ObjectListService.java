@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -79,7 +80,7 @@ public class B2ObjectListService implements ListService {
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
-                        new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
+                        session.getFeature(IdProvider.class).getFileid(containerService.getContainer(directory)),
                         marker.nextFilename, marker.nextFileId, chunksize,
                         containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
                         String.valueOf(Path.DELIMITER));
