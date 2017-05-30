@@ -72,7 +72,7 @@ public final class CryptoPathCache implements Cache<Path> {
         for(int i = 0; i < decrypted.size(); i++) {
             final Path f = decrypted.get(i);
             if(f.getType().contains(Path.Type.decrypted)) {
-                list.add(i, f.attributes().getEncrypted());
+                list.add(i, this.toEncrypted(f));
             }
             else {
                 list.add(i, f);
@@ -102,6 +102,16 @@ public final class CryptoPathCache implements Cache<Path> {
                 log.error(String.format("Missing decrypted reference for %s", file));
             }
             return file.attributes().getDecrypted();
+        }
+        return file;
+    }
+
+    private Path toEncrypted(final Path file) {
+        if(file.getType().contains(Path.Type.decrypted)) {
+            if(null == file.attributes().getEncrypted()) {
+                log.error(String.format("Missing encrypted reference for %s", file));
+            }
+            return file.attributes().getEncrypted();
         }
         return file;
     }
