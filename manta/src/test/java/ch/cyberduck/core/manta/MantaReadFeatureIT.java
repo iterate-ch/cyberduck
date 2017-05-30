@@ -87,27 +87,34 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
         new MantaTouchFeature(session).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final byte[] content = RandomUtils.nextBytes(1000);
+
+        final int BYTES_TOTAL = 10;//00;
+        final int BYTES_OFFSET = 1;//00;
+
+        final byte[] content = RandomUtils.nextBytes(BYTES_TOTAL);
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
         new DefaultUploadFeature<Void>(new MantaWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                test,
+                local,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
-        status.setOffset(100L);
+        status.setOffset(BYTES_OFFSET);
         final MantaReadFeature read = new MantaReadFeature(session);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, status.length(content.length - BYTES_OFFSET), new DisabledConnectionCallback());
         assertNotNull(in);
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - BYTES_OFFSET);
         new StreamCopier(status, status).transfer(in, buffer);
-        final byte[] reference = new byte[content.length - 100];
-        System.arraycopy(content, 100, reference, 0, content.length - 100);
+        final byte[] reference = new byte[content.length - BYTES_OFFSET];
+        System.arraycopy(content, BYTES_OFFSET, reference, 0, content.length - BYTES_OFFSET);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new MantaDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

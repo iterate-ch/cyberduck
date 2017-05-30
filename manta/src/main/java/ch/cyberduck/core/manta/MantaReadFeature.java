@@ -15,10 +15,12 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.joyent.manta.client.MantaObject;
+import com.joyent.manta.http.MantaHttpHeaders;
 
 public class MantaReadFeature implements Read {
     private static final Logger log = Logger.getLogger(MantaReadFeature.class);
@@ -41,11 +44,17 @@ public class MantaReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String remotePath = session.pathMapper.requestPath(file);
+        final MantaHttpHeaders headers = new MantaHttpHeaders();
 
         try {
+            if(status.isAppend()) {
+                final HttpRange range = HttpRange.withStatus(status);
+                headers.setByteRange(range.getStart(), range.getEnd() < 0 ? null : range.getEnd());
+            }
+
             // requesting an empty file as an InputStream doesn't work, but we also don't want to
-            // perform a HEAD request for every read so we'll opt to handle the exception
-            return session.getClient().getAsInputStream(remotePath);
+            // perform a HEAD request for every read so we'll opt to handle the exception instead
+            return session.getClient().getAsInputStream(remotePath, headers);
         }
         catch(UnsupportedOperationException e) {
             return emptyFileFallback(remotePath);
@@ -57,7 +66,7 @@ public class MantaReadFeature implements Read {
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        return true;
+        return file.getType().contains(AbstractPath.Type.file);
     }
 
     private InputStream emptyFileFallback(final String remotePath) throws BackgroundException {
@@ -72,6 +81,7 @@ public class MantaReadFeature implements Read {
         if(probablyEmptyFile.getContentLength() != 0) {
             throw session.exceptionMapper.map(
                     "Cannot read file {0}",
+                    // TODO: not sure what to do here?
                     new RuntimeException("Empty file was not actually empty. Concurrent Access detected."));
         }
 
