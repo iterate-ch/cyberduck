@@ -10,6 +10,7 @@ https://cyberduck.io/
 - [Bugfix] Failure connecting to local disk (Windows)
 - [Bugfix] Multipart uploads fail if the user lacks permission to list multipart uploads (S3) (#9948)
 - [Bugfix] Synchronize files in vault (Cryptomator)
+- [Bugfix] Repeated login prompt (2-Factor Authentication SFTP)
 
 6.0 [https://trac.cyberduck.io/milestone/6.0]
 - [Feature] Create encrypted vault interopable with Cryptomator (#7937)
