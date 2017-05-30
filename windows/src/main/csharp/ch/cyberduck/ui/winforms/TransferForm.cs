@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -82,6 +82,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             transferListView.ItemSelectionChanged += (sender, e) => SelectionChangedEvent();
             transferListView.ItemsChanged +=
                 delegate { transferListView.GridLines = transferListView.GetItemCount() > 0; };
+
+            AddContextMenu(transcriptBox);
 
             //force handle creation
             IntPtr intPtr = Handle;
@@ -310,6 +312,18 @@ namespace Ch.Cyberduck.Ui.Winforms
                     Windows7Taskbar.SetProgressState(Handle, Windows7Taskbar.ThumbnailProgressState.Normal);
                     Windows7Taskbar.SetProgressValue(Handle, (ulong) progress, (ulong) maximum);
                 }
+            }
+        }
+
+        private void AddContextMenu(RichTextBox rtb)
+        {
+            if (rtb.ContextMenuStrip == null)
+            {
+                ContextMenuStrip cms = new ContextMenuStrip {ShowImageMargin = false};
+                ToolStripMenuItem tsmiCopy = new ToolStripMenuItem("Copy");
+                tsmiCopy.Click += (sender, e) => rtb.Copy();
+                cms.Items.Add(tsmiCopy);
+                rtb.ContextMenuStrip = cms;
             }
         }
 
