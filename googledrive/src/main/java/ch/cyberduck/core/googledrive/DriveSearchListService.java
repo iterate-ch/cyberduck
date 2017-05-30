@@ -20,16 +20,18 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public class DriveSearchListService extends AbstractDriveListService {
 
+    private final DriveFileidProvider fileid;
     private final String query;
 
-    public DriveSearchListService(final DriveSession session, final String query) {
+    public DriveSearchListService(final DriveSession session, final DriveFileidProvider fileid, final String query) {
         super(session);
+        this.fileid = fileid;
         this.query = query;
     }
 
     @Override
     protected String query(final Path directory) throws BackgroundException {
         // The contains operator only performs prefix matching for a name.
-        return String.format("name contains '%s'", query);
+        return String.format("name contains '%s' and '%s' in parents", query, fileid.getFileid(directory));
     }
 }
