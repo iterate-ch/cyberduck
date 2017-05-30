@@ -91,7 +91,7 @@ public class MantaPathMapper {
     }
 
     String requestPath(final Path homeRelativeRemote) {
-        return homeRelativeRemote.getAbsolute();
+        return buildNormalizedHomePath(homeRelativeRemote.getAbsolute()).getAbsolute();
     }
 
     Path getNormalizedHomePath() {

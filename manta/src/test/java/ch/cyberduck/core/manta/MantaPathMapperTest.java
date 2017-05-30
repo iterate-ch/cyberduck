@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Protocol;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -64,11 +65,30 @@ public class MantaPathMapperTest {
         assertEquals("/account", buildMapper("account", "~~/").getNormalizedHomePath().getAbsolute());
         assertEquals("/account", buildMapper("account", "/~~/").getNormalizedHomePath().getAbsolute());
         assertEquals("/account/public", buildMapper("account", "~/public").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account/stor", buildMapper("account", "/~~/stor").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildMapper("account", "/~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildMapper("account", "~~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildMapper("account", "/~~/public").getNormalizedHomePath().getAbsolute());
     }
 
     @Test
     public void testNormalizingHomePathsForSubAccounts() {
         assertEquals("/account", buildMapper("account/sub", "").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account/sub", "~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account/sub", "~~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account/sub", "/~~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account/sub", "~~/").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildMapper("account/sub", "/~~/").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildMapper("account/sub", "~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildMapper("account/sub", "/~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildMapper("account/sub", "~~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildMapper("account/sub", "/~~/public").getNormalizedHomePath().getAbsolute());
+    }
+
+    @Test
+    public void testRequestPathMapping() {
+        assertEquals("/account/public", buildMapper("account/sub", "~/public").requestPath(new Path("~/public", EnumSet.noneOf(AbstractPath.Type.class))));
+        assertEquals("/account/public", buildMapper("account/sub", "/~/public").requestPath(new Path("~/public", EnumSet.noneOf(AbstractPath.Type.class))));
+        assertEquals("/account/public", buildMapper("account/sub", "~~/public").requestPath(new Path("~/public", EnumSet.noneOf(AbstractPath.Type.class))));
+        assertEquals("/account/public", buildMapper("account/sub", "/~~/public").requestPath(new Path("~/public", EnumSet.noneOf(AbstractPath.Type.class))));
     }
 }

@@ -43,9 +43,8 @@ public class MantaBufferWriteFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testWrite() throws Exception {
-        fail("write hangs?");
         final MantaWriteFeature feature = new MantaBufferWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -68,9 +67,8 @@ public class MantaBufferWriteFeatureIT extends AbstractMantaTest {
 
     @Test
     public void testWriteUnknownLength() throws Exception {
-        fail("write hangs?");
         final MantaWriteFeature feature = new MantaBufferWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
