@@ -21,6 +21,7 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Search;
 
 public class DriveSearchFeature implements Search {
@@ -38,7 +39,12 @@ public class DriveSearchFeature implements Search {
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
-        return new DriveSearchListService(session, fileid, regex.toPattern().pattern()).list(workdir, listener);
+        try {
+            return new DriveSearchListService(session, fileid, regex.toPattern().pattern()).list(workdir, listener);
+        }
+        catch(NotfoundException e) {
+            return AttributedList.emptyList();
+        }
     }
 
     @Override
