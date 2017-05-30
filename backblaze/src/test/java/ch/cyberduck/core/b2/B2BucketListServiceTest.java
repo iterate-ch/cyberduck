@@ -53,7 +53,7 @@ public class B2BucketListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
-        bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
+        bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()));
         final AttributedList<Path> list = new B2BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());

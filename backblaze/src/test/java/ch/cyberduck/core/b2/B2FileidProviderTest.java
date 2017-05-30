@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -56,9 +57,9 @@ public class B2FileidProviderTest {
         new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file, new TransferStatus());
-        assertNotNull(new B2FileidProvider(session).getFileid(file));
+        assertNotNull(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
         try {
-            assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
+            assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
             fail();
         }
         catch(NotfoundException e) {
@@ -80,7 +81,7 @@ public class B2FileidProviderTest {
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         final Path folder = new B2DirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertNull(new B2FileidProvider(session).getFileid(folder));
+        assertNull(new B2FileidProvider(session).getFileid(folder, new DisabledListProgressListener()));
         new B2DeleteFeature(session).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
 
     }
