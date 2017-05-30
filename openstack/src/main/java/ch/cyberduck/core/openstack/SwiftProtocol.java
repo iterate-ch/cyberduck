@@ -73,4 +73,9 @@ public class SwiftProtocol extends AbstractProtocol {
     public String getContext() {
         return PreferencesFactory.get().getProperty("openstack.authentication.context");
     }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

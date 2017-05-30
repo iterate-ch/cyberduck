@@ -56,4 +56,8 @@ public final class FTPProtocol extends AbstractProtocol {
         return true;
     }
 
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

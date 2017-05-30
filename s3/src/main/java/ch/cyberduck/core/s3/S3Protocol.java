@@ -110,6 +110,16 @@ public final class S3Protocol extends AbstractProtocol {
         return this.icon();
     }
 
+    @Override
+    public String getAuthorization() {
+        return PreferencesFactory.get().getProperty("s3.signature.version");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
     public enum AuthenticationHeaderSignatureVersion {
         AWS2 {
             @Override
@@ -141,10 +151,5 @@ public final class S3Protocol extends AbstractProtocol {
         }
 
         public abstract HashAlgorithm getHashAlgorithm();
-    }
-
-    @Override
-    public String getAuthorization() {
-        return PreferencesFactory.get().getProperty("s3.signature.version");
     }
 }

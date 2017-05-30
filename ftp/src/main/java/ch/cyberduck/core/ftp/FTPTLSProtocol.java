@@ -70,4 +70,8 @@ public final class FTPTLSProtocol extends AbstractProtocol {
         return true;
     }
 
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

@@ -3,7 +3,7 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>googledrive</string>
+        <string>ftp</string>
         <key>Vendor</key>
         <string>cyberduck</string>
     </dict>

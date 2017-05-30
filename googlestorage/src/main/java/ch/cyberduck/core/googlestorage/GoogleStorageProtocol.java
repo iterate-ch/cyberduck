@@ -133,4 +133,9 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     public String getClientSecret() {
         return PreferencesFactory.get().getProperty("googlestorage.oauth.secret");
     }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

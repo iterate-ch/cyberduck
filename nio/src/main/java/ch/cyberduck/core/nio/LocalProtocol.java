@@ -104,6 +104,6 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return false;
     }
 }
