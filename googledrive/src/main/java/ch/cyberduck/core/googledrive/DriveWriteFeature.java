@@ -17,12 +17,12 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -99,7 +99,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
-                        final String fileid = session.getFeature(IdProvider.class).getFileid(file);
+                        final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
                         request = new HttpPatch(String.format("%s/upload/drive/v3/files/%s", base, fileid));
                         // Upload the file
                         request.setEntity(entity);
@@ -108,7 +108,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                         request = new HttpPost(String.format("%s/upload/drive/v3/files?uploadType=resumable", base));
                         request.setEntity(new StringEntity("{\"name\": \""
                                 + file.getName() + "\", \"parents\": [\""
-                                + session.getFeature(IdProvider.class).getFileid(file.getParent()) + "\"]}",
+                                + new DriveFileidProvider(session).getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
                                 ContentType.create("application/json", "UTF-8")));
                     }
                     if(StringUtils.isNotBlank(status.getMime())) {

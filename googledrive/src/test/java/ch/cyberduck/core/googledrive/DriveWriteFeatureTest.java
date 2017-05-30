@@ -75,7 +75,7 @@ public class DriveWriteFeatureTest {
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
-            test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
+            test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
             assertTrue(new DefaultFindFeature(session).find(test));
             final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
             assertEquals(content.length, attributes.getSize());

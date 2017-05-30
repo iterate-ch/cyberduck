@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -50,13 +49,19 @@ public class B2ObjectListService implements ListService {
     private final B2Session session;
 
     private final int chunksize;
+    private B2FileidProvider fileid;
 
     public B2ObjectListService(final B2Session session) {
-        this(session, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+        this(session, new B2FileidProvider(session));
     }
 
-    public B2ObjectListService(final B2Session session, final int chunksize) {
+    public B2ObjectListService(final B2Session session, final B2FileidProvider fileid) {
+        this(session, fileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+    }
+
+    public B2ObjectListService(final B2Session session, final B2FileidProvider fileid, final int chunksize) {
         this.session = session;
+        this.fileid = fileid;
         this.chunksize = chunksize;
     }
 
@@ -80,7 +85,7 @@ public class B2ObjectListService implements ListService {
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
-                        session.getFeature(IdProvider.class).getFileid(containerService.getContainer(directory)),
+                        fileid.getFileid(containerService.getContainer(directory), listener),
                         marker.nextFilename, marker.nextFileId, chunksize,
                         containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
                         String.valueOf(Path.DELIMITER));

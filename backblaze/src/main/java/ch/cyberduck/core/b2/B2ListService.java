@@ -1,4 +1,4 @@
-package ch.cyberduck.core.googledrive;
+package ch.cyberduck.core.b2;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -15,24 +15,29 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public class DriveSearchListService extends AbstractDriveListService {
+public class B2ListService implements ListService {
 
-    private final DriveFileidProvider fileid;
-    private final String query;
+    private final B2Session session;
+    private final B2FileidProvider fileid;
 
-    public DriveSearchListService(final DriveSession session, final DriveFileidProvider fileid, final String query) {
-        super(session);
+    public B2ListService(final B2Session session, final B2FileidProvider fileid) {
+        this.session = session;
         this.fileid = fileid;
-        this.query = query;
     }
 
     @Override
-    protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        // The contains operator only performs prefix matching for a name.
-        return String.format("name contains '%s' and '%s' in parents", query, fileid.getFileid(directory, listener));
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        if(directory.isRoot()) {
+            return new B2BucketListService(session).list(directory, listener);
+        }
+        else {
+            return new B2ObjectListService(session, fileid).list(directory, listener);
+        }
     }
 }

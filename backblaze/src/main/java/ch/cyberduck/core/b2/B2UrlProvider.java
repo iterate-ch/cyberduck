@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -25,7 +26,6 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -68,7 +68,7 @@ public class B2UrlProvider implements UrlProvider {
                 // Determine expiry time for URL
                 final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 expiry.add(Calendar.SECOND, seconds);
-                final String token = session.getClient().getDownloadAuthorization(session.getFeature(IdProvider.class).getFileid(containerService.getContainer(file)),
+                final String token = session.getClient().getDownloadAuthorization(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                         StringUtils.EMPTY, seconds);
                 list.add(new DescriptiveUrl(URI.create(String.format("%s?Authorization=%s", download, token)), DescriptiveUrl.Type.signed,
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))

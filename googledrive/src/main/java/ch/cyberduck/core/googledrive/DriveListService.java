@@ -15,24 +15,27 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public class DriveSearchListService extends AbstractDriveListService {
+public class DriveListService implements ListService {
 
+    private final DriveSession session;
     private final DriveFileidProvider fileid;
-    private final String query;
 
-    public DriveSearchListService(final DriveSession session, final DriveFileidProvider fileid, final String query) {
-        super(session);
+    public DriveListService(final DriveSession session, final DriveFileidProvider fileid) {
+        this.session = session;
         this.fileid = fileid;
-        this.query = query;
     }
 
     @Override
-    protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        // The contains operator only performs prefix matching for a name.
-        return String.format("name contains '%s' and '%s' in parents", query, fileid.getFileid(directory, listener));
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory.getName())) {
+            return new DriveSharedFolderListService(session).list(directory, listener);
+        }
+        return new DriveDefaultListService(session, fileid).list(directory, listener);
     }
 }

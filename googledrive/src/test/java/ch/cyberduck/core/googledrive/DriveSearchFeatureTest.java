@@ -80,9 +80,7 @@ public class DriveSearchFeatureTest {
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final String name = new AlphanumericRandomStringService().random();
         final Path workdir = new DefaultHomeFinderService(session).find();
-        final Path file = new Path(workdir, name, EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(file, new TransferStatus());
-        file.attributes().setVersionId(new DriveFileidProvider(session).getFileid(file));
+        final Path file = new DriveTouchFeature(session).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveSearchFeature feature = new DriveSearchFeature(session);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         // Supports prefix matching only

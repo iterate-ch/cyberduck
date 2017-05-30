@@ -17,12 +17,12 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -99,7 +99,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session);
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
-                    fileid = session.getClient().startLargeFileUpload(session.getFeature(IdProvider.class).getFileid(containerService.getContainer(file)),
+                    fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                             containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
                 }
                 else {
@@ -108,7 +108,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 }
             }
             else {
-                fileid = session.getClient().startLargeFileUpload(session.getFeature(IdProvider.class).getFileid(containerService.getContainer(file)),
+                fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                         containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
             }
             // Save file id for use in part referencing this
