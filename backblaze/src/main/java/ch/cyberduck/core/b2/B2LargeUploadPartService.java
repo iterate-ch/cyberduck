@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -92,6 +93,12 @@ public class B2LargeUploadPartService {
                 }
             }
             // Uploads are listed in the order they were started, with the oldest one first
+            Collections.sort(uploads, new Comparator<B2FileInfoResponse>() {
+                @Override
+                public int compare(final B2FileInfoResponse o1, final B2FileInfoResponse o2) {
+                    return o1.getUploadTimestamp().compareTo(o2.getUploadTimestamp());
+                }
+            });
             Collections.reverse(uploads);
             return uploads;
         }
