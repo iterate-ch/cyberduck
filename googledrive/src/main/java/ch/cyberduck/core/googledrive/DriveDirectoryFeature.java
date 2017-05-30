@@ -15,11 +15,11 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,7 +44,7 @@ public class DriveDirectoryFeature implements Directory<Void> {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(folder.getName())
                     .setMimeType("application/vnd.google-apps.folder")
-                    .setParents(Collections.singletonList(session.getFeature(IdProvider.class).getFileid(folder.getParent()))));
+                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(folder.getParent(), new DisabledListProgressListener()))));
             final File execute = insert.execute();
             return new Path(folder.getParent(), folder.getName(), folder.getType(),
                     new PathAttributes(folder.attributes()).withVersionId(execute.getId()));

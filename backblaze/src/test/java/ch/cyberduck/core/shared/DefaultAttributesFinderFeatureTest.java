@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -76,7 +77,7 @@ public class DefaultAttributesFinderFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-                new B2FileidProvider(session).getFileid(bucket),
+                new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());

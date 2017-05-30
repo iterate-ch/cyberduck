@@ -16,13 +16,13 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.log4j.Logger;
 
@@ -58,7 +58,7 @@ public class B2DeleteFeature implements Delete {
                 // Delete /.bzEmpty if any
                 final String fileid;
                 try {
-                    fileid = session.getFeature(IdProvider.class).getFileid(new Path(file, B2DirectoryFeature.PLACEHOLDER, EnumSet.of(Path.Type.file)));
+                    fileid = new B2FileidProvider(session).getFileid(new Path(file, B2DirectoryFeature.PLACEHOLDER, EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
                 }
                 catch(NotfoundException e) {
                     log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getDetail(), file));
@@ -76,7 +76,7 @@ public class B2DeleteFeature implements Delete {
             }
             else if(file.isFile()) {
                 try {
-                    session.getClient().deleteFileVersion(containerService.getKey(file), session.getFeature(IdProvider.class).getFileid(file));
+                    session.getClient().deleteFileVersion(containerService.getKey(file), new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
                 }
                 catch(B2ApiException e) {
                     throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
@@ -91,7 +91,7 @@ public class B2DeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     callback.delete(file);
                     // Finally delete bucket itself
-                    session.getClient().deleteBucket(session.getFeature(IdProvider.class).getFileid(file));
+                    session.getClient().deleteBucket(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
                 }
             }
             catch(B2ApiException e) {

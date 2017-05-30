@@ -17,12 +17,12 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
@@ -62,7 +62,7 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
         if(containerService.isContainer(file)) {
             try {
                 BucketType bucketType = this.convert(acl);
-                session.getClient().updateBucket(session.getFeature(IdProvider.class).getFileid(containerService.getContainer(file)),
+                session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                         bucketType);
             }
             catch(B2ApiException e) {

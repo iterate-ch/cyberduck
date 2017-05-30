@@ -83,12 +83,11 @@ public class DriveMoveFeatureTest {
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoDirectoryFeature<Void>(session, new DriveDirectoryFeature(session), new DriveWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
-        new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DriveUploadFeature(new DriveWriteFeature(session))), new DriveWriteFeature(session), cryptomator).touch(file, new TransferStatus());
+        final Path folder = new CryptoDirectoryFeature<Void>(session, new DriveDirectoryFeature(session), new DriveWriteFeature(session), cryptomator).mkdir(
+                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DriveUploadFeature(new DriveWriteFeature(session))), new DriveWriteFeature(session), cryptomator).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new DriveMoveFeature(session), new DriveDeleteFeature(session), cryptomator);
         // rename file

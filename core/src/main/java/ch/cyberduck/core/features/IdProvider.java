@@ -16,11 +16,12 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface IdProvider {
-    String getFileid(Path file) throws BackgroundException;
+    String getFileid(Path file, ListProgressListener listener) throws BackgroundException;
 
     IdProvider withCache(Cache<Path> cache);
 }

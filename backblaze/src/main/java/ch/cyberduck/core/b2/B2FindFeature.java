@@ -17,13 +17,13 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -59,7 +59,7 @@ public class B2FindFeature implements Find {
             }
             else {
                 try {
-                    return null != session.getFeature(IdProvider.class).withCache(cache).getFileid(file);
+                    return null != new B2FileidProvider(session).withCache(cache).getFileid(file, new DisabledListProgressListener());
                 }
                 catch(NotfoundException e) {
                     return false;

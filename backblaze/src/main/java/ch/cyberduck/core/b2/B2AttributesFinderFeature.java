@@ -17,12 +17,12 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +53,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try {
-            final B2FileResponse info = session.getClient().getFileInfo(session.getFeature(IdProvider.class).withCache(cache).getFileid(file));
+            final B2FileResponse info = session.getClient().getFileInfo(new B2FileidProvider(session).withCache(cache).getFileid(file, new DisabledListProgressListener()));
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {
