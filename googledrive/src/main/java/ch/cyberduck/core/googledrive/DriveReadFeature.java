@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -74,7 +75,7 @@ public class DriveReadFeature implements Read {
             else {
                 final String base = session.getClient().getRootUrl();
                 final HttpUriRequest request = new HttpGet(String.format("%s/drive/v3/files/%s?alt=media", base,
-                        new DriveFileidProvider(session).getFileid(file)));
+                        new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener())));
                 request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);

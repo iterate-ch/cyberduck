@@ -75,7 +75,7 @@ public abstract class AbstractDriveListService implements ListService {
             String page = null;
             do {
                 final FileList list = session.getClient().files().list()
-                        .setQ(this.query(directory))
+                        .setQ(this.query(directory, listener))
                         .setPageToken(page)
                         .setFields(fields)
                         .setPageSize(pagesize).execute();
@@ -149,5 +149,5 @@ public abstract class AbstractDriveListService implements ListService {
         return attributes;
     }
 
-    protected abstract String query(final Path directory) throws BackgroundException;
+    protected abstract String query(final Path directory, final ListProgressListener listener) throws BackgroundException;
 }

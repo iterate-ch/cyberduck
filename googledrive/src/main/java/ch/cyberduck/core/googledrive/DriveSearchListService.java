@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -30,8 +31,8 @@ public class DriveSearchListService extends AbstractDriveListService {
     }
 
     @Override
-    protected String query(final Path directory) throws BackgroundException {
+    protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
         // The contains operator only performs prefix matching for a name.
-        return String.format("name contains '%s' and '%s' in parents", query, fileid.getFileid(directory));
+        return String.format("name contains '%s' and '%s' in parents", query, fileid.getFileid(directory, listener));
     }
 }

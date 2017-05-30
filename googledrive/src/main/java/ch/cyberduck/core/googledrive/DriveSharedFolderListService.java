@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -29,7 +30,7 @@ public class DriveSharedFolderListService extends AbstractDriveListService {
     }
 
     @Override
-    protected String query(final Path directory) throws BackgroundException {
+    protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return "sharedWithMe";
     }
 }
