@@ -23,19 +23,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-
 
 import java.io.OutputStream;
 
 public class MantaWriteFeature implements Write<Void> {
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     private final MantaSession session;
     private final MantaAttributesFinderFeature attrFinder;

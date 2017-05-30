@@ -22,10 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.test.IntegrationTest;
@@ -35,18 +32,12 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.FileReader;
-import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Created by tomascelaya on 5/24/17.
- */
 @Category(IntegrationTest.class)
 public class MantaPublicKeyAuthenticationIT {
 

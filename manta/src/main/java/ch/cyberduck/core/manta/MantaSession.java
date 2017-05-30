@@ -44,7 +44,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -56,8 +55,6 @@ import com.joyent.manta.config.SettableConfigContext;
 import com.joyent.manta.config.StandardConfigContext;
 
 public class MantaSession extends SSLSession<MantaClient> {
-
-    public static final Logger log = Logger.getLogger(MantaSession.class);
 
     static final String HEADER_KEY_STORAGE_CLASS = "Durability-Level";
 
@@ -170,7 +167,6 @@ public class MantaSession extends SSLSession<MantaClient> {
             return (T) new MantaWriteFeature(this);
         }
         if(type == MultipartWrite.class) {
-            log.error("multipart write feature requested");
             return (T) new MantaBufferWriteFeature(this);
         }
         if(type == Delete.class) {

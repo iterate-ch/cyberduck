@@ -16,9 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class MantaProtocol extends AbstractProtocol {
 

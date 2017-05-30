@@ -29,9 +29,7 @@ import java.util.Iterator;
 
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
-import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.exception.MantaIOException;
-
 
 public class MantaListService implements ListService {
 

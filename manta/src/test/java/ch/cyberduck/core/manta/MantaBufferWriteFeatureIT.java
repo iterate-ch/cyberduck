@@ -24,7 +24,6 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;

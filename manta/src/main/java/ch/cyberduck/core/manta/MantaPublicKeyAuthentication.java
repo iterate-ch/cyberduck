@@ -35,15 +35,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyException;
 import java.security.KeyPair;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.Base64;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
-import com.joyent.manta.config.KeyPairFactory;
-import com.joyent.manta.exception.MantaAuthenticationException;
 import com.joyent.manta.http.signature.KeyFingerprinter;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
@@ -52,8 +45,8 @@ import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PKCS5KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
-import net.schmizz.sshj.userauth.password.Resource;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
+import net.schmizz.sshj.userauth.password.Resource;
 
 public class MantaPublicKeyAuthentication implements MantaAuthentication {
 

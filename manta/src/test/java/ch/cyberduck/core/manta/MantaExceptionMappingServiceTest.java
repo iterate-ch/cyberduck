@@ -15,19 +15,11 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
-import java.net.SocketException;
 import java.security.KeyException;
-
-import com.joyent.manta.exception.MantaAuthenticationException;
-import com.joyent.manta.exception.MantaException;
-import com.joyent.manta.exception.MantaIOException;
 
 import static org.junit.Assert.assertTrue;
 

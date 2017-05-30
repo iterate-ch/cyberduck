@@ -24,21 +24,17 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hamcrest.Matcher;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MantaSessionTest {
 

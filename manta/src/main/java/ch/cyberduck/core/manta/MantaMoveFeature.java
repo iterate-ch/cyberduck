@@ -23,8 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.util.Collections;
 
@@ -32,7 +30,6 @@ import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.exception.MantaIOException;
 
 public class MantaMoveFeature implements Move {
-    private static final Logger log = Logger.getLogger(MantaMoveFeature.class);
 
     private final MantaSession session;
     private Delete delete;

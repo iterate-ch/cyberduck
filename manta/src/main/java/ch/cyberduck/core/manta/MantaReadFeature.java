@@ -33,7 +33,6 @@ import com.joyent.manta.client.MantaObject;
 import com.joyent.manta.http.MantaHttpHeaders;
 
 public class MantaReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(MantaReadFeature.class);
 
     private final MantaSession session;
 

@@ -24,12 +24,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
-import com.joyent.manta.client.MantaMetadata;
-import com.joyent.manta.exception.MantaClientException;
-import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.exception.MantaIOException;
-import com.joyent.manta.http.MantaHttpHeaders;
 
 public class MantaTouchFeature implements Touch {
 

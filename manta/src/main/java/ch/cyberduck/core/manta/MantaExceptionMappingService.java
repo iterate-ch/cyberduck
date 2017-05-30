@@ -18,34 +18,23 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.client.HttpResponseException;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.security.KeyException;
 
-import com.joyent.manta.exception.MantaClientException;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
-import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.exception.MantaIOException;
 
 public class MantaExceptionMappingService extends AbstractExceptionMappingService<Exception> {
 
-    private static final Logger log = Logger.getLogger(MantaExceptionMappingService.class);
     private final MantaSession session;
 
     public MantaExceptionMappingService(final MantaSession session) {

@@ -15,15 +15,11 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -31,8 +27,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
-import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 

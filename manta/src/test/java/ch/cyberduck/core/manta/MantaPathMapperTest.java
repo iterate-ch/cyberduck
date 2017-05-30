@@ -17,22 +17,13 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Protocol;
 
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.EnumSet;
 
-import com.joyent.manta.client.MantaMetadata;
-import com.joyent.manta.client.MantaObject;
 import com.joyent.manta.client.MantaObjectResponse;
-import com.joyent.manta.http.MantaHttpHeaders;
 
 import static org.junit.Assert.*;
 

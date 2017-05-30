@@ -25,9 +25,6 @@ import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaObject;
 
-/**
- * Created by tomascelaya on 5/24/17.
- */
 public class MantaPathMapper {
 
     static final String MANTA_HOME_SHORTCUT = "~~";

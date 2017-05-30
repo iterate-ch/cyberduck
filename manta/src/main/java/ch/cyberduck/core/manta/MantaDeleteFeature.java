@@ -18,11 +18,8 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,8 +28,6 @@ import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.exception.MantaIOException;
 
 public class MantaDeleteFeature implements Delete {
-
-    public static final Logger log = Logger.getLogger(MantaDeleteFeature.class);
 
     private final MantaSession session;
 
@@ -44,7 +39,6 @@ public class MantaDeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             callback.delete(file);
-            log.error("deleteing file " + file);
             try {
                 // TODO: verify deleteRecursive behavior
                 session.getClient().deleteRecursive(session.pathMapper.requestPath(file));

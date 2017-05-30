@@ -23,8 +23,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -35,7 +33,6 @@ import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class MantaTouchFeatureIT extends AbstractMantaTest {
-    private static final Logger log = Logger.getLogger(MantaTouchFeatureIT.class);
 
     @Test
     public void testTouch() throws Exception {

@@ -15,20 +15,10 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AbstractPath.Type;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.EnumSet;
-
-/**
- * Created by tomascelaya on 5/26/17.
- */
 public class MantaHomeFinderFeature extends DefaultHomeFinderService {
 
     private final MantaSession session;

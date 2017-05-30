@@ -19,11 +19,8 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
-
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -31,7 +28,6 @@ import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.exception.MantaIOException;
 
 public class MantaAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(MantaAttributesFinderFeature.class);
 
     private final MantaSession session;
 
