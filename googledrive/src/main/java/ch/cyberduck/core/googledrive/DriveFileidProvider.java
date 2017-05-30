@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
-
     private Cache<Path> cache = PathCache.empty();
 
     public DriveFileidProvider(final DriveSession session) {
@@ -47,7 +46,7 @@ public class DriveFileidProvider implements IdProvider {
         }
         final AttributedList<Path> list;
         if(!cache.isCached(file.getParent())) {
-            list = session.list(file.getParent(), new DisabledListProgressListener());
+            list = new FileidDriveListService(file).list(file.getParent(), new DisabledListProgressListener());
             cache.put(file.getParent(), list);
         }
         else {
@@ -64,5 +63,19 @@ public class DriveFileidProvider implements IdProvider {
     public IdProvider withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
+    }
+
+    private final class FileidDriveListService extends AbstractDriveListService {
+        private final Path file;
+
+        public FileidDriveListService(final Path file) {
+            super(DriveFileidProvider.this.session, 1);
+            this.file = file;
+        }
+
+        @Override
+        protected String query(final Path directory) throws BackgroundException {
+            return String.format("name = '%s' and '%s' in parents", file.getName(), DriveFileidProvider.this.getFileid(directory));
+        }
     }
 }

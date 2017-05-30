@@ -20,7 +20,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
@@ -75,7 +74,7 @@ public class DriveReadFeature implements Read {
             else {
                 final String base = session.getClient().getRootUrl();
                 final HttpUriRequest request = new HttpGet(String.format("%s/drive/v3/files/%s?alt=media", base,
-                        session.getFeature(IdProvider.class).getFileid(file)));
+                        new DriveFileidProvider(session).getFileid(file)));
                 request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);

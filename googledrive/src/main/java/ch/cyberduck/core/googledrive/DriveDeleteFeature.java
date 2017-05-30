@@ -19,7 +19,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.IdProvider;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +39,7 @@ public class DriveDeleteFeature implements Delete {
             }
             callback.delete(file);
             try {
-                session.getClient().files().delete(session.getFeature(IdProvider.class).getFileid(file)).execute();
+                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file)).execute();
             }
             catch(IOException e) {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);
