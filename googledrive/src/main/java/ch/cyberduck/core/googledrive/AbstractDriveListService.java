@@ -47,18 +47,25 @@ public abstract class AbstractDriveListService implements ListService {
 
     protected static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
     protected static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
+    protected static final String DEFAULT_FIELDS = "files(createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink),nextPageToken";
 
     private final DriveSession session;
     private final int pagesize;
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
+    private final String fields;
 
     public AbstractDriveListService(final DriveSession session) {
         this(session, PreferencesFactory.get().getInteger("googledrive.list.limit"));
     }
 
     public AbstractDriveListService(final DriveSession session, final int pagesize) {
+        this(session, pagesize, DEFAULT_FIELDS);
+    }
+
+    public AbstractDriveListService(final DriveSession session, final int pagesize, final String fields) {
         this.session = session;
         this.pagesize = pagesize;
+        this.fields = fields;
     }
 
     @Override
@@ -70,7 +77,7 @@ public abstract class AbstractDriveListService implements ListService {
                 final FileList list = session.getClient().files().list()
                         .setQ(this.query(directory))
                         .setPageToken(page)
-                        .setFields("files(createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink),nextPageToken")
+                        .setFields(fields)
                         .setPageSize(pagesize).execute();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Chunk of %d retrieved", list.getFiles().size()));
