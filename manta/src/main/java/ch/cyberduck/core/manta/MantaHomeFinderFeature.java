@@ -29,11 +29,11 @@ import java.util.EnumSet;
 /**
  * Created by tomascelaya on 5/26/17.
  */
-public class MantaHomeFinderService extends DefaultHomeFinderService {
+public class MantaHomeFinderFeature extends DefaultHomeFinderService {
 
     private final MantaSession session;
 
-    public MantaHomeFinderService(final MantaSession session) {
+    public MantaHomeFinderFeature(final MantaSession session) {
         super(session);
         this.session = session;
     }

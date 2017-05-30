@@ -48,7 +48,6 @@ public class MantaTouchFeatureIT extends AbstractMantaTest {
         new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Ignore("whitespace is broken?")
     @Test
     public void testWhitespaceTouch() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();

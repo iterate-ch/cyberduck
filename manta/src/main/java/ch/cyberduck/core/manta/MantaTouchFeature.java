@@ -46,13 +46,11 @@ public class MantaTouchFeature implements Touch {
                 session.getClient().putDirectory(file.getParent().getAbsolute());
             }
 
-            session.getClient().put(session.pathMapper.requestPath(file), new byte[0]);
+            final String remotePath = session.pathMapper.requestPath(file);
+            // put(String, byte[]) does not urlencode paths, manta bug forthcoming
+            session.getClient().put(remotePath, "");
         }
         catch(MantaException | MantaIOException e) {
-//            if (e instanceof MantaClientHttpResponseException
-//                    && ((MantaClientHttpResponseException) e).)
-
-
             throw session.exceptionMapper.map("Cannot create file {0}", e, file);
         }
         catch(IOException e) {

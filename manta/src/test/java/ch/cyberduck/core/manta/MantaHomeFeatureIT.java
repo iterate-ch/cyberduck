@@ -30,7 +30,7 @@ public class MantaHomeFeatureIT extends AbstractMantaTest{
 
     @Test
     public void testHomeFeature() throws BackgroundException {
-        final Path drive = new MantaHomeFinderService(session).find();
+        final Path drive = new MantaHomeFinderFeature(session).find();
         assertNotNull(drive);
         assertFalse(drive.isRoot());
         assertTrue(drive.isPlaceholder());
