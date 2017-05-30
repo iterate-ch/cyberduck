@@ -88,8 +88,6 @@ public class DriveSession extends HttpSession<Drive> {
     private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
             authorizationService);
 
-    private final DriveFileidProvider fileid = new DriveFileidProvider(this);
-
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -123,10 +121,7 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory.getName())) {
-            return new DriveSharedFolderListService(this).list(directory, listener);
-        }
-        return new DriveDefaultListService(this).list(directory, listener);
+        return new DriveListService(this, new DriveFileidProvider(this)).list(directory, listener);
     }
 
     public HttpClient getHttpClient() {
@@ -167,7 +162,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveHomeFinderService(this);
         }
         if(type == IdProvider.class) {
-            return (T) fileid;
+            return (T) new DriveFileidProvider(this);
         }
         if(type == Quota.class) {
             return (T) new DriveQuotaFeature(this);
