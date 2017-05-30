@@ -26,20 +26,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.features.Lifecycle;
-import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -157,6 +144,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         }
         if(type == Lifecycle.class) {
             return (T) new B2LifecycleFeature(this);
+        }
+        if(type == Search.class) {
+            return (T) new B2SearchFeature(this);
         }
         return super._getFeature(type);
     }
