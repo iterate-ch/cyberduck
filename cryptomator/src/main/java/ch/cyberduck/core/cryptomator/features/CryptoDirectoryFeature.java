@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
@@ -71,11 +70,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
-        final Path copy = proxy.mkdir(encrypt, region, status);
-        copy.getType().add(Path.Type.decrypted);
-        copy.attributes().setEncrypted(encrypt);
-        copy.attributes().setVault(vault.getHome());
-        return copy;
+        return vault.decrypt(session, proxy.mkdir(encrypt, region, status));
     }
 
     @Override
