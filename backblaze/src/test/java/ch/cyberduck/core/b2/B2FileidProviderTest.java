@@ -53,10 +53,8 @@ public class B2FileidProviderTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
-        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(file, new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path file = new B2TouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
         try {
             assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
@@ -78,11 +76,9 @@ public class B2FileidProviderTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path folder = new B2DirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNull(new B2FileidProvider(session).getFileid(folder, new DisabledListProgressListener()));
         new B2DeleteFeature(session).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
-
     }
 }

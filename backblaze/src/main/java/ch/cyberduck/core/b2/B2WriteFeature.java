@@ -18,13 +18,13 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -91,13 +91,13 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     final Checksum checksum = status.getChecksum();
                     if(status.isSegment()) {
                         final B2GetUploadPartUrlResponse uploadUrl
-                                = session.getClient().getUploadPartUrl(session.getFeature(IdProvider.class).getFileid(file));
+                                = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
                         return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
                     }
                     else {
                         final B2GetUploadUrlResponse uploadUrl;
                         if(null == urls.get()) {
-                            uploadUrl = session.getClient().getUploadUrl(session.getFeature(IdProvider.class).getFileid(containerService.getContainer(file)));
+                            uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Obtained upload URL %s for file %s", uploadUrl, file));
                             }

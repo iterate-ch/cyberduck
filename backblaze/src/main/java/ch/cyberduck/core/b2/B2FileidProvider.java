@@ -17,9 +17,12 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -27,7 +30,16 @@ import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
+
+import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2FileInfoResponse;
+import synapticloop.b2.response.B2ListFilesResponse;
+
 public class B2FileidProvider implements IdProvider {
+
+    private final PathContainerService containerService
+            = new PathContainerService();
 
     private final B2Session session;
 
@@ -38,23 +50,46 @@ public class B2FileidProvider implements IdProvider {
     }
 
     @Override
-    public String getFileid(final Path file) throws BackgroundException {
+    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-        final AttributedList<Path> list;
-        if(!cache.isCached(file.getParent())) {
-            list = session.list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getParent(), list);
+        if(containerService.isContainer(file)) {
+            final AttributedList<Path> list;
+            if(!cache.isCached(file.getParent())) {
+                list = new B2ListService(session, this).list(file.getParent(), new DisabledListProgressListener());
+                cache.put(file.getParent(), list);
+            }
+            else {
+                list = cache.get(file.getParent());
+            }
+            final Path found = list.find(new SimplePathPredicate(file));
+            if(null == found) {
+                throw new NotfoundException(file.getAbsolute());
+            }
+            return found.attributes().getVersionId();
         }
-        else {
-            list = cache.get(file.getParent());
+        if(file.isDirectory()) {
+            // Placeholder does not exist
+            return null;
         }
-        final Path found = list.find(new SimplePathPredicate(file));
-        if(null == found) {
+        try {
+            final B2ListFilesResponse response = session.getClient().listFileNames(
+                    this.getFileid(containerService.getContainer(file), listener), file.getName(), 1,
+                    containerService.isContainer(file.getParent()) ? null : containerService.getKey(file.getParent()) + Path.DELIMITER, String.valueOf(Path.DELIMITER));
+            for(B2FileInfoResponse info : response.getFiles()) {
+                if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
+                    return info.getFileId();
+                }
+            }
             throw new NotfoundException(file.getAbsolute());
         }
-        return found.attributes().getVersionId();
+        catch(B2ApiException e) {
+            throw new B2ExceptionMappingService(session).map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override
