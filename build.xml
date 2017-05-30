@@ -34,6 +34,8 @@
     <property name="img" value="${home}/img"/>
     <property name="lib" value="${home}/lib"/>
     <property name="lib.ext" value="${lib}/ext"/>
+    <property name="profiles" value="${home}/profiles"/>
+    <property name="profiles.default" value="${profiles}/default"/>
     <property name="www" value="${home}/www"/>
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>

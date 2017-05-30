@@ -25,9 +25,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -108,8 +107,8 @@ public final class ProtocolFactory {
     /**
      * @return List of protocols
      */
-    public static List<Protocol> getEnabledProtocols() {
-        final List<Protocol> enabled = new ArrayList<Protocol>();
+    public static Set<Protocol> getEnabledProtocols() {
+        final Set<Protocol> enabled = new HashSet<>();
         for(Protocol protocol : registered) {
             if(protocol.isEnabled()) {
                 enabled.add(protocol);
@@ -123,7 +122,7 @@ public final class ProtocolFactory {
      * @return Matching protocol or null if no match
      */
     public static Protocol forName(final String identifier) {
-        return ProtocolFactory.forName(registered, identifier);
+        return ProtocolFactory.forName(ProtocolFactory.getEnabledProtocols(), identifier);
     }
 
     public static Protocol forName(final Set<Protocol> protocols, final String identifier) {
@@ -153,7 +152,7 @@ public final class ProtocolFactory {
      * @return Standard protocol for this scheme. This is ambigous
      */
     public static Protocol forScheme(final String scheme) {
-        return ProtocolFactory.forScheme(registered, scheme);
+        return ProtocolFactory.forScheme(ProtocolFactory.getEnabledProtocols(), scheme);
     }
 
     public static Protocol forScheme(final Set<Protocol> protocols, final String scheme) {
