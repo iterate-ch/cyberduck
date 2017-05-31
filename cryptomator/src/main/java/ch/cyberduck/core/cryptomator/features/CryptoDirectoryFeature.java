@@ -51,7 +51,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
-        final String directoryId = this.random.random();
+        final String directoryId = random.random();
         final Path encrypt = vault.encrypt(session, folder, directoryId, false);
         // Create metadata file for directory
         final Path directoryMetadataFile = vault.encrypt(session, folder, true);
@@ -68,7 +68,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
-        return vault.decrypt(session, proxy.mkdir(encrypt, region, status));
+        return vault.decrypt(session, vault.encrypt(session, proxy.mkdir(encrypt, region, status), true));
     }
 
     @Override
