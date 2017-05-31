@@ -72,7 +72,7 @@ public class DAVMoveFeatureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new DAVMoveFeature(session), new DAVDeleteFeature(session), cryptomator);
         // rename file
-        final Path fileRenamed = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, false, new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(file));
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(fileRenamed));
@@ -81,7 +81,10 @@ public class DAVMoveFeatureTest {
         move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(folderRenamed));
-        new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(fileRenamed, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
+        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
+        new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(
+                fileRenamedInRenamedFolder, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
