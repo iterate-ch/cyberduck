@@ -51,16 +51,14 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
-        if(!status.isExists()) {
-            folder.attributes().setDirectoryId(random.random());
-        }
-        final Path encrypt = vault.encrypt(session, folder);
+        final String directoryId = random.random();
+        final Path encrypt = vault.encrypt(session, folder, directoryId, false);
         // Create metadata file for directory
         final Path directoryMetadataFile = vault.encrypt(session, folder, true);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write metadata %s for folder %s", directoryMetadataFile, folder));
         }
-        new ContentWriter(session).write(directoryMetadataFile, encrypt.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
+        new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(Charset.forName("UTF-8")));
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(intermediate, region, new TransferStatus());
@@ -70,7 +68,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
-        return vault.decrypt(session, proxy.mkdir(encrypt, region, status));
+        return vault.decrypt(session, vault.encrypt(session, proxy.mkdir(encrypt, region, status), true));
     }
 
     @Override
