@@ -71,8 +71,9 @@ public class CryptoDirectoryProvider {
     /**
      * Get encrypted reference for clear text directory path.
      *
-     * @param session   Connection
-     * @param directory Clear text
+     * @param session     Connection
+     * @param directoryId Directory ID or null to read directory id from metadata file
+     * @param directory   Clear text
      */
     public Path toEncrypted(final Session<?> session, final String directoryId, final Path directory) throws BackgroundException {
         if(directory.getType().contains(Path.Type.directory)) {
@@ -81,7 +82,7 @@ public class CryptoDirectoryProvider {
             // Remember random directory id for use in vault
             final String id = this.toDirectoryId(session, directory, directoryId);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Set directory ID %s for folder %s", id, directory));
+                log.debug(String.format("Use directory ID '%s' for folder %s", id, directory));
             }
             attributes.setDirectoryId(id);
             attributes.setDecrypted(directory);
