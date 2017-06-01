@@ -23,9 +23,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
 import java.security.KeyException;
@@ -61,25 +63,14 @@ public class MantaExceptionMappingService extends AbstractExceptionMappingServic
             return new LoginFailureException("Login failed", failure);
         }
         if(failure instanceof MantaClientHttpResponseException) {
-            final MantaClientHttpResponseException me = (MantaClientHttpResponseException) failure;
-            return mapHttpException(me, ObjectUtils.firstNonNull(me.getContent(), ""));
+            final MantaClientHttpResponseException httpFailure = (MantaClientHttpResponseException) failure;
+            return new HttpResponseExceptionMappingService().map(
+                    new HttpResponseException(httpFailure.getStatusCode(), httpFailure.getLocalizedMessage()));
         }
-
         if(failure instanceof MantaIOException) {
             return new DefaultIOExceptionMappingService().map((IOException) ExceptionUtils.getRootCause(failure));
         }
         return new InteroperabilityException(failure.getMessage(), failure);
-    }
-
-    public BackgroundException mapHttpException(final MantaClientHttpResponseException httpFailure, final String path) {
-        switch(httpFailure.getStatusCode()) {
-            case 403:
-                return new AccessDeniedException(httpFailure.getStatusMessage());
-            case 404:
-                return new NotfoundException("Not Found. Item does not exist.");
-            default:
-                return new InteroperabilityException("Unexpected remote error", httpFailure);
-        }
     }
 
     BackgroundException mapLoginException(final Exception failure) {

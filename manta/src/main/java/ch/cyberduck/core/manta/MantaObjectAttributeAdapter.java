@@ -40,10 +40,6 @@ public class MantaObjectAttributeAdapter {
     }
 
     public PathAttributes from(final MantaObject mantaObject) {
-        // TODO: directoryId for cryptomator?
-        // TODO: region?
-        // TODO: metadata extras?
-
         final PathAttributes attributes = new PathAttributes();
 
         final String[] pathSegments = mantaObject.getPath().split(MantaClient.SEPARATOR);

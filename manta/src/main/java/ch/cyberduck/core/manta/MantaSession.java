@@ -166,9 +166,6 @@ public class MantaSession extends SSLSession<MantaClient> {
         if(type == Write.class) {
             return (T) new MantaWriteFeature(this);
         }
-        if(type == MultipartWrite.class) {
-            return (T) new MantaBufferWriteFeature(this);
-        }
         if(type == Delete.class) {
             return (T) new MantaDeleteFeature(this);
         }

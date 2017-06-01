@@ -53,12 +53,6 @@ public class MantaDirectoryFeature implements Directory {
         return session.pathMapper.isUserWritable(workdir);
     }
 
-    /**
-     * TODO: what does this do?
-     *
-     * @param writer
-     * @return
-     */
     @Override
     public Directory withWriter(final Write writer) {
         return this;

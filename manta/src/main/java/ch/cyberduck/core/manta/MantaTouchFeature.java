@@ -62,7 +62,6 @@ public class MantaTouchFeature implements Touch {
 
     @Override
     public Touch withWriter(final Write writer) {
-        // TODO: same as withCache, would it help to use the writer?
         return this;
     }
 }

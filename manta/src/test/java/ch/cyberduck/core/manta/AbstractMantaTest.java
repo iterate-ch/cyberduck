@@ -48,7 +48,6 @@ public abstract class AbstractMantaTest {
 
     @Before
     public void setup() throws Exception {
-        System.out.print(">>>> test setup <<<<");
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Triton Manta.cyberduckprofile"));
 

@@ -18,6 +18,7 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
@@ -65,7 +66,8 @@ public class MantaReadFeature implements Read {
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        return file.getType().contains(AbstractPath.Type.file);
+        // The feature will only be called for paths of type file.
+        return true;
     }
 
     private InputStream emptyFileFallback(final String remotePath) throws BackgroundException {
@@ -78,10 +80,7 @@ public class MantaReadFeature implements Read {
         }
 
         if(probablyEmptyFile.getContentLength() != 0) {
-            throw session.exceptionMapper.map(
-                    "Cannot read file {0}",
-                    // TODO: not sure what to do here?
-                    new RuntimeException("Empty file was not actually empty. Concurrent Access detected."));
+            throw new AccessDeniedException();
         }
 
         return new NullInputStream(0);

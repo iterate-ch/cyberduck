@@ -104,10 +104,6 @@ public interface Protocol extends Comparable<Protocol> {
         manta {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                if(credentials.isAnonymousLogin()) {
-                    return false; // is this correct?
-                }
-
                 final boolean usingPublicKey = options.publickey && credentials.isPublicKeyAuthentication();
                 final boolean usingUsernameAndPassword = options.user && !StringUtils.isAnyEmpty(credentials.getUsername(), credentials.getPassword());
                 return usingPublicKey || usingUsernameAndPassword;

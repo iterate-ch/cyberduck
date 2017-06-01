@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.joyent.manta</groupId>
             <artifactId>java-manta-client</artifactId>
-            <version>LATEST</version>
+            <version>3.0.0</version>
         </dependency>
 
         <dependency>
