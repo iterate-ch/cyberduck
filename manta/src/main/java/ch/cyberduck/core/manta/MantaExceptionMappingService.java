@@ -65,7 +65,7 @@ public class MantaExceptionMappingService extends AbstractExceptionMappingServic
         if(failure instanceof MantaClientHttpResponseException) {
             final MantaClientHttpResponseException httpFailure = (MantaClientHttpResponseException) failure;
             return new HttpResponseExceptionMappingService().map(
-                    new HttpResponseException(httpFailure.getStatusCode(), httpFailure.getLocalizedMessage()));
+                    new HttpResponseException(httpFailure.getStatusCode(), httpFailure.getStatusMessage()));
         }
         if(failure instanceof MantaIOException) {
             return new DefaultIOExceptionMappingService().map((IOException) ExceptionUtils.getRootCause(failure));

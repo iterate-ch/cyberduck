@@ -39,7 +39,7 @@ public class MantaAttributesFinderFeatureIT extends AbstractMantaTest {
             new MantaAttributesFinderFeature(session).find(randomFile());
         }
         catch(NotfoundException e) {
-            assertEquals("Not Found. Item does not exist. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Not Found. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }

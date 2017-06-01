@@ -53,7 +53,7 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
             new MantaReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
         catch(NotfoundException e) {
-            assertEquals("Not Found. Item does not exist. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Not Found. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }
