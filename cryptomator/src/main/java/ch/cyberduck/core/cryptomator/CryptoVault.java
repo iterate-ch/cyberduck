@@ -166,8 +166,7 @@ public class CryptoVault implements Vault {
         };
         this.unlock(masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
-        // Nullify to avoid recursion
-        home.attributes().setVault(null);
+        home.attributes().setVault(home);
         return this;
     }
 
