@@ -17,6 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -31,6 +32,9 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -60,10 +64,14 @@ public class FTPStatListServiceTest {
         final ListService service = new FTPStatListService(session,
                 new CompositeFileEntryParser(Collections.singletonList(new UnixFTPEntryParser())));
         final Path directory = new FTPWorkdirService(session).find();
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
+        new FTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
-        assertTrue(list.contains(new Path(directory, "test", EnumSet.of(Path.Type.file))));
-        assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
-                list.get(new Path(directory, "test", EnumSet.of(Path.Type.file))).attributes().getPermission());
+        assertTrue(list.contains(file));
+        assertEquals(permission,
+                list.get(file).attributes().getPermission());
         session.close();
     }
 
