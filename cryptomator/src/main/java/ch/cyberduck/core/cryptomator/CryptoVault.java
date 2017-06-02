@@ -301,6 +301,7 @@ public class CryptoVault implements Vault {
             encrypted.attributes().setDecrypted(file);
         }
         // Add reference for vault
+        file.attributes().setVault(home);
         encrypted.attributes().setVault(home);
         return encrypted;
     }
