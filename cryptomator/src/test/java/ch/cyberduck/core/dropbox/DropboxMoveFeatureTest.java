@@ -92,7 +92,7 @@ public class DropboxMoveFeatureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new DropboxMoveFeature(session), new DropboxDeleteFeature(session), cryptomator);
         // rename file
-        final Path fileRenamed = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, false, new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(file));
         assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(fileRenamed));
@@ -101,7 +101,10 @@ public class DropboxMoveFeatureTest {
         move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(folderRenamed));
-        new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(fileRenamed, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
+        assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
+        new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(
+                fileRenamedInRenamedFolder, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

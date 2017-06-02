@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
@@ -47,12 +46,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
-        final Path encrypt = vault.encrypt(session, file);
-        final Path copy = proxy.touch(encrypt, status);
-        copy.getType().add(Path.Type.decrypted);
-        copy.attributes().setEncrypted(encrypt);
-        copy.attributes().setVault(vault.getHome());
-        return copy;
+        return vault.decrypt(session, proxy.touch(vault.encrypt(session, file), status));
     }
 
     @Override

@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>6.0.1-SNAPSHOT</version>
+    <version>6.1.0-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -58,7 +58,7 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://g.iterate.ch/scm/iterate/cyberduck.git</connection>
+        <connection>scm:git:ssh://git@g.iterate.ch:7999/iterate/cyberduck.git</connection>
         <tag>HEAD</tag>
     </scm>
 
@@ -223,7 +223,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.136</version>
+                <version>1.11.137</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
