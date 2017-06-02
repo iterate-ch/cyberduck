@@ -218,7 +218,7 @@ public abstract class Preferences {
 
     protected void setDefaults(final Properties properties) {
         for(Map.Entry<Object, Object> property : properties.entrySet()) {
-            defaults.put((String) property.getKey(), (String) property.getValue());
+            defaults.put(property.getKey().toString(), property.getValue().toString());
         }
     }
 
