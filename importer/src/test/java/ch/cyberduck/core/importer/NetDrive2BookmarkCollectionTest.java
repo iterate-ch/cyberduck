@@ -17,8 +17,9 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class NetDrive2BookmarkCollectionTest {
 
     @Test
     public void testParse() throws AccessDeniedException {
-        ProtocolFactory.register(new SFTPProtocol());
+        ProtocolFactory.register(new TestProtocol(Scheme.sftp));
         NetDrive2BookmarkCollection c = new NetDrive2BookmarkCollection();
         assertEquals(0, c.size());
         c.parse(new Local("src/test/resources/drives.dat"));
