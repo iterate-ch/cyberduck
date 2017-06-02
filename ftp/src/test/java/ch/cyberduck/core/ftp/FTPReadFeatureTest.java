@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -31,6 +32,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -139,18 +142,18 @@ public class FTPReadFeatureTest {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test, new TransferStatus());
         final TransferStatus status = new TransferStatus();
         status.setLength(5L);
         final Path workdir = new FTPWorkdirService(session).find();
-        final InputStream in = new FTPReadFeature(session).read(new Path(workdir, "test", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         // Send ABOR because stream was not read completly
         in.close();
         // Make sure subsequent PWD command works
         assertEquals(workdir, new FTPWorkdirService(session).find());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -191,17 +194,18 @@ public class FTPReadFeatureTest {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test, new TransferStatus());
+        final Path file = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
         final TransferStatus status = new TransferStatus();
         status.setLength(5L);
         final Path workdir = new FTPWorkdirService(session).find();
-        final InputStream in = new FTPReadFeature(session).read(new Path(workdir, "test", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         // Read 226 reply
         in.close();
         // Read timeout
         in.close();
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

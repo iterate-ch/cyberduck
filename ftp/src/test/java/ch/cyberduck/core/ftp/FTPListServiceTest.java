@@ -65,16 +65,19 @@ public class FTPListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final ListService service = new FTPListService(session, null, TimeZone.getDefault());
         final Path directory = new FTPWorkdirService(session).find();
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
+        new FTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
                 assertFalse(list.isEmpty());
             }
         });
-        assertTrue(list.contains(
-                new Path(directory, "test", EnumSet.of(Path.Type.file))));
-        assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
-                list.get(new Path(directory, "test", EnumSet.of(Path.Type.file))).attributes().getPermission());
+        assertTrue(list.contains(file));
+        assertEquals(permission, list.get(file).attributes().getPermission());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -91,16 +94,19 @@ public class FTPListServiceTest {
         service.remove(FTPListService.Command.stat);
         service.remove(FTPListService.Command.mlsd);
         final Path directory = new FTPWorkdirService(session).find();
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
+        new FTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
                 assertFalse(list.isEmpty());
             }
         });
-        assertTrue(list.contains(
-                new Path(directory, "test", EnumSet.of(Path.Type.file))));
-        assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
-                list.get(new Path(directory, "test", EnumSet.of(Path.Type.file))).attributes().getPermission());
+        assertTrue(list.contains(file));
+        assertEquals(permission, list.get(file).attributes().getPermission());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

@@ -1,6 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -145,11 +146,11 @@ public class SFTPWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path workdir = new SFTPHomeDirectoryService(session).find();
-        final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertEquals(false, new SFTPWriteFeature(session).append(
-                new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
-        assertEquals(true, new SFTPWriteFeature(session).append(
-                new Path(workdir, "test", EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
+        final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        assertEquals(false, new SFTPWriteFeature(session).append(test, 0L, PathCache.empty()).append);
+        new SFTPTouchFeature(session).touch(test, new TransferStatus());
+        assertEquals(true, new SFTPWriteFeature(session).append(test, 0L, PathCache.empty()).append);
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

@@ -17,6 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -27,7 +28,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
@@ -35,6 +40,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
@@ -54,7 +60,10 @@ public class FTPDefaultListServiceTest {
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.list);
         final Path directory = new FTPWorkdirService(session).find();
-        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", EnumSet.of(Path.Type.file))));
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(file));
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -70,7 +79,10 @@ public class FTPDefaultListServiceTest {
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.lista);
         final Path directory = new FTPWorkdirService(session).find();
-        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", EnumSet.of(Path.Type.file))));
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(file));
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

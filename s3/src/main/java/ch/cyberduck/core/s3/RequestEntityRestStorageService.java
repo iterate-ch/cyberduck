@@ -121,12 +121,15 @@ public class RequestEntityRestStorageService extends RestS3Service {
             }
         }
         if(preferences.getBoolean("s3.bucket.requesterpays")) {
-            // Downloading Objects in Requester Pays Buckets
-            if("GET".equals(request.getMethod()) || "POST".equals(request.getMethod())) {
-                final Jets3tProperties properties = getJetS3tProperties();
-                if(!properties.getBoolProperty("s3service.disable-request-payer", false)) {
-                    // For GET and POST requests, include x-amz-request-payer : requester in the header
-                    request.addHeader("x-amz-request-payer", "requester");
+            // Only for AWS
+            if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                // Downloading Objects in Requester Pays Buckets
+                if("GET".equals(request.getMethod()) || "POST".equals(request.getMethod())) {
+                    final Jets3tProperties properties = getJetS3tProperties();
+                    if(!properties.getBoolProperty("s3service.disable-request-payer", false)) {
+                        // For GET and POST requests, include x-amz-request-payer : requester in the header
+                        request.addHeader("x-amz-request-payer", "requester");
+                    }
                 }
             }
         }

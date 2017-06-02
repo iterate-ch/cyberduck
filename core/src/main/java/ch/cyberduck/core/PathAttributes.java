@@ -23,6 +23,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Map;
  * Attributes of a remote directory or file.
  */
 public class PathAttributes extends Attributes implements Serializable {
+    private static final Logger log = Logger.getLogger(PathAttributes.class);
 
     public static final PathAttributes EMPTY = new PathAttributes();
 
@@ -181,7 +183,12 @@ public class PathAttributes extends Attributes implements Serializable {
             dict.setStringForKey(storageClass, "Storage Class");
         }
         if(vault != null) {
-            dict.setObjectForKey(vault, "Vault");
+            if(vault.attributes() == this) {
+                log.debug(String.format("Skip serializing vault attribute %s to avoid recursion", vault));
+            }
+            else {
+                dict.setObjectForKey(vault, "Vault");
+            }
         }
         return dict.getSerialized();
     }
