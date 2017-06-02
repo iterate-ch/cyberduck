@@ -2,8 +2,9 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.ftp.FTPProtocol;
 
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class FetchBookmarkCollectionTest {
 
     @Test
     public void testGetFile() throws Exception {
-        ProtocolFactory.register(new FTPProtocol());
+        ProtocolFactory.register(new TestProtocol(Scheme.ftp));
         FetchBookmarkCollection c = new FetchBookmarkCollection();
         assertEquals(0, c.size());
         c.parse(new Local("src/test/resources/com.fetchsoftworks.Fetch.Shortcuts.plist"));
