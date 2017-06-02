@@ -75,7 +75,7 @@ public class CommandLinePathParserTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singletonList(new SwiftProtocol())));
         final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
-                new Local("../profiles/Rackspace US.cyberduckprofile")
+                new Local("../profiles/default/Rackspace US.cyberduckprofile")
         );
         assertNotNull(profile);
 

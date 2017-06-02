@@ -50,7 +50,7 @@ public class TerminalOptionsInputValidatorTest {
         final Set<Protocol> list = new HashSet<>(Arrays.asList(
                 new SwiftProtocol(),
                 new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
-                        .read(new Local("../profiles/Rackspace US.cyberduckprofile"))
+                        .read(new Local("../profiles/default/Rackspace US.cyberduckprofile"))
         ));
         assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace://cdn.duck.sh/%%~nc"));
     }
@@ -61,7 +61,7 @@ public class TerminalOptionsInputValidatorTest {
         final Set<Protocol> list = new HashSet<>(Arrays.asList(
                 new SwiftProtocol(),
                 new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
-                        .read(new Local("../profiles/Rackspace US.cyberduckprofile"))
+                        .read(new Local("../profiles/default/Rackspace US.cyberduckprofile"))
         ));
         assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate(uri));
     }
@@ -71,7 +71,7 @@ public class TerminalOptionsInputValidatorTest {
         final Set<Protocol> list = new HashSet<>(Arrays.asList(
                 new SwiftProtocol(),
                 new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
-                        .read(new Local("../profiles/Rackspace US.cyberduckprofile"))
+                        .read(new Local("../profiles/default/Rackspace US.cyberduckprofile"))
         ));
         assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:///"));
         assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace://"));
