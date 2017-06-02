@@ -19,13 +19,16 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
+@Category(IntegrationTest.class)
 public class GoogleStorageUrlProviderTest {
 
     @Test
