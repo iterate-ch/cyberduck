@@ -66,12 +66,12 @@ public interface Vault {
     /**
      * @param file     Decrypted human readable path
      * @param metadata Provide path to metadata of file if set to true
-     * @return Encrypted path
+     * @return Encrypted path or metadata file
      */
     Path encrypt(Session<?> session, Path file, boolean metadata) throws BackgroundException;
 
     /**
-     * @param file      Encrypted path
+     * @param file Encrypted file or directory metadata file
      * @return Decrypted human readable path
      */
     Path decrypt(Session<?> session, Path file) throws BackgroundException;

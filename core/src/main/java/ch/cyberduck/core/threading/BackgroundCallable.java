@@ -107,6 +107,7 @@ public class BackgroundCallable<T> implements Callable<T> {
             return null;
         }
         catch(BackgroundException e) {
+            this.failure(client, e);
             // If there was any failure, display the summary now
             if(action.alert(e)) {
                 if(log.isDebugEnabled()) {
