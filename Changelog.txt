@@ -1,6 +1,13 @@
 Cyberduck
 https://cyberduck.io/
 
+6.0.4 [https://trac.cyberduck.io/milestone/6.0.4]
+- [Bugfix] Failure to upload to root of vault (Cryptomator)
+- [Bugfix] Disable x-amz-request-payer header for non AWS endpoints (S3)
+
+6.0.2 [https://trac.cyberduck.io/milestone/6.0.2]
+- [Bugfix] Invalid version number format for Mac App Store (Mac)
+
 6.0.1 [https://trac.cyberduck.io/milestone/6.0.1]
 - [Bugfix] New connections do not authenticate (Dropbox) (#9932)
 - [Bugfix] Large file uploads do not resume (Backblaze B2) (#9935)
