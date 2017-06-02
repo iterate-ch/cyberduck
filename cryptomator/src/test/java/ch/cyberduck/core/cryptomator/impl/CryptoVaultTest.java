@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
@@ -99,8 +100,53 @@ public class CryptoVaultTest {
         assertNull(vault.encrypt(session, directory, true).attributes().getDirectoryId());
         assertNull(vault.encrypt(session, vault.encrypt(session, directory), true).attributes().getDirectoryId());
         assertNotEquals(vault.encrypt(session, directory).attributes().getDirectoryId(), vault.encrypt(session, directory, true).attributes().getDirectoryId());
+
         vault.close();
         assertEquals(Vault.State.closed, vault.getState());
+    }
+
+    @Test
+    public void testFind() throws Exception {
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                            final String masterKey = "{\n" +
+                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                    "  \"scryptCostParam\": 16384,\n" +
+                                    "  \"scryptBlockSize\": 8,\n" +
+                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                    "  \"version\": 5\n" +
+                                    "}";
+                            return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
+                        }
+
+                        @Override
+                        public boolean offset(final Path file) throws BackgroundException {
+                            return false;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        vault.load(session, new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
+            }
+        });
+        assertEquals(Vault.State.open, vault.getState());
+        assertEquals(vault, new DefaultVaultRegistry(new DisabledPasswordCallback()).find(session, home));
+        vault.close();
     }
 
     @Test
