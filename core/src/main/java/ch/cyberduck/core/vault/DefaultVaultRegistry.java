@@ -104,7 +104,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         return Vault.DISABLED;
     }
 
-    private Vault find(final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
+    protected Vault find(final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
         final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
         listener.found(vault);
         return vault;
