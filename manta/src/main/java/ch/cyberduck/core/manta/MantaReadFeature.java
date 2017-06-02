@@ -43,7 +43,6 @@ public class MantaReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final String remotePath = session.pathMapper.requestPath(file);
         final MantaHttpHeaders headers = new MantaHttpHeaders();
 
         try {
@@ -54,10 +53,10 @@ public class MantaReadFeature implements Read {
 
             // requesting an empty file as an InputStream doesn't work, but we also don't want to
             // perform a HEAD request for every read so we'll opt to handle the exception instead
-            return session.getClient().getAsInputStream(remotePath, headers);
+            return session.getClient().getAsInputStream(session.pathMapper.requestPath(file), headers);
         }
         catch(UnsupportedOperationException e) {
-            return emptyFileFallback(remotePath);
+            return emptyFileFallback(file);
         }
         catch(IOException e) {
             throw session.exceptionMapper.map(e);
@@ -70,17 +69,17 @@ public class MantaReadFeature implements Read {
         return true;
     }
 
-    private InputStream emptyFileFallback(final String remotePath) throws BackgroundException {
+    private InputStream emptyFileFallback(final Path file) throws BackgroundException {
         final MantaObject probablyEmptyFile;
         try {
-            probablyEmptyFile = session.getClient().head(remotePath);
+            probablyEmptyFile = session.getClient().head(session.pathMapper.requestPath(file));
         }
         catch(IOException e) {
-            throw session.exceptionMapper.map("Cannot read file {0}", e);
+            throw session.exceptionMapper.map("Cannot read file {0}", e, file);
         }
 
         if(probablyEmptyFile.getContentLength() != 0) {
-            throw new AccessDeniedException();
+            throw new AccessDeniedException("Unexpected file size.");
         }
 
         return new NullInputStream(0);

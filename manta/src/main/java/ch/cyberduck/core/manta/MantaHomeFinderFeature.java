@@ -39,6 +39,6 @@ public class MantaHomeFinderFeature extends DefaultHomeFinderService {
 
     @Override
     public Path find(final Path root, final String path) {
-        return super.find(root, path);
+        return root;
     }
 }

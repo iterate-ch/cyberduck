@@ -15,11 +15,14 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractPath.Type;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
@@ -27,7 +30,6 @@ import com.joyent.manta.client.MantaObject;
 
 public class MantaPathMapper {
 
-    static final String MANTA_HOME_SHORTCUT = "~~";
     static final String HOME_PATH_PRIVATE = "stor";
     static final String HOME_PATH_PUBLIC = "public";
 
@@ -61,43 +63,58 @@ public class MantaPathMapper {
     private final Path accountRoot;
     private final Path normalizedHomePath;
 
-    private final Path privateRoot;
-    private final Path publicRoot;
-
     MantaPathMapper(MantaSession session) {
         Validate.notNull(session.getHost().getCredentials(), "Credentials missing");
+        Validate.notNull(session.getHost().getCredentials().getUsername(), "Username missing");
+        final String username = session.getHost().getCredentials().getUsername();
 
-        accountRoot = extractAccountRoot(session.getHost().getCredentials().getUsername());
+        // try to create a root path. at worst the user will fail to list global buckets later
+        Path accountRootPath;
+        try {
+            accountRootPath = new Path(
+                    (StringUtils.contains(username, "/") ? username.split("/")[0] : username),
+                    EnumSet.of(Type.placeholder)
+            );
+        }
+        catch(NullPointerException npe) {
+            accountRootPath = new Path("/", EnumSet.of(Type.placeholder));
+        }
+
+        accountRoot = accountRootPath;
         accountOwner = accountRoot.getName();
-
         normalizedHomePath = buildNormalizedHomePath(session.getHost().getDefaultPath());
-
-        privateRoot = Volume.PRIVATE.forAccount(accountRoot);
-        publicRoot = Volume.PUBLIC.forAccount(accountRoot);
     }
 
-    private Path buildNormalizedHomePath(final String homePath) {
-        final String defaultPath = StringUtils.defaultIfBlank(homePath, MANTA_HOME_SHORTCUT);
+    private Path buildNormalizedHomePath(final String rawHomePath) {
+        final String defaultPath = StringUtils.defaultIfBlank(rawHomePath, Path.HOME);
         final String accountRootRegex = "^/?(" + accountRoot.getAbsolute() + "|~~?)/?";
-        final String subdirectoryPath = defaultPath.replaceFirst(accountRootRegex, "");
-        if(StringUtils.isEmpty(subdirectoryPath)) {
+        final String subdirectoryRawPath = defaultPath.replaceFirst(accountRootRegex, "");
+        if(StringUtils.isEmpty(subdirectoryRawPath)) {
             return accountRoot;
         }
 
-        return new Path(accountRoot, subdirectoryPath, EnumSet.of(Type.volume, Type.directory));
+        final String[] subdirectoryPathSegments = StringUtils.split(subdirectoryRawPath, Path.DELIMITER);
+        Path homePath = accountRoot;
+
+        for(final String pathSegment : subdirectoryPathSegments) {
+            EnumSet<Type> types = EnumSet.of(Type.directory);
+            if(homePath.getParent().equals(accountRoot)
+                    && StringUtils.equalsAny(pathSegment, HOME_PATH_PRIVATE, HOME_PATH_PUBLIC)) {
+                types.add(Type.volume);
+            }
+
+            homePath = new Path(homePath, pathSegment, types);
+        }
+
+        return homePath;
     }
 
     String requestPath(final Path homeRelativeRemote) {
-        return buildNormalizedHomePath(homeRelativeRemote.getAbsolute()).getAbsolute();
+        return homeRelativeRemote.getAbsolute();
     }
 
     Path getNormalizedHomePath() {
         return normalizedHomePath;
-    }
-
-    private String trimAccountOwner(String remotePath) {
-        Validate.isTrue(StringUtils.startsWith(remotePath, normalizedHomePath.getAbsolute()));
-        return remotePath.replace(normalizedHomePath.getAbsolute(), "");
     }
 
     boolean isUserWritable(final MantaObject mantaObject) {
@@ -109,8 +126,10 @@ public class MantaPathMapper {
     }
 
     private boolean isUserWritable(final String path) {
-        return StringUtils.startsWith(path, accountRoot.getAbsolute() + Path.DELIMITER + HOME_PATH_PUBLIC)
-                || StringUtils.startsWith(path, accountRoot.getAbsolute() + Path.DELIMITER + HOME_PATH_PRIVATE);
+        return StringUtils.startsWithAny(
+                path,
+                getPublicRoot().getAbsolute(),
+                getPrivateRoot().getAbsolute());
     }
 
     boolean isWorldReadable(final MantaObject mantaObject) {
@@ -122,32 +141,22 @@ public class MantaPathMapper {
     }
 
     private boolean isWorldReadable(final String path) {
-        return StringUtils.startsWith(path, accountRoot.getAbsolute() + Path.DELIMITER + HOME_PATH_PUBLIC);
+        return StringUtils.startsWithAny(path, getPublicRoot().getAbsolute());
     }
 
-    public Path getAccountRoot() {
+    Path getAccountRoot() {
         return accountRoot;
     }
 
-    private Path extractAccountRoot(final String username) {
-        return new Path(
-                '/' +
-                        (StringUtils.contains(username, "/")
-                                ? username.split("/")[0]
-                                : username),
-                EnumSet.of(Type.placeholder)
-        );
-    }
-
-    public String getAccountOwner() {
+    String getAccountOwner() {
         return accountOwner;
     }
 
-    public Path getPrivateRoot() {
-        return privateRoot;
+    Path getPrivateRoot() {
+        return Volume.PRIVATE.forAccount(accountRoot);
     }
 
-    public Path getPublicRoot() {
-        return publicRoot;
+    Path getPublicRoot() {
+        return Volume.PUBLIC.forAccount(accountRoot);
     }
 }

@@ -67,7 +67,6 @@ public class MantaSessionTest {
 
     @Test
     public void testSessionRejectsBadUsernames() {
-        assertUsernameFailsLogin("");
         assertUsernameFailsLogin("!");
         assertUsernameFailsLogin("/subuser");
         assertUsernameFailsLogin("login/");

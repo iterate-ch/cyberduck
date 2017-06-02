@@ -21,9 +21,11 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.EnumSet;
 import java.util.Iterator;
 
@@ -52,8 +54,16 @@ public class MantaListService implements ListService {
         try {
             objectsIter = c.listObjects(remotePath).iterator();
         }
+        catch(UncheckedIOException uioe) {
+            if (directory.isRoot()) {
+                // Most users should not be able to list all buckets, treat this as a regular exception
+                throw new AccessDeniedException("Cannot list buckets.");
+            }
+
+            throw uioe;
+        }
         catch(MantaIOException me) {
-            throw session.exceptionMapper.map("Listing directory {0} failed", me);
+            throw session.exceptionMapper.map("Listing directory {0} failed", me, directory);
         }
         catch(IOException ioe) {
             throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", ioe);
@@ -65,9 +75,7 @@ public class MantaListService implements ListService {
             final Path path = new Path(
                     directory,
                     attr.getDisplayname(),
-                    o.isDirectory()
-                            ? EnumSet.of(Path.Type.directory)
-                            : EnumSet.of(Path.Type.file),
+                    EnumSet.of(o.isDirectory() ? Path.Type.directory : Path.Type.file),
                     attr);
 
             children.add(path);

@@ -49,15 +49,7 @@ public class MantaExceptionMappingService extends AbstractExceptionMappingServic
 
     @Override
     public BackgroundException map(final Exception failure) {
-
-        // StringWriter sw = new StringWriter();
-        // PrintWriter pw = new PrintWriter(sw);
-        // failure.printStackTrace(pw);
-        // log.error(sw.toString());
-
-        /**
-         * TODO: more fine-grained mapping
-         */
+        // TODO: more fine-grained mapping
 
         if(failure instanceof KeyException) {
             return new LoginFailureException("Login failed", failure);

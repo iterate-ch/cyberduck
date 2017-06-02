@@ -88,7 +88,8 @@ public class MantaObjectAttributeAdapter {
     }
 
     private void populateLinkAttribute(final PathAttributes attributes, final MantaObject mantaObject) {
-        final String joinedPath = session.getHost().getDefaultWebURL() + MantaClient.SEPARATOR + mantaObject.getPath();
+        // mantaObject.getPath() starts with /
+        final String joinedPath = session.getHost().getDefaultWebURL() + mantaObject.getPath();
 
         try {
             final URI link = new URI(joinedPath);

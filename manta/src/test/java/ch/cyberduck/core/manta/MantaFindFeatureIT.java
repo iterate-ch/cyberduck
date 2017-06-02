@@ -34,7 +34,7 @@ public class MantaFindFeatureIT extends AbstractMantaTest {
     public void testFindFileNotFound() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertFalse(f.find(new Path(
-                MantaPathMapper.Volume.PRIVATE.forAccount(session),
+                randomFile(),
                 UUID.randomUUID().toString(),
                 EnumSet.of(Path.Type.file))));
     }
