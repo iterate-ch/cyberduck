@@ -16,6 +16,7 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
@@ -98,5 +99,14 @@ public class LocalProtocol extends AbstractProtocol {
     @Override
     public String getDefaultHostname() {
         return LOCAL_HOSTNAME;
+    }
+
+    @Override
+    public String disk() {
+        switch(Factory.Platform.getDefault()) {
+            case mac:
+                return "NSComputer";
+        }
+        return super.disk();
     }
 }
