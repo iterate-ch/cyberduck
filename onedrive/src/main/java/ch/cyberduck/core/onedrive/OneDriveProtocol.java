@@ -81,9 +81,4 @@ public class OneDriveProtocol extends AbstractProtocol {
     public String getClientSecret() {
         return PreferencesFactory.get().getProperty("onedrive.oauth.secret");
     }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
 }

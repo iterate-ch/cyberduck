@@ -76,11 +76,6 @@ public class SpectraProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isEnabled() {
-        return false;
-    }
-
-    @Override
     public String getAuthorization() {
         return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.name();
     }

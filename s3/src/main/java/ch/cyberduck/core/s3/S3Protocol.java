@@ -115,11 +115,6 @@ public final class S3Protocol extends AbstractProtocol {
         return PreferencesFactory.get().getProperty("s3.signature.version");
     }
 
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
-
     public enum AuthenticationHeaderSignatureVersion {
         AWS2 {
             @Override

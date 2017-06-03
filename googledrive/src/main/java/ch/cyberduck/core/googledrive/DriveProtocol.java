@@ -87,9 +87,4 @@ public class DriveProtocol extends AbstractProtocol {
     public String getClientSecret() {
         return PreferencesFactory.get().getProperty("googledrive.oauth.clientsecret");
     }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
 }

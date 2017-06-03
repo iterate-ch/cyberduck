@@ -92,9 +92,4 @@ public class DropboxProtocol extends AbstractProtocol {
     public String getClientSecret() {
         return PreferencesFactory.get().getProperty("dropbox.oauth.clientsecret");
     }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
 }

@@ -47,7 +47,8 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        // Disabled by defeault. Enable using profile
+        return false;
     }
 
     @Override

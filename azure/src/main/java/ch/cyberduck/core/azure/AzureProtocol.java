@@ -82,9 +82,4 @@ public class AzureProtocol extends AbstractProtocol {
     public String[] getSchemes() {
         return new String[]{this.getScheme().name(), "azure"};
     }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
 }
