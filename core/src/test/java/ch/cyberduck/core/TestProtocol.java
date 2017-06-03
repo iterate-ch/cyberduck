@@ -45,4 +45,9 @@ public class TestProtocol extends AbstractProtocol {
     public String getPrefix() {
         return "ch.cyberduck.core.Null";
     }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
