@@ -107,11 +107,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             StructureMapBootstrapper.Bootstrap();
             PreferencesFactory.set(new ApplicationPreferences());
-            ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
-                new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
-                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol());
-
             if (!Debugger.IsAttached)
             {
                 // Add the event handler for handling UI thread exceptions to the event.

@@ -51,11 +51,7 @@ public final class ProtocolFactory {
         return ProtocolFactory.forName(protocols, identifier);
     }
 
-    public static void register(Protocol... protocols) {
-        // Order determines list in connection dropdown
-        for(Protocol protocol : protocols) {
-            register(protocol);
-        }
+    static {
         // Order determines list in connection dropdown
         final Local bundled = LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path"));
         if(bundled.exists()) {
@@ -151,14 +147,14 @@ public final class ProtocolFactory {
      * @param scheme Protocol scheme
      * @return Standard protocol for this scheme. This is ambigous
      */
-    public static Protocol forScheme(final String scheme) {
+    public static Protocol forScheme(final Scheme scheme) {
         return ProtocolFactory.forScheme(ProtocolFactory.getEnabledProtocols(), scheme);
     }
 
-    public static Protocol forScheme(final Set<Protocol> protocols, final String scheme) {
+    public static Protocol forScheme(final Set<Protocol> protocols, final Scheme scheme) {
         for(Protocol protocol : protocols) {
             for(int k = 0; k < protocol.getSchemes().length; k++) {
-                if(protocol.getSchemes()[k].equals(scheme)) {
+                if(protocol.getSchemes()[k].equals(scheme.name())) {
                     return protocol;
                 }
             }
