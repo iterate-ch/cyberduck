@@ -143,7 +143,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
-        for(Protocol protocol : ProtocolFactory.getEnabledProtocols()) {
+        for(Protocol protocol : ProtocolFactory.global.getProtocols()) {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             this.protocolPopup.lastItem().setRepresentedObject(String.valueOf(protocol.hashCode()));
@@ -159,7 +159,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
-        final Protocol selected = ProtocolFactory.forName(sender.selectedItem().representedObject());
+        final Protocol selected = ProtocolFactory.global.forName(sender.selectedItem().representedObject());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Protocol selection changed to %s", selected));
         }

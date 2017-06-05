@@ -287,7 +287,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         if (profile.isEnabled())
                         {
-                            ProtocolFactory.register(profile);
+                            ProtocolFactory.global.register(profile);
                             Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                             NewBrowser().AddBookmark(host);
                             // Register in application support
