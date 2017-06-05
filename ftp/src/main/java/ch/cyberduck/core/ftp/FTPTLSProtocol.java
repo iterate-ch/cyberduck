@@ -24,7 +24,7 @@ import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
-public final class FTPTLSProtocol extends AbstractProtocol {
+public class FTPTLSProtocol extends AbstractProtocol {
     @Override
     public String getIdentifier() {
         return this.getScheme().name();

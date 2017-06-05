@@ -50,7 +50,18 @@ public class CommandLinePathParserTest {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        }, new S3Protocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        })
+        ));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
                 new CommandLinePathParser(input, factory).parse("ftps://u@test.cyberduck.ch/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
@@ -72,7 +83,12 @@ public class CommandLinePathParserTest {
 
     @Test
     public void testParseProfile() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singletonList(new SwiftProtocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        })));
         final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
                 new Local("../profiles/default/Rackspace US.cyberduckprofile")

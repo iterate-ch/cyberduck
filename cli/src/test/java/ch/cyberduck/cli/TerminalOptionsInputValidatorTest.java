@@ -39,9 +39,19 @@ public class TerminalOptionsInputValidatorTest {
 
     @Test
     public void testValidate() throws Exception {
-        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(Collections.singleton(new FTPProtocol())))
+        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(Collections.singleton(new FTPProtocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        })))
                 .validate("ftp://cdn.duck.sh/"));
-        assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(Collections.singleton(new FTPProtocol())))
+        assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(Collections.singleton(new FTPProtocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        })))
                 .validate("ftp://cdn.duck.sh/%%~nc"));
     }
 
