@@ -55,11 +55,6 @@ public final class DAVSSLProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name(), "davs"};
-    }
-
-    @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }

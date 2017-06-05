@@ -50,11 +50,6 @@ public final class DAVProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name(), "dav"};
-    }
-
-    @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }

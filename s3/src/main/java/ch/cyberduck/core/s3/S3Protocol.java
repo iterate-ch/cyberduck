@@ -55,11 +55,6 @@ public final class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name(), "s3"};
-    }
-
-    @Override
     public boolean isHostnameConfigurable() {
         return true;
     }
