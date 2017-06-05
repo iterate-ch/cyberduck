@@ -112,6 +112,16 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
+    @Test(expected = NotfoundException.class)
+    public void testReadInvalidRange() throws Exception {
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
+        final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new OneDriveTouchFeature(session).touch(test, new TransferStatus());
+        final OneDriveReadFeature read = new OneDriveReadFeature(session);
+        final InputStream in = read.read(test, new TransferStatus().skip(1).append(true), new DisabledConnectionCallback());
+        assertNull(in);
+    }
+
     @Test
     public void testReadRangeUnknownLength() throws Exception {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
