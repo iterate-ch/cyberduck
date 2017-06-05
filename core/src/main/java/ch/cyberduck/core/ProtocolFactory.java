@@ -92,10 +92,6 @@ public final class ProtocolFactory {
         registered.add(protocol);
     }
 
-    public Protocol find(final String identifier) {
-        return this.forName(registered, identifier);
-    }
-
     /**
      * @return List of protocols
      */
