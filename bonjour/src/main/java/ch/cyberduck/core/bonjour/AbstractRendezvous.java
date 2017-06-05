@@ -91,11 +91,21 @@ public abstract class AbstractRendezvous implements Rendezvous {
     private final Set<RendezvousListener> listeners =
             Collections.synchronizedSet(new HashSet<RendezvousListener>());
 
-    private LimitedRendezvousListener notifier;
+    private final ProtocolFactory protocols;
+
+    private final LimitedRendezvousListener notifier = new LimitedRendezvousListener(listeners);
+
+    public AbstractRendezvous() {
+        this(ProtocolFactory.global);
+    }
+
+    public AbstractRendezvous(final ProtocolFactory protocols) {
+        this.protocols = protocols;
+    }
 
     @Override
     public void init() {
-        notifier = new LimitedRendezvousListener(listeners);
+        //
     }
 
     @Override
@@ -179,16 +189,16 @@ public abstract class AbstractRendezvous implements Rendezvous {
      */
     protected Protocol getProtocol(final String fullname) {
         if(fullname.contains(SERVICE_TYPE_SFTP)) {
-            return ProtocolFactory.global.forScheme(Scheme.sftp);
+            return protocols.forScheme(Scheme.sftp);
         }
         if(fullname.contains(SERVICE_TYPE_FTP)) {
-            return ProtocolFactory.global.forScheme(Scheme.ftp);
+            return protocols.forScheme(Scheme.ftp);
         }
         if(fullname.contains(SERVICE_TYPE_WEBDAV)) {
-            return ProtocolFactory.global.forScheme(Scheme.dav);
+            return protocols.forScheme(Scheme.dav);
         }
         if(fullname.contains(SERVICE_TYPE_WEBDAV_TLS)) {
-            return ProtocolFactory.global.forScheme(Scheme.davs);
+            return protocols.forScheme(Scheme.davs);
         }
         log.warn(String.format("Cannot find service type in %s", fullname));
         return null;

@@ -25,6 +25,7 @@ import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.ResolveListener;
 import com.apple.dnssd.TXTRecord;
 
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
@@ -39,6 +40,11 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     private final Map<String, DNSSDService> browsers;
 
     public RendezvousResponder() {
+        this(ProtocolFactory.global);
+    }
+
+    public RendezvousResponder(final ProtocolFactory protocols) {
+        super(protocols);
         this.browsers = new ConcurrentHashMap<String, DNSSDService>();
     }
 

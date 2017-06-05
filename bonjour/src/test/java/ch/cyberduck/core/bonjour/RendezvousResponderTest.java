@@ -1,14 +1,14 @@
 package ch.cyberduck.core.bonjour;
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TestProtocol;
 
-import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -50,11 +50,12 @@ public class RendezvousResponderTest {
 
     @Test
     public void testGetProtocol() throws Exception {
-        final AbstractRendezvous r = new RendezvousResponder();
-        Assert.assertEquals(new FTPProtocol(), r.getProtocol("andaman._ftp._tcp.local."));
-        assertEquals(new SFTPProtocol(), r.getProtocol("yuksom._sftp-ssh._tcp."));
-        assertEquals(new DAVProtocol(), r.getProtocol("yuksom._webdav._tcp"));
-        assertEquals(new DAVSSLProtocol(), r.getProtocol("andaman._webdavs._tcp"));
+        final AbstractRendezvous r = new RendezvousResponder(new ProtocolFactory(new HashSet<>(Arrays.asList(new TestProtocol(Scheme.sftp),
+                new TestProtocol(Scheme.ftp), new TestProtocol(Scheme.dav), new TestProtocol(Scheme.davs)))));
+        assertEquals(new TestProtocol(Scheme.ftp), r.getProtocol("andaman._ftp._tcp.local."));
+        assertEquals(new TestProtocol(Scheme.sftp), r.getProtocol("yuksom._sftp-ssh._tcp."));
+        assertEquals(new TestProtocol(Scheme.dav), r.getProtocol("yuksom._webdav._tcp"));
+        assertEquals(new TestProtocol(Scheme.davs), r.getProtocol("andaman._webdavs._tcp"));
         assertNull(r.getProtocol("andaman._g._tcp"));
     }
 }
