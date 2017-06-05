@@ -148,13 +148,17 @@ public final class ProtocolFactory {
      * @return Standard protocol for this scheme. This is ambigous
      */
     public static Protocol forScheme(final Scheme scheme) {
+        return forScheme(scheme.name());
+    }
+
+    public static Protocol forScheme(final String scheme) {
         return ProtocolFactory.forScheme(ProtocolFactory.getEnabledProtocols(), scheme);
     }
 
-    public static Protocol forScheme(final Set<Protocol> protocols, final Scheme scheme) {
+    public static Protocol forScheme(final Set<Protocol> protocols, final String scheme) {
         for(Protocol protocol : protocols) {
             for(int k = 0; k < protocol.getSchemes().length; k++) {
-                if(protocol.getSchemes()[k].equals(scheme.name())) {
+                if(protocol.getSchemes()[k].equals(scheme)) {
                     return protocol;
                 }
             }
