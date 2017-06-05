@@ -28,15 +28,14 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -124,23 +123,23 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         Protocol protocol;
         switch(protocolstring) {
             case "FTP":
-                protocol = new FTPProtocol();
+                protocol = ProtocolFactory.forScheme(Scheme.ftp);
                 break;
             case "SFTP":
-                protocol = new SFTPProtocol();
+                protocol = ProtocolFactory.forScheme(Scheme.sftp);
                 break;
             case "FTPTLS":
             case "FTPSSL":
-                protocol = new FTPTLSProtocol();
+                protocol = ProtocolFactory.forScheme(Scheme.ftps);
                 break;
             case "S3":
-                protocol = new S3Protocol();
+                protocol = ProtocolFactory.forScheme(new S3Protocol().getIdentifier());
                 break;
             case "WebDAV":
-                protocol = new DAVProtocol();
+                protocol = ProtocolFactory.forScheme(new DAVProtocol().getIdentifier());
                 break;
             case "WebDAVS":
-                protocol = new DAVSSLProtocol();
+                protocol = ProtocolFactory.forScheme(new DAVSSLProtocol().getIdentifier());
                 break;
             default:
                 log.warn(String.format("Unknown protocol %s", protocolstring));

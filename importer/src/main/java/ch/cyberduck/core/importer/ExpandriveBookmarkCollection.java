@@ -22,10 +22,9 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -45,7 +44,7 @@ public abstract class ExpandriveBookmarkCollection extends JsonBookmarkCollectio
             reader.beginArray();
             while(reader.hasNext()) {
                 reader.beginObject();
-                final Host current = new Host(new FTPProtocol(), PreferencesFactory.get().getProperty("connection.hostname.default"));
+                final Host current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
                 boolean skip = false;
                 while(reader.hasNext()) {
                     final String name = reader.nextName();

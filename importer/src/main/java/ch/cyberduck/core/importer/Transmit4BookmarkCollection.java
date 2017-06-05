@@ -18,13 +18,12 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -61,7 +60,7 @@ public class Transmit4BookmarkCollection extends XmlBookmarkCollection {
                     final String type = attrs.getValue("type");
                     switch(type) {
                         case "FAVORITE":
-                            current = new Host(new FTPProtocol(), PreferencesFactory.get().getProperty("connection.hostname.default"));
+                            current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
                             break;
                         default:
                             log.warn(String.format("Unsupported type: %s", type));
@@ -95,23 +94,23 @@ public class Transmit4BookmarkCollection extends XmlBookmarkCollection {
                         case "protocol":
                             switch(StringUtils.lowerCase(elementText)) {
                                 case "webdav":
-                                    current.setProtocol(new DAVProtocol());
+                                    current.setProtocol(ProtocolFactory.forScheme(new DAVProtocol().getIdentifier()));
                                     break;
                                 case "webdavs":
-                                    current.setProtocol(new DAVSSLProtocol());
+                                    current.setProtocol(ProtocolFactory.forScheme(new DAVSSLProtocol().getIdentifier()));
                                     break;
                                 case "sftp":
-                                    current.setProtocol(new SFTPProtocol());
+                                    current.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
                                     break;
                                 case "ftptls":
                                 case "ftpssl":
-                                    current.setProtocol(new FTPTLSProtocol());
+                                    current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
                                     break;
                                 case "ftp":
-                                    current.setProtocol(new FTPProtocol());
+                                    current.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
                                     break;
                                 case "s3":
-                                    current.setProtocol(new S3Protocol());
+                                    current.setProtocol(ProtocolFactory.forScheme(new S3Protocol().getIdentifier()));
                                     break;
                             }
                             // Reset port to default

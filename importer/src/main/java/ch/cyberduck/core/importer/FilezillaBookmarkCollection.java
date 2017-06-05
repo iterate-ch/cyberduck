@@ -23,11 +23,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -78,7 +77,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
         public void startElement(final String name, final Attributes attrs) {
             this.attrs = attrs;
             if(name.equals("Server")) {
-                current = new Host(new FTPProtocol(), PreferencesFactory.get().getProperty("connection.hostname.default"));
+                current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
             }
         }
 
@@ -92,14 +91,14 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                     try {
                         switch(Integer.parseInt(elementText)) {
                             case 0:
-                                current.setProtocol(new FTPProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
                                 break;
                             case 3:
                             case 4:
-                                current.setProtocol(new FTPTLSProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
                                 break;
                             case 1:
-                                current.setProtocol(new SFTPProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
                                 break;
                         }
                         // Reset port to default

@@ -21,10 +21,10 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 
@@ -66,7 +66,7 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
         public void startElement(String name, Attributes attrs) {
             switch(name) {
                 case "site":
-                    current = new Host(new FTPProtocol(), attrs.getValue("hName"));
+                    current = new Host(ProtocolFactory.forScheme(Scheme.ftp), attrs.getValue("hName"));
                     current.setNickname(attrs.getValue("name"));
                     current.getCredentials().setUsername(attrs.getValue("un"));
                     current.setWebURL(attrs.getValue("wURL"));
@@ -76,22 +76,22 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
                     try {
                         switch(Integer.valueOf(protocol)) {
                             case 1:
-                                current.setProtocol(new FTPProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
                                 break;
                             case 2:
                             case 3:
                             case 4:
-                                current.setProtocol(new FTPTLSProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
                                 break;
                             case 6:
-                                current.setProtocol(new DAVProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(new DAVProtocol().getIdentifier()));
                                 break;
                             case 7:
-                                current.setProtocol(new DAVSSLProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(new DAVSSLProtocol().getIdentifier()));
                                 break;
                             case 8:
                             case 9:
-                                current.setProtocol(new S3Protocol());
+                                current.setProtocol(ProtocolFactory.forScheme(new S3Protocol().getIdentifier()));
                                 break;
                         }
                         // Reset port to default

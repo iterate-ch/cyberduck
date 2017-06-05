@@ -20,10 +20,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.hubic.HubicProtocol;
@@ -90,13 +90,13 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                             final String type = this.readNext(name, reader);
                             switch(type) {
                                 case "hubic":
-                                    protocol = new HubicProtocol();
+                                    protocol = ProtocolFactory.forScheme(new HubicProtocol().getIdentifier());
                                     break;
                                 case "google_cloud_storage":
-                                    protocol = new GoogleStorageProtocol();
+                                    protocol = ProtocolFactory.forScheme(new GoogleStorageProtocol().getIdentifier());
                                     break;
                                 case "gdrive":
-                                    protocol = new DriveProtocol();
+                                    protocol = ProtocolFactory.forScheme(new DriveProtocol().getIdentifier());
                                     break;
                                 default:
                                     protocol = ProtocolFactory.forName(type);
@@ -114,10 +114,10 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                     if(ssl) {
                         switch(protocol.getType()) {
                             case ftp:
-                                protocol = new FTPTLSProtocol();
+                                protocol = ProtocolFactory.forScheme(Scheme.ftps);
                                 break;
                             case dav:
-                                protocol = new DAVSSLProtocol();
+                                protocol = ProtocolFactory.forScheme(new DAVSSLProtocol().getIdentifier());
                                 break;
                         }
                     }

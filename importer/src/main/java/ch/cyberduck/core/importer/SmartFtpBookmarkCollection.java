@@ -22,14 +22,13 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -95,7 +94,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
         @Override
         public void startElement(String name, Attributes attrs) {
             if(name.equals("FavoriteItem")) {
-                current = new Host(new FTPProtocol(), PreferencesFactory.get().getProperty("connection.hostname.default"));
+                current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
                 current.getCredentials().setUsername(
                         PreferencesFactory.get().getProperty("connection.login.anon.name"));
             }
@@ -114,14 +113,14 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                     try {
                         switch(Integer.parseInt(elementText)) {
                             case 1:
-                                current.setProtocol(new FTPProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
                                 break;
                             case 2:
                             case 3:
-                                current.setProtocol(new FTPTLSProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
                                 break;
                             case 4:
-                                current.setProtocol(new SFTPProtocol());
+                                current.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
                                 break;
                         }
                         // Reset port to default

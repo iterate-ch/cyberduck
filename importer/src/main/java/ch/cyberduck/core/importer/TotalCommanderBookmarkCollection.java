@@ -21,8 +21,9 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -71,7 +72,7 @@ public class TotalCommanderBookmarkCollection extends ThirdpartyBookmarkCollecti
                         if(current != null) {
                             this.add(current);
                         }
-                        current = new Host(new FTPProtocol(), PreferencesFactory.get().getProperty("connection.hostname.default"));
+                        current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
                         current.getCredentials().setUsername(
                                 PreferencesFactory.get().getProperty("connection.login.anon.name"));
                         Pattern pattern = Pattern.compile("\\[(.*)\\]");

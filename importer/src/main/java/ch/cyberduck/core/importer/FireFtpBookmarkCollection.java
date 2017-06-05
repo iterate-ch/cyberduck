@@ -22,12 +22,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -116,7 +115,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     private void read(final String entry) {
-        final Host current = new Host(new FTPProtocol(), PreferencesFactory.get().getProperty("connection.hostname.default"));
+        final Host current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
         current.getCredentials().setUsername(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"));
         for(String attribute : entry.split(", ")) {
@@ -183,12 +182,12 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             }
             else if("security".equals(name)) {
                 if("authtls".equals(value)) {
-                    current.setProtocol(new FTPTLSProtocol());
+                    current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
                     // Reset port to default
                     current.setPort(-1);
                 }
                 if("sftp".equals(value)) {
-                    current.setProtocol(new SFTPProtocol());
+                    current.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
                     // Reset port to default
                     current.setPort(-1);
                 }

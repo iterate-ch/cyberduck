@@ -22,16 +22,16 @@ import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -84,7 +84,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
         if(null == server) {
             return false;
         }
-        final Host host = new Host(new FTPProtocol(), server);
+        final Host host = new Host(ProtocolFactory.forScheme(Scheme.ftp), server);
         final String port = bookmark.stringForKey("Port");
         if(StringUtils.isNotBlank(port)) {
             host.setPort(Integer.parseInt(port));
@@ -119,21 +119,21 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
             try {
                 switch(Integer.parseInt(protocol)) {
                     case 0:
-                        host.setProtocol(new FTPProtocol());
+                        host.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
                         break;
                     case 1:
-                        host.setProtocol(new SFTPProtocol());
+                        host.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
                         break;
                     case 3:
-                        host.setProtocol(new S3Protocol());
+                        host.setProtocol(ProtocolFactory.forScheme(new S3Protocol().getIdentifier()));
                         break;
                     case 2:
                     case 4:
                         if(host.getPort() == new DAVSSLProtocol().getDefaultPort()) {
-                            host.setProtocol(new DAVSSLProtocol());
+                            host.setProtocol(ProtocolFactory.forScheme(new DAVSSLProtocol().getIdentifier()));
                         }
                         else {
-                            host.setProtocol(new DAVProtocol());
+                            host.setProtocol(ProtocolFactory.forScheme(new DAVProtocol().getIdentifier()));
                         }
                         break;
                 }
