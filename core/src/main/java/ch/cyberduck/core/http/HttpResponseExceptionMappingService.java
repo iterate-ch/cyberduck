@@ -48,6 +48,7 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
                 return new ConflictException(buffer.toString(), failure);
             case HttpStatus.SC_NOT_FOUND:
             case HttpStatus.SC_GONE:
+            case HttpStatus.SC_REQUESTED_RANGE_NOT_SATISFIABLE:
                 return new NotfoundException(buffer.toString(), failure);
             case HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE:
             case HttpStatus.SC_INSUFFICIENT_STORAGE:
