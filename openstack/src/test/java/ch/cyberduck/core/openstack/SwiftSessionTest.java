@@ -58,7 +58,7 @@ public class SwiftSessionTest {
 
     @Test
     public void testConnectRackspaceLon() throws Exception {
-        ProtocolFactory.register(new SwiftProtocol());
+        ProtocolFactory.global.register(new SwiftProtocol());
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
