@@ -18,7 +18,6 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +30,7 @@ public final class DAVProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return LocaleFactory.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)");
+        return this.getName();
     }
 
     @Override
