@@ -1695,13 +1695,13 @@ public class PreferencesController extends ToolbarWindowController {
         }
 
         final Protocol defaultProtocol
-                = ProtocolFactory.global.find(preferences.getProperty("connection.protocol.default"));
+                = ProtocolFactory.global.forName(preferences.getProperty("connection.protocol.default"));
         this.protocolCombobox.selectItemWithTitle(defaultProtocol.getDescription());
     }
 
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
-        final Protocol selected = ProtocolFactory.global.find(sender.selectedItem().representedObject());
+        final Protocol selected = ProtocolFactory.global.forName(sender.selectedItem().representedObject());
         preferences.setProperty("connection.protocol.default", selected.getProvider());
         preferences.setProperty("connection.port.default", selected.getDefaultPort());
     }

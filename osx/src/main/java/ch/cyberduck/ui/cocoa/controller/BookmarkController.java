@@ -220,7 +220,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
-        final Protocol selected = ProtocolFactory.global.find(sender.selectedItem().representedObject());
+        final Protocol selected = ProtocolFactory.global.forName(sender.selectedItem().representedObject());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Protocol selection changed to %s", selected));
         }

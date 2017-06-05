@@ -92,7 +92,7 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                                     protocol = protocols.forType(Protocol.Type.googledrive);
                                     break;
                                 default:
-                                    protocol = protocols.find(type);
+                                    protocol = protocols.forName(type);
                             }
                             break;
 

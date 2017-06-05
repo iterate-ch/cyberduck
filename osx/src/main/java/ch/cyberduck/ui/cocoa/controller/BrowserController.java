@@ -1846,7 +1846,7 @@ public class BrowserController extends WindowController
             bookmark.setDefaultPath(selected.getAbsolute());
         }
         else {
-            bookmark = new Host(ProtocolFactory.global.find(preferences.getProperty("connection.protocol.default")),
+            bookmark = new Host(ProtocolFactory.global.forName(preferences.getProperty("connection.protocol.default")),
                     preferences.getProperty("connection.hostname.default"),
                     preferences.getInteger("connection.port.default"));
         }
