@@ -179,16 +179,16 @@ public abstract class AbstractRendezvous implements Rendezvous {
      */
     protected Protocol getProtocol(final String fullname) {
         if(fullname.contains(SERVICE_TYPE_SFTP)) {
-            return ProtocolFactory.forScheme(Scheme.sftp);
+            return ProtocolFactory.global.forScheme(Scheme.sftp);
         }
         if(fullname.contains(SERVICE_TYPE_FTP)) {
-            return ProtocolFactory.forScheme(Scheme.ftp);
+            return ProtocolFactory.global.forScheme(Scheme.ftp);
         }
         if(fullname.contains(SERVICE_TYPE_WEBDAV)) {
-            return ProtocolFactory.forName("dav");
+            return ProtocolFactory.global.forScheme(Scheme.dav);
         }
         if(fullname.contains(SERVICE_TYPE_WEBDAV_TLS)) {
-            return ProtocolFactory.forName("davs");
+            return ProtocolFactory.global.forScheme(Scheme.davs);
         }
         log.warn(String.format("Cannot find service type in %s", fullname));
         return null;
