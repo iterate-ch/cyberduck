@@ -53,7 +53,7 @@ public class ProfileDictionary {
         final Deserializer<String> dict = deserializer.create(serialized);
         final String protocol = dict.stringForKey("Protocol");
         if(StringUtils.isNotBlank(protocol)) {
-            final Protocol parent = protocols.forName(protocol);
+            final Protocol parent = protocols.find(protocol);
             if(null == parent) {
                 log.error(String.format("Unknown protocol %s in profile", protocol));
                 return null;

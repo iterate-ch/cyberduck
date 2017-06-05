@@ -34,7 +34,7 @@ public class ProtocolFactoryTest {
                         return false;
                     }
                 })));
-        assertTrue(f.getProtocols().contains(new TestProtocol(Scheme.ftp)));
-        assertFalse(f.getProtocols().contains(new TestProtocol(Scheme.sftp)));
+        assertTrue(f.find().contains(new TestProtocol(Scheme.ftp)));
+        assertFalse(f.find().contains(new TestProtocol(Scheme.sftp)));
     }
 }
