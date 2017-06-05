@@ -3,11 +3,17 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class TransferCollectionTest {
+
+    @BeforeClass
+    public static void register() {
+        ProtocolFactory.global.register(new TestProtocol());
+    }
 
     @Test
     public void testEmpty() throws Exception {
@@ -67,7 +73,6 @@ public class TransferCollectionTest {
 
     @Test
     public void testLoadCopyWithDestination() throws Exception {
-        ProtocolFactory.register(new TestProtocol());
         TransferCollection c = new TransferCollection(new Local("src/test/resources/TransferCollectionCopyFormat.plist")) {
             @Override
             public void trash() {

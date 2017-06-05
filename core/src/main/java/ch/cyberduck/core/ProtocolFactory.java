@@ -25,35 +25,24 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class ProtocolFactory {
     private static final Logger log = Logger.getLogger(ProtocolFactory.class);
 
-    /**
-     * Ordered list of supported protocols.
-     */
-    private static final Set<Protocol> registered
-            = new LinkedHashSet<Protocol>();
+    public static final ProtocolFactory global = new ProtocolFactory();
 
-    public static final ProtocolFactory global = new ProtocolFactory(registered);
+    private final Set<Protocol> registered;
 
-    private final Set<Protocol> protocols;
-
-    public ProtocolFactory(final Set<Protocol> protocols) {
-        this.protocols = protocols;
+    public ProtocolFactory() {
+        this(LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path")));
     }
 
-    public Protocol find(final String identifier) {
-        return ProtocolFactory.forName(protocols, identifier);
-    }
-
-    static {
-        // Order determines list in connection dropdown
-        final Local bundled = LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path"));
+    public ProtocolFactory(final Local bundled) {
+        this.registered = new LinkedHashSet<Protocol>();
         if(bundled.exists()) {
             try {
                 for(Local f : bundled.list().filter(new ProfileFilter())) {
@@ -65,7 +54,7 @@ public final class ProtocolFactory {
                         log.info(String.format("Adding bundled protocol %s", profile));
                     }
                     // Replace previous possibly disable protocol in Preferences
-                    register(profile);
+                    registered.add(profile);
                 }
             }
             catch(AccessDeniedException e) {
@@ -86,7 +75,7 @@ public final class ProtocolFactory {
                         log.info(String.format("Adding thirdparty protocol %s", protocol));
                     }
                     // Replace previous possibly disable protocol in Preferences
-                    register(protocol);
+                    registered.add(protocol);
                 }
             }
             catch(AccessDeniedException e) {
@@ -95,33 +84,34 @@ public final class ProtocolFactory {
         }
     }
 
-    public static void register(final Protocol p) {
-        registered.remove(p);
-        registered.add(p);
+    public ProtocolFactory(final Set<Protocol> protocols) {
+        this.registered = protocols;
+    }
+
+    public void register(final Protocol protocol) {
+        registered.add(protocol);
+    }
+
+    public Protocol find(final String identifier) {
+        return this.forName(registered, identifier);
     }
 
     /**
      * @return List of protocols
      */
-    public static Set<Protocol> getEnabledProtocols() {
-        final Set<Protocol> enabled = new HashSet<>();
-        for(Protocol protocol : registered) {
-            if(protocol.isEnabled()) {
-                enabled.add(protocol);
-            }
-        }
-        return enabled;
+    public Set<Protocol> getProtocols() {
+        return registered.stream().filter(Protocol::isEnabled).collect(Collectors.toSet());
     }
 
     /**
      * @param identifier Provider name or hash code of protocol
      * @return Matching protocol or null if no match
      */
-    public static Protocol forName(final String identifier) {
-        return ProtocolFactory.forName(ProtocolFactory.getEnabledProtocols(), identifier);
+    public Protocol forName(final String identifier) {
+        return this.forName(this.getProtocols(), identifier);
     }
 
-    public static Protocol forName(final Set<Protocol> protocols, final String identifier) {
+    public Protocol forName(final Set<Protocol> protocols, final String identifier) {
         for(Protocol protocol : protocols) {
             if(protocol.getProvider().equals(identifier)) {
                 return protocol;
@@ -132,33 +122,35 @@ public final class ProtocolFactory {
                 return protocol;
             }
         }
-        for(Protocol protocol : protocols) {
-            for(String scheme : protocol.getSchemes()) {
-                if(scheme.equals(identifier)) {
-                    return protocol;
-                }
-            }
-        }
-        log.warn(String.format("Unknown protocol with identifier %s", identifier));
-        return null;
+        return this.forScheme(identifier);
     }
 
     /**
      * @param scheme Protocol scheme
      * @return Standard protocol for this scheme. This is ambigous
      */
-    public static Protocol forScheme(final Scheme scheme) {
+    public Protocol forScheme(final Scheme scheme) {
         return forScheme(scheme.name());
     }
 
-    public static Protocol forScheme(final String scheme) {
-        return ProtocolFactory.forScheme(ProtocolFactory.getEnabledProtocols(), scheme);
+    public Protocol forType(final Protocol.Type type) {
+        for(Protocol protocol : this.getProtocols()) {
+            if(protocol.getType().equals(type)) {
+                return protocol;
+            }
+        }
+        log.warn(String.format("Unknown type %s", type));
+        return null;
     }
 
-    public static Protocol forScheme(final Set<Protocol> protocols, final String scheme) {
+    public Protocol forScheme(final String scheme) {
+        return this.forScheme(this.getProtocols(), scheme);
+    }
+
+    public Protocol forScheme(final Set<Protocol> protocols, final String scheme) {
         for(Protocol protocol : protocols) {
-            for(int k = 0; k < protocol.getSchemes().length; k++) {
-                if(protocol.getSchemes()[k].equals(scheme)) {
+            for(String s : protocol.getSchemes()) {
+                if(s.equals(scheme)) {
                     return protocol;
                 }
             }
@@ -167,7 +159,7 @@ public final class ProtocolFactory {
         return null;
     }
 
-    private static class ProfileFilter implements Filter<Local> {
+    private static final class ProfileFilter implements Filter<Local> {
         @Override
         public boolean accept(final Local file) {
             return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));

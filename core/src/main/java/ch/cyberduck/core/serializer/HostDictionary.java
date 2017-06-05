@@ -76,7 +76,7 @@ public class HostDictionary {
             }
             final Object providerObj = dict.stringForKey("Provider");
             if(providerObj != null) {
-                final Protocol provider = ProtocolFactory.forName(providerObj.toString());
+                final Protocol provider = protocols.forName(providerObj.toString());
                 if(null != provider) {
                     bookmark.setProtocol(provider);
                 }

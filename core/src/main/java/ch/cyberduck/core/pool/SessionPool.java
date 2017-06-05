@@ -83,7 +83,7 @@ public interface SessionPool {
     }
 
     final class DisconnectedSessionPool implements SessionPool {
-        private static final Host DISCONNECTED = new Host(ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
+        private static final Host DISCONNECTED = new Host(ProtocolFactory.global.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
                 PreferencesFactory.get().getProperty("connection.hostname.default"),
                 PreferencesFactory.get().getInteger("connection.port.default"));
 
