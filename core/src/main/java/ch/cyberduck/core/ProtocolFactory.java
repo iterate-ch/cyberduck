@@ -36,16 +36,29 @@ public final class ProtocolFactory {
     public static final ProtocolFactory global = new ProtocolFactory();
 
     private final Set<Protocol> registered;
+    private final Local bundle;
 
     public ProtocolFactory() {
-        this(LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path")));
+        this(new LinkedHashSet<Protocol>());
     }
 
-    public ProtocolFactory(final Local bundled) {
-        this.registered = new LinkedHashSet<Protocol>();
-        if(bundled.exists()) {
+    public ProtocolFactory(final Set<Protocol> protocols) {
+        this(LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path")), protocols);
+    }
+
+    public ProtocolFactory(final Local bundle, final Set<Protocol> protocols) {
+        this.bundle = bundle;
+        this.registered = protocols;
+    }
+
+    public void register(Protocol... protocols) {
+        // Order determines list in connection dropdown
+        for(Protocol protocol : protocols) {
+            register(protocol);
+        }
+        if(bundle.exists()) {
             try {
-                for(Local f : bundled.list().filter(new ProfileFilter())) {
+                for(Local f : bundle.list().filter(new ProfileFilter())) {
                     final Profile profile = ProfileReaderFactory.get().read(f);
                     if(null == profile.getProtocol()) {
                         continue;
@@ -58,7 +71,7 @@ public final class ProtocolFactory {
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", bundled, e.getMessage()));
+                log.warn(String.format("Failure reading collection %s %s", bundle, e.getMessage()));
             }
         }
         // Load thirdparty protocols
@@ -82,10 +95,6 @@ public final class ProtocolFactory {
                 log.warn(String.format("Failure reading collection %s %s", library, e.getMessage()));
             }
         }
-    }
-
-    public ProtocolFactory(final Set<Protocol> protocols) {
-        this.registered = protocols;
     }
 
     public void register(final Protocol protocol) {

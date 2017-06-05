@@ -15,34 +15,37 @@ package ch.cyberduck.cli;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.SessionPoolFactory;
-import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.TildePathExpander;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.azure.AzureProtocol;
+import ch.cyberduck.core.b2.B2Protocol;
+import ch.cyberduck.core.dav.DAVProtocol;
+import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.googledrive.DriveProtocol;
+import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
+import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.onedrive.OneDriveProtocol;
+import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
@@ -102,6 +105,25 @@ public class Terminal {
 
     public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults.withDefaults(input);
+        ProtocolFactory.global.register(
+                new FTPProtocol(),
+                new FTPTLSProtocol(),
+                new SFTPProtocol(),
+                new DAVProtocol(),
+                new DAVSSLProtocol(),
+                new SwiftProtocol(),
+                new S3Protocol(),
+                new GoogleStorageProtocol(),
+                new AzureProtocol(),
+                new IRODSProtocol(),
+                new SpectraProtocol(),
+                new B2Protocol(),
+                new DriveProtocol(),
+                new HubicProtocol(),
+                new DropboxProtocol(),
+                new DropboxProtocol(),
+                new OneDriveProtocol()
+        );
         this.options = options;
         if(log.isInfoEnabled()) {
             log.info(String.format("Parsed options %s from input %s", options, input));
