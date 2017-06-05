@@ -37,7 +37,7 @@ public class OneDriveMeContextLoginTest {
 
     @BeforeClass
     public static void protocol() {
-        ProtocolFactory.register(new OneDriveProtocol());
+        ProtocolFactory.global.register(new OneDriveProtocol());
     }
 
     @After
