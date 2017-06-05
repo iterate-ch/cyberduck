@@ -109,7 +109,7 @@ public final class ProtocolFactory {
         return this.find(Protocol::isEnabled);
     }
 
-    private Set<Protocol> find(final Predicate<Protocol> search) {
+    public Set<Protocol> find(final Predicate<Protocol> search) {
         return registered.stream().filter(search).collect(Collectors.toSet());
     }
 
