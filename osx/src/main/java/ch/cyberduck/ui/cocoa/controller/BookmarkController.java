@@ -68,6 +68,7 @@ import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class BookmarkController extends SheetController implements CollectionListener {
     private static final Logger log = Logger.getLogger(BookmarkController.class);
@@ -143,11 +144,64 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
-        for(Protocol protocol : ProtocolFactory.global.find()) {
-            final String title = protocol.getDescription();
-            this.protocolPopup.addItemWithTitle(title);
-            this.protocolPopup.lastItem().setRepresentedObject(String.valueOf(protocol.hashCode()));
-            this.protocolPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
+        for(Protocol protocol : ProtocolFactory.global.find(new Predicate<Protocol>() {
+            @Override
+            public boolean test(final Protocol protocol) {
+                switch(protocol.getType()) {
+                    case ftp:
+                    case sftp:
+                    case dav:
+                        return true;
+                }
+                return false;
+            }
+        })) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : ProtocolFactory.global.find(new Predicate<Protocol>() {
+            @Override
+            public boolean test(final Protocol protocol) {
+                switch(protocol.getType()) {
+                    case s3:
+                    case swift:
+                    case azure:
+                    case b2:
+                    case googlestorage:
+                        return true;
+                }
+                return false;
+            }
+        })) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : ProtocolFactory.global.find(new Predicate<Protocol>() {
+            @Override
+            public boolean test(final Protocol protocol) {
+                switch(protocol.getType()) {
+                    case dropbox:
+                    case onedrive:
+                    case googledrive:
+                        return true;
+                }
+                return false;
+            }
+        })) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : ProtocolFactory.global.find(new Predicate<Protocol>() {
+            @Override
+            public boolean test(final Protocol protocol) {
+                switch(protocol.getType()) {
+                    case file:
+                        return true;
+                }
+                return false;
+            }
+        })) {
+            this.addProtocol(protocol);
         }
         this.addObserver(new BookmarkObserver() {
             @Override
@@ -155,6 +209,13 @@ public class BookmarkController extends SheetController implements CollectionLis
                 protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(bookmark.getProtocol().hashCode())));
             }
         });
+    }
+
+    private void addProtocol(final Protocol protocol) {
+        final String title = protocol.getDescription();
+        this.protocolPopup.addItemWithTitle(title);
+        this.protocolPopup.lastItem().setRepresentedObject(String.valueOf(protocol.hashCode()));
+        this.protocolPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
     }
 
     @Action
