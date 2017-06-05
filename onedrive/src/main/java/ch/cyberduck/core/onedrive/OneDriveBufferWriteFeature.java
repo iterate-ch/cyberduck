@@ -47,8 +47,9 @@ public class OneDriveBufferWriteFeature extends OneDriveWriteFeature implements 
             @Override
             protected void copy(final Buffer buffer) throws IOException {
                 try {
+                    // Write full content length of buffer in a single request
                     final HttpResponseOutputStream<Void> proxy = OneDriveBufferWriteFeature.super.write(file,
-                            new TransferStatus(status).length(buffer.length()), callback);
+                            new TransferStatus(status).skip(0L).length(buffer.length()), callback);
                     IOUtils.copy(new BufferInputStream(buffer), proxy);
                     // Re-use buffer
                     buffer.truncate(0L);
