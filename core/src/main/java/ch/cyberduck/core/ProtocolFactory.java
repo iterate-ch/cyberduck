@@ -110,7 +110,7 @@ public final class ProtocolFactory {
     }
 
     public Set<Protocol> find(final Predicate<Protocol> search) {
-        return registered.stream().filter(search).collect(Collectors.toSet());
+        return registered.stream().filter(search).sorted().collect(Collectors.toSet());
     }
 
     /**
