@@ -108,7 +108,7 @@ public final class ProtocolFactory {
      * @return Matching protocol or null if no match
      */
     public Protocol forName(final String identifier) {
-        return this.forName(this.getProtocols(), identifier);
+        return this.forName(registered, identifier);
     }
 
     public Protocol forName(final Set<Protocol> protocols, final String identifier) {
@@ -134,7 +134,7 @@ public final class ProtocolFactory {
     }
 
     public Protocol forType(final Protocol.Type type) {
-        for(Protocol protocol : this.getProtocols()) {
+        for(Protocol protocol : registered) {
             if(protocol.getType().equals(type)) {
                 return protocol;
             }
@@ -144,7 +144,7 @@ public final class ProtocolFactory {
     }
 
     public Protocol forScheme(final String scheme) {
-        return this.forScheme(this.getProtocols(), scheme);
+        return this.forScheme(registered, scheme);
     }
 
     public Protocol forScheme(final Set<Protocol> protocols, final String scheme) {
