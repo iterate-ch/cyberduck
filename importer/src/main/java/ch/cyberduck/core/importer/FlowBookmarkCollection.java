@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -123,7 +122,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                         host.setProtocol(protocols.forScheme(Scheme.sftp));
                         break;
                     case 3:
-                        host.setProtocol(protocols.forScheme(new S3Protocol().getIdentifier()));
+                        host.setProtocol(protocols.forScheme(Scheme.s3));
                         break;
                     case 2:
                     case 4:

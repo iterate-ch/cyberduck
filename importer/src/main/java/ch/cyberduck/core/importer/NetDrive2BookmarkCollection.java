@@ -23,9 +23,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.googledrive.DriveProtocol;
-import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
-import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -88,17 +85,14 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                         case "type":
                             final String type = this.readNext(name, reader);
                             switch(type) {
-                                case "hubic":
-                                    protocol = protocols.forScheme(new HubicProtocol().getIdentifier());
-                                    break;
                                 case "google_cloud_storage":
-                                    protocol = protocols.forScheme(new GoogleStorageProtocol().getIdentifier());
+                                    protocol = protocols.forType(Protocol.Type.googlestorage);
                                     break;
                                 case "gdrive":
-                                    protocol = protocols.forScheme(new DriveProtocol().getIdentifier());
+                                    protocol = protocols.forType(Protocol.Type.googledrive);
                                     break;
                                 default:
-                                    protocol = protocols.forName(type);
+                                    protocol = protocols.find(type);
                             }
                             break;
 
