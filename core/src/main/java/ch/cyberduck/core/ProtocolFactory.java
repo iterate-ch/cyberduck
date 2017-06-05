@@ -26,6 +26,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -105,12 +106,12 @@ public final class ProtocolFactory {
     /**
      * @return List of protocols
      */
-    public Set<Protocol> find() {
+    public List<Protocol> find() {
         return this.find(Protocol::isEnabled);
     }
 
-    public Set<Protocol> find(final Predicate<Protocol> search) {
-        return registered.stream().filter(search).sorted().collect(Collectors.toSet());
+    public List<Protocol> find(final Predicate<Protocol> search) {
+        return registered.stream().filter(search).sorted().collect(Collectors.toList());
     }
 
     /**
@@ -121,7 +122,7 @@ public final class ProtocolFactory {
         return this.forName(this.find(), identifier);
     }
 
-    public Protocol forName(final Set<Protocol> protocols, final String identifier) {
+    public Protocol forName(final List<Protocol> protocols, final String identifier) {
         for(Protocol protocol : protocols) {
             if(protocol.getProvider().equals(identifier)) {
                 return protocol;
