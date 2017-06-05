@@ -64,7 +64,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local folder) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local folder) throws AccessDeniedException {
         for(Local child : folder.list().filter(new NullFilter<Local>() {
             @Override
             public boolean accept(Local file) {
@@ -75,15 +75,15 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             }
         })) {
             if(child.isDirectory()) {
-                this.parse(child);
+                this.parse(protocols, child);
             }
             else {
-                this.read(child);
+                this.read(protocols, child);
             }
         }
     }
 
-    protected void read(Local file) throws AccessDeniedException {
+    protected void read(final ProtocolFactory protocols, Local file) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
             try {
@@ -93,8 +93,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                     log.trace(line);
                     if(line.startsWith("[")) {
                         this.add(current);
-
-                        current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
+                        current = new Host(protocols.forScheme(Scheme.ftp));
                         current.getCredentials().setUsername(
                                 PreferencesFactory.get().getProperty("connection.login.anon.name"));
                         Pattern pattern = Pattern.compile("\\[(.*)\\]");
@@ -111,7 +110,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                             log.warn("Failed to detect start of bookmark");
                             continue;
                         }
-                        this.parse(current, line);
+                        this.parse(protocols, current, line);
                     }
                 }
             }
@@ -124,7 +123,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
     }
 
-    private boolean parse(final Host current, final String line) {
+    private boolean parse(final ProtocolFactory protocols, final Host current, final String line) {
         final Scanner scanner = new Scanner(line);
         scanner.useDelimiter("=");
         if(!scanner.hasNext()) {
@@ -141,10 +140,10 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             try {
                 switch(Integer.parseInt(value)) {
                     case 4:
-                        current.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
+                        current.setProtocol(protocols.forScheme(Scheme.sftp));
                         break;
                     case 5:
-                        current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
+                        current.setProtocol(protocols.forScheme(Scheme.ftps));
                         break;
                 }
                 // Reset port to default

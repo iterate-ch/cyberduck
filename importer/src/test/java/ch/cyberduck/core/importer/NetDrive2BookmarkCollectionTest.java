@@ -23,21 +23,22 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertEquals;
 
 public class NetDrive2BookmarkCollectionTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testParseNotFound() throws Exception {
-        new NetDrive2BookmarkCollection().parse(new Local(System.getProperty("java.io.tmpdir"), "f"));
+        new NetDrive2BookmarkCollection().parse(new ProtocolFactory(Collections.emptySet()), new Local(System.getProperty("java.io.tmpdir"), "f"));
     }
 
     @Test
     public void testParse() throws AccessDeniedException {
-        ProtocolFactory.register(new TestProtocol(Scheme.sftp));
         NetDrive2BookmarkCollection c = new NetDrive2BookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(new Local("src/test/resources/drives.dat"));
+        c.parse(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.sftp))), new Local("src/test/resources/drives.dat"));
         assertEquals(1, c.size());
     }
 }

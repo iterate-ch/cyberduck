@@ -38,13 +38,13 @@ public abstract class ExpandriveBookmarkCollection extends JsonBookmarkCollectio
     private static final Logger log = Logger.getLogger(ExpandriveBookmarkCollection.class);
 
     @Override
-    protected void parse(final Local file) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         try {
             final JsonReader reader = new JsonReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
             reader.beginArray();
             while(reader.hasNext()) {
                 reader.beginObject();
-                final Host current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
+                final Host current = new Host(protocols.forScheme(Scheme.ftp));
                 boolean skip = false;
                 while(reader.hasNext()) {
                     final String name = reader.nextName();
@@ -71,13 +71,13 @@ public abstract class ExpandriveBookmarkCollection extends JsonBookmarkCollectio
                             current.setDefaultPath(this.readNext(name, reader));
                             break;
                         case "type":
-                            final Protocol type = ProtocolFactory.forName(this.readNext(name, reader));
+                            final Protocol type = protocols.forName(this.readNext(name, reader));
                             if(null != type) {
                                 current.setProtocol(type);
                             }
                             break;
                         case "protocol":
-                            final Protocol protocol = ProtocolFactory.forName(this.readNext(name, reader));
+                            final Protocol protocol = protocols.forName(this.readNext(name, reader));
                             if(null != protocol) {
                                 current.setProtocol(protocol);
                                 // Reset port to default

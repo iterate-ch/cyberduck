@@ -21,12 +21,10 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3Protocol;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -52,21 +50,27 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
     }
 
     @Override
-    protected AbstractHandler getHandler() {
-        return new ServerHandler();
+    protected AbstractHandler getHandler(final ProtocolFactory protocols) {
+        return new ServerHandler(protocols);
     }
 
     /**
      * Parser for Filezilla Site Manager.
      */
     private class ServerHandler extends AbstractHandler {
+        private final ProtocolFactory protocols;
+
         private Host current = null;
+
+        public ServerHandler(final ProtocolFactory protocols) {
+            this.protocols = protocols;
+        }
 
         @Override
         public void startElement(String name, Attributes attrs) {
             switch(name) {
                 case "site":
-                    current = new Host(ProtocolFactory.forScheme(Scheme.ftp), attrs.getValue("hName"));
+                    current = new Host(protocols.forScheme(Scheme.ftp), attrs.getValue("hName"));
                     current.setNickname(attrs.getValue("name"));
                     current.getCredentials().setUsername(attrs.getValue("un"));
                     current.setWebURL(attrs.getValue("wURL"));
@@ -76,22 +80,22 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
                     try {
                         switch(Integer.valueOf(protocol)) {
                             case 1:
-                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
+                                current.setProtocol(protocols.forScheme(Scheme.ftp));
                                 break;
                             case 2:
                             case 3:
                             case 4:
-                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
+                                current.setProtocol(protocols.forScheme(Scheme.ftps));
                                 break;
                             case 6:
-                                current.setProtocol(ProtocolFactory.forScheme(new DAVProtocol().getIdentifier()));
+                                current.setProtocol(protocols.forScheme(Scheme.dav));
                                 break;
                             case 7:
-                                current.setProtocol(ProtocolFactory.forScheme(new DAVSSLProtocol().getIdentifier()));
+                                current.setProtocol(protocols.forScheme(Scheme.davs));
                                 break;
                             case 8:
                             case 9:
-                                current.setProtocol(ProtocolFactory.forScheme(new S3Protocol().getIdentifier()));
+                                current.setProtocol(protocols.forType(Protocol.Type.s3));
                                 break;
                         }
                         // Reset port to default

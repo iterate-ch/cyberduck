@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -45,7 +46,7 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local file) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
             throw new LocalAccessDeniedException(String.format("Invalid bookmark file %s", file));
@@ -73,7 +74,7 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
             if(null == url) {
                 continue;
             }
-            final Host host = HostParser.parse(url);
+            final Host host = new HostParser(protocols).get(url);
             host.setNickname(reader.stringForKey("Name"));
             this.add(host);
         }

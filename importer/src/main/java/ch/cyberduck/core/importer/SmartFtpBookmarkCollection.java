@@ -56,7 +56,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local folder) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local folder) throws AccessDeniedException {
         for(Local child : folder.list().filter(new Filter<Local>() {
             @Override
             public boolean accept(Local file) {
@@ -72,29 +72,34 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
             }
         })) {
             if(child.isDirectory()) {
-                this.parse(child);
+                this.parse(protocols, child);
             }
             else {
-                this.read(child);
+                this.read(protocols, child);
             }
         }
     }
 
     @Override
-    protected AbstractHandler getHandler() {
-        return new ServerHandler();
+    protected AbstractHandler getHandler(final ProtocolFactory protocols) {
+        return new ServerHandler(protocols);
     }
 
     /**
      * Parser for SmartFTP favorites.
      */
     private class ServerHandler extends AbstractHandler {
+        private final ProtocolFactory protocols;
         private Host current = null;
+
+        public ServerHandler(final ProtocolFactory protocols) {
+            this.protocols = protocols;
+        }
 
         @Override
         public void startElement(String name, Attributes attrs) {
             if(name.equals("FavoriteItem")) {
-                current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
+                current = new Host(protocols.forScheme(Scheme.ftp));
                 current.getCredentials().setUsername(
                         PreferencesFactory.get().getProperty("connection.login.anon.name"));
             }
@@ -113,14 +118,14 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                     try {
                         switch(Integer.parseInt(elementText)) {
                             case 1:
-                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
+                                current.setProtocol(protocols.forScheme(Scheme.ftp));
                                 break;
                             case 2:
                             case 3:
-                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
+                                current.setProtocol(protocols.forScheme(Scheme.ftps));
                                 break;
                             case 4:
-                                current.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
+                                current.setProtocol(protocols.forScheme(Scheme.sftp));
                                 break;
                         }
                         // Reset port to default

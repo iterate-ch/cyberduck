@@ -19,9 +19,8 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
-import ch.cyberduck.core.s3.S3Protocol;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -32,12 +31,17 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
     private static final long serialVersionUID = 2245328157886337606L;
 
     @Override
-    protected AbstractHandler getHandler() {
-        return new ServerHandler();
+    protected AbstractHandler getHandler(final ProtocolFactory protocols) {
+        return new ServerHandler(protocols);
     }
 
     private class ServerHandler extends AbstractHandler {
+        private final ProtocolFactory protocols;
         private Host current = null;
+
+        public ServerHandler(final ProtocolFactory protocols) {
+            this.protocols = protocols;
+        }
 
 
         @Override
@@ -47,11 +51,11 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
                     String type = attrs.getValue("xsi:type");
                     switch(type) {
                         case "GoogleSettings":
-                            current = new Host(ProtocolFactory.forScheme(new GoogleStorageProtocol().getIdentifier()));
+                            current = new Host(protocols.forType(Protocol.Type.googlestorage));
                             break;
                         case "S3Settings":
                         case "DunkelSettings":
-                            current = new Host(ProtocolFactory.forScheme(new S3Protocol().getIdentifier()));
+                            current = new Host(protocols.forType(Protocol.Type.s3));
                             break;
                         default:
                             log.warn("Unsupported connection type:" + type);

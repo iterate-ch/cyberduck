@@ -62,22 +62,28 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
     }
 
     @Override
-    protected AbstractHandler getHandler() {
-        return new ServerHandler();
+    protected AbstractHandler getHandler(final ProtocolFactory protocols) {
+        return new ServerHandler(protocols);
     }
 
     /**
      * Parser for Filezilla Site Manager.
      */
     private class ServerHandler extends AbstractHandler {
+        private final ProtocolFactory protocols;
+
         private Host current = null;
         private Attributes attrs;
+
+        public ServerHandler(final ProtocolFactory protocols) {
+            this.protocols = protocols;
+        }
 
         @Override
         public void startElement(final String name, final Attributes attrs) {
             this.attrs = attrs;
             if(name.equals("Server")) {
-                current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
+                current = new Host(protocols.forScheme(Scheme.ftp));
             }
         }
 
@@ -91,14 +97,14 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                     try {
                         switch(Integer.parseInt(elementText)) {
                             case 0:
-                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
+                                current.setProtocol(protocols.forScheme(Scheme.ftp));
                                 break;
                             case 3:
                             case 4:
-                                current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
+                                current.setProtocol(protocols.forScheme(Scheme.ftps));
                                 break;
                             case 1:
-                                current.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
+                                current.setProtocol(protocols.forScheme(Scheme.sftp));
                                 break;
                         }
                         // Reset port to default

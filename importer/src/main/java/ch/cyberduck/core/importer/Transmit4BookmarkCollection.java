@@ -18,12 +18,10 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3Protocol;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -33,8 +31,8 @@ public class Transmit4BookmarkCollection extends XmlBookmarkCollection {
     private static final Logger log = Logger.getLogger(Transmit4BookmarkCollection.class);
 
     @Override
-    protected AbstractHandler getHandler() {
-        return new FavoriteHandler();
+    protected AbstractHandler getHandler(final ProtocolFactory protocols) {
+        return new FavoriteHandler(protocols);
     }
 
     @Override
@@ -48,10 +46,15 @@ public class Transmit4BookmarkCollection extends XmlBookmarkCollection {
     }
 
     private class FavoriteHandler extends AbstractHandler {
+        private final ProtocolFactory protocols;
         private Host current = null;
 
         // Current attribute name
         private String attribute;
+
+        public FavoriteHandler(final ProtocolFactory protocols) {
+            this.protocols = protocols;
+        }
 
         @Override
         public void startElement(final String name, final Attributes attrs) {
@@ -60,7 +63,7 @@ public class Transmit4BookmarkCollection extends XmlBookmarkCollection {
                     final String type = attrs.getValue("type");
                     switch(type) {
                         case "FAVORITE":
-                            current = new Host(ProtocolFactory.forScheme(Scheme.ftp));
+                            current = new Host(protocols.forScheme(Scheme.ftp));
                             break;
                         default:
                             log.warn(String.format("Unsupported type: %s", type));
@@ -94,23 +97,23 @@ public class Transmit4BookmarkCollection extends XmlBookmarkCollection {
                         case "protocol":
                             switch(StringUtils.lowerCase(elementText)) {
                                 case "webdav":
-                                    current.setProtocol(ProtocolFactory.forScheme(new DAVProtocol().getIdentifier()));
+                                    current.setProtocol(protocols.forScheme(Scheme.dav));
                                     break;
                                 case "webdavs":
-                                    current.setProtocol(ProtocolFactory.forScheme(new DAVSSLProtocol().getIdentifier()));
+                                    current.setProtocol(protocols.forScheme(Scheme.davs));
                                     break;
                                 case "sftp":
-                                    current.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
+                                    current.setProtocol(protocols.forScheme(Scheme.sftp));
                                     break;
                                 case "ftptls":
                                 case "ftpssl":
-                                    current.setProtocol(ProtocolFactory.forScheme(Scheme.ftps));
+                                    current.setProtocol(protocols.forScheme(Scheme.ftps));
                                     break;
                                 case "ftp":
-                                    current.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
+                                    current.setProtocol(protocols.forScheme(Scheme.ftp));
                                     break;
                                 case "s3":
-                                    current.setProtocol(ProtocolFactory.forScheme(new S3Protocol().getIdentifier()));
+                                    current.setProtocol(protocols.forType(Protocol.Type.s3));
                                     break;
                             }
                             // Reset port to default

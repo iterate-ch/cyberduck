@@ -60,7 +60,7 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local file) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
             try {
@@ -68,7 +68,7 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                 String line;
                 while((line = in.readLine()) != null) {
                     if(line.startsWith("[Sessions\\")) {
-                        current = new Host(ProtocolFactory.forScheme(Scheme.sftp));
+                        current = new Host(protocols.forScheme(Scheme.sftp));
                         current.getCredentials().setUsername(
                                 PreferencesFactory.get().getProperty("connection.login.anon.name"));
                         Pattern pattern = Pattern.compile("\\[Session\\\\(.*)\\]");
@@ -118,10 +118,10 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                     case 0:
                                     case 1:
                                     case 2:
-                                        current.setProtocol(ProtocolFactory.forScheme(Scheme.sftp));
+                                        current.setProtocol(protocols.forScheme(Scheme.sftp));
                                         break;
                                     case 5:
-                                        current.setProtocol(ProtocolFactory.forScheme(Scheme.ftp));
+                                        current.setProtocol(protocols.forScheme(Scheme.ftp));
                                         break;
                                 }
                                 // Reset port to default

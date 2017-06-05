@@ -30,12 +30,9 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3Protocol;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -58,7 +55,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local file) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         final NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
             throw new LocalAccessDeniedException(String.format("Invalid bookmark file %s", file));
@@ -100,12 +97,12 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
             NSEnumerator favoritesEnumerator = favorites.objectEnumerator();
             NSObject favorite;
             while((favorite = favoritesEnumerator.nextObject()) != null) {
-                this.parse(Rococoa.cast(favorite, TransmitFavorite.class));
+                this.parse(protocols, Rococoa.cast(favorite, TransmitFavorite.class));
             }
         }
     }
 
-    private void parse(final TransmitFavorite favorite) {
+    private void parse(final ProtocolFactory protocols, final TransmitFavorite favorite) {
         String server = favorite.server();
         if(StringUtils.isBlank(server)) {
             log.warn("No server name:" + server);
@@ -123,23 +120,23 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         Protocol protocol;
         switch(protocolstring) {
             case "FTP":
-                protocol = ProtocolFactory.forScheme(Scheme.ftp);
+                protocol = protocols.forScheme(Scheme.ftp);
                 break;
             case "SFTP":
-                protocol = ProtocolFactory.forScheme(Scheme.sftp);
+                protocol = protocols.forScheme(Scheme.sftp);
                 break;
             case "FTPTLS":
             case "FTPSSL":
-                protocol = ProtocolFactory.forScheme(Scheme.ftps);
+                protocol = protocols.forScheme(Scheme.ftps);
                 break;
             case "S3":
-                protocol = ProtocolFactory.forScheme(new S3Protocol().getIdentifier());
+                protocol = protocols.forType(Protocol.Type.s3);
                 break;
             case "WebDAV":
-                protocol = ProtocolFactory.forScheme(new DAVProtocol().getIdentifier());
+                protocol = protocols.forScheme(Scheme.dav);
                 break;
             case "WebDAVS":
-                protocol = ProtocolFactory.forScheme(new DAVSSLProtocol().getIdentifier());
+                protocol = protocols.forScheme(Scheme.davs);
                 break;
             default:
                 log.warn(String.format("Unknown protocol %s", protocolstring));

@@ -19,10 +19,17 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,14 +38,14 @@ public class WinScpBookmarkCollectionTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testParseNotFound() throws Exception {
-        new WinScpBookmarkCollection().parse(new Local(System.getProperty("java.io.tmpdir"), "f"));
+        new WinScpBookmarkCollection().parse(new ProtocolFactory(Collections.emptySet()), new Local(System.getProperty("java.io.tmpdir"), "f"));
     }
 
     @Test
     public void testParse() throws Exception {
         WinScpBookmarkCollection c = new WinScpBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(new Local("src/test/resources/WinSCP.ini"));
+        c.parse(new ProtocolFactory(new HashSet<>(Arrays.asList(new TestProtocol(Scheme.ftp), new TestProtocol(Scheme.sftp)))), new Local("src/test/resources/WinSCP.ini"));
         assertEquals(127, c.size());
         for(Host bookmark : c) {
             assertFalse(StringUtils.isBlank(bookmark.getHostname()));

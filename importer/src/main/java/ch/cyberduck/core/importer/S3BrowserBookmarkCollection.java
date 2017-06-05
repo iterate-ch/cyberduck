@@ -58,7 +58,7 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local file) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(),
                     Charset.forName("UTF-8")));
@@ -67,7 +67,7 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
                 String line;
                 while((line = in.readLine()) != null) {
                     if(line.startsWith("[account_")) {
-                        current = new Host(ProtocolFactory.forScheme(new S3Protocol().getIdentifier()));
+                        current = new Host(protocols.forScheme(new S3Protocol().getIdentifier()));
                     }
                     else if(StringUtils.isBlank(line)) {
                         this.add(current);
