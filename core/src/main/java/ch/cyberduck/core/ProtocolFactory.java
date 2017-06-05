@@ -25,6 +25,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -118,22 +119,16 @@ public final class ProtocolFactory {
      * @param identifier Provider name or hash code of protocol
      * @return Matching protocol or null if no match
      */
-    public Protocol find(final String identifier) {
+    public Protocol forName(final String identifier) {
         return this.forName(this.find(), identifier);
     }
 
-    public Protocol forName(final List<Protocol> protocols, final String identifier) {
-        for(Protocol protocol : protocols) {
-            if(protocol.getProvider().equals(identifier)) {
-                return protocol;
-            }
-        }
-        for(Protocol protocol : protocols) {
-            if(String.valueOf(protocol.hashCode()).equals(identifier)) {
-                return protocol;
-            }
-        }
-        return this.forScheme(identifier);
+    public Protocol forName(final List<Protocol> registered, final String identifier) {
+        return registered.stream().filter(protocol -> protocol.getProvider().equals(identifier)).findFirst().orElse(
+                registered.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
+                        registered.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(identifier)).findFirst().orElse(null)
+                )
+        );
     }
 
     /**
@@ -145,29 +140,11 @@ public final class ProtocolFactory {
     }
 
     public Protocol forType(final Protocol.Type type) {
-        for(Protocol protocol : registered) {
-            if(protocol.getType().equals(type)) {
-                return protocol;
-            }
-        }
-        log.warn(String.format("Unknown type %s", type));
-        return null;
+        return this.find().stream().filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
     }
 
     public Protocol forScheme(final String scheme) {
-        return this.forScheme(registered, scheme);
-    }
-
-    public Protocol forScheme(final Set<Protocol> protocols, final String scheme) {
-        for(Protocol protocol : protocols) {
-            for(String s : protocol.getSchemes()) {
-                if(s.equals(scheme)) {
-                    return protocol;
-                }
-            }
-        }
-        log.warn(String.format("Unknown scheme %s", scheme));
-        return null;
+        return this.find().stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null);
     }
 
     private static final class ProfileFilter implements Filter<Local> {

@@ -26,6 +26,8 @@ import ch.cyberduck.core.ProtocolFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.function.Predicate;
+
 public class ProfileDictionary {
     private static final Logger log = Logger.getLogger(ProfileDictionary.class);
 
@@ -53,7 +55,12 @@ public class ProfileDictionary {
         final Deserializer<String> dict = deserializer.create(serialized);
         final String protocol = dict.stringForKey("Protocol");
         if(StringUtils.isNotBlank(protocol)) {
-            final Protocol parent = protocols.find(protocol);
+            final Protocol parent = protocols.forName(protocols.find(new Predicate<Protocol>() {
+                @Override
+                public boolean test(final Protocol protocol) {
+                    return true;
+                }
+            }), protocol);
             if(null == parent) {
                 log.error(String.format("Unknown protocol %s in profile", protocol));
                 return null;
