@@ -22,7 +22,7 @@ import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
-public final class DAVSSLProtocol extends AbstractProtocol {
+public class DAVSSLProtocol extends AbstractProtocol {
     @Override
     public String getName() {
         return "WebDAV (HTTPS)";

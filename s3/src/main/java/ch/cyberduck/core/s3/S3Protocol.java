@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class S3Protocol extends AbstractProtocol {
+public class S3Protocol extends AbstractProtocol {
     private static final Logger log = Logger.getLogger(S3Protocol.class);
 
     @Override
