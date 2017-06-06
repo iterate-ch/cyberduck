@@ -39,12 +39,14 @@ public class CryptoDirectoryProvider {
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
 
     private final Path dataRoot;
+    private final Path home;
     private final CryptoVault cryptomator;
 
     private final RandomStringService random
             = new UUIDRandomStringService();
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
+        this.home = vault;
         this.dataRoot = new Path(vault, DATA_DIR_NAME, vault.getType());
         this.cryptomator = cryptomator;
     }
@@ -79,30 +81,30 @@ public class CryptoDirectoryProvider {
         if(!directory.isDirectory()) {
             throw new NotfoundException(directory.getAbsolute());
         }
-        if(!directory.isChild(dataRoot)) {
-            throw new NotfoundException(directory.getAbsolute());
+        if(directory.equals(home) || directory.isChild(home)) {
+            final PathAttributes attributes = new PathAttributes(directory.attributes());
+            attributes.setVersionId(null);
+            // Remember random directory id for use in vault
+            final String id = this.toDirectoryId(session, directory, directoryId);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Use directory ID '%s' for folder %s", id, directory));
+            }
+            attributes.setDirectoryId(id);
+            attributes.setDecrypted(directory);
+            final String directoryIdHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(id);
+            // Intermediate directory
+            final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
+            // Add encrypted type
+            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
+            type.add(Path.Type.encrypted);
+            type.remove(Path.Type.decrypted);
+            return new Path(intermediate, directoryIdHash.substring(2), type, attributes);
         }
-        final PathAttributes attributes = new PathAttributes(directory.attributes());
-        attributes.setVersionId(null);
-        // Remember random directory id for use in vault
-        final String id = this.toDirectoryId(session, directory, directoryId);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Use directory ID '%s' for folder %s", id, directory));
-        }
-        attributes.setDirectoryId(id);
-        attributes.setDecrypted(directory);
-        final String directoryIdHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(id);
-        // Intermediate directory
-        final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
-        // Add encrypted type
-        final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
-        type.add(Path.Type.encrypted);
-        type.remove(Path.Type.decrypted);
-        return new Path(intermediate, directoryIdHash.substring(2), type, attributes);
+        throw new NotfoundException(directory.getAbsolute());
     }
 
     private String toDirectoryId(final Session<?> session, final Path directory, final String directoryId) throws BackgroundException {
-        if(dataRoot.getParent().equals(directory)) {
+        if(home.equals(directory)) {
             return ROOT_DIR_ID;
         }
         if(StringUtils.isBlank(directoryId)) {
