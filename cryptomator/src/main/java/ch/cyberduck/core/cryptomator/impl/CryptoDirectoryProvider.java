@@ -39,12 +39,14 @@ public class CryptoDirectoryProvider {
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
 
     private final Path dataRoot;
+    private final Path home;
     private final CryptoVault cryptomator;
 
     private final RandomStringService random
             = new UUIDRandomStringService();
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
+        this.home = vault;
         this.dataRoot = new Path(vault, DATA_DIR_NAME, vault.getType());
         this.cryptomator = cryptomator;
     }
@@ -76,7 +78,10 @@ public class CryptoDirectoryProvider {
      * @param directory   Clear text
      */
     public Path toEncrypted(final Session<?> session, final String directoryId, final Path directory) throws BackgroundException {
-        if(directory.getType().contains(Path.Type.directory)) {
+        if(!directory.isDirectory()) {
+            throw new NotfoundException(directory.getAbsolute());
+        }
+        if(directory.equals(home) || directory.isChild(home)) {
             final PathAttributes attributes = new PathAttributes(directory.attributes());
             attributes.setVersionId(null);
             // Remember random directory id for use in vault
@@ -99,7 +104,7 @@ public class CryptoDirectoryProvider {
     }
 
     private String toDirectoryId(final Session<?> session, final Path directory, final String directoryId) throws BackgroundException {
-        if(dataRoot.getParent().equals(directory)) {
+        if(home.equals(directory)) {
             return ROOT_DIR_ID;
         }
         if(StringUtils.isBlank(directoryId)) {
