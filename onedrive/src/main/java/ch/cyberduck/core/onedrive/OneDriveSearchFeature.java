@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
@@ -59,7 +60,7 @@ public class OneDriveSearchFeature implements Search {
             final PathAttributes attributes = this.attributes.convert(metadata);
             final String driveId = metadata.getParentReference().getDriveId();
             final String parentDrivePath = metadata.getParentReference().getPath();
-            final String parentPath = parentDrivePath.substring(parentDrivePath.indexOf(':') + 2); // skip :/
+            final String parentPath = StringUtils.removeStart(parentDrivePath, "/drive/root:");
             final String filePath = String.format("/%s/%s/%s", driveId, parentPath, metadata.getName());
             list.add(new Path(filePath, metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
         }
