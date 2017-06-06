@@ -76,26 +76,29 @@ public class CryptoDirectoryProvider {
      * @param directory   Clear text
      */
     public Path toEncrypted(final Session<?> session, final String directoryId, final Path directory) throws BackgroundException {
-        if(directory.getType().contains(Path.Type.directory)) {
-            final PathAttributes attributes = new PathAttributes(directory.attributes());
-            attributes.setVersionId(null);
-            // Remember random directory id for use in vault
-            final String id = this.toDirectoryId(session, directory, directoryId);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Use directory ID '%s' for folder %s", id, directory));
-            }
-            attributes.setDirectoryId(id);
-            attributes.setDecrypted(directory);
-            final String directoryIdHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(id);
-            // Intermediate directory
-            final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
-            // Add encrypted type
-            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
-            type.add(Path.Type.encrypted);
-            type.remove(Path.Type.decrypted);
-            return new Path(intermediate, directoryIdHash.substring(2), type, attributes);
+        if(!directory.isDirectory()) {
+            throw new NotfoundException(directory.getAbsolute());
         }
-        throw new NotfoundException(directory.getAbsolute());
+        if(!directory.isChild(dataRoot)) {
+            throw new NotfoundException(directory.getAbsolute());
+        }
+        final PathAttributes attributes = new PathAttributes(directory.attributes());
+        attributes.setVersionId(null);
+        // Remember random directory id for use in vault
+        final String id = this.toDirectoryId(session, directory, directoryId);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Use directory ID '%s' for folder %s", id, directory));
+        }
+        attributes.setDirectoryId(id);
+        attributes.setDecrypted(directory);
+        final String directoryIdHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(id);
+        // Intermediate directory
+        final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
+        // Add encrypted type
+        final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
+        type.add(Path.Type.encrypted);
+        type.remove(Path.Type.decrypted);
+        return new Path(intermediate, directoryIdHash.substring(2), type, attributes);
     }
 
     private String toDirectoryId(final Session<?> session, final Path directory, final String directoryId) throws BackgroundException {
