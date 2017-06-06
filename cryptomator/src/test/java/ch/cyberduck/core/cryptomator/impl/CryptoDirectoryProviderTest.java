@@ -44,11 +44,19 @@ import static org.junit.Assert.assertNotNull;
 public class CryptoDirectoryProviderTest {
 
     @Test(expected = NotfoundException.class)
-    public void testToEncryptedFile() throws Exception {
+    public void testToEncryptedInvalidArgument() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         final CryptoDirectoryProvider provider = new CryptoDirectoryProvider(home, vault);
         provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/vault/f", EnumSet.of(Path.Type.file)));
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testToEncryptedInvalidPath() throws Exception {
+        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        final CryptoDirectoryProvider provider = new CryptoDirectoryProvider(home, vault);
+        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/", EnumSet.of(Path.Type.directory)));
     }
 
     @Test
