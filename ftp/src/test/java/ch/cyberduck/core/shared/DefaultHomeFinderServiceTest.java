@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 public class DefaultHomeFinderServiceTest {
 
     @Test
-    public void testFindFtp() throws Exception {
+    public void testFind() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
@@ -45,13 +45,5 @@ public class DefaultHomeFinderServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         assertEquals(new Path("/test.d", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
         session.close();
-    }
-
-    @Test
-    public void testFindWithWorkdir() throws Exception {
-        assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-                new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
-        assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-                new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
     }
 }
