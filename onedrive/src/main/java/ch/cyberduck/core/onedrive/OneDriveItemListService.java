@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveDrive;
@@ -58,7 +59,7 @@ public class OneDriveItemListService implements ListService {
             else {
                 folder = session.toFolder(directory);
             }
-            Iterator<OneDriveItem.Metadata> iterator = folder.iterator();
+            final Iterator<OneDriveItem.Metadata> iterator = folder.iterator(PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
             while(iterator.hasNext()) {
                 final OneDriveItem.Metadata metadata;
                 try {
