@@ -26,6 +26,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Search;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Objects;
@@ -33,6 +35,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class SearchWorker extends Worker<AttributedList<Path>> {
+    private static final Logger log = Logger.getLogger(SearchWorker.class);
 
     private final Path directory;
     private final Filter<Path> filter;
@@ -74,6 +77,22 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             list.removeAll(removal);
         }
         return list;
+    }
+
+    @Override
+    public void cleanup(final AttributedList<Path> list) {
+        if(!(AttributedList.<Path>emptyList() == list)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cache search result %s in cache %s", list, cache));
+            }
+            // Cache directory listing
+            cache.put(directory, list);
+        }
+    }
+
+    @Override
+    public AttributedList<Path> initialize() {
+        return AttributedList.emptyList();
     }
 
     @Override
