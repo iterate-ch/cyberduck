@@ -99,6 +99,7 @@ public class CryptoDirectoryProviderTest {
             }
         });
         final CryptoDirectoryProvider provider = new CryptoDirectoryProvider(home, vault);
+        assertNotNull(provider.toEncrypted(session, null, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));
         assertNotNull(provider.toEncrypted(session, null, f));
         assertEquals(provider.toEncrypted(session, null, f), provider.toEncrypted(session, null, f));
