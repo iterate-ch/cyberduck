@@ -20,7 +20,7 @@ Libre FTP, SFTP, WebDAV, S3, Azure and OpenStack Swift browser for Mac and Windo
 
 ## Building
 
-Run `mvn package -DskipTests` to build without running any tests.
+Run `mvn verify -DskipTests` to build without running any tests.
 
 ## Running Tests
 
