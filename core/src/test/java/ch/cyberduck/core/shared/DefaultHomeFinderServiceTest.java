@@ -37,9 +37,13 @@ public class DefaultHomeFinderServiceTest {
     }
 
     @Test
-    public void testDefaultLocalPathWindows() throws Exception {
+    public void testDefaultLocalPathDriveLetter() throws Exception {
         assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
                 new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "C:/Users/example/Documents/vault"));
+    }
+
+    @Test
+    public void testDefaultLocalPathDriveLetterBackwardSlashes() throws Exception {
         assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
                 new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "C:\\Users\\example\\Documents\\vault"));
     }

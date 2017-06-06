@@ -25,7 +25,6 @@ import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.PathDictionary;
 
 import org.apache.commons.lang3.StringUtils;
@@ -84,6 +83,6 @@ public class DefaultHomeFinderService implements Home {
 
     protected String normalize(final String input, final boolean absolute) {
         return PathNormalizer.normalize(StringUtils.replace(input,
-                PreferencesFactory.get().getProperty("local.delimiter"), String.valueOf(Path.DELIMITER)), absolute);
+                String.valueOf("\\"), String.valueOf(Path.DELIMITER)), absolute);
     }
 }
