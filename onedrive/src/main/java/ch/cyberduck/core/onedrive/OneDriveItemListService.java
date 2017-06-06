@@ -65,7 +65,7 @@ public class OneDriveItemListService implements ListService {
                     metadata = iterator.next();
                 }
                 catch(OneDriveRuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage());
                     continue;
                 }
                 final PathAttributes attributes = this.attributes.convert(metadata);
