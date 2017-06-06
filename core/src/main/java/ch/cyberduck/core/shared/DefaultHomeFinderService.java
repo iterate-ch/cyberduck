@@ -25,6 +25,7 @@ import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.PathDictionary;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,20 +65,25 @@ public class DefaultHomeFinderService implements Home {
     public Path find(final Path root, final String path) {
         if(path.startsWith(String.valueOf(Path.DELIMITER))) {
             // Mount absolute path
-            final String normalized = PathNormalizer.normalize(path);
-            return new Path(normalized,
-                    normalized.equals(String.valueOf(Path.DELIMITER)) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+            final String normalized = this.normalize(path, true);
+            return new Path(normalized, normalized.equals(String.valueOf(Path.DELIMITER)) ?
+                    EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
         }
         else {
             if(path.startsWith(Path.HOME)) {
                 // Relative path to the home directory
-                return new Path(root, PathNormalizer.normalize(StringUtils.removeStart(
+                return new Path(root, this.normalize(StringUtils.removeStart(
                         StringUtils.removeStart(path, Path.HOME), String.valueOf(Path.DELIMITER)), false), EnumSet.of(Path.Type.directory));
             }
             else {
                 // Relative path
-                return new Path(root, PathNormalizer.normalize(path, false), EnumSet.of(Path.Type.directory));
+                return new Path(root, this.normalize(path, false), EnumSet.of(Path.Type.directory));
             }
         }
+    }
+
+    protected String normalize(final String input, final boolean absolute) {
+        return PathNormalizer.normalize(StringUtils.replace(input,
+                PreferencesFactory.get().getProperty("local.delimiter"), String.valueOf(Path.DELIMITER)), absolute);
     }
 }
