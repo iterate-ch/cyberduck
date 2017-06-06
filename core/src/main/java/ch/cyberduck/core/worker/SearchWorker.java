@@ -52,8 +52,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
     @Override
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         // Run recursively
-        final Search search = session.getFeature(Search.class);
-        search.withCache(cache);
+        final Search search = session.getFeature(Search.class).withCache(cache);
         return this.search(search, directory);
     }
 
@@ -77,17 +76,6 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             list.removeAll(removal);
         }
         return list;
-    }
-
-    @Override
-    public void cleanup(final AttributedList<Path> list) {
-        if(!(AttributedList.<Path>emptyList() == list)) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Cache search result %s in cache %s", list, cache));
-            }
-            // Cache directory listing
-            cache.put(directory, list);
-        }
     }
 
     @Override
