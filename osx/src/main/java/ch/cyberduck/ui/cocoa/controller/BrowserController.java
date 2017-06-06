@@ -1755,6 +1755,7 @@ public class BrowserController extends WindowController
                                             new SearchWorker(workdir, filenameFilter, cache, listener) {
                                                 @Override
                                                 public void cleanup(final AttributedList<Path> list) {
+                                                    super.cleanup(list);
                                                     // Reload browser
                                                     reload();
                                                 }

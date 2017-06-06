@@ -3159,6 +3159,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
+                    base.cleanup(result);
                     _controller.Reload();
                 }
             }
