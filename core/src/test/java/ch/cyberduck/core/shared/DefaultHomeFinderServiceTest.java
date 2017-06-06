@@ -41,6 +41,6 @@ public class DefaultHomeFinderServiceTest {
         assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
                 new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "C:/Users/example/Documents/vault"));
         assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
-                new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "C:\\Users\\alive\\Documents\\vault"));
+                new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "C:\\Users\\example\\Documents\\vault"));
     }
 }
