@@ -43,6 +43,7 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
             case HttpStatus.SC_UNAUTHORIZED:
                 return new LoginFailureException(buffer.toString(), failure);
             case HttpStatus.SC_FORBIDDEN:
+            case HttpStatus.SC_NOT_ACCEPTABLE:
                 return new AccessDeniedException(buffer.toString(), failure);
             case HttpStatus.SC_CONFLICT:
                 return new ConflictException(buffer.toString(), failure);
