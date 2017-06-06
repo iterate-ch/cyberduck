@@ -20,7 +20,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 
@@ -57,12 +56,9 @@ public class OneDriveSearchFeature implements Search {
                 log.warn(e);
                 continue;
             }
-            final PathAttributes attributes = this.attributes.convert(metadata);
-            final String driveId = metadata.getParentReference().getDriveId();
-            final String parentDrivePath = metadata.getParentReference().getPath();
-            final String parentPath = StringUtils.removeStart(parentDrivePath, "/drive/root:");
-            final String filePath = String.format("/%s/%s/%s", driveId, parentPath, metadata.getName());
-            list.add(new Path(filePath, metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
+            list.add(new Path(String.format("/%s/%s/%s", metadata.getParentReference().getDriveId(), StringUtils.removeStart(metadata.getParentReference().getPath(), "/drive/root:"), metadata.getName()),
+                    metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
+                    attributes.convert(metadata)));
         }
         return list;
     }
