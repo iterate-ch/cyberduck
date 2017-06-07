@@ -53,11 +53,11 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
         return this;
     }
 
-    protected PathAttributes convert(final java.nio.file.Path path) throws IOException {
+    protected PathAttributes convert(final java.nio.file.Path file) throws IOException {
         final boolean isPosix = session.isPosixFilesystem();
         final PathAttributes attributes = new PathAttributes();
         final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
-        final BasicFileAttributes a = Files.readAttributes(path, provider, LinkOption.NOFOLLOW_LINKS);
+        final BasicFileAttributes a = Files.readAttributes(file, provider, LinkOption.NOFOLLOW_LINKS);
         attributes.setSize(a.size());
         attributes.setModificationDate(a.lastModifiedTime().toMillis());
         attributes.setCreationDate(a.creationTime().toMillis());
@@ -66,6 +66,21 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
             attributes.setOwner(((PosixFileAttributes) a).owner().getName());
             attributes.setGroup(((PosixFileAttributes) a).group().getName());
             attributes.setPermission(new Permission(PosixFilePermissions.toString(((PosixFileAttributes) a).permissions())));
+        }
+        else {
+            Permission.Action actions = Permission.Action.none;
+            if(Files.isReadable(file)) {
+                actions.or(Permission.Action.read);
+            }
+            if(Files.isWritable(file)) {
+                actions.or(Permission.Action.write);
+            }
+            if(Files.isExecutable(file)) {
+                actions.or(Permission.Action.execute);
+            }
+            attributes.setPermission(new Permission(
+                    actions, Permission.Action.none, Permission.Action.none
+            ));
         }
         return attributes;
     }
