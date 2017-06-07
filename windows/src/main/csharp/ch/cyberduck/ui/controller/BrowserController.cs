@@ -3160,7 +3160,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object result)
                 {
                     base.cleanup(result);
-                    SetFilter(new RecursiveSearchFilter(result));
+                    SetFilter(new RecursiveSearchFilter((AttributedList)result));
                     _controller.Reload();
                 }
             }
