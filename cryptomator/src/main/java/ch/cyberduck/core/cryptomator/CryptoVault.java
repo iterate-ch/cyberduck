@@ -89,7 +89,8 @@ public class CryptoVault implements Vault {
     /**
      * Root of vault directory
      */
-    private Path home;
+    private final Path home;
+
     private Cryptor cryptor;
 
     private final CryptoFilenameProvider filenameProvider;
@@ -106,7 +107,7 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public synchronized CryptoVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                 FastSecureRandomProvider.get().provide()
         );
@@ -123,7 +124,7 @@ public class CryptoVault implements Vault {
         }
         // Obtain non encrypted directory writer
         final Directory directory = session._getFeature(Directory.class);
-        home = directory.mkdir(home, region, new TransferStatus());
+        final Path vault = directory.mkdir(home, region, new TransferStatus());
         new ContentWriter(session).write(masterKeyFile, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
@@ -135,7 +136,7 @@ public class CryptoVault implements Vault {
         directory.mkdir(dataDir, region, new TransferStatus());
         directory.mkdir(firstLevel, region, new TransferStatus());
         directory.mkdir(secondLevel, region, new TransferStatus());
-        return this;
+        return vault;
     }
 
     @Override

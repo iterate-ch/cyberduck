@@ -34,7 +34,7 @@ public interface Vault {
      * @throws BackgroundException    Failure reading master key from server
      * @throws NotfoundException      No master key file in home
      */
-    Vault create(Session<?> session, String region, final VaultCredentials credentials) throws BackgroundException;
+    Path create(Session<?> session, String region, final VaultCredentials credentials) throws BackgroundException;
 
     /**
      * Open existing vault

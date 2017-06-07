@@ -77,7 +77,8 @@ public class SwiftWriteFeatureTest {
         home.attributes().setRegion("DFW");
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final CryptoWriteFeature<StorageObject> writer = new CryptoWriteFeature<StorageObject>(session, new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator);
         final Cryptor cryptor = cryptomator.getCryptor();
