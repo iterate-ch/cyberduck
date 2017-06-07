@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -32,7 +31,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
-import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -56,9 +54,6 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
 
     private final Preferences preferences
             = PreferencesFactory.get();
-
-    private final PathContainerService containerService
-            = new S3PathContainerService();
 
     private final S3Session session;
 
@@ -118,7 +113,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 distribution.setUrl(URI.create(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container))));
                 distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
                 distribution.setContainers(new S3BucketListService(session).list(
-                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()));
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()).toList());
                 return distribution;
             }
             catch(ServiceException e) {

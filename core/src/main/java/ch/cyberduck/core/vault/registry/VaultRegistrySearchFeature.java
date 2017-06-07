@@ -23,16 +23,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistrySearchFeature implements Search {
+
     private final Session<?> session;
     private final Search proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
     private Cache<Path> cache;
 
-    public VaultRegistrySearchFeature(final Session<?> session, final Search proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistrySearchFeature(final Session<?> session, final Search proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -54,5 +55,13 @@ public class VaultRegistrySearchFeature implements Search {
     public Search withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistrySearchFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -36,7 +36,7 @@ public class LocalTouchFeature implements Touch {
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isFile()) {
             try {
-                Files.createFile(session.getClient().getPath(file.getAbsolute()));
+                Files.createFile(session.toPath(file));
             }
             catch(FileAlreadyExistsException e) {
                 //

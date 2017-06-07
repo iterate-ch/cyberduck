@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -50,7 +51,7 @@ public class DriveFileidProviderTest {
     @Test
     public void testGetFileidRoot() throws Exception {
         assertEquals("root", new DriveFileidProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
-                .getFileid(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+                .getFileid(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
     }
 
     @Test
@@ -78,8 +79,7 @@ public class DriveFileidProviderTest {
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());
-        assertNotNull(new DriveFileidProvider(session)
-                .getFileid(test));
+        assertNotNull(new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

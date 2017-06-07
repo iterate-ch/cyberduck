@@ -23,17 +23,17 @@ import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.Map;
 
 public class VaultRegistryBulkFeature<R> implements Bulk<R> {
 
-    private final DefaultVaultRegistry registry;
     private final Session<?> session;
     private final Bulk<R> proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryBulkFeature(final Session<?> session, final Bulk<R> proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryBulkFeature(final Session<?> session, final Bulk<R> proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -59,5 +59,13 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
         for(Path file : files.keySet()) {
             registry.find(session, file).getFeature(session, Bulk.class, proxy).post(type, files, callback);
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryBulkFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

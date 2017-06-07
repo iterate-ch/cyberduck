@@ -23,6 +23,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Map;
  * Attributes of a remote directory or file.
  */
 public class PathAttributes extends Attributes implements Serializable {
+    private static final Logger log = Logger.getLogger(PathAttributes.class);
 
     public static final PathAttributes EMPTY = new PathAttributes();
 
@@ -87,7 +89,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Should be hidden in the browser by default
      */
-    private boolean duplicate;
+    private Boolean duplicate;
 
     /**
      * Revision number
@@ -109,7 +111,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * HTTP headers
      */
-    private Map<String, String> metadata;
+    private Map<String, String> metadata = Collections.emptyMap();
 
     /**
      * Cryptomator vault
@@ -129,7 +131,32 @@ public class PathAttributes extends Attributes implements Serializable {
     private String directoryId;
 
     public PathAttributes() {
-        metadata = Collections.emptyMap();
+    }
+
+    public PathAttributes(final PathAttributes copy) {
+        size = copy.size;
+        modified = copy.modified;
+        accessed = copy.accessed;
+        created = copy.created;
+        owner = copy.owner;
+        group = copy.group;
+        permission = copy.permission;
+        acl = copy.acl;
+        checksum = copy.checksum;
+        etag = copy.etag;
+        storageClass = copy.storageClass;
+        encryption = copy.encryption;
+        versionId = copy.versionId;
+        duplicate = copy.duplicate;
+        revision = copy.revision;
+        region = copy.region;
+        displayname = copy.displayname;
+        link = copy.link;
+        metadata = copy.metadata;
+        vault = copy.vault;
+        decrypted = copy.decrypted;
+        encrypted = copy.encrypted;
+        directoryId = copy.directoryId;
     }
 
     @Override
@@ -146,7 +173,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(StringUtils.isNotBlank(versionId)) {
             dict.setStringForKey(versionId, "Version");
         }
-        dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
+        if(duplicate != null) {
+            dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
+        }
         if(StringUtils.isNotBlank(region)) {
             dict.setStringForKey(region, "Region");
         }
@@ -154,7 +183,12 @@ public class PathAttributes extends Attributes implements Serializable {
             dict.setStringForKey(storageClass, "Storage Class");
         }
         if(vault != null) {
-            dict.setObjectForKey(vault, "Vault");
+            if(vault.attributes() == this) {
+                log.debug(String.format("Skip serializing vault attribute %s to avoid recursion", vault));
+            }
+            else {
+                dict.setObjectForKey(vault, "Vault");
+            }
         }
         return dict.getSerialized();
     }
@@ -300,6 +334,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.versionId = versionId;
     }
 
+    public PathAttributes withVersionId(final String versionId) {
+        this.setVersionId(versionId);
+        return this;
+    }
+
     public String getDirectoryId() {
         return directoryId;
     }
@@ -356,7 +395,7 @@ public class PathAttributes extends Attributes implements Serializable {
      * @return True if hidden by default.
      */
     public boolean isDuplicate() {
-        return duplicate;
+        return duplicate != null && duplicate;
     }
 
     /**

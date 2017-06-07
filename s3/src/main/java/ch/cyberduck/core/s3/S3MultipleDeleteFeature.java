@@ -112,11 +112,6 @@ public class S3MultipleDeleteFeature implements Delete {
         }
     }
 
-    @Override
-    public boolean isRecursive() {
-        return false;
-    }
-
     /**
      * @param container Bucket
      * @param keys      Key and version ID for versioned object or null
@@ -174,5 +169,15 @@ public class S3MultipleDeleteFeature implements Delete {
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot delete {0}", e, container);
         }
+    }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        return true;
+    }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
     }
 }

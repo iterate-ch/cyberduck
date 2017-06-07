@@ -18,6 +18,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
@@ -82,7 +83,16 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         try {
             final IRODSFileSystem fs = this.configure(IRODSFileSystem.instance());
             final IRODSAccessObjectFactory factory = fs.getIRODSAccessObjectFactory();
-            return factory.getIRODSFileSystemAO(this.account(host.getCredentials()));
+            final String region = this.getRegion();
+            final String resource = this.getResource();
+            final Credentials credentials = host.getCredentials();
+            try {
+                return factory.getIRODSFileSystemAO(new URIEncodingIRODSAccount(credentials.getUsername(), credentials.getPassword(),
+                        new IRODSHomeFinderService(IRODSSession.this).find().getAbsolute(), region, resource));
+            }
+            catch(IllegalArgumentException e) {
+                throw new LoginFailureException(e.getMessage(), e);
+            }
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
@@ -133,26 +143,12 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
             }
             if(!response.isSuccessful()) {
                 throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                        "Login {0} with username and password", "Credentials"), host.getHostname()));
+                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
             }
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
         }
-    }
-
-    protected IRODSAccount account(final Credentials credentials) throws BackgroundException {
-        final String region = this.getRegion();
-        final String resource = this.getResource();
-        final IRODSAccount account;
-        try {
-            account = new URIEncodingIRODSAccount(credentials.getUsername(), credentials.getPassword(),
-                    new IRODSHomeFinderService(IRODSSession.this).find().getAbsolute(), region, resource);
-        }
-        catch(IllegalArgumentException e) {
-            throw new LoginFailureException(e.getMessage(), e);
-        }
-        return account;
     }
 
     @Override

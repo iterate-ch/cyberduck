@@ -18,29 +18,40 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import com.google.api.services.drive.Drive;
+import static com.google.api.client.json.Json.MEDIA_TYPE;
 
 public class DriveReadFeature implements Read {
     private static final Logger log = Logger.getLogger(DriveReadFeature.class);
 
     private final DriveSession session;
 
-    public DriveReadFeature(DriveSession session) {
+    public DriveReadFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -62,7 +73,10 @@ public class DriveReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
-                final Drive.Files.Get request = session.getClient().files().get(new DriveFileidProvider(session).getFileid(file));
+                final String base = session.getClient().getRootUrl();
+                final HttpUriRequest request = new HttpGet(String.format("%s/drive/v3/files/%s?alt=media", base,
+                        new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener())));
+                request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
                     final String header;
@@ -75,11 +89,20 @@ public class DriveReadFeature implements Read {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Add range header %s for file %s", header, file));
                     }
-                    request.getRequestHeaders().setRange(header);
+                    request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
                     // Disable compression
-                    request.getRequestHeaders().setAcceptEncoding("identity");
+                    request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
                 }
-                return request.executeMediaAsInputStream();
+                final HttpClient client = session.getHttpClient();
+                final HttpResponse response = client.execute(request);
+                switch(response.getStatusLine().getStatusCode()) {
+                    case HttpStatus.SC_OK:
+                    case HttpStatus.SC_PARTIAL_CONTENT:
+                        return new HttpMethodReleaseInputStream(response);
+                    default:
+                        throw new DriveExceptionMappingService().map(new HttpResponseException(
+                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                }
             }
         }
         catch(IOException e) {

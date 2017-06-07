@@ -67,7 +67,7 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
             log.warn(String.format("Lookup failed for %s in reverse cache", reference));
             return null;
         }
-        final T[] entries = (T[]) list.toArray(new Referenceable[list.size()]);
+        final T[] entries = list.toArray();
         for(T entry : entries) {
             if(this.key(entry).equals(reference)) {
                 return entry;

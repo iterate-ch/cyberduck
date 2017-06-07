@@ -18,17 +18,23 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
+
 import java.net.URISyntaxException;
+import java.util.EnumSet;
 
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
@@ -61,9 +67,15 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 container.create(options, context);
             }
             else {
-                // Add placeholder object
-                folder.getType().add(Path.Type.placeholder);
-                new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
+                if(Checksum.NONE == status.getChecksum()) {
+                    status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+                }
+                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
+                type.add(Path.Type.placeholder);
+                final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
+                        new PathAttributes(folder.attributes()));
+                new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
+                return placeholder;
             }
         }
         catch(URISyntaxException e) {

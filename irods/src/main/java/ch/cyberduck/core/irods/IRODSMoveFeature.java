@@ -18,7 +18,6 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -61,6 +60,11 @@ public class IRODSMoveFeature implements Move {
     }
 
     @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
     public boolean isSupported(final Path source, final Path target) {
         return true;
     }
@@ -71,8 +75,4 @@ public class IRODSMoveFeature implements Move {
         return this;
     }
 
-    @Override
-    public Move withList(final ListService list) {
-        return this;
-    }
 }

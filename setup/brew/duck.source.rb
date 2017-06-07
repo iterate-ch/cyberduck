@@ -14,7 +14,7 @@ class Duck < Formula
   def install
     ENV.java_cache
     revision = version.to_s.rpartition(".").last
-    system "mvn", "-DskipTests", "-Dgit.commitsCount=#{revision}", "--projects", "cli/osx", "--also-make", "package"
+    system "mvn", "-DskipTests", "-Dgit.commitsCount=#{revision}", "--projects", "cli/osx", "--also-make", "verify"
     libexec.install Dir["cli/osx/target/duck.bundle/*"]
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end

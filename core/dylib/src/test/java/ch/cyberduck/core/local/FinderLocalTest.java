@@ -195,7 +195,7 @@ public class FinderLocalTest {
     @Test(expected = LocalAccessDeniedException.class)
     public void testLockNoSuchFile() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        l.lock();
+        l.lock(false);
     }
 
     @Test
@@ -203,7 +203,7 @@ public class FinderLocalTest {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalTouchFeature().touch(l);
         try {
-            final NSURL lock = l.lock();
+            final NSURL lock = l.lock(false);
             assertNotNull(lock);
             l.release(lock);
         }

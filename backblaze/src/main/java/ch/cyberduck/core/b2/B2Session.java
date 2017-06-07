@@ -33,7 +33,9 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -88,12 +90,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            return new B2BucketListService(this).list(directory, listener);
-        }
-        else {
-            return new B2ObjectListService(this).list(directory, listener);
-        }
+        return new B2ListService(this, new B2FileidProvider(this)).list(directory, listener);
     }
 
     @Override
@@ -121,6 +118,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         }
         if(type == Upload.class) {
             return (T) new B2ThresholdUploadService(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new B2LargeUploadWriteFeature(this);
         }
         if(type == Write.class) {
             return (T) new B2WriteFeature(this);
@@ -154,6 +154,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         }
         if(type == AttributesFinder.class) {
             return (T) new B2AttributesFinderFeature(this);
+        }
+        if(type == Lifecycle.class) {
+            return (T) new B2LifecycleFeature(this);
         }
         return super._getFeature(type);
     }

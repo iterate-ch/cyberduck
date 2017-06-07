@@ -21,6 +21,7 @@ package ch.cyberduck.ui.browser;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -43,6 +44,6 @@ public class DownloadDirectoryFinderTest {
         final Local folder = new Local("~/Documents");
         folder.mkdir();
         host.setDownloadFolder(folder);
-        assertEquals("~/Documents", finder.find(host).getAbbreviatedPath());
+        assertEquals(String.format("~%sDocuments", PreferencesFactory.get().getProperty("local.delimiter")), finder.find(host).getAbbreviatedPath());
     }
 }

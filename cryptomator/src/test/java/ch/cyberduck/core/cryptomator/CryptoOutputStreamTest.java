@@ -15,20 +15,18 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -74,12 +72,7 @@ public class CryptoOutputStreamTest {
             }
         };
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
-        vault.create(session, null, new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("pwd");
-            }
-        });
+        vault.create(session, null, new VaultCredentials("test"));
         return vault;
     }
 
@@ -93,7 +86,7 @@ public class CryptoOutputStreamTest {
             public Void getStatus() throws BackgroundException {
                 return null;
             }
-        }, vault.getCryptor(), header);
+        }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
 
         final byte[] part1 = RandomUtils.nextBytes(1024);
         final byte[] part2 = RandomUtils.nextBytes(1024);
@@ -103,7 +96,7 @@ public class CryptoOutputStreamTest {
 
         final byte[] read = new byte[part1.length + part2.length];
         final byte[] expected = ByteBuffer.allocate(part1.length + part2.length).put(part1).put(part2).array();
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header, 0);
         assertEquals(expected.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
@@ -120,14 +113,14 @@ public class CryptoOutputStreamTest {
             public Void getStatus() throws BackgroundException {
                 return null;
             }
-        }, vault.getCryptor(), header);
+        }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
 
         final byte[] cleartext = RandomUtils.nextBytes(vault.getCryptor().fileContentCryptor().cleartextChunkSize());
         stream.write(cleartext, 0, cleartext.length);
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header, 0);
         assertEquals(cleartext.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
@@ -144,14 +137,14 @@ public class CryptoOutputStreamTest {
             public Void getStatus() throws BackgroundException {
                 return null;
             }
-        }, vault.getCryptor(), header);
+        }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
 
         final byte[] cleartext = RandomUtils.nextBytes(vault.getCryptor().fileContentCryptor().cleartextChunkSize() + 1);
         stream.write(cleartext, 0, cleartext.length);
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header, 0);
         IOUtils.readFully(cryptoInputStream, read);
         cryptoInputStream.close();
 

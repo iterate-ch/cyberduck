@@ -158,9 +158,9 @@ public class SheetInvoker extends ProxyController {
      * @param returncode  Identifier for the button clicked by the user
      * @param contextInfo Not used
      */
-    public void sheetDidClose_returnCode_contextInfo(final NSWindow sheet, final int returncode, ID contextInfo) {
+    public void sheetDidClose_returnCode_contextInfo(final NSWindow sheet, final int returncode, final ID contextInfo) {
         sheet.endEditingFor(null);
-        sheet.close();
+        sheet.orderOut(contextInfo);
         this.returncode = returncode;
         callback.callback(returncode);
         signal.countDown();

@@ -34,6 +34,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
+import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -48,9 +49,10 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.kms.AWSKMSClient;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.services.kms.AWSKMS;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.AliasListEntry;
 import com.amazonaws.services.kms.model.KeyListEntry;
 
@@ -65,6 +67,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             = new S3PathContainerService();
 
     private final ClientConfiguration configuration;
+
+    private final S3LocationFeature locationFeature;
 
     public KMSEncryptionFeature(final S3Session session) {
         this(session, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
@@ -88,6 +92,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                 configuration.setProxyHost(proxy.getHostname());
                 configuration.setProxyPort(proxy.getPort());
         }
+        locationFeature = new S3LocationFeature(session);
     }
 
     private interface Authenticated<T> extends Callable<T> {
@@ -155,9 +160,9 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
                 @Override
                 public Set<Algorithm> call() throws BackgroundException {
-                    // Create new IAM credentials
-                    final AWSKMSClient client = new AWSKMSClient(
-                            new com.amazonaws.auth.AWSCredentials() {
+                    final Location.Name region = locationFeature.getLocation(container);
+                    final AWSKMS client = AWSKMSClientBuilder.standard()
+                            .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
                                 @Override
                                 public String getAWSAccessKeyId() {
                                     return session.getHost().getCredentials().getUsername();
@@ -167,16 +172,9 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                                 public String getAWSSecretKey() {
                                     return session.getHost().getCredentials().getPassword();
                                 }
-                            }, configuration
-                    );
-                    final Location feature = session.getFeature(Location.class);
-                    final Location.Name region = feature.getLocation(container);
-                    try {
-                        client.setRegion(Region.getRegion(Regions.fromName(region.getIdentifier())));
-                    }
-                    catch(IllegalArgumentException ignored) {
-                        log.warn(String.format("Unknown region %s", region.getIdentifier()));
-                    }
+                            }))
+                            .withClientConfiguration(configuration)
+                            .withRegion(region.getIdentifier()).build();
                     try {
                         final Map<String, String> aliases = new HashMap<String, String>();
                         for(AliasListEntry entry : client.listAliases().getAliases()) {

@@ -59,13 +59,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      */
     public Path(final Path parent, final String name, final EnumSet<Type> type) {
         this.type = type;
-        // Inherit parent types
-        if(parent.getType().contains(Type.encrypted)) {
-            this.type.add(Type.encrypted);
-        }
-        if(parent.getType().contains(Type.decrypted)) {
-            this.type.add(Type.decrypted);
-        }
         this.attributes = new PathAttributes();
         this.attributes.setRegion(parent.attributes.getRegion());
         this._setPath(parent, name);
@@ -232,7 +225,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      */
     @Override
     public int hashCode() {
-        return new DefaultPathReference(this).hashCode();
+        return new DefaultPathPredicate(this).hashCode();
     }
 
     /**
@@ -245,7 +238,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
             return false;
         }
         if(other instanceof Path) {
-            return new DefaultPathReference(this).equals(new DefaultPathReference((Path) other));
+            return new DefaultPathPredicate(this).equals(new DefaultPathPredicate((Path) other));
         }
         return false;
     }

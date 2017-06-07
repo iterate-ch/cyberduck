@@ -21,6 +21,7 @@ import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -35,11 +36,17 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
+import org.apache.ftpserver.ftplet.Authority;
 import org.apache.ftpserver.ftplet.FtpException;
+import org.apache.ftpserver.ftplet.UserManager;
 import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
+import org.apache.ftpserver.usermanager.impl.BaseUser;
+import org.apache.ftpserver.usermanager.impl.ConcurrentLoginPermission;
+import org.apache.ftpserver.usermanager.impl.WritePermission;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -52,6 +59,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class ConcurrentTransferWorkerTest {
 
     private static int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
@@ -91,9 +99,19 @@ public class ConcurrentTransferWorkerTest {
     @BeforeClass
     public static void start() throws Exception {
         final FtpServerFactory serverFactory = new FtpServerFactory();
-        final PropertiesUserManagerFactory userManager = new PropertiesUserManagerFactory();
-        userManager.setUrl(ConcurrentTransferWorkerTest.class.getResource("/ftpserver-user.properties"));
-        serverFactory.setUserManager(userManager.createUserManager());
+        final PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
+        userManagerFactory.setUrl(ConcurrentTransferWorkerTest.class.getResource("/ftpserver-user.properties"));
+        final UserManager userManager = userManagerFactory.createUserManager();
+        BaseUser user = new BaseUser();
+        user.setName("test");
+        user.setPassword("test");
+        user.setHomeDirectory(new TemporaryApplicationResourcesFinder().find().getAbsolute());
+        List<Authority> authorities = new ArrayList<Authority>();
+        authorities.add(new WritePermission());
+        authorities.add(new ConcurrentLoginPermission(2, Integer.MAX_VALUE));
+        user.setAuthorities(authorities);
+        userManager.save(user);
+        serverFactory.setUserManager(userManager);
         final ListenerFactory factory = new ListenerFactory();
         factory.setPort(PORT_NUMBER);
         serverFactory.addListener("default", factory.createListener());

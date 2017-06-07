@@ -14,6 +14,7 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -37,15 +38,15 @@ public class AzureObjectListServiceTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        final Path directory = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path directory = new AzureDirectoryFeature(session, null).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureDirectoryFeature(session, null).mkdir(directory, null, new TransferStatus());
         assertTrue(new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener()).isEmpty());
         new AzureTouchFeature(session, null).touch(file, new TransferStatus());
         final AttributedList<Path> list = new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(1, list.size());
         assertTrue(list.contains(file));
+        assertEquals(HashAlgorithm.md5, list.get(0).attributes().getChecksum().algorithm);
         new AzureDeleteFeature(session, null).delete(Arrays.<Path>asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

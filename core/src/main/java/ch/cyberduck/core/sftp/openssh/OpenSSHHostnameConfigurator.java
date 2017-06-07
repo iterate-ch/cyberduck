@@ -69,6 +69,11 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
     }
 
     @Override
+    public void reload() {
+        configuration.refresh();
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("OpenSSHHostnameConfigurator{");
         sb.append("configuration=").append(configuration);

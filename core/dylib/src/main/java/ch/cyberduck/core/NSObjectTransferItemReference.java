@@ -36,7 +36,7 @@ public class NSObjectTransferItemReference implements CacheReference<TransferIte
 
     public static NSObject get(final Path file) {
         if(!cache.containsKey(file)) {
-            cache.put(file, NSString.stringWithString(new DefaultPathReference(file).toString()));
+            cache.put(file, NSString.stringWithString(new DefaultPathPredicate(file).toString()));
         }
         return cache.get(file);
     }
@@ -69,5 +69,10 @@ public class NSObjectTransferItemReference implements CacheReference<TransferIte
         sb.append("hashCode=").append(hashCode);
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public boolean test(final TransferItem item) {
+        return hashCode == item.hashCode();
     }
 }

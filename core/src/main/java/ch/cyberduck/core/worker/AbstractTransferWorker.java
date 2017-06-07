@@ -36,6 +36,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
+import ch.cyberduck.core.threading.TransferBackgroundActionState;
+import ch.cyberduck.core.transfer.SynchronizingTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -127,7 +129,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         this.options = options;
         this.prompt = prompt;
         this.meter = meter;
-        this.error = error;
+        this.error = new SynchronizingTransferErrorCallback(error);
         this.progress = progress;
         this.stream = stream;
         this.callback = callback;
@@ -238,7 +240,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             return this.submit(new RetryTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
-                    if(AbstractTransferWorker.this.isCanceled()) {
+                    if(parent.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
                     Session<?> source = null;
@@ -297,10 +299,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         throw e;
                     }
                     catch(BackgroundException e) {
-                        if(isCanceled()) {
-                            throw new ConnectionCanceledException(e);
-                        }
-                        if(this.retry(e, progress, parent)) {
+                        if(this.retry(e, progress, new TransferBackgroundActionState(parent))) {
                             // Retry immediately
                             return call();
                         }
@@ -372,11 +371,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         try {
                             source = borrow(Connection.source);
                             destination = borrow(Connection.destination);
-                            transfer.transfer(source, destination,
+                            item.remote = transfer.transfer(source, destination,
                                     segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                     segment.getRename().local != null ? segment.getRename().local : item.local,
                                     options, segment, callback, progress, stream);
-
                             // Recursive
                             if(item.remote.isDirectory()) {
                                 for(TransferItem f : cache.get(item)) {
@@ -403,14 +401,14 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             throw e;
                         }
                         catch(BackgroundException e) {
-                            segment.setFailure();
-                            if(AbstractTransferWorker.this.isCanceled()) {
-                                throw new ConnectionCanceledException(e);
-                            }
-                            if(this.retry(e, progress, segment)) {
+                            if(this.retry(e, progress, new TransferBackgroundActionState(status))) {
+                                // Set retry count to make multipart uploads search for existing segments
+                                segment.setRetry(this.getCount());
                                 // Retry immediately
+                                log.info(String.format("Retry %s with transfer status %s", item, segment));
                                 return call();
                             }
+                            segment.setFailure();
                             if(table.size() == 1) {
                                 throw e;
                             }

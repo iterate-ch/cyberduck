@@ -76,7 +76,6 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
@@ -375,16 +374,9 @@ public class InfoController extends ToolbarWindowController {
                 }
                 break;
             case s3:
-                if(session.getHost().getProtocol().getType() == Protocol.Type.s3) {
-                    // Set icon of cloud service provider
-                    item.setLabel(session.getHost().getProtocol().getName());
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
-                }
-                else {
-                    // Currently these settings are only available for Amazon S3
-                    item.setLabel(new S3Protocol().getName());
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(new S3Protocol().disk(), 32));
-                }
+                // Set icon of cloud service provider
+                item.setLabel(session.getHost().getProtocol().getName());
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
                 break;
             case metadata:
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
@@ -423,6 +415,7 @@ public class InfoController extends ToolbarWindowController {
                     return false;
                 }
                 return session.getHost().getProtocol().getType() == Protocol.Type.s3
+                        || session.getHost().getProtocol().getType() == Protocol.Type.b2
                         || session.getHost().getProtocol().getType() == Protocol.Type.azure
                         || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             case metadata:
@@ -452,42 +445,6 @@ public class InfoController extends ToolbarWindowController {
         this.files = files;
         this.initializePanel(this.getSelectedTab());
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
-    }
-
-    @Override
-    public void awakeFromNib() {
-        this.ownerr.setTarget(this.id());
-        final Selector s = Foundation.selector("permissionSelectionChanged:");
-        this.ownerr.setAction(s);
-        this.ownerr.setAllowsMixedState(true);
-        this.ownerw.setTarget(this.id());
-        this.ownerw.setAction(s);
-        this.ownerw.setAllowsMixedState(true);
-        this.ownerx.setTarget(this.id());
-        this.ownerx.setAction(s);
-        this.ownerx.setAllowsMixedState(true);
-
-        this.groupr.setTarget(this.id());
-        this.groupr.setAction(s);
-        this.groupr.setAllowsMixedState(true);
-        this.groupw.setTarget(this.id());
-        this.groupw.setAction(s);
-        this.groupw.setAllowsMixedState(true);
-        this.groupx.setTarget(this.id());
-        this.groupx.setAction(s);
-        this.groupx.setAllowsMixedState(true);
-
-        this.otherr.setTarget(this.id());
-        this.otherr.setAction(s);
-        this.otherr.setAllowsMixedState(true);
-        this.otherw.setTarget(this.id());
-        this.otherw.setAction(s);
-        this.otherw.setAllowsMixedState(true);
-        this.otherx.setTarget(this.id());
-        this.otherx.setAction(s);
-        this.otherx.setAllowsMixedState(true);
-
-        super.awakeFromNib();
     }
 
     @Override
@@ -1401,38 +1358,65 @@ public class InfoController extends ToolbarWindowController {
 
     public void setOwnerr(NSButton ownerr) {
         this.ownerr = ownerr;
+        this.ownerr.setTarget(this.id());
+        this.ownerr.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.ownerr.setAllowsMixedState(true);
     }
 
     public void setOwnerw(NSButton ownerw) {
         this.ownerw = ownerw;
+        this.ownerw.setTarget(this.id());
+        this.ownerw.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.ownerw.setAllowsMixedState(true);
     }
 
     public void setOwnerx(NSButton ownerx) {
         this.ownerx = ownerx;
+        this.ownerx.setTarget(this.id());
+        this.ownerx.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.ownerx.setAllowsMixedState(true);
     }
 
     public void setGroupr(NSButton groupr) {
         this.groupr = groupr;
+        this.groupr.setTarget(this.id());
+        this.groupr.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.groupr.setAllowsMixedState(true);
     }
 
     public void setGroupw(NSButton groupw) {
         this.groupw = groupw;
+        this.groupw.setTarget(this.id());
+        this.groupw.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.groupw.setAllowsMixedState(true);
     }
 
     public void setGroupx(NSButton groupx) {
         this.groupx = groupx;
+        this.groupx.setTarget(this.id());
+        this.groupx.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.groupx.setAllowsMixedState(true);
     }
 
     public void setOtherr(NSButton otherr) {
         this.otherr = otherr;
+        this.otherr.setTarget(this.id());
+        this.otherr.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.otherr.setAllowsMixedState(true);
     }
 
     public void setOtherw(NSButton otherw) {
         this.otherw = otherw;
+        this.otherw.setTarget(this.id());
+        this.otherw.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.otherw.setAllowsMixedState(true);
     }
 
     public void setOtherx(NSButton otherx) {
         this.otherx = otherx;
+        this.otherx.setTarget(this.id());
+        this.otherx.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.otherx.setAllowsMixedState(true);
     }
 
     public void setIconImageView(NSImageView iconImageView) {
@@ -1708,6 +1692,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
+                || session.getHost().getProtocol().getType() == Protocol.Type.b2
                 || session.getHost().getProtocol().getType() == Protocol.Type.azure
                 || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
         if(enable) {

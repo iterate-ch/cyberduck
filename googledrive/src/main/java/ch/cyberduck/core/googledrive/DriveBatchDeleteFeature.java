@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,7 +39,7 @@ public class DriveBatchDeleteFeature implements Delete {
 
     private final DriveSession session;
 
-    public DriveBatchDeleteFeature(DriveSession session) {
+    public DriveBatchDeleteFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -48,7 +49,7 @@ public class DriveBatchDeleteFeature implements Delete {
         final List<BackgroundException> failures = new ArrayList<>();
         for(Path file : files) {
             try {
-                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file))
+                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener()))
                         .queue(batch, new JsonBatchCallback<Void>() {
                             @Override
                             public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) throws IOException {
@@ -76,6 +77,11 @@ public class DriveBatchDeleteFeature implements Delete {
         for(BackgroundException e : failures) {
             throw e;
         }
+    }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        return true;
     }
 
     @Override

@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,6 +27,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -64,7 +66,7 @@ public class B2LargeUploadPartService {
             do {
                 final B2ListFilesResponse chunk;
                 chunk = session.getClient().listUnfinishedLargeFiles(
-                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)), startFileId, null);
+                        new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()), startFileId, null);
                 for(B2FileInfoResponse upload : chunk.getFiles()) {
                     if(file.isDirectory()) {
                         final Path parent = new Path(containerService.getContainer(file), upload.getFileName(),
@@ -91,6 +93,12 @@ public class B2LargeUploadPartService {
                 }
             }
             // Uploads are listed in the order they were started, with the oldest one first
+            Collections.sort(uploads, new Comparator<B2FileInfoResponse>() {
+                @Override
+                public int compare(final B2FileInfoResponse o1, final B2FileInfoResponse o2) {
+                    return o1.getUploadTimestamp().compareTo(o2.getUploadTimestamp());
+                }
+            });
             Collections.reverse(uploads);
             return uploads;
         }

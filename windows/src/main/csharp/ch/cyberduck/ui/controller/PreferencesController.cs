@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,6 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
@@ -45,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly string ForFiles = LocaleFactory.localizedString("for Files", "Preferences");
         private static readonly string ForFolders = LocaleFactory.localizedString("for Folders", "Preferences");
-        private static readonly Logger Log = Logger.getLogger(typeof (PreferencesController).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(PreferencesController).FullName);
 
         private static readonly KeyValueIconTriple<Host, string> NoneBookmark =
             new KeyValueIconTriple<Host, string>(null, LocaleFactory.localizedString("None"), null);
@@ -774,7 +773,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_UseKeychainChangedEvent()
         {
-            PreferencesFactory.get().setProperty("connection.login.useKeychain", View.UseKeychain);
+            PreferencesFactory.get().setProperty("connection.login.keychain", View.UseKeychain);
         }
 
         private void View_DefaultBookmarkChangedEvent()
@@ -847,7 +846,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ViewClosedEvent += delegate { BookmarkCollection.defaultCollection().removeListener(this); };
             SelectDefaultBookmark(PreferencesFactory.get().getProperty("browser.open.bookmark.default"));
             View.ConfirmDisconnect = PreferencesFactory.get().getBoolean("browser.confirmDisconnect");
-            View.UseKeychain = PreferencesFactory.get().getBoolean("connection.login.useKeychain");
+            View.UseKeychain = PreferencesFactory.get().getBoolean("connection.login.keychain");
             PopulateDefaultProtocols();
             View.DefaultProtocol =
                 ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default"));
@@ -1162,7 +1161,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultProtocols()
         {
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
-            foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] {}))
+            foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getProvider()));
             }
@@ -1194,11 +1193,12 @@ namespace Ch.Cyberduck.Ui.Controller
             bool defaultEditorAdded = false;
 
             foreach (Application editor in Utils.ConvertFromJavaList<Application>(EditorFactory.instance().getEditors())
-                )
+            )
             {
                 if (ApplicationFinderFactory.get().isInstalled(editor))
                 {
-                    editors.Add(new KeyValueIconTriple<Application, string>(editor, editor.getName(), editor.getName()));
+                    editors.Add(
+                        new KeyValueIconTriple<Application, string>(editor, editor.getName(), editor.getName()));
                     if (defaultEditorLocation != null && editor.getIdentifier().Equals(defaultEditorLocation))
                     {
                         defaultEditorAdded = true;

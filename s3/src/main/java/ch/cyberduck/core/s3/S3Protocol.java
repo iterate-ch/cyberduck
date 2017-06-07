@@ -41,7 +41,7 @@ public final class S3Protocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return LocaleFactory.localizedString("S3 (Amazon Simple Storage Service)", "S3");
+        return LocaleFactory.localizedString("Amazon S3", "S3");
     }
 
     @Override

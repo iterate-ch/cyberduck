@@ -24,6 +24,7 @@ import java.util.List;
 public interface Delete {
     void delete(List<Path> files, LoginCallback prompt, Callback callback) throws BackgroundException;
 
+    boolean isSupported(final Path file);
     boolean isRecursive();
 
     interface Callback {

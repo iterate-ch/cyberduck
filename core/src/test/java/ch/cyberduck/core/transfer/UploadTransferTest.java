@@ -141,11 +141,12 @@ public class UploadTransferTest {
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertEquals(true, options.resumeRequested);
+                return file;
             }
         };
         final TransferOptions options = new TransferOptions();
@@ -204,11 +205,12 @@ public class UploadTransferTest {
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 //
+                return file;
             }
         };
         new SingleTransferWorker(session, null, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -343,6 +345,11 @@ public class UploadTransferTest {
                         }
 
                         @Override
+                        public boolean isRecursive(final Path source, final Path target) {
+                            return true;
+                        }
+
+                        @Override
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
@@ -352,10 +359,6 @@ public class UploadTransferTest {
                             return this;
                         }
 
-                        @Override
-                        public Move withList(final ListService list) {
-                            return this;
-                        }
                     };
                 }
                 if(type.equals(AttributesFinder.class)) {
@@ -413,12 +416,13 @@ public class UploadTransferTest {
         LocalTouchFactory.get().touch(local);
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
-            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertEquals(table.get(test).getRename().remote, file);
                 status.setComplete();
                 set.set(true);
+                return file;
             }
 
             @Override

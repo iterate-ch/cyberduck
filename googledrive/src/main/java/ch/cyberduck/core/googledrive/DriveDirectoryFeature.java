@@ -15,7 +15,9 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -31,7 +33,7 @@ public class DriveDirectoryFeature implements Directory<Void> {
 
     private final DriveSession session;
 
-    public DriveDirectoryFeature(DriveSession session) {
+    public DriveDirectoryFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -42,13 +44,14 @@ public class DriveDirectoryFeature implements Directory<Void> {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(folder.getName())
                     .setMimeType("application/vnd.google-apps.folder")
-                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(folder.getParent()))));
-            insert.execute();
+                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(folder.getParent(), new DisabledListProgressListener()))));
+            final File execute = insert.execute();
+            return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                    new PathAttributes(folder.attributes()).withVersionId(execute.getId()));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
-        return folder;
     }
 
     @Override

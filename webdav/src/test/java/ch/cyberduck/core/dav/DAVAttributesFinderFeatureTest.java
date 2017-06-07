@@ -51,7 +51,7 @@ public class DAVAttributesFinderFeatureTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
+        final Path test = new Path("/trunk/LICENSE", EnumSet.of(Path.Type.file));
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(923, attributes.getSize());
@@ -59,7 +59,7 @@ public class DAVAttributesFinderFeatureTest {
         assertNotNull(attributes.getETag());
         // Test wrong type
         try {
-            f.find(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory)));
+            f.find(new Path("/trunk/LICENSE", EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {

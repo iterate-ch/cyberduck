@@ -54,7 +54,7 @@ public class SwiftCopyFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftCopyFeature(session).copy(test, copy);
+        new SwiftCopyFeature(session).copy(test, copy, new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(copy));
         new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());

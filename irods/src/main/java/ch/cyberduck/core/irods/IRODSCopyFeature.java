@@ -18,6 +18,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -39,13 +40,13 @@ public class IRODSCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy) throws BackgroundException {
+    public void copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
                     .getDataTransferOperations(fs.getIRODSAccount());
             transfer.copy(fs.getIRODSFileFactory().instanceIRODSFile(source.getAbsolute()),
-                    fs.getIRODSFileFactory().instanceIRODSFile(copy.getAbsolute()), new TransferStatusCallbackListener() {
+                    fs.getIRODSFileFactory().instanceIRODSFile(target.getAbsolute()), new TransferStatusCallbackListener() {
                         @Override
                         public FileStatusCallbackResponse statusCallback(final TransferStatus transferStatus) throws JargonException {
                             return FileStatusCallbackResponse.CONTINUE;
@@ -65,5 +66,20 @@ public class IRODSCopyFeature implements Copy {
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot copy {0}", e, source);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
+    public Copy withTarget(final Session<?> session) {
+        return this;
     }
 }

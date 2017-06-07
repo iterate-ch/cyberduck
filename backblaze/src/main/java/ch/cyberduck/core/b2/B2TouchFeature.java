@@ -18,16 +18,20 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 
 import java.util.Collections;
 
+import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
@@ -42,13 +46,17 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+        if(Checksum.NONE == status.getChecksum()) {
+            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+        }
         status.setMime(new MappingMimeTypeService().getMime(file.getName()));
         status.setMetadata(Collections.singletonMap(
                 X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()))
         );
-        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
-        return file;
+        final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
+        new DefaultStreamCloser().close(out);
+        return new Path(file.getParent(), file.getName(), file.getType(),
+                new PathAttributes(file.attributes()).withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
     }
 
     @Override

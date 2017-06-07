@@ -70,7 +70,7 @@ public class StatelessSessionPool implements SessionPool {
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
         synchronized(lock) {
-            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+            if(failure != null && diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
                 connect.close(conn);
             }
         }

@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -62,15 +63,16 @@ public class DeleteWorker extends Worker<List<Path>> {
 
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
+        final Delete delete = session.getFeature(Delete.class);
+        final ListService list = session.getFeature(ListService.class);
         final List<Path> recursive = new ArrayList<Path>();
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            recursive.addAll(this.compile(session, file));
+            recursive.addAll(this.compile(delete, list, new ActionListProgressListener(this, listener), file));
         }
-        final Delete feature = session.getFeature(Delete.class);
-        feature.delete(recursive, prompt, new Delete.Callback() {
+        delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
@@ -80,24 +82,27 @@ public class DeleteWorker extends Worker<List<Path>> {
         return recursive;
     }
 
-    protected List<Path> compile(final Session<?> session, final Path file) throws BackgroundException {
+    protected List<Path> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
         final List<Path> recursive = new ArrayList<Path>();
         if(file.isFile() || file.isSymbolicLink()) {
-            recursive.add(file);
+            if(delete.isSupported(file)) {
+                recursive.add(file);
+            }
         }
         else if(file.isDirectory()) {
-            final Delete feature = session.getFeature(Delete.class);
-            if(!feature.isRecursive()) {
-                for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener)).filter(filter)) {
+            if(!delete.isRecursive()) {
+                for(Path child : list.list(file, listener).filter(filter)) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
-                    recursive.addAll(this.compile(session, child));
+                    recursive.addAll(this.compile(delete, list, listener, child));
                 }
             }
-            // Add parent after children
-            recursive.add(file);
+            if(delete.isSupported(file)) {
+                // Add parent after children
+                recursive.add(file);
+            }
         }
         return recursive;
     }

@@ -16,7 +16,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultPathReference;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullFilter;
@@ -94,8 +94,8 @@ public class SearchWorkerTest {
         assertTrue(cache.get(new Path("/folder", EnumSet.of(Path.Type.directory))).contains(
                 new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
 
-        assertNotNull(cache.lookup(new DefaultPathReference(new Path("/folder", EnumSet.of(Path.Type.directory)))));
-        assertNotNull(cache.lookup(new DefaultPathReference(new Path("/t1.png", EnumSet.of(Path.Type.file)))));
-        assertNotNull(cache.lookup(new DefaultPathReference(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file)))));
+        assertNotNull(cache.lookup(new DefaultPathPredicate(new Path("/folder", EnumSet.of(Path.Type.directory)))));
+        assertNotNull(cache.lookup(new DefaultPathPredicate(new Path("/t1.png", EnumSet.of(Path.Type.file)))));
+        assertNotNull(cache.lookup(new DefaultPathPredicate(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file)))));
     }
 }

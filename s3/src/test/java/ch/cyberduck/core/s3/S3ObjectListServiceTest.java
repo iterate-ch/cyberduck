@@ -33,7 +33,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -68,7 +67,7 @@ public class S3ObjectListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
+        final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
             assertEquals("us-east-1", p.attributes().getRegion());
@@ -92,7 +91,7 @@ public class S3ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
                 new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         session.close();
@@ -194,9 +193,8 @@ public class S3ObjectListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(placeholder, null, new TransferStatus());
-        placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -215,9 +213,8 @@ public class S3ObjectListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path placeholder = new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(placeholder, null, new TransferStatus());
-        placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+                new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -236,9 +233,8 @@ public class S3ObjectListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path placeholder = new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(placeholder, null, new TransferStatus());
-        placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+                new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -257,9 +253,8 @@ public class S3ObjectListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path placeholder = new Path(container, String.format("%s@", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(placeholder, null, new TransferStatus());
-        placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+                new Path(container, String.format("%s@", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -354,7 +349,7 @@ public class S3ObjectListServiceTest {
                     }
                 });
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(),
-                new KeychainX509KeyManager(host, new DisabledCertificateStore()), new DisabledProxyFinder());
+                new KeychainX509KeyManager(host, new DisabledCertificateStore()));
         session.open(new DisabledHostKeyCallback());
         new S3ObjectListService(session).list(
                 new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());

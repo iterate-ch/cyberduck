@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -79,10 +80,13 @@ public class SFTPListServiceTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+        final String target = new AlphanumericRandomStringService().random();
+        new SFTPSymlinkFeature(session).symlink(file, target);
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
-        assertTrue(list.contains(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink))));
-        assertEquals(new Path(home, "test.symlink-invalid", EnumSet.of(Path.Type.file)),
-                list.get(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink))).getSymlinkTarget());
+        assertTrue(list.contains(file));
+        assertEquals(new Path(home, target, EnumSet.of(Path.Type.file)), list.get(file).getSymlinkTarget());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

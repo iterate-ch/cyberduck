@@ -44,6 +44,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatter;
@@ -65,6 +66,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
+import ch.cyberduck.ui.cocoa.controller.CopyController;
 import ch.cyberduck.ui.cocoa.controller.DeleteController;
 import ch.cyberduck.ui.cocoa.controller.MoveController;
 
@@ -374,8 +376,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(pasteboard.isEmpty()) {
                     continue;
                 }
-                if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()
-                        || pasteboard.getBookmark().compareTo(controller.getSession().getHost()) != 0) {
+                if(pasteboard.getBookmark().compareTo(controller.getSession().getHost()) != 0) {
                     // Drag to browser windows with different session or explicit copy requested by user.
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path file : pasteboard) {
@@ -385,12 +386,20 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     controller.transfer(new CopyTransfer(pasteboard.getBookmark(), target, files),
                             new ArrayList<Path>(files.values()), false);
                 }
+                else if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+                    // The file should be copied
+                    final Map<Path, Path> files = new HashMap<Path, Path>();
+                    for(Path next : pasteboard) {
+                        Path renamed = new Path(destination, next.getName(), next.getType());
+                        files.put(next, renamed);
+                    }
+                    new CopyController(controller).copy(files);
+                }
                 else {
                     // The file should be renamed
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard) {
-                        Path renamed = new Path(
-                                destination, next.getName(), next.getType());
+                        final Path renamed = new Path(destination, next.getName(), next.getType());
                         files.put(next, renamed);
                     }
                     new MoveController(controller).rename(files);
@@ -491,6 +500,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     return NSDraggingInfo.NSDragOperationMove;
                 }
                 else {
+                    for(Path file : pasteboard) {
+                        if(!controller.getSession().getFeature(Copy.class).isSupported(file, destination)) {
+                            return NSDraggingInfo.NSDragOperationNone;
+                        }
+                    }
                     // If copying between sessions is supported
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
@@ -612,7 +626,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     if(!file.exists()) {
                         try {
                             LocalTouchFactory.get().touch(file);
-                            IconServiceFactory.get().set(file, new TransferStatus());
+                            IconServiceFactory.get().set(file, new TransferStatus().length(0L));
                         }
                         catch(AccessDeniedException e) {
                             log.warn(String.format("Failure creating file %s %s", file, e.getMessage()));

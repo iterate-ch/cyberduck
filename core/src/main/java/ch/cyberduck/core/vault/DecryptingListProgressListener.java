@@ -46,6 +46,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
         for(int i = index; i < list.size(); i++) {
             final Path f = list.get(i);
             try {
+                f.getType().add(Path.Type.encrypted);
                 list.set(i, vault.decrypt(session, f));
             }
             catch(BackgroundException e) {

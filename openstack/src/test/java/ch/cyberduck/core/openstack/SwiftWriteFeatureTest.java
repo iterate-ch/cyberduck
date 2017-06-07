@@ -122,9 +122,9 @@ public class SwiftWriteFeatureTest {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
                 list.set(true);
-                final Path segment1 = new Path(container, segments.name(file, 0L, 1), EnumSet.of(Path.Type.file));
+                final Path segment1 = segments.getSegment(file, 0L, 1);
                 segment1.attributes().setSize(1L);
-                final Path segment2 = new Path(container, segments.name(file, 0L, 2), EnumSet.of(Path.Type.file));
+                final Path segment2 = segments.getSegment(file, 0L, 2);
                 segment2.attributes().setSize(2L);
                 return new AttributedList<Path>(Arrays.asList(segment1, segment2));
             }

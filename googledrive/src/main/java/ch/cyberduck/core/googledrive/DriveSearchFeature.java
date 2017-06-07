@@ -21,18 +21,30 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Search;
 
 public class DriveSearchFeature implements Search {
     private DriveSession session;
+    private DriveFileidProvider fileid;
 
     public DriveSearchFeature(final DriveSession session) {
+        this(session, new DriveFileidProvider(session));
+    }
+
+    public DriveSearchFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
-        return new DriveSearchListService(session, regex.toPattern().pattern()).list(workdir, listener);
+        try {
+            return new DriveSearchListService(session, regex.toPattern().pattern()).list(workdir, listener);
+        }
+        catch(NotfoundException e) {
+            return AttributedList.emptyList();
+        }
     }
 
     @Override
@@ -42,6 +54,7 @@ public class DriveSearchFeature implements Search {
 
     @Override
     public Search withCache(final Cache<Path> cache) {
+        fileid.withCache(cache);
         return this;
     }
 }

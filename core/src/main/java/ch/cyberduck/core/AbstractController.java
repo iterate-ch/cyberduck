@@ -23,6 +23,7 @@ import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.DefaultBackgroundExecutor;
 import ch.cyberduck.core.threading.MainAction;
 
+import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.Future;
@@ -70,6 +71,10 @@ public abstract class AbstractController implements Controller {
      */
     @Override
     public <T> Future<T> background(final BackgroundAction<T> action) {
+        if(registry.contains(action)) {
+            log.warn(String.format("Skip duplicate background action %s found in registry", action));
+            return ConcurrentUtils.constantFuture(null);
+        }
         return DefaultBackgroundExecutor.get().execute(this, registry, action);
     }
 

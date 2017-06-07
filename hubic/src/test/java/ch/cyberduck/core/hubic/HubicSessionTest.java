@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -55,7 +54,7 @@ public class HubicSessionTest {
         session.close();
     }
 
-    @Test(expected = LoginCanceledException.class)
+    @Test(expected = LoginFailureException.class)
     public void testConnectInvalidAccessToken() throws Exception {
         final HubicSession session = new HubicSession(new Host(new HubicProtocol(),
                 new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));

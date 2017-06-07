@@ -19,6 +19,8 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.regex.Pattern;
+
 public final class StringAppender {
 
     private final StringBuilder buffer;
@@ -59,10 +61,9 @@ public final class StringAppender {
         if(buffer.charAt(buffer.length() - 1) == ':') {
             buffer.deleteCharAt(buffer.length() - 1);
         }
-        buffer.append(suffix);
-//        if(StringUtils.isAlpha(String.valueOf(buffer.charAt(buffer.length() - 1)))) {
-//            buffer.append(".");
-//        }
+        if(!Pattern.matches("[.?!]", String.valueOf(buffer.charAt(buffer.length() - 1)))) {
+            buffer.append(suffix);
+        }
         return this;
     }
 

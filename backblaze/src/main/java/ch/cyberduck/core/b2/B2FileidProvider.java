@@ -15,9 +15,15 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -25,10 +31,8 @@ import ch.cyberduck.core.features.IdProvider;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
-import synapticloop.b2.response.B2BucketResponse;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
@@ -39,39 +43,42 @@ public class B2FileidProvider implements IdProvider {
 
     private final B2Session session;
 
+    private Cache<Path> cache = PathCache.empty();
+
     public B2FileidProvider(final B2Session session) {
         this.session = session;
     }
 
     @Override
-    public String getFileid(final Path file) throws BackgroundException {
+    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-        try {
-            if(containerService.isContainer(file)) {
-                final List<B2BucketResponse> buckets = session.getClient().listBuckets();
-                for(B2BucketResponse bucket : buckets) {
-                    if(StringUtils.equals(containerService.getContainer(file).getName(), bucket.getBucketName())) {
-                        return bucket.getBucketId();
-                    }
-                }
+        if(containerService.isContainer(file)) {
+            final AttributedList<Path> list;
+            if(!cache.isCached(file.getParent())) {
+                list = new B2ListService(session, this).list(file.getParent(), new DisabledListProgressListener());
+                cache.put(file.getParent(), list);
+            }
+            else {
+                list = cache.get(file.getParent());
+            }
+            final Path found = list.find(new SimplePathPredicate(file));
+            if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            if(file.isPlaceholder()) {
-                // Placeholder does not exist
-                return null;
-            }
+            return found.attributes().getVersionId();
+        }
+        if(file.isDirectory()) {
+            // Placeholder does not exist
+            return null;
+        }
+        try {
             final B2ListFilesResponse response = session.getClient().listFileNames(
-                    this.getFileid(containerService.getContainer(file)), containerService.getKey(file), 2);
+                    this.getFileid(containerService.getContainer(file), listener), containerService.getKey(file), 2);
             for(B2FileInfoResponse info : response.getFiles()) {
-                if(file.isFile()) {
-                    if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
-                        switch(info.getAction()) {
-                            default:
-                                return info.getFileId();
-                        }
-                    }
+                if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
+                    return info.getFileId();
                 }
             }
             throw new NotfoundException(file.getAbsolute());
@@ -83,4 +90,11 @@ public class B2FileidProvider implements IdProvider {
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
+
+    @Override
+    public IdProvider withCache(final Cache<Path> cache) {
+        this.cache = cache;
+        return this;
+    }
+
 }

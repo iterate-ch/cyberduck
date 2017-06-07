@@ -20,16 +20,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.Set;
 
 public class VaultRegistryEncryptionFeature implements Encryption {
+
     private final Session<?> session;
     private final Encryption proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryEncryptionFeature(final Session<?> session, final Encryption proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryEncryptionFeature(final Session<?> session, final Encryption proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -53,5 +54,13 @@ public class VaultRegistryEncryptionFeature implements Encryption {
     @Override
     public Algorithm getDefault(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Encryption.class, proxy).getDefault(file);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryEncryptionFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

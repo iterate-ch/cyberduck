@@ -31,6 +31,10 @@ public abstract class NSUserDefaults extends NSObject {
         return CLASS.standardUserDefaults();
     }
 
+    public static NSUserDefaults sharedUserDefaults(String group) {
+        return CLASS.alloc().initWithSuiteName(group);
+    }
+
     public static void resetStandardUserDefaults() {
         CLASS.resetStandardUserDefaults();
     }
@@ -47,6 +51,8 @@ public abstract class NSUserDefaults extends NSObject {
          * <i>native declaration : :21</i>
          */
         void resetStandardUserDefaults();
+
+        NSUserDefaults alloc();
     }
 
     /**
@@ -60,6 +66,11 @@ public abstract class NSUserDefaults extends NSObject {
      * <i>native declaration : :24</i>
      */
     public abstract NSUserDefaults initWithUser(String username);
+
+    /**
+     * Returns an NSUserDefaults object initialized with the defaults for the specified app group.
+     */
+    public abstract NSUserDefaults initWithSuiteName(String group);
 
     /**
      * Original signature : <code>id objectForKey(NSString*)</code><br>

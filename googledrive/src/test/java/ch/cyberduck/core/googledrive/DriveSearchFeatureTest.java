@@ -42,7 +42,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -51,7 +51,7 @@ import static org.junit.Assert.*;
 public class DriveSearchFeatureTest {
 
     @Test
-    public void testSearch() throws Exception {
+    public void testSearchRoot() throws Exception {
         final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -80,9 +80,7 @@ public class DriveSearchFeatureTest {
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final String name = new AlphanumericRandomStringService().random();
         final Path workdir = new DefaultHomeFinderService(session).find();
-        final Path file = new Path(workdir, name, EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(file, new TransferStatus());
-        file.attributes().setVersionId(new DriveFileidProvider(session).getFileid(file));
+        final Path file = new DriveTouchFeature(session).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveSearchFeature feature = new DriveSearchFeature(session);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         // Supports prefix matching only
@@ -90,7 +88,50 @@ public class DriveSearchFeatureTest {
         assertTrue(feature.search(workdir, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
         final Path subdir = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        new DriveDeleteFeature(session).delete(Arrays.asList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testSearchFolder() throws Exception {
+        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
+        final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                fail(reason);
+            }
+        }, new DisabledHostKeyCallback(),
+                new DisabledPasswordStore() {
+                    @Override
+                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
+                        if(user.equals("Google Drive OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("googledrive.accesstoken");
+                        }
+                        if(user.equals("Google Drive OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("googledrive.refreshtoken");
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public String getPassword(String hostname, String user) {
+                        return super.getPassword(hostname, user);
+                    }
+                }, new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final String name = new AlphanumericRandomStringService().random();
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path workdir = new DriveDirectoryFeature(session).mkdir(home, null, new TransferStatus());
+        final Path file = new DriveTouchFeature(session).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DriveSearchFeature feature = new DriveSearchFeature(session);
+        assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
+        // Supports prefix matching only
+        assertFalse(feature.search(workdir, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
+        assertTrue(feature.search(workdir, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
+        final Path subdir = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
+        new DriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

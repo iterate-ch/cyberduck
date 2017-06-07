@@ -73,7 +73,6 @@ public class DriveMetadataFeatureTest {
         final Path home = new DriveHomeFinderService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());
-        test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
         new DriveMetadataFeature(session).setMetadata(test, Collections.singletonMap("test", "t"));
         assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session).getMetadata(test));
         new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -32,7 +33,12 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.serializer.PathDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.LoadingVaultLookupListener;
+import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -77,19 +83,127 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
-        final Path f = new Path("/", EnumSet.of((Path.Type.directory)));
+        final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         vault.load(session, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
         });
-        assertNotSame(f, vault.encrypt(session, f));
         assertEquals(Vault.State.open, vault.getState());
+        assertNotSame(home, vault.encrypt(session, home));
+        assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
+        final Path directory = new Path(home, "dir", EnumSet.of((Path.Type.directory)));
+        assertNull(directory.attributes().getVault());
+        assertEquals(home, vault.encrypt(session, directory).attributes().getVault());
+        assertEquals(home, directory.attributes().getVault());
+        assertEquals(vault.encrypt(session, directory), vault.encrypt(session, directory));
+        assertEquals(new Path(home, "dir", EnumSet.of(Path.Type.directory, Path.Type.decrypted)), vault.decrypt(session, vault.encrypt(session, directory, true)));
+        assertNotEquals(vault.encrypt(session, directory), vault.encrypt(session, directory, true));
+        assertEquals(vault.encrypt(session, directory).attributes().getDirectoryId(), vault.encrypt(session, directory).attributes().getDirectoryId());
+        assertEquals(vault.encrypt(session, vault.encrypt(session, directory)).attributes().getDirectoryId(), vault.encrypt(session, vault.encrypt(session, directory)).attributes().getDirectoryId());
+        assertNull(vault.encrypt(session, directory, true).attributes().getDirectoryId());
+        assertNull(vault.encrypt(session, vault.encrypt(session, directory), true).attributes().getDirectoryId());
+        assertNotEquals(vault.encrypt(session, directory).attributes().getDirectoryId(), vault.encrypt(session, directory, true).attributes().getDirectoryId());
+
         vault.close();
         assertEquals(Vault.State.closed, vault.getState());
+    }
+
+    @Test
+    public void testFind() throws Exception {
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                            final String masterKey = "{\n" +
+                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                    "  \"scryptCostParam\": 16384,\n" +
+                                    "  \"scryptBlockSize\": 8,\n" +
+                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                    "  \"version\": 5\n" +
+                                    "}";
+                            return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
+                        }
+
+                        @Override
+                        public boolean offset(final Path file) throws BackgroundException {
+                            return false;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
+            }
+        }).getHome());
+        assertEquals(Vault.State.open, vault.getState());
+        final AtomicBoolean found = new AtomicBoolean();
+        assertEquals(vault, new DefaultVaultRegistry(new DisabledPasswordCallback()) {
+            protected Vault find(final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
+                found.set(true);
+                return vault;
+            }
+        }.find(session, home));
+        assertTrue(found.get());
+        vault.close();
+    }
+
+    @Test
+    public void testSerializeVaultHome() throws Exception {
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                            final String masterKey = "{\n" +
+                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                    "  \"scryptCostParam\": 16384,\n" +
+                                    "  \"scryptBlockSize\": 8,\n" +
+                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                    "  \"version\": 5\n" +
+                                    "}";
+                            return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
+                        }
+
+                        @Override
+                        public boolean offset(final Path file) throws BackgroundException {
+                            return false;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
+            }
+        }).getHome());
+        assertEquals(Vault.State.open, vault.getState());
+        assertEquals(home, new PathDictionary().deserialize(home.serialize(SerializerFactory.get())));
+        vault.close();
     }
 
     @Test
@@ -275,12 +389,7 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(
                 home, new DisabledPasswordStore());
-        vault.create(session, null, new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("pwd");
-            }
-        });
+        vault.create(session, null, new VaultCredentials("test"));
     }
 
     @Test
@@ -315,12 +424,7 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(
                 home, new DisabledPasswordStore());
-        vault.create(session, null, new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("pwd");
-            }
-        });
+        vault.create(session, null, new VaultCredentials("test"));
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0);

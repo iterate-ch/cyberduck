@@ -43,7 +43,6 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
@@ -416,11 +415,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     /**
      * Amazon CloudFront Extension to create a new distribution configuration
-     * *
      *
      * @return Distribution configuration
-     * @throws AmazonClientException       CloudFront failure details
-     * @throws ConnectionCanceledException Authentication canceled
      */
     protected StreamingDistribution createStreamingDistribution(final Path container, final Distribution distribution)
             throws BackgroundException {
@@ -551,9 +547,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     /**
      * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
-     *
-     * @throws AmazonClientException CloudFront failure details
-     * @throws IOException           I/O error
      */
     protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution)
             throws IOException, BackgroundException {
@@ -694,7 +687,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 try {
                     distribution.setContainers(new S3BucketListService(session).list(
                             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            new DisabledListProgressListener()));
+                            new DisabledListProgressListener()).toList());
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
@@ -736,7 +729,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             if(this.getFeature(DistributionLogging.class, method) != null) {
                 distribution.setContainers(new S3BucketListService(session).list(
                         new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                        new DisabledListProgressListener()));
+                        new DisabledListProgressListener()).toList());
             }
             return distribution;
         }

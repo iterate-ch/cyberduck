@@ -43,6 +43,7 @@ using ch.cyberduck.core.irods;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.openstack;
+using ch.cyberduck.core.onedrive;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
@@ -109,7 +110,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
-                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol());
+                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol());
 
             if (!Debugger.IsAttached)
             {
@@ -142,7 +143,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private MainController()
         {
             InitializeAppProperties();
-            SaveMySettingsOnExit = true;
+            // Explicitly set SaveMySettingsOnExit to false, preventing UnauthorizedAccessException after Close
+            // if no permission for writing to %AppData%
+            SaveMySettingsOnExit = false;
             Startup += ApplicationDidFinishLaunching;
             StartupNextInstance += StartupNextInstanceHandler;
             Shutdown += delegate
@@ -158,7 +161,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     Logger.warn("No Bonjour support available", se);
                 }
                 PreferencesFactory.get().setProperty("uses", PreferencesFactory.get().getInteger("uses") + 1);
-                PreferencesFactory.get().save();
+                try
+                {
+                    PreferencesFactory.get().save();
+                }
+                catch (UnauthorizedAccessException unauthorizedAccessException)
+                {
+                    Logger.fatal("Could not save preferences", unauthorizedAccessException);
+                }
                 if (_updater != null)
                 {
                     _updater.unregister();
@@ -810,7 +820,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in Browsers)
                 {
-                    if (!c.IsMounted())
+                    if (c.isIdle() && !c.IsMounted())
                     {
                         c.Invoke(delegate { c.View.BringToFront(); });
 

@@ -28,5 +28,6 @@ namespace Ch.Cyberduck.Ui.Controller
         bool SavePasswordEnabled { set; }
 
         event VoidHandler ChangedSavePasswordCheckboxEvent;
+        event VoidHandler ChangedPasswordEvent;
     }
 }

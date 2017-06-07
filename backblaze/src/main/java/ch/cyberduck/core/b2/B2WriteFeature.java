@@ -18,11 +18,11 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -33,6 +33,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -42,10 +43,13 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
+import synapticloop.b2.response.B2UploadPartResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> implements Write<BaseB2Response> {
@@ -55,30 +59,23 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
             = new PathContainerService();
 
     private final B2Session session;
-
     private final Find finder;
-
     private final AttributesFinder attributes;
-
-    private final Long threshold;
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
             = new ThreadLocal<B2GetUploadUrlResponse>();
 
+    private final Preferences preferences = PreferencesFactory.get();
+
     public B2WriteFeature(final B2Session session) {
-        this(session, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public B2WriteFeature(final B2Session session, final Long threshold) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), threshold);
-    }
-
-    public B2WriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes, final Long threshold) {
+    public B2WriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;
-        this.threshold = threshold;
     }
 
     @Override
@@ -92,27 +89,30 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
             public BaseB2Response call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final Checksum checksum = status.getChecksum();
-                    if(Checksum.NONE == checksum) {
-                        throw new InteroperabilityException(String.format("Missing SHA1 checksum for file %s", file.getName()));
-                    }
                     if(status.isSegment()) {
                         final B2GetUploadPartUrlResponse uploadUrl
-                                = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file));
-                        return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.toString());
+                                = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
+                        return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
                     }
                     else {
                         final B2GetUploadUrlResponse uploadUrl;
                         if(null == urls.get()) {
-                            uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
+                            uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Obtained upload URL %s for file %s", uploadUrl, file));
+                            }
                             urls.set(uploadUrl);
                         }
                         else {
                             uploadUrl = urls.get();
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Use upload URL %s for file %s", uploadUrl, file));
+                            }
                         }
                         try {
                             return session.getClient().uploadFile(uploadUrl,
                                     file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
-                                    entity, checksum.toString(),
+                                    entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                                     status.getMime(),
                                     status.getMetadata());
                         }
@@ -138,23 +138,6 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
         return this.write(file, status, command);
     }
 
-    protected boolean threshold(final Long length) {
-        if(length > threshold) {
-            if(!PreferencesFactory.get().getBoolean("b2.upload.largeobject")) {
-                // Disabled by user
-                if(length < PreferencesFactory.get().getLong("b2.upload.largeobject.required.threshold")) {
-                    log.warn("Large upload is disabled with property b2.upload.largeobject.required.threshold");
-                    return false;
-                }
-            }
-            return true;
-        }
-        else {
-            // Below threshold
-            return false;
-        }
-    }
-
     @Override
     public boolean temporary() {
         return false;
@@ -172,6 +155,19 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
     @Override
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+        if(length >= preferences.getLong("b2.upload.largeobject.threshold")) {
+            if(preferences.getBoolean("b2.upload.largeobject")) {
+                final B2LargeUploadPartService partService = new B2LargeUploadPartService(session);
+                final List<B2FileInfoResponse> upload = partService.find(file);
+                if(!upload.isEmpty()) {
+                    Long size = 0L;
+                    for(B2UploadPartResponse completed : partService.list(upload.iterator().next().getFileId())) {
+                        size += completed.getContentLength();
+                    }
+                    return new Append(size);
+                }
+            }
+        }
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());

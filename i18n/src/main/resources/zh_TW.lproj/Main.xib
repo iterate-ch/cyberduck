@@ -407,7 +407,7 @@ CA
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="在 Terminal.app 中開啟" id="318">
+                            <menuItem title="在 Terminal 中開啟" id="318">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openTerminalButtonClicked:" target="-1" id="414"/>

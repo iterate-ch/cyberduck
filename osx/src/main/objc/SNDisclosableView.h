@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2002, Kurt Revis.  All rights reserved.
+ Copyright (c) 2002-2014, Kurt Revis.  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -14,25 +14,11 @@
 
 
 @interface SNDisclosableView : NSView
-{
-    BOOL isShown;
-    CGFloat originalHeight;
-    CGFloat hiddenHeight;
-    NSArray *hiddenSubviews;
-    NSView *nonretainedOriginalNextKeyView;
-    NSView *nonretainedLastChildKeyView;
-    NSSize sizeBeforeHidden;
-}
 
-- (BOOL)isShown;
-- (void)setIsShown:(BOOL)value;
-
-- (CGFloat)hiddenHeight;
-- (void)setHiddenHeight:(CGFloat)value;
+@property (nonatomic, assign, getter = isShown) BOOL shown;
+@property (nonatomic, assign) CGFloat hiddenHeight;
 
 // Actions
 - (IBAction)toggleDisclosure:(id)sender;
-- (IBAction)hide:(id)sender;
-- (IBAction)show:(id)sender;
 
 @end

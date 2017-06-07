@@ -16,6 +16,7 @@ package ch.cyberduck.ui.cocoa.toolbar;
  */
 
 import ch.cyberduck.binding.application.NSPasteboard;
+import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.Archive;
@@ -25,10 +26,12 @@ import ch.cyberduck.core.TerminalServiceFactory;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
@@ -36,6 +39,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 
 import org.rococoa.Foundation;
+import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 
 import static ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory.BrowserToolbarItem.*;
@@ -85,7 +89,9 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                 break;
             }
             case encoding: {
-//                controller.getSession().getHost().getEncoding()
+                final NSPopUpButton popup = Rococoa.cast(item.view(), NSPopUpButton.class);
+                popup.selectItemAtIndex(popup.indexOfItemWithRepresentedObject(controller.isMounted() ?
+                        controller.getSession().getHost().getEncoding() : PreferencesFactory.get().getProperty("browser.charset.encoding")));
             }
         }
         return this.validate(item.action());
@@ -210,10 +216,15 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0;
         }
         else if(action.equals(newfolder.action())) {
-            return this.isBrowser() && controller.isMounted();
+            return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Directory.class).isSupported(
+                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
+            );
         }
         else if(action.equals(Foundation.selector("createEncryptedVaultButtonClicked:"))) {
-            return this.isBrowser() && controller.isMounted() && controller.getSession().getVault() != VaultRegistry.DISABLED;
+            return this.isBrowser() && controller.isMounted() && controller.getSession().getVault() != VaultRegistry.DISABLED &&
+                    controller.getSession().getFeature(Directory.class).isSupported(
+                            new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
+                    );
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(

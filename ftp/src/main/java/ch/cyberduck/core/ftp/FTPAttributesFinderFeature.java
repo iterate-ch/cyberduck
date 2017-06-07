@@ -55,7 +55,7 @@ public class FTPAttributesFinderFeature implements AttributesFinder {
                 final AttributedList<Path> attributes
                         = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), new DisabledListProgressListener());
                 if(attributes.contains(file)) {
-                    return attributes.iterator().next().attributes();
+                    return attributes.get(attributes.indexOf(file)).attributes();
                 }
             }
             throw new InteroperabilityException("No support for MLST in reply to FEAT");

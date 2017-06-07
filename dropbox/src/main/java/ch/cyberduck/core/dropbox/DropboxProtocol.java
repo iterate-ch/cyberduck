@@ -28,6 +28,11 @@ public class DropboxProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getName() {
+        return "Dropbox";
+    }
+
+    @Override
     public String getDescription() {
         return "Dropbox";
     }

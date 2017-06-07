@@ -63,9 +63,7 @@ public class AzureDeleteFeatureTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new AzureDirectoryFeature(session, null).mkdir(test, null, new TransferStatus());
-        test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path test = new AzureDirectoryFeature(session, null).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(test));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(test));

@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
@@ -26,9 +25,9 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.cryptomator.features.*;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
@@ -36,7 +35,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -86,12 +84,12 @@ public class CryptoVault implements Vault {
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
 
+    private final PasswordStore keychain;
+
     /**
      * Root of vault directory
      */
-    private final Path home;
-    private final PasswordStore keychain;
-
+    private Path home;
     private Cryptor cryptor;
 
     private final CryptoFilenameProvider filenameProvider;
@@ -108,40 +106,35 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public synchronized CryptoVault create(final Session<?> session, final String region, final PasswordCallback prompt) throws BackgroundException {
+    public synchronized CryptoVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                 FastSecureRandomProvider.get().provide()
         );
         final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         final Host bookmark = session.getHost();
-        final Credentials keyfilePassphrase = new VaultCredentials();
-        prompt.prompt(keyfilePassphrase,
-                LocaleFactory.localizedString("Create Vault", "Cryptomator"),
-                MessageFormat.format(LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()),
-                new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
-        if(keyfilePassphrase.isSaved()) {
+        if(credentials.isSaved()) {
             keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), keyfilePassphrase.getPassword());
+                    new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
         }
-        final String passphrase = keyfilePassphrase.getPassword();
+        final String passphrase = credentials.getPassword();
         final KeyFile masterKeyFileContent = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write master key to %s", masterKeyFile));
         }
         // Obtain non encrypted directory writer
-        final Directory feature = session._getFeature(Directory.class);
-        feature.mkdir(home, region, new TransferStatus());
+        final Directory directory = session._getFeature(Directory.class);
+        home = directory.mkdir(home, region, new TransferStatus());
         new ContentWriter(session).write(masterKeyFile, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
-        final Path secondLevel = directoryProvider.toEncrypted(session, home);
+        final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        feature.mkdir(dataDir, region, new TransferStatus());
-        feature.mkdir(firstLevel, region, new TransferStatus());
-        feature.mkdir(secondLevel, region, new TransferStatus());
+        directory.mkdir(dataDir, region, new TransferStatus());
+        directory.mkdir(firstLevel, region, new TransferStatus());
+        directory.mkdir(secondLevel, region, new TransferStatus());
         return this;
     }
 
@@ -167,55 +160,50 @@ public class CryptoVault implements Vault {
             throw new VaultException(String.format("Failure reading vault master key file %s", masterKeyFile.getName()), e);
         }
         final Host bookmark = session.getHost();
-        final Credentials keyfilePassphrase = new VaultCredentials(
+        final VaultCredentials keyfilePassphrase = new VaultCredentials(
                 keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
                         new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl())) {
         };
-        // Disable save in keychain by default
-        keyfilePassphrase.setSaved(false);
         this.unlock(masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
-        // Nullify to avoid recursion
-        home.attributes().setVault(null);
-        // Mark vault as volume for lookup in registry
-        home.attributes().setVault(new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault),
-                new PathAttributesDictionary().deserialize(home.attributes().serialize(SerializerFactory.get()))));
+        home.attributes().setVault(home);
         return this;
     }
 
     private void unlock(final Path masterKeyFile, final KeyFile masterKeyFileContent,
-                        final Host bookmark, final Credentials keyfilePassphrase, final PasswordCallback prompt, final String message) throws LoginCanceledException, VaultException {
-        if(null == keyfilePassphrase.getPassword()) {
-            prompt.prompt(keyfilePassphrase,
+                        final Host bookmark, final VaultCredentials passphrase,
+                        final PasswordCallback prompt, final String message) throws LoginCanceledException, VaultException {
+        if(null == passphrase.getPassword()) {
+            prompt.prompt(passphrase,
                     LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     message,
                     new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
-            if(null == keyfilePassphrase.getPassword()) {
+            if(null == passphrase.getPassword()) {
                 throw new LoginCanceledException();
             }
         }
         try {
-            this.open(masterKeyFileContent, keyfilePassphrase.getPassword());
-            if(keyfilePassphrase.isSaved()) {
+            this.open(masterKeyFileContent, passphrase.getPassword());
+            if(passphrase.isSaved()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save passphrase for %s", masterKeyFile));
                 }
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), keyfilePassphrase.getPassword());
+                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), passphrase.getPassword());
                 // Save masterkey.cryptomator content in preferences
                 PreferencesFactory.get().setProperty(new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(),
                         new String(masterKeyFileContent.serialize()));
             }
         }
         catch(CryptoAuthenticationException e) {
-            keyfilePassphrase.setPassword(null);
-            this.unlock(masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase,
+            passphrase.setPassword(null);
+            this.unlock(masterKeyFile, masterKeyFileContent, bookmark, passphrase,
                     prompt, String.format("%s %s.", e.getDetail(),
                             MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
         }
         finally {
-            keyfilePassphrase.setPassword(null);
+            passphrase.setPassword(null);
         }
     }
 
@@ -269,23 +257,34 @@ public class CryptoVault implements Vault {
 
     @Override
     public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
-        return this.encrypt(session, file, false);
+        return this.encrypt(session, file, file.attributes().getDirectoryId(), false);
     }
 
     public Path encrypt(final Session<?> session, final Path file, boolean metadata) throws BackgroundException {
+        return this.encrypt(session, file, file.attributes().getDirectoryId(), metadata);
+    }
+
+    public Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
         if(file.getType().contains(Path.Type.encrypted)) {
-            log.debug(String.format("Skip file %s because it is already marked as an ecrypted path", file));
-            return file;
+            if(file.attributes().getDecrypted() == null) {
+                log.warn(String.format("Skip file %s because it is already marked as an encrypted path", file));
+                return file;
+            }
+            return this.encrypt(session, file.attributes().getDecrypted(), directoryId, metadata);
         }
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {
-                log.warn(String.format("Skip file %s because it is already marked as an internal vault path", file));
+                log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
                 return file;
             }
-            final Path parent = directoryProvider.toEncrypted(session, file.getParent());
+            if(file.equals(home)) {
+                log.warn(String.format("Skip vault home %s because the root has no metadata file", file));
+                return file;
+            }
+            final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
+            final PathAttributes attributes = new PathAttributes(file.attributes());
             // Translate file size
             attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
             attributes.setVersionId(null);
@@ -293,13 +292,16 @@ public class CryptoVault implements Vault {
         }
         else {
             if(file.getType().contains(Path.Type.vault)) {
-                return directoryProvider.toEncrypted(session, home);
+                return directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
             }
-            encrypted = directoryProvider.toEncrypted(session, file);
+            encrypted = directoryProvider.toEncrypted(session, directoryId, file);
         }
-        // Add reference to decrypted file
-        encrypted.attributes().setDecrypted(file);
+        if(!metadata) {
+            // Add reference to decrypted file
+            encrypted.attributes().setDecrypted(file);
+        }
         // Add reference for vault
+        file.attributes().setVault(home);
         encrypted.attributes().setVault(home);
         return encrypted;
     }
@@ -307,8 +309,11 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         if(file.getType().contains(Path.Type.decrypted)) {
-            log.debug(String.format("Skip file %s because it is already marked as an decrypted path", file));
-            return file;
+            if(file.attributes().getEncrypted() == null) {
+                log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
+                return file;
+            }
+            return this.decrypt(session, file.attributes().getEncrypted());
         }
         if(file.getType().contains(Path.Type.vault)) {
             log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
@@ -321,7 +326,7 @@ public class CryptoVault implements Vault {
             try {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
-                final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
+                final PathAttributes attributes = new PathAttributes(file.attributes());
                 attributes.setVersionId(null);
                 if(inflated.getName().startsWith(DIR_PREFIX)) {
                     final Permission permission = attributes.getPermission();
@@ -391,6 +396,10 @@ public class CryptoVault implements Vault {
         }
     }
 
+    public Path getHome() {
+        return home;
+    }
+
     public Cryptor getCryptor() {
         return cryptor;
     }
@@ -401,6 +410,11 @@ public class CryptoVault implements Vault {
 
     public CryptoDirectoryProvider getDirectoryProvider() {
         return directoryProvider;
+    }
+
+    public int numberOfChunks(final long cleartextFileSize) {
+        return (int) (cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
+                ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
     }
 
     @Override
@@ -433,7 +447,7 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoMultipartWriteFeature(session, (Write) delegate, this);
             }
             if(type == Move.class) {
-                return (T) new CryptoMoveFeature(session, (Move) delegate, session._getFeature(Delete.class), session._getFeature(ListService.class), this);
+                return (T) new CryptoMoveFeature(session, (Move) delegate, session._getFeature(Delete.class), this);
             }
             if(type == AttributesFinder.class) {
                 return (T) new CryptoAttributesFeature(session, (AttributesFinder) delegate, this);

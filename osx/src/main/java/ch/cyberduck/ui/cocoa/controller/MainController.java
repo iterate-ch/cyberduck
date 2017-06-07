@@ -184,7 +184,7 @@ public class MainController extends BundleController implements NSApplication.De
         final List<BrowserController> browsers = getBrowsers();
         if(!force) {
             for(BrowserController controller : browsers) {
-                if(!controller.isMounted()) {
+                if(controller.isIdle() && !controller.isMounted()) {
                     controller.window().makeKeyAndOrderFront(null);
                     return controller;
                 }
@@ -543,7 +543,7 @@ public class MainController extends BundleController implements NSApplication.De
     public void showActivityWindowClicked(final ID sender) {
         ActivityController c = ActivityControllerFactory.get();
         if(c.isVisible()) {
-            c.window().close();
+            c.window().orderOut(null);
         }
         else {
             c.window().orderFront(null);
@@ -1143,6 +1143,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * NSService implementation
      */
+    @Action
     public void serviceUploadFileUrl_(final NSPasteboard pboard, final String userData) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("serviceUploadFileUrl_: with user data %s", userData));
@@ -1299,6 +1300,7 @@ public class MainController extends BundleController implements NSApplication.De
         DefaultBackgroundExecutor.get().shutdown();
     }
 
+    @Action
     public void applicationWillRestartAfterUpdate(ID updater) {
         // Disable donation prompt after udpate install
         displayDonationPrompt = false;
@@ -1320,6 +1322,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * Extract the URL from the Apple event and handle it here.
      */
+    @Action
     public void handleGetURLEvent_withReplyEvent(NSAppleEventDescriptor event, NSAppleEventDescriptor reply) {
         log.debug("Received URL from Apple Event:" + event);
         final NSAppleEventDescriptor param = event.paramDescriptorForKeyword(keyAEResult);
@@ -1376,6 +1379,7 @@ public class MainController extends BundleController implements NSApplication.De
      *
      * @param notification Notification name
      */
+    @Action
     public void workspaceWillPowerOff(NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Workspace will power off with notification %s", notification));
@@ -1389,12 +1393,14 @@ public class MainController extends BundleController implements NSApplication.De
      *
      * @param notification Notification name
      */
+    @Action
     public void workspaceWillLogout(NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Workspace will logout with notification %s", notification));
         }
     }
 
+    @Action
     public void workspaceWillSleep(NSNotification notification) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Workspace will sleep with notification %s", notification));

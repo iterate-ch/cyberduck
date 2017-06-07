@@ -1,3 +1,4 @@
 #!/bin/sh
+mkdir -p /usr/local/bin
 ln -sf /usr/local/duck.bundle/Contents/MacOS/duck /usr/local/bin/duck
 exit 0

@@ -56,7 +56,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     public S3ThresholdUploadService(final S3Session session, final Long multipartThreshold) {
         this.session = session;
         this.multipartThreshold = multipartThreshold;
-        this.writer = new S3WriteFeature(session, new S3DisabledMultipartService());
+        this.writer = new S3WriteFeature(session);
     }
 
     @Override

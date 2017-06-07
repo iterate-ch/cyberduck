@@ -41,9 +41,12 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -157,14 +160,17 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setLength(local.attributes().getSize());
             }
             if(options.temporary) {
+                final Move feature = session.getFeature(Move.class);
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
                                 file.getName(), new AlphanumericRandomStringService().random()), file.getType());
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set temporary filename %s", renamed));
+                if(feature.isSupported(file, renamed)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Set temporary filename %s", renamed));
+                    }
+                    status.temporary(renamed);
+                    status.withDisplayname(file);
                 }
-                status.temporary(renamed);
-                status.displayname(file);
             }
             status.setMime(mapping.getMime(file.getName()));
         }
@@ -243,6 +249,16 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 final Redundancy feature = session.getFeature(Redundancy.class);
                 if(feature != null) {
                     status.setStorageClass(feature.getDefault());
+                }
+            }
+        }
+        if(options.checksum) {
+            if(local.isFile()) {
+                if(null == session.getFeature(MultipartWrite.class)) {
+                    final ChecksumCompute feature = session.getFeature(Write.class).checksum();
+                    if(feature != null) {
+                        status.setChecksum(feature.compute(local.getInputStream(), new TransferStatus()));
+                    }
                 }
             }
         }

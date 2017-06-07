@@ -23,7 +23,6 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -39,8 +38,6 @@ import java.util.List;
 public class TransferMenuDelegate extends AbstractMenuDelegate {
 
     private final Transfer transfer;
-
-    private final RevealService reveal = RevealServiceFactory.get();
 
     public TransferMenuDelegate(final Transfer transfer) {
         this.transfer = transfer;
@@ -81,7 +78,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
 
     @Action
     public void menuItemClicked(final NSMenuItem sender) {
-        reveal.reveal(LocalFactory.get(sender.representedObject()));
+        RevealServiceFactory.get().reveal(LocalFactory.get(sender.representedObject()));
     }
 
     @Override

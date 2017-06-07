@@ -15,7 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -31,7 +31,7 @@ public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
 
-    public DriveMoveFeature(DriveSession session) {
+    public DriveMoveFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -46,14 +46,9 @@ public class DriveMoveFeature implements Move {
     }
 
     @Override
-    public Move withList(final ListService list) {
-        return this;
-    }
-
-    @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
-            final String fileid = new DriveFileidProvider(session).getFileid(file);
+            final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 // Rename title
                 final File properties = new File();
@@ -71,7 +66,7 @@ public class DriveMoveFeature implements Move {
             }
             // Move the file to the new folder
             session.getClient().files().update(fileid, null)
-                    .setAddParents(new DriveFileidProvider(session).getFileid(renamed.getParent()))
+                    .setAddParents(new DriveFileidProvider(session).getFileid(renamed.getParent(), new DisabledListProgressListener()))
                     .setRemoveParents(previousParents.toString())
                     .setFields("id, parents")
                     .execute();
@@ -79,5 +74,10 @@ public class DriveMoveFeature implements Move {
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
     }
 }

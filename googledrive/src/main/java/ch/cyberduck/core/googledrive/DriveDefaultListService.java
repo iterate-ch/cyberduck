@@ -24,20 +24,28 @@ import java.util.EnumSet;
 
 public class DriveDefaultListService extends AbstractDriveListService {
 
-    private DriveSession session;
+    private final DriveFileidProvider fileid;
 
     public DriveDefaultListService(final DriveSession session) {
+        this(session, new DriveFileidProvider(session));
+    }
+
+    public DriveDefaultListService(final DriveSession session, final DriveFileidProvider fileid) {
         super(session);
-        this.session = session;
+        this.fileid = fileid;
     }
 
     public DriveDefaultListService(final DriveSession session, final int pagesize) {
-        super(session, pagesize);
-        this.session = session;
+        this(session, new DriveFileidProvider(session), pagesize);
     }
 
-    protected String query(final Path directory) throws BackgroundException {
-        return String.format("'%s' in parents", new DriveFileidProvider(session).getFileid(directory));
+    public DriveDefaultListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize) {
+        super(session, pagesize);
+        this.fileid = fileid;
+    }
+
+    protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return String.format("'%s' in parents", fileid.getFileid(directory, listener));
     }
 
     @Override

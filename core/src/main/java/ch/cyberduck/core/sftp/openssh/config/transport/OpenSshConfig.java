@@ -126,13 +126,13 @@ public class OpenSshConfig {
         return h;
     }
 
-    private Map<String, Host> refresh() {
+    public Map<String, Host> refresh() {
         final long mtime = configuration.attributes().getModificationDate();
         if(mtime != lastModified) {
             try {
                 final InputStream in = configuration.getInputStream();
                 try {
-                    hosts = parse(in);
+                    hosts = this.parse(in);
                 }
                 finally {
                     IOUtils.closeQuietly(in);

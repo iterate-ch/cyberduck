@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.AttributesFinder;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
-import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.Metadata;
 
 public class DropboxAttributesFinderFeature implements AttributesFinder {
@@ -51,12 +50,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
         if(metadata instanceof FileMetadata) {
             final FileMetadata fm = (FileMetadata) metadata;
             attributes.setSize(fm.getSize());
-            attributes.setVersionId(fm.getId());
             attributes.setModificationDate(fm.getClientModified().getTime());
-        }
-        else if(metadata instanceof FolderMetadata) {
-            final FolderMetadata fm = (FolderMetadata) metadata;
-            attributes.setVersionId(fm.getId());
         }
         return attributes;
     }

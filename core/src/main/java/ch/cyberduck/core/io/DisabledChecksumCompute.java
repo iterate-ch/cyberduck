@@ -18,11 +18,15 @@ package ch.cyberduck.core.io;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.InputStream;
 
 public class DisabledChecksumCompute implements ChecksumCompute {
+
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+        IOUtils.closeQuietly(in);
         return Checksum.NONE;
     }
 }

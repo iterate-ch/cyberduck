@@ -106,7 +106,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
                 distribution.setLogging(c.isEnabled());
                 distribution.setLoggingContainer(c.getLoggingTarget());
                 distribution.setContainers(new S3BucketListService(session).list(
-                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()));
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()).toList());
             }
             return distribution;
         }

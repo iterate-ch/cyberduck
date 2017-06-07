@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 public class S3CopyFeatureTest {
 
     @Test
-    public void testCopyZeroLength() throws Exception {
+    public void testCopyFileZeroLength() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
@@ -50,7 +50,7 @@ public class S3CopyFeatureTest {
         test.attributes().setSize(0L);
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy);
+        new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(copy));
@@ -59,7 +59,7 @@ public class S3CopyFeatureTest {
     }
 
     @Test
-    public void testCopy() throws Exception {
+    public void testCopyFile() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
@@ -69,7 +69,7 @@ public class S3CopyFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy);
+        new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(copy));

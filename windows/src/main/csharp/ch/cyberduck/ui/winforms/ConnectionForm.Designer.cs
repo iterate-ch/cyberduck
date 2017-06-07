@@ -422,6 +422,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxPassword.Size = new System.Drawing.Size(357, 23);
             this.textBoxPassword.TabIndex = 35;
             this.textBoxPassword.UseSystemPasswordChar = true;
+            this.textBoxPassword.TextChanged += new System.EventHandler(this.textBoxPassword_TextChanged);
             // 
             // anonymousCheckBox
             // 

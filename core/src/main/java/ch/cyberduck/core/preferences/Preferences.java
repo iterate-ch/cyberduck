@@ -270,11 +270,6 @@ public abstract class Preferences {
         defaults.put("local.delimiter", File.separator);
         defaults.put("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
-        /*
-          Prompt to resolve bookmark of file outside of sandbox with choose panel
-         */
-        defaults.put("local.bookmark.resolve.prompt", String.valueOf(false));
-
         defaults.put("application.name", "Cyberduck");
         final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
         defaults.put("application.support.path", support);
@@ -374,6 +369,7 @@ public abstract class Preferences {
           Warn before renaming files
          */
         defaults.put("browser.move.confirm", String.valueOf(true));
+        defaults.put("browser.copy.confirm", String.valueOf(false));
 
 
         defaults.put("browser.transcript.open", String.valueOf(false));
@@ -420,7 +416,7 @@ public abstract class Preferences {
 
         defaults.put("queue.removeItemWhenComplete", String.valueOf(false));
         /*
-          The maximum number of concurrent transfers
+          The maximum number of concurrent transfers in transfer list
          */
         defaults.put("queue.maxtransfers", String.valueOf(2));
         /*
@@ -435,7 +431,7 @@ public abstract class Preferences {
         /*
           Warning when number of transfers in queue exceeds limit
          */
-        defaults.put("queue.size.warn", String.valueOf(50));
+        defaults.put("queue.size.warn", String.valueOf(20));
         /*
           Bring transfer window to front
          */
@@ -468,6 +464,8 @@ public abstract class Preferences {
         defaults.put("queue.upload.file.metadata.change", String.valueOf(true));
         defaults.put("queue.upload.file.encryption.change", String.valueOf(true));
         defaults.put("queue.upload.file.redundancy.change", String.valueOf(true));
+
+        defaults.put("queue.upload.checksum.calculate", String.valueOf(true));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
@@ -529,25 +527,26 @@ public abstract class Preferences {
         /*
           Bandwidth throttle options
          */
-        final StringBuilder options = new StringBuilder();
-        options.append(5 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(10 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(20 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(50 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(100 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(150 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(200 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(500 * DecimalSizeFormatter.KILO.multiple()).append(",");
-        options.append(1 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(2 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(5 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(10 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(15 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(20 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(50 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        options.append(100 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-        defaults.put("queue.bandwidth.options", options.toString());
-
+        {
+            final StringBuilder options = new StringBuilder();
+            options.append(5 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(10 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(20 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(50 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(100 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(150 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(200 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(500 * DecimalSizeFormatter.KILO.multiple()).append(",");
+            options.append(1 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(2 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(5 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(10 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(15 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(20 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(50 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            options.append(100 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+            defaults.put("queue.bandwidth.options", options.toString());
+        }
         /*
           Bandwidth throttle upload stream
          */
@@ -556,6 +555,23 @@ public abstract class Preferences {
           Bandwidth throttle download stream
          */
         defaults.put("queue.download.bandwidth.bytes", String.valueOf(-1));
+
+        /*
+         * Concurrent connections
+         */
+        defaults.put("queue.connections.limit", String.valueOf(2));
+        {
+            final StringBuilder options = new StringBuilder();
+            options.append(1).append(",");
+            options.append(2).append(",");
+            options.append(3).append(",");
+            options.append(4).append(",");
+            options.append(5).append(",");
+            options.append(10).append(",");
+            options.append(15).append(",");
+            options.append(20).append(",");
+            defaults.put("queue.connections.options", options.toString());
+        }
 
         /*
           While downloading, update the icon of the downloaded file as a progress indicator
@@ -683,6 +699,7 @@ public abstract class Preferences {
         defaults.put("s3.upload.multipart.threshold", String.valueOf(100L * 1024L * 1024L));
         defaults.put("s3.upload.multipart.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
         // Maximum number of parts is 10'000. With 10MB segements this gives a maximum object size of 100GB
+        // Must be a multiple of org.cryptomator.cryptolib.v1.Constants.PAYLOAD_SIZE when using Cryptomator Vaults
         defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
 
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
@@ -711,6 +728,13 @@ public abstract class Preferences {
         defaults.put("hubic.oauth.secret", "IIm0EkjdyPquS9SpIZXAdNlGbcf3mL9s3UiOFLnWLeTxLosjvAHGIbomvAcBZQb2");
         defaults.put("hubic.oauth.redirecturi", "https://cyberduck.io/oauth");
 //        defaults.put("hubic.oauth.redirecturi", "x-cyberduck-action:oauth");
+
+        defaults.put("onedrive.oauth.clientid", "372770ba-bb24-436b-bbd4-19bc86310c0e");
+        defaults.put("onedrive.oauth.secret", "mJjWVkmfD9FVHNFTpbrdowv");
+        defaults.put("onedrive.oauth.redirecturi", "https://cyberduck.io/oauth/");
+
+        defaults.put("onedrive.listing.chunksize", String.valueOf(1000));
+        defaults.put("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
 
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(month));
@@ -769,11 +793,12 @@ public abstract class Preferences {
 
         defaults.put("b2.upload.largeobject", String.valueOf(true));
         defaults.put("b2.upload.largeobject.concurrency", String.valueOf(5));
-        defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
+        defaults.put("b2.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
         // When uploading files larger than 200MB, use the large files support to break up the files into parts and upload the parts in parallel.
         defaults.put("b2.upload.largeobject.threshold", String.valueOf(200 * 1024L * 1024L)); // 200MB
         // Each part can be anywhere from 100MB to 5GB in size
         defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
+        defaults.put("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
@@ -1033,6 +1058,7 @@ public abstract class Preferences {
 //        defaults.put("dropbox.oauth.redirecturi", "x-cyberduck-action:oauth");
 
         defaults.put("cryptomator.enable", String.valueOf(true));
+        defaults.put("cryptomator.vault.autodetect", String.valueOf(true));
     }
 
     protected void setLogging() {

@@ -33,6 +33,7 @@ import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
+import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -86,7 +87,13 @@ public final class MainApplication {
                     new DropboxProtocol(),
                     new DriveProtocol(),
                     new HubicProtocol(),
-                    new LocalProtocol()
+                    new OneDriveProtocol(),
+                    new LocalProtocol() {
+                        @Override
+                        public String disk() {
+                            return "NSComputer";
+                        }
+                    }
             );
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()

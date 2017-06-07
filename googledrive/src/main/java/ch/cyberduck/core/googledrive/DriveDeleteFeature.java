@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -27,7 +28,7 @@ public class DriveDeleteFeature implements Delete {
 
     private final DriveSession session;
 
-    public DriveDeleteFeature(DriveSession session) {
+    public DriveDeleteFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -39,7 +40,7 @@ public class DriveDeleteFeature implements Delete {
             }
             callback.delete(file);
             try {
-                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file)).execute();
+                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener())).execute();
             }
             catch(IOException e) {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -48,7 +49,12 @@ public class DriveDeleteFeature implements Delete {
     }
 
     @Override
+    public boolean isSupported(final Path file) {
+        return true;
+    }
+
+    @Override
     public boolean isRecursive() {
-        return false;
+        return true;
     }
 }

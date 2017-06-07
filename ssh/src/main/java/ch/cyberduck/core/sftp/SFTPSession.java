@@ -298,13 +298,13 @@ public class SFTPSession extends Session<SSHClient> {
                         new LoginOptions().user(false).keychain(false).publickey(false));
                 if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
                     throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                            "Login {0} with username and password", "Credentials"), host.getHostname()));
+                            "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
                 }
             }
             else {
                 if(null == lastFailure) {
                     throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                            "Login {0} with username and password", "Credentials"), host.getHostname()));
+                            "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
                 }
                 throw lastFailure;
             }
@@ -401,7 +401,7 @@ public class SFTPSession extends Session<SSHClient> {
             return (T) new SFTPCompressFeature(this);
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new CustomOriginCloudFrontDistributionConfiguration(host, this);
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
         }
         if(type == Home.class) {
             return (T) new SFTPHomeDirectoryService(this);

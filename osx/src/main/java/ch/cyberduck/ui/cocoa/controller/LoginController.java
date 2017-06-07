@@ -28,13 +28,11 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.ui.LoginInputValidator;
 
 public class LoginController extends ConnectionController {
 
     private final String title;
     private final String reason;
-    private final LoginOptions options;
 
     @Outlet
     private NSImageView iconView;
@@ -45,22 +43,14 @@ public class LoginController extends ConnectionController {
 
     public LoginController(final String title, final String reason,
                            final Host bookmark, final Credentials credentials, final LoginOptions options) {
-        super(bookmark, credentials, new LoginInputValidator(credentials, bookmark, options));
+        super(bookmark, credentials, options);
         this.title = title;
         this.reason = reason;
-        this.options = options;
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
                 if(!options.user) {
                     usernameField.setEnabled(false);
-                }
-                if(!options.password) {
-                    passwordField.setEnabled(false);
-                }
-                if(!options.keychain) {
-                    keychainCheckbox.setEnabled(false);
-                    keychainCheckbox.setState(NSCell.NSOffState);
                 }
                 if(!options.anonymous) {
                     anonymousCheckbox.setEnabled(false);
@@ -77,17 +67,6 @@ public class LoginController extends ConnectionController {
     @Override
     protected String getBundleName() {
         return "Login";
-    }
-
-    @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        if(options.user) {
-            window.makeFirstResponder(usernameField);
-        }
-        else {
-            window.makeFirstResponder(passwordField);
-        }
     }
 
     public void setIconView(NSImageView iconView) {

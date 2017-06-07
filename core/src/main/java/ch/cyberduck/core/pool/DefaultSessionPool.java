@@ -201,7 +201,7 @@ public class DefaultSessionPool implements SessionPool {
             log.info(String.format("Release session %s to pool", session));
         }
         try {
-            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+            if(failure != null && diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
                 try {
                     session.interrupt();
                 }

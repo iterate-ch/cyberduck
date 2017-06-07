@@ -18,14 +18,11 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.io
  */
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 public class ThreadLocalHostnameDelegatingTrustManager implements X509TrustManager, TrustManagerHostnameCallback {
-    private static final Logger log = Logger.getLogger(ThreadLocalHostnameDelegatingTrustManager.class);
 
     /**
      * Target hostname of current request stored as thread local

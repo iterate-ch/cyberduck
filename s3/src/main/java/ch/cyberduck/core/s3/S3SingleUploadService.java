@@ -58,7 +58,9 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
         final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion = session.getSignatureVersion();
         switch(signatureVersion) {
             case AWS4HMACSHA256:
-                status.setChecksum(writer.checksum().compute(local.getInputStream(), status));
+                if(Checksum.NONE == status.getChecksum()) {
+                    status.setChecksum(writer.checksum().compute(local.getInputStream(), status));
+                }
                 break;
         }
         try {

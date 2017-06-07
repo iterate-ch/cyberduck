@@ -76,7 +76,7 @@ public class DriveCopyFeatureTest {
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveCopyFeature(session).copy(test, copy);
+        new DriveCopyFeature(session).copy(test, copy, new TransferStatus());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));

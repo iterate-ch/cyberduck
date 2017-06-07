@@ -20,11 +20,13 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -46,7 +48,7 @@ public class S3CopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         if(source.isFile() || source.isPlaceholder()) {
             // Keep same storage class
             final String storageClass = source.attributes().getStorageClass();
@@ -54,7 +56,7 @@ public class S3CopyFeature implements Copy {
             final Encryption.Algorithm encryption = source.attributes().getEncryption();
             // Apply non standard ACL
             if(null == accessControlListFeature) {
-                this.copy(source, copy, storageClass, encryption, Acl.EMPTY);
+                this.copy(source, target, storageClass, encryption, Acl.EMPTY);
             }
             else {
                 Acl acl = Acl.EMPTY;
@@ -64,9 +66,19 @@ public class S3CopyFeature implements Copy {
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e.getDetail()));
                 }
-                this.copy(source, copy, storageClass, encryption, acl);
+                this.copy(source, target, storageClass, encryption, acl);
             }
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 
     protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,
@@ -93,5 +105,10 @@ public class S3CopyFeature implements Copy {
                 throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
             }
         }
+    }
+
+    @Override
+    public Copy withTarget(final Session<?> session) {
+        return this;
     }
 }

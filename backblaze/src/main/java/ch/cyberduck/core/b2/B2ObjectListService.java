@@ -49,13 +49,19 @@ public class B2ObjectListService implements ListService {
     private final B2Session session;
 
     private final int chunksize;
+    private B2FileidProvider fileid;
 
     public B2ObjectListService(final B2Session session) {
-        this(session, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+        this(session, new B2FileidProvider(session));
     }
 
-    public B2ObjectListService(final B2Session session, final int chunksize) {
+    public B2ObjectListService(final B2Session session, final B2FileidProvider fileid) {
+        this(session, fileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+    }
+
+    public B2ObjectListService(final B2Session session, final B2FileidProvider fileid, final int chunksize) {
         this.session = session;
+        this.fileid = fileid;
         this.chunksize = chunksize;
     }
 
@@ -73,10 +79,13 @@ public class B2ObjectListService implements ListService {
             // Seen placeholders
             final Map<String, Integer> revisions = new HashMap<String, Integer>();
             do {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("List directory %s with marker %s", directory, marker));
+                }
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
-                        new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
+                        fileid.getFileid(containerService.getContainer(directory), listener),
                         marker.nextFilename, marker.nextFileId, chunksize,
                         containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
                         String.valueOf(Path.DELIMITER));
@@ -96,27 +105,26 @@ public class B2ObjectListService implements ListService {
 
     protected Marker parse(final Path directory, final AttributedList<Path> objects,
                            final B2ListFilesResponse response, final Map<String, Integer> revisions) throws BackgroundException {
-        for(B2FileInfoResponse file : response.getFiles()) {
-            if(StringUtils.isBlank(file.getFileId())) {
+        for(B2FileInfoResponse info : response.getFiles()) {
+            if(StringUtils.isBlank(info.getFileId())) {
                 // Common prefix
-                final Path placeholder = new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                final Path placeholder = new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
                 objects.add(placeholder);
                 continue;
             }
-            final PathAttributes attributes = this.parse(file);
+            final PathAttributes attributes = this.parse(info);
             final Integer revision;
-            if(revisions.keySet().contains(file.getFileName())) {
+            if(revisions.keySet().contains(info.getFileName())) {
                 // Later version already found
                 attributes.setDuplicate(true);
-                revision = revisions.get(file.getFileName()) + 1;
+                revision = revisions.get(info.getFileName()) + 1;
             }
             else {
                 revision = 1;
             }
-            attributes.setSize(file.getSize());
-            revisions.put(file.getFileName(), revision);
+            revisions.put(info.getFileName(), revision);
             attributes.setRevision(revision);
-            objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
+            objects.add(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.file), attributes));
         }
         if(null == response.getNextFileName()) {
             return new Marker(response.getNextFileName(), response.getNextFileId());
@@ -130,7 +138,9 @@ public class B2ObjectListService implements ListService {
      */
     protected PathAttributes parse(final B2FileInfoResponse response) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setChecksum(Checksum.parse(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT)));
+        attributes.setChecksum(
+                Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
+        );
         final long timestamp = response.getUploadTimestamp();
         attributes.setCreationDate(timestamp);
         attributes.setModificationDate(timestamp);
@@ -141,6 +151,8 @@ public class B2ObjectListService implements ListService {
                 attributes.setDuplicate(true);
                 attributes.setSize(-1L);
                 break;
+            default:
+                attributes.setSize(response.getSize());
         }
         return attributes;
     }
@@ -156,6 +168,15 @@ public class B2ObjectListService implements ListService {
 
         public boolean hasNext() {
             return nextFilename != null;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Marker{");
+            sb.append("nextFilename='").append(nextFilename).append('\'');
+            sb.append(", nextFileId='").append(nextFileId).append('\'');
+            sb.append('}');
+            return sb.toString();
         }
     }
 }

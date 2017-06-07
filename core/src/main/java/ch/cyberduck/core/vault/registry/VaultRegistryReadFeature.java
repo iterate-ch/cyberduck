@@ -21,16 +21,17 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.io.InputStream;
 
 public class VaultRegistryReadFeature implements Read {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Read proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryReadFeature(final Session<?> session, final Read proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryReadFeature(final Session<?> session, final Read proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -44,5 +45,13 @@ public class VaultRegistryReadFeature implements Read {
     @Override
     public boolean offset(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Read.class, proxy).offset(file);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryReadFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

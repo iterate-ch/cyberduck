@@ -69,7 +69,7 @@ public class S3MultipartCopyFeatureTest {
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
         final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
-        feature.copy(test, copy);
+        feature.copy(test, copy, status);
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -101,7 +101,7 @@ public class S3MultipartCopyFeatureTest {
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
         final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
-        feature.copy(test, copy);
+        feature.copy(test, copy, status);
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

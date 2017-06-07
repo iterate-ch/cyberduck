@@ -38,16 +38,25 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class CryptoDirectoryProviderTest {
 
     @Test(expected = NotfoundException.class)
-    public void testToEncryptedFile() throws Exception {
+    public void testToEncryptedInvalidArgument() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         final CryptoDirectoryProvider provider = new CryptoDirectoryProvider(home, vault);
-        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), new Path("/vault/f", EnumSet.of(Path.Type.file)));
+        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/vault/f", EnumSet.of(Path.Type.file)));
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testToEncryptedInvalidPath() throws Exception {
+        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        final CryptoDirectoryProvider provider = new CryptoDirectoryProvider(home, vault);
+        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/", EnumSet.of(Path.Type.directory)));
     }
 
     @Test
@@ -90,6 +99,9 @@ public class CryptoDirectoryProviderTest {
             }
         });
         final CryptoDirectoryProvider provider = new CryptoDirectoryProvider(home, vault);
-        assertNotNull(provider.toEncrypted(new NullSession(new Host(new TestProtocol())), new Path("/vault/f", EnumSet.of(Path.Type.directory))));
+        assertNotNull(provider.toEncrypted(session, null, home));
+        final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));
+        assertNotNull(provider.toEncrypted(session, null, f));
+        assertEquals(provider.toEncrypted(session, null, f), provider.toEncrypted(session, null, f));
     }
 }

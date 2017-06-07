@@ -16,22 +16,22 @@ package ch.cyberduck.ui;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Protocol;
 
 public class LoginInputValidator implements InputValidator {
     private final Credentials credentials;
-    private final Host bookmark;
+    private final Protocol protocol;
     private final LoginOptions options;
 
-    public LoginInputValidator(final Credentials credentials, final Host bookmark, final LoginOptions options) {
+    public LoginInputValidator(final Credentials credentials, final Protocol protocol, final LoginOptions options) {
         this.credentials = credentials;
-        this.bookmark = bookmark;
+        this.protocol = protocol;
         this.options = options;
     }
 
     @Override
     public boolean validate() {
-        return credentials.validate(bookmark.getProtocol(), options);
+        return credentials.validate(protocol, options);
     }
 }
