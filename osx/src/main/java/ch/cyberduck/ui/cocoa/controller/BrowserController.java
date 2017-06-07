@@ -1727,20 +1727,20 @@ public class BrowserController extends WindowController
             case outline:
                 // Setup search filter
                 final String input = searchField.stringValue();
-                // Setup search filter
-                final Filter<Path> filter = SearchFilterFactory.create(input, showHiddenFiles);
-                this.setFilter(filter);
                 if(StringUtils.isBlank(input)) {
+                    this.setFilter(SearchFilterFactory.create(showHiddenFiles));
                     // Reload with current cache
                     this.reload();
                 }
                 else {
+                    // Setup search filter
                     final NSObject action = notification.userInfo().objectForKey("NSTextMovement");
                     if(null == action) {
                         return;
                     }
                     switch(Integer.valueOf(action.toString())) {
                         case NSText.NSReturnTextMovement:
+                            // Prompt for recursive search when pressing return key
                             final NSAlert alert = NSAlert.alert(
                                     MessageFormat.format(LocaleFactory.localizedString("Search for {0}"), input),
                                     MessageFormat.format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"), workdir.getName()),
@@ -1769,10 +1769,6 @@ public class BrowserController extends WindowController
                                 }
                             });
                             break;
-                        default:
-                            // Remove filter
-                            this.setFilter(null);
-                            this.reload();
                     }
                 }
         }
@@ -2950,7 +2946,7 @@ public class BrowserController extends WindowController
             log.debug(String.format("Set working directory to %s", directory));
         }
         // Remove any custom file filter
-        this.setFilter(null);
+        this.setFilter(SearchFilterFactory.create(showHiddenFiles));
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
         if(null == directory) {
