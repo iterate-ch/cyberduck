@@ -63,9 +63,9 @@ public class OneDriveSearchFeatureTest extends AbstractOneDriveTest {
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         final Path filesubdir = new OneDriveTouchFeature(session).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
-            final AttributedList<Path> result = feature.search(directory, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener());
-            assertTrue(result.contains(file));
-            assertEquals(subdir, result.get(result.indexOf(file)).getParent());
+            final AttributedList<Path> result = feature.search(directory, new SearchFilter(filesubdir.getName()), new DisabledListProgressListener());
+            assertNotNull(result.find(new SimplePathPredicate(filesubdir)));
+            assertEquals(subdir, result.find(new SimplePathPredicate(filesubdir)).getParent());
         }
         new OneDriveDeleteFeature(session).delete(Arrays.asList(file, filesubdir, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
