@@ -52,15 +52,17 @@ public class B2SearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> list = new AttributedList<>();
-            String startFilename = null;
+            String prefix = null;
             if(!containerService.isContainer(workdir)) {
-                startFilename = containerService.getKey(workdir) + Path.DELIMITER;
+                prefix = containerService.getKey(workdir) + Path.DELIMITER;
             }
+            String startFilename = prefix;
             do {
                 final B2ListFilesResponse response = session.getClient().listFileNames(
                         new B2FileidProvider(session).withCache(cache).getFileid(containerService.getContainer(workdir), listener),
                         startFilename,
-                        PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+                        PreferencesFactory.get().getInteger("b2.listing.chunksize"),
+                        prefix, null);
                 for(B2FileInfoResponse info : response.getFiles()) {
                     if(PathNormalizer.name(info.getFileName()).startsWith(regex.toPattern().pattern())) {
                         list.add(new Path(String.format("%s/%s", containerService.getContainer(workdir).getAbsolute(), info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session).parse(info)));
