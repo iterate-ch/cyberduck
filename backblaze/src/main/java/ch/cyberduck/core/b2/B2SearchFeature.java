@@ -52,7 +52,10 @@ public class B2SearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> list = new AttributedList<>();
-            String startFilename = containerService.getKey(workdir) + Path.DELIMITER;
+            String startFilename = null;
+            if(!containerService.isContainer(workdir)) {
+                startFilename = containerService.getKey(workdir) + Path.DELIMITER;
+            }
             do {
                 final B2ListFilesResponse response = session.getClient().listFileNames(
                         new B2FileidProvider(session).withCache(cache).getFileid(containerService.getContainer(workdir), listener),
