@@ -1759,7 +1759,7 @@ public class BrowserController extends WindowController
                                                     public void cleanup(final AttributedList<Path> list) {
                                                         super.cleanup(list);
                                                         // Set filter with search result
-                                                        setFilter(new RecursiveSearchFilter(list, input));
+                                                        setFilter(new RecursiveSearchFilter(list));
                                                         // Reload browser
                                                         reload();
                                                     }

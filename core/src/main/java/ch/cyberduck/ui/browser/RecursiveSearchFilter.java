@@ -16,19 +16,15 @@ package ch.cyberduck.ui.browser;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 
-import java.util.regex.Pattern;
-
-public class RecursiveSearchFilter implements Filter<Path> {
+public class RecursiveSearchFilter extends NullFilter<Path> {
 
     private final AttributedList<Path> list;
-    private final String input;
 
-    public RecursiveSearchFilter(final AttributedList<Path> list, final String input) {
+    public RecursiveSearchFilter(final AttributedList<Path> list) {
         this.list = list;
-        this.input = input;
     }
 
     @Override
@@ -42,10 +38,5 @@ public class RecursiveSearchFilter implements Filter<Path> {
             }
         }
         return false;
-    }
-
-    @Override
-    public Pattern toPattern() {
-        return Pattern.compile(input);
     }
 }
