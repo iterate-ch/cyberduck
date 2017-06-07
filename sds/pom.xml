@@ -111,41 +111,29 @@
                     <compilerArguments combine.self="override"/>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-codegen-maven-plugin</artifactId>
+                <version>2.2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>https://duck.ssp-europe.eu/swagger-proxy/api_v4/</inputSpec>
+                            <language>java</language>
+                            <output>${project.basedir}</output>
+                            <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
+                            <apiPackage>ch.cyberduck.core.sds.io.swagger.client.api</apiPackage>
+                            <configOptions>
+                                <sourceFolder>src/main/java</sourceFolder>
+                                <library>jersey2</library>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>codegen</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.swagger</groupId>
-                        <artifactId>swagger-codegen-maven-plugin</artifactId>
-                        <version>2.2.2</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <inputSpec>https://duck.ssp-europe.eu/swagger-proxy/api_v4/</inputSpec>
-                                    <language>java</language>
-                                    <output>${project.basedir}</output>
-                                    <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
-                                    <apiPackage>ch.cyberduck.core.sds.io.swagger.client.api</apiPackage>
-                                    <generateSupportingFiles>false</generateSupportingFiles>
-                                    <generateApiDocumentation>false</generateApiDocumentation>
-                                    <configOptions>
-                                        <sourceFolder>src/main/java</sourceFolder>
-                                        <library>jersey2</library>
-                                    </configOptions>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
