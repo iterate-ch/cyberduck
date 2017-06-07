@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -51,14 +52,20 @@ public class B2SearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> list = new AttributedList<>();
-            final B2ListFilesResponse response = session.getClient().listFileNames(
-                    new B2FileidProvider(session).withCache(cache).getFileid(containerService.getContainer(workdir), listener), regex.toPattern().pattern(), 2,
-                    containerService.isContainer(workdir) ? null : containerService.getKey(workdir), String.valueOf(Path.DELIMITER));
-            for(B2FileInfoResponse info : response.getFiles()) {
-                if(info.getFileName().startsWith(regex.toPattern().pattern())) {
-                    list.add(new Path(workdir, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session).parse(info)));
+            String startFilename = containerService.getKey(workdir) + Path.DELIMITER;
+            do {
+                final B2ListFilesResponse response = session.getClient().listFileNames(
+                        new B2FileidProvider(session).withCache(cache).getFileid(containerService.getContainer(workdir), listener),
+                        startFilename,
+                        PreferencesFactory.get().getInteger("b2.listing.chunksize"));
+                for(B2FileInfoResponse info : response.getFiles()) {
+                    if(PathNormalizer.name(info.getFileName()).startsWith(regex.toPattern().pattern())) {
+                        list.add(new Path(String.format("%s/%s", containerService.getContainer(workdir).getAbsolute(), info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session).parse(info)));
+                    }
                 }
+                startFilename = response.getNextFileName();
             }
+            while(startFilename != null);
             return list;
         }
         catch(B2ApiException e) {
