@@ -65,7 +65,8 @@ public class B2SearchFeature implements Search {
                         prefix, null);
                 for(B2FileInfoResponse info : response.getFiles()) {
                     if(PathNormalizer.name(info.getFileName()).startsWith(regex.toPattern().pattern())) {
-                        list.add(new Path(String.format("%s/%s", containerService.getContainer(workdir).getAbsolute(), info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session).parse(info)));
+                        list.add(new Path(String.format("%s%s%s", containerService.getContainer(workdir).getAbsolute(),
+                                String.valueOf(Path.DELIMITER), info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session).parse(info)));
                     }
                 }
                 startFilename = response.getNextFileName();
