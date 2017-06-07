@@ -72,6 +72,28 @@ public class B2SearchFeatureTest {
     }
 
     @Test
+    public void testSearchInRoot() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
+        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener());
+        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final String name = new AlphanumericRandomStringService().random();
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new B2TouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final B2SearchFeature feature = new B2SearchFeature(session);
+        assertNotNull(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
+        // Supports prefix matching only
+        assertNull(feature.search(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
+        assertNotNull(feature.search(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
+        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
     public void testSearchInDirectory() throws Exception {
         final B2Session session = new B2Session(
                 new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),

@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -53,25 +54,34 @@ public class B2SearchFeature implements Search {
         try {
             final AttributedList<Path> list = new AttributedList<>();
             String prefix = null;
-            if(!containerService.isContainer(workdir)) {
-                prefix = containerService.getKey(workdir) + Path.DELIMITER;
+            final AttributedList<Path> containers;
+            if(workdir.isRoot()) {
+                containers = new B2BucketListService(session).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), listener);
             }
-            String startFilename = prefix;
-            do {
-                final B2ListFilesResponse response = session.getClient().listFileNames(
-                        new B2FileidProvider(session).withCache(cache).getFileid(containerService.getContainer(workdir), listener),
-                        startFilename,
-                        PreferencesFactory.get().getInteger("b2.listing.chunksize"),
-                        prefix, null);
-                for(B2FileInfoResponse info : response.getFiles()) {
-                    if(PathNormalizer.name(info.getFileName()).startsWith(regex.toPattern().pattern())) {
-                        list.add(new Path(String.format("%s%s%s", containerService.getContainer(workdir).getAbsolute(),
-                                String.valueOf(Path.DELIMITER), info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session).parse(info)));
-                    }
+            else {
+                containers = new AttributedList<>(Collections.singletonList(containerService.getContainer(workdir)));
+                if(!containerService.isContainer(workdir)) {
+                    prefix = containerService.getKey(workdir) + Path.DELIMITER;
                 }
-                startFilename = response.getNextFileName();
             }
-            while(startFilename != null);
+            for(Path container : containers) {
+                String startFilename = prefix;
+                do {
+                    final B2ListFilesResponse response = session.getClient().listFileNames(
+                            new B2FileidProvider(session).withCache(cache).getFileid(container, listener),
+                            startFilename,
+                            PreferencesFactory.get().getInteger("b2.listing.chunksize"),
+                            prefix, null);
+                    for(B2FileInfoResponse info : response.getFiles()) {
+                        if(PathNormalizer.name(info.getFileName()).startsWith(regex.toPattern().pattern())) {
+                            list.add(new Path(String.format("%s%s%s", container.getAbsolute(),
+                                    String.valueOf(Path.DELIMITER), info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session).parse(info)));
+                        }
+                    }
+                    startFilename = response.getNextFileName();
+                }
+                while(startFilename != null);
+            }
             return list;
         }
         catch(B2ApiException e) {
