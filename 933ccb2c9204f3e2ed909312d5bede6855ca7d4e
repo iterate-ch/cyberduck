@@ -1,13 +1,3 @@
-Unsynced commit '933ccb2c9204f3e2ed909312d5bede6855ca7d4e' referred by 'branch master' has been detected at June 08, 2017;
-Git and Subversion repositories are out of sync at the moment.
+Conflict has been resolved:
 
-To translate this unsynced commit to Subversion and restore synchronized state do:
-
-1. Fetch unsynced commit to your local Git clone
-    $ git fetch origin refs/subgit/unsynced/heads/master/1:refs/subgit/unsynced/heads/master/1
-
-2. Merge fetched ref to 'branch master'
-    $ git merge refs/subgit/unsynced/heads/master/1 refs/heads/master
-
-3. Push merged commit back to the Git repository
-    $ git push origin refs/heads/master
+Unsynced changes (commit '933ccb2c9204f3e2ed909312d5bede6855ca7d4e') have been translated to revision 41250
