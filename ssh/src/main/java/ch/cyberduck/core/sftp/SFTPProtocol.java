@@ -59,5 +59,4 @@ public final class SFTPProtocol extends AbstractProtocol {
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
-
 }

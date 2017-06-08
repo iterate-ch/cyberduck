@@ -177,14 +177,47 @@
       <PackagePath>$(PackageLayout)\License.txt</PackagePath>
     </LayoutFile>
 
-    <LayoutFile Include="$(OutputPath)profiles\Rackspace US.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Rackspace US.cyberduckprofile</PackagePath>
+    <LayoutFile Include="$(OutputPath)profiles\Azure.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Azure.cyberduckprofile</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)profiles\B2.cyberduckprofile">
       <PackagePath>$(PackageLayout)\profiles\B2.cyberduckprofile</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\DAV.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\DAV.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\Dropbox.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Dropbox.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\File.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\File.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\FTP.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\FTP.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\FTPS.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\FTPS.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\Google Cloud Storage.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Google Cloud Storage.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\Google Drive.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Google Drive.cyberduckprofile</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)profiles\Microsoft OneDrive.cyberduckprofile">
       <PackagePath>$(PackageLayout)\profiles\Microsoft OneDrive.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\Rackspace US.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Rackspace US.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\S3 (HTTPS).cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\S3 (HTTPS).cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\SFTP.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\SFTP.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\Swift.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Swift.cyberduckprofile</PackagePath>
     </LayoutFile>
 
     <LayoutFile Include="$(OutputPath)msvcr100.dll">

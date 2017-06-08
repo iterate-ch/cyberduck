@@ -20,13 +20,9 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.googledrive.DriveProtocol;
-import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
-import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +52,7 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local file) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         try {
             final JsonReader reader = new JsonReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
             reader.beginArray();
@@ -89,17 +85,14 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                         case "type":
                             final String type = this.readNext(name, reader);
                             switch(type) {
-                                case "hubic":
-                                    protocol = new HubicProtocol();
-                                    break;
                                 case "google_cloud_storage":
-                                    protocol = new GoogleStorageProtocol();
+                                    protocol = protocols.forType(Protocol.Type.googlestorage);
                                     break;
                                 case "gdrive":
-                                    protocol = new DriveProtocol();
+                                    protocol = protocols.forType(Protocol.Type.googledrive);
                                     break;
                                 default:
-                                    protocol = ProtocolFactory.forName(type);
+                                    protocol = protocols.forName(type);
                             }
                             break;
 
@@ -114,14 +107,14 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                     if(ssl) {
                         switch(protocol.getType()) {
                             case ftp:
-                                protocol = new FTPTLSProtocol();
+                                protocol = protocols.forScheme(Scheme.ftps);
                                 break;
                             case dav:
-                                protocol = new DAVSSLProtocol();
+                                protocol = protocols.forScheme(Scheme.davs);
                                 break;
                         }
                     }
-                    this.add(HostParser.parse(ProtocolFactory.global, protocol, url));
+                    this.add(HostParser.parse(protocols, protocol, url));
                 }
             }
             reader.endArray();

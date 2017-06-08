@@ -1,8 +1,8 @@
 package ch.cyberduck.core.dav;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,17 +13,14 @@ package ch.cyberduck.core.dav;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
-public final class DAVProtocol extends AbstractProtocol {
+public class DAVProtocol extends AbstractProtocol {
     @Override
     public String getName() {
         return "WebDAV (HTTP)";
@@ -31,7 +28,7 @@ public final class DAVProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return LocaleFactory.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)");
+        return this.getName();
     }
 
     @Override
@@ -50,13 +47,7 @@ public final class DAVProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name(), "dav"};
-    }
-
-    @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
-
 }

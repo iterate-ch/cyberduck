@@ -37,7 +37,7 @@ public class OneDriveMeContextLoginTest {
 
     @BeforeClass
     public static void protocol() {
-        ProtocolFactory.register(new OneDriveProtocol());
+        ProtocolFactory.global.register(new OneDriveProtocol());
     }
 
     @After
@@ -48,7 +48,7 @@ public class OneDriveMeContextLoginTest {
     @Before
     public void setup() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/Microsoft OneDrive.cyberduckprofile"));
+                new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {

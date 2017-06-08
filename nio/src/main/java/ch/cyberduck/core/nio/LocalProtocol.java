@@ -16,10 +16,9 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -103,7 +102,11 @@ public class LocalProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isEnabled() {
-        return true;
+    public String disk() {
+        switch(Factory.Platform.getDefault()) {
+            case mac:
+                return "NSComputer";
+        }
+        return super.disk();
     }
 }

@@ -64,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (!Controllers.TryGetValue(parent, out c))
             {
                 c = new ConnectionController(new Host(
-                    ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
+                    ProtocolFactory.global.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
                     PreferencesFactory.get().getProperty("connection.hostname.default"),
                     PreferencesFactory.get().getInteger("connection.port.default")));
                 Controllers.Add(parent, c);

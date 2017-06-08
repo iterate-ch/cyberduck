@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 
@@ -47,7 +48,7 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local file) {
+    protected void parse(final ProtocolFactory protocols, final Local file) {
         NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
             log.error("Invalid bookmark file:" + file);
@@ -59,16 +60,16 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
             return;
         }
         for(NSDictionary item : items) {
-            this.parse(item);
+            this.parse(protocols, item);
         }
     }
 
-    private void parse(NSDictionary item) {
+    private void parse(final ProtocolFactory protocols, NSDictionary item) {
         final PlistDeserializer bookmark = new PlistDeserializer(item);
         final List<NSDictionary> children = bookmark.listForKey("Children");
         if(null != children) {
             for(NSDictionary child : children) {
-                this.parse(child);
+                this.parse(protocols, child);
             }
             return;
         }
@@ -77,7 +78,7 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
             // Possibly a folder
             return;
         }
-        final Host host = HostParser.parse(url);
+        final Host host = new HostParser(protocols).get(url);
         if(StringUtils.isBlank(host.getHostname())) {
             // Possibly file://
             return;

@@ -16,6 +16,7 @@
         <module>core/dll</module>
         <module>core/native</module>
         <module>i18n</module>
+        <module>profiles</module>
         <!-- Encryption-->
         <module>cryptomator</module>
         <module>cryptomator/dll</module>

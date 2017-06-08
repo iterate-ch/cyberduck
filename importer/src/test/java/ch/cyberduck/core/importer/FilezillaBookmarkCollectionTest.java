@@ -3,10 +3,14 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -17,7 +21,7 @@ public class FilezillaBookmarkCollectionTest {
     public void testParse() throws Exception {
         FilezillaBookmarkCollection c = new FilezillaBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(new Local("src/test/resources/org.filezilla-project.sitemanager.xml"));
+        c.parse(new ProtocolFactory(new HashSet<>(Arrays.asList(new TestProtocol(Scheme.ftp), new TestProtocol(Scheme.ftps), new TestProtocol(Scheme.sftp)))), new Local("src/test/resources/org.filezilla-project.sitemanager.xml"));
         assertEquals(2, c.size());
     }
 
@@ -47,7 +51,7 @@ public class FilezillaBookmarkCollectionTest {
             }
         });
         assertEquals(0, c.size());
-        c.parse(new Local("src/test/resources/org.filezilla-project.sitemanager-2.xml"));
+        c.parse(new ProtocolFactory(new HashSet<>(Arrays.asList(new TestProtocol(Scheme.ftp), new TestProtocol(Scheme.ftps), new TestProtocol(Scheme.sftp)))), new Local("src/test/resources/org.filezilla-project.sitemanager-2.xml"));
         assertEquals(1, c.size());
         final Host b = c.iterator().next();
         assertTrue(saved.get());

@@ -24,11 +24,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -93,11 +91,21 @@ public abstract class AbstractRendezvous implements Rendezvous {
     private final Set<RendezvousListener> listeners =
             Collections.synchronizedSet(new HashSet<RendezvousListener>());
 
-    private LimitedRendezvousListener notifier;
+    private final ProtocolFactory protocols;
+
+    private final LimitedRendezvousListener notifier = new LimitedRendezvousListener(listeners);
+
+    public AbstractRendezvous() {
+        this(ProtocolFactory.global);
+    }
+
+    public AbstractRendezvous(final ProtocolFactory protocols) {
+        this.protocols = protocols;
+    }
 
     @Override
     public void init() {
-        notifier = new LimitedRendezvousListener(listeners);
+        //
     }
 
     @Override
@@ -181,16 +189,16 @@ public abstract class AbstractRendezvous implements Rendezvous {
      */
     protected Protocol getProtocol(final String fullname) {
         if(fullname.contains(SERVICE_TYPE_SFTP)) {
-            return new SFTPProtocol();
+            return protocols.forScheme(Scheme.sftp);
         }
         if(fullname.contains(SERVICE_TYPE_FTP)) {
-            return new FTPProtocol();
+            return protocols.forScheme(Scheme.ftp);
         }
         if(fullname.contains(SERVICE_TYPE_WEBDAV)) {
-            return new DAVProtocol();
+            return protocols.forScheme(Scheme.dav);
         }
         if(fullname.contains(SERVICE_TYPE_WEBDAV_TLS)) {
-            return new DAVSSLProtocol();
+            return protocols.forScheme(Scheme.davs);
         }
         log.warn(String.format("Cannot find service type in %s", fullname));
         return null;

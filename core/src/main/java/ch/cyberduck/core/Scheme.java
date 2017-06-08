@@ -88,6 +88,39 @@ public enum Scheme {
             return 443;
         }
     },
+    dav {
+        @Override
+        public boolean isSecure() {
+            return false;
+        }
+
+        @Override
+        public int getPort() {
+            return 80;
+        }
+    },
+    davs {
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public int getPort() {
+            return 443;
+        }
+    },
+    s3 {
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public int getPort() {
+            return 443;
+        }
+    },
     rtmp {
         @Override
         public boolean isSecure() {

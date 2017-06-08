@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.LocalTouchFactory;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.OutputStream;
@@ -11,9 +12,13 @@ import static org.junit.Assert.*;
 
 public class FolderBookmarkCollectionTest {
 
+    @BeforeClass
+    public static void register() {
+        ProtocolFactory.global.register(new TestProtocol());
+    }
+
     @Test
     public void testLoad() throws Exception {
-        ProtocolFactory.register(new TestProtocol());
         final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final String uid = "4d6b034c-8635-4e2f-93b1-7306ba22da22";
         final Local b = new Local(source, String.format("%s.duck", uid));

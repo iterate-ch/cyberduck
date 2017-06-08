@@ -27,6 +27,8 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -237,7 +239,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                         callback.warn(host.getProtocol(),
                                 MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                                 MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
-                                        new FTPTLSProtocol().getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                                        ProtocolFactory.global.forScheme(Scheme.ftps).getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
                                 LocaleFactory.localizedString("Continue", "Credentials"),
                                 LocaleFactory.localizedString("Change", "Credentials"),
                                 String.format("connection.unsecure.%s", host.getHostname()));
@@ -245,7 +247,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     }
                     catch(LoginCanceledException e) {
                         // Protocol switch
-                        host.setProtocol(new FTPTLSProtocol());
+                        host.setProtocol(ProtocolFactory.global.forScheme(Scheme.ftps));
                         // Reconfigure client for TLS
                         this.configure(client);
                         client.execAUTH();

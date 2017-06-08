@@ -38,21 +38,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>ftp</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>ssh</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>webdav</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.apple</groupId>
             <artifactId>dnssd</artifactId>
             <version>1.0</version>

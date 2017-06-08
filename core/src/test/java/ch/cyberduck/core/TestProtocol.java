@@ -29,11 +29,9 @@ public class TestProtocol extends AbstractProtocol {
             case ftps:
             case sftp:
                 return Type.ftp;
-            case http:
-            case https:
+            default:
                 return Type.dav;
         }
-        return super.getType();
     }
 
     @Override
@@ -44,5 +42,10 @@ public class TestProtocol extends AbstractProtocol {
     @Override
     public String getPrefix() {
         return "ch.cyberduck.core.Null";
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

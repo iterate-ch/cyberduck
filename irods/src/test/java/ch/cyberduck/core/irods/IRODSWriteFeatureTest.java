@@ -62,7 +62,7 @@ public class IRODSWriteFeatureTest {
 
     @BeforeClass
     public static void protocol() {
-        ProtocolFactory.register(new IRODSProtocol());
+        ProtocolFactory.global.register(new IRODSProtocol());
     }
 
     @Test

@@ -48,7 +48,17 @@ public class CommandLineUriParserTest {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        }, new S3Protocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        })));
         assertTrue(new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
                 .compareTo(new CommandLineUriParser(input, factory).parse("s3://AWS456@cyberduck-test/key")) == 0);
         assertTrue(new Host(new FTPTLSProtocol(), "cyberduck.io", 55, "/folder", new Credentials("anonymous", null))
@@ -61,10 +71,15 @@ public class CommandLineUriParserTest {
         final CommandLine input = parser.parse(new Options(), new String[]{});
         final Set<Protocol> list = new HashSet<>(Arrays.asList(
                 new SwiftProtocol(),
-                new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
-                        .read(new Local("../profiles/Rackspace US.cyberduckprofile"))
+                new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol() {
+                    @Override
+                    public boolean isEnabled() {
+                        return true;
+                    }
+                })))
+                        .read(new Local("../profiles/default/Rackspace US.cyberduckprofile"))
         ));
-        assertTrue(new Host(new ProtocolFactory(list).find("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
+        assertTrue(new Host(new ProtocolFactory(list).forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
                 .compareTo(new CommandLineUriParser(input, new ProtocolFactory(list)).parse("rackspace://u@cdn.cyberduck.ch/")) == 0);
 
     }

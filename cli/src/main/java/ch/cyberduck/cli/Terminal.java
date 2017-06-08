@@ -105,7 +105,7 @@ public class Terminal {
 
     public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults.withDefaults(input);
-        ProtocolFactory.register(
+        ProtocolFactory.global.register(
                 new FTPProtocol(),
                 new FTPTLSProtocol(),
                 new SFTPProtocol(),

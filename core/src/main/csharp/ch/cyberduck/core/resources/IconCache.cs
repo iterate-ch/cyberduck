@@ -370,7 +370,7 @@ namespace Ch.Cyberduck.Core.Resources
             if (!_protocolImages.TryGetValue(size, out dict))
             {
                 dict = new Dictionary<string, Bitmap>();
-                foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] {}))
+                foreach (Protocol p in ProtocolFactory.global.find().toArray(new Protocol[] {}))
                 {
                     dict[p.disk()] = IconForName(p.disk(), size);
                 }
@@ -384,7 +384,7 @@ namespace Ch.Cyberduck.Core.Resources
             if (null == _protocolIcons)
             {
                 _protocolIcons = new Dictionary<string, Bitmap>();
-                foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] {}))
+                foreach (Protocol p in ProtocolFactory.global.find().toArray(new Protocol[] {}))
                 {
                     _protocolIcons[p.getProvider()] = IconForName(p.icon(), 16);
                 }

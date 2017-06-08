@@ -20,8 +20,9 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -43,7 +44,7 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
     private static final long serialVersionUID = 5122804563710604658L;
 
     @Override
-    protected void parse(final Local file) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         try {
             final BufferedReader in
                     = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
@@ -52,7 +53,7 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
                 String line;
                 while((line = in.readLine()) != null) {
                     if(line.startsWith("[")) {
-                        current = new Host(new FTPProtocol(), PreferencesFactory.get().getProperty("connection.hostname.default"));
+                        current = new Host(protocols.forScheme(Scheme.ftp));
                         current.getCredentials().setUsername(
                                 PreferencesFactory.get().getProperty("connection.login.anon.name"));
                         Pattern pattern = Pattern.compile("\\[(.*)\\]");

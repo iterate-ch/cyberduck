@@ -63,7 +63,7 @@ public class HostDictionary {
             log.warn(String.format("Missing protocol key in %s", serialized));
             return null;
         }
-        final Protocol p = protocols.find(protocolObj.toString());
+        final Protocol p = protocols.forName(protocolObj.toString());
         if(null != p) {
             final Host bookmark = new Host(p);
             final Object hostnameObj = dict.stringForKey("Hostname");
@@ -76,7 +76,7 @@ public class HostDictionary {
             }
             final Object providerObj = dict.stringForKey("Provider");
             if(providerObj != null) {
-                final Protocol provider = ProtocolFactory.forName(providerObj.toString());
+                final Protocol provider = protocols.forName(providerObj.toString());
                 if(null != provider) {
                     bookmark.setProtocol(provider);
                 }
