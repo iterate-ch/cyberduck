@@ -89,9 +89,7 @@
                 </fx:fileset>
                 <fx:fileset type="license" file="${home}/LICENSE"/>
                 <fx:fileset dir="${home}" type="data">
-                    <include name="profiles/Rackspace US.cyberduckprofile"/>
-                    <include name="profiles/B2.cyberduckprofile"/>
-                    <include name="profiles/Microsoft OneDrive.cyberduckprofile"/>
+                    <include name="profiles/default/*.cyberduckprofile"/>
                 </fx:fileset>
                 <!-- Localizations -->
                 <fx:fileset dir="${home}" type="data">
