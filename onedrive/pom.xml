@@ -37,7 +37,7 @@
         <dependency>
             <groupId>ch.iterate.onedrive</groupId>
             <artifactId>onedrive-java-client</artifactId>
-            <version>2.0</version>
+            <version>2.0.2</version>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -47,29 +47,4 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>maven.nuxeo-release</id>
-            <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>maven.nuxeo-snapshots</id>
-            <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>

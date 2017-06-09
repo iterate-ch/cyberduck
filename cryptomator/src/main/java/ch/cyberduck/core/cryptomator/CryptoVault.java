@@ -84,11 +84,12 @@ public class CryptoVault implements Vault {
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
 
+    private final PasswordStore keychain;
+
     /**
      * Root of vault directory
      */
     private final Path home;
-    private final PasswordStore keychain;
 
     private Cryptor cryptor;
 
@@ -106,7 +107,7 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public synchronized CryptoVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                 FastSecureRandomProvider.get().provide()
         );
@@ -122,8 +123,8 @@ public class CryptoVault implements Vault {
             log.debug(String.format("Write master key to %s", masterKeyFile));
         }
         // Obtain non encrypted directory writer
-        final Directory feature = session._getFeature(Directory.class);
-        feature.mkdir(home, region, new TransferStatus());
+        final Directory directory = session._getFeature(Directory.class);
+        final Path vault = directory.mkdir(home, region, new TransferStatus());
         new ContentWriter(session).write(masterKeyFile, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
@@ -132,10 +133,10 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        feature.mkdir(dataDir, region, new TransferStatus());
-        feature.mkdir(firstLevel, region, new TransferStatus());
-        feature.mkdir(secondLevel, region, new TransferStatus());
-        return this;
+        directory.mkdir(dataDir, region, new TransferStatus());
+        directory.mkdir(firstLevel, region, new TransferStatus());
+        directory.mkdir(secondLevel, region, new TransferStatus());
+        return vault;
     }
 
     @Override

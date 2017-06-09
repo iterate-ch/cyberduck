@@ -62,7 +62,8 @@ public class SwiftTouchFeatureTest {
         final Path home = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, RandomStringUtils.random(130), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         new CryptoTouchFeature<StorageObject>(session, new SwiftTouchFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).touch(test, new TransferStatus());
@@ -82,7 +83,8 @@ public class SwiftTouchFeatureTest {
         final Path home = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, RandomStringUtils.random(130), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(session, regionService))), new SwiftWriteFeature(session, regionService), cryptomator).touch(test, new TransferStatus());

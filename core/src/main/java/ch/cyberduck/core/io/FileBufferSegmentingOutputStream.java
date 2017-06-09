@@ -41,6 +41,9 @@ public abstract class FileBufferSegmentingOutputStream extends SegmentingOutputS
     }
 
     protected void copy() throws IOException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Copy buffer%s to output", buffer));
+        }
         this.copy(buffer);
     }
 

@@ -39,9 +39,9 @@ public class CreateVaultWorker extends Worker<Path> {
 
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
-        final Vault vault = this.vault.create(session, region, passphrase);
+        final Path home = vault.create(session, region, passphrase);
         vault.close();
-        return vault.getHome();
+        return home;
     }
 
     @Override

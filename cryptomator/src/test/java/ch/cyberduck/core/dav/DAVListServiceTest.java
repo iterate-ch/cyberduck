@@ -62,7 +62,8 @@ public class DAVListServiceTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new DAVListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))), new DAVWriteFeature(session), cryptomator).touch(test, new TransferStatus());

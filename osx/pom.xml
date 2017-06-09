@@ -238,6 +238,26 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>run-ant-build-target</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}"/>
+                                        <property name="version" value="${project.version}"/>
+                                        <property name="revision" value="${git.commitsCount}"/>
+                                        <property name="git.revision" value="${git.revision}"/>
+                                        <!-- 'Release' or 'Mac App Store' -->
+                                        <property name="xcode.configuration" value="${xcode.configuration}"/>
+                                        <property name="sparkle.feed" value="${sparkle.feed}"/>
+                                        <property name="sparkle.key.prefix" value="${sparkle.key.prefix}"/>
+                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>run-ant-package-target</id>
                                 <phase>install</phase>
                                 <goals>

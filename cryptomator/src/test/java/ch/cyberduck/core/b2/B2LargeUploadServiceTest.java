@@ -77,7 +77,8 @@ public class B2LargeUploadServiceTest {
         final Path home = new Path("/test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
                 new B2LargeUploadService(session, new B2WriteFeature(session), 5242880L, 5),
@@ -119,7 +120,8 @@ public class B2LargeUploadServiceTest {
         final Path home = new Path("/test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus writeStatus = new TransferStatus();
         final byte[] content = new byte[5242885];

@@ -25,8 +25,8 @@ import java.util.Objects;
 
 public final class DisabledVault implements Vault {
     @Override
-    public Vault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
-        return this;
+    public Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+        return null;
     }
 
     @Override

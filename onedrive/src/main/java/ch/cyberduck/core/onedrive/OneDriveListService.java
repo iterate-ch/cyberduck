@@ -21,8 +21,6 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.nuxeo.onedrive.client.OneDriveRuntimeException;
-
 public class OneDriveListService implements ListService {
 
     private final OneDriveSession session;
@@ -33,16 +31,11 @@ public class OneDriveListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        try {
-            if(directory.isRoot()) {
-                return new OneDriveContainerListService(session).list(directory, listener);
-            }
-            else {
-                return new OneDriveItemListService(session).list(directory, listener);
-            }
+        if(directory.isRoot()) {
+            return new OneDriveContainerListService(session).list(directory, listener);
         }
-        catch(OneDriveRuntimeException e) { // this catches iterator.hasNext() which in return should fail fast
-            throw new OneDriveExceptionMappingService().map("Listing directory {0} failed", e.getCause(), directory);
+        else {
+            return new OneDriveItemListService(session).list(directory, listener);
         }
     }
 }
