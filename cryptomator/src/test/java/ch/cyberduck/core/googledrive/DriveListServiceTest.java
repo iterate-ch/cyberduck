@@ -64,7 +64,7 @@ public class DriveListServiceTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path home = new DriveHomeFinderService(session).find();
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));

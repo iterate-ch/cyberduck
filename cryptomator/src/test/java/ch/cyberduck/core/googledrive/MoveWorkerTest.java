@@ -37,7 +37,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -85,7 +84,7 @@ public class MoveWorkerTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DriveHomeFinderService(session).find();
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
@@ -125,7 +124,7 @@ public class MoveWorkerTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DriveHomeFinderService(session).find();
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
@@ -168,7 +167,7 @@ public class MoveWorkerTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DriveHomeFinderService(session).find();
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
@@ -211,7 +210,7 @@ public class MoveWorkerTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DriveHomeFinderService(session).find();
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
@@ -261,7 +260,7 @@ public class MoveWorkerTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DriveHomeFinderService(session).find();
         final Path clearFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(clearFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(clearFile));
@@ -307,7 +306,7 @@ public class MoveWorkerTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DriveHomeFinderService(session).find();
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
@@ -356,7 +355,7 @@ public class MoveWorkerTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DriveHomeFinderService(session).find();
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
         final CryptoVault cryptomator = new CryptoVault(
@@ -405,7 +404,7 @@ public class MoveWorkerTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DriveHomeFinderService(session).find();
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
