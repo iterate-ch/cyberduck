@@ -105,12 +105,16 @@ public final class ProtocolFactory {
     }
 
     /**
-     * @return List of protocols
+     * @return List of enabled protocols
      */
     public List<Protocol> find() {
         return this.find(Protocol::isEnabled);
     }
 
+    /**
+     * @param search Search filter for all registered protocols
+     * @return List of registered protocols matching search criteria.
+     */
     public List<Protocol> find(final Predicate<Protocol> search) {
         return registered.stream().filter(search).sorted().collect(Collectors.toList());
     }
