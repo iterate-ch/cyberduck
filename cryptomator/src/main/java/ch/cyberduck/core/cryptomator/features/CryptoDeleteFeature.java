@@ -15,6 +15,8 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -22,11 +24,16 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
+
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class CryptoDeleteFeature implements Delete {
+    private static final Logger log = Logger.getLogger(CryptoDeleteFeature.class);
 
     private final Session<?> session;
     private final Delete proxy;
@@ -57,7 +64,28 @@ public class CryptoDeleteFeature implements Delete {
                 }
             }
         }
-        proxy.delete(encrypted, prompt, callback);
+        if(!encrypted.isEmpty()) {
+            proxy.delete(encrypted, prompt, callback);
+        }
+        for(Path f : files) {
+            if(f.equals(vault.getHome())) {
+                final List<Path> metadata = new ArrayList<>();
+                if(!proxy.isRecursive()) {
+                    final Find find = session._getFeature(Find.class);
+                    metadata.add(new Path(vault.getHome(), "masterkey.cryptomator", EnumSet.of(Path.Type.file)));
+                    if(find.find(new Path(vault.getHome(), "d", EnumSet.of(Path.Type.directory)))) {
+                        metadata.addAll(session._getFeature(ListService.class).list(new Path(vault.getHome(), "d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).toList());
+                        metadata.add(new Path(vault.getHome(), "d", EnumSet.of(Path.Type.directory)));
+                    }
+                    if(find.find(new Path(vault.getHome(), "m", EnumSet.of(Path.Type.directory)))) {
+                        metadata.addAll(session._getFeature(ListService.class).list(new Path(vault.getHome(), "m", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).toList());
+                        metadata.add(new Path(vault.getHome(), "m", EnumSet.of(Path.Type.directory)));
+                    }
+                }
+                metadata.add(f);
+                proxy.delete(metadata, prompt, callback);
+            }
+        }
     }
 
     @Override
