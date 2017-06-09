@@ -133,7 +133,7 @@ public class MoveWorkerTest {
         worker.run(session);
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(target, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(target, targetFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
