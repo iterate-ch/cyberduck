@@ -70,9 +70,9 @@ public class CryptoDeleteFeature implements Delete {
         for(Path f : files) {
             if(f.equals(vault.getHome())) {
                 final List<Path> metadata = new ArrayList<>();
+                metadata.add(vault.encrypt(session, f));
                 if(!proxy.isRecursive()) {
                     final Find find = session._getFeature(Find.class);
-                    metadata.add(new Path(vault.getHome(), "masterkey.cryptomator", EnumSet.of(Path.Type.file)));
                     if(find.find(new Path(vault.getHome(), "d", EnumSet.of(Path.Type.directory)))) {
                         metadata.addAll(session._getFeature(ListService.class).list(new Path(vault.getHome(), "d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).toList());
                         metadata.add(new Path(vault.getHome(), "d", EnumSet.of(Path.Type.directory)));
@@ -82,6 +82,7 @@ public class CryptoDeleteFeature implements Delete {
                         metadata.add(new Path(vault.getHome(), "m", EnumSet.of(Path.Type.directory)));
                     }
                 }
+                metadata.add(new Path(vault.getHome(), "masterkey.cryptomator", EnumSet.of(Path.Type.file)));
                 metadata.add(f);
                 proxy.delete(metadata, prompt, callback);
             }
