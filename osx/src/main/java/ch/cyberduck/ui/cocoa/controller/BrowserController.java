@@ -3103,14 +3103,19 @@ public class BrowserController extends WindowController
         if(null != c) {
             c.window().close();
         }
-        this.background(new DisconnectBackgroundAction(this, pool) {
-            @Override
-            public void cleanup() {
-                super.cleanup();
-                window.setDocumentEdited(false);
-                disconnected.run();
-            }
-        });
+        if(this.isConnected()) {
+            this.background(new DisconnectBackgroundAction(this, pool) {
+                @Override
+                public void cleanup() {
+                    super.cleanup();
+                    window.setDocumentEdited(false);
+                    disconnected.run();
+                }
+            });
+        }
+        else {
+            disconnected.run();
+        }
     }
 
     @Action
