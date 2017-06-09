@@ -1,6 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
+6.1
+- [Feature] Search files fast without recursively listing directories (OneDrive)
+- [Feature] Search files fast without recursively listing directories (S3)
+- [Feature] Search files fast without recursively listing directories (Dropbox)
+- [Feature] Search files fast without recursively listing directories (Google Drive)
+
 6.0.4 [https://trac.cyberduck.io/milestone/6.0.4]
 - [Bugfix] Failure to upload to root of vault (Cryptomator)
 - [Bugfix] Disable x-amz-request-payer header for non AWS endpoints (S3)
