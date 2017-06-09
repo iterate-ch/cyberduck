@@ -105,7 +105,7 @@ public class CryptoDirectoryProvider {
     }
 
     private String toDirectoryId(final Session<?> session, final Path directory, final String directoryId) throws BackgroundException {
-        if(home.equals(directory)) {
+        if(new SimplePathPredicate(home).test(directory)) {
             return ROOT_DIR_ID;
         }
         if(StringUtils.isBlank(directoryId)) {
