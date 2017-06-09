@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.ProxyInputStream;
 import org.cryptomator.cryptolib.api.CryptoException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
@@ -24,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-public class CryptoInputStream extends InputStream {
+public class CryptoInputStream extends ProxyInputStream {
 
     private final InputStream proxy;
     private final Cryptor cryptor;
@@ -39,15 +40,12 @@ public class CryptoInputStream extends InputStream {
     private final int chunkSize;
 
     public CryptoInputStream(final InputStream proxy, final Cryptor cryptor, final FileHeader header, final long chunkIndexOffset) throws IOException {
+        super(proxy);
         this.proxy = proxy;
         this.cryptor = cryptor;
         this.header = header;
         this.chunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
         this.chunkIndexOffset = chunkIndexOffset;
-    }
-
-    public InputStream getProxy() {
-        return proxy;
     }
 
     @Override
