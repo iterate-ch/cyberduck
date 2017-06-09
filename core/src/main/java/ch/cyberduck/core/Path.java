@@ -277,7 +277,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
             return false;
         }
         for(Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
-            if(parent.equals(directory)) {
+            if(new SimplePathPredicate(parent).test(directory)) {
                 return true;
             }
         }
