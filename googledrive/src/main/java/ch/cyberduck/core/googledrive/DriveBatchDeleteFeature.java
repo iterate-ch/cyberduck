@@ -68,14 +68,16 @@ public class DriveBatchDeleteFeature implements Delete {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
-        try {
-            batch.execute();
-        }
-        catch(IOException e) {
-            throw new DriveExceptionMappingService().map(e);
-        }
-        for(BackgroundException e : failures) {
-            throw e;
+        if(!files.isEmpty()) {
+            try {
+                batch.execute();
+            }
+            catch(IOException e) {
+                throw new DriveExceptionMappingService().map(e);
+            }
+            for(BackgroundException e : failures) {
+                throw e;
+            }
         }
     }
 
