@@ -166,49 +166,49 @@
     </ComponentGroup>
 
     <ComponentGroup Id="profiles" Directory="PROFILES">
-      <Component Id="azure">
+      <Component Id="azure.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Azure.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="b2">
+      <Component Id="b2.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/B2.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="dav">
+      <Component Id="dav.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/DAV.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="davs">
+      <Component Id="davs.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/DAVS.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="dropbox">
+      <Component Id="dropbox.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Dropbox.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="file">
+      <Component Id="file.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/File.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="ftp">
+      <Component Id="ftp.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/FTP.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="ftps">
+      <Component Id="ftps.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/FTPS.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="googlecloudstorage">
+      <Component Id="googlecloudstorage.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Google Cloud Storage.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="googledrive">
+      <Component Id="googledrive.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Google Drive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="onedrive">
+      <Component Id="onedrive.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft OneDrive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="rackspace">
+      <Component Id="rackspace.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="s3">
+      <Component Id="s3.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/S3 (HTTPS).cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="sftp">
+      <Component Id="sftp.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/SFTP.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="swift">
+      <Component Id="swift.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Swift.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
