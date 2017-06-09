@@ -67,8 +67,11 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+
+import static ch.cyberduck.core.Profile.DEFAULT_PROVIDER;
 
 public class BookmarkController extends SheetController implements CollectionListener {
     private static final Logger log = Logger.getLogger(BookmarkController.class);
@@ -144,61 +147,30 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
-        for(Protocol protocol : ProtocolFactory.global.find(new Predicate<Protocol>() {
-            @Override
-            public boolean test(final Protocol protocol) {
-                switch(protocol.getType()) {
-                    case ftp:
-                    case sftp:
-                    case dav:
-                        return true;
-                }
-                return false;
-            }
-        })) {
+        for(Protocol protocol : ProtocolFactory.global.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : ProtocolFactory.global.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.googlestorage)))) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : ProtocolFactory.global.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : ProtocolFactory.global.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.file)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
         for(Protocol protocol : ProtocolFactory.global.find(new Predicate<Protocol>() {
             @Override
             public boolean test(final Protocol protocol) {
-                switch(protocol.getType()) {
-                    case s3:
-                    case swift:
-                    case azure:
-                    case b2:
-                    case googlestorage:
-                        return true;
-                }
-                return false;
-            }
-        })) {
-            this.addProtocol(protocol);
-        }
-        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : ProtocolFactory.global.find(new Predicate<Protocol>() {
-            @Override
-            public boolean test(final Protocol protocol) {
-                switch(protocol.getType()) {
-                    case dropbox:
-                    case onedrive:
-                    case googledrive:
-                        return true;
-                }
-                return false;
-            }
-        })) {
-            this.addProtocol(protocol);
-        }
-        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : ProtocolFactory.global.find(new Predicate<Protocol>() {
-            @Override
-            public boolean test(final Protocol protocol) {
-                switch(protocol.getType()) {
-                    case file:
-                        return true;
-                }
-                return false;
+                return protocol.isEnabled() && !StringUtils.equals(DEFAULT_PROVIDER, protocol.getProvider());
             }
         })) {
             this.addProtocol(protocol);
@@ -604,5 +576,21 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     public interface BookmarkObserver {
         void change(final Host bookmark);
+    }
+
+    private static class DefaultProtocolPredicate implements Predicate<Protocol> {
+        private final EnumSet<Protocol.Type> types;
+
+        public DefaultProtocolPredicate(final EnumSet<Protocol.Type> types) {
+            this.types = types;
+        }
+
+        @Override
+        public boolean test(final Protocol protocol) {
+            if(types.contains(protocol.getType())) {
+                return protocol.isEnabled() && StringUtils.equals(DEFAULT_PROVIDER, protocol.getProvider());
+            }
+            return false;
+        }
     }
 }
