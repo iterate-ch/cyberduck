@@ -1423,7 +1423,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 infoController.View.Close();
             }
-            if (IsMounted())
+            if (IsConnected())
             {
                 Background(new DisconnectAction(this, runnable));
             }
