@@ -41,6 +41,11 @@ import java.util.Set;
 public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
+    /**
+     * Vendor identifier of default bundled profiles.
+     */
+    public static final String DEFAULT_PROVIDER = "cyberduck";
+
     private final Deserializer<String> dict;
 
     /**
