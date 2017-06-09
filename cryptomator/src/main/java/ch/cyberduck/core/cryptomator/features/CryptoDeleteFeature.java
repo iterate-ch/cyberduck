@@ -66,7 +66,7 @@ public class CryptoDeleteFeature implements Delete {
             proxy.delete(encrypted, prompt, callback);
         }
         for(Path f : files) {
-            if(!f.equals(vault.getHome())) {
+            if(f.equals(vault.getHome())) {
                 final Find find = session._getFeature(Find.class);
                 final List<Path> metadata = new ArrayList<>();
                 metadata.add(new Path(vault.getHome(), "masterkey.cryptomator", EnumSet.of(Path.Type.file)));
