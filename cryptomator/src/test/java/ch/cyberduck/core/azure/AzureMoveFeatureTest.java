@@ -59,9 +59,9 @@ public class AzureMoveFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
-        cryptomator.create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+        final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path folder = new CryptoDirectoryFeature<Void>(session, new AzureDirectoryFeature(session, null), new AzureWriteFeature(session, null), cryptomator).mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
@@ -82,7 +82,7 @@ public class AzureMoveFeatureTest {
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(fileRenamedInRenamedFolder));
         new CryptoDeleteFeature(session, new AzureDeleteFeature(session, null), cryptomator).delete(Arrays.asList(
-                fileRenamedInRenamedFolder, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

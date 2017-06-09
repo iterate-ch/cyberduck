@@ -43,7 +43,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
@@ -67,7 +67,7 @@ public class FTPTouchFeatureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        new CryptoDeleteFeature(session, new FTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new FTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -87,7 +87,7 @@ public class FTPTouchFeatureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        new CryptoDeleteFeature(session, new FTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new FTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

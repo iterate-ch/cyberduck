@@ -2542,7 +2542,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public void SetWorkdir(Path directory, List<Path> selected)
         {
             // Remove any custom file filter
-            SetFilter(null);
+            SetFilter(SearchFilterFactory.create(ShowHiddenFiles));
             if (null == directory)
             {
                 Reload(null, new HashSet<Path>(), selected, false);
@@ -3050,7 +3050,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 case BrowserView.File:
                     View.CurrentView = BrowserView.File;
-                    SetFilter(null);
+                    SetFilter(SearchFilterFactory.create(ShowHiddenFiles));
                     Reload();
                     break;
                 case BrowserView.Bookmark:
@@ -3159,6 +3159,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
+                    base.cleanup(result);
+                    _controller.SetFilter(new RecursiveSearchFilter((AttributedList)result));
                     _controller.Reload();
                 }
             }

@@ -54,12 +54,13 @@ public class CryptoDeleteFeature implements Delete {
             if(!f.equals(vault.getHome())) {
                 final Path encrypt = vault.encrypt(session, f);
                 encrypted.add(encrypt);
+                final Path metadata = vault.encrypt(session, f, true);
                 if(f.isDirectory()) {
                     // Delete metadata file for directory
-                    encrypted.add(vault.encrypt(session, f, true));
+                    encrypted.add(metadata);
                 }
-                if(filenameProvider.isDeflated(encrypt.getName())) {
-                    final Path metadataFile = filenameProvider.resolve(encrypt.getName());
+                if(filenameProvider.isDeflated(metadata.getName())) {
+                    final Path metadataFile = filenameProvider.resolve(metadata.getName());
                     encrypted.add(metadataFile);
                 }
             }
@@ -72,15 +73,26 @@ public class CryptoDeleteFeature implements Delete {
                 final List<Path> metadata = new ArrayList<>();
                 if(!proxy.isRecursive()) {
                     final Find find = session._getFeature(Find.class);
-                    metadata.add(new Path(vault.getHome(), "masterkey.cryptomator", EnumSet.of(Path.Type.file)));
-                    if(find.find(new Path(vault.getHome(), "d", EnumSet.of(Path.Type.directory)))) {
-                        metadata.addAll(session._getFeature(ListService.class).list(new Path(vault.getHome(), "d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).toList());
-                        metadata.add(new Path(vault.getHome(), "d", EnumSet.of(Path.Type.directory)));
+                    final Path dataRoot = new Path(f, "d", f.getType());
+                    if(find.find(dataRoot)) {
+                        for(Path d : session._getFeature(ListService.class).list(dataRoot, new DisabledListProgressListener()).toList()) {
+                            metadata.addAll(session._getFeature(ListService.class).list(d, new DisabledListProgressListener()).toList());
+                            metadata.add(d);
+                        }
+                        metadata.add(dataRoot);
                     }
-                    if(find.find(new Path(vault.getHome(), "m", EnumSet.of(Path.Type.directory)))) {
-                        metadata.addAll(session._getFeature(ListService.class).list(new Path(vault.getHome(), "m", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).toList());
-                        metadata.add(new Path(vault.getHome(), "m", EnumSet.of(Path.Type.directory)));
+                    final Path metaRoot = new Path(f, "m", f.getType());
+                    if(find.find(metaRoot)) {
+                        for(Path m : session._getFeature(ListService.class).list(metaRoot, new DisabledListProgressListener()).toList()) {
+                            for(Path m2 : session._getFeature(ListService.class).list(m, new DisabledListProgressListener()).toList()) {
+                                metadata.addAll(session._getFeature(ListService.class).list(m2, new DisabledListProgressListener()).toList());
+                                metadata.add(m2);
+                            }
+                            metadata.add(m);
+                        }
+                        metadata.add(metaRoot);
                     }
+                    metadata.add(new Path(f, "masterkey.cryptomator", EnumSet.of(Path.Type.file)));
                 }
                 metadata.add(f);
                 proxy.delete(metadata, prompt, callback);

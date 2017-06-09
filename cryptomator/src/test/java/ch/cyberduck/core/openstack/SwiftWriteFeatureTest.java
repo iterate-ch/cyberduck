@@ -50,7 +50,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Random;
 
@@ -97,7 +97,7 @@ public class SwiftWriteFeatureTest {
         final InputStream in = new CryptoReadFeature(session, new SwiftReadFeature(session, new SwiftRegionService(session)), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        new CryptoDeleteFeature(session, new SwiftDeleteFeature(session), cryptomator).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new SwiftDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

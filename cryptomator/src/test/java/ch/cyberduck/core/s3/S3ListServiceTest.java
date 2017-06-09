@@ -41,7 +41,7 @@ import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
@@ -68,7 +68,7 @@ public class S3ListServiceTest {
         assertTrue(new CryptoListService(session, new S3ObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new S3SingleUploadService(session, new S3WriteFeature(session))), new S3WriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new S3ObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
-        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

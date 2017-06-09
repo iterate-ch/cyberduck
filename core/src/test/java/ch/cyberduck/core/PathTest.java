@@ -169,8 +169,7 @@ public class PathTest {
         assertFalse(p.isChild(new Path("/a", EnumSet.of(Path.Type.file))));
         final Path d = new Path("/a", EnumSet.of(Path.Type.directory));
         d.attributes().setVersionId("1");
-        d.attributes().setDuplicate(true);
-        assertFalse(p.isChild(d));
+        assertTrue(p.isChild(d));
     }
 
     @Test

@@ -38,7 +38,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -81,10 +80,10 @@ public class DriveMoveFeatureTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path home = new DefaultHomeFinderService(session).find();
-        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
-        cryptomator.create(session, null, new VaultCredentials("test"));
+        final Path home = new DriveHomeFinderService(session).find();
+        final CryptoVault cryptomator = new CryptoVault(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+        final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path folder = new CryptoDirectoryFeature<Void>(session, new DriveDirectoryFeature(session), new DriveWriteFeature(session), cryptomator).mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
@@ -104,7 +103,7 @@ public class DriveMoveFeatureTest {
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         new CryptoDeleteFeature(session, new DriveDeleteFeature(session), cryptomator).delete(Arrays.asList(
-                fileRenamedInRenamedFolder, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
