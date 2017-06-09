@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.features.*;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryProvider;
@@ -89,7 +90,7 @@ public class CryptoVault implements Vault {
     /**
      * Root of vault directory
      */
-    private final Path home;
+    private Path home;
 
     private Cryptor cryptor;
 
@@ -251,7 +252,7 @@ public class CryptoVault implements Vault {
     @Override
     public boolean contains(final Path file) {
         if(this.isUnlocked()) {
-            return file.equals(home) || file.isChild(home);
+            return new SimplePathPredicate(file).test(home) || file.isChild(home);
         }
         return false;
     }
@@ -279,7 +280,7 @@ public class CryptoVault implements Vault {
                 log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
                 return file;
             }
-            if(file.equals(home)) {
+            if(new SimplePathPredicate(file).test(home)) {
                 log.warn(String.format("Skip vault home %s because the root has no metadata file", file));
                 return file;
             }
@@ -532,7 +533,7 @@ public class CryptoVault implements Vault {
             return false;
         }
         final CryptoVault that = (CryptoVault) o;
-        return Objects.equals(home, that.home);
+        return new SimplePathPredicate(home).test(that.home);
     }
 
     @Override
