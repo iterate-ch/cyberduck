@@ -83,6 +83,17 @@ public class LocalListServiceTest {
             assertTrue(list.get(symlinkAbsolute).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
             new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());
             session.close();
+        } else {
+            assertNotNull(session.open(new DisabledHostKeyCallback()));
+            assertTrue(session.isConnected());
+            assertNotNull(session.getClient());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+            final Path home = new LocalHomeFinderFeature(session).find();
+            final Path recent = new Path(home, "Recent", EnumSet.of(Path.Type.directory));
+            final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
+            assertTrue(list.contains(recent));
+            final AttributedList<Path> symlinkContent = new LocalListService(session).list(recent, new DisabledListProgressListener());
+            session.close();
         }
     }
 
