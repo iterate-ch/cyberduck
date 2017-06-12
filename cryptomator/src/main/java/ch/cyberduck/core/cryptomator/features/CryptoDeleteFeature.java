@@ -57,10 +57,16 @@ public class CryptoDeleteFeature implements Delete {
                 final Path metadata = vault.encrypt(session, f, true);
                 if(f.isDirectory()) {
                     // Delete metadata file for directory
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Add metadata file %s", metadata));
+                    }
                     encrypted.add(metadata);
                 }
                 if(filenameProvider.isDeflated(metadata.getName())) {
                     final Path metadataFile = filenameProvider.resolve(metadata.getName());
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Add metadata file %s", metadata));
+                    }
                     encrypted.add(metadataFile);
                 }
             }
@@ -70,6 +76,7 @@ public class CryptoDeleteFeature implements Delete {
         }
         for(Path f : files) {
             if(f.equals(vault.getHome())) {
+                log.warn(String.format("Recursively delete vault %s", f));
                 final List<Path> metadata = new ArrayList<>();
                 if(!proxy.isRecursive()) {
                     final Find find = session._getFeature(Find.class);
