@@ -43,7 +43,7 @@ public class S3SessionTest {
 
     @BeforeClass
     public static void register() {
-        ProtocolFactory.global.register(new S3Protocol());
+        ProtocolFactory.get().register(new S3Protocol());
     }
 
     @Test

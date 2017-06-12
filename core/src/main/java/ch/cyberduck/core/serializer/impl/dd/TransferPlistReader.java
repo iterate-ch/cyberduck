@@ -35,7 +35,7 @@ public class TransferPlistReader extends PlistReader<Transfer> {
     }
 
     public TransferPlistReader(final DeserializerFactory deserializer) {
-        this(ProtocolFactory.global, deserializer);
+        this(ProtocolFactory.get(), deserializer);
     }
 
     public TransferPlistReader(final ProtocolFactory protocols) {

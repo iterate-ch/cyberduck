@@ -40,7 +40,7 @@ public class HostDictionary {
     private final ProtocolFactory protocols;
 
     public HostDictionary() {
-        this(ProtocolFactory.global);
+        this(ProtocolFactory.get());
     }
 
     public HostDictionary(final ProtocolFactory protocols) {
@@ -48,7 +48,7 @@ public class HostDictionary {
     }
 
     public HostDictionary(final DeserializerFactory deserializer) {
-        this(ProtocolFactory.global, deserializer);
+        this(ProtocolFactory.get(), deserializer);
     }
 
     public HostDictionary(final ProtocolFactory protocols, final DeserializerFactory deserializer) {

@@ -36,7 +36,11 @@ import java.util.stream.Collectors;
 public final class ProtocolFactory {
     private static final Logger log = Logger.getLogger(ProtocolFactory.class);
 
-    public static final ProtocolFactory global = new ProtocolFactory();
+    private static final ProtocolFactory global = new ProtocolFactory();
+
+    public static ProtocolFactory get() {
+        return global;
+    }
 
     private final Set<Protocol> registered;
     private final Local bundle;

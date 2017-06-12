@@ -48,7 +48,7 @@ public final class TerminalHelpPrinter {
         final StringBuilder protocols = new StringBuilder(StringUtils.LF);
         protocols.append("Supported protocols");
         protocols.append(StringUtils.LF);
-        for(Protocol p : ProtocolFactory.global.find()) {
+        for(Protocol p : ProtocolFactory.get().find()) {
             protocols.append(p.getProvider()).append("\t").append(p.getDescription());
             protocols.append(StringUtils.LF);
             switch(p.getType()) {

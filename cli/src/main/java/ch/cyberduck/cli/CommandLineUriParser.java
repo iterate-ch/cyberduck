@@ -32,7 +32,7 @@ public class CommandLineUriParser {
     private final ProtocolFactory factory;
 
     public CommandLineUriParser(final CommandLine input) {
-        this(input, ProtocolFactory.global);
+        this(input, ProtocolFactory.get());
     }
 
     public CommandLineUriParser(final CommandLine input, final ProtocolFactory factory) {

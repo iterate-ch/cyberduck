@@ -35,7 +35,7 @@ public class ProfileDictionary {
     private final ProtocolFactory protocols;
 
     public ProfileDictionary() {
-        this(ProtocolFactory.global);
+        this(ProtocolFactory.get());
     }
 
     public ProfileDictionary(final ProtocolFactory protocols) {
@@ -43,7 +43,7 @@ public class ProfileDictionary {
     }
 
     public ProfileDictionary(final DeserializerFactory deserializer) {
-        this(ProtocolFactory.global, deserializer);
+        this(ProtocolFactory.get(), deserializer);
     }
 
     public ProfileDictionary(final ProtocolFactory protocols, final DeserializerFactory deserializer) {

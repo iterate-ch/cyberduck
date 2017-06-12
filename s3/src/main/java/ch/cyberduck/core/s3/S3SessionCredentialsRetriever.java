@@ -54,7 +54,7 @@ public class S3SessionCredentialsRetriever {
     private final X509KeyManager key;
 
     public S3SessionCredentialsRetriever(final X509TrustManager trust, final X509KeyManager key, final TranscriptListener transcript, final String url) {
-        this(trust, key, ProtocolFactory.global, transcript, url);
+        this(trust, key, ProtocolFactory.get(), transcript, url);
     }
 
     public S3SessionCredentialsRetriever(final X509TrustManager trust, final X509KeyManager key, final ProtocolFactory factory, final TranscriptListener transcript, final String url) {

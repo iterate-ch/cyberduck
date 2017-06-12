@@ -41,7 +41,7 @@ public final class HostParser {
     private final ProtocolFactory factory;
 
     public HostParser() {
-        this(ProtocolFactory.global);
+        this(ProtocolFactory.get());
     }
 
     public HostParser(final ProtocolFactory factory) {
@@ -65,7 +65,7 @@ public final class HostParser {
      * @return Bookmark
      */
     public static Host parse(final String url) {
-        return parse(ProtocolFactory.global, ProtocolFactory.global.forName(
+        return parse(ProtocolFactory.get(), ProtocolFactory.get().forName(
                 preferences.getProperty("connection.protocol.default")), url);
     }
 

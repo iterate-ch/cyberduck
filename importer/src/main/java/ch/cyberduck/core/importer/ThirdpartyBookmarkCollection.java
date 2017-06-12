@@ -117,7 +117,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             else {
                 // First import
-                this.parse(ProtocolFactory.global, file);
+                this.parse(ProtocolFactory.get(), file);
             }
             // Save last checksum
             if(current != null) {
@@ -136,7 +136,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     public abstract Local getFile();
 
     protected void parse(Local file) throws AccessDeniedException {
-        this.parse(ProtocolFactory.global, file);
+        this.parse(ProtocolFactory.get(), file);
     }
 
     protected abstract void parse(final ProtocolFactory protocols, Local file) throws AccessDeniedException;

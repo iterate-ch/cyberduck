@@ -37,7 +37,7 @@ public class HostDictionaryTest {
 
     @BeforeClass
     public static void register() {
-        ProtocolFactory.global.register(new TestProtocol());
+        ProtocolFactory.get().register(new TestProtocol());
     }
 
     @Test

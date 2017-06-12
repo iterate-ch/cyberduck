@@ -107,7 +107,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             StructureMapBootstrapper.Bootstrap();
             PreferencesFactory.set(new ApplicationPreferences());
-            ProtocolFactory.global.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
+            ProtocolFactory.get().register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol());
@@ -292,7 +292,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         if (profile.isEnabled())
                         {
-                            ProtocolFactory.global.register(profile);
+                            ProtocolFactory.get().register(profile);
                             Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                             NewBrowser().AddBookmark(host);
                             // Register in application support

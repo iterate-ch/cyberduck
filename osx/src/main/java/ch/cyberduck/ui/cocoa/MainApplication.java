@@ -71,7 +71,7 @@ public final class MainApplication {
             // Register factory implementations.
             final Preferences preferences = new ApplicationUserDefaultsPreferences();
             PreferencesFactory.set(preferences);
-            ProtocolFactory.global.register(
+            ProtocolFactory.get().register(
                     new FTPProtocol(),
                     new FTPTLSProtocol(),
                     new SFTPProtocol(),

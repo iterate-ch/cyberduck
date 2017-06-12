@@ -40,7 +40,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     private final Map<String, DNSSDService> browsers;
 
     public RendezvousResponder() {
-        this(ProtocolFactory.global);
+        this(ProtocolFactory.get());
     }
 
     public RendezvousResponder(final ProtocolFactory protocols) {

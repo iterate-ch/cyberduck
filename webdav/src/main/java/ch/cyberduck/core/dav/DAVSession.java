@@ -238,7 +238,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                         catch(LoginCanceledException e) {
                             // Protocol switch
                             host.setHostname(url.getHost());
-                            host.setProtocol(ProtocolFactory.global.forScheme(Scheme.davs));
+                            host.setProtocol(ProtocolFactory.get().forScheme(Scheme.davs));
                             return false;
                         }
                     }

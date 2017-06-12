@@ -1685,23 +1685,23 @@ public class PreferencesController extends ToolbarWindowController {
         this.protocolCombobox.setTarget(this.id());
         this.protocolCombobox.setAction(Foundation.selector("protocolComboboxClicked:"));
         this.protocolCombobox.removeAllItems();
-        for(Protocol protocol : ProtocolFactory.global.find()) {
+        for(Protocol protocol : ProtocolFactory.get().find()) {
             this.protocolCombobox.addItemWithTitle(protocol.getDescription());
         }
-        for(Protocol protocol : ProtocolFactory.global.find()) {
+        for(Protocol protocol : ProtocolFactory.get().find()) {
             final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocol.getDescription());
             item.setRepresentedObject(protocol.getProvider());
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
         }
 
         final Protocol defaultProtocol
-                = ProtocolFactory.global.forName(preferences.getProperty("connection.protocol.default"));
+                = ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default"));
         this.protocolCombobox.selectItemWithTitle(defaultProtocol.getDescription());
     }
 
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
-        final Protocol selected = ProtocolFactory.global.forName(sender.selectedItem().representedObject());
+        final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
         preferences.setProperty("connection.protocol.default", selected.getProvider());
         preferences.setProperty("connection.port.default", selected.getDefaultPort());
     }

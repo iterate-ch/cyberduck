@@ -79,7 +79,7 @@ public class UDTProxyConfiguratorTest {
 
     @BeforeClass
     public static void register() {
-        ProtocolFactory.global.register(new S3Protocol());
+        ProtocolFactory.get().register(new S3Protocol());
     }
 
     @Test(expected = ConnectionRefusedException.class)

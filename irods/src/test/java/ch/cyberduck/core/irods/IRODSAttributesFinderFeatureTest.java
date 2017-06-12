@@ -49,7 +49,7 @@ public class IRODSAttributesFinderFeatureTest {
 
     @BeforeClass
     public static void protocol() {
-        ProtocolFactory.global.register(new IRODSProtocol());
+        ProtocolFactory.get().register(new IRODSProtocol());
     }
 
     @Test(expected = NotfoundException.class)

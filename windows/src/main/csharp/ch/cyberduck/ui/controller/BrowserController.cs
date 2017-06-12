@@ -1228,7 +1228,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 bookmark =
                     new Host(
-                        ProtocolFactory.global.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
+                        ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
                         PreferencesFactory.get().getProperty("connection.hostname.default"),
                         PreferencesFactory.get().getInteger("connection.port.default"));
             }

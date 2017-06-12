@@ -44,7 +44,7 @@ public class FTPSessionTest {
 
     @BeforeClass
     public static void protocol() {
-        ProtocolFactory.global.register(new FTPTLSProtocol() {
+        ProtocolFactory.get().register(new FTPTLSProtocol() {
             @Override
             public boolean isEnabled() {
                 return true;

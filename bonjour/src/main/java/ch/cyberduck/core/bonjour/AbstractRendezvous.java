@@ -96,7 +96,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
     private final LimitedRendezvousListener notifier = new LimitedRendezvousListener(listeners);
 
     public AbstractRendezvous() {
-        this(ProtocolFactory.global);
+        this(ProtocolFactory.get());
     }
 
     public AbstractRendezvous(final ProtocolFactory protocols) {

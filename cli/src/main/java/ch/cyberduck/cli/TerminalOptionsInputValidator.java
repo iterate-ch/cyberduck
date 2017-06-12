@@ -41,7 +41,7 @@ public class TerminalOptionsInputValidator {
     private final ProtocolFactory factory;
 
     public TerminalOptionsInputValidator() {
-        this(ProtocolFactory.global);
+        this(ProtocolFactory.get());
     }
 
     public TerminalOptionsInputValidator(final ProtocolFactory factory) {

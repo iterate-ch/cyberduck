@@ -126,7 +126,7 @@ public class SwiftAuthenticationServiceTest {
                 return "/v2.0/tokens";
             }
         };
-        ProtocolFactory.global.register(protocol);
+        ProtocolFactory.get().register(protocol);
         final SwiftAuthenticationService s = new SwiftAuthenticationService();
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Rackspace UK.cyberduckprofile"));
