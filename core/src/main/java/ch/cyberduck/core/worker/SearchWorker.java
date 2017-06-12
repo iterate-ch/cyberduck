@@ -66,6 +66,9 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             final Set<Path> removal = new HashSet<>();
             for(final Path file : list) {
                 if(file.isDirectory()) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Recursively search in %s", file));
+                    }
                     if(this.search(search, file).isEmpty()) {
                         if(list.attributes().addHidden(file)) {
                             removal.add(file);
