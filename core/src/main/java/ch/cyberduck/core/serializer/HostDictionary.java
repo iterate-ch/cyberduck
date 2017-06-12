@@ -66,7 +66,7 @@ public class HostDictionary {
         final Protocol protocol;
         final String identifier = protocolObj.toString();
         final Object providerObj = dict.stringForKey("Provider");
-        if(providerObj != null) {
+        if(null == providerObj) {
             protocol = protocols.forName(identifier);
         }
         else {
