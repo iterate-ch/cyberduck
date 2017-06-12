@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,8 +37,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class LocalListServiceTest {
 
@@ -83,16 +83,25 @@ public class LocalListServiceTest {
             assertTrue(list.get(symlinkAbsolute).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
             new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());
             session.close();
-        } else {
+        }
+        else {
             assertNotNull(session.open(new DisabledHostKeyCallback()));
             assertTrue(session.isConnected());
             assertNotNull(session.getClient());
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
             final Path home = new LocalHomeFinderFeature(session).find();
-            final Path recent = new Path(home, "Recent", EnumSet.of(Path.Type.directory));
             final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
-            assertTrue(list.contains(recent));
-            final AttributedList<Path> symlinkContent = new LocalListService(session).list(recent, new DisabledListProgressListener());
+            assertTrue(list.contains(new Path(home, "Recent", EnumSet.of(Path.Type.directory))));
+            final Path recent = list.get(new Path(home, "Recent", EnumSet.of(Path.Type.directory)));
+            assertFalse(recent.attributes().getPermission().isReadable());
+            assertFalse(recent.attributes().getPermission().isExecutable());
+            try {
+                new LocalListService(session).list(recent, new DisabledListProgressListener());
+                fail();
+            }
+            catch(LocalAccessDeniedException e) {
+                //
+            }
             session.close();
         }
     }
