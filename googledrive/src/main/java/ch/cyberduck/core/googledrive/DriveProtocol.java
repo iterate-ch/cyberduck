@@ -33,6 +33,11 @@ public class DriveProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getName() {
+        return "Google Drive";
+    }
+
+    @Override
     public String getPrefix() {
         return String.format("%s.%s", DriveProtocol.class.getPackage().getName(), "Drive");
     }
