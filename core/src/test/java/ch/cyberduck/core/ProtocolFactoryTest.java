@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -27,14 +28,24 @@ public class ProtocolFactoryTest {
 
     @Test
     public void getProtocols() throws Exception {
+        final TestProtocol defaultProtocol = new TestProtocol(Scheme.ftp);
+        final TestProtocol providerProtocol = new TestProtocol(Scheme.ftp) {
+            @Override
+            public String getProvider() {
+                return "c";
+            }
+        };
+        final TestProtocol disabledProtocol = new TestProtocol(Scheme.sftp) {
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        };
         final ProtocolFactory f = new ProtocolFactory(new HashSet<>(
-                Arrays.asList(new TestProtocol(Scheme.ftp), new TestProtocol(Scheme.sftp) {
-                    @Override
-                    public boolean isEnabled() {
-                        return false;
-                    }
-                })));
-        assertTrue(f.find().contains(new TestProtocol(Scheme.ftp)));
-        assertFalse(f.find().contains(new TestProtocol(Scheme.sftp)));
+                Arrays.asList(defaultProtocol, providerProtocol, disabledProtocol)));
+        final List<Protocol> protocols = f.find();
+        assertTrue(protocols.contains(defaultProtocol));
+        assertTrue(protocols.contains(providerProtocol));
+        assertFalse(protocols.contains(disabledProtocol));
     }
 }

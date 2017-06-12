@@ -84,6 +84,8 @@ public class BookmarkController extends SheetController implements CollectionLis
     protected final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
+    private final ProtocolFactory protocols = ProtocolFactory.get();
+
     private final List<BookmarkObserver> observers = new ArrayList<>();
 
     protected final Host bookmark;
@@ -147,27 +149,27 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
-        for(Protocol protocol : ProtocolFactory.get().find(new DefaultProtocolPredicate(
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
                 EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : ProtocolFactory.get().find(new DefaultProtocolPredicate(
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
                 EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.googlestorage)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : ProtocolFactory.get().find(new DefaultProtocolPredicate(
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
                 EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : ProtocolFactory.get().find(new DefaultProtocolPredicate(
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
                 EnumSet.of(Protocol.Type.file)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : ProtocolFactory.get().find(new Predicate<Protocol>() {
+        for(Protocol protocol : protocols.find(new Predicate<Protocol>() {
             @Override
             public boolean test(final Protocol protocol) {
                 return protocol.isEnabled() && !StringUtils.equals(DEFAULT_PROVIDER, protocol.getProvider());

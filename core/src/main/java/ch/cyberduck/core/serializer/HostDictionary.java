@@ -63,9 +63,17 @@ public class HostDictionary {
             log.warn(String.format("Missing protocol key in %s", serialized));
             return null;
         }
-        final Protocol p = protocols.forName(protocolObj.toString());
-        if(null != p) {
-            final Host bookmark = new Host(p);
+        final Protocol protocol;
+        final String identifier = protocolObj.toString();
+        final Object providerObj = dict.stringForKey("Provider");
+        if(null == providerObj) {
+            protocol = protocols.forName(identifier);
+        }
+        else {
+            protocol = protocols.forName(identifier, providerObj.toString());
+        }
+        if(null != protocol) {
+            final Host bookmark = new Host(protocol);
             final Object hostnameObj = dict.stringForKey("Hostname");
             if(hostnameObj != null) {
                 bookmark.setHostname(hostnameObj.toString());
@@ -73,16 +81,6 @@ public class HostDictionary {
             final Object uuidObj = dict.stringForKey("UUID");
             if(uuidObj != null) {
                 bookmark.setUuid(uuidObj.toString());
-            }
-            final Object providerObj = dict.stringForKey("Provider");
-            if(providerObj != null) {
-                final Protocol provider = protocols.forName(providerObj.toString());
-                if(null != provider) {
-                    bookmark.setProtocol(provider);
-                }
-                else {
-                    log.warn(String.format("Provider %s no more available. Default to %s", providerObj, bookmark.getProtocol()));
-                }
             }
             final Object usernameObj = dict.stringForKey("Username");
             if(usernameObj != null) {
