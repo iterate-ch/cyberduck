@@ -262,6 +262,7 @@ public class CryptoVault implements Vault {
         return this.encrypt(session, file, file.attributes().getDirectoryId(), false);
     }
 
+    @Override
     public Path encrypt(final Session<?> session, final Path file, boolean metadata) throws BackgroundException {
         return this.encrypt(session, file, file.attributes().getDirectoryId(), metadata);
     }
