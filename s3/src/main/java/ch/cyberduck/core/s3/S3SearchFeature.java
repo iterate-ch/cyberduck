@@ -21,11 +21,8 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.jets3t.service.ServiceException;
 
@@ -34,12 +31,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class S3SearchFeature implements Search {
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
-    private final PathContainerService containerService
-            = new S3PathContainerService();
 
     private final S3Session session;
 
