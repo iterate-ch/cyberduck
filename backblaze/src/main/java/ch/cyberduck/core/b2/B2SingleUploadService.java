@@ -95,6 +95,7 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
         this.verify(file, digest, Checksum.parse(StringUtils.removeStart(((B2FileResponse) response).getContentSha1(), "unverified:")));
     }
 
+    @Override
     protected void verify(final Path file, final MessageDigest digest, final Checksum checksum) throws ChecksumException {
         if(null == digest) {
             log.debug(String.format("Digest verification disabled for file %s", file));
