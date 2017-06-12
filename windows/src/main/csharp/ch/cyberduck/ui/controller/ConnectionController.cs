@@ -49,7 +49,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         private ConnectionController(Host bookmark, Credentials credentials,
-            InputValidator validator, LoginOptions options) : base(bookmark, credentials, validator, options)
+            LoginInputValidator validator, LoginOptions options) : base(bookmark, credentials, validator, options)
         {
             Init();
         }

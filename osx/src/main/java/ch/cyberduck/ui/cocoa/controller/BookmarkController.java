@@ -55,7 +55,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.ui.InputValidator;
+import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -91,6 +91,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     protected final Host bookmark;
     protected final Credentials credentials;
 
+    protected final LoginInputValidator validator;
     protected final LoginOptions options;
 
     @Outlet
@@ -124,18 +125,18 @@ public class BookmarkController extends SheetController implements CollectionLis
     }
 
     public BookmarkController(final Host bookmark, final Credentials credentials) {
-        this(bookmark, credentials, new InputValidator() {
-            @Override
-            public boolean validate() {
-                return true;
-            }
-        }, new LoginOptions(bookmark.getProtocol()));
+        this(bookmark, credentials, new LoginOptions(bookmark.getProtocol()));
     }
 
-    public BookmarkController(final Host bookmark, final Credentials credentials, final InputValidator validator, final LoginOptions options) {
+    public BookmarkController(final Host bookmark, final Credentials credentials, final LoginOptions options) {
+        this(bookmark, credentials, new LoginInputValidator(credentials, bookmark.getProtocol(), options), options);
+    }
+
+    public BookmarkController(final Host bookmark, final Credentials credentials, final LoginInputValidator validator, final LoginOptions options) {
         super(validator);
         this.bookmark = bookmark;
         this.credentials = credentials;
+        this.validator = validator;
         this.options = options;
     }
 
@@ -214,6 +215,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         }
         bookmark.setProtocol(selected);
         options.configure(selected);
+        validator.configure(selected);
         this.update();
     }
 
