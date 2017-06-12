@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
@@ -128,14 +129,29 @@ public final class ProtocolFactory {
      * @return Matching protocol or null if no match
      */
     public Protocol forName(final String identifier) {
-        return this.forName(this.find(), identifier);
+        return registered.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
+                this.forName(identifier, null)
+        );
     }
 
-    public Protocol forName(final List<Protocol> registered, final String identifier) {
-        return registered.stream().filter(protocol -> protocol.getProvider().equals(identifier)).findFirst().orElse(
-                registered.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
-                        registered.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(identifier)).findFirst().orElse(null)
-                )
+    public Protocol forName(final String identifier, final String provider) {
+        return this.forName(this.find(), identifier, provider);
+    }
+
+    public Protocol forName(final List<Protocol> registered, final String identifier, final String provider) {
+        return registered.stream().filter(protocol -> {
+            if(StringUtils.equals(protocol.getIdentifier(), identifier)) {
+                if(null == provider) {
+                    // Matching protocol with no custom provider
+                    return true;
+                }
+                else {
+                    return StringUtils.equals(protocol.getProvider(), provider);
+                }
+            }
+            return false;
+        }).findFirst().orElse(
+                registered.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(identifier)).findFirst().orElse(null)
         );
     }
 

@@ -60,7 +60,7 @@ public class ProfileDictionary {
                 public boolean test(final Protocol protocol) {
                     return true;
                 }
-            }), protocol);
+            }), protocol, null);
             if(null == parent) {
                 log.error(String.format("Unknown protocol %s in profile", protocol));
                 return null;
