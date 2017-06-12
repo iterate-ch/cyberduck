@@ -151,7 +151,9 @@ public final class ProtocolFactory {
             }
             return false;
         }).findFirst().orElse(
-                registered.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(identifier)).findFirst().orElse(null)
+                registered.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+                        registered.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(identifier)).findFirst().orElse(null)
+                )
         );
     }
 
