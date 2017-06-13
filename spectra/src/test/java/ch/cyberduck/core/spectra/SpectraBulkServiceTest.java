@@ -274,4 +274,32 @@ public class SpectraBulkServiceTest {
         new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
+
+    @Test
+    public void testSPECTRA67() throws Exception {
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path container = new Path("CYBERDUCK-SPECTRA-67", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final HashMap<Path, TransferStatus> files = new HashMap<>();
+        for(int i = 0; i < 250; i++) {
+            files.put(new Path(container, String.format("file-%d.f", i), EnumSet.of(Path.Type.file)), new TransferStatus());
+        }
+        final SpectraBulkService bulk = new SpectraBulkService(session);
+        // Clear cache
+        bulk.clear();
+        final Set<UUID> uuid = bulk.pre(Transfer.Type.download, files, new DisabledConnectionCallback());
+        assertNotNull(uuid);
+        assertFalse(uuid.isEmpty());
+        assertEquals(250, uuid.size());
+        session.close();
+    }
 }
