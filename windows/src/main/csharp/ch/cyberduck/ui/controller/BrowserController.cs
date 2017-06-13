@@ -1846,7 +1846,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDuplicateFile()
         {
-            return IsMounted() && SelectedPaths.Count == 1;
+            return IsMounted() && Session.getFeature(typeof(Copy)) != null && SelectedPaths.Count == 1;
         }
 
         private bool View_ValidateRenameFile()
