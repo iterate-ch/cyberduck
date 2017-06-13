@@ -69,6 +69,10 @@ public class S3ObjectListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return this.list(directory, listener, preferences.getInteger("s3.listing.chunksize"));
+    }
+
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         try {
             String prefix = this.createPrefix(directory);
             // If this optional, Unicode string parameter is included with your request,
@@ -77,7 +81,7 @@ public class S3ObjectListService implements ListService {
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
             final AttributedList<Path> objects = new AttributedList<Path>();
-            objects.addAll(this.listObjects(directory, prefix, String.valueOf(Path.DELIMITER), listener));
+            objects.addAll(this.listObjects(directory, prefix, String.valueOf(Path.DELIMITER), chunksize, listener));
             final Versioning feature = session.getFeature(Versioning.class);
             final Path container = containerService.getContainer(directory);
             if(feature != null && feature.getConfiguration(container).isEnabled()) {
@@ -86,7 +90,7 @@ public class S3ObjectListService implements ListService {
                 do {
                     final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                             container.getName(), prefix, String.valueOf(Path.DELIMITER),
-                            preferences.getInteger("s3.listing.chunksize"),
+                            chunksize,
                             priorLastKey, priorLastVersionId, true);
                     objects.addAll(this.listVersions(container, directory,
                             Arrays.asList(chunk.getItems())));
@@ -125,7 +129,7 @@ public class S3ObjectListService implements ListService {
         return prefix;
     }
 
-    protected AttributedList<Path> listObjects(final Path parent, final String prefix, final String delimiter, final ListProgressListener listener)
+    protected AttributedList<Path> listObjects(final Path parent, final String prefix, final String delimiter, final int chunksize, final ListProgressListener listener)
             throws IOException, ServiceException, BackgroundException {
         final Path bucket = containerService.getContainer(parent);
         final AttributedList<Path> children = new AttributedList<Path>();
@@ -136,7 +140,7 @@ public class S3ObjectListService implements ListService {
             // in lexicographic (alphabetical) order.
             final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
                     PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
-                    preferences.getInteger("s3.listing.chunksize"), priorLastKey);
+                    chunksize, priorLastKey);
 
             final StorageObject[] objects = chunk.getObjects();
             for(StorageObject object : objects) {

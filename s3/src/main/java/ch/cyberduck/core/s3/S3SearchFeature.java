@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.jets3t.service.ServiceException;
 
@@ -42,7 +43,8 @@ public class S3SearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         final S3ObjectListService list = new S3ObjectListService(session);
         try {
-            final AttributedList<Path> objects = list.listObjects(workdir, list.createPrefix(workdir), null, listener);
+            final AttributedList<Path> objects = list.listObjects(workdir, list.createPrefix(workdir), null,
+                    PreferencesFactory.get().getInteger("s3.listing.chunksize"), listener);
             final Set<Path> removal = new HashSet<>();
             for(final Path f : objects) {
                 if(!f.getName().contains(regex.toPattern().pattern())) {
