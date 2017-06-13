@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -34,6 +35,10 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -320,5 +325,27 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
         }
         return chunks;
+    }
+
+    /**
+     * Forces a full reclaim of all caches, and waits until the reclaim completes. Cache contents that need to be retained because they are a part of an active job are retained.
+     * Any cache contents that can be reclaimed will be. This operation may take a very long time to complete, depending on how much of the cache can be reclaimed and how many blobs the cache is managing.
+     */
+    protected void clear() throws BackgroundException {
+        final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session.getClient(), session.getHost()));
+        try {
+            final HttpResponse response = session.getClient().getHttpClient().execute(
+                    new HttpPut(String.format("%s://%s/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(), session.getHost().getHostname()))
+            );
+            if(HttpStatus.SC_NO_CONTENT != response.getStatusLine().getStatusCode()) {
+                throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+            }
+        }
+        catch(HttpResponseException e) {
+            throw new HttpResponseExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 }
