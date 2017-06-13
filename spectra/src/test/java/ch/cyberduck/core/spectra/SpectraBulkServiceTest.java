@@ -290,8 +290,8 @@ public class SpectraBulkServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("CYBERDUCK-SPECTRA-67", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final HashMap<Path, TransferStatus> files = new HashMap<>();
-        for(int i = 0; i < 250; i++) {
-            files.put(new Path(container, String.format("file-%d.f", i), EnumSet.of(Path.Type.file)), new TransferStatus());
+        for(int i = 1; i < 11; i++) {
+            files.put(new Path(container, String.format("test-%d.f", i), EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         final SpectraBulkService bulk = new SpectraBulkService(session);
         // Clear cache
@@ -299,7 +299,7 @@ public class SpectraBulkServiceTest {
         final Set<UUID> uuid = bulk.pre(Transfer.Type.download, files, new DisabledConnectionCallback());
         assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
-        assertEquals(250, uuid.size());
+        assertEquals(1, uuid.size());
         session.close();
     }
 }
