@@ -15,11 +15,17 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import org.apache.commons.text.CharacterPredicate;
 import org.apache.commons.text.RandomStringGenerator;
 
 public class AlphanumericRandomStringService implements RandomStringService {
     @Override
     public String random() {
-        return new RandomStringGenerator.Builder().withinRange('0', 'z').build().generate(8);
+        return new RandomStringGenerator.Builder().withinRange('0', 'z').filteredBy(new CharacterPredicate() {
+            @Override
+            public boolean test(final int codePoint) {
+                return Character.isAlphabetic(codePoint) || Character.isDigit(codePoint);
+            }
+        }).build().generate(8);
     }
 }
