@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,13 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import org.apache.commons.text.RandomStringGenerator;
+import org.junit.Test;
 
-public class AlphanumericRandomStringService implements RandomStringService {
-    @Override
-    public String random() {
-        return new RandomStringGenerator.Builder().withinRange('0', 'z').build().generate(8);
+import static org.junit.Assert.assertNotNull;
+
+public class AsciiRandomStringServiceTest {
+    @Test
+    public void random() throws Exception {
+        assertNotNull(new AsciiRandomStringService().random());
     }
 }

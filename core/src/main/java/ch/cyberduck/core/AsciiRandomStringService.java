@@ -15,11 +15,11 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 
 public class AsciiRandomStringService implements RandomStringService {
     @Override
     public String random() {
-        return RandomStringUtils.randomAscii(8);
+        return new RandomStringGenerator.Builder().withinRange('a', 'z').build().generate(8);
     }
 }
