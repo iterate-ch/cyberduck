@@ -87,6 +87,10 @@ public class S3EncryptionFeature implements Encryption {
      */
     @Override
     public void setEncryption(final Path file, final Algorithm setting) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
+            preferences.setProperty(key, setting.toString());
+        }
         if(file.isFile() || file.isPlaceholder()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session, new S3AccessControlListFeature(session));
             // Copy item in place to write new attributes

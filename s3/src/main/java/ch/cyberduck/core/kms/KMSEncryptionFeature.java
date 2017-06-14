@@ -137,15 +137,6 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         return super.getEncryption(file);
     }
 
-    @Override
-    public void setEncryption(final Path file, final Algorithm setting) throws BackgroundException {
-        if(containerService.isContainer(file)) {
-            final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
-            preferences.setProperty(key, setting.toString());
-        }
-        super.setEncryption(file, setting);
-    }
-
     /**
      * @return List of IDs of KMS managed keys
      */
