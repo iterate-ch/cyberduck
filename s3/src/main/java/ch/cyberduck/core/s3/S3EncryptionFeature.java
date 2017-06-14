@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
@@ -35,6 +36,9 @@ import java.util.Set;
 public class S3EncryptionFeature implements Encryption {
 
     private final Preferences preferences = PreferencesFactory.get();
+
+    private final PathContainerService containerService
+            = new S3PathContainerService();
 
     private final S3Session session;
 
@@ -53,7 +57,11 @@ public class S3EncryptionFeature implements Encryption {
      */
     @Override
     public Algorithm getDefault(final Path file) {
-        // Return setting in preferences
+        final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
+        if(StringUtils.isNotBlank(preferences.getProperty(key))) {
+            return Algorithm.fromString(preferences.getProperty(key));
+        }
+        // Return default setting in preferences
         final String setting = preferences.getProperty("s3.encryption.algorithm");
         if(StringUtils.equals(SSE_AES256.algorithm, setting)) {
             return SSE_AES256;
