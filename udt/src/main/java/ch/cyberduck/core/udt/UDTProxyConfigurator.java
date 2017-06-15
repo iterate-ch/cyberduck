@@ -42,6 +42,7 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
@@ -142,13 +143,9 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
                 = new DefaultSocketConfigurator();
 
         private final Host proxy;
-
         private final X509TrustManager trust;
-
         private final X509KeyManager key;
-
         private final UDTSocketCallback callback;
-
         private final List<Header> headers;
 
         public UDTHttpConnectionPoolBuilder(final Host host, final Host proxy, final List<Header> headers,
@@ -177,7 +174,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         }
 
         @Override
-        protected RegistryBuilder<ConnectionSocketFactory> registry() {
+        public Registry<ConnectionSocketFactory> createRegistry() {
             final RegistryBuilder<ConnectionSocketFactory> registry = RegistryBuilder.create();
             if(proxy.getProtocol().isSecure()) {
                 registry.register(proxy.getProtocol().getScheme().toString(), new SSLConnectionSocketFactory(
@@ -251,7 +248,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
                     return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
                 }
             });
-            return registry;
+            return registry.build();
         }
     }
 }
