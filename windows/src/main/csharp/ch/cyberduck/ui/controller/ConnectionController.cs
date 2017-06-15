@@ -49,7 +49,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         private ConnectionController(Host bookmark, Credentials credentials,
-            InputValidator validator, LoginOptions options) : base(bookmark, credentials, validator, options)
+            LoginInputValidator validator, LoginOptions options) : base(bookmark, credentials, validator, options)
         {
             Init();
         }
@@ -64,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (!Controllers.TryGetValue(parent, out c))
             {
                 c = new ConnectionController(new Host(
-                    ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
+                    ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
                     PreferencesFactory.get().getProperty("connection.hostname.default"),
                     PreferencesFactory.get().getInteger("connection.port.default")));
                 Controllers.Add(parent, c);

@@ -16,6 +16,7 @@ package ch.cyberduck.binding.application;
  */
 
 import org.rococoa.ObjCClass;
+import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class NSSearchField extends NSTextField {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSearchField", _Class.class);
@@ -24,11 +25,17 @@ public abstract class NSSearchField extends NSTextField {
         return CLASS.alloc().init();
     }
 
+    public static NSSearchField searchFieldWithFrame(NSRect frameRect) {
+        return CLASS.alloc().initWithFrame(frameRect);
+    }
+
     public interface _Class extends ObjCClass {
         NSSearchField alloc();
     }
 
     public abstract NSSearchField init();
+
+    public abstract NSSearchField initWithFrame(NSRect frameRect);
 
     /**
      * When the value of this property is YES, the cell calls its action method immediately upon notification of any

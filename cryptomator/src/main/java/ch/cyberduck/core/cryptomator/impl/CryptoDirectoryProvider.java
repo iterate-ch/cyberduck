@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -81,7 +82,7 @@ public class CryptoDirectoryProvider {
         if(!directory.isDirectory()) {
             throw new NotfoundException(directory.getAbsolute());
         }
-        if(directory.equals(home) || directory.isChild(home)) {
+        if(new SimplePathPredicate(directory).test(home) || directory.isChild(home)) {
             final PathAttributes attributes = new PathAttributes(directory.attributes());
             attributes.setVersionId(null);
             // Remember random directory id for use in vault
@@ -104,7 +105,7 @@ public class CryptoDirectoryProvider {
     }
 
     private String toDirectoryId(final Session<?> session, final Path directory, final String directoryId) throws BackgroundException {
-        if(home.equals(directory)) {
+        if(new SimplePathPredicate(home).test(directory)) {
             return ROOT_DIR_ID;
         }
         if(StringUtils.isBlank(directoryId)) {

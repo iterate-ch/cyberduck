@@ -21,9 +21,10 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3Protocol;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +58,7 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local file) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(),
                     Charset.forName("UTF-8")));
@@ -66,7 +67,7 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
                 String line;
                 while((line = in.readLine()) != null) {
                     if(line.startsWith("[account_")) {
-                        current = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new S3Protocol().getDefaultPort());
+                        current = new Host(protocols.forType(Protocol.Type.s3));
                     }
                     else if(StringUtils.isBlank(line)) {
                         this.add(current);

@@ -49,7 +49,7 @@ public class IRODSListServiceTest {
 
     @BeforeClass
     public static void protocol() {
-        ProtocolFactory.register(new IRODSProtocol());
+        ProtocolFactory.get().register(new IRODSProtocol());
     }
 
     @Test

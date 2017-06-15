@@ -3,6 +3,7 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -33,7 +34,7 @@ public class ThirdpartyBookmarkCollectionTest {
             }
 
             @Override
-            protected void parse(final Local file) {
+            protected void parse(final ProtocolFactory protocols, final Local file) {
                 this.add(new Host(new TestProtocol()));
                 r.set(true);
             }

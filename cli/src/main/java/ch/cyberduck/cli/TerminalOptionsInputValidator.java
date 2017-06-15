@@ -41,7 +41,7 @@ public class TerminalOptionsInputValidator {
     private final ProtocolFactory factory;
 
     public TerminalOptionsInputValidator() {
-        this(ProtocolFactory.global);
+        this(ProtocolFactory.get());
     }
 
     public TerminalOptionsInputValidator(final ProtocolFactory factory) {
@@ -132,7 +132,7 @@ public class TerminalOptionsInputValidator {
      */
     protected boolean validate(final String uri) {
         if(uri.indexOf("://", 0) != -1) {
-            final Protocol protocol = factory.find(uri.substring(0, uri.indexOf("://", 0)));
+            final Protocol protocol = factory.forName(uri.substring(0, uri.indexOf("://", 0)));
             if(null == protocol) {
                 console.printf("Missing protocol in URI %s%n", uri);
                 return false;

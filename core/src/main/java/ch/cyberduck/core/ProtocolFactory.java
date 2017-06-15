@@ -23,45 +23,50 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class ProtocolFactory {
     private static final Logger log = Logger.getLogger(ProtocolFactory.class);
 
-    /**
-     * Ordered list of supported protocols.
-     */
-    private static final Set<Protocol> registered
-            = new LinkedHashSet<Protocol>();
+    private static final ProtocolFactory global = new ProtocolFactory();
 
-    public static final ProtocolFactory global = new ProtocolFactory(registered);
+    public static ProtocolFactory get() {
+        return global;
+    }
 
-    private final Set<Protocol> protocols;
+    private final Set<Protocol> registered;
+    private final Local bundle;
+
+    public ProtocolFactory() {
+        this(new LinkedHashSet<Protocol>());
+    }
 
     public ProtocolFactory(final Set<Protocol> protocols) {
-        this.protocols = protocols;
+        this(LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path")), protocols);
     }
 
-    public Protocol find(final String identifier) {
-        return ProtocolFactory.forName(protocols, identifier);
+    public ProtocolFactory(final Local bundle, final Set<Protocol> protocols) {
+        this.bundle = bundle;
+        this.registered = protocols;
     }
 
-    public static void register(Protocol... protocols) {
+    public void register(Protocol... protocols) {
         // Order determines list in connection dropdown
         for(Protocol protocol : protocols) {
             register(protocol);
         }
-        // Order determines list in connection dropdown
-        final Local bundled = LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path"));
-        if(bundled.exists()) {
+        if(bundle.exists()) {
             try {
-                for(Local f : bundled.list().filter(new ProfileFilter())) {
+                for(Local f : bundle.list().filter(new ProfileFilter())) {
                     final Profile profile = ProfileReaderFactory.get().read(f);
                     if(null == profile.getProtocol()) {
                         continue;
@@ -70,11 +75,11 @@ public final class ProtocolFactory {
                         log.info(String.format("Adding bundled protocol %s", profile));
                     }
                     // Replace previous possibly disable protocol in Preferences
-                    register(profile);
+                    registered.add(profile);
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", bundled, e.getMessage()));
+                log.warn(String.format("Failure reading collection %s %s", bundle, e.getMessage()));
             }
         }
         // Load thirdparty protocols
@@ -91,7 +96,7 @@ public final class ProtocolFactory {
                         log.info(String.format("Adding thirdparty protocol %s", protocol));
                     }
                     // Replace previous possibly disable protocol in Preferences
-                    register(protocol);
+                    registered.add(protocol);
                 }
             }
             catch(AccessDeniedException e) {
@@ -100,75 +105,75 @@ public final class ProtocolFactory {
         }
     }
 
-    public static void register(final Protocol p) {
-        registered.remove(p);
-        registered.add(p);
+    public void register(final Protocol protocol) {
+        registered.add(protocol);
     }
 
     /**
-     * @return List of protocols
+     * @return List of enabled protocols
      */
-    public static List<Protocol> getEnabledProtocols() {
-        final List<Protocol> enabled = new ArrayList<Protocol>();
-        for(Protocol protocol : registered) {
-            if(protocol.isEnabled()) {
-                enabled.add(protocol);
-            }
-        }
-        return enabled;
+    public List<Protocol> find() {
+        return this.find(Protocol::isEnabled);
+    }
+
+    /**
+     * @param search Search filter for all registered protocols
+     * @return List of registered protocols matching search criteria.
+     */
+    public List<Protocol> find(final Predicate<Protocol> search) {
+        return registered.stream().filter(search).sorted().collect(Collectors.toList());
     }
 
     /**
      * @param identifier Provider name or hash code of protocol
      * @return Matching protocol or null if no match
      */
-    public static Protocol forName(final String identifier) {
-        return ProtocolFactory.forName(registered, identifier);
+    public Protocol forName(final String identifier) {
+        return registered.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
+                this.forName(identifier, null)
+        );
     }
 
-    public static Protocol forName(final Set<Protocol> protocols, final String identifier) {
-        for(Protocol protocol : protocols) {
-            if(protocol.getProvider().equals(identifier)) {
-                return protocol;
-            }
-        }
-        for(Protocol protocol : protocols) {
-            if(String.valueOf(protocol.hashCode()).equals(identifier)) {
-                return protocol;
-            }
-        }
-        for(Protocol protocol : protocols) {
-            for(String scheme : protocol.getSchemes()) {
-                if(scheme.equals(identifier)) {
-                    return protocol;
+    public Protocol forName(final String identifier, final String provider) {
+        return this.forName(this.find(), identifier, provider);
+    }
+
+    public Protocol forName(final List<Protocol> registered, final String identifier, final String provider) {
+        return registered.stream().filter(protocol -> {
+            if(StringUtils.equals(protocol.getIdentifier(), identifier)) {
+                if(null == provider) {
+                    // Matching protocol with no custom provider
+                    return true;
+                }
+                else {
+                    return StringUtils.equals(protocol.getProvider(), provider);
                 }
             }
-        }
-        log.warn(String.format("Unknown protocol with identifier %s", identifier));
-        return null;
+            return false;
+        }).findFirst().orElse(
+                registered.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+                        registered.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(identifier)).findFirst().orElse(null)
+                )
+        );
     }
 
     /**
      * @param scheme Protocol scheme
      * @return Standard protocol for this scheme. This is ambigous
      */
-    public static Protocol forScheme(final String scheme) {
-        return ProtocolFactory.forScheme(registered, scheme);
+    public Protocol forScheme(final Scheme scheme) {
+        return forScheme(scheme.name());
     }
 
-    public static Protocol forScheme(final Set<Protocol> protocols, final String scheme) {
-        for(Protocol protocol : protocols) {
-            for(int k = 0; k < protocol.getSchemes().length; k++) {
-                if(protocol.getSchemes()[k].equals(scheme)) {
-                    return protocol;
-                }
-            }
-        }
-        log.warn(String.format("Unknown scheme %s", scheme));
-        return null;
+    public Protocol forType(final Protocol.Type type) {
+        return this.find().stream().filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
     }
 
-    private static class ProfileFilter implements Filter<Local> {
+    public Protocol forScheme(final String scheme) {
+        return this.find().stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null);
+    }
+
+    private static final class ProfileFilter implements Filter<Local> {
         @Override
         public boolean accept(final Local file) {
             return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));

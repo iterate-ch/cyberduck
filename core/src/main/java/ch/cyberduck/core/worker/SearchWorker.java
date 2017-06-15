@@ -26,6 +26,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Search;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Objects;
@@ -33,6 +35,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class SearchWorker extends Worker<AttributedList<Path>> {
+    private static final Logger log = Logger.getLogger(SearchWorker.class);
 
     private final Path directory;
     private final Filter<Path> filter;
@@ -49,8 +52,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
     @Override
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         // Run recursively
-        final Search search = session.getFeature(Search.class);
-        search.withCache(cache);
+        final Search search = session.getFeature(Search.class).withCache(cache);
         return this.search(search, directory);
     }
 
@@ -64,6 +66,9 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             final Set<Path> removal = new HashSet<>();
             for(final Path file : list) {
                 if(file.isDirectory()) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Recursively search in %s", file));
+                    }
                     if(this.search(search, file).isEmpty()) {
                         if(list.attributes().addHidden(file)) {
                             removal.add(file);
@@ -74,6 +79,11 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             list.removeAll(removal);
         }
         return list;
+    }
+
+    @Override
+    public AttributedList<Path> initialize() {
+        return AttributedList.emptyList();
     }
 
     @Override

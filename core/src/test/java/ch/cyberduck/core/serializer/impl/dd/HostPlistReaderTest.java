@@ -26,11 +26,17 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class HostPlistReaderTest {
+
+    @BeforeClass
+    public static void register() {
+        ProtocolFactory.get().register(new TestProtocol());
+    }
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testDeserializeNoSuchFile() throws Exception {
@@ -47,7 +53,6 @@ public class HostPlistReaderTest {
 
     @Test
     public void testRead() throws Exception {
-        ProtocolFactory.register(new TestProtocol());
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
                 "src/test/resources/s3.amazonaws.com – S3.duck"));
@@ -58,7 +63,6 @@ public class HostPlistReaderTest {
 
     @Test
     public void testReadPrivateKey() throws Exception {
-        ProtocolFactory.register(new TestProtocol());
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
                 "src/test/resources/Private Key Legacy.duck"));
@@ -70,7 +74,6 @@ public class HostPlistReaderTest {
 
     @Test
     public void testReadPrivateKeyBookmark() throws Exception {
-        ProtocolFactory.register(new TestProtocol());
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
                 "src/test/resources/Private Key.duck"));

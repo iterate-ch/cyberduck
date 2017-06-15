@@ -134,7 +134,7 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SingleSessionPool{");
+        final StringBuilder sb = new StringBuilder("StatelessSessionPool{");
         sb.append("session=").append(session);
         sb.append('}');
         return sb.toString();

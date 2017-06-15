@@ -29,28 +29,28 @@ namespace Ch.Cyberduck.Core
 
         public override string getPassword(Scheme scheme, int port, String hostName, String user)
         {
-            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
+            Host host = new Host(ProtocolFactory.get().forScheme(scheme.name()), hostName, port);
             host.getCredentials().setUsername(user);
             return getPassword(host);
         }
 
         public override string getPassword(String hostName, String user)
         {
-            Host host = new Host(ProtocolFactory.forScheme(Scheme.ftp.name()), hostName);
+            Host host = new Host(ProtocolFactory.get().forScheme(Scheme.ftp.name()), hostName);
             host.getCredentials().setUsername(user);
             return getPassword(host);
         }
 
         public override void addPassword(String hostName, String user, String password)
         {
-            Host host = new Host(ProtocolFactory.forScheme(Scheme.ftp.name()), hostName);
+            Host host = new Host(ProtocolFactory.get().forScheme(Scheme.ftp.name()), hostName);
             host.getCredentials().setUsername(user);
             PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
         }
 
         public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
         {
-            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
+            Host host = new Host(ProtocolFactory.get().forScheme(scheme.name()), hostName, port);
             host.getCredentials().setUsername(user);
             PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
         }

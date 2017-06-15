@@ -41,6 +41,11 @@ import java.util.Set;
 public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
+    /**
+     * Vendor identifier of default bundled profiles.
+     */
+    public static final String DEFAULT_PROVIDER = "cyberduck";
+
     private final Deserializer<String> dict;
 
     /**
@@ -287,6 +292,9 @@ public class Profile implements Protocol, Serializable {
     @Override
     public Set<Location.Name> getRegions() {
         final List<String> regions = this.list("Regions");
+        if(regions.isEmpty()) {
+            return parent.getRegions();
+        }
         final Set<Location.Name> set = new HashSet<Location.Name>();
         for(String region : regions) {
             set.add(new Location.Name(region));

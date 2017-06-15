@@ -18,9 +18,14 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.junit.Test;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,14 +33,14 @@ public class Expandrive5BookmarkCollectionTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testParseNotFound() throws Exception {
-        new Expandrive5BookmarkCollection().parse(new Local(System.getProperty("java.io.tmpdir"), "f"));
+        new Expandrive5BookmarkCollection().parse(new ProtocolFactory(Collections.emptySet()), new Local(System.getProperty("java.io.tmpdir"), "f"));
     }
 
     @Test
     public void testParse() throws Exception {
         Expandrive5BookmarkCollection c = new Expandrive5BookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(new Local("src/test/resources/expandrive5.favorites.js"));
+        c.parse(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.ftp))), new Local("src/test/resources/expandrive5.favorites.js"));
         assertEquals(3, c.size());
         assertEquals("Imported from ExpanDrive 5", c.get(0).getComment());
         assertEquals("c", c.get(0).getCredentials().getUsername());

@@ -55,7 +55,7 @@ public class DefaultBookmarkController extends BookmarkController {
     private NSPopUpButton encodingPopup;
 
     public DefaultBookmarkController(final Host bookmark) {
-        super(bookmark, bookmark.getCredentials());
+        super(bookmark);
     }
 
     @Override

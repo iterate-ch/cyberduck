@@ -42,7 +42,7 @@ public class CryptoChecksumComputeTest {
 
     @Test
     public void testCompute() throws Exception {
-        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
+        final Path vault = new Path("/vault", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
@@ -52,7 +52,7 @@ public class CryptoChecksumComputeTest {
 
                         @Override
                         public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
-                            assertTrue(folder.equals(home) || folder.isChild(home));
+                            assertTrue(folder.equals(vault) || folder.isChild(vault));
                             return folder;
                         }
 
@@ -70,13 +70,14 @@ public class CryptoChecksumComputeTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
-        final Cryptor cryptor = vault.getCryptor();
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"));
+        final Cryptor cryptor = cryptomator.getCryptor();
         final ByteBuffer header = cryptor.fileHeaderCryptor().encryptHeader(cryptor.fileHeaderCryptor().create());
         // DEFAULT_PIPE_SIZE=1024
-        final Path file = new Path(home, "f", EnumSet.of(Path.Type.file));
+        final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
-        final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, vault);
+        final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, cryptomator);
         final RandomNonceGenerator nonces = new RandomNonceGenerator();
         assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)).hash);
         assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)),

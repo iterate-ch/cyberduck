@@ -51,6 +51,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -75,6 +76,11 @@ import static org.junit.Assert.*;
 @Ignore
 @Category(IntegrationTest.class)
 public class UDTProxyConfiguratorTest {
+
+    @BeforeClass
+    public static void register() {
+        ProtocolFactory.get().register(new S3Protocol());
+    }
 
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectNoServer() throws Exception {
@@ -197,7 +203,6 @@ public class UDTProxyConfiguratorTest {
 
     @Test
     public void testUnsecureConnection() throws Exception {
-        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
@@ -215,7 +220,6 @@ public class UDTProxyConfiguratorTest {
 
     @Test
     public void testWrite() throws Exception {
-        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(

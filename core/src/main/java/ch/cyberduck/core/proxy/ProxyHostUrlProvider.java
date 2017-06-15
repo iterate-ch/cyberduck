@@ -32,7 +32,7 @@ public class ProxyHostUrlProvider extends HostUrlProvider {
     public String get(final Host host) {
         switch(host.getProtocol().getScheme()) {
             case sftp:
-                return super.get(new Host(ProtocolFactory.forScheme(Scheme.ftp.name()), host.getHostname(), host.getPort()));
+                return super.get(new Host(ProtocolFactory.get().forScheme(Scheme.ftp), host.getHostname(), host.getPort()));
         }
         return super.get(host);
     }

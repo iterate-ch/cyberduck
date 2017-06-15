@@ -22,12 +22,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +65,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
      * FireFTP settings are in Firefox/Profiles/.*\.default/fireFTPsites.dat
      */
     @Override
-    protected void parse(final Local folder) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local folder) throws AccessDeniedException {
         for(Local settings : folder.list().filter(new NullFilter<Local>() {
             @Override
             public boolean accept(Local file) {
@@ -82,7 +81,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                     return false;
                 }
             })) {
-                this.read(child);
+                this.read(protocols, child);
             }
         }
     }
@@ -90,7 +89,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     /**
      * Read invalid JSON format.
      */
-    protected void read(final Local file) throws AccessDeniedException {
+    protected void read(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
             try {
@@ -101,7 +100,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                         Matcher entries = Pattern.compile("\\{(.*?)\\}").matcher(array.group(1));
                         while(entries.find()) {
                             final String entry = entries.group(1);
-                            this.read(entry);
+                            this.read(protocols, entry);
                         }
                     }
                 }
@@ -115,8 +114,8 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
     }
 
-    private void read(final String entry) {
-        final Host current = new Host(new FTPProtocol(), PreferencesFactory.get().getProperty("connection.hostname.default"));
+    private void read(final ProtocolFactory protocols, final String entry) {
+        final Host current = new Host(protocols.forScheme(Scheme.ftp));
         current.getCredentials().setUsername(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"));
         for(String attribute : entry.split(", ")) {
@@ -183,12 +182,12 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             }
             else if("security".equals(name)) {
                 if("authtls".equals(value)) {
-                    current.setProtocol(new FTPTLSProtocol());
+                    current.setProtocol(protocols.forScheme(Scheme.ftps));
                     // Reset port to default
                     current.setPort(-1);
                 }
                 if("sftp".equals(value)) {
-                    current.setProtocol(new SFTPProtocol());
+                    current.setProtocol(protocols.forScheme(Scheme.sftp));
                     // Reset port to default
                     current.setPort(-1);
                 }

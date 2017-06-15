@@ -46,7 +46,6 @@
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
 		4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
-		473A4B6A1CAC67CE00B536E7 /* B2.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */; };
 		473BF0871892968E0068B4C1 /* azure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0851892968E0068B4C1 /* azure.tiff */; };
 		474163C106C4F64100AC0BD2 /* Info.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.xib */; };
 		474163C206C4F64100AC0BD2 /* Browser.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.xib */; };
@@ -58,7 +57,6 @@
 		474163CF06C4F64100AC0BD2 /* Bookmark.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163BF06C4F64100AC0BD2 /* Bookmark.xib */; };
 		474166A606C6555E00AC0BD2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 474166A406C6555E00AC0BD2 /* InfoPlist.strings */; };
 		4741686B06C6BA9400AC0BD2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4741686906C6BA9400AC0BD2 /* Localizable.strings */; };
-		47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
 		474960651CD75C9700B020C9 /* addbookmark.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604C1CD75C9700B020C9 /* addbookmark.pdf */; };
 		474960661CD75C9700B020C9 /* connect.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604D1CD75C9700B020C9 /* connect.pdf */; };
 		474960671CD75C9700B020C9 /* delete.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749604E1CD75C9700B020C9 /* delete.pdf */; };
@@ -195,7 +193,6 @@
 		47B331941668102400C9FFA0 /* swift.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331921668102400C9FFA0 /* swift.tiff */; };
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
 		47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */; };
-		47C299A91EA4F528005D9507 /* Microsoft OneDrive.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C299A81EA4F520005D9507 /* Microsoft OneDrive.cyberduckprofile */; };
 		47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		47CD043812DB5F2000694306 /* File.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD041612DB5F2000694306 /* File.strings */; };
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
@@ -208,7 +205,6 @@
 		47D6FFE91CCFA54A005B01C5 /* CDToolbarItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 47D6FFE71CCFA54A005B01C5 /* CDToolbarItem.h */; };
 		47D939CA1A268D7F0006D4AE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D939C91A268D7F0006D4AE /* Foundation.framework */; };
 		47D93A031A27602E0006D4AE /* License.txt in Resources */ = {isa = PBXBuildFile; fileRef = 474163AF06C4F64100AC0BD2 /* License.txt */; };
-		47D93A051A2760810006D4AE /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
 		47D93A061A2762A40006D4AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		47D93A071A2762A40006D4AE /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
 		47D93A081A2762A40006D4AE /* Azure.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47652CE91202BED200745031 /* Azure.strings */; };
@@ -227,7 +223,6 @@
 		47D93A151A2762A40006D4AE /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		47D93A161A2762A40006D4AE /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47D93A171A2762A40006D4AE /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
-		47DD99831CAA766100960EAF /* B2.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47ED775F1CEA1314009EBA0A /* transferstop.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47ED775E1CEA1314009EBA0A /* transferstop.pdf */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
@@ -276,18 +271,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		47472EEF177F78620090A595 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = Profiles;
-			dstSubfolderSpec = 7;
-			files = (
-				47C299A91EA4F528005D9507 /* Microsoft OneDrive.cyberduckprofile in CopyFiles */,
-				47DD99831CAA766100960EAF /* B2.cyberduckprofile in CopyFiles */,
-				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		47C253691BF0D92800863EAF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -304,8 +287,6 @@
 			dstPath = Profiles;
 			dstSubfolderSpec = 7;
 			files = (
-				473A4B6A1CAC67CE00B536E7 /* B2.cyberduckprofile in CopyFiles */,
-				47D93A051A2760810006D4AE /* Rackspace US.cyberduckprofile in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -511,8 +492,6 @@
 		47181E9D0E17D1E500568D80 /* el */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = el; path = i18n/src/main/resources/el.lproj/Status.strings; sourceTree = "<group>"; };
 		47181E9E0E17D1E500568D80 /* el */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = el; path = i18n/src/main/resources/el.lproj/Configuration.strings; sourceTree = "<group>"; };
 		47181E9F0E17D1E500568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text; name = el; path = i18n/src/main/resources/el.lproj/License.txt; sourceTree = "<group>"; };
-		4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace UK.cyberduckprofile"; sourceTree = "<group>"; };
-		4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace US.cyberduckprofile"; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-document.icns"; sourceTree = "<group>"; };
 		471F5C0D12AD1B6B0005D323 /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_PT; path = i18n/src/main/resources/pt_PT.lproj/Alert.strings; sourceTree = "<group>"; };
@@ -1063,7 +1042,6 @@
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = i18n/src/main/resources/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		4791D0521C2829F300CC7DAB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = osx/target/Sparkle.framework; sourceTree = "<group>"; };
-		479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = B2.cyberduckprofile; sourceTree = "<group>"; };
 		479614771E5D848A00BF7014 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		4796147A1E5D858D00BF7014 /* QuickLookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookUI.framework; path = ../../../../System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework; sourceTree = "<group>"; };
 		479626AE1C98057C00CEBEC0 /* googledrive.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = googledrive.tiff; sourceTree = "<group>"; };
@@ -1297,7 +1275,6 @@
 		47B607490DA420880068282C /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = i18n/src/main/resources/da.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "setup/app/container-migration.plist"; sourceTree = "<group>"; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
-		47C299A81EA4F520005D9507 /* Microsoft OneDrive.cyberduckprofile */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Microsoft OneDrive.cyberduckprofile"; sourceTree = "<group>"; };
 		47C2AD801A268C880047B67A /* duck.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = duck.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = cs; path = i18n/src/main/resources/cs.lproj/Command.xib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = nl; path = i18n/src/main/resources/nl.lproj/Command.xib; sourceTree = "<group>"; };
@@ -1714,17 +1691,6 @@
 			path = bookmarks;
 			sourceTree = "<group>";
 		};
-		4718F499175F432400B424AD /* profiles */ = {
-			isa = PBXGroup;
-			children = (
-				4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */,
-				4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */,
-				479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */,
-				47C299A81EA4F520005D9507 /* Microsoft OneDrive.cyberduckprofile */,
-			);
-			path = profiles;
-			sourceTree = "<group>";
-		};
 		474152D706C4F08A00AC0BD2 /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -1774,7 +1740,6 @@
 				471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */,
 				47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */,
 				478F0DF312FB03DC000FE33C /* update.pem */,
-				4718F499175F432400B424AD /* profiles */,
 				470C646C1328CBF300146FB6 /* bookmarks */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
 				47B2E9FA1E2CF5E1007BE83D /* Activity.xib */,
@@ -2025,7 +1990,6 @@
 				4735940F0CE76EE50085DEAC /* Prune NIBs */,
 				47C2724412E99D8600A13758 /* Frameworks */,
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
-				47472EEF177F78620090A595 /* CopyFiles */,
 				47C253691BF0D92800863EAF /* CopyFiles */,
 				47EFE4E11BED03E7009AC47B /* ShellScript */,
 				4723B4F01BF13FE8004FF004 /* ShellScript */,

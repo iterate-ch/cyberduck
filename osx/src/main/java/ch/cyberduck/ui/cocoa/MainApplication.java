@@ -71,7 +71,7 @@ public final class MainApplication {
             // Register factory implementations.
             final Preferences preferences = new ApplicationUserDefaultsPreferences();
             PreferencesFactory.set(preferences);
-            ProtocolFactory.register(
+            ProtocolFactory.get().register(
                     new FTPProtocol(),
                     new FTPTLSProtocol(),
                     new SFTPProtocol(),
@@ -88,12 +88,7 @@ public final class MainApplication {
                     new DriveProtocol(),
                     new HubicProtocol(),
                     new OneDriveProtocol(),
-                    new LocalProtocol() {
-                        @Override
-                        public String disk() {
-                            return "NSComputer";
-                        }
-                    }
+                    new LocalProtocol()
             );
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()

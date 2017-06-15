@@ -88,6 +88,7 @@ import ch.cyberduck.core.worker.TouchWorker;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.browser.PathReloadFinder;
+import ch.cyberduck.ui.browser.RecursiveSearchFilter;
 import ch.cyberduck.ui.browser.RegexFilter;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 import ch.cyberduck.ui.browser.UploadDirectoryFinder;
@@ -1726,43 +1727,48 @@ public class BrowserController extends WindowController
             case outline:
                 // Setup search filter
                 final String input = searchField.stringValue();
-                // Setup search filter
-                final Filter<Path> filter = SearchFilterFactory.create(input, showHiddenFiles);
-                this.setFilter(filter);
                 if(StringUtils.isBlank(input)) {
+                    this.setFilter(SearchFilterFactory.create(showHiddenFiles));
                     // Reload with current cache
                     this.reload();
                 }
                 else {
+                    // Setup search filter
                     final NSObject action = notification.userInfo().objectForKey("NSTextMovement");
                     if(null == action) {
                         return;
                     }
-                    if(Integer.valueOf(action.toString()) == NSText.NSReturnTextMovement) {
-                        final NSAlert alert = NSAlert.alert(
-                                MessageFormat.format(LocaleFactory.localizedString("Search for {0}"), input),
-                                MessageFormat.format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"), workdir.getName()),
-                                LocaleFactory.localizedString("Search"),
-                                LocaleFactory.localizedString("Cancel"),
-                                null
-                        );
-                        this.alert(alert, new SheetCallback() {
-                            @Override
-                            public void callback(int returncode) {
-                                if(returncode == DEFAULT_OPTION) {
-                                    // Delay render until path is cached in the background
-                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, pool,
-                                            new SearchWorker(workdir, filenameFilter, cache, listener) {
-                                                @Override
-                                                public void cleanup(final AttributedList<Path> list) {
-                                                    // Reload browser
-                                                    reload();
-                                                }
-                                            })
-                                    );
+                    switch(Integer.valueOf(action.toString())) {
+                        case NSText.NSReturnTextMovement:
+                            // Prompt for recursive search when pressing return key
+                            final NSAlert alert = NSAlert.alert(
+                                    MessageFormat.format(LocaleFactory.localizedString("Search for {0}"), input),
+                                    MessageFormat.format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"), workdir.getName()),
+                                    LocaleFactory.localizedString("Search"),
+                                    LocaleFactory.localizedString("Cancel"),
+                                    null
+                            );
+                            this.alert(alert, new SheetCallback() {
+                                @Override
+                                public void callback(int returncode) {
+                                    if(returncode == DEFAULT_OPTION) {
+                                        // Delay render until path is cached in the background
+                                        background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, pool,
+                                                new SearchWorker(workdir, filenameFilter, cache, listener) {
+                                                    @Override
+                                                    public void cleanup(final AttributedList<Path> list) {
+                                                        super.cleanup(list);
+                                                        // Set filter with search result
+                                                        setFilter(new RecursiveSearchFilter(list));
+                                                        // Reload browser
+                                                        reload();
+                                                    }
+                                                })
+                                        );
+                                    }
                                 }
-                            }
-                        });
+                            });
+                            break;
                     }
                 }
         }
@@ -1846,7 +1852,7 @@ public class BrowserController extends WindowController
             bookmark.setDefaultPath(selected.getAbsolute());
         }
         else {
-            bookmark = new Host(ProtocolFactory.forName(preferences.getProperty("connection.protocol.default")),
+            bookmark = new Host(ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default")),
                     preferences.getProperty("connection.hostname.default"),
                     preferences.getInteger("connection.port.default"));
         }
@@ -2940,7 +2946,7 @@ public class BrowserController extends WindowController
             log.debug(String.format("Set working directory to %s", directory));
         }
         // Remove any custom file filter
-        this.setFilter(null);
+        this.setFilter(SearchFilterFactory.create(showHiddenFiles));
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
         if(null == directory) {
@@ -3103,14 +3109,19 @@ public class BrowserController extends WindowController
         if(null != c) {
             c.window().close();
         }
-        this.background(new DisconnectBackgroundAction(this, pool) {
-            @Override
-            public void cleanup() {
-                super.cleanup();
-                window.setDocumentEdited(false);
-                disconnected.run();
-            }
-        });
+        if(this.isConnected()) {
+            this.background(new DisconnectBackgroundAction(this, pool) {
+                @Override
+                public void cleanup() {
+                    super.cleanup();
+                    window.setDocumentEdited(false);
+                    disconnected.run();
+                }
+            });
+        }
+        else {
+            disconnected.run();
+        }
     }
 
     @Action

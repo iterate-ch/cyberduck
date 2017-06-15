@@ -47,12 +47,13 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        // Disabled by defeault. Enable using profile
+        return false;
     }
 
     @Override
     public String[] getSchemes() {
-        return new String[]{this.getScheme().name()};
+        return new String[]{this.getScheme().name(), this.getIdentifier()};
     }
 
     @Override

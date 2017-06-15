@@ -63,14 +63,16 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Host _host;
         private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
         protected readonly LoginOptions _options;
+        protected readonly LoginInputValidator _validator;
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
 
-        private BookmarkController(T view, Host host, Credentials credentials, InputValidator validator,
+        private BookmarkController(T view, Host host, Credentials credentials, LoginInputValidator validator,
             LoginOptions options) : base(validator)
         {
             _host = host;
             _credentials = credentials;
+            _validator = validator;
             _options = options;
             View = view;
 
@@ -87,12 +89,18 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        protected BookmarkController(Host host, Credentials credentials) : this(host, credentials,
-            new DisabledInputValidator(), new LoginOptions(host.getProtocol()))
+        protected BookmarkController(Host host, Credentials credentials) : this(host, credentials, 
+            new LoginOptions(host.getProtocol()))
         {
         }
 
-        protected BookmarkController(Host host, Credentials credentials, InputValidator validator,
+        protected BookmarkController(Host host, Credentials credentials,
+            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host, credentials,
+            new LoginInputValidator(credentials, host.getProtocol(), options), options)
+        {
+        }
+
+        protected BookmarkController(Host host, Credentials credentials, LoginInputValidator validator,
             LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host, credentials,
             validator, options)
         {
@@ -328,6 +336,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             _host.setProtocol(selected);
             _options.configure(selected);
+            _validator.configure(selected);
             ItemChanged();
             Update();
             Reachable();
@@ -487,7 +496,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void InitProtocols()
         {
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
-            foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] { }))
+            foreach (Protocol p in ProtocolFactory.get().find().toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getProvider()));
             }

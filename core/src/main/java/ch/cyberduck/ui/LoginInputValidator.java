@@ -21,8 +21,9 @@ import ch.cyberduck.core.Protocol;
 
 public class LoginInputValidator implements InputValidator {
     private final Credentials credentials;
-    private final Protocol protocol;
     private final LoginOptions options;
+
+    private Protocol protocol;
 
     public LoginInputValidator(final Credentials credentials, final Protocol protocol, final LoginOptions options) {
         this.credentials = credentials;
@@ -33,5 +34,9 @@ public class LoginInputValidator implements InputValidator {
     @Override
     public boolean validate() {
         return credentials.validate(protocol, options);
+    }
+
+    public void configure(final Protocol protocol) {
+        this.protocol = protocol;
     }
 }

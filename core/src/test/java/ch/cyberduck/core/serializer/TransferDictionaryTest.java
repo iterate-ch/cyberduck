@@ -55,7 +55,7 @@ public class TransferDictionaryTest {
 
     @BeforeClass
     public static void register() {
-        ProtocolFactory.register(new TestProtocol());
+        ProtocolFactory.get().register(new TestProtocol());
     }
 
     @Test

@@ -26,6 +26,7 @@ import ch.cyberduck.core.TerminalServiceFactory;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
@@ -241,7 +242,8 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                     && controller.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
-            return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1;
+            return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Copy.class) != null
+                    && controller.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("renameFileButtonClicked:"))) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {

@@ -22,16 +22,13 @@ import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -54,15 +51,15 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(final Local file) throws AccessDeniedException {
+    protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
             throw new LocalAccessDeniedException(String.format("Invalid bookmark file %s", file));
         }
-        this.parse(serialized);
+        this.parse(protocols, serialized);
     }
 
-    private void parse(NSDictionary serialized) {
+    private void parse(final ProtocolFactory protocols, NSDictionary serialized) {
         List<NSDictionary> items = new PlistDeserializer(serialized).listForKey("BookmarkItems");
         for(NSDictionary item : items) {
             final PlistDeserializer bookmark = new PlistDeserializer(item);
@@ -71,20 +68,20 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                 continue;
             }
             if("Bookmark".equals(classname)) {
-                this.read(bookmark);
+                this.read(protocols, bookmark);
             }
             if("BookmarkFolder".equals(classname)) {
-                this.parse(item);
+                this.parse(protocols, item);
             }
         }
     }
 
-    private boolean read(final PlistDeserializer bookmark) {
+    private boolean read(final ProtocolFactory protocols, final PlistDeserializer bookmark) {
         final String server = bookmark.stringForKey("Server");
         if(null == server) {
             return false;
         }
-        final Host host = new Host(new FTPProtocol(), server);
+        final Host host = new Host(protocols.forScheme(Scheme.ftp), server);
         final String port = bookmark.stringForKey("Port");
         if(StringUtils.isNotBlank(port)) {
             host.setPort(Integer.parseInt(port));
@@ -119,21 +116,21 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
             try {
                 switch(Integer.parseInt(protocol)) {
                     case 0:
-                        host.setProtocol(new FTPProtocol());
+                        host.setProtocol(protocols.forScheme(Scheme.ftp));
                         break;
                     case 1:
-                        host.setProtocol(new SFTPProtocol());
+                        host.setProtocol(protocols.forScheme(Scheme.sftp));
                         break;
                     case 3:
-                        host.setProtocol(new S3Protocol());
+                        host.setProtocol(protocols.forScheme(Scheme.s3));
                         break;
                     case 2:
                     case 4:
-                        if(host.getPort() == new DAVSSLProtocol().getDefaultPort()) {
-                            host.setProtocol(new DAVSSLProtocol());
+                        if(host.getPort() == Scheme.davs.getPort()) {
+                            host.setProtocol(protocols.forScheme(Scheme.davs));
                         }
                         else {
-                            host.setProtocol(new DAVProtocol());
+                            host.setProtocol(protocols.forScheme(Scheme.dav));
                         }
                         break;
                 }

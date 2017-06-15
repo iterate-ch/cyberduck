@@ -33,7 +33,7 @@ public class HistoryCollectionTest {
 
     @Test
     public void testAdd() throws Exception {
-        ProtocolFactory.register(new TestProtocol());
+        ProtocolFactory.get().register(new TestProtocol());
         final CountDownLatch lock = new CountDownLatch(1);
         final CountDownLatch loaded = new CountDownLatch(1);
         final CountDownLatch exit = new CountDownLatch(1);

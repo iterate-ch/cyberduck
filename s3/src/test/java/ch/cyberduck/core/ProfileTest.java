@@ -19,6 +19,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.s3.S3Protocol;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -26,9 +27,13 @@ import static org.junit.Assert.assertNotEquals;
 
 public class ProfileTest {
 
+    @BeforeClass
+    public static void register() {
+        ProtocolFactory.get().register(new S3Protocol());
+    }
+
     @Test
     public void testEquals() throws Exception {
-        ProtocolFactory.register(new S3Protocol());
         assertEquals(ProfileReaderFactory.get().read(
                         new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile")),
                 ProfileReaderFactory.get().read(
@@ -37,7 +42,6 @@ public class ProfileTest {
 
     @Test
     public void testCompareTo() throws Exception {
-        ProtocolFactory.register(new S3Protocol());
         assertEquals(0, ProfileReaderFactory.get().read(
                 new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile")).compareTo(ProfileReaderFactory.get().read(
                 new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile"))));
@@ -47,7 +51,6 @@ public class ProfileTest {
 
     @Test
     public void testCompareMultipleRegions() throws Exception {
-        ProtocolFactory.register(new S3Protocol());
         assertEquals(0, ProfileReaderFactory.get().read(
                 new Local("../profiles/Verizon Cloud Storage (AMS1A).cyberduckprofile")).compareTo(ProfileReaderFactory.get().read(
                 new Local("../profiles/Verizon Cloud Storage (IAD3A).cyberduckprofile"))));

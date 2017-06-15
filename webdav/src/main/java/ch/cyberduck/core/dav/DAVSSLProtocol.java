@@ -18,12 +18,11 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
-public final class DAVSSLProtocol extends AbstractProtocol {
+public class DAVSSLProtocol extends AbstractProtocol {
     @Override
     public String getName() {
         return "WebDAV (HTTPS)";
@@ -31,7 +30,7 @@ public final class DAVSSLProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return LocaleFactory.localizedString("WebDAV (HTTP/SSL)");
+        return this.getName();
     }
 
     @Override
@@ -52,11 +51,6 @@ public final class DAVSSLProtocol extends AbstractProtocol {
     @Override
     public Scheme getScheme() {
         return Scheme.https;
-    }
-
-    @Override
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name(), "davs"};
     }
 
     @Override

@@ -87,11 +87,6 @@ public class HubicProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isEnabled() {
-        return false;
-    }
-
-    @Override
     public String disk() {
         return new SwiftProtocol().disk();
     }

@@ -25,6 +25,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
@@ -116,7 +117,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             else {
                 // First import
-                this.parse(file);
+                this.parse(ProtocolFactory.get(), file);
             }
             // Save last checksum
             if(current != null) {
@@ -134,7 +135,11 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     public abstract Local getFile();
 
-    protected abstract void parse(Local file) throws AccessDeniedException;
+    protected void parse(Local file) throws AccessDeniedException {
+        this.parse(ProtocolFactory.get(), file);
+    }
+
+    protected abstract void parse(final ProtocolFactory protocols, Local file) throws AccessDeniedException;
 
     public boolean isInstalled() {
         return StringUtils.isNotBlank(this.getName());

@@ -77,7 +77,7 @@ public class S3ObjectListService implements ListService {
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
             final AttributedList<Path> objects = new AttributedList<Path>();
-            objects.addAll(this.listObjects(directory, prefix, listener));
+            objects.addAll(this.listObjects(directory, prefix, String.valueOf(Path.DELIMITER), listener));
             final Versioning feature = session.getFeature(Versioning.class);
             final Path container = containerService.getContainer(directory);
             if(feature != null && feature.getConfiguration(container).isEnabled()) {
@@ -125,7 +125,7 @@ public class S3ObjectListService implements ListService {
         return prefix;
     }
 
-    protected AttributedList<Path> listObjects(final Path parent, final String prefix, final ListProgressListener listener)
+    protected AttributedList<Path> listObjects(final Path parent, final String prefix, final String delimiter, final ListProgressListener listener)
             throws IOException, ServiceException, BackgroundException {
         final Path bucket = containerService.getContainer(parent);
         final AttributedList<Path> children = new AttributedList<Path>();
@@ -135,7 +135,7 @@ public class S3ObjectListService implements ListService {
             // Read directory listing in chunks. List results are always returned
             // in lexicographic (alphabetical) order.
             final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
-                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, String.valueOf(Path.DELIMITER),
+                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
                     preferences.getInteger("s3.listing.chunksize"), priorLastKey);
 
             final StorageObject[] objects = chunk.getObjects();
@@ -146,8 +146,13 @@ public class S3ObjectListService implements ListService {
                 }
                 final EnumSet<AbstractPath.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
                         ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                final Path file = new Path(parent, PathNormalizer.name(key), types,
-                        attributes.convert(object));
+                final Path file;
+                if(null == delimiter) {
+                    file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), types, attributes.convert(object));
+                }
+                else {
+                    file = new Path(parent, PathNormalizer.name(key), types, attributes.convert(object));
+                }
                 // Copy bucket location
                 file.attributes().setRegion(bucket.attributes().getRegion());
                 children.add(file);
@@ -162,7 +167,13 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final Path file = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                final Path file;
+                if(null == delimiter) {
+                    file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                }
+                else {
+                    file = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                }
                 file.attributes().setRegion(bucket.attributes().getRegion());
                 children.add(file);
             }

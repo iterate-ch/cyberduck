@@ -85,6 +85,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
 
 /**
@@ -212,6 +213,12 @@ public abstract class Preferences {
         public static void main(String[] args) {
             System.out.println("Version: " + getSpecification());
             System.out.println("Implementation: " + getImplementation());
+        }
+    }
+
+    protected void setDefaults(final Properties properties) {
+        for(Map.Entry<Object, Object> property : properties.entrySet()) {
+            defaults.put(property.getKey().toString(), property.getValue().toString());
         }
     }
 

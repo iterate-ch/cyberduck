@@ -24,7 +24,7 @@ import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
-public final class FTPProtocol extends AbstractProtocol {
+public class FTPProtocol extends AbstractProtocol {
 
     @Override
     public String getIdentifier() {
@@ -55,5 +55,4 @@ public final class FTPProtocol extends AbstractProtocol {
     public boolean isEncodingConfigurable() {
         return true;
     }
-
 }

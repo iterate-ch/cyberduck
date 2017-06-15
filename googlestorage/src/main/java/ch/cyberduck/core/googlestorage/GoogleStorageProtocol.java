@@ -89,11 +89,6 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name(), "gs"};
-    }
-
-    @Override
     public boolean isPortConfigurable() {
         return false;
     }

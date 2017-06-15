@@ -23,12 +23,22 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Search {
+
+    /**
+     * @param workdir  Current working directory in browser
+     * @param regex    Search string
+     * @param listener Notification listener
+     * @return List of files found or empty list
+     */
     AttributedList<Path> search(Path workdir, Filter<Path> regex, ListProgressListener listener) throws BackgroundException;
 
+    /**
+     * @return True if search is capable of recursively searching in folders
+     */
     boolean isRecursive();
 
     /**
-     * Decorate with cache
+     * Decorate with read-only cache
      *
      * @param cache Path cache
      */

@@ -43,7 +43,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Random;
 
@@ -79,10 +79,11 @@ public class DriveWriteFeatureTest {
         final byte[] content = new byte[1048576];
         new Random().nextBytes(content);
         status.setLength(content.length);
-        final Path home = new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path home = new DriveHomeFinderService(session).find();
+        final CryptoVault cryptomator = new CryptoVault(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+        final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<Void>(session, new DriveWriteFeature(session), cryptomator);
         final Cryptor cryptor = cryptomator.getCryptor();
@@ -101,7 +102,7 @@ public class DriveWriteFeatureTest {
         final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        new CryptoDeleteFeature(session, new DriveDeleteFeature(session), cryptomator).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new DriveDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

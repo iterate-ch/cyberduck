@@ -55,7 +55,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.ui.InputValidator;
+import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -67,7 +67,11 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.function.Predicate;
+
+import static ch.cyberduck.core.Profile.DEFAULT_PROVIDER;
 
 public class BookmarkController extends SheetController implements CollectionListener {
     private static final Logger log = Logger.getLogger(BookmarkController.class);
@@ -80,11 +84,14 @@ public class BookmarkController extends SheetController implements CollectionLis
     protected final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
+    private final ProtocolFactory protocols = ProtocolFactory.get();
+
     private final List<BookmarkObserver> observers = new ArrayList<>();
 
     protected final Host bookmark;
     protected final Credentials credentials;
 
+    protected final LoginInputValidator validator;
     protected final LoginOptions options;
 
     @Outlet
@@ -118,18 +125,18 @@ public class BookmarkController extends SheetController implements CollectionLis
     }
 
     public BookmarkController(final Host bookmark, final Credentials credentials) {
-        this(bookmark, credentials, new InputValidator() {
-            @Override
-            public boolean validate() {
-                return true;
-            }
-        }, new LoginOptions(bookmark.getProtocol()));
+        this(bookmark, credentials, new LoginOptions(bookmark.getProtocol()));
     }
 
-    public BookmarkController(final Host bookmark, final Credentials credentials, final InputValidator validator, final LoginOptions options) {
+    public BookmarkController(final Host bookmark, final Credentials credentials, final LoginOptions options) {
+        this(bookmark, credentials, new LoginInputValidator(credentials, bookmark.getProtocol(), options), options);
+    }
+
+    public BookmarkController(final Host bookmark, final Credentials credentials, final LoginInputValidator validator, final LoginOptions options) {
         super(validator);
         this.bookmark = bookmark;
         this.credentials = credentials;
+        this.validator = validator;
         this.options = options;
     }
 
@@ -143,11 +150,33 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
-        for(Protocol protocol : ProtocolFactory.getEnabledProtocols()) {
-            final String title = protocol.getDescription();
-            this.protocolPopup.addItemWithTitle(title);
-            this.protocolPopup.lastItem().setRepresentedObject(String.valueOf(protocol.hashCode()));
-            this.protocolPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.googlestorage)))) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.file)))) {
+            this.addProtocol(protocol);
+        }
+        this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : protocols.find(new Predicate<Protocol>() {
+            @Override
+            public boolean test(final Protocol protocol) {
+                return protocol.isEnabled() && !StringUtils.equals(DEFAULT_PROVIDER, protocol.getProvider());
+            }
+        })) {
+            this.addProtocol(protocol);
         }
         this.addObserver(new BookmarkObserver() {
             @Override
@@ -157,9 +186,16 @@ public class BookmarkController extends SheetController implements CollectionLis
         });
     }
 
+    private void addProtocol(final Protocol protocol) {
+        final String title = protocol.getDescription();
+        this.protocolPopup.addItemWithTitle(title);
+        this.protocolPopup.lastItem().setRepresentedObject(String.valueOf(protocol.hashCode()));
+        this.protocolPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
+    }
+
     @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
-        final Protocol selected = ProtocolFactory.forName(sender.selectedItem().representedObject());
+        final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Protocol selection changed to %s", selected));
         }
@@ -179,6 +215,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         }
         bookmark.setProtocol(selected);
         options.configure(selected);
+        validator.configure(selected);
         this.update();
     }
 
@@ -543,5 +580,21 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     public interface BookmarkObserver {
         void change(final Host bookmark);
+    }
+
+    private static class DefaultProtocolPredicate implements Predicate<Protocol> {
+        private final EnumSet<Protocol.Type> types;
+
+        public DefaultProtocolPredicate(final EnumSet<Protocol.Type> types) {
+            this.types = types;
+        }
+
+        @Override
+        public boolean test(final Protocol protocol) {
+            if(types.contains(protocol.getType())) {
+                return protocol.isEnabled() && StringUtils.equals(DEFAULT_PROVIDER, protocol.getProvider());
+            }
+            return false;
+        }
     }
 }

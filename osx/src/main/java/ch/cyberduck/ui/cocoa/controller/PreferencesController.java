@@ -1685,23 +1685,24 @@ public class PreferencesController extends ToolbarWindowController {
         this.protocolCombobox.setTarget(this.id());
         this.protocolCombobox.setAction(Foundation.selector("protocolComboboxClicked:"));
         this.protocolCombobox.removeAllItems();
-        for(Protocol protocol : ProtocolFactory.getEnabledProtocols()) {
+        final List<Protocol> protocols = ProtocolFactory.get().find();
+        for(Protocol protocol : protocols) {
             this.protocolCombobox.addItemWithTitle(protocol.getDescription());
         }
-        for(Protocol protocol : ProtocolFactory.getEnabledProtocols()) {
+        for(Protocol protocol : protocols) {
             final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocol.getDescription());
             item.setRepresentedObject(protocol.getProvider());
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
         }
 
         final Protocol defaultProtocol
-                = ProtocolFactory.forName(preferences.getProperty("connection.protocol.default"));
+                = ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default"));
         this.protocolCombobox.selectItemWithTitle(defaultProtocol.getDescription());
     }
 
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
-        final Protocol selected = ProtocolFactory.forName(sender.selectedItem().representedObject());
+        final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
         preferences.setProperty("connection.protocol.default", selected.getProvider());
         preferences.setProperty("connection.port.default", selected.getDefaultPort());
     }
@@ -1758,8 +1759,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-                Arrays.asList(Scheme.ftp, Scheme.ftps),
-                new Application(bundle)
+                Arrays.asList(Scheme.ftp, Scheme.ftps), new Application(bundle)
         );
     }
 

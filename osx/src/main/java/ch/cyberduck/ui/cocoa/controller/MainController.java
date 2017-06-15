@@ -632,7 +632,7 @@ public class MainController extends BundleController implements NSApplication.De
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Register profile %s", profile));
                         }
-                        ProtocolFactory.register(profile);
+                        ProtocolFactory.get().register(profile);
                         final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                         newDocument().addBookmark(host);
                         // Register in application support

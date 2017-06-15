@@ -849,7 +849,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UseKeychain = PreferencesFactory.get().getBoolean("connection.login.keychain");
             PopulateDefaultProtocols();
             View.DefaultProtocol =
-                ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default"));
+                ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default"));
             View.AlternatingRowBackground = PreferencesFactory.get().getBoolean("browser.alternatingRows");
             View.VerticalLines = PreferencesFactory.get().getBoolean("browser.verticalLines");
             View.HorizontalLines = PreferencesFactory.get().getBoolean("browser.horizontalLines");
@@ -1161,7 +1161,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultProtocols()
         {
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
-            foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] { }))
+            foreach (Protocol p in ProtocolFactory.get().find().toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getProvider()));
             }

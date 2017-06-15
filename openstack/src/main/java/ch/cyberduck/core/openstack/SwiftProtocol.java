@@ -45,11 +45,6 @@ public class SwiftProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name(), "swift", "cf"};
-    }
-
-    @Override
     public boolean isHostnameConfigurable() {
         return true;
     }

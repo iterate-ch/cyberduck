@@ -41,6 +41,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.identitymanagement.model.*;
@@ -106,19 +107,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
             @Override
             public Void call() throws BackgroundException {
                 PreferencesFactory.get().deleteProperty(String.format("%s%s", prefix, username));
-                final AmazonIdentityManagement client = AmazonIdentityManagementClientBuilder.standard()
-                        .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
-                            @Override
-                            public String getAWSAccessKeyId() {
-                                return host.getCredentials().getUsername();
-                            }
-
-                            @Override
-                            public String getAWSSecretKey() {
-                                return host.getCredentials().getPassword();
-                            }
-                        }))
-                        .withClientConfiguration(configuration).build();
+                final AmazonIdentityManagement client = client();
                 try {
                     final ListAccessKeysResult keys
                             = client.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
@@ -176,19 +165,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
-                final AmazonIdentityManagement client = AmazonIdentityManagementClientBuilder.standard()
-                        .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
-                            @Override
-                            public String getAWSAccessKeyId() {
-                                return host.getCredentials().getUsername();
-                            }
-
-                            @Override
-                            public String getAWSSecretKey() {
-                                return host.getCredentials().getPassword();
-                            }
-                        }))
-                        .withClientConfiguration(configuration).build();
+                final AmazonIdentityManagement client = client();
                 try {
                     // Create new IAM credentials
                     User user;
@@ -225,5 +202,22 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                 return null;
             }
         }, prompt);
+    }
+
+    private AmazonIdentityManagement client() {
+        return AmazonIdentityManagementClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
+                    @Override
+                    public String getAWSAccessKeyId() {
+                        return host.getCredentials().getUsername();
+                    }
+
+                    @Override
+                    public String getAWSSecretKey() {
+                        return host.getCredentials().getPassword();
+                    }
+                }))
+                .withClientConfiguration(configuration)
+                .withRegion(Regions.DEFAULT_REGION).build();
     }
 }

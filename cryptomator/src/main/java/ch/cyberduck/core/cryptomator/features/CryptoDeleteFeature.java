@@ -15,6 +15,8 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -22,11 +24,16 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
+
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class CryptoDeleteFeature implements Delete {
+    private static final Logger log = Logger.getLogger(CryptoDeleteFeature.class);
 
     private final Session<?> session;
     private final Delete proxy;
@@ -47,17 +54,57 @@ public class CryptoDeleteFeature implements Delete {
             if(!f.equals(vault.getHome())) {
                 final Path encrypt = vault.encrypt(session, f);
                 encrypted.add(encrypt);
+                final Path metadata = vault.encrypt(session, f, true);
                 if(f.isDirectory()) {
                     // Delete metadata file for directory
-                    encrypted.add(vault.encrypt(session, f, true));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Add metadata file %s", metadata));
+                    }
+                    encrypted.add(metadata);
                 }
-                if(filenameProvider.isDeflated(encrypt.getName())) {
-                    final Path metadataFile = filenameProvider.resolve(encrypt.getName());
+                if(filenameProvider.isDeflated(metadata.getName())) {
+                    final Path metadataFile = filenameProvider.resolve(metadata.getName());
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Add metadata file %s", metadata));
+                    }
                     encrypted.add(metadataFile);
                 }
             }
         }
-        proxy.delete(encrypted, prompt, callback);
+        if(!encrypted.isEmpty()) {
+            proxy.delete(encrypted, prompt, callback);
+        }
+        for(Path f : files) {
+            if(f.equals(vault.getHome())) {
+                log.warn(String.format("Recursively delete vault %s", f));
+                final List<Path> metadata = new ArrayList<>();
+                if(!proxy.isRecursive()) {
+                    final Find find = session._getFeature(Find.class);
+                    final Path dataRoot = new Path(f, "d", f.getType());
+                    if(find.find(dataRoot)) {
+                        for(Path d : session._getFeature(ListService.class).list(dataRoot, new DisabledListProgressListener()).toList()) {
+                            metadata.addAll(session._getFeature(ListService.class).list(d, new DisabledListProgressListener()).toList());
+                            metadata.add(d);
+                        }
+                        metadata.add(dataRoot);
+                    }
+                    final Path metaRoot = new Path(f, "m", f.getType());
+                    if(find.find(metaRoot)) {
+                        for(Path m : session._getFeature(ListService.class).list(metaRoot, new DisabledListProgressListener()).toList()) {
+                            for(Path m2 : session._getFeature(ListService.class).list(m, new DisabledListProgressListener()).toList()) {
+                                metadata.addAll(session._getFeature(ListService.class).list(m2, new DisabledListProgressListener()).toList());
+                                metadata.add(m2);
+                            }
+                            metadata.add(m);
+                        }
+                        metadata.add(metaRoot);
+                    }
+                    metadata.add(new Path(f, "masterkey.cryptomator", EnumSet.of(Path.Type.file)));
+                }
+                metadata.add(f);
+                proxy.delete(metadata, prompt, callback);
+            }
+        }
     }
 
     @Override

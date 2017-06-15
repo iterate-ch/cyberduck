@@ -23,7 +23,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
@@ -50,8 +49,6 @@ public class DefaultSearchFeatureTest {
                 return list;
             }
         });
-        final PathCache cache = new PathCache(Integer.MAX_VALUE);
-        feature.withCache(cache);
         final Filter<Path> filter = new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {
@@ -71,10 +68,5 @@ public class DefaultSearchFeatureTest {
         assertTrue(search.contains(f1));
         assertFalse(search.contains(f2));
         assertEquals(1, search.size());
-        assertTrue(cache.containsKey(workdir));
-        assertTrue(cache.get(workdir).filter(filter).contains(f1));
-        assertFalse(cache.get(workdir).filter(filter).contains(f2));
-        assertTrue(cache.get(workdir).filter(new NullFilter<Path>()).contains(f1));
-        assertTrue(cache.get(workdir).filter(new NullFilter<Path>()).contains(f2));
     }
 }

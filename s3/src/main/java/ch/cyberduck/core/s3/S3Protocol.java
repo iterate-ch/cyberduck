@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class S3Protocol extends AbstractProtocol {
+public class S3Protocol extends AbstractProtocol {
     private static final Logger log = Logger.getLogger(S3Protocol.class);
 
     @Override
@@ -52,11 +52,6 @@ public final class S3Protocol extends AbstractProtocol {
     @Override
     public Scheme getScheme() {
         return Scheme.https;
-    }
-
-    @Override
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name(), "s3"};
     }
 
     @Override
@@ -110,6 +105,11 @@ public final class S3Protocol extends AbstractProtocol {
         return this.icon();
     }
 
+    @Override
+    public String getAuthorization() {
+        return PreferencesFactory.get().getProperty("s3.signature.version");
+    }
+
     public enum AuthenticationHeaderSignatureVersion {
         AWS2 {
             @Override
@@ -141,10 +141,5 @@ public final class S3Protocol extends AbstractProtocol {
         }
 
         public abstract HashAlgorithm getHashAlgorithm();
-    }
-
-    @Override
-    public String getAuthorization() {
-        return PreferencesFactory.get().getProperty("s3.signature.version");
     }
 }

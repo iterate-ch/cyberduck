@@ -35,7 +35,7 @@ public class ProfilePlistReader extends PlistReader<Profile> {
     }
 
     public ProfilePlistReader(final DeserializerFactory deserializer) {
-        this(ProtocolFactory.global, deserializer);
+        this(ProtocolFactory.get(), deserializer);
     }
 
     public ProfilePlistReader(final ProtocolFactory protocols) {

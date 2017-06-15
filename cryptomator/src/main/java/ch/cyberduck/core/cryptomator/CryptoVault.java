@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.features.*;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryProvider;
@@ -90,6 +91,7 @@ public class CryptoVault implements Vault {
      * Root of vault directory
      */
     private Path home;
+
     private Cryptor cryptor;
 
     private final CryptoFilenameProvider filenameProvider;
@@ -106,7 +108,7 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public synchronized CryptoVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                 FastSecureRandomProvider.get().provide()
         );
@@ -123,7 +125,7 @@ public class CryptoVault implements Vault {
         }
         // Obtain non encrypted directory writer
         final Directory directory = session._getFeature(Directory.class);
-        home = directory.mkdir(home, region, new TransferStatus());
+        final Path vault = directory.mkdir(home, region, new TransferStatus());
         new ContentWriter(session).write(masterKeyFile, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
@@ -135,7 +137,7 @@ public class CryptoVault implements Vault {
         directory.mkdir(dataDir, region, new TransferStatus());
         directory.mkdir(firstLevel, region, new TransferStatus());
         directory.mkdir(secondLevel, region, new TransferStatus());
-        return this;
+        return vault;
     }
 
     @Override
@@ -250,7 +252,7 @@ public class CryptoVault implements Vault {
     @Override
     public boolean contains(final Path file) {
         if(this.isUnlocked()) {
-            return file.equals(home) || file.isChild(home);
+            return new SimplePathPredicate(file).test(home) || file.isChild(home);
         }
         return false;
     }
@@ -260,6 +262,7 @@ public class CryptoVault implements Vault {
         return this.encrypt(session, file, file.attributes().getDirectoryId(), false);
     }
 
+    @Override
     public Path encrypt(final Session<?> session, final Path file, boolean metadata) throws BackgroundException {
         return this.encrypt(session, file, file.attributes().getDirectoryId(), metadata);
     }
@@ -278,7 +281,7 @@ public class CryptoVault implements Vault {
                 log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
                 return file;
             }
-            if(file.equals(home)) {
+            if(new SimplePathPredicate(file).test(home)) {
                 log.warn(String.format("Skip vault home %s because the root has no metadata file", file));
                 return file;
             }
@@ -531,7 +534,7 @@ public class CryptoVault implements Vault {
             return false;
         }
         final CryptoVault that = (CryptoVault) o;
-        return Objects.equals(home, that.home);
+        return new SimplePathPredicate(home).test(that.home);
     }
 
     @Override

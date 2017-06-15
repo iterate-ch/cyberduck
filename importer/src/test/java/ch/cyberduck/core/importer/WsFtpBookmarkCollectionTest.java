@@ -18,6 +18,7 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.junit.Test;
@@ -26,6 +27,6 @@ public class WsFtpBookmarkCollectionTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testParseNotFound() throws Exception {
-        new WsFtpBookmarkCollection().read(new Local(System.getProperty("java.io.tmpdir"), "f"));
+        new WsFtpBookmarkCollection().read(new ProtocolFactory(), new Local(System.getProperty("java.io.tmpdir"), "f"));
     }
 }

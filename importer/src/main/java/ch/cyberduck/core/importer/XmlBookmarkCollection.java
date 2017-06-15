@@ -20,6 +20,7 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.log4j.Logger;
@@ -73,18 +74,18 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
         }
     }
 
-    protected abstract AbstractHandler getHandler();
+    protected abstract AbstractHandler getHandler(final ProtocolFactory protocols);
 
     @Override
-    protected void parse(Local file) throws AccessDeniedException {
-        this.read(file);
+    protected void parse(final ProtocolFactory protocols, Local file) throws AccessDeniedException {
+        this.read(protocols, file);
     }
 
-    protected void read(final Local child) throws AccessDeniedException {
+    protected void read(final ProtocolFactory protocols, final Local child) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(child.getInputStream(),
                     Charset.forName("UTF-8")));
-            AbstractHandler handler = this.getHandler();
+            AbstractHandler handler = this.getHandler(protocols);
             final XMLReader xr = XMLReaderFactory.createXMLReader();
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);

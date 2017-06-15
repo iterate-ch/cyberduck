@@ -47,7 +47,7 @@ public class TransferDictionary {
     private final ProtocolFactory protocols;
 
     public TransferDictionary() {
-        this(ProtocolFactory.global);
+        this(ProtocolFactory.get());
     }
 
     public TransferDictionary(final ProtocolFactory protocols) {
@@ -55,7 +55,7 @@ public class TransferDictionary {
     }
 
     public TransferDictionary(final DeserializerFactory deserializer) {
-        this(ProtocolFactory.global, deserializer);
+        this(ProtocolFactory.get(), deserializer);
     }
 
     public TransferDictionary(final ProtocolFactory protocols, final DeserializerFactory deserializer) {

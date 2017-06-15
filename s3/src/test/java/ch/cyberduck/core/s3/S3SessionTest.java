@@ -24,6 +24,7 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -40,9 +41,13 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class S3SessionTest {
 
+    @BeforeClass
+    public static void register() {
+        ProtocolFactory.get().register(new S3Protocol());
+    }
+
     @Test
     public void testHttpProfile() throws Exception {
-        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
@@ -249,7 +254,6 @@ public class S3SessionTest {
 
     @Test
     public void testBucketVirtualHostStyleEucalyptusDefaultHost() throws Exception {
-        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
@@ -258,7 +262,6 @@ public class S3SessionTest {
 
     @Test
     public void testBucketVirtualHostStyleEucalyptusCustomDeployment() throws Exception {
-        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, "ec.cyberduck.io");
@@ -268,7 +271,6 @@ public class S3SessionTest {
     @Test(expected = LoginFailureException.class)
     @Ignore
     public void testTemporaryAccessToken() throws Exception {
-        ProtocolFactory.register(new S3Protocol());
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile"));
         assertTrue(profile.validate(new Credentials(), new LoginOptions(profile)));

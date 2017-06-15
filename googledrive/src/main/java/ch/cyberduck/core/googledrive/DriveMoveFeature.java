@@ -53,7 +53,7 @@ public class DriveMoveFeature implements Move {
                 // Rename title
                 final File properties = new File();
                 properties.setName(renamed.getName());
-                final File update = session.getClient().files().update(fileid, properties).execute();
+                session.getClient().files().update(fileid, properties).execute();
             }
             // Retrieve the existing parents to remove
             final StringBuilder previousParents = new StringBuilder();

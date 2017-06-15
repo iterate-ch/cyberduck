@@ -46,7 +46,7 @@ public class IRODSSessionTest {
 
     @BeforeClass
     public static void protocol() {
-        ProtocolFactory.register(new IRODSProtocol());
+        ProtocolFactory.get().register(new IRODSProtocol());
     }
 
     @Test

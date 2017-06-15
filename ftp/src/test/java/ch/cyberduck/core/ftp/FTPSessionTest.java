@@ -25,6 +25,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -40,6 +41,16 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class FTPSessionTest {
+
+    @BeforeClass
+    public static void protocol() {
+        ProtocolFactory.get().register(new FTPTLSProtocol() {
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        });
+    }
 
     @Test
     public void testConnectAnonymous() throws Exception {

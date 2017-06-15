@@ -41,7 +41,7 @@ public class CommandLinePathParser {
     private final ProtocolFactory factory;
 
     public CommandLinePathParser(final CommandLine input) {
-        this(input, ProtocolFactory.global);
+        this(input, ProtocolFactory.get());
     }
 
     public CommandLinePathParser(final CommandLine input, final ProtocolFactory factory) {

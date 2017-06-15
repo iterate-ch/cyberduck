@@ -23,7 +23,7 @@ import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
-public final class SFTPProtocol extends AbstractProtocol {
+public class SFTPProtocol extends AbstractProtocol {
 
     @Override
     public Type getType() {
@@ -59,5 +59,4 @@ public final class SFTPProtocol extends AbstractProtocol {
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
-
 }

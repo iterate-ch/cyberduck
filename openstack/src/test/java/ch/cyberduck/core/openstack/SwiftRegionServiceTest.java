@@ -44,7 +44,7 @@ public class SwiftRegionServiceTest {
 
     @Test
     public void testFindDefaultLocationInBookmark() throws Exception {
-        ProtocolFactory.register(new SwiftProtocol());
+        ProtocolFactory.get().register(new SwiftProtocol());
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Rackspace US (IAD).cyberduckprofile"));
         final SwiftSession session = new SwiftSession(
