@@ -130,6 +130,9 @@
                                 <sourceFolder>swagger</sourceFolder>
                                 <library>jersey2</library>
                             </configOptions>
+                            <environmentVariables>
+                                <apiTests>false</apiTests>
+                            </environmentVariables>
                         </configuration>
                     </execution>
                 </executions>
