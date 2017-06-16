@@ -33,7 +33,9 @@ public class SpectraExceptionMappingService extends AbstractExceptionMappingServ
     @Override
     public BackgroundException map(final FailedRequestException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, e.getError().getMessage());
+        if(null != e.getError()) {
+            this.append(buffer, e.getError().getMessage());
+        }
         switch(e.getStatusCode()) {
             case HttpStatus.SC_FORBIDDEN:
                 if(StringUtils.isNotBlank(e.getError().getCode())) {
