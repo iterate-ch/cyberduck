@@ -32,21 +32,23 @@ public final class BookmarkNameProvider {
 
     public static String toString(final Host bookmark, final boolean username) {
         if(StringUtils.isEmpty(bookmark.getNickname())) {
-            if(StringUtils.equals(bookmark.getHostname(), bookmark.getProtocol().getDefaultHostname())) {
-                return bookmark.getProtocol().getName();
+            final String prefix;
+            // Return default bookmark name
+            if(username && !bookmark.getCredentials().isAnonymousLogin() && StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+                prefix = String.format("%s@", bookmark.getCredentials().getUsername());
             }
-            if(StringUtils.isBlank(bookmark.getHostname())) {
-                return bookmark.getProtocol().getName();
+            else {
+                prefix = StringUtils.EMPTY;
             }
-            if(username) {
-                if(!bookmark.getCredentials().isAnonymousLogin()
-                        && StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-                    return String.format("%s@%s \u2013 %s", bookmark.getCredentials().getUsername(),
-                            StringUtils.strip(bookmark.getHostname()), bookmark.getProtocol().getName());
-                }
+            if(StringUtils.isNotBlank(bookmark.getHostname())) {
+                return String.format("%s%s \u2013 %s", prefix, StringUtils.strip(bookmark.getHostname()), bookmark.getProtocol().getName());
             }
-            return String.format("%s \u2013 %s", StringUtils.strip(bookmark.getHostname()), bookmark.getProtocol().getName());
+            if(StringUtils.isNotBlank(bookmark.getProtocol().getDefaultHostname())) {
+                return String.format("%s%s \u2013 %s", prefix, StringUtils.strip(bookmark.getProtocol().getDefaultHostname()), bookmark.getProtocol().getName());
+            }
+            return String.format("%s%s", prefix, bookmark.getProtocol().getName());
         }
+        // Return custom bookmark name set
         return bookmark.getNickname();
     }
 }
