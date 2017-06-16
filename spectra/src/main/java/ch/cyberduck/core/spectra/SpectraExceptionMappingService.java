@@ -38,20 +38,22 @@ public class SpectraExceptionMappingService extends AbstractExceptionMappingServ
         }
         switch(e.getStatusCode()) {
             case HttpStatus.SC_FORBIDDEN:
-                if(StringUtils.isNotBlank(e.getError().getCode())) {
-                    switch(e.getError().getCode()) {
-                        case "SignatureDoesNotMatch":
-                            return new LoginFailureException(buffer.toString(), e);
-                        case "InvalidAccessKeyId":
-                            return new LoginFailureException(buffer.toString(), e);
-                        case "InvalidClientTokenId":
-                            return new LoginFailureException(buffer.toString(), e);
-                        case "InvalidSecurity":
-                            return new LoginFailureException(buffer.toString(), e);
-                        case "MissingClientTokenId":
-                            return new LoginFailureException(buffer.toString(), e);
-                        case "MissingAuthenticationToken":
-                            return new LoginFailureException(buffer.toString(), e);
+                if(null != e.getError()) {
+                    if(StringUtils.isNotBlank(e.getError().getCode())) {
+                        switch(e.getError().getCode()) {
+                            case "SignatureDoesNotMatch":
+                                return new LoginFailureException(buffer.toString(), e);
+                            case "InvalidAccessKeyId":
+                                return new LoginFailureException(buffer.toString(), e);
+                            case "InvalidClientTokenId":
+                                return new LoginFailureException(buffer.toString(), e);
+                            case "InvalidSecurity":
+                                return new LoginFailureException(buffer.toString(), e);
+                            case "MissingClientTokenId":
+                                return new LoginFailureException(buffer.toString(), e);
+                            case "MissingAuthenticationToken":
+                                return new LoginFailureException(buffer.toString(), e);
+                        }
                     }
                 }
         }
