@@ -31,7 +31,7 @@ public class S3ThresholdCopyFeature extends S3CopyFeature {
     private final S3Session session;
 
     private final Long multipartThreshold
-            = preferences.getLong("s3.upload.multipart.threshold");
+            = preferences.getLong("s3.upload.multipart.required.threshold");
 
     public S3ThresholdCopyFeature(final S3Session session) {
         super(session);
