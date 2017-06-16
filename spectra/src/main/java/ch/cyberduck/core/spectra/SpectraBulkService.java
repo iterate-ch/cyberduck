@@ -28,6 +28,8 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.s3.RequestEntityRestStorageService;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,6 +42,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.log4j.Logger;
+import org.jets3t.service.ServiceException;
 
 import java.io.IOException;
 import java.security.SignatureException;
@@ -332,11 +335,11 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      * Any cache contents that can be reclaimed will be. This operation may take a very long time to complete, depending on how much of the cache can be reclaimed and how many blobs the cache is managing.
      */
     protected void clear() throws BackgroundException {
-        final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session.getClient(), session.getHost()));
         try {
-            final HttpResponse response = session.getClient().getHttpClient().execute(
-                    new HttpPut(String.format("%s://%s/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(), session.getHost().getHostname()))
-            );
+            final RequestEntityRestStorageService client = session.getClient();
+            final HttpPut request = new HttpPut(String.format("%s://%s/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(), session.getHost().getHostname()));
+            client.authorizeHttpRequest(request, null, null);
+            final HttpResponse response = client.getHttpClient().execute(request);
             if(HttpStatus.SC_NO_CONTENT != response.getStatusLine().getStatusCode()) {
                 throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
             }
@@ -346,6 +349,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        catch(ServiceException e) {
+            throw new S3ExceptionMappingService().map(e);
         }
     }
 }
