@@ -17,14 +17,14 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -80,17 +80,9 @@ public class S3EncryptionFeature implements Encryption {
     @Override
     public void setEncryption(final Path file, final Algorithm setting) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session, new S3AccessControlListFeature(session));
+            final Copy copy = new S3ThresholdCopyFeature(session);
             // Copy item in place to write new attributes
-            final AclPermission feature = session.getFeature(AclPermission.class);
-            if(null == feature) {
-                copy.copy(file, file, new S3StorageClassFeature(session).getClass(file), setting,
-                        Acl.EMPTY);
-            }
-            else {
-                copy.copy(file, file, new S3StorageClassFeature(session).getClass(file), setting,
-                        feature.getPermission(file));
-            }
+            copy.copy(file, file, new TransferStatus().length(file.attributes().getSize()));
         }
     }
 

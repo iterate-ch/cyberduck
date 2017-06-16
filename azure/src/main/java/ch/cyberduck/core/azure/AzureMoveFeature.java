@@ -60,7 +60,7 @@ public class AzureMoveFeature implements Move {
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus().length(-1L));
+        new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()));
         delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), callback);
     }
 

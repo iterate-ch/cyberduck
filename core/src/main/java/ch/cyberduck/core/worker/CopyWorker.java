@@ -67,15 +67,15 @@ public class CopyWorker extends Worker<List<Path>> {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                final Path source = entry.getKey();
-                final Path target = entry.getValue();
-                final Map<Path, Path> recursive = this.compile(copy, session.getFeature(ListService.class), source, target);
+                final Map<Path, Path> recursive = this.compile(copy, session.getFeature(ListService.class), entry.getKey(), entry.getValue());
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                    if(r.getKey().isDirectory()) {
-                        directory.mkdir(r.getValue(), null, new TransferStatus());
+                    final Path source = r.getKey();
+                    final Path target = r.getValue();
+                    if(source.isDirectory()) {
+                        directory.mkdir(target, null, new TransferStatus().length(0L));
                     }
                     else {
-                        copy.copy(r.getKey(), r.getValue(), new TransferStatus());
+                        copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()));
                     }
                 }
             }
