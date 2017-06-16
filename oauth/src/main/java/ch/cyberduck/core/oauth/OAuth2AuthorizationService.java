@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -113,77 +114,83 @@ public class OAuth2AuthorizationService {
             // Found existing tokens
             if(saved.isExpired()) {
                 // Refresh expired access key
-                return this.refresh(saved);
-            }
-            return saved;
-        }
-        else {
-            // Obtain new tokens
-            final Credentials input = new TokenCredentials(bookmark);
-            // Start OAuth2 flow within browser
-            final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
-                    method,
-                    transport, json,
-                    new GenericUrl(tokenServerUrl),
-                    new ClientParametersAuthentication(clientid, clientsecret),
-                    clientid,
-                    authorizationServerUrl)
-                    .setScopes(scopes)
-                    .build();
-            final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
-            authorizationCodeRequestUrl.setRedirectUri(redirectUri);
-            for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
-                authorizationCodeRequestUrl.set(values.getKey(), values.getValue());
-            }
-
-            // Direct the user to an authorization page to grant access to their protected data.
-            final String url = authorizationCodeRequestUrl.build();
-            if(!browser.open(url)) {
-                log.warn(String.format("Failed to launch web browser for %s", url));
-            }
-            if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
-                final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
-                registry.register(new OAuth2TokenListener() {
-                    @Override
-                    public void callback(final String param) {
-                        input.setPassword(param);
-                    }
-                }, cancel);
+                try {
+                    return this.refresh(saved);
+                }
+                catch(LoginFailureException e) {
+                    log.warn(String.format("Failure refreshing tokens from %s for %s", saved, bookmark));
+                    // Continue with new OAuth 2 flow
+                }
             }
             else {
-                prompt.prompt(bookmark, input,
-                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
-                        LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-                        new LoginOptions().keychain(true).user(false).password(true)
-                );
+                return saved;
             }
-            try {
-                if(StringUtils.isBlank(input.getPassword())) {
-                    throw new LoginCanceledException();
+        }
+        // Obtain new tokens
+        final Credentials input = new TokenCredentials(bookmark);
+        // Start OAuth2 flow within browser
+        final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
+                method,
+                transport, json,
+                new GenericUrl(tokenServerUrl),
+                new ClientParametersAuthentication(clientid, clientsecret),
+                clientid,
+                authorizationServerUrl)
+                .setScopes(scopes)
+                .build();
+        final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
+        authorizationCodeRequestUrl.setRedirectUri(redirectUri);
+        for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
+            authorizationCodeRequestUrl.set(values.getKey(), values.getValue());
+        }
+
+        // Direct the user to an authorization page to grant access to their protected data.
+        final String url = authorizationCodeRequestUrl.build();
+        if(!browser.open(url)) {
+            log.warn(String.format("Failed to launch web browser for %s", url));
+        }
+        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
+            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
+            registry.register(new OAuth2TokenListener() {
+                @Override
+                public void callback(final String param) {
+                    input.setPassword(param);
                 }
-                // Swap the given authorization token for access/refresh tokens
-                final TokenResponse response = flow.newTokenRequest(input.getPassword())
-                        .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
-                // Save access key and refresh key
-                final Tokens tokens = new Tokens(
-                        response.getAccessToken(), response.getRefreshToken(),
-                        null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
-                if(input.isSaved()) {
-                    this.save(keychain, bookmark, tokens);
-                }
-                return tokens;
+            }, cancel);
+        }
+        else {
+            prompt.prompt(bookmark, input,
+                    LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
+                    LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
+                    new LoginOptions().keychain(true).user(false).password(true)
+            );
+        }
+        try {
+            if(StringUtils.isBlank(input.getPassword())) {
+                throw new LoginCanceledException();
             }
-            catch(TokenResponseException e) {
-                throw new OAuthExceptionMappingService().map(e);
+            // Swap the given authorization token for access/refresh tokens
+            final TokenResponse response = flow.newTokenRequest(input.getPassword())
+                    .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
+            // Save access key and refresh key
+            final Tokens tokens = new Tokens(
+                    response.getAccessToken(), response.getRefreshToken(),
+                    null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                            System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
+            if(input.isSaved()) {
+                this.save(keychain, bookmark, tokens);
             }
-            catch(HttpResponseException e) {
-                throw new HttpResponseExceptionMappingService().map(new org.apache.http.client
-                        .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
+            return tokens;
+        }
+        catch(TokenResponseException e) {
+            throw new OAuthExceptionMappingService().map(e);
+        }
+        catch(HttpResponseException e) {
+            throw new HttpResponseExceptionMappingService().map(new org.apache.http.client
+                    .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
@@ -319,6 +326,15 @@ public class OAuth2AuthorizationService {
 
         public boolean isExpired() {
             return System.currentTimeMillis() >= expiryInMilliseconds;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Tokens{");
+            sb.append("accessToken='").append(accessToken).append('\'');
+            sb.append(", refreshToken='").append(refreshToken).append('\'');
+            sb.append('}');
+            return sb.toString();
         }
     }
 }
