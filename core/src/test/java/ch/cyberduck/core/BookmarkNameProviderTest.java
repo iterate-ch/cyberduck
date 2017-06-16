@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -38,7 +39,11 @@ public class BookmarkNameProviderTest {
         assertEquals("u@h – WebDAV (HTTP)", BookmarkNameProvider.toString(new Host(dav, "h", new Credentials("u", null)), true));
         assertEquals("h – WebDAV (HTTP)", BookmarkNameProvider.toString(new Host(dav, "h", new Credentials(null, null)), true));
         assertEquals("h – WebDAV (HTTP)", BookmarkNameProvider.toString(new Host(dav, "h", new Credentials("", null)), true));
-        final TestProtocol nohostname = new TestProtocol(Scheme.file) {
+    }
+
+    @Test
+    public void testToStringNoDefaultHostname() throws Exception {
+        final TestProtocol protocol = new TestProtocol(Scheme.file) {
             @Override
             public String getName() {
                 return "Disk";
@@ -49,7 +54,24 @@ public class BookmarkNameProviderTest {
                 return "";
             }
         };
-        assertEquals("Disk", BookmarkNameProvider.toString(new Host(nohostname), true));
-        assertEquals("Disk", BookmarkNameProvider.toString(new Host(nohostname), false));
+        assertEquals("Disk", BookmarkNameProvider.toString(new Host(protocol, StringUtils.EMPTY), true));
+        assertEquals("Disk", BookmarkNameProvider.toString(new Host(protocol, StringUtils.EMPTY), false));
+    }
+
+    @Test
+    public void testToStringDefaultHostname() throws Exception {
+        final TestProtocol protocol = new TestProtocol(Scheme.file) {
+            @Override
+            public String getName() {
+                return "P";
+            }
+
+            @Override
+            public String getDefaultHostname() {
+                return "default";
+            }
+        };
+        assertEquals("default \u2013 P", BookmarkNameProvider.toString(new Host(protocol, StringUtils.EMPTY), true));
+        assertEquals("default \u2013 P", BookmarkNameProvider.toString(new Host(protocol, StringUtils.EMPTY), false));
     }
 }
