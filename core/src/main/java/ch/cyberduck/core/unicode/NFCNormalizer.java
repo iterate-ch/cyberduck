@@ -25,12 +25,12 @@ import java.text.Normalizer;
 public class NFCNormalizer {
     private static final Logger log = Logger.getLogger(NFCNormalizer.class);
 
-    public String normalize(final String name) {
+    public CharSequence normalize(final CharSequence name) {
         if(!Normalizer.isNormalized(name, Normalizer.Form.NFC)) {
             // Canonical decomposition followed by canonical composition (default)
             final String normalized = Normalizer.normalize(name, Normalizer.Form.NFC);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Normalized local path %s to %s", name, normalized));
+                log.debug(String.format("Normalized string %s to %s", name, normalized));
             }
             return normalized;
         }
