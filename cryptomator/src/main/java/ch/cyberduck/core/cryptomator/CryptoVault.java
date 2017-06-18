@@ -39,6 +39,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.unicode.NFCNormalizer;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 
@@ -81,7 +82,7 @@ public class CryptoVault implements Vault {
     private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
     private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
 
-    private static final Integer VAULT_VERSION = 5;
+    private static final Integer VAULT_VERSION = 6;
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
 
@@ -230,7 +231,7 @@ public class CryptoVault implements Vault {
             log.debug(String.format("Initialized crypto provider %s", provider));
         }
         try {
-            cryptor = provider.createFromKeyFile(keyFile, passphrase, VAULT_VERSION);
+            cryptor = provider.createFromKeyFile(keyFile, new NFCNormalizer().normalize(passphrase), VAULT_VERSION);
         }
         catch(IllegalArgumentException e) {
             throw new VaultException("Failure reading key file", e);
