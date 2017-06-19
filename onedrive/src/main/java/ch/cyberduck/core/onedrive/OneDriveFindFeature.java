@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
@@ -35,7 +36,7 @@ public class OneDriveFindFeature implements Find {
             new OneDriveAttributesFinderFeature(session).find(file);
             return true;
         }
-        catch(NotfoundException e) {
+        catch(NotfoundException | InteroperabilityException e) {
             return false;
         }
     }
