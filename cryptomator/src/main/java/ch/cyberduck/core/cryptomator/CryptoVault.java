@@ -167,15 +167,15 @@ public class CryptoVault implements Vault {
                 keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
                         new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl())) {
         };
-        this.unlock(masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase, prompt,
+        this.unlock(session, masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         home.attributes().setVault(home);
         return this;
     }
 
-    private void unlock(final Path masterKeyFile, final KeyFile masterKeyFileContent,
+    private void unlock(final Session<?> session, final Path masterKeyFile, final KeyFile masterKeyFileContent,
                         final Host bookmark, final VaultCredentials passphrase,
-                        final PasswordCallback prompt, final String message) throws LoginCanceledException, VaultException {
+                        final PasswordCallback prompt, final String message) throws BackgroundException {
         if(null == passphrase.getPassword()) {
             prompt.prompt(passphrase,
                     LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
@@ -186,7 +186,7 @@ public class CryptoVault implements Vault {
             }
         }
         try {
-            this.open(masterKeyFileContent, passphrase.getPassword());
+            this.open(this.upgrade(session, masterKeyFileContent, passphrase.getPassword()), passphrase.getPassword());
             if(passphrase.isSaved()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save passphrase for %s", masterKeyFile));
@@ -201,7 +201,7 @@ public class CryptoVault implements Vault {
         }
         catch(CryptoAuthenticationException e) {
             passphrase.setPassword(null);
-            this.unlock(masterKeyFile, masterKeyFileContent, bookmark, passphrase,
+            this.unlock(session, masterKeyFile, masterKeyFileContent, bookmark, passphrase,
                     prompt, String.format("%s %s.", e.getDetail(),
                             MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
         }
@@ -221,6 +221,29 @@ public class CryptoVault implements Vault {
             }
         }
         cryptor = null;
+    }
+
+    private KeyFile upgrade(final Session<?> session, final KeyFile keyFile, final CharSequence passphrase) throws BackgroundException {
+        if(keyFile.getVersion() == VAULT_VERSION) {
+            return keyFile;
+        }
+        log.warn(String.format("Upgrade vault version %d to %d", keyFile.getVersion(), VAULT_VERSION));
+        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
+                FastSecureRandomProvider.get().provide()
+        );
+        final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, keyFile.getVersion());
+        // Create backup, as soon as we know the password was correct
+        final Path masterKeyFileBackup = new Path(home, BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+        new ContentWriter(session).write(masterKeyFileBackup, keyFile.serialize());
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Master key backup saved in %s", masterKeyFileBackup));
+        }
+        // Write updated masterkey file
+        final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
+        final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+        new ContentWriter(session).write(masterKeyFile, upgradedMasterKeyFile.serialize(), new TransferStatus().exists(true));
+        log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION));
+        return KeyFile.parse(upgradedMasterKeyFile.serialize());
     }
 
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
