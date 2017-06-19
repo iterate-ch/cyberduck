@@ -48,14 +48,8 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        try {
-            final Path drive = new OneDriveHomeFinderFeature(session).find();
-            new OneDriveReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
-        }
-        catch(NotfoundException e) {
-            assertEquals("Not Found. Item does not exist. Please contact your web hosting service provider for assistance.", e.getDetail());
-            throw e;
-        }
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
+        new OneDriveReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
