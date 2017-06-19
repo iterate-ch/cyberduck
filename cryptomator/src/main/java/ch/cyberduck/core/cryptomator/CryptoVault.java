@@ -229,22 +229,30 @@ public class CryptoVault implements Vault {
                 return keyFile;
             case 5:
                 log.warn(String.format("Upgrade vault version %d to %d", keyFile.getVersion(), VAULT_VERSION));
-                final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
-                        FastSecureRandomProvider.get().provide()
-                );
-                final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, keyFile.getVersion());
-                // Create backup, as soon as we know the password was correct
-                final Path masterKeyFileBackup = new Path(home, BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
-                new ContentWriter(session).write(masterKeyFileBackup, keyFile.serialize());
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Master key backup saved in %s", masterKeyFileBackup));
+                try {
+                    final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
+                            FastSecureRandomProvider.get().provide()
+                    );
+                    final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, keyFile.getVersion());
+                    // Create backup, as soon as we know the password was correct
+                    final Path masterKeyFileBackup = new Path(home, BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                    new ContentWriter(session).write(masterKeyFileBackup, keyFile.serialize());
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Master key backup saved in %s", masterKeyFileBackup));
+                    }
+                    // Write updated masterkey file
+                    final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
+                    final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                    new ContentWriter(session).write(masterKeyFile, upgradedMasterKeyFile.serialize(), new TransferStatus().exists(true));
+                    log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION));
+                    return KeyFile.parse(upgradedMasterKeyFile.serialize());
                 }
-                // Write updated masterkey file
-                final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
-                final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
-                new ContentWriter(session).write(masterKeyFile, upgradedMasterKeyFile.serialize(), new TransferStatus().exists(true));
-                log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION));
-                return KeyFile.parse(upgradedMasterKeyFile.serialize());
+                catch(IllegalArgumentException e) {
+                    throw new VaultException("Failure reading key file", e);
+                }
+                catch(InvalidPassphraseException e) {
+                    throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
+                }
             default:
                 log.error(String.format("Unsupported vault version %d", keyFile.getVersion()));
                 return keyFile;
