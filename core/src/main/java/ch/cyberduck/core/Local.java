@@ -87,7 +87,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     public Local(final String name) throws LocalAccessDeniedException {
         String path = name;
         if(PreferencesFactory.get().getBoolean("local.normalize.unicode")) {
-            path = new NFCNormalizer().normalize(path);
+            path = new NFCNormalizer().normalize(path).toString();
         }
         if(PreferencesFactory.get().getBoolean("local.normalize.tilde")) {
             path = new TildeExpander().expand(path);
