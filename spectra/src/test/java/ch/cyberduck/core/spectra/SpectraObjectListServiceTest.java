@@ -159,7 +159,7 @@ public class SpectraObjectListServiceTest {
                 assertEquals(paginate += 10, list.size());
                 super.chunk(parent, list);
             }
-        }, 10);
+        }, String.valueOf(Path.DELIMITER), 10);
         assertEquals(500, list.size());
         session.close();
     }

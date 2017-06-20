@@ -58,10 +58,10 @@ public class S3ObjectListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, String.valueOf(Path.DELIMITER));
+        return this.list(directory, listener, String.valueOf(Path.DELIMITER), preferences.getInteger("s3.listing.chunksize"));
     }
 
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
         try {
             final String prefix = this.createPrefix(directory);
             // If this optional, Unicode string parameter is included with your request,
@@ -78,7 +78,7 @@ public class S3ObjectListService implements ListService {
                 // in lexicographic (alphabetical) order.
                 final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
                         PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
-                        preferences.getInteger("s3.listing.chunksize"), priorLastKey);
+                        chunksize, priorLastKey);
 
                 final StorageObject[] objects = chunk.getObjects();
                 for(StorageObject object : objects) {
