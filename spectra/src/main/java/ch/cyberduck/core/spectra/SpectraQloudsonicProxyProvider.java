@@ -37,7 +37,7 @@ public class SpectraQloudsonicProxyProvider implements UDTProxyProvider {
         else {
             protocol = new UDTProtocol();
         }
-        return new Host(protocol, "localhost", protocol.getScheme().getPort());
+        return new Host(protocol, "10.85.41.154", protocol.getScheme().getPort());
     }
 
     @Override
