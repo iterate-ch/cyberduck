@@ -67,6 +67,8 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                 return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_REQUEST_TIMEOUT:
+            case HttpStatus.SC_GATEWAY_TIMEOUT:
+            case HttpStatus.SC_BAD_GATEWAY:
                 return new ConnectionTimeoutException(buffer.toString(), failure);
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
             case 429:

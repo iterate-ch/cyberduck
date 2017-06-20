@@ -25,13 +25,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.CopyWorker;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class CopyController extends ProxyController {
@@ -40,17 +37,19 @@ public class CopyController extends ProxyController {
             = PreferencesFactory.get();
 
     private final BrowserController parent;
-
     private final Cache<Path> cache;
+    private final Callback callback;
 
-    public CopyController(final BrowserController parent) {
+    public CopyController(final BrowserController parent, final Callback callback) {
         this.parent = parent;
         this.cache = parent.getCache();
+        this.callback = callback;
     }
 
-    public CopyController(final BrowserController parent, final Cache<Path> cache) {
+    public CopyController(final BrowserController parent, final Cache<Path> cache, final Callback callback) {
         this.parent = parent;
         this.cache = cache;
+        this.callback = callback;
     }
 
     /**
@@ -69,15 +68,7 @@ public class CopyController extends ProxyController {
         final DefaultMainAction action = new DefaultMainAction() {
             @Override
             public void run() {
-                parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
-                        new CopyWorker(selected, parent) {
-                                    @Override
-                                    public void cleanup(final List<Path> copied) {
-                                        parent.reload(parent.workdir(), copied, new ArrayList<Path>(selected.values()));
-                                    }
-                                }
-                        )
-                );
+                callback.callback(selected);
             }
         };
         this.copy(selected, action);
@@ -129,5 +120,9 @@ public class CopyController extends ProxyController {
         else {
             new OverwriteController(parent, cache).overwrite(new ArrayList<Path>(selected.values()), action);
         }
+    }
+
+    public interface Callback {
+        void callback(final Map<Path, Path> selected);
     }
 }

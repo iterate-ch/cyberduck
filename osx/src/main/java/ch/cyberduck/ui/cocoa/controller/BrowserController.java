@@ -78,6 +78,7 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultFactory;
+import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
@@ -435,7 +436,7 @@ public class BrowserController extends WindowController
     /**
      * Make the browser reload its content. Will make use of the cache.
      */
-    protected void reload() {
+    public void reload() {
         if(this.isMounted()) {
             this.reload(workdir, Collections.singleton(workdir), this.getSelectedPaths(), false);
         }
@@ -453,7 +454,7 @@ public class BrowserController extends WindowController
      * @param workdir  Use working directory as the current root of the browser
      * @param selected The items to be selected
      */
-    protected void reload(final Path workdir, final List<Path> changed, final List<Path> selected) {
+    public void reload(final Path workdir, final List<Path> changed, final List<Path> selected) {
         this.reload(workdir, new PathReloadFinder().find(changed), selected, true);
     }
 
@@ -464,7 +465,7 @@ public class BrowserController extends WindowController
      * @param folders  Folders to render
      * @param selected The items to be selected
      */
-    protected void reload(final Path workdir, final Set<Path> folders, final List<Path> selected) {
+    public void reload(final Path workdir, final Set<Path> folders, final List<Path> selected) {
         this.reload(workdir, folders, selected, true);
     }
 
@@ -476,7 +477,7 @@ public class BrowserController extends WindowController
      * @param selected   The items to be selected
      * @param invalidate Invalidate the cache before rendering
      */
-    protected void reload(final Path workdir, final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
+    public void reload(final Path workdir, final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data with selected files %s", selected));
         }
@@ -847,7 +848,7 @@ public class BrowserController extends WindowController
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
             protected SessionPool getSession() {
-                return BrowserController.this.getSession();
+                return pool;
             }
 
             @Override
@@ -870,7 +871,7 @@ public class BrowserController extends WindowController
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
             @Override
             protected SessionPool getSession() {
-                return BrowserController.this.getSession();
+                return pool;
             }
 
             @Override
@@ -2238,7 +2239,7 @@ public class BrowserController extends WindowController
         final CreateFileController sheet = new CreateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateFileController.Callback() {
             @Override
             public void callback(final boolean edit, final Path file) {
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
                         new TouchWorker(file) {
                             @Override
                             public void cleanup(final Path folder) {
@@ -2259,7 +2260,7 @@ public class BrowserController extends WindowController
     public void createSymlinkButtonClicked(final ID sender) {
         final CreateSymlinkController sheet = new CreateSymlinkController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateSymlinkController.Callback() {
             public void callback(final Path selected, final Path link) {
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, BrowserController.this.getSession(), new CreateSymlinkWorker(link, selected) {
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected) {
                     @Override
                     public void cleanup(final Path symlink) {
                         reload(workdir(), Collections.singletonList(symlink), Collections.singletonList(symlink));
@@ -2278,7 +2279,15 @@ public class BrowserController extends WindowController
                 new OverwriteController(BrowserController.this).overwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
                     @Override
                     public void run() {
-                        transfer(new CopyTransfer(pool.getHost(), pool.getHost(), selected), new ArrayList<Path>(selected.values()), true);
+                        background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
+                                        new CopyWorker(selected, SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()), new DisabledProgressListener()) {
+                                            @Override
+                                            public void cleanup(final List<Path> copied) {
+                                                reload(workdir(), copied, new ArrayList<Path>(selected.values()));
+                                            }
+                                        }
+                                )
+                        );
                     }
                 });
             }
@@ -2294,7 +2303,7 @@ public class BrowserController extends WindowController
 
             @Override
             public void callback(final Path folder, final String region) {
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
                         new CreateDirectoryWorker(folder, region) {
                             @Override
                             public void cleanup(final Path folder) {
@@ -2313,7 +2322,7 @@ public class BrowserController extends WindowController
                 feature != null ? feature.getLocations() : Collections.emptySet(), new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
                         new CreateVaultWorker(region, passphrase, VaultFactory.get(folder, PasswordStoreFactory.get())) {
                             @Override
                             public void cleanup(final Path vault) {

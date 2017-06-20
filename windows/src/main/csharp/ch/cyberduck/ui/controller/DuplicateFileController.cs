@@ -69,7 +69,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void DuplicateFile(Path selected, String filename)
         {
             Path duplicate = new Path(selected.getParent(), filename, selected.getType());
-            BrowserController.DuplicatePath(selected, duplicate);
+            BrowserController.CopyPath(selected, duplicate);
         }
     }
 }

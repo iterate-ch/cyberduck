@@ -27,6 +27,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.copy.ChecksumFilter;
 import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 
@@ -230,7 +231,7 @@ public class CopyTransfer extends Transfer {
         final Path copy = mapping.get(source);
         progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
-        final Copy feature = session.getFeature(Copy.class).withTarget(destination);
+        final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
         feature.copy(source, copy, status);
         this.addTransferred(status.getLength());
         return copy;

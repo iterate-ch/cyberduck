@@ -39,8 +39,12 @@ public class ContentWriter {
     }
 
     public void write(final Path file, final byte[] content) throws BackgroundException {
+        this.write(file, content, new TransferStatus());
+    }
+
+    public void write(final Path file, final byte[] content, final TransferStatus status) throws BackgroundException {
         final Write<?> write = session._getFeature(Write.class);
-        final TransferStatus status = new TransferStatus().length(content.length);
+        status.setLength(content.length);
         status.setChecksum(write.checksum().compute(new ByteArrayInputStream(content), status));
         final StatusOutputStream<?> out = write.write(file, status, new DisabledConnectionCallback());
         try {
