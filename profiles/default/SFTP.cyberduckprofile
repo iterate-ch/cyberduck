@@ -20,6 +20,6 @@
         <key>Protocol</key>
         <string>sftp</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>iterate GmbH</string>
     </dict>
 </plist>
