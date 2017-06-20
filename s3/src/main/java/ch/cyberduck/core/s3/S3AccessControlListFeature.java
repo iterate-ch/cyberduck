@@ -64,9 +64,10 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 return this.convert(session.getClient().getBucketAcl(containerService.getContainer(file).getName()));
             }
             else if(file.isFile() || file.isPlaceholder()) {
-                final Versioning feature = session.getFeature(Versioning.class);
-                if(feature != null && feature.getConfiguration(containerService.getContainer(file)).isEnabled()) {
-                    return this.convert(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
+                final Versioning versioning = session.getFeature(Versioning.class);
+                if(versioning != null && versioning.getConfiguration(containerService.getContainer(file)).isEnabled()) {
+                    final String version = file.attributes().getVersionId();
+                    return this.convert(session.getClient().getVersionedObjectAcl(version,
                             containerService.getContainer(file).getName(), containerService.getKey(file)));
                 }
                 else {
