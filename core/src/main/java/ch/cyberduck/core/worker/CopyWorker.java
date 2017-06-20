@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
@@ -36,37 +38,55 @@ import java.util.Map;
 public class CopyWorker extends Worker<List<Path>> {
 
     private final Map<Path, Path> files;
+    private final SessionPool target;
     private final ProgressListener listener;
 
-    public CopyWorker(final Map<Path, Path> files, final ProgressListener listener) {
+    public CopyWorker(final Map<Path, Path> files, final SessionPool target, final ProgressListener listener) {
         this.files = files;
+        this.target = target;
         this.listener = listener;
     }
 
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
         final Directory directory = session.getFeature(Directory.class);
-        final Copy copy = session.getFeature(Copy.class);
-        for(Map.Entry<Path, Path> entry : files.entrySet()) {
-            if(this.isCanceled()) {
-                throw new ConnectionCanceledException();
+        final Session<?> destination = target.borrow(new BackgroundActionState() {
+            @Override
+            public boolean isCanceled() {
+                return CopyWorker.this.isCanceled();
             }
-            final Path source = entry.getKey();
-            final Path target = entry.getValue();
-            final Map<Path, Path> recursive = this.compile(copy, session.getFeature(ListService.class), source, target);
-            for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                if(r.getKey().isDirectory()) {
-                    directory.mkdir(r.getValue(), null, new TransferStatus());
+
+            @Override
+            public boolean isRunning() {
+                return true;
+            }
+        });
+        try {
+            final Copy copy = session.getFeature(Copy.class).withTarget(destination);
+            for(Map.Entry<Path, Path> entry : files.entrySet()) {
+                if(this.isCanceled()) {
+                    throw new ConnectionCanceledException();
                 }
-                else {
-                    copy.copy(r.getKey(), r.getValue(), new TransferStatus());
+                final Path source = entry.getKey();
+                final Path target = entry.getValue();
+                final Map<Path, Path> recursive = this.compile(copy, session.getFeature(ListService.class), source, target);
+                for(Map.Entry<Path, Path> r : recursive.entrySet()) {
+                    if(r.getKey().isDirectory()) {
+                        directory.mkdir(r.getValue(), null, new TransferStatus());
+                    }
+                    else {
+                        copy.copy(r.getKey(), r.getValue(), new TransferStatus());
+                    }
                 }
             }
+            final List<Path> changed = new ArrayList<Path>();
+            changed.addAll(files.keySet());
+            changed.addAll(files.values());
+            return changed;
         }
-        final List<Path> changed = new ArrayList<Path>();
-        changed.addAll(files.keySet());
-        changed.addAll(files.values());
-        return changed;
+        finally {
+            target.release(destination, null);
+        }
     }
 
     protected Map<Path, Path> compile(final Copy copy, final ListService list, final Path source, final Path target) throws BackgroundException {

@@ -136,7 +136,7 @@ public final class PathNormalizer {
             }
         }
         if(PreferencesFactory.get().getBoolean("path.normalize.unicode")) {
-            return new NFCNormalizer().normalize(normalized);
+            return new NFCNormalizer().normalize(normalized).toString();
         }
         // Return the normalized path that we have completed
         return normalized;

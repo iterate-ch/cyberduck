@@ -1551,7 +1551,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (_pasteboard.isCopy())
             {
-                DuplicatePaths(files);
+                CopyPaths(files);
             }
         }
 
@@ -2788,6 +2788,16 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="source">The original file to duplicate</param>
+        /// <param name="destination">The destination of the duplicated file</param>
+        protected internal void CopyPath(Path source, Path destination)
+        {
+            CopyPaths(new Dictionary<Path, Path> {{source, destination}});
+        }
+
         protected internal void CopyPaths(IDictionary<Path, Path> selected)
         {
             if (CheckCopy(selected))
@@ -3006,33 +3016,6 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 return true;
-            }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="source">The original file to duplicate</param>
-        /// <param name="destination">The destination of the duplicated file</param>
-        protected internal void DuplicatePath(Path source, Path destination)
-        {
-            DuplicatePaths(new Dictionary<Path, Path> {{source, destination}});
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="selected">A dictionary with the original files as the key and the destination files as the value</param>
-        ///<param name="browser"></param>
-        protected internal void DuplicatePaths(IDictionary<Path, Path> selected)
-        {
-            if (CheckOverwrite(selected.Values))
-            {
-                CopyTransfer copy = new CopyTransfer(Session.getHost(), Session.getHost(),
-                    Utils.ConvertToJavaMap(selected));
-                List<Path> changed = new List<Path>();
-                changed.AddRange(selected.Values);
-                transfer(copy, changed, true);
             }
         }
 
@@ -3378,7 +3361,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerCopyWorker(BrowserController controller, Map files)
-                    : base(files, controller)
+                    : base(files, SessionPoolFactory.create(controller, controller.Cache, controller.Session.getHost()), controller)
                 {
                     _controller = controller;
                     _files = files;

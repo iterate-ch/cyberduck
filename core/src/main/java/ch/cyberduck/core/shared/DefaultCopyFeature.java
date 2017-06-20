@@ -63,7 +63,7 @@ public class DefaultCopyFeature implements Copy {
                 Write write = to.getFeature(MultipartWrite.class);
                 if(null == write) {
                     // Fallback if multipart write is not available
-                    write = from.getFeature(Write.class);
+                    write = to.getFeature(Write.class);
                 }
                 out = new ThrottledOutputStream(write.write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
                 new StreamCopier(status, status).transfer(in, out);
