@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>onedrive</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>iterate GmbH</string>
         <key>Description</key>
         <string>Microsoft OneDrive</string>
         <key>Scheme</key>
