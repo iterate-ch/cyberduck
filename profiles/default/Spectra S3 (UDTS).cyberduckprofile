@@ -18,9 +18,9 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>spectra-udts</string>
+        <string>spectra</string>
         <key>Vendor</key>
-        <string>spectralogic</string>
+        <string>spectralogic-udts</string>
         <key>Description</key>
         <string>Spectra S3 (UDTS)</string>
         <key>Scheme</key>
