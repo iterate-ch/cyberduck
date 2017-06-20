@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -52,16 +53,22 @@ public class S3CopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         if(source.isFile() || source.isPlaceholder()) {
-            // Keep same storage class
-            status.setStorageClass(new S3StorageClassFeature(session).getClass(source));
-            // Keep encryption setting
-            status.setEncryption(new S3EncryptionFeature(session).getEncryption(source));
-            // Apply non standard ACL
-            try {
-                status.setAcl(accessControlListFeature.getPermission(source));
+            if(null == status.getStorageClass()) {
+                // Keep same storage class
+                status.setStorageClass(new S3StorageClassFeature(session).getClass(source));
             }
-            catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure %s", e.getDetail()));
+            if(Encryption.Algorithm.NONE == status.getEncryption()) {
+                // Keep encryption setting
+                status.setEncryption(new S3EncryptionFeature(session).getEncryption(source));
+            }
+            if(null == status.getAcl()) {
+                // Apply non standard ACL
+                try {
+                    status.setAcl(accessControlListFeature.getPermission(source));
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    log.warn(String.format("Ignore failure %s", e.getDetail()));
+                }
             }
             final S3Object destination = new S3Object(containerService.getKey(target));
             destination.setStorageClass(status.getStorageClass());

@@ -21,7 +21,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -92,9 +91,12 @@ public class S3EncryptionFeature implements Encryption {
             preferences.setProperty(key, setting.toString());
         }
         if(file.isFile() || file.isPlaceholder()) {
-            final Copy copy = new S3ThresholdCopyFeature(session);
+            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
             // Copy item in place to write new attributes
-            copy.copy(file, file, new TransferStatus().length(file.attributes().getSize()));
+            final TransferStatus status = new TransferStatus();
+            status.setEncryption(setting);
+            status.setLength(file.attributes().getSize());
+            copy.copy(file, file, status);
         }
     }
 

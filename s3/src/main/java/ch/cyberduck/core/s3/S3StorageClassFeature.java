@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -86,8 +85,11 @@ public class S3StorageClassFeature implements Redundancy {
             preferences.setProperty(key, redundancy);
         }
         if(file.isFile() || file.isPlaceholder()) {
-            final Copy copy = new S3ThresholdCopyFeature(session);
-            copy.copy(file, file, new TransferStatus().length(file.attributes().getSize()));
+            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(file.attributes().getSize());
+            status.setStorageClass(redundancy);
+            copy.copy(file, file, status);
         }
     }
 }
