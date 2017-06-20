@@ -80,6 +80,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
                             log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", bucket, accelerationService));
                         }
                         accelerationService.configure(true, bucket);
+                        break;
                     }
                     else {
                         log.warn(String.format("Transfer acceleration disabled for %s", bucket));

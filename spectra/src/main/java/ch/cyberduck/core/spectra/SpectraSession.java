@@ -16,11 +16,16 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.DisabledUrlProvider;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.s3.S3TransferAccelerationService;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -44,6 +49,12 @@ public class SpectraSession extends S3Session {
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         return configuration;
+    }
+
+    @Override
+    public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
+        new SpectraTransferAcceleration(this).configure(true, null);
+        return new RequestEntityRestStorageService(this, this.configure(), this.getBuilder().build(this));
     }
 
     @Override
@@ -103,6 +114,9 @@ public class SpectraSession extends S3Session {
         }
         if(type == DistributionConfiguration.class) {
             return null;
+        }
+        if(type == TransferAcceleration.class) {
+                return (T) new SpectraTransferAcceleration(this);
         }
         return super._getFeature(type);
     }
