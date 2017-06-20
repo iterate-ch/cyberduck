@@ -83,7 +83,8 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         }
         catch(OneDriveAPIException e) {
             final BackgroundException failure = new OneDriveExceptionMappingService().map(e);
-            assertTrue(failure.getDetail().contains("Invalid Content-Range header value."));
+            assertTrue(failure.getDetail().contains("Invalid Content-Range header value.")
+                    || failure.getDetail().contains("Bad Request. The Content-Range header is missing or malformed."));
             throw failure;
         }
     }

@@ -40,13 +40,7 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        try {
-            new OneDriveAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
-        }
-        catch(NotfoundException e) {
-            assertEquals("Not Found. Item does not exist. Please contact your web hosting service provider for assistance.", e.getDetail());
-            throw e;
-        }
+        new OneDriveAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -59,7 +53,6 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
             assertNotEquals(-1L, attributes.getSize());
             assertNotEquals(-1L, attributes.getCreationDate());
             assertNotEquals(-1L, attributes.getModificationDate());
-            assertNotNull(attributes.getETag());
             assertNull(attributes.getVersionId());
             assertNotNull(attributes.getLink());
         }

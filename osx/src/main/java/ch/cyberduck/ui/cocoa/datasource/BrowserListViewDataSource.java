@@ -24,8 +24,8 @@ import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
 
 import org.apache.log4j.Logger;
@@ -38,7 +38,7 @@ import java.util.List;
 public class BrowserListViewDataSource extends BrowserTableDataSource implements NSTableView.DataSource {
     private static final Logger log = Logger.getLogger(BrowserListViewDataSource.class);
 
-    public BrowserListViewDataSource(final BrowserController controller, final Cache<Path> cache) {
+    public BrowserListViewDataSource(final BrowserController controller, final PathCache cache) {
         super(controller, cache);
     }
 

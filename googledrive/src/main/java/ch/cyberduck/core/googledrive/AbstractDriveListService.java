@@ -94,6 +94,9 @@ public abstract class AbstractDriveListService implements ListService {
                     else {
                         filename = PathNormalizer.name(f.getName());
                     }
+                    if(StringUtils.equals(filename, String.valueOf(Path.DELIMITER))) {
+                        continue;
+                    }
                     // Use placeholder type to mark Google Apps document to download as web link file
                     final EnumSet<AbstractPath.Type> type = DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
                             StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)

@@ -27,8 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class OneDriveMeContextLoginTest {
@@ -78,6 +77,8 @@ public class OneDriveMeContextLoginTest {
 
     @Test
     public void testLogin() throws Exception {
-        assertEquals("/587e132bbff8c44a", new OneDriveHomeFinderFeature(session).find().getAbsolute());
+        final Path home = new OneDriveHomeFinderFeature(session).find();
+        assertFalse(home.isRoot());
+        assertTrue(new PathContainerService().isContainer(home));
     }
 }
