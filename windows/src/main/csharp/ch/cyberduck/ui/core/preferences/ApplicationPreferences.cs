@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.dateformatter.class", typeof(UserDefaultsDateFormatter).AssemblyQualifiedName);
             defaults.put("factory.passwordstore.class", typeof(DataProtectorPasswordStore).AssemblyQualifiedName);
             defaults.put("factory.alertcallback.class", typeof(DialogAlertCallback).AssemblyQualifiedName);
-            defaults.put("factory.certificatestore.class", typeof(SystemCertificateStore).AssemblyQualifiedName);
+            defaults.put("factory.certificatestore.class", typeof(ch.cyberduck.core.DisabledCertificateStore).AssemblyQualifiedName);
             defaults.put("factory.hostkeycallback.class", typeof(HostKeyController).AssemblyQualifiedName);
             defaults.put("factory.logincallback.class", typeof(PromptLoginController).AssemblyQualifiedName);
             defaults.put("factory.passwordcallback.class", typeof(PromptPasswordController).AssemblyQualifiedName);
