@@ -33,6 +33,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -51,7 +52,7 @@ public class S3VersionedObjectListServiceTest {
                         EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         final PathAttributes att = new PathAttributes();
-        assertTrue(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
+        assertFalse(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
         att.setVersionId("VLphaWnNt9MNseMuYVsLSmCFe6EuJJAq");
         assertTrue(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
         session.close();
