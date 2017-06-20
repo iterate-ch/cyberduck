@@ -20,7 +20,6 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.Preferences;
@@ -71,7 +70,7 @@ public class CopyController extends ProxyController {
             @Override
             public void run() {
                 parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
-                        new CopyWorker(selected, new DisabledProgressListener()) {
+                        new CopyWorker(selected, parent) {
                                     @Override
                                     public void cleanup(final List<Path> copied) {
                                         parent.reload(parent.workdir(), copied, new ArrayList<Path>(selected.values()));

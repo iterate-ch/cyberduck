@@ -3378,7 +3378,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerCopyWorker(BrowserController controller, Map files)
-                    : base(files, new DisabledProgressListener())
+                    : base(files, controller)
                 {
                     _controller = controller;
                     _files = files;
