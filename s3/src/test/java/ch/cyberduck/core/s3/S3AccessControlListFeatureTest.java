@@ -30,6 +30,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -230,7 +231,7 @@ public class S3AccessControlListFeatureTest {
         f.setPermission(test, acl);
     }
 
-    @Test
+    @Test(expected = NotfoundException.class)
     public void testReadVersioned() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
@@ -241,9 +242,16 @@ public class S3AccessControlListFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new S3TouchFeature(session).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        try {
+            new S3AccessControlListFeature(session).getPermission(test);
+        }
+        catch(NotfoundException e) {
+            fail();
+        }
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
-        f.getPermission(test);
+        assertFalse(new DefaultFindFeature(session).find(test));
+        new S3AccessControlListFeature(session).getPermission(test);
         session.close();
     }
 
