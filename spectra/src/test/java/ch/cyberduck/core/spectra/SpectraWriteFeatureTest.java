@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -41,10 +42,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -70,8 +74,8 @@ public class SpectraWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         // Allocate
@@ -92,7 +96,7 @@ public class SpectraWriteFeatureTest {
             out.close();
         }
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
-        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -124,7 +128,7 @@ public class SpectraWriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -164,5 +168,60 @@ public class SpectraWriteFeatureTest {
         assertFalse(append.append);
         assertTrue(append.override);
         assertEquals(3L, append.size, 0L);
+    }
+
+    @Test
+    public void testSPECTRA69() throws Exception {
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
+                new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        // Allocate
+        final SpectraBulkService bulk = new SpectraBulkService(session);
+        {
+            final byte[] content1 = RandomUtils.nextBytes(1000);
+            final TransferStatus status = new TransferStatus().length(content1.length);
+            status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content1), status));
+            bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            assertNotNull(out);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content1), out);
+            out.close();
+            assertEquals(content1.length, new S3AttributesFinderFeature(session).find(test).getSize());
+            bulk.pre(Transfer.Type.download, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+            final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            assertNotNull(in);
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content1.length);
+            new StreamCopier(status, status).transfer(in, buffer);
+            assertArrayEquals(content1, buffer.toByteArray());
+        }
+        {
+            final byte[] content2 = RandomUtils.nextBytes(1000);
+            final TransferStatus status = new TransferStatus().length(content2.length);
+            // Overwrite
+            bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)), new DisabledConnectionCallback());
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true), new DisabledConnectionCallback());
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content2), out);
+            out.close();
+            assertEquals(content2.length, new S3AttributesFinderFeature(session).find(test).getSize());
+            bulk.pre(Transfer.Type.download, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+            final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            assertNotNull(in);
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content2.length);
+            new StreamCopier(status, status).transfer(in, buffer);
+            assertArrayEquals(content2, buffer.toByteArray());
+        }
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
     }
 }
