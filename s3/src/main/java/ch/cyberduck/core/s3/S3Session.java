@@ -245,6 +245,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         else {
             final AttributedList<Path> objects = new S3ObjectListService(this).list(directory, listener);
             try {
+                objects.addAll(new S3VersionedObjectListService(this).list(directory, listener));
+            }
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure listing versioned objects. %s", e.getDetail()));
+            }
+            try {
                 for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setDuplicate(true);

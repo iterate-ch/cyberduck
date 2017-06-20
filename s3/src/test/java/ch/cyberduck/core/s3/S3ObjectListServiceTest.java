@@ -178,7 +178,7 @@ public class S3ObjectListServiceTest {
         final PathAttributes att = new PathAttributes();
         assertTrue(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
         att.setVersionId("VLphaWnNt9MNseMuYVsLSmCFe6EuJJAq");
-        assertTrue(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
+        assertFalse(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
         session.close();
     }
 

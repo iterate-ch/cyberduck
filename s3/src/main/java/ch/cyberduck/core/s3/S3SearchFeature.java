@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -25,9 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.jets3t.service.ServiceException;
-
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,25 +37,16 @@ public class S3SearchFeature implements Search {
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
-        final S3ObjectListService list = new S3ObjectListService(session);
-        try {
-            final AttributedList<Path> objects = list.listObjects(workdir, list.createPrefix(workdir), null,
-                    PreferencesFactory.get().getInteger("s3.listing.chunksize"), listener);
-            final Set<Path> removal = new HashSet<>();
-            for(final Path f : objects) {
-                if(!f.getName().contains(regex.toPattern().pattern())) {
-                    removal.add(f);
-                }
+        final AttributedList<Path> objects = new S3ObjectListService(session).list(workdir, listener, null,
+                PreferencesFactory.get().getInteger("s3.listing.chunksize"));
+        final Set<Path> removal = new HashSet<>();
+        for(final Path f : objects) {
+            if(!f.getName().contains(regex.toPattern().pattern())) {
+                removal.add(f);
             }
-            objects.removeAll(removal);
-            return objects;
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, workdir);
-        }
-        catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, workdir);
-        }
+        objects.removeAll(removal);
+        return objects;
     }
 
     @Override

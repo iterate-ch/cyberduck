@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -28,7 +27,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -36,18 +34,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
-import org.jets3t.service.VersionOrDeleteMarkersChunk;
-import org.jets3t.service.model.BaseVersionOrDeleteMarker;
-import org.jets3t.service.model.S3Version;
 import org.jets3t.service.model.StorageObject;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.List;
 
 public class S3ObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(S3ObjectListService.class);
@@ -69,44 +58,75 @@ public class S3ObjectListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, preferences.getInteger("s3.listing.chunksize"));
+        return this.list(directory, listener, String.valueOf(Path.DELIMITER), preferences.getInteger("s3.listing.chunksize"));
     }
 
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
         try {
-            String prefix = this.createPrefix(directory);
+            final String prefix = this.createPrefix(directory);
             // If this optional, Unicode string parameter is included with your request,
             // then keys that contain the same string between the prefix and the first
             // occurrence of the delimiter will be rolled up into a single result
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
-            final AttributedList<Path> objects = new AttributedList<Path>();
-            objects.addAll(this.listObjects(directory, prefix, String.valueOf(Path.DELIMITER), chunksize, listener));
-            final Versioning feature = session.getFeature(Versioning.class);
-            final Path container = containerService.getContainer(directory);
-            if(feature != null && feature.getConfiguration(container).isEnabled()) {
-                String priorLastKey = null;
-                String priorLastVersionId = null;
-                do {
-                    final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                            container.getName(), prefix, String.valueOf(Path.DELIMITER),
-                            chunksize,
-                            priorLastKey, priorLastVersionId, true);
-                    objects.addAll(this.listVersions(container, directory,
-                            Arrays.asList(chunk.getItems())));
-                    priorLastKey = chunk.getNextKeyMarker();
-                    priorLastVersionId = chunk.getNextVersionIdMarker();
-                    listener.chunk(directory, objects);
+            final Path bucket = containerService.getContainer(directory);
+            final AttributedList<Path> children = new AttributedList<Path>();
+            // Null if listing is complete
+            String priorLastKey = null;
+            do {
+                // Read directory listing in chunks. List results are always returned
+                // in lexicographic (alphabetical) order.
+                final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
+                        PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
+                        chunksize, priorLastKey);
+
+                final StorageObject[] objects = chunk.getObjects();
+                for(StorageObject object : objects) {
+                    final String key = PathNormalizer.normalize(object.getKey());
+                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                        continue;
+                    }
+                    final EnumSet<AbstractPath.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
+                            ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                    final Path file;
+                    if(null == delimiter) {
+                        file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), types, attributes.convert(object));
+                    }
+                    else {
+                        file = new Path(directory, PathNormalizer.name(key), types, attributes.convert(object));
+                    }
+                    // Copy bucket location
+                    file.attributes().setRegion(bucket.attributes().getRegion());
+                    children.add(file);
                 }
-                while(priorLastKey != null);
+                final String[] prefixes = chunk.getCommonPrefixes();
+                for(String common : prefixes) {
+                    if(common.equals(String.valueOf(Path.DELIMITER))) {
+                        log.warn(String.format("Skipping prefix %s", common));
+                        continue;
+                    }
+                    final String key = PathNormalizer.normalize(common);
+                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                        continue;
+                    }
+                    final Path file;
+                    if(null == delimiter) {
+                        file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                    }
+                    else {
+                        file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                    }
+                    file.attributes().setRegion(bucket.attributes().getRegion());
+                    children.add(file);
+                }
+                priorLastKey = chunk.getPriorLastKey();
+                listener.chunk(directory, children);
             }
-            return objects;
+            while(priorLastKey != null);
+            return children;
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, directory);
         }
     }
 
@@ -127,101 +147,5 @@ public class S3ObjectListService implements ListService {
             }
         }
         return prefix;
-    }
-
-    protected AttributedList<Path> listObjects(final Path parent, final String prefix, final String delimiter, final int chunksize, final ListProgressListener listener)
-            throws IOException, ServiceException, BackgroundException {
-        final Path bucket = containerService.getContainer(parent);
-        final AttributedList<Path> children = new AttributedList<Path>();
-        // Null if listing is complete
-        String priorLastKey = null;
-        do {
-            // Read directory listing in chunks. List results are always returned
-            // in lexicographic (alphabetical) order.
-            final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
-                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
-                    chunksize, priorLastKey);
-
-            final StorageObject[] objects = chunk.getObjects();
-            for(StorageObject object : objects) {
-                final String key = PathNormalizer.normalize(object.getKey());
-                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
-                    continue;
-                }
-                final EnumSet<AbstractPath.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
-                        ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                final Path file;
-                if(null == delimiter) {
-                    file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), types, attributes.convert(object));
-                }
-                else {
-                    file = new Path(parent, PathNormalizer.name(key), types, attributes.convert(object));
-                }
-                // Copy bucket location
-                file.attributes().setRegion(bucket.attributes().getRegion());
-                children.add(file);
-            }
-            final String[] prefixes = chunk.getCommonPrefixes();
-            for(String common : prefixes) {
-                if(common.equals(String.valueOf(Path.DELIMITER))) {
-                    log.warn(String.format("Skipping prefix %s", common));
-                    continue;
-                }
-                final String key = PathNormalizer.normalize(common);
-                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
-                    continue;
-                }
-                final Path file;
-                if(null == delimiter) {
-                    file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-                }
-                else {
-                    file = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-                }
-                file.attributes().setRegion(bucket.attributes().getRegion());
-                children.add(file);
-            }
-            priorLastKey = chunk.getPriorLastKey();
-            listener.chunk(parent, children);
-        }
-        while(priorLastKey != null);
-        return children;
-    }
-
-    private List<Path> listVersions(final Path bucket, final Path parent, final List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
-            throws IOException, ServiceException {
-        // Amazon S3 returns object versions in the order in which they were
-        // stored, with the most recently stored returned first.
-        Collections.sort(versionOrDeleteMarkers, new Comparator<BaseVersionOrDeleteMarker>() {
-            @Override
-            public int compare(BaseVersionOrDeleteMarker o1, BaseVersionOrDeleteMarker o2) {
-                return o1.getLastModified().compareTo(o2.getLastModified());
-            }
-        });
-        final List<Path> versions = new ArrayList<Path>();
-        int i = 0;
-        for(BaseVersionOrDeleteMarker marker : versionOrDeleteMarkers) {
-            if((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest()) {
-                // Latest version already in default listing
-                final String key = PathNormalizer.normalize(marker.getKey());
-                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
-                    continue;
-                }
-                final Path p = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.file));
-                // Versioning is enabled if non null.
-                p.attributes().setVersionId(marker.getVersionId());
-                p.attributes().setRevision(++i);
-                p.attributes().setDuplicate(true);
-                p.attributes().setModificationDate(marker.getLastModified().getTime());
-                p.attributes().setRegion(bucket.attributes().getRegion());
-                if(marker instanceof S3Version) {
-                    p.attributes().setSize(((S3Version) marker).getSize());
-                    p.attributes().setETag(((S3Version) marker).getEtag());
-                    p.attributes().setStorageClass(((S3Version) marker).getStorageClass());
-                }
-                versions.add(p);
-            }
-        }
-        return versions;
     }
 }
