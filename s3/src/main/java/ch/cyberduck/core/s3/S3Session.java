@@ -296,9 +296,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Copy.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3ThresholdCopyFeature(this, new S3AccessControlListFeature(this));
+                return (T) new S3ThresholdCopyFeature(this);
             }
-            return (T) new S3CopyFeature(this, new S3AccessControlListFeature(this));
+            return (T) new S3CopyFeature(this);
         }
         if(type == Delete.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
