@@ -42,6 +42,7 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -126,23 +127,14 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Action
-    public void menuClicked(final NSMenu menu) {
-        final List<DescriptiveUrl> selected = new ArrayList<DescriptiveUrl>();
-        for(Path file : this.getSelected()) {
-            selected.add(this.getURLs(file).iterator().next());
-        }
-        this.handle(selected);
-    }
-
-    @Action
     public void menuItemClicked(final NSMenuItem item) {
-        this.handle(this.getURLs(item.menu().indexOfItem(item), this.getSelected()));
+        this.handle(Collections.singletonList(item.representedObject()));
     }
 
     /**
      * @param selected URLs of selected files.
      */
-    public abstract void handle(final List<DescriptiveUrl> selected);
+    public abstract void handle(final List<String> selected);
 
     @Override
     public boolean validateMenuItem(final NSMenuItem item) {
@@ -164,6 +156,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     public Selector getDefaultAction() {
-        return Foundation.selector("menuClicked:");
+        return null;
     }
 }

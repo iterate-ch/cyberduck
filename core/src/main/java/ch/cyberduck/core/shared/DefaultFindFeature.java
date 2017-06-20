@@ -58,7 +58,8 @@ public class DefaultFindFeature implements Find {
             else {
                 list = cache.get(file.getParent());
             }
-            final boolean found = list.find(new SimplePathPredicate(file)) != null;
+            final Path existing = list.find(new DuplicateFilterPathPredicate(file));
+            final boolean found = existing != null;
             if(!found) {
                 switch(session.getCase()) {
                     case insensitive:
@@ -85,5 +86,20 @@ public class DefaultFindFeature implements Find {
     public DefaultFindFeature withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
+    }
+
+    private final class DuplicateFilterPathPredicate extends SimplePathPredicate {
+
+        public DuplicateFilterPathPredicate(final Path file) {
+            super(file);
+        }
+
+        @Override
+        public boolean test(final Path file) {
+            if(file.attributes().isDuplicate()) {
+                return false;
+            }
+            return super.test(file);
+        }
     }
 }

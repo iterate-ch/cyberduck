@@ -35,7 +35,13 @@ public class RegexFilter implements Filter<Path> {
         if(pattern.matcher(file.getName()).matches()) {
             return false;
         }
-        return !file.attributes().isDuplicate();
+        if(file.getType().contains(Path.Type.upload)) {
+            return false;
+        }
+        if(file.attributes().isDuplicate()) {
+            return false;
+        }
+        return true;
     }
 
     @Override

@@ -2791,10 +2791,8 @@ public class BrowserController extends WindowController
         pasteboard.clear();
         pasteboard.setCopy(true);
         final List<Path> s = this.getSelectedPaths();
-        for(Path p : s) {
-            // Writing data for private use when the item gets dragged to the transfer queue.
-            pasteboard.add(p);
-        }
+        // Writing data for private use when the item gets dragged to the transfer queue.
+        pasteboard.addAll(s);
         final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
         if(s.size() == 0) {
             s.add(this.workdir());
@@ -2817,10 +2815,8 @@ public class BrowserController extends WindowController
     public void cut(final ID sender) {
         pasteboard.clear();
         pasteboard.setCut(true);
-        for(Path s : this.getSelectedPaths()) {
-            // Writing data for private use when the item gets dragged to the transfer queue.
-            pasteboard.add(s);
-        }
+        // Writing data for private use when the item gets dragged to the transfer queue.
+        pasteboard.addAll(this.getSelectedPaths());
         final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
         clipboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
         if(!clipboard.setStringForType(this.getSelectedPath().getAbsolute(), NSPasteboard.StringPboardType)) {

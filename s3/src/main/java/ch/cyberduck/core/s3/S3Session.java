@@ -245,9 +245,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         else {
             final AttributedList<Path> objects = new S3ObjectListService(this).list(directory, listener);
             try {
+                objects.addAll(new S3VersionedObjectListService(this).list(directory, listener));
+            }
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure listing versioned objects. %s", e.getDetail()));
+            }
+            try {
                 for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setDuplicate(true);
                     attributes.setVersionId(upload.getUploadId());
                     attributes.setModificationDate(upload.getInitiatedDate().getTime());
                     objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
@@ -296,9 +301,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Copy.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3ThresholdCopyFeature(this, new S3AccessControlListFeature(this));
+                return (T) new S3ThresholdCopyFeature(this);
             }
-            return (T) new S3CopyFeature(this, new S3AccessControlListFeature(this));
+            return (T) new S3CopyFeature(this);
         }
         if(type == Delete.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {

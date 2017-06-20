@@ -17,14 +17,13 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
@@ -86,16 +85,11 @@ public class S3StorageClassFeature implements Redundancy {
             preferences.setProperty(key, redundancy);
         }
         if(file.isFile() || file.isPlaceholder()) {
-            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session, new S3AccessControlListFeature(session));
-            final AclPermission feature = session.getFeature(AclPermission.class);
-            if(null == feature) {
-                copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
-                        Acl.EMPTY);
-            }
-            else {
-                copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
-                        feature.getPermission(file));
-            }
+            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(file.attributes().getSize());
+            status.setStorageClass(redundancy);
+            copy.copy(file, file, status);
         }
     }
 }

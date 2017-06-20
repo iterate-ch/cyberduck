@@ -17,12 +17,11 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public class S3ThresholdCopyFeature extends S3CopyFeature {
 
@@ -30,24 +29,21 @@ public class S3ThresholdCopyFeature extends S3CopyFeature {
             = PreferencesFactory.get();
 
     private final S3Session session;
-    private final S3AccessControlListFeature accessControlListFeature;
 
     private final Long multipartThreshold
-            = preferences.getLong("s3.upload.multipart.threshold");
+            = preferences.getLong("s3.upload.multipart.required.threshold");
 
-    public S3ThresholdCopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
-        super(session, accessControlListFeature);
+    public S3ThresholdCopyFeature(final S3Session session) {
+        super(session);
         this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
     }
 
-    protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,
-                        final Acl acl) throws BackgroundException {
-        if(source.attributes().getSize() > multipartThreshold) {
-            new S3MultipartCopyFeature(session, accessControlListFeature).copy(source, copy, storageClass, encryption, acl);
+    public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
+        if(status.getLength() > multipartThreshold) {
+            new S3MultipartCopyFeature(session).copy(source, copy, status);
         }
         else {
-            new S3CopyFeature(session, accessControlListFeature).copy(source, copy, storageClass, encryption, acl);
+            new S3CopyFeature(session).copy(source, copy, status);
         }
     }
 }

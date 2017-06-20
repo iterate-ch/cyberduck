@@ -59,9 +59,9 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
     }
 
     @Override
-    public void handle(final List<DescriptiveUrl> selected) {
-        for(DescriptiveUrl url : selected) {
-            BrowserLauncherFactory.get().open(url.getUrl());
+    public void handle(final List<String> selected) {
+        for(String url : selected) {
+            BrowserLauncherFactory.get().open(url);
         }
     }
 }

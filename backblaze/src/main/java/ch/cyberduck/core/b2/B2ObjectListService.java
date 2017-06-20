@@ -124,7 +124,14 @@ public class B2ObjectListService implements ListService {
             }
             revisions.put(info.getFileName(), revision);
             attributes.setRevision(revision);
-            objects.add(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.file), attributes));
+            switch(info.getAction()) {
+                case upload:
+                    objects.add(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
+                    break;
+                default:
+                    objects.add(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.file), attributes));
+                    break;
+            }
         }
         if(null == response.getNextFileName()) {
             return new Marker(response.getNextFileName(), response.getNextFileId());
@@ -148,7 +155,6 @@ public class B2ObjectListService implements ListService {
         switch(response.getAction()) {
             case hide:
             case start:
-                attributes.setDuplicate(true);
                 attributes.setSize(-1L);
                 break;
             default:

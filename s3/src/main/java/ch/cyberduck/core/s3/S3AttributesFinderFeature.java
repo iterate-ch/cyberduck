@@ -74,9 +74,10 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     protected StorageObject details(final Path file) throws BackgroundException {
         final String container = containerService.getContainer(file).getName();
         try {
-            final Versioning feature = session.getFeature(Versioning.class);
-            if(feature != null && feature.getConfiguration(containerService.getContainer(file)).isEnabled()) {
-                return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
+            final Versioning versioning = session.getFeature(Versioning.class);
+            if(versioning != null && versioning.getConfiguration(containerService.getContainer(file)).isEnabled()) {
+                final String version = file.attributes().getVersionId();
+                return session.getClient().getVersionedObjectDetails(version,
                         container, containerService.getKey(file));
             }
             else {
