@@ -5,6 +5,6 @@
         <key>Protocol</key>
         <string>ftp</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>iterate GmbH</string>
     </dict>
 </plist>

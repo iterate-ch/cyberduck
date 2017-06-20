@@ -17,16 +17,15 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -61,79 +60,68 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     private final Long partsize
             = PreferencesFactory.get().getLong("s3.upload.multipart.size");
 
-    private final S3AccessControlListFeature accessControlListFeature;
-
-    public S3MultipartCopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
-        super(session, accessControlListFeature);
-        this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
+    public S3MultipartCopyFeature(final S3Session session) {
+        this(session, new S3AccessControlListFeature(session));
     }
 
-    protected void copy(final Path source, final Path copy, final String storageClass,
-                        final Encryption.Algorithm encryption,
-                        final Acl acl) throws BackgroundException {
-        if(source.isFile() || source.isPlaceholder()) {
-            final S3Object destination = new S3Object(containerService.getKey(copy));
-            // Copying object applying the metadata of the original
-            destination.setStorageClass(storageClass);
-            destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
-            // Set custom key id stored in KMS
-            destination.setServerSideEncryptionKmsKeyId(encryption.key);
-            if(null != accessControlListFeature) {
-                destination.setAcl(accessControlListFeature.convert(acl));
+    public S3MultipartCopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
+        super(session, acl);
+        this.session = session;
+    }
+
+    @Override
+    protected void copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {
+        try {
+            final List<MultipartPart> completed = new ArrayList<MultipartPart>();
+            // ID for the initiated multipart upload.
+            final MultipartUpload multipart = session.getClient().multipartStartUpload(
+                    destination.getBucketName(), destination);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Multipart upload started for %s with ID %s",
+                        multipart.getObjectKey(), multipart.getUploadId()));
             }
-            try {
-                final List<MultipartPart> completed = new ArrayList<MultipartPart>();
-                // ID for the initiated multipart upload.
-                final MultipartUpload multipart = session.getClient().multipartStartUpload(
-                        containerService.getContainer(copy).getName(), destination);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Multipart upload started for %s with ID %s",
-                            multipart.getObjectKey(), multipart.getUploadId()));
+            final long size = status.getLength();
+            long remaining = size;
+            long offset = 0;
+            final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
+            for(int partNumber = 1; remaining > 0; partNumber++) {
+                // Last part can be less than 5 MB. Adjust part size.
+                final Long length = Math.min(Math.max((size / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
+                // Submit to queue
+                parts.add(this.submit(source, multipart, partNumber, offset, length));
+                remaining -= length;
+                offset += length;
+            }
+            for(Future<MultipartPart> future : parts) {
+                try {
+                    completed.add(future.get());
                 }
-                final long size = source.attributes().getSize();
-                long remaining = size;
-                long offset = 0;
-                final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
-                for(int partNumber = 1; remaining > 0; partNumber++) {
-                    // Last part can be less than 5 MB. Adjust part size.
-                    final Long length = Math.min(Math.max((size / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
-                    // Submit to queue
-                    parts.add(this.submit(source, multipart, partNumber, offset, length));
-                    remaining -= length;
-                    offset += length;
+                catch(InterruptedException e) {
+                    log.error("Part upload failed with interrupt failure");
+                    throw new ConnectionCanceledException(e);
                 }
-                for(Future<MultipartPart> future : parts) {
-                    try {
-                        completed.add(future.get());
+                catch(ExecutionException e) {
+                    log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
+                    if(e.getCause() instanceof BackgroundException) {
+                        throw (BackgroundException) e.getCause();
                     }
-                    catch(InterruptedException e) {
-                        log.error("Part upload failed with interrupt failure");
-                        throw new ConnectionCanceledException(e);
-                    }
-                    catch(ExecutionException e) {
-                        log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                        if(e.getCause() instanceof BackgroundException) {
-                            throw (BackgroundException) e.getCause();
-                        }
-                        throw new BackgroundException(e.getCause());
-                    }
-                }
-                // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
-                // could take several minutes to complete. Because a request could fail after the initial 200 OK response
-                // has been sent, it is important that you check the response body to determine whether the request succeeded.
-                final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Completed multipart upload for %s with checksum %s",
-                            complete.getObjectKey(), complete.getEtag()));
+                    throw new BackgroundException(e.getCause());
                 }
             }
-            catch(ServiceException e) {
-                throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
+            // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
+            // could take several minutes to complete. Because a request could fail after the initial 200 OK response
+            // has been sent, it is important that you check the response body to determine whether the request succeeded.
+            final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Completed multipart upload for %s with checksum %s",
+                        complete.getObjectKey(), complete.getEtag()));
             }
-            finally {
-                pool.shutdown(false);
-            }
+        }
+        catch(ServiceException e) {
+            throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
+        }
+        finally {
+            pool.shutdown(false);
         }
     }
 

@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
@@ -25,12 +24,11 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.model.S3Object;
 
 public class S3CopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(S3CopyFeature.class);
@@ -42,6 +40,10 @@ public class S3CopyFeature implements Copy {
 
     private final S3AccessControlListFeature accessControlListFeature;
 
+    public S3CopyFeature(final S3Session session) {
+        this(session, new S3AccessControlListFeature(session));
+    }
+
     public S3CopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
@@ -51,23 +53,36 @@ public class S3CopyFeature implements Copy {
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         if(source.isFile() || source.isPlaceholder()) {
             // Keep same storage class
-            final String storageClass = source.attributes().getStorageClass();
+            status.setStorageClass(new S3StorageClassFeature(session).getClass(source));
             // Keep encryption setting
-            final Encryption.Algorithm encryption = source.attributes().getEncryption();
+            status.setEncryption(new S3EncryptionFeature(session).getEncryption(source));
             // Apply non standard ACL
-            if(null == accessControlListFeature) {
-                this.copy(source, target, storageClass, encryption, Acl.EMPTY);
+            try {
+                status.setAcl(accessControlListFeature.getPermission(source));
             }
-            else {
-                Acl acl = Acl.EMPTY;
-                try {
-                    acl = accessControlListFeature.getPermission(source);
-                }
-                catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Ignore failure %s", e.getDetail()));
-                }
-                this.copy(source, target, storageClass, encryption, acl);
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure %s", e.getDetail()));
             }
+            final S3Object destination = new S3Object(containerService.getKey(target));
+            destination.setStorageClass(status.getStorageClass());
+            destination.setServerSideEncryptionAlgorithm(status.getEncryption().algorithm);
+            // Set custom key id stored in KMS
+            destination.setServerSideEncryptionKmsKeyId(status.getEncryption().key);
+            destination.setAcl(accessControlListFeature.convert(status.getAcl()));
+            destination.setBucketName(containerService.getContainer(target).getName());
+            this.copy(source, destination, status);
+        }
+    }
+
+    protected void copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {
+        try {
+            // Copying object applying the metadata of the original
+            session.getClient().copyObject(containerService.getContainer(source).getName(),
+                    containerService.getKey(source),
+                    destination.getBucketName(), destination, false);
+        }
+        catch(ServiceException e) {
+            throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
 
@@ -79,32 +94,6 @@ public class S3CopyFeature implements Copy {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return !containerService.isContainer(source) && !containerService.isContainer(target);
-    }
-
-    protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,
-                        final Acl acl) throws BackgroundException {
-        if(source.isFile() || source.isPlaceholder()) {
-            final StorageObject destination = new StorageObject(containerService.getKey(copy));
-            destination.setStorageClass(storageClass);
-            destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
-            // Set custom key id stored in KMS
-            destination.setServerSideEncryptionKmsKeyId(encryption.key);
-            if(null == accessControlListFeature) {
-                destination.setAcl(null);
-            }
-            else {
-                destination.setAcl(accessControlListFeature.convert(acl));
-            }
-            try {
-                // Copying object applying the metadata of the original
-                session.getClient().copyObject(containerService.getContainer(source).getName(),
-                        containerService.getKey(source),
-                        containerService.getContainer(copy).getName(), destination, false);
-            }
-            catch(ServiceException e) {
-                throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
-            }
-        }
     }
 
     @Override

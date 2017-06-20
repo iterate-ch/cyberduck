@@ -25,6 +25,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
@@ -133,6 +134,33 @@ public class SpectraObjectListServiceTest {
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new SpectraDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testListSPECTRA70() throws Exception {
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path container = new Path("CYBERDUCK-SPECTRA-70", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener() {
+            int paginate = 0;
+
+            @Override
+            public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+                assertEquals(paginate += 10, list.size());
+                super.chunk(parent, list);
+            }
+        }, 10);
+        assertEquals(500, list.size());
         session.close();
     }
 }
