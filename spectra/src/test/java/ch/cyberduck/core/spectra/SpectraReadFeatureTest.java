@@ -35,6 +35,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,6 +46,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -120,5 +124,36 @@ public class SpectraReadFeatureTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         assertFalse(new SpectraReadFeature(session).offset(null));
+    }
+
+    @Test
+    public void testSPECTRA66() throws Exception {
+        final Host host = new Host(new SpectraProtocol() {
+            @Override
+            public Scheme getScheme() {
+                return Scheme.http;
+            }
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        ));
+        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path container = new Path("CYBERDUCK-SPECTRA-67", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final HashMap<Path, TransferStatus> files = new HashMap<>();
+        for(int i = 1; i < 5; i++) {
+            files.put(new Path(container, String.format("test-%d.f", i), EnumSet.of(Path.Type.file)), new TransferStatus());
+        }
+        final SpectraBulkService bulk = new SpectraBulkService(session);
+        final Set<UUID> uuid = bulk.pre(Transfer.Type.download, files, new DisabledConnectionCallback());
+        assertNotNull(uuid);
+        assertFalse(uuid.isEmpty());
+        assertEquals(1, uuid.size());
+        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
+            final InputStream in = new SpectraReadFeature(session).read(entry.getKey(), entry.getValue(), new DisabledConnectionCallback());
+            assertNotNull(in);
+            IOUtils.closeQuietly(in);
+        }
+        session.close();
     }
 }
