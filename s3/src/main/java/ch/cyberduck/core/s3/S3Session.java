@@ -253,7 +253,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             try {
                 for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setDuplicate(true);
                     attributes.setVersionId(upload.getUploadId());
                     attributes.setModificationDate(upload.getInitiatedDate().getTime());
                     objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
