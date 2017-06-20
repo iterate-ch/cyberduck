@@ -51,12 +51,15 @@ public class S3VersionedObjectListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        final Versioning versioning = session.getFeature(Versioning.class);
+        if(null == versioning) {
+            return AttributedList.emptyList();
+        }
         final S3ObjectListService list = new S3ObjectListService(session);
+        final String prefix = list.createPrefix(directory);
+        final Path bucket = containerService.getContainer(directory);
+        final AttributedList<Path> children = new AttributedList<Path>();
         try {
-            final String prefix = list.createPrefix(directory);
-            final Path bucket = containerService.getContainer(directory);
-            final AttributedList<Path> children = new AttributedList<Path>();
-            final Versioning versioning = session.getFeature(Versioning.class);
             if(versioning.getConfiguration(bucket).isEnabled()) {
                 String priorLastKey = null;
                 String priorLastVersionId = null;
