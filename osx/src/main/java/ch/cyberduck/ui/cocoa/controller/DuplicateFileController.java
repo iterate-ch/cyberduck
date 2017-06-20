@@ -68,6 +68,7 @@ public class DuplicateFileController extends FileController {
 
     @Override
     public void callback(final int returncode, final Path file) {
+        file.setType(selected.getType());
         callback.callback(Collections.singletonMap(selected, file));
     }
 
