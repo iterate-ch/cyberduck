@@ -56,6 +56,7 @@ public class DefaultPathPredicate implements CacheReference<Path> {
         types.remove(Path.Type.encrypted);
         types.remove(Path.Type.decrypted);
         types.remove(Path.Type.vault);
+        types.remove(Path.Type.upload);
         return String.valueOf(types);
     }
 
