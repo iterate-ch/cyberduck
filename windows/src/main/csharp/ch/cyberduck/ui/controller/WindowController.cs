@@ -48,9 +48,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
     public abstract class WindowController : AsyncController
     {
-        private bool _invalidated;
-
         private readonly InputValidator _validator;
+        private bool _invalidated;
 
         protected WindowController() : this(new DisabledInputValidator())
         {
@@ -125,7 +124,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public virtual bool ViewShouldClose()
         {
-            return _validator.validate();
+            return !Singleton || _validator.validate();
         }
 
         public override void invoke(MainAction mainAction, bool wait)
