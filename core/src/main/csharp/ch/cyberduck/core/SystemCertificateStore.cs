@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -168,7 +168,7 @@ namespace Ch.Cyberduck.Core
                             return false;
                         });
 
-                if (result.Result == TaskDialogSimpleResult.Ok)
+                if (result.Result == TaskDialogSimpleResult.Command)
                 {
                     if (result.CommandButtonResult == 0)
                     {
@@ -236,7 +236,8 @@ namespace Ch.Cyberduck.Core
             {
                 if ((status.Status & X509ChainStatusFlags.RevocationStatusUnknown) ==
                     X509ChainStatusFlags.RevocationStatusUnknown ||
-                    ((status.Status & X509ChainStatusFlags.OfflineRevocation) == X509ChainStatusFlags.OfflineRevocation))
+                    ((status.Status & X509ChainStatusFlags.OfflineRevocation) ==
+                     X509ChainStatusFlags.OfflineRevocation))
                 {
                     //due to the offline revocation check
                     continue;
