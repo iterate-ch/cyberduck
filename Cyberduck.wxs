@@ -68,7 +68,7 @@
           </Extension>
         </ProgId>
 		  
-		<RegistryValue Root="HKMU" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
+		<RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
       </Component>
       <Component Id="Cyberduck.Exe.Config">
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.exe.config" KeyPath="yes" Checksum="yes"/>
