@@ -104,7 +104,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         final List<Path> existingSegments = new ArrayList<Path>();
         if(status.isAppend() || status.isRetry()) {
             // Get a lexicographically ordered list of the existing file segments
-            existingSegments.addAll(listService.list(segmentService.getSegmentsDirectory(file, status.getLength()), new DisabledListProgressListener()).toList());
+            existingSegments.addAll(listService.list(segmentService.getSegmentsDirectory(file, status.getOffset() + status.getLength()), new DisabledListProgressListener()).toList());
         }
         // Get the results of the uploads in the order they were submitted
         // this is important for building the manifest, and is not a problem in terms of performance
@@ -117,7 +117,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
             final Long length = Math.min(segmentSize, remaining);
             // Segment name with left padded segment number
-            final Path segment = segmentService.getSegment(file, length, segmentNumber);
+            final Path segment = segmentService.getSegment(file, status.getOffset() + status.getLength(), segmentNumber);
             if(existingSegments.contains(segment)) {
                 final Path existingSegment = existingSegments.get(existingSegments.indexOf(segment));
                 if(log.isDebugEnabled()) {
