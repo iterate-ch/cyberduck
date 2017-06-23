@@ -35,7 +35,7 @@
     </WixExtension>
     <WixExtension Include="WixUtilExtension">
       <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
-      <Name>WixutilExtension</Name>
+      <Name>WixUtilExtension</Name>
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
