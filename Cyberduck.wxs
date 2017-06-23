@@ -24,7 +24,7 @@
 
     <ComponentGroup Id="ProductComponents" Directory="INSTALLLOCATION">
       <Component Id="InstallLocationRegistrySearch">
-        <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
+        <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
       </Component>
       <Component Id="ProductExe">
         <File Id="product.exe" Source="$(var.cyberduck.TargetPath)" KeyPath="yes" Checksum="yes" >
