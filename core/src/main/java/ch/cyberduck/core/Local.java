@@ -213,6 +213,9 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path), new DirectoryStream.Filter<Path>() {
             @Override
             public boolean accept(final Path entry) throws IOException {
+                if(null == entry.getFileName()) {
+                    return false;
+                }
                 return filter.accept(entry.getFileName().toString());
             }
         })) {
