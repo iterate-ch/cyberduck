@@ -23,6 +23,9 @@
     <Property Id="AUTOSTART" Value="0"/>
 
     <ComponentGroup Id="ProductComponents" Directory="INSTALLLOCATION">
+      <Component Id="InstallLocationRegistrySearch">
+        <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
+      </Component>
       <Component Id="ProductExe">
         <File Id="product.exe" Source="$(var.cyberduck.TargetPath)" KeyPath="yes" Checksum="yes" >
           <netfx:NativeImage Id="ngen_product.exe" Platform="32bit" Priority="3" />
