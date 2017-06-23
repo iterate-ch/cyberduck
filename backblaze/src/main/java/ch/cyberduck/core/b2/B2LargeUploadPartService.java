@@ -140,6 +140,9 @@ public class B2LargeUploadPartService {
         }
     }
 
+    /**
+     * Cancel large file upload with id
+     */
     public void delete(final String id) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Delete multipart upload for fileid %s", id));

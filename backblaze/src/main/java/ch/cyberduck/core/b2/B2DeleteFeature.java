@@ -21,6 +21,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 
@@ -51,7 +52,12 @@ public class B2DeleteFeature implements Delete {
                 continue;
             }
             if(file.getType().contains(Path.Type.upload)) {
-                new B2LargeUploadPartService(session).delete(file.attributes().getVersionId());
+                try {
+                    new B2LargeUploadPartService(session).delete(file.attributes().getVersionId());
+                }
+                catch(NotfoundException | InteroperabilityException e) {
+                    log.warn(String.format("Ignore failure %s canceling large upload for %s", e, file));
+                }
             }
             callback.delete(file);
             if(file.isDirectory()) {
