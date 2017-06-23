@@ -126,6 +126,7 @@ public class B2ObjectListService implements ListService {
             attributes.setRevision(revision);
             switch(info.getAction()) {
                 case upload:
+                    attributes.setDuplicate(true);
                     objects.add(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
                     break;
                 default:
