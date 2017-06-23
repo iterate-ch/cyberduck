@@ -45,6 +45,9 @@ public class LocalListService implements ListService {
         final AttributedList<ch.cyberduck.core.Path> paths = new AttributedList<>();
         try (DirectoryStream<java.nio.file.Path> directoryStream = Files.newDirectoryStream(session.toPath(directory))) {
             for(java.nio.file.Path path : directoryStream) {
+                if(null == path.getFileName()) {
+                    continue;
+                }
                 try {
                     final PathAttributes attributes = feature.convert(path);
                     final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
