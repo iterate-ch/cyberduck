@@ -9,9 +9,8 @@
                                                     LogoSideFile="setup\wix\welcome.bmp"/>
         </BootstrapperApplicationRef>
         <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck"/>
-		<util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Value="InstallFolder" Variable="PreviousInstallFolder" />
-		<util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
-		
+        <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
+        <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
         <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
 
         <Chain>
