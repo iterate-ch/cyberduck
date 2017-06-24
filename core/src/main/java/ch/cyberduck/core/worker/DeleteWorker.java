@@ -35,8 +35,10 @@ import ch.cyberduck.core.features.Delete;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class DeleteWorker extends Worker<List<Path>> {
 
@@ -82,9 +84,9 @@ public class DeleteWorker extends Worker<List<Path>> {
         return recursive;
     }
 
-    protected List<Path> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
+    protected Set<Path> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
-        final List<Path> recursive = new ArrayList<Path>();
+        final Set<Path> recursive = new HashSet<Path>();
         if(file.isFile() || file.isSymbolicLink()) {
             if(delete.isSupported(file)) {
                 recursive.add(file);
