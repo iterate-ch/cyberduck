@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import synapticloop.b2.Action;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
@@ -124,15 +125,8 @@ public class B2ObjectListService implements ListService {
             }
             revisions.put(info.getFileName(), revision);
             attributes.setRevision(revision);
-            switch(info.getAction()) {
-                case upload:
-                    attributes.setDuplicate(true);
-                    objects.add(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
-                    break;
-                default:
-                    objects.add(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.file), attributes));
-                    break;
-            }
+            objects.add(new Path(directory, PathNormalizer.name(info.getFileName()),
+                    info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes));
         }
         if(null == response.getNextFileName()) {
             return new Marker(response.getNextFileName(), response.getNextFileId());
@@ -155,7 +149,10 @@ public class B2ObjectListService implements ListService {
         attributes.setVersionId(response.getFileId());
         switch(response.getAction()) {
             case hide:
+                // File version marking the file as hidden, so that it will not show up in b2_list_file_names
             case start:
+                // Large file has been started, but not finished or canceled
+                attributes.setDuplicate(true);
                 attributes.setSize(-1L);
                 break;
             default:
