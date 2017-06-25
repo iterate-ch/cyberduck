@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Bundle Name="Cyberduck CLI" Version="1.0.0.0" Manufacturer="iterate GmbH"
           UpgradeCode="46C3FB4E-2B23-4728-8196-BEA25ADE868A" IconSourceFile="cyberduck-application.ico">
     <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
@@ -8,6 +8,8 @@
         LogoFile="setup\wix\banner.png" LogoSideFile="setup\wix\welcome.bmp" />
     </BootstrapperApplicationRef>
     <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck CLI" />
+    <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
+    <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
     <Chain>
       <PackageGroupRef Id="NetFx45Web" />
       <RollbackBoundary />
