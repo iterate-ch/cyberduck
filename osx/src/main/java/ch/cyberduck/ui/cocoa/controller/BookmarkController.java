@@ -71,8 +71,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static ch.cyberduck.core.Profile.DEFAULT_PROVIDER;
-
 public class BookmarkController extends SheetController implements CollectionListener {
     private static final Logger log = Logger.getLogger(BookmarkController.class);
 
@@ -173,7 +171,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         for(Protocol protocol : protocols.find(new Predicate<Protocol>() {
             @Override
             public boolean test(final Protocol protocol) {
-                return protocol.isEnabled() && !StringUtils.equals(DEFAULT_PROVIDER, protocol.getProvider());
+                return protocol.isEnabled() && !protocol.isBundled();
             }
         })) {
             this.addProtocol(protocol);
@@ -592,7 +590,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         @Override
         public boolean test(final Protocol protocol) {
             if(types.contains(protocol.getType())) {
-                return protocol.isEnabled() && StringUtils.equals(DEFAULT_PROVIDER, protocol.getProvider());
+                return protocol.isBundled();
             }
             return false;
         }
