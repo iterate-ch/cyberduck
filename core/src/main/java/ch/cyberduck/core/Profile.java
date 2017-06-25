@@ -248,7 +248,11 @@ public class Profile implements Protocol, Serializable {
 
     @Override
     public String[] getSchemes() {
-        return parent.getSchemes();
+        final List<String> v = this.list("Schemes");
+        if(v.isEmpty()) {
+            return parent.getSchemes();
+        }
+        return v.toArray(new String[v.size()]);
     }
 
     @Override
