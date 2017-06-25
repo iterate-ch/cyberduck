@@ -71,7 +71,7 @@ public class GoogleStorageAccessControlListFeatureTest {
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
         f.setPermission(test, acl);
-        acl.addAll(new Acl.CanonicalUser("00b4903a976d2139c3b4ffbe7c61eccdb69e545fde42445d455befdad73b1455", "dkocher"), new Acl.Role(Acl.Role.FULL));
+        acl.addAll(new Acl.CanonicalUser("dkocher@sudo.ch", "dkocher"), new Acl.Role(Acl.Role.FULL));
         assertEquals(acl, f.getPermission(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
