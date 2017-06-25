@@ -48,6 +48,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
         checkThreshold(1);
         buffer.write(b);
         written++;
+        this.afterWrite(1);
     }
 
     /**
@@ -62,6 +63,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
         buffer.write(b);
         written += b.length;
         this.checkThreshold(b.length);
+        this.afterWrite(b.length);
     }
 
 
@@ -79,6 +81,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
         buffer.write(b, off, len);
         written += len;
         this.checkThreshold(len);
+        this.afterWrite(len);
     }
 
     @Override
