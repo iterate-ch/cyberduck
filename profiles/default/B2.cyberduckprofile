@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>b2</string>
         <key>Vendor</key>
-        <string>backblaze</string>
+        <string>iterate GmbH</string>
         <key>Description</key>
         <string>Backblaze B2 Cloud Storage</string>
         <key>Scheme</key>
