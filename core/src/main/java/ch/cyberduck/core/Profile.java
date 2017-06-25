@@ -44,7 +44,7 @@ public class Profile implements Protocol, Serializable {
     /**
      * Vendor identifier of default bundled profiles.
      */
-    public static final String DEFAULT_PROVIDER = "cyberduck";
+    public static final String DEFAULT_PROVIDER = "iterate GmbH";
 
     private final Deserializer<String> dict;
 
