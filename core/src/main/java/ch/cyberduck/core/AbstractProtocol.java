@@ -36,6 +36,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isBundled() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return this.getScheme().name().toUpperCase(Locale.ROOT);
     }

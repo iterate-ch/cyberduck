@@ -21,6 +21,8 @@
         <string>onedrive</string>
         <key>Vendor</key>
         <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
         <key>Description</key>
         <string>Microsoft OneDrive</string>
         <key>Scheme</key>
