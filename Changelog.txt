@@ -6,11 +6,12 @@ https://cyberduck.io/
 - [Feature] Search files fast without recursively listing directories (S3)
 - [Feature] Search files fast without recursively listing directories (Dropbox)
 - [Feature] Search files fast without recursively listing directories (Google Drive)
-- [Feature] Group protocols by type in bookmark window (Mac)
+- [Feature] Group protocols by type in bookmark window
 - [Bugfix] Missing x-amz-server-side-encryption header when creating folders (S3) (#9378)
 - [Bugfix] Interoperability with vault version 6 (Cryptomator)
 - [Bugfix] Missing content length header in uploads to SharePoint Online (OneDrive)
 - [Bugfix] Always trust invalid certificate setting not remembered (Windows)
+- [Bugfix] Unable to rename files larger than 5 GB (S3) (#9983)
 
 6.0.4 [https://trac.cyberduck.io/milestone/6.0.4]
 - [Bugfix] Failure to upload to root of vault (Cryptomator)
