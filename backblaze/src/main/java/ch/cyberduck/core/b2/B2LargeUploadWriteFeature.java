@@ -138,6 +138,10 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
 
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
+            if(0 == len) {
+                // Skip empty segment
+                return;
+            }
             try {
                 if(0 == partNumber && len < PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
@@ -201,21 +205,31 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     return;
                 }
                 if(completed.isEmpty()) {
-                    return;
-                }
-                completed.sort(new Comparator<B2UploadPartResponse>() {
-                    @Override
-                    public int compare(final B2UploadPartResponse o1, final B2UploadPartResponse o2) {
-                        return o1.getPartNumber().compareTo(o2.getPartNumber());
+                    if(null == version) {
+                        // No single file upload and zero parts
+                        try {
+                            version = new VersionId(new B2TouchFeature(session).touch(file, overall.length(0L)).attributes().getVersionId());
+                        }
+                        catch(BackgroundException e) {
+                            throw new IOException(e);
+                        }
                     }
-                });
-                final List<String> checksums = new ArrayList<String>();
-                for(B2UploadPartResponse part : completed) {
-                    checksums.add(part.getContentSha1());
                 }
-                session.getClient().finishLargeFileUpload(version.id, checksums.toArray(new String[checksums.size()]));
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
+                else {
+                    completed.sort(new Comparator<B2UploadPartResponse>() {
+                        @Override
+                        public int compare(final B2UploadPartResponse o1, final B2UploadPartResponse o2) {
+                            return o1.getPartNumber().compareTo(o2.getPartNumber());
+                        }
+                    });
+                    final List<String> checksums = new ArrayList<String>();
+                    for(B2UploadPartResponse part : completed) {
+                        checksums.add(part.getContentSha1());
+                    }
+                    session.getClient().finishLargeFileUpload(version.id, checksums.toArray(new String[checksums.size()]));
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
+                    }
                 }
             }
             catch(B2ApiException e) {

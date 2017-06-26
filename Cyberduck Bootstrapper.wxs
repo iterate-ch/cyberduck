@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
     <Bundle Name="Cyberduck" Version="!(bind.packageVersion.Setup)" Manufacturer="iterate GmbH"
             UpgradeCode="69C1D059-4B45-4220-A82C-DAE80C9CD8E0" IconSourceFile="cyberduck-application.ico">
         <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
@@ -9,6 +9,8 @@
                                                     LogoSideFile="setup\wix\welcome.bmp"/>
         </BootstrapperApplicationRef>
         <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck"/>
+        <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
+        <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
         <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
 
         <Chain>

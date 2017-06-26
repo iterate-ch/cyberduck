@@ -41,11 +41,6 @@ import java.util.Set;
 public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
-    /**
-     * Vendor identifier of default bundled profiles.
-     */
-    public static final String DEFAULT_PROVIDER = "cyberduck";
-
     private final Deserializer<String> dict;
 
     /**
@@ -133,6 +128,14 @@ public class Profile implements Protocol, Serializable {
             return parent.getProvider();
         }
         return v;
+    }
+
+    public boolean isBundled() {
+        final String v = this.value("Bundled");
+        if(StringUtils.isBlank(v)) {
+            return parent.isBundled();
+        }
+        return Boolean.valueOf(v);
     }
 
     @Override
@@ -245,7 +248,11 @@ public class Profile implements Protocol, Serializable {
 
     @Override
     public String[] getSchemes() {
-        return parent.getSchemes();
+        final List<String> v = this.list("Schemes");
+        if(v.isEmpty()) {
+            return parent.getSchemes();
+        }
+        return v.toArray(new String[v.size()]);
     }
 
     @Override

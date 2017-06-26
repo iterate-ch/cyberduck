@@ -33,7 +33,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -140,12 +139,7 @@ public abstract class LicenseFactory extends Factory<License> {
             try {
                 final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
                 final List<License> list = new ArrayList<License>(name.newInstance().open());
-                for(Iterator<License> iter = list.iterator(); iter.hasNext(); ) {
-                    final License key = iter.next();
-                    if(!key.verify()) {
-                        iter.remove();
-                    }
-                }
+                list.removeIf(key -> !key.verify());
                 if(list.isEmpty()) {
                     return LicenseFactory.EMPTY_LICENSE;
                 }

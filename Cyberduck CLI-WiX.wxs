@@ -28,6 +28,9 @@
     </Directory>
 
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+    <Component Id="InstallLocationRegistrySearch">
+        <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
+      </Component>
       <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
         <File Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
       </Component>
@@ -162,6 +165,9 @@
       </Component>
       <Component Id="mscapi" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
         <File Source="$(var.CLI.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="msvcr100">
+        <File Source="$(var.CLI.TargetDir)/msvcr100.dll" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
 

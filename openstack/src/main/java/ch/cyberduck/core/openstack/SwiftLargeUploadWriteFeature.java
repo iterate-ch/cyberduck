@@ -144,6 +144,10 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
 
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
+            if(0 == len) {
+                // Skip empty segment
+                return;
+            }
             try {
                 completed.add(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
                     @Override
@@ -193,16 +197,21 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                     log.warn(String.format("Skip double close of stream %s", this));
                     return;
                 }
-                // Static Large Object
-                final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completed);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
+                if(completed.isEmpty()) {
+                    new SwiftTouchFeature(session, regionService).touch(file, overall.length(0L));
                 }
-                session.getClient().createSLOManifestObject(regionService.lookup(
-                        containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(),
-                        overall.getMime(),
-                        containerService.getKey(file), manifest, Collections.emptyMap());
+                else {
+                    // Static Large Object
+                    final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completed);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
+                    }
+                    session.getClient().createSLOManifestObject(regionService.lookup(
+                            containerService.getContainer(file)),
+                            containerService.getContainer(file).getName(),
+                            overall.getMime(),
+                            containerService.getKey(file), manifest, Collections.emptyMap());
+                }
             }
             catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);

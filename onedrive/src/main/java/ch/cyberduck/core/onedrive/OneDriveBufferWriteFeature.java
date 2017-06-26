@@ -33,12 +33,16 @@ import java.io.IOException;
 
 public class OneDriveBufferWriteFeature extends OneDriveWriteFeature implements MultipartWrite<Void> {
 
+    private final OneDriveSession session;
+
     public OneDriveBufferWriteFeature(final OneDriveSession session) {
         super(session);
+        this.session = session;
     }
 
     public OneDriveBufferWriteFeature(final OneDriveSession session, final Find finder, final AttributesFinder attributes) {
         super(session, finder, attributes);
+        this.session = session;
     }
 
     @Override
@@ -47,13 +51,18 @@ public class OneDriveBufferWriteFeature extends OneDriveWriteFeature implements 
             @Override
             protected void copy(final Buffer buffer) throws IOException {
                 try {
-                    // Write full content length of buffer in a single request
-                    final HttpResponseOutputStream<Void> proxy = OneDriveBufferWriteFeature.super.write(file,
-                            new TransferStatus(status).skip(0L).length(buffer.length()), callback);
-                    IOUtils.copy(new BufferInputStream(buffer), proxy);
-                    // Re-use buffer
-                    buffer.truncate(0L);
-                    proxy.close();
+                    if(buffer.length() == 0L) {
+                        new OneDriveTouchFeature(session).touch(file, status);
+                    }
+                    else {
+                        // Write full content length of buffer in a single request
+                        final HttpResponseOutputStream<Void> proxy = OneDriveBufferWriteFeature.super.write(file,
+                                new TransferStatus(status).skip(0L).length(buffer.length()), callback);
+                        IOUtils.copy(new BufferInputStream(buffer), proxy);
+                        // Re-use buffer
+                        buffer.truncate(0L);
+                        proxy.close();
+                    }
                 }
                 catch(BackgroundException e) {
                     throw new IOException(e);

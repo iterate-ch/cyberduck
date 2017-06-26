@@ -181,6 +181,8 @@ public interface Protocol extends Comparable<Protocol> {
      */
     String getProvider();
 
+    boolean isBundled();
+
     /**
      * @return Protocol family
      */

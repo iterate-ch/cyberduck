@@ -69,8 +69,7 @@ public class B2LargeUploadPartService {
                         new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()), startFileId, null);
                 for(B2FileInfoResponse upload : chunk.getFiles()) {
                     if(file.isDirectory()) {
-                        final Path parent = new Path(containerService.getContainer(file), upload.getFileName(),
-                                EnumSet.of(Path.Type.file, Path.Type.upload)).getParent();
+                        final Path parent = new Path(containerService.getContainer(file), upload.getFileName(), EnumSet.of(Path.Type.file)).getParent();
                         if(parent.equals(file)) {
                             uploads.add(upload);
                         }

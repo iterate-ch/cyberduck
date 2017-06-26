@@ -21,7 +21,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 
@@ -51,44 +50,41 @@ public class B2DeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
-            if(file.getType().contains(Path.Type.upload)) {
-                try {
-                    new B2LargeUploadPartService(session).delete(file.attributes().getVersionId());
-                }
-                catch(NotfoundException | InteroperabilityException e) {
-                    log.warn(String.format("Ignore failure %s canceling large upload for %s", e, file));
-                }
-            }
             callback.delete(file);
-            if(file.isDirectory()) {
-                // Delete /.bzEmpty if any
-                final String fileid;
-                try {
-                    fileid = new B2FileidProvider(session).getFileid(new Path(file, B2DirectoryFeature.PLACEHOLDER, EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
-                }
-                catch(NotfoundException e) {
-                    log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getDetail(), file));
-                    continue;
-                }
-                try {
-                    session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), fileid);
-                }
-                catch(B2ApiException e) {
-                    log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getMessage(), file));
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
+            if(file.getType().contains(Path.Type.upload)) {
+                new B2LargeUploadPartService(session).delete(file.attributes().getVersionId());
             }
-            else if(file.isFile()) {
-                try {
-                    session.getClient().deleteFileVersion(containerService.getKey(file), new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
+            else {
+                if(file.isDirectory()) {
+                    // Delete /.bzEmpty if any
+                    final String fileid;
+                    try {
+                        fileid = new B2FileidProvider(session).getFileid(new Path(file, B2DirectoryFeature.PLACEHOLDER, EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+                    }
+                    catch(NotfoundException e) {
+                        log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getDetail(), file));
+                        continue;
+                    }
+                    try {
+                        session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), fileid);
+                    }
+                    catch(B2ApiException e) {
+                        log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getMessage(), file));
+                    }
+                    catch(IOException e) {
+                        throw new DefaultIOExceptionMappingService().map(e);
+                    }
                 }
-                catch(B2ApiException e) {
-                    throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
+                else if(file.isFile()) {
+                    try {
+                        session.getClient().deleteFileVersion(containerService.getKey(file), new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
+                    }
+                    catch(B2ApiException e) {
+                        throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
+                    }
+                    catch(IOException e) {
+                        throw new DefaultIOExceptionMappingService().map(e);
+                    }
                 }
             }
         }

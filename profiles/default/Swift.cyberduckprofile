@@ -21,5 +21,7 @@
         <string>swift</string>
         <key>Vendor</key>
         <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
     </dict>
 </plist>

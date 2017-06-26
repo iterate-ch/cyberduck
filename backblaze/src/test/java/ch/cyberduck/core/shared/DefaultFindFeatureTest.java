@@ -15,32 +15,35 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2FileidProvider;
+import ch.cyberduck.core.b2.B2LargeUploadWriteFeature;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2Session;
 import ch.cyberduck.core.b2.B2TouchFeature;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
-
-import synapticloop.b2.response.B2StartLargeFileResponse;
 
 import static org.junit.Assert.assertTrue;
 
@@ -57,7 +60,7 @@ public class DefaultFindFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file, new TransferStatus());
         // Find without version id set in attributes
         new DefaultFindFeature(session).find(file);
@@ -75,12 +78,11 @@ public class DefaultFindFeatureTest {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-                new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
-                file.getName(), null, Collections.emptyMap());
+        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final StatusOutputStream<VersionId> out = new B2LargeUploadWriteFeature(session).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        IOUtils.copyLarge(new ByteArrayInputStream(RandomUtils.nextBytes(100)), out);
+        out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
-        session.getClient().cancelLargeFileUpload(startResponse.getFileId());
         session.close();
     }
 }

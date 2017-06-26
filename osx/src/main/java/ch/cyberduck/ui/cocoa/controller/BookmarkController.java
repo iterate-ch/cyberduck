@@ -33,20 +33,7 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -69,9 +56,6 @@ import org.rococoa.cocoa.foundation.NSSize;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.function.Predicate;
-
-import static ch.cyberduck.core.Profile.DEFAULT_PROVIDER;
 
 public class BookmarkController extends SheetController implements CollectionListener {
     private static final Logger log = Logger.getLogger(BookmarkController.class);
@@ -170,12 +154,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : protocols.find(new Predicate<Protocol>() {
-            @Override
-            public boolean test(final Protocol protocol) {
-                return protocol.isEnabled() && !StringUtils.equals(DEFAULT_PROVIDER, protocol.getProvider());
-            }
-        })) {
+        for(Protocol protocol : protocols.find(new ProfileProtocolPredicate())) {
             this.addProtocol(protocol);
         }
         this.addObserver(new BookmarkObserver() {
@@ -582,19 +561,4 @@ public class BookmarkController extends SheetController implements CollectionLis
         void change(final Host bookmark);
     }
 
-    private static class DefaultProtocolPredicate implements Predicate<Protocol> {
-        private final EnumSet<Protocol.Type> types;
-
-        public DefaultProtocolPredicate(final EnumSet<Protocol.Type> types) {
-            this.types = types;
-        }
-
-        @Override
-        public boolean test(final Protocol protocol) {
-            if(types.contains(protocol.getType())) {
-                return protocol.isEnabled() && StringUtils.equals(DEFAULT_PROVIDER, protocol.getProvider());
-            }
-            return false;
-        }
-    }
 }

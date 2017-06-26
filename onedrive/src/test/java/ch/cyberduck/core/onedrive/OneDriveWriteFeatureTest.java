@@ -67,6 +67,29 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
+    @Test
+    public void testWriteZeroLength() throws Exception {
+        final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);
+        final Path container = new OneDriveHomeFinderFeature(session).find();
+        final byte[] content = RandomUtils.nextBytes(0);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        assertEquals(content.length, IOUtils.copyLarge(in, out));
+        in.close();
+        out.close();
+        assertNull(out.getStatus());
+        assertTrue(new DefaultFindFeature(session).find(file));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
     @Test(expected = InteroperabilityException.class)
     public void testWriteUnknownLength() throws Exception {
         final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);

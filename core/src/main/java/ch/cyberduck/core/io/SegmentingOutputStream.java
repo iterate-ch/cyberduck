@@ -20,12 +20,18 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class SegmentingOutputStream extends ProxyOutputStream {
     private static final Logger log = Logger.getLogger(SegmentingOutputStream.class);
 
     private final Long threshold;
     private Long written = 0L;
+
+    /**
+     * Flag set to true if any bytes have been written to the proxy stream
+     */
+    private final AtomicBoolean after = new AtomicBoolean();
 
     private final OutputStream buffer;
     private final OutputStream proxy;
@@ -42,6 +48,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
         checkThreshold(1);
         buffer.write(b);
         written++;
+        this.afterWrite(1);
     }
 
     /**
@@ -56,6 +63,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
         buffer.write(b);
         written += b.length;
         this.checkThreshold(b.length);
+        this.afterWrite(b.length);
     }
 
 
@@ -73,6 +81,12 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
         buffer.write(b, off, len);
         written += len;
         this.checkThreshold(len);
+        this.afterWrite(len);
+    }
+
+    @Override
+    protected void afterWrite(final int n) throws IOException {
+        after.set(true);
     }
 
     protected void checkThreshold(final int count) throws IOException {
@@ -84,7 +98,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
 
     @Override
     public void close() throws IOException {
-        if(written > 0L) {
+        if(written > 0L || !after.get()) {
             this.copy();
             this.reset();
         }

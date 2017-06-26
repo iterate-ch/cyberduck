@@ -145,6 +145,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
 
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
+            if(0 == len) {
+                // Skip empty segment
+                return;
+            }
             try {
                 completed.add(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
                     @Override
@@ -197,7 +201,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                     log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
                     try {
-                        new S3TouchFeature(session).touch(file, overall);
+                        new S3TouchFeature(session).touch(file, overall.length(0L));
                     }
                     catch(BackgroundException e) {
                         throw new IOException(e);

@@ -48,7 +48,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -117,12 +116,8 @@ public class TransferTableDataSource extends ListDataSource {
             return collection;
         }
         final Collection<Transfer> filtered = new Collection<Transfer>(collection);
-        for(Iterator<Transfer> i = filtered.iterator(); i.hasNext(); ) {
-            if(!filter.accept(i.next())) {
-                // Temporarily remove the transfer from the collection copy
-                i.remove();
-            }
-        }
+        // Temporarily remove the transfer from the collection copy
+        filtered.removeIf(transfer -> !filter.accept(transfer));
         return filtered;
     }
 

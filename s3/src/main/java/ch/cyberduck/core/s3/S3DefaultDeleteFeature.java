@@ -55,31 +55,32 @@ public class S3DefaultDeleteFeature implements Delete {
         for(Path file : files) {
             if(containerService.isContainer(file)) {
                 containers.add(file);
-                continue;
             }
-            if(file.getType().contains(Path.Type.upload)) {
+            else {
                 callback.delete(file);
-                // In-progress multipart upload
-                try {
-                    multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
-                            containerService.getContainer(file).getName(), containerService.getKey(file)));
+                if(file.getType().contains(Path.Type.upload)) {
+                    // In-progress multipart upload
+                    try {
+                        multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
+                                containerService.getContainer(file).getName(), containerService.getKey(file)));
+                    }
+                    catch(NotfoundException ignored) {
+                        log.warn(String.format("Ignore failure deleting multipart upload %s", file));
+                    }
                 }
-                catch(NotfoundException ignored) {
-                    log.warn(String.format("Ignore failure deleting multipart upload %s", file));
-                }
-                continue;
-            }
-            callback.delete(file);
-            try {
-                // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
-            }
-            catch(ServiceException e) {
-                try {
-                    throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
-                catch(NotfoundException ignored) {
-                    log.warn(String.format("Ignore missing placeholder object %s", file));
+                else {
+                    try {
+                        // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+                        session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
+                    }
+                    catch(ServiceException e) {
+                        try {
+                            throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
+                        }
+                        catch(NotfoundException ignored) {
+                            log.warn(String.format("Ignore missing placeholder object %s", file));
+                        }
+                    }
                 }
             }
         }
