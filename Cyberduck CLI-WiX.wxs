@@ -167,7 +167,7 @@
         <File Source="$(var.CLI.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="msvcr100">
-        <File Source="$(var.cyberduck.TargetDir)/msvcr100.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLI.TargetDir)/msvcr100.dll" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
 
