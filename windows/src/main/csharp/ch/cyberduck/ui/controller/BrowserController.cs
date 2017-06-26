@@ -505,7 +505,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateOpenInTerminal()
         {
-            return IsMounted() && Session is SFTPSession;
+            return IsMounted() && Session.getHost().getProtocol().getType() == Protocol.Type.sftp && TerminalServiceFactory.get() != null;
         }
 
         private void View_OpenInTerminal()
