@@ -145,6 +145,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
 
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
+            if(0 == len) {
+                // Skip empty segment
+                return;
+            }
             try {
                 completed.add(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
                     @Override
