@@ -15,8 +15,6 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Protocol;
-
 import java.util.EnumSet;
 import java.util.function.Predicate;
 
