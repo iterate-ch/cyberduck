@@ -33,20 +33,7 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -578,21 +565,5 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     public interface BookmarkObserver {
         void change(final Host bookmark);
-    }
-
-    private static class DefaultProtocolPredicate implements Predicate<Protocol> {
-        private final EnumSet<Protocol.Type> types;
-
-        public DefaultProtocolPredicate(final EnumSet<Protocol.Type> types) {
-            this.types = types;
-        }
-
-        @Override
-        public boolean test(final Protocol protocol) {
-            if(types.contains(protocol.getType())) {
-                return protocol.isBundled();
-            }
-            return false;
-        }
     }
 }
