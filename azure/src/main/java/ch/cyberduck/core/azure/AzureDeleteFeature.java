@@ -55,20 +55,21 @@ public class AzureDeleteFeature implements Delete {
         for(Path file : files) {
             if(containerService.isContainer(file)) {
                 containers.add(file);
-                continue;
             }
-            callback.delete(file);
-            try {
-                final BlobRequestOptions options = new BlobRequestOptions();
-                session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlockBlobReference(containerService.getKey(file)).delete(
-                        DeleteSnapshotsOption.INCLUDE_SNAPSHOTS, AccessCondition.generateEmptyCondition(), options, context);
-            }
-            catch(StorageException e) {
-                throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
-            }
-            catch(URISyntaxException e) {
-                throw new NotfoundException(e.getMessage(), e);
+            else {
+                callback.delete(file);
+                try {
+                    final BlobRequestOptions options = new BlobRequestOptions();
+                    session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                            .getBlockBlobReference(containerService.getKey(file)).delete(
+                            DeleteSnapshotsOption.INCLUDE_SNAPSHOTS, AccessCondition.generateEmptyCondition(), options, context);
+                }
+                catch(StorageException e) {
+                    throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
+                }
+                catch(URISyntaxException e) {
+                    throw new NotfoundException(e.getMessage(), e);
+                }
             }
         }
         for(Path file : containers) {

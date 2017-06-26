@@ -81,17 +81,18 @@ public class S3MultipleDeleteFeature implements Delete {
                 catch(NotfoundException ignored) {
                     log.warn(String.format("Ignore failure deleting multipart upload %s", file));
                 }
-                continue;
-            }
-            final Path container = containerService.getContainer(file);
-            final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
-            // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-            keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
-            if(map.containsKey(container)) {
-                map.get(container).addAll(keys);
             }
             else {
-                map.put(container, keys);
+                final Path container = containerService.getContainer(file);
+                final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
+                // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+                keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
+                if(map.containsKey(container)) {
+                    map.get(container).addAll(keys);
+                }
+                else {
+                    map.put(container, keys);
+                }
             }
         }
         // Iterate over all containers and delete list of keys
