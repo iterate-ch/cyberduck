@@ -204,28 +204,30 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     log.warn(String.format("Skip double close of stream %s", this));
                     return;
                 }
-                if(completed.isEmpty()) {
+                if(completed.isEmpty() && null == version) {
+                    // No single file upload and zero parts
                     try {
                         version = new VersionId(new B2TouchFeature(session).touch(file, overall.length(0L)).attributes().getVersionId());
                     }
                     catch(BackgroundException e) {
                         throw new IOException(e);
                     }
-                    return;
                 }
-                completed.sort(new Comparator<B2UploadPartResponse>() {
-                    @Override
-                    public int compare(final B2UploadPartResponse o1, final B2UploadPartResponse o2) {
-                        return o1.getPartNumber().compareTo(o2.getPartNumber());
+                else {
+                    completed.sort(new Comparator<B2UploadPartResponse>() {
+                        @Override
+                        public int compare(final B2UploadPartResponse o1, final B2UploadPartResponse o2) {
+                            return o1.getPartNumber().compareTo(o2.getPartNumber());
+                        }
+                    });
+                    final List<String> checksums = new ArrayList<String>();
+                    for(B2UploadPartResponse part : completed) {
+                        checksums.add(part.getContentSha1());
                     }
-                });
-                final List<String> checksums = new ArrayList<String>();
-                for(B2UploadPartResponse part : completed) {
-                    checksums.add(part.getContentSha1());
-                }
-                session.getClient().finishLargeFileUpload(version.id, checksums.toArray(new String[checksums.size()]));
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
+                    session.getClient().finishLargeFileUpload(version.id, checksums.toArray(new String[checksums.size()]));
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
+                    }
                 }
             }
             catch(B2ApiException e) {
