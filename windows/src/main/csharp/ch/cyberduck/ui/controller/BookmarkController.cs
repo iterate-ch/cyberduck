@@ -525,7 +525,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.getProvider()));
             }
-            foreach (Protocol protocol in p.find(new UnbundledProtocolPredicate(null)).toArray(new Protocol[] { }))
+            foreach (Protocol protocol in p.find(new ProfileProtocolPredicate()).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.getProvider()));
@@ -630,18 +630,6 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 View.SelectedTimezone = _host.getTimezone().getID();
-            }
-        }
-
-        private class UnbundledProtocolPredicate : DefaultProtocolPredicate
-        {
-            public UnbundledProtocolPredicate(EnumSet types) : base(types)
-            {
-            }
-
-            public override bool test(Protocol protocol)
-            {
-                return protocol.isEnabled() && !protocol.isBundled();
             }
         }
 

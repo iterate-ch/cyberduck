@@ -56,7 +56,6 @@ import org.rococoa.cocoa.foundation.NSSize;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class BookmarkController extends SheetController implements CollectionListener {
     private static final Logger log = Logger.getLogger(BookmarkController.class);
@@ -155,12 +154,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : protocols.find(new Predicate<Protocol>() {
-            @Override
-            public boolean test(final Protocol protocol) {
-                return protocol.isEnabled() && !protocol.isBundled();
-            }
-        })) {
+        for(Protocol protocol : protocols.find(new ProfileProtocolPredicate())) {
             this.addProtocol(protocol);
         }
         this.addObserver(new BookmarkObserver() {
@@ -566,4 +560,5 @@ public class BookmarkController extends SheetController implements CollectionLis
     public interface BookmarkObserver {
         void change(final Host bookmark);
     }
+
 }
