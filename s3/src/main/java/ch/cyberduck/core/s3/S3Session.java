@@ -297,7 +297,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3DirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
         }
         if(type == Move.class) {
-            return (T) new S3MoveFeature(this, new S3AccessControlListFeature(this));
+            return (T) new S3MoveFeature(this);
         }
         if(type == Copy.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
