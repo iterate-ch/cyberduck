@@ -58,7 +58,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
      * A split smaller than 5M is not allowed
      */
     private final Long partsize
-            = PreferencesFactory.get().getLong("s3.upload.multipart.size");
+            = PreferencesFactory.get().getLong("s3.copy.multipart.size");
 
     public S3MultipartCopyFeature(final S3Session session) {
         this(session, new S3AccessControlListFeature(session));

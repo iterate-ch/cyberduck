@@ -29,21 +29,27 @@ public class S3ThresholdCopyFeature extends S3CopyFeature {
             = PreferencesFactory.get();
 
     private final S3Session session;
+    private final S3AccessControlListFeature accessControlListFeature;
 
     private final Long multipartThreshold
             = preferences.getLong("s3.upload.multipart.required.threshold");
 
     public S3ThresholdCopyFeature(final S3Session session) {
-        super(session);
+        this(session, new S3AccessControlListFeature(session));
+    }
+
+    public S3ThresholdCopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
+        super(session, accessControlListFeature);
         this.session = session;
+        this.accessControlListFeature = accessControlListFeature;
     }
 
     public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
         if(status.getLength() > multipartThreshold) {
-            new S3MultipartCopyFeature(session).copy(source, copy, status);
+            new S3MultipartCopyFeature(session, accessControlListFeature).copy(source, copy, status);
         }
         else {
-            new S3CopyFeature(session).copy(source, copy, status);
+            new S3CopyFeature(session, accessControlListFeature).copy(source, copy, status);
         }
     }
 }
