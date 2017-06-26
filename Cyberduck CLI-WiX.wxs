@@ -166,6 +166,9 @@
       <Component Id="mscapi" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
         <File Source="$(var.CLI.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="msvcr100">
+        <File Source="$(var.cyberduck.TargetDir)/msvcr100.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="profiles" Directory="PROFILES">
