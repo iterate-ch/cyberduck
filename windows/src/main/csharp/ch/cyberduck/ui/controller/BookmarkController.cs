@@ -35,9 +35,11 @@ using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using java.util;
 using org.apache.log4j;
 using StructureMap;
 using Path = System.IO.Path;
+using Timer = System.Threading.Timer;
 using TimeZone = java.util.TimeZone;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -63,9 +65,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Host _host;
         private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
         protected readonly LoginOptions _options;
-        protected readonly LoginInputValidator _validator;
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
+        protected readonly LoginInputValidator _validator;
 
         private BookmarkController(T view, Host host, Credentials credentials, LoginInputValidator validator,
             LoginOptions options) : base(validator)
@@ -89,7 +91,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        protected BookmarkController(Host host, Credentials credentials) : this(host, credentials, 
+        protected BookmarkController(Host host, Credentials credentials) : this(host, credentials,
             new LoginOptions(host.getProtocol()))
         {
         }
@@ -496,9 +498,37 @@ namespace Ch.Cyberduck.Ui.Controller
         private void InitProtocols()
         {
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
-            foreach (Protocol p in ProtocolFactory.get().find().toArray(new Protocol[] { }))
+            ProtocolFactory p = ProtocolFactory.get();
+            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav))).toArray(new Protocol[] { }))
             {
-                protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getProvider()));
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.getProvider()));
+            }
+            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2,
+                    Protocol.Type.googlestorage))).toArray(new Protocol[] { }))
+            {
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.getProvider()));
+            }
+            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
+                    EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))
+                .toArray(new Protocol[] { }))
+            {
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.getProvider()));
+            }
+            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.file))).toArray(new Protocol[] { }))
+            {
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.getProvider()));
+            }
+            foreach (Protocol protocol in p.find(new ProfileProtocolPredicate()).toArray(new Protocol[] { }))
+            {
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.getProvider()));
             }
             View.PopulateProtocols(protocols);
         }
