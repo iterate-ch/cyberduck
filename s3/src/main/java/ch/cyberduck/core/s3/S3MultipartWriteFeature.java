@@ -201,7 +201,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                     log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
                     try {
-                        new S3TouchFeature(session).touch(file, overall);
+                        new S3TouchFeature(session).touch(file, overall.length(0L));
                     }
                     catch(BackgroundException e) {
                         throw new IOException(e);
