@@ -138,6 +138,10 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
 
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
+            if(0 == len) {
+                // Skip empty segment
+                return;
+            }
             try {
                 if(0 == partNumber && len < PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
@@ -201,6 +205,12 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     return;
                 }
                 if(completed.isEmpty()) {
+                    try {
+                        version = new VersionId(new B2TouchFeature(session).touch(file, overall.length(0L)).attributes().getVersionId());
+                    }
+                    catch(BackgroundException e) {
+                        throw new IOException(e);
+                    }
                     return;
                 }
                 completed.sort(new Comparator<B2UploadPartResponse>() {
