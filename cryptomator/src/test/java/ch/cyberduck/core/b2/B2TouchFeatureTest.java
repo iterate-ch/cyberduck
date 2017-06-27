@@ -46,6 +46,7 @@ import java.util.UUID;
 
 import synapticloop.b2.response.BaseB2Response;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -67,6 +68,7 @@ public class B2TouchFeatureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoTouchFeature<BaseB2Response>(session, new B2TouchFeature(session), new B2WriteFeature(session), cryptomator).touch(
                 new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(test.attributes().getVersionId());
         assertTrue(new CryptoFindFeature(session, new B2FindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -88,6 +90,7 @@ public class B2TouchFeatureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new B2SingleUploadService(new B2WriteFeature(session))), new B2WriteFeature(session), cryptomator).touch(
                 new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(test.attributes().getVersionId());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
