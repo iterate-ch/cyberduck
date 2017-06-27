@@ -84,7 +84,6 @@ public class CryptoDirectoryProvider {
         }
         if(new SimplePathPredicate(directory).test(home) || directory.isChild(home)) {
             final PathAttributes attributes = new PathAttributes(directory.attributes());
-            attributes.setVersionId(null);
             // Remember random directory id for use in vault
             final String id = this.toDirectoryId(session, directory, directoryId);
             if(log.isDebugEnabled()) {
