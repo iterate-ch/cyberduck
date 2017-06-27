@@ -338,6 +338,7 @@ public class CryptoVault implements Vault {
             attributes.setVersionId(null);
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());
             type.remove(Path.Type.directory);
+            type.remove(Path.Type.decrypted);
             type.add(Path.Type.file);
             type.add(Path.Type.encrypted);
             encrypted = new Path(parent, filename, type, attributes);
