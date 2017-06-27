@@ -40,6 +40,7 @@ import java.util.EnumSet;
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
+import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2DirectoryFeature implements Directory<BaseB2Response> {
@@ -84,7 +85,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
                 final BaseB2Response reply = out.getStatus();
-                return new Path(folder.getParent(), folder.getName(), type, new PathAttributes(folder.attributes()));
+                return new Path(folder.getParent(), folder.getName(), type, new PathAttributes(folder.attributes()).withVersionId(((B2FileResponse) reply).getFileId()));
             }
         }
         catch(B2ApiException e) {
