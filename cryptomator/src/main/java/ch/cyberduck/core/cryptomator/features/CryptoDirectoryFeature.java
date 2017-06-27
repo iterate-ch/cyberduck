@@ -68,7 +68,10 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
-        return vault.decrypt(session, vault.encrypt(session, proxy.mkdir(encrypt, region, status), true));
+        final Path target = proxy.mkdir(encrypt, region, status);
+        final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));
+        decrypt.attributes().withVersionId(target.attributes().getVersionId());
+        return decrypt;
     }
 
     @Override
