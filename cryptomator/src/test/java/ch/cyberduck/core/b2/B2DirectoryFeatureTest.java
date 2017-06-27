@@ -45,6 +45,7 @@ import java.util.UUID;
 
 import synapticloop.b2.response.BaseB2Response;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -67,6 +68,7 @@ public class B2DirectoryFeatureTest {
         final Path test = new CryptoDirectoryFeature<BaseB2Response>(session, new B2DirectoryFeature(session), new B2WriteFeature(session), cryptomator).mkdir(
                 new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
+        assertNotNull(test.attributes().getVersionId());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
