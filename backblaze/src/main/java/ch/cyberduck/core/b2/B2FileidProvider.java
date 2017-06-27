@@ -69,15 +69,12 @@ public class B2FileidProvider implements IdProvider {
             }
             return found.attributes().getVersionId();
         }
-        if(file.isDirectory()) {
-            // Placeholder does not exist
-            return null;
-        }
         try {
             final B2ListFilesResponse response = session.getClient().listFileNames(
-                    this.getFileid(containerService.getContainer(file), listener), containerService.getKey(file), 2);
+                    this.getFileid(containerService.getContainer(file), listener),
+                    file.isPlaceholder() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file), 2);
             for(B2FileInfoResponse info : response.getFiles()) {
-                if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
+                if(StringUtils.equals(file.isPlaceholder() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file), info.getFileName())) {
                     return info.getFileId();
                 }
             }
