@@ -37,8 +37,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class B2DirectoryFeatureTest {
@@ -109,6 +108,7 @@ public class B2DirectoryFeatureTest {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new B2DirectoryFeature(session, new B2WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
+        assertNotNull(test.attributes().getVersionId());
         assertTrue(new B2FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
