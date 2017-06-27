@@ -66,7 +66,7 @@ public class SingleTransferWorkerTest {
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[62768];
+        final byte[] content = new byte[98305];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
@@ -95,6 +95,7 @@ public class SingleTransferWorkerTest {
                         protected void afterWrite(final int n) throws IOException {
                             super.afterWrite(n);
                             if(this.getByteCount() >= 42768L) {
+                                assertTrue(this.getByteCount() < content.length);
                                 // Buffer size
                                 assertEquals(32768L, status.getOffset());
                                 failed.set(true);
@@ -143,9 +144,9 @@ public class SingleTransferWorkerTest {
 
         }.run(session, session));
         local.delete();
-        assertEquals(62768L, counter.getSent(), 0L);
+        assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        assertEquals(62768L, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
