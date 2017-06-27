@@ -335,7 +335,6 @@ public class CryptoVault implements Vault {
             final PathAttributes attributes = new PathAttributes(file.attributes());
             // Translate file size
             attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
-            attributes.setVersionId(null);
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());
             type.remove(Path.Type.directory);
             type.remove(Path.Type.decrypted);
@@ -385,7 +384,6 @@ public class CryptoVault implements Vault {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
-                attributes.setVersionId(null);
                 if(inflated.getName().startsWith(DIR_PREFIX)) {
                     final Permission permission = attributes.getPermission();
                     permission.setUser(permission.getUser().or(Permission.Action.execute));
