@@ -128,6 +128,7 @@ public class OneDriveWriteFeature implements Write<Void> {
         public void write(final byte[] b, final int off, final int len) throws IOException {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             if(content.length == 0) {
+                upload.cancelUpload();
                 try {
                     new OneDriveTouchFeature(session).touch(file, status);
                 }
