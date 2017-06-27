@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -41,7 +42,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private Write writer;
+    private Write<StorageObject> writer;
 
     public S3TouchFeature(final S3Session session) {
         this.session = session;
@@ -67,7 +68,8 @@ public class S3TouchFeature implements Touch<StorageObject> {
             status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
         }
         status.setLength(0L);
-        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
+        final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
+        new DefaultStreamCloser().close(out);
         return file;
     }
 
@@ -78,7 +80,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
     }
 
     @Override
-    public Touch<StorageObject> withWriter(final Write writer) {
+    public Touch<StorageObject> withWriter(final Write<StorageObject> writer) {
         this.writer = writer;
         return this;
     }
