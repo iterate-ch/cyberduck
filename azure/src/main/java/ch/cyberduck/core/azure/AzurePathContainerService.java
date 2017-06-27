@@ -26,7 +26,7 @@ public class AzurePathContainerService extends PathContainerService {
     @Override
     public String getKey(final Path file) {
         final String key = super.getKey(file);
-        if(file.isPlaceholder()) {
+        if(file.isDirectory() && file.isPlaceholder()) {
             return key.concat(String.valueOf(Path.DELIMITER));
         }
         return key;

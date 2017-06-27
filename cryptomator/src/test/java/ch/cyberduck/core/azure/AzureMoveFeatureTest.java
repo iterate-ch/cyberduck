@@ -75,7 +75,7 @@ public class AzureMoveFeatureTest {
         assertFalse(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(file));
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(fileRenamed));
         // rename folder
-        final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(folderRenamed));

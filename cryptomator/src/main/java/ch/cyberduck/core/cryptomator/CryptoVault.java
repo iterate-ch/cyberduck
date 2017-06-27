@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
@@ -102,8 +103,9 @@ public class CryptoVault implements Vault {
         this.home = home;
         this.keychain = keychain;
         // New vault home with vault flag set for internal use
-        final Path vault = new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault), home.attributes());
-        vault.getType().addAll(home.getType());
+        final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(home.getType());
+        type.add(Path.Type.vault);
+        final Path vault = new Path(home.getAbsolute(), type, home.attributes());
         this.filenameProvider = new CryptoFilenameProvider(vault);
         this.directoryProvider = new CryptoDirectoryProvider(vault, this);
     }
@@ -306,11 +308,17 @@ public class CryptoVault implements Vault {
 
     public Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
         if(file.getType().contains(Path.Type.encrypted)) {
-            if(file.attributes().getDecrypted() == null) {
+            final Path decrypted = file.attributes().getDecrypted();
+            if(decrypted == null) {
                 log.warn(String.format("Skip file %s because it is already marked as an encrypted path", file));
                 return file;
             }
-            return this.encrypt(session, file.attributes().getDecrypted(), directoryId, metadata);
+            final EnumSet<Path.Type> type = decrypted.getType();
+            type.addAll(file.getType());
+            type.add(Path.Type.decrypted);
+            type.remove(Path.Type.encrypted);
+            decrypted.setType(type);
+            return this.encrypt(session, decrypted, directoryId, metadata);
         }
         final Path encrypted;
         if(file.isFile() || metadata) {
@@ -324,11 +332,15 @@ public class CryptoVault implements Vault {
             }
             final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            final PathAttributes attributes = new PathAttributes(file.attributes());
+            final PathAttributes attributes = new PathAttributes(file.attributes()).withVersionId(null);
             // Translate file size
             attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
-            attributes.setVersionId(null);
-            encrypted = new Path(parent, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), attributes);
+            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());
+            type.remove(Path.Type.directory);
+            type.remove(Path.Type.decrypted);
+            type.add(Path.Type.file);
+            type.add(Path.Type.encrypted);
+            encrypted = new Path(parent, filename, type, attributes);
         }
         else {
             if(file.getType().contains(Path.Type.vault)) {
@@ -349,11 +361,16 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         if(file.getType().contains(Path.Type.decrypted)) {
-            if(file.attributes().getEncrypted() == null) {
+            final Path encrypted = file.attributes().getEncrypted();
+            if(encrypted == null) {
                 log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
                 return file;
             }
-            return this.decrypt(session, file.attributes().getEncrypted());
+            final EnumSet<Path.Type> type = encrypted.getType();
+            type.addAll(file.getType());
+            type.remove(Path.Type.decrypted);
+            encrypted.setType(type);
+            return this.decrypt(session, encrypted);
         }
         if(file.getType().contains(Path.Type.vault)) {
             log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
@@ -367,7 +384,6 @@ public class CryptoVault implements Vault {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
-                attributes.setVersionId(null);
                 if(inflated.getName().startsWith(DIR_PREFIX)) {
                     final Permission permission = attributes.getPermission();
                     permission.setUser(permission.getUser().or(Permission.Action.execute));
@@ -382,8 +398,12 @@ public class CryptoVault implements Vault {
                 attributes.setEncrypted(file);
                 // Add reference for vault
                 attributes.setVault(home);
-                return new Path(file.getParent().attributes().getDecrypted(), cleartextFilename,
-                        EnumSet.of(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file, Path.Type.decrypted), attributes);
+                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());
+                type.remove(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.file : Path.Type.directory);
+                type.add(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file);
+                type.remove(Path.Type.encrypted);
+                type.add(Path.Type.decrypted);
+                return new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
             }
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException(
@@ -429,11 +449,9 @@ public class CryptoVault implements Vault {
         final String fileName = file.getName();
         if(filenameProvider.isDeflated(fileName)) {
             final String filename = filenameProvider.inflate(session, fileName);
-            return new Path(file.getParent(), filename, file.getType(), file.attributes());
+            return new Path(file.getParent(), filename, EnumSet.of(Path.Type.file), file.attributes());
         }
-        else {
-            return file;
-        }
+        return file;
     }
 
     public Path getHome() {
