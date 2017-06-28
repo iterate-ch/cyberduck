@@ -33,6 +33,8 @@ import synapticloop.b2.exception.B2ApiException;
 public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = Logger.getLogger(B2ErrorResponseInterceptor.class);
 
+    private static final int MAX_RETRIES = 1;
+
     private final B2Session session;
 
     private String accountId = StringUtils.EMPTY;
@@ -46,25 +48,27 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
-                final B2ApiException failure;
-                try {
-                    EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                    failure = new B2ApiException(EntityUtils.toString(response.getEntity()), new HttpResponseException(
-                            response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
-                }
-                catch(IOException e) {
-                    log.warn(String.format("Failure parsing response entity from %s", response));
-                    return false;
-                }
-                if("expired_auth_token".equalsIgnoreCase(failure.getCode())) {
-                    //  The authorization token is valid for at most 24 hours.
+                if(executionCount <= MAX_RETRIES) {
+                    final B2ApiException failure;
                     try {
-                        session.getClient().authenticate(accountId, applicationKey);
-                        return true;
+                        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+                        failure = new B2ApiException(EntityUtils.toString(response.getEntity()), new HttpResponseException(
+                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                     }
-                    catch(B2ApiException | IOException e) {
-                        log.warn(String.format("Attempt to renew expired auth token failed. %s", e.getMessage()));
+                    catch(IOException e) {
+                        log.warn(String.format("Failure parsing response entity from %s", response));
                         return false;
+                    }
+                    if("expired_auth_token".equalsIgnoreCase(failure.getCode())) {
+                        //  The authorization token is valid for at most 24 hours.
+                        try {
+                            session.getClient().authenticate(accountId, applicationKey);
+                            return true;
+                        }
+                        catch(B2ApiException | IOException e) {
+                            log.warn(String.format("Attempt to renew expired auth token failed. %s", e.getMessage()));
+                            return false;
+                        }
                     }
                 }
         }
