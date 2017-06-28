@@ -45,9 +45,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             bool r = false;
             _controller.Invoke(delegate
                 {
-                    String provider = host.getProtocol().getProvider();
-                    string footer = String.Format("{0}/{1}", PreferencesFactory.get().getProperty("website.help"),
-                                                  provider);
+                    string footer = new DefaultProviderHelpService().help(host.getProtocol());
                     string title = LocaleFactory.localizedString("Error");
                     string message = failure.getMessage() ?? LocaleFactory.localizedString("Unknown");
                     string detail = failure.getDetail() ?? LocaleFactory.localizedString("Unknown");
