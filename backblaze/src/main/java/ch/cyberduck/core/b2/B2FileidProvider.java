@@ -81,7 +81,7 @@ public class B2FileidProvider implements IdProvider {
             throw new NotfoundException(file.getAbsolute());
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map(e);
+            throw new B2ExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

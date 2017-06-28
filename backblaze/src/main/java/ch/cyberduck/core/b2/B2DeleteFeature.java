@@ -80,7 +80,7 @@ public class B2DeleteFeature implements Delete {
                         session.getClient().deleteFileVersion(containerService.getKey(file), new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
                     }
                     catch(B2ApiException e) {
-                        throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
+                        throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
                     }
                     catch(IOException e) {
                         throw new DefaultIOExceptionMappingService().map(e);
@@ -97,7 +97,7 @@ public class B2DeleteFeature implements Delete {
                 }
             }
             catch(B2ApiException e) {
-                throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
+                throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);

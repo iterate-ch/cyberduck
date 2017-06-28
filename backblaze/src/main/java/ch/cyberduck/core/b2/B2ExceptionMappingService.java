@@ -16,10 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -38,28 +34,11 @@ import synapticloop.b2.exception.B2ApiException;
 public class B2ExceptionMappingService extends AbstractExceptionMappingService<B2ApiException> {
     private static final Logger log = Logger.getLogger(B2ExceptionMappingService.class);
 
-    private final B2Session session;
-
-    public B2ExceptionMappingService(final B2Session session) {
-        this.session = session;
-    }
-
     @Override
     public BackgroundException map(final B2ApiException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         switch(e.getStatus()) {
-            case HttpStatus.SC_UNAUTHORIZED:
-                // 401 Unauthorized.
-                if("expired_auth_token".equalsIgnoreCase(e.getCode())) {
-                    try {
-                        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-                        return new RetriableAccessDeniedException(buffer.toString());
-                    }
-                    catch(BackgroundException f) {
-                        log.warn(String.format("Attempt to renew expired auth token failed. %s", f.getDetail()));
-                    }
-                }
             case HttpStatus.SC_FORBIDDEN:
                 if("cap_exceeded".equalsIgnoreCase(e.getCode())
                         || "storage_cap_exceeded".equalsIgnoreCase(e.getCode())
