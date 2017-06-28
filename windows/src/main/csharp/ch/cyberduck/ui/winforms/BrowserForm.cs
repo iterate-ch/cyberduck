@@ -2302,7 +2302,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (Host bookmark in bookmarks)
             {
                 ToolStripItem item = new ToolStripMenuItem(BookmarkNameProvider.toString(bookmark),
-                    icons[bookmark.getProtocol().getProvider()]);
+                    icons[bookmark.getProtocol().getIdentifier()]);
                 item.Tag = bookmark;
                 item.Click += (o, args) => ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
                 items.Add(item);
@@ -2323,7 +2323,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 foreach (Host h in history)
                 {
                     ToolStripItem item = new ToolStripMenuItem(BookmarkNameProvider.toString(h),
-                        icons[h.getProtocol().getProvider()]);
+                        icons[h.getProtocol().getIdentifier()]);
                     item.Tag = h;
                     item.Click += (o, args) => ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
                     items.Add(item);
@@ -2460,7 +2460,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     i.Tag = h;
                     i.Click += (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(h));
                     _form.menuItem64.MenuItems.Add(_bookmarkStartPosition + pos, i);
-                    _form.vistaMenu1.SetImage(i, _icons[h.getProtocol().getProvider()]);
+                    _form.vistaMenu1.SetImage(i, _icons[h.getProtocol().getIdentifier()]);
                 }));
             }
 
@@ -2474,7 +2474,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     i.Tag = h;
                     i.Click += (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(h));
                     _form.menuItem64.MenuItems.Add(_bookmarkStartPosition + pos, i);
-                    _form.vistaMenu1.SetImage(i, _icons[h.getProtocol().getProvider()]);
+                    _form.vistaMenu1.SetImage(i, _icons[h.getProtocol().getIdentifier()]);
 
 
                     foreach (MenuItem item in _form.menuItem64.MenuItems)
@@ -2498,7 +2498,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         {
                             Host h = (Host) obj;
                             item.Text = BookmarkNameProvider.toString(h);
-                            _form.vistaMenu1.SetImage(item, _icons[h.getProtocol().getProvider()]);
+                            _form.vistaMenu1.SetImage(item, _icons[h.getProtocol().getIdentifier()]);
                             break;
                         }
                     }
@@ -2536,7 +2536,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     foreach (MenuItem item in items)
                     {
                         if (null != item.Tag)
-                            _form.vistaMenu1.SetImage(item, _icons[((Host) item.Tag).getProtocol().getProvider()]);
+                            _form.vistaMenu1.SetImage(item, _icons[((Host) item.Tag).getProtocol().getIdentifier()]);
                     }
                     _form.Menu = _form.mainMenu;
                     _form.ResumeLayout();
@@ -2929,7 +2929,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         i.Tag = h;
                         i.Click += (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(h));
                         _menu.MenuItems.Add(pos, i);
-                        _form.vistaMenu1.SetImage(i, _icons[h.getProtocol().getProvider()]);
+                        _form.vistaMenu1.SetImage(i, _icons[h.getProtocol().getIdentifier()]);
                     }
                 }));
             }
@@ -2995,7 +2995,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     foreach (MenuItem item in items)
                     {
                         if (null != item.Tag)
-                            _form.vistaMenu1.SetImage(item, _icons[((Host) item.Tag).getProtocol().getProvider()]);
+                            _form.vistaMenu1.SetImage(item, _icons[((Host) item.Tag).getProtocol().getIdentifier()]);
                     }
                 }
                 else
