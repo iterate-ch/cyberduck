@@ -85,7 +85,7 @@ public class B2SearchFeature implements Search {
             return list;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map(e);
+            throw new B2ExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

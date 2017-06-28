@@ -66,7 +66,7 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
                         bucketType);
             }
             catch(B2ApiException e) {
-                throw new B2ExceptionMappingService(session).map("Cannot change permissions of {0}", e, file);
+                throw new B2ExceptionMappingService().map("Cannot change permissions of {0}", e, file);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);

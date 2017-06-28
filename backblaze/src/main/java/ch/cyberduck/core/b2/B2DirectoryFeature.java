@@ -85,7 +85,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
             }
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Cannot create folder {0}", e, folder);
+            throw new B2ExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

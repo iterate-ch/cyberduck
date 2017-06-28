@@ -26,8 +26,6 @@ import org.apache.log4j.Logger;
 public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = Logger.getLogger(OAuth2ErrorResponseInterceptor.class);
 
-    private static final int MAX_RETRIES = 1;
-
     private final OAuth2RequestInterceptor service;
 
     public OAuth2ErrorResponseInterceptor(final OAuth2RequestInterceptor service) {
@@ -38,18 +36,15 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
-                if(executionCount <= MAX_RETRIES) {
-                    try {
-                        log.info(String.format("Attempt to refresh OAuth tokens for failure %s", response));
-                        service.setTokens(service.refresh());
-                        return true;
-                    }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Failure refreshing OAuth tokens. %s", e.getDetail()));
-                        return false;
-                    }
+                try {
+                    log.info(String.format("Attempt to refresh OAuth tokens for failure %s", response));
+                    service.setTokens(service.refresh());
+                    return true;
                 }
-                break;
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure refreshing OAuth tokens. %s", e.getDetail()));
+                    return false;
+                }
         }
         return false;
     }
