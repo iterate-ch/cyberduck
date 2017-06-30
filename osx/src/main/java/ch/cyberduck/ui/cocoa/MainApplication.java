@@ -38,6 +38,7 @@ import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
@@ -88,7 +89,8 @@ public final class MainApplication {
                     new DriveProtocol(),
                     new HubicProtocol(),
                     new OneDriveProtocol(),
-                    new LocalProtocol()
+                    new LocalProtocol(),
+                    new SDSProtocol()
             );
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()
