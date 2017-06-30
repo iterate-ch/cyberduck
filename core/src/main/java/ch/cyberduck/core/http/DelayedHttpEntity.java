@@ -34,6 +34,10 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     private final CountDownLatch entry;
     private final CountDownLatch exit = new CountDownLatch(1);
 
+    public DelayedHttpEntity() {
+        this(new CountDownLatch(1));
+    }
+
     /**
      * @param entry Signal when stream is ready
      */
@@ -118,5 +122,12 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
 
     public boolean isStreaming() {
         return !consumed;
+    }
+
+    /**
+     * @return Set when output stream is ready
+     */
+    public CountDownLatch getEntry() {
+        return entry;
     }
 }
