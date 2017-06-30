@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -40,6 +41,7 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -62,6 +64,7 @@ import java.util.EnumSet;
 public class SDSSession extends HttpSession<ApiClient> {
 
     private String token;
+    private Long userId;
 
     final static String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
 
@@ -123,6 +126,24 @@ public class SDSSession extends HttpSession<ApiClient> {
         }
     }
 
+    /**
+     * Lazy loading of currrent user's id
+     *
+     * @return User id of the current logged in user
+     * @throws BackgroundException
+     */
+    public Long getUserId() throws BackgroundException {
+        if (userId == null){
+            try {
+                userId = new UserApi(client).getUserInfo(token, null, false).getId();
+            }
+            catch(ApiException e) {
+                throw new SDSExceptionMappingService().map("Getting user information failed", e);
+            }
+        }
+        return userId;
+    }
+
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<Path>();
@@ -172,6 +193,9 @@ public class SDSSession extends HttpSession<ApiClient> {
         }
         if(type == Write.class) {
             return (T) new SDSWriteFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new SDSDirectoryFeature(this);
         }
         if(type == Delete.class) {
             return (T) new SDSDeleteFeature(this);
