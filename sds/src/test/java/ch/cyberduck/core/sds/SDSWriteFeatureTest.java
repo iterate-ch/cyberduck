@@ -60,7 +60,6 @@ public class SDSWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path room = new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(32768);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
