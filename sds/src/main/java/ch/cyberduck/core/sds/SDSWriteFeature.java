@@ -1,0 +1,131 @@
+package ch.cyberduck.core.sds;
+
+/*
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
+import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.DelayedHttpMultipartEntity;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.protocol.HTTP;
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+
+import java.io.IOException;
+
+public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
+
+    private final SDSSession session;
+
+    public SDSWriteFeature(final SDSSession session) {
+        super(session);
+        this.session = session;
+    }
+
+    public SDSWriteFeature(final SDSSession session, final Find finder, final AttributesFinder attributes) {
+        super(finder, attributes);
+        this.session = session;
+    }
+
+    @Override
+    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final CreateFileUploadRequest body = new CreateFileUploadRequest();
+        body.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file.getParent(), new DisabledListProgressListener())));
+        body.setName(file.getName());
+        body.classification(2);
+        try {
+            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(session.getToken(), body);
+            final String id = response.getUploadId();
+            status.setMime("multipart/form-data");
+            final DelayedHttpMultipartEntity entity = new DelayedHttpMultipartEntity(file.getName(), status);
+            final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
+                @Override
+                public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
+                    try {
+                        final HttpPost post = new HttpPost(String.format("%s/nodes/files/uploads/%s", session.getClient().getBasePath(), id));
+                        post.setEntity(entity);
+                        post.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
+                        post.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
+                        final HttpResponse response = ApacheConnectorProvider.getHttpClient(session.getClient().getHttpClient()).execute(post);
+                        // Validate response
+                        switch(response.getStatusLine().getStatusCode()) {
+                            case HttpStatus.SC_CREATED:
+                                // Upload complete
+                                break;
+                            default:
+                                throw new HttpResponseExceptionMappingService().map(
+                                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        }
+                        final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), id, null, new CompleteUploadRequest());
+                        return new VersionId(String.valueOf(upload.getId()));
+                    }
+                    catch(IOException e) {
+                        throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
+                    }
+                    catch(ApiException e) {
+                        throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+                    }
+                }
+
+                @Override
+                public long getContentLength() {
+                    return entity.getContentLength();
+                }
+            };
+            return this.write(file, status, command, entity);
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+    }
+
+    @Override
+    public boolean temporary() {
+        return false;
+    }
+
+    @Override
+    public boolean random() {
+        return false;
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return new DisabledChecksumCompute();
+    }
+}
