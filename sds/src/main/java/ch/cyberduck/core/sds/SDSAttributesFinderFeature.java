@@ -19,6 +19,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
@@ -53,6 +54,19 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         attributes.setCreationDate(node.getCreatedAt().getTime());
         attributes.setModificationDate(node.getUpdatedAt().getTime());
         attributes.setSize(node.getSize());
+        final Permission permission = new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none);
+        if(node.getPermissions().getRead()) {
+            permission.setUser(permission.getUser().or(Permission.Action.read));
+            switch(node.getType()) {
+                case ROOM:
+                case FOLDER:
+                    permission.setUser(permission.getUser().or(Permission.Action.execute));
+            }
+        }
+        if(node.getPermissions().getChange()) {
+            permission.setUser(permission.getUser().or(Permission.Action.write));
+        }
+        attributes.setPermission(permission);
         return attributes;
     }
 
