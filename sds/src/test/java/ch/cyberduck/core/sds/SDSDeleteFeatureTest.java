@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -58,7 +59,7 @@ public class SDSDeleteFeatureTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SDSDirectoryFeature(session).mkdir(room, null, new TransferStatus());
         final Path fileInRoom = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(new DefaultUploadFeature(new SDSWriteFeature(session))).touch(fileInRoom, new TransferStatus());
+        new DefaultTouchFeature<VersionId>(new DefaultUploadFeature<VersionId>(new SDSWriteFeature(session))).touch(fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
         new SDSDeleteFeature(session).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(fileInRoom));
@@ -81,7 +82,7 @@ public class SDSDeleteFeatureTest {
         new SDSDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         final Path file = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(new DefaultUploadFeature(new SDSWriteFeature(session))).touch(file, new TransferStatus());
+        new DefaultTouchFeature<VersionId>(new DefaultUploadFeature<VersionId>(new SDSWriteFeature(session))).touch(file, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         new SDSDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder));
