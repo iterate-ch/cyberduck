@@ -68,4 +68,42 @@ public class SDSTouchFeatureTest {
             throw e;
         }
     }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testInvalidName() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        try {
+            new SDSTouchFeature(session).touch(new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
+        }
+        catch(InteroperabilityException e) {
+            assertEquals("-40755. Not allowed filename='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testInvalidCharacter() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        try {
+            new SDSTouchFeature(session).touch(new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
+        }
+        catch(InteroperabilityException e) {
+            assertEquals("-40755. Not allowed filename='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
+    }
 }
