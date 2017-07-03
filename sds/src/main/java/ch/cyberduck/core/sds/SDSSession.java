@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -173,6 +174,9 @@ public class SDSSession extends HttpSession<ApiClient> {
         }
         if(type == Touch.class) {
             return (T) new SDSTouchFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new SDSFindFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new SDSAttributesFinderFeature(this);
