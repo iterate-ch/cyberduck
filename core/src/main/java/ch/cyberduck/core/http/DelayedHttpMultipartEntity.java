@@ -38,9 +38,7 @@ public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
 
     public static final String DEFAULT_BOUNDARY = "------------------------d8ad73fe428d737a";
 
-    private final String filename;
     private final TransferStatus status;
-    private final String boundary = DEFAULT_BOUNDARY;
     private final CountDownLatch exit = new CountDownLatch(1);
 
     private static final String CR_LF = "\r\n";
@@ -49,13 +47,17 @@ public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
     private final byte[] header;
     private final byte[] footer;
 
+
+    public DelayedHttpMultipartEntity(final String filename, final TransferStatus status) {
+        this(filename, status, DEFAULT_BOUNDARY);
+    }
+
     /**
      * @param status Length
      */
-    public DelayedHttpMultipartEntity(final String filename, final TransferStatus status) {
-        this.filename = filename;
+    public DelayedHttpMultipartEntity(final String filename, final TransferStatus status, final String boundary) {
         this.status = status;
-        final StringBuffer multipartHeader = new StringBuffer();
+        final StringBuilder multipartHeader = new StringBuilder();
         multipartHeader.append(TWO_DASHES);
         multipartHeader.append(boundary);
         multipartHeader.append(CR_LF);
@@ -65,7 +67,7 @@ public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
         multipartHeader.append(CR_LF);
         multipartHeader.append(CR_LF);
         header = encode(MIME.DEFAULT_CHARSET, multipartHeader.toString()).buffer();
-        final StringBuffer multipartFooter = new StringBuffer();
+        final StringBuilder multipartFooter = new StringBuilder();
         multipartFooter.append(CR_LF);
         multipartFooter.append(TWO_DASHES);
         multipartFooter.append(boundary);
