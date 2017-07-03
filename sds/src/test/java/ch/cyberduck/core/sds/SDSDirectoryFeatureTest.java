@@ -53,9 +53,9 @@ public class SDSDirectoryFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path room = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SDSDirectoryFeature(session).mkdir(room, null, new TransferStatus());
         new SDSDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(test));
         new SDSDeleteFeature(session).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());

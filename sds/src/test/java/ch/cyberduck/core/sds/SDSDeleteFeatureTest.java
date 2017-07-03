@@ -36,7 +36,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -52,10 +51,9 @@ public class SDSDeleteFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path room = new Path("CD-TEST-" + new AlphanumericRandomStringService().random(),
-                EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SDSDirectoryFeature(session).mkdir(room, null, new TransferStatus());
-        final Path fileInRoom = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
         new SDSDeleteFeature(session).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -72,13 +70,12 @@ public class SDSDeleteFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path room = new Path("CD-TEST-" + new AlphanumericRandomStringService().random(),
-                EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SDSDirectoryFeature(session).mkdir(room, null, new TransferStatus());
-        final Path folder = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SDSDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path folder = new SDSDirectoryFeature(session).mkdir(new Path(room,
+                new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
-        final Path file = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         new SDSDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());

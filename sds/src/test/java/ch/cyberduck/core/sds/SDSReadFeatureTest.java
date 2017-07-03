@@ -43,6 +43,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -104,7 +105,9 @@ public class SDSReadFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path test = new Path(new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
@@ -128,7 +131,7 @@ public class SDSReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -140,10 +143,12 @@ public class SDSReadFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path test = new Path(new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1000);
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);
@@ -164,7 +169,7 @@ public class SDSReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
