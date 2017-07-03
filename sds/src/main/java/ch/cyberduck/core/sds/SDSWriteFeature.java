@@ -19,10 +19,12 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.DelayedHttpMultipartEntity;
@@ -36,6 +38,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpResponse;
@@ -53,15 +57,18 @@ import java.util.Collections;
 public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
     private final SDSSession session;
+    private final Find finder;
+    private final AttributesFinder attributes;
 
     public SDSWriteFeature(final SDSSession session) {
-        super(session);
-        this.session = session;
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public SDSWriteFeature(final SDSSession session, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
+        this.finder = finder;
+        this.attributes = attributes;
     }
 
     @Override
@@ -141,6 +148,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
     @Override
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return override;
+        if(finder.withCache(cache).find(file)) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        }
+        return Write.notfound;
     }
 }
