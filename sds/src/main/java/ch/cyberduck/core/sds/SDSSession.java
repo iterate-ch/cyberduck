@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -180,6 +181,9 @@ public class SDSSession extends HttpSession<ApiClient> {
         }
         if(type == AttributesFinder.class) {
             return (T) new SDSAttributesFinderFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new SDSMoveFeature(this);
         }
         return super._getFeature(type);
     }
