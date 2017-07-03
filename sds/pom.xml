@@ -131,7 +131,8 @@
                                 <library>jersey2</library>
                                 <import-mappings>EncryptionInfo=ch.cyberduck.core.sds.model.EncryptionInfo,
                                     CompleteUploadRequest=ch.cyberduck.core.sds.swagger.CompleteUploadRequest,
-                                    CopyNodesRequest=ch.cyberduck.core.sds.swagger.CopyNodesRequest
+                                    CopyNodesRequest=ch.cyberduck.core.sds.swagger.CopyNodesRequest,
+                                    MoveNodesRequest=ch.cyberduck.core.sds.swagger.MoveNodesRequest
                                 </import-mappings>
                             </configOptions>
                             <environmentVariables>
