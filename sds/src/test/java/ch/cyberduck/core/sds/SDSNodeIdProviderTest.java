@@ -15,15 +15,33 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.Arrays;
+import java.util.EnumSet;
+
+import static org.junit.Assert.*;
 
 public class SDSNodeIdProviderTest {
 
@@ -34,5 +52,42 @@ public class SDSNodeIdProviderTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(new SDSNodeIdProvider(session).withCache(PathCache.empty()));
+    }
+
+    @Test
+    public void getFileIdFile() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener());
+        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final Path bucket = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path file = new DefaultTouchFeature<VersionId>(new DefaultUploadFeature<VersionId>(new SDSWriteFeature(session))).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
+        try {
+            assertNull(new SDSNodeIdProvider(session).getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        new SDSDeleteFeature(session).delete(Arrays.asList(file, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void getFileIdDirectory() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener());
+        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final Path bucket = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path folder = new SDSDirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertNotNull(new SDSNodeIdProvider(session).getFileid(folder, new DisabledListProgressListener()));
+        new SDSDeleteFeature(session).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
