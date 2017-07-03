@@ -27,7 +27,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
@@ -117,7 +116,7 @@ public class DefaultDownloadFeatureTest {
 
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test, new TransferStatus());
+        new SDSTouchFeature(session).touch(test, new TransferStatus());
         final byte[] content = new byte[1];
         new Random().nextBytes(content);
         {
