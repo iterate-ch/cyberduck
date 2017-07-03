@@ -38,10 +38,22 @@ public class SDSReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final HttpRange range = HttpRange.withStatus(status);
+            final String header;
+            if(status.isAppend()) {
+                final HttpRange range = HttpRange.withStatus(status);
+                if(-1 == range.getEnd()) {
+                    header = String.format("bytes=%d-", range.getStart());
+                }
+                else {
+                    header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
+                }
+            }
+            else {
+                header = null;
+            }
             return new ExtendedNodesApi(session.getClient()).getFileData(session.getToken(),
                     Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())),
-                    String.format("bytes=%d-%d", range.getStart(), range.getEnd()), true);
+                    header, true);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Download {0} failed", e, file);
