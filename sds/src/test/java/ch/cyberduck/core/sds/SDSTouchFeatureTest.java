@@ -62,6 +62,7 @@ public class SDSTouchFeatureTest {
         }
         catch(InteroperabilityException e) {
             assertEquals("-80001. Parent ID must be positive. See API doc. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
         }
     }
 }
