@@ -34,6 +34,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -61,6 +62,27 @@ public class SDSMoveFeatureTest {
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveDifferentDataRoom() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path room1 = new SDSDirectoryFeature(session).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path room2 = new SDSDirectoryFeature(session).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new Path(room1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session).touch(test, new TransferStatus());
+        final Path target = new Path(room2, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new SDSMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
+        assertFalse(new SDSFindFeature(session).find(test));
+        assertTrue(new SDSFindFeature(session).find(target));
+        new SDSDeleteFeature(session).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

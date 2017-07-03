@@ -24,12 +24,12 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.model.MoveNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
+import ch.cyberduck.core.sds.swagger.MoveNodesRequest;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 
@@ -49,13 +49,13 @@ public class SDSMoveFeature implements Move {
             if(exists) {
                 new SDSDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
-            if(StringUtils.equals(source.getName(), target.getName())) {
+            if(!source.getParent().equals(target.getParent())) {
                 // Change parent node
                 new NodesApi(session.getClient()).moveNodes(session.getToken(),
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
-                        new MoveNodesRequest().addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener()))), null);
+                        new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener()))), null);
             }
-            else {
+            if(!StringUtils.equals(source.getName(), target.getName())) {
                 if(pathContainerService.isContainer(source)) {
                     new NodesApi(session.getClient()).updateRoom(session.getToken(),
                             Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())),
@@ -64,12 +64,14 @@ public class SDSMoveFeature implements Move {
                 // Rename
                 else if(source.isDirectory()) {
                     new NodesApi(session.getClient()).updateFolder(session.getToken(),
-                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())),
+                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(
+                                    new Path(target.getParent(), source.getName(), source.getType()), new DisabledListProgressListener())),
                             new UpdateFolderRequest().name(target.getName()), null);
                 }
                 else {
                     new NodesApi(session.getClient()).updateFile(session.getToken(),
-                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())),
+                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(
+                                    new Path(target.getParent(), source.getName(), source.getType()), new DisabledListProgressListener())),
                             new UpdateFileRequest().name(target.getName()), null);
                 }
             }
