@@ -29,6 +29,8 @@ public class SDSNodeIdProvider implements IdProvider {
 
     private final SDSSession session;
 
+    private static final String ROOT_NODE_ID = "0";
+
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
     }
@@ -39,9 +41,9 @@ public class SDSNodeIdProvider implements IdProvider {
             return file.attributes().getVersionId();
         }
         if(file.isRoot()) {
-            return "0";
+            return ROOT_NODE_ID;
         }
-        String parentID = this.getFileid(file.getParent(), new DisabledListProgressListener());
+        final String parentID = this.getFileid(file.getParent(), new DisabledListProgressListener());
         final String found = session.find(parentID, file.getName());
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
