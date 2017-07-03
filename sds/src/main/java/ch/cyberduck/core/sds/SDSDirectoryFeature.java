@@ -47,22 +47,17 @@ public class SDSDirectoryFeature implements Directory {
 
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
-        if(containerService.isContainer(folder)) {
-            final CreateRoomRequest roomRequest = new CreateRoomRequest();
-            roomRequest.addAdminIdsItem(session.getUserId());
-            roomRequest.setAdminGroupIds(null);
-            roomRequest.setName(folder.getName());
-            try {
+        try {
+            if(containerService.isContainer(folder)) {
+                final CreateRoomRequest roomRequest = new CreateRoomRequest();
+                roomRequest.addAdminIdsItem(session.getUser());
+                roomRequest.setAdminGroupIds(null);
+                roomRequest.setName(folder.getName());
                 final Node r = new NodesApi(session.getClient()).createRoom(session.getToken(), null, roomRequest);
                 return new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume),
                         new PathAttributes(folder.attributes()).withVersionId(String.valueOf(r.getId())));
             }
-            catch(ApiException e) {
-                throw new SDSExceptionMappingService().map("Cannot create data room {0}", e, folder);
-            }
-        }
-        else {
-            try {
+            else {
                 final CreateFolderRequest folderRequest = new CreateFolderRequest();
                 folderRequest.setParentId(Long.parseLong(idProvider.getFileid(folder.getParent(), new DisabledListProgressListener())));
                 folderRequest.setName(folder.getName());
@@ -70,9 +65,9 @@ public class SDSDirectoryFeature implements Directory {
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
                         new PathAttributes(folder.attributes()).withVersionId(String.valueOf(f.getId())));
             }
-            catch(ApiException e) {
-                throw new SDSExceptionMappingService().map("Cannot create folder {0}", e, folder);
-            }
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }
 
