@@ -26,7 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -35,6 +35,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -45,7 +46,25 @@ import static org.junit.Assert.assertTrue;
 public class SDSDirectoryFeatureTest {
 
     @Test
-    public void testCreateRoom() throws Exception {
+    public void testCreateDirectory() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path room = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new SDSDirectoryFeature(session).mkdir(room, null, new TransferStatus());
+        new SDSDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        new SDSDeleteFeature(session).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DefaultFindFeature(session).find(test));
+        session.close();
+    }
+
+    @Test
+    public void testCreateDataRoom() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
@@ -53,12 +72,11 @@ public class SDSDirectoryFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
-        final Path room = new Path("CD-TEST-" + new AlphanumericRandomStringService().random(),
-                EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path target = new SDSDirectoryFeature(session).mkdir(room, null, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(target));
+        assertTrue(new DefaultFindFeature(session).find(target));
         new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(target));
+        assertFalse(new DefaultFindFeature(session).find(target));
         session.close();
     }
 }
