@@ -19,9 +19,14 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,6 +35,8 @@ public class SDSNodeIdProvider implements IdProvider {
     private final SDSSession session;
 
     private static final String ROOT_NODE_ID = "0";
+
+    private final PathContainerService containerService = new PathContainerService();
 
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
@@ -43,12 +50,33 @@ public class SDSNodeIdProvider implements IdProvider {
         if(file.isRoot()) {
             return ROOT_NODE_ID;
         }
-        final String parentID = this.getFileid(file.getParent(), new DisabledListProgressListener());
-        final String found = session.find(parentID, file.getName());
-        if(null == found) {
+        try {
+            final String type;
+            if(file.isDirectory()) {
+                if(containerService.isContainer(file)) {
+                    type = "room";
+                }
+                else {
+                    type = "folder";
+                }
+            }
+            else {
+                type = "file";
+            }
+            final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(session.getToken(), null, 0,
+                    Long.parseLong(this.getFileid(file.getParent(), new DisabledListProgressListener())),
+                    null, String.format(String.format("type:eq:%s|name:cn:%%s", type), file.getName()),
+                    null, null, null);
+            for(Node node : nodes.getItems()) {
+                if(node.getName().equals(file.getName())) {
+                    return node.getId().toString();
+                }
+            }
             throw new NotfoundException(file.getAbsolute());
         }
-        return found;
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
     }
 
     @Override
