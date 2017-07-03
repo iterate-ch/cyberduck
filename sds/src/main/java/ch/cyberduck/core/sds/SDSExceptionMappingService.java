@@ -34,8 +34,12 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
         final JsonParser parser = new JsonParser();
         try {
             final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
-            this.append(buffer, json.getAsJsonPrimitive("errorCode").getAsString());
-            this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+            if(json.get("errorCode").isJsonPrimitive()) {
+                this.append(buffer, json.getAsJsonPrimitive("errorCode").getAsString());
+            }
+            if(json.get("debugInfo").isJsonPrimitive()) {
+                this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+            }
         }
         catch(JsonParseException e) {
             // Ignore
