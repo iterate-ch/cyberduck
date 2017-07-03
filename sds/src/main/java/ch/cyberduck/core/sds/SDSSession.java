@@ -47,8 +47,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -195,7 +193,7 @@ public class SDSSession extends HttpSession<ApiClient> {
             return (T) new SDSNodeIdProvider(this);
         }
         if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(new DefaultUploadFeature(new SDSWriteFeature(this)));
+            return (T) new SDSTouchFeature(this);
         }
         return super._getFeature(type);
     }
