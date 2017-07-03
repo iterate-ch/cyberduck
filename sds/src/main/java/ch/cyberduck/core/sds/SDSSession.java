@@ -46,6 +46,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -64,7 +65,7 @@ import java.util.EnumSet;
 public class SDSSession extends HttpSession<ApiClient> {
 
     private String token;
-    private Long userId;
+    private UserAccount account;
 
     final static String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
 
@@ -99,6 +100,7 @@ public class SDSSession extends HttpSession<ApiClient> {
                     .password(host.getCredentials().getPassword())
             );
             token = response.getToken();
+            account = new UserApi(client).getUserInfo(token, null, false);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
@@ -124,24 +126,6 @@ public class SDSSession extends HttpSession<ApiClient> {
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(String.format("Finding %s failed", name), e);
         }
-    }
-
-    /**
-     * Lazy loading of currrent user's id
-     *
-     * @return User id of the current logged in user
-     * @throws BackgroundException
-     */
-    public Long getUserId() throws BackgroundException {
-        if (userId == null){
-            try {
-                userId = new UserApi(client).getUserInfo(token, null, false).getId();
-            }
-            catch(ApiException e) {
-                throw new SDSExceptionMappingService().map("Getting user information failed", e);
-            }
-        }
-        return userId;
     }
 
     @Override
@@ -179,6 +163,13 @@ public class SDSSession extends HttpSession<ApiClient> {
             throw new SDSExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         return children;
+    }
+
+    /**
+     * @return User id of the current logged in user
+     */
+    public Long getUser() {
+        return account.getId();
     }
 
     public String getToken() {
