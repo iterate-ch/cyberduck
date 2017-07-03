@@ -24,20 +24,31 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SDSTouchFeatureTest {
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
+    public void testSupported() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertTrue(new SDSTouchFeature(session).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
+        assertTrue(new SDSTouchFeature(session).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))));
+        assertFalse(new SDSTouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test(expected = InteroperabilityException.class)
     public void testTouchFileRoot() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
@@ -46,7 +57,11 @@ public class SDSTouchFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
-        assertTrue(new SDSTouchFeature(session).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
-        assertFalse(new SDSTouchFeature(session).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
+        try {
+            new SDSTouchFeature(session).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        }
+        catch(InteroperabilityException e) {
+            assertEquals("-80001. Parent ID must be positive. See API doc. Please contact your web hosting service provider for assistance.", e.getDetail());
+        }
     }
 }
