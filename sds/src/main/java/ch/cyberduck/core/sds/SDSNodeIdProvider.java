@@ -53,6 +53,6 @@ public class SDSNodeIdProvider implements IdProvider {
 
     @Override
     public IdProvider withCache(final Cache<Path> cache) {
-        throw new UnsupportedOperationException();
+        return this;
     }
 }
