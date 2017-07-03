@@ -27,8 +27,6 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.DelayedHttpMultipartEntity;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
-import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
@@ -40,16 +38,17 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
@@ -84,14 +83,21 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         post.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
                         post.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
                         final HttpResponse response = ApacheConnectorProvider.getHttpClient(session.getClient().getHttpClient()).execute(post);
-                        // Validate response
-                        switch(response.getStatusLine().getStatusCode()) {
-                            case HttpStatus.SC_CREATED:
-                                // Upload complete
-                                break;
-                            default:
-                                throw new HttpResponseExceptionMappingService().map(
-                                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        try {
+                            // Validate response
+                            switch(response.getStatusLine().getStatusCode()) {
+                                case HttpStatus.SC_CREATED:
+                                    // Upload complete
+                                    break;
+                                default:
+                                    EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+                                    throw new SDSExceptionMappingService().map(
+                                            new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                                    EntityUtils.toString(response.getEntity())));
+                            }
+                        }
+                        finally {
+                            EntityUtils.consume(response.getEntity());
                         }
                         final CompleteUploadRequest body = new CompleteUploadRequest();
                         body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
