@@ -28,6 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.IdProvider;
@@ -35,7 +36,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -110,22 +110,6 @@ public class SDSSession extends HttpSession<ApiClient> {
         client.getHttpClient().close();
     }
 
-    public String find(final String parentId, final String name) throws BackgroundException {
-        try {
-            final NodeList nodes = new NodesApi(client).getFsNodes(token, null, 0,
-                    Long.parseLong(parentId), null, String.format("name:cn:%s", name), null, null, null);
-            for(Node node : nodes.getItems()) {
-                if(node.getName().equals(name)) {
-                    return node.getId().toString();
-                }
-            }
-            return null;
-        }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map(String.format("Finding %s failed", name), e);
-        }
-    }
-
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<Path>();
@@ -134,12 +118,7 @@ public class SDSSession extends HttpSession<ApiClient> {
                     Long.parseLong(new SDSNodeIdProvider(this).getFileid(directory, new DisabledListProgressListener())),
                     null, null, null, null, null);
             for(Node node : nodes.getItems()) {
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setVersionId(String.valueOf(node.getId()));
-                attributes.setChecksum(Checksum.parse(node.getHash()));
-                attributes.setCreationDate(node.getCreatedAt().getTime());
-                attributes.setModificationDate(node.getUpdatedAt().getTime());
-                attributes.setSize(node.getSize());
+                final PathAttributes attributes = new SDSAttributesFinderFeature(this).toAttributes(node);
                 final EnumSet<AbstractPath.Type> type;
                 switch(node.getType()) {
                     case ROOM:
@@ -194,6 +173,9 @@ public class SDSSession extends HttpSession<ApiClient> {
         }
         if(type == Touch.class) {
             return (T) new SDSTouchFeature(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new SDSAttributesFinderFeature(this);
         }
         return super._getFeature(type);
     }
