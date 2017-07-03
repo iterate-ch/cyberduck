@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
@@ -26,18 +27,20 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.DelayedHttpMultipartEntity;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -67,7 +70,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         final CreateFileUploadRequest body = new CreateFileUploadRequest();
         body.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file.getParent(), new DisabledListProgressListener())));
         body.setName(file.getName());
-        body.classification(2);
+        body.classification(2); // internal
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(session.getToken(), body);
             final String id = response.getUploadId();
@@ -80,6 +83,8 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         final HttpPost post = new HttpPost(String.format("%s/nodes/files/uploads/%s", session.getClient().getBasePath(), id));
                         post.setEntity(entity);
                         post.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
+                        final HttpRange range = HttpRange.withStatus(status);
+                        post.setHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/*", range.getStart(), range.getEnd()));
                         post.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
                         final HttpResponse response = ApacheConnectorProvider.getHttpClient(session.getClient().getHttpClient()).execute(post);
                         // Validate response
@@ -91,7 +96,9 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                                 throw new HttpResponseExceptionMappingService().map(
                                         new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
-                        final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), id, null, new CompleteUploadRequest());
+                        final CompleteUploadRequest body = new CompleteUploadRequest();
+                        body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                        final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), id, null, body);
                         return new VersionId(String.valueOf(upload.getId()));
                     }
                     catch(IOException e) {
@@ -127,5 +134,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     @Override
     public ChecksumCompute checksum() {
         return new DisabledChecksumCompute();
+    }
+
+    @Override
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+        return override;
     }
 }
