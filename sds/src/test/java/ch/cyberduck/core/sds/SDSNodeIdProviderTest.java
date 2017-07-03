@@ -27,11 +27,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -67,7 +64,7 @@ public class SDSNodeIdProviderTest {
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path bucket = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path file = new DefaultTouchFeature<VersionId>(new DefaultUploadFeature<VersionId>(new SDSWriteFeature(session))).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SDSTouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
         try {
             assertNull(new SDSNodeIdProvider(session).getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
