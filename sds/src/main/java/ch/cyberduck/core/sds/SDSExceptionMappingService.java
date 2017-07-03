@@ -20,12 +20,27 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 
+import java.io.StringReader;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+
 public class SDSExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
 
     @Override
     public BackgroundException map(final ApiException failure) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, failure.getMessage());
+        final JsonParser parser = new JsonParser();
+        try {
+            final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
+            this.append(buffer, json.getAsJsonPrimitive("errorCode").getAsString());
+            this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+        }
+        catch(JsonParseException e) {
+            // Ignore
+            this.append(buffer, failure.getMessage());
+        }
         return new HttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
     }
 }
