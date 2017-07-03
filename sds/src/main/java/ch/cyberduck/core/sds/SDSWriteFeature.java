@@ -74,7 +74,6 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(session.getToken(), body);
             final String id = response.getUploadId();
-            status.setMime("multipart/form-data");
             final DelayedHttpMultipartEntity entity = new DelayedHttpMultipartEntity(file.getName(), status);
             final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
                 @Override
@@ -83,8 +82,6 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         final HttpPost post = new HttpPost(String.format("%s/nodes/files/uploads/%s", session.getClient().getBasePath(), id));
                         post.setEntity(entity);
                         post.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
-                        final HttpRange range = HttpRange.withStatus(status);
-                        post.setHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/*", range.getStart(), range.getEnd()));
                         post.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
                         final HttpResponse response = ApacheConnectorProvider.getHttpClient(session.getClient().getHttpClient()).execute(post);
                         // Validate response
