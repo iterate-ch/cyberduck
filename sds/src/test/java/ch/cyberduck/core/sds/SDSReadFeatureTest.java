@@ -39,11 +39,13 @@ import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -53,6 +55,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class SDSReadFeatureTest {
 
     @Test(expected = NotfoundException.class)
