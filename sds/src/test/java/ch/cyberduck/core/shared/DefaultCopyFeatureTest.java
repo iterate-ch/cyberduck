@@ -78,8 +78,7 @@ public class DefaultCopyFeatureTest {
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
-        final OutputStream out = new SDSWriteFeature(session).write(source, new TransferStatus(), new DisabledConnectionCallback());
-//        final OutputStream out = new SDSWriteFeature(session).write(source, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new SDSWriteFeature(session).write(source, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
