@@ -1691,7 +1691,7 @@ public class PreferencesController extends ToolbarWindowController {
         }
         for(Protocol protocol : protocols) {
             final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocol.getDescription());
-            item.setRepresentedObject(protocol.getProvider());
+            item.setRepresentedObject(protocol.getIdentifier());
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
         }
 
@@ -1703,7 +1703,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
         final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
-        preferences.setProperty("connection.protocol.default", selected.getProvider());
+        preferences.setProperty("connection.protocol.default", selected.getIdentifier());
         preferences.setProperty("connection.port.default", selected.getDefaultPort());
     }
 

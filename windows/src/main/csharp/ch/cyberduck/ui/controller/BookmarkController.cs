@@ -503,32 +503,32 @@ namespace Ch.Cyberduck.Ui.Controller
                 EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getProvider()));
+                    protocol.getIdentifier()));
             }
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
                 EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2,
                     Protocol.Type.googlestorage))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getProvider()));
+                    protocol.getIdentifier()));
             }
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
                     EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))
                 .toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getProvider()));
+                    protocol.getIdentifier()));
             }
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
                 EnumSet.of(Protocol.Type.file))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getProvider()));
+                    protocol.getIdentifier()));
             }
             foreach (Protocol protocol in p.find(new ProfileProtocolPredicate()).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getProvider()));
+                    protocol.getIdentifier()));
             }
             View.PopulateProtocols(protocols);
         }

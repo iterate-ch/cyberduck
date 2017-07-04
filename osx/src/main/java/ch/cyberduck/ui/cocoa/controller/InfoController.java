@@ -55,7 +55,6 @@ import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
-import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
@@ -2475,27 +2474,8 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void helpButtonClicked(final ID sender) {
         final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
-        final BrowserLauncher browser = BrowserLauncherFactory.get();
-        switch(InfoToolbarItem.valueOf(this.getSelectedTab())) {
-            case info:
-                site.append("/howto/info");
-                browser.open(site.toString());
-                break;
-            case permissions:
-                site.append("/howto/permissions");
-                browser.open(site.toString());
-                break;
-            case acl:
-                site.append("/howto/acl");
-                browser.open(site.toString());
-                break;
-            case distribution:
-                site.append("/howto/cdn");
-                browser.open(site.toString());
-                break;
-            default:
-                browser.open(new DefaultProviderHelpService().help(session.getHost().getProtocol()));
-        }
+        site.append("/howto/info");
+        BrowserLauncherFactory.get().open(site.toString());
     }
 
     private enum AclColumns {

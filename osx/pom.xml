@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>6.1.0-SNAPSHOT</version>
+        <version>6.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>osx</artifactId>
     <packaging>jar</packaging>
@@ -245,15 +245,15 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <property name="home" value="${main.basedir}"/>
-                                        <property name="version" value="${project.version}"/>
-                                        <property name="revision" value="${git.commitsCount}"/>
-                                        <property name="git.revision" value="${git.revision}"/>
+                                        <property name="home" value="${main.basedir}" />
+                                        <property name="version" value="${project.version}" />
+                                        <property name="revision" value="${git.commitsCount}" />
+                                        <property name="git.revision" value="${git.revision}" />
                                         <!-- 'Release' or 'Mac App Store' -->
-                                        <property name="xcode.configuration" value="${xcode.configuration}"/>
-                                        <property name="sparkle.feed" value="${sparkle.feed}"/>
-                                        <property name="sparkle.key.prefix" value="${sparkle.key.prefix}"/>
-                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
+                                        <property name="xcode.configuration" value="${xcode.configuration}" />
+                                        <property name="sparkle.feed" value="${sparkle.feed}" />
+                                        <property name="sparkle.key.prefix" value="${sparkle.key.prefix}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                     </tasks>
                                 </configuration>
                             </execution>

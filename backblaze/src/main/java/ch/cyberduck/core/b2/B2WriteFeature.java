@@ -123,7 +123,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     }
                 }
                 catch(B2ApiException e) {
-                    throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
+                    throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);

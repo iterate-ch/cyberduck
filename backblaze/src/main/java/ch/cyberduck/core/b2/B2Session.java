@@ -36,6 +36,8 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.impl.client.HttpClientBuilder;
+
 import javax.net.SocketFactory;
 import java.io.IOException;
 
@@ -43,6 +45,9 @@ import synapticloop.b2.B2ApiClient;
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2Session extends HttpSession<B2ApiClient> {
+
+    private final B2ErrorResponseInterceptor retryHandler = new B2ErrorResponseInterceptor(
+            this);
 
     public B2Session(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -62,7 +67,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
 
     @Override
     public B2ApiClient connect(final HostKeyCallback key) throws BackgroundException {
-        return new B2ApiClient(builder.build(this).build());
+        final HttpClientBuilder configuration = builder.build(this);
+        configuration.setServiceUnavailableRetryStrategy(retryHandler);
+        return new B2ApiClient(configuration.build());
     }
 
     @Override
@@ -84,10 +91,14 @@ public class B2Session extends HttpSession<B2ApiClient> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         try {
-            client.authenticate(host.getCredentials().getUsername(), host.getCredentials().getPassword());
+            final String accountId = host.getCredentials().getUsername();
+            final String applicationKey = host.getCredentials().getPassword();
+            client.authenticate(accountId, applicationKey);
+            // Save tokens for 401 error response when expired
+            retryHandler.setTokens(accountId, applicationKey);
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(this).map(e);
+            throw new B2ExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

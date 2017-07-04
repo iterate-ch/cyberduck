@@ -50,7 +50,7 @@ public class B2ReadFeature implements Read {
             return session.getClient().downloadFileByIdToStream(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Download {0} failed", e, file);
+            throw new B2ExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
