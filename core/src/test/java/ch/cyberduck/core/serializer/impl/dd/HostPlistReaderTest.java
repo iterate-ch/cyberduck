@@ -29,7 +29,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class HostPlistReaderTest {
 
@@ -42,13 +43,6 @@ public class HostPlistReaderTest {
     public void testDeserializeNoSuchFile() throws Exception {
         final HostPlistReader reader = new HostPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         reader.read(new Local("test"));
-    }
-
-    @Test
-    public void testDeserializeDeprecatedProtocol() throws Exception {
-        final HostPlistReader reader = new HostPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
-        assertNull(reader.read(
-                new Local("src/test/resources/1c158c34-db8a-4c32-a732-abd9447bb27c.duck")));
     }
 
     @Test
