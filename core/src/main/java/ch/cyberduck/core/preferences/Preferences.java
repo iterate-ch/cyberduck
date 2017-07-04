@@ -744,6 +744,10 @@ public abstract class Preferences {
         defaults.put("onedrive.listing.chunksize", String.valueOf(1000));
         defaults.put("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
 
+        defaults.put("sds.oauth.clientid", "");
+        defaults.put("sds.oauth.secret", "");
+        defaults.put("sds.oauth.redirecturi", "https://cyberduck.io/oauth/");
+
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(month));
 
