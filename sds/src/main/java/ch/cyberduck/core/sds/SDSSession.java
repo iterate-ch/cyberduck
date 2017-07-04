@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
@@ -185,6 +186,9 @@ public class SDSSession extends HttpSession<ApiClient> {
         }
         if(type == Move.class) {
             return (T) new SDSMoveFeature(this);
+        }
+        if(type == Search.class) {
+            return (T) new SDSSearchFeature(this);
         }
         return super._getFeature(type);
     }
