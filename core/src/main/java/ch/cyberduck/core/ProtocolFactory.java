@@ -1,9 +1,8 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2011 David Kocher. All rights reserved.
- *
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,9 +13,6 @@ package ch.cyberduck.core;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -139,7 +135,7 @@ public final class ProtocolFactory {
     }
 
     public Protocol forName(final List<Protocol> registered, final String identifier, final String provider) {
-        return registered.stream().filter(protocol -> {
+        final Protocol match = registered.stream().filter(protocol -> {
             if(StringUtils.equals(protocol.getIdentifier(), identifier)) {
                 if(null == provider) {
                     // Matching protocol with no custom provider
@@ -155,6 +151,16 @@ public final class ProtocolFactory {
                         registered.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(identifier)).findFirst().orElse(null)
                 )
         );
+        if(null == match) {
+            if(registered.isEmpty()) {
+                log.error("List of registered protocols is empty");
+                return null;
+            }
+            final Protocol next = registered.iterator().next();
+            log.warn(String.format("Missing registered protocol for identifier %s. Return first in list %s", identifier, next));
+            return next;
+        }
+        return match;
     }
 
     /**

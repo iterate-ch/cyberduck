@@ -16,6 +16,7 @@ package ch.cyberduck.core.http;
  */
 
 import org.apache.commons.io.input.CountingInputStream;
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.http.HttpConnection;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -37,7 +38,7 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
      * @throws NullPointerException If the response has no message entity
      */
     public HttpMethodReleaseInputStream(final HttpResponse response) throws IOException {
-        super(response.getEntity().getContent());
+        super(null == response.getEntity() ? new NullInputStream(0L) : response.getEntity().getContent());
         this.response = response;
     }
 
@@ -52,8 +53,9 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
     public void close() throws IOException {
         if(response instanceof CloseableHttpResponse) {
             long read = this.getByteCount();
-            if(read == response.getEntity().getContentLength()) {
-                // Fully consumed
+            if(-1 == response.getEntity().getContentLength()
+                    || read == response.getEntity().getContentLength()) {
+                // Fully consumed or unknown content length for decompressing HTTP entity
                 super.close();
             }
             else {
