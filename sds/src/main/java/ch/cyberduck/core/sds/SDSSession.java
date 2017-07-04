@@ -38,8 +38,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -49,58 +47,65 @@ import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
+import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.glassfish.jersey.apache.connector.ApacheClientProperties;
-import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
 import java.util.EnumSet;
 
-public class SDSSession extends HttpSession<ApiClient> {
+public class SDSSession extends HttpSession<SDSApiClient> {
 
     private String token;
     private UserAccount account;
 
     final static String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
 
+    private final SDSErrorResponseInterceptor retryHandler = new SDSErrorResponseInterceptor(this);
+
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
-    protected ApiClient connect(final HostKeyCallback key) throws BackgroundException {
-        final ApiClient client = new ApiClient();
+    protected SDSApiClient connect(final HostKeyCallback key) throws BackgroundException {
+        final HttpClientBuilder builder = this.builder.build(this);
+        builder.setServiceUnavailableRetryStrategy(retryHandler);
+        final CloseableHttpClient apache = builder.build();
+        final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext()));
         final ClientConfig configuration = new ClientConfig();
-        configuration.property(ApacheClientProperties.CONNECTION_MANAGER, builder.createConnectionManager(builder.createRegistry()));
-        configuration.property(ApacheClientProperties.REQUEST_CONFIG, builder.createRequestConfig(
-                PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000
-        ));
         configuration.register(new InputStreamProvider());
-        configuration.connectorProvider(new ApacheConnectorProvider());
+        configuration.connectorProvider(new HttpComponentsProvider(this.builder, this));
         client.setHttpClient(ClientBuilder.newClient(configuration));
         client.setUserAgent(new PreferencesUseragentProvider().get());
         return client;
     }
 
+
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         try {
             // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
+            final String login = host.getCredentials().getUsername();
+            final String password = host.getCredentials().getPassword();
             final LoginResponse response = new AuthApi(client).login(new LoginRequest()
                     .authType(host.getProtocol().getAuthorization())
                     .language("en")
-                    .login(host.getCredentials().getUsername())
-                    .password(host.getCredentials().getPassword())
+                    .login(login)
+                    .password(password)
             );
-            token = response.getToken();
-            account = new UserApi(client).getUserInfo(token, null, false);
+            this.setToken(response.getToken());
+            account = new UserApi(client).getUserInfo(response.getToken(), null, false);
+            // Save tokens for 401 error response when expired
+            retryHandler.setTokens(login, password);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
@@ -154,6 +159,10 @@ public class SDSSession extends HttpSession<ApiClient> {
 
     public String getToken() {
         return token;
+    }
+
+    public void setToken(final String token) {
+        this.token = token;
     }
 
     @Override

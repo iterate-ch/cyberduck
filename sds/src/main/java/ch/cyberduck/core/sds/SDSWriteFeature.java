@@ -49,7 +49,6 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -85,11 +84,12 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                 @Override
                 public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                     try {
-                        final HttpPost post = new HttpPost(String.format("%s/nodes/files/uploads/%s", session.getClient().getBasePath(), id));
+                        final SDSApiClient client = session.getClient();
+                        final HttpPost post = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), id));
                         post.setEntity(entity);
                         post.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
                         post.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
-                        final HttpResponse response = ApacheConnectorProvider.getHttpClient(session.getClient().getHttpClient()).execute(post);
+                        final HttpResponse response = client.getClient().execute(post);
                         try {
                             // Validate response
                             switch(response.getStatusLine().getStatusCode()) {
@@ -108,7 +108,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         }
                         final CompleteUploadRequest body = new CompleteUploadRequest();
                         body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
-                        final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), id, null, body);
+                        final Node upload = new NodesApi(client).completeFileUpload(session.getToken(), id, null, body);
                         return new VersionId(String.valueOf(upload.getId()));
                     }
                     catch(IOException e) {
