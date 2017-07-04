@@ -36,6 +36,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -63,7 +64,7 @@ public class SDSMultipartWriteFeatureTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
+        status.setLength(-1L);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -77,6 +78,29 @@ public class SDSMultipartWriteFeatureTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testWriteZeroLength() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new NullInputStream(0L), out);
+        final VersionId version = out.getStatus();
+        assertNotNull(version);
+        assertTrue(new DefaultFindFeature(session).find(test));
         new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
