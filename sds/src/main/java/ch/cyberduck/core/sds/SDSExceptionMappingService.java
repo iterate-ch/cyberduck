@@ -32,18 +32,20 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
     public BackgroundException map(final ApiException failure) {
         final StringBuilder buffer = new StringBuilder();
         final JsonParser parser = new JsonParser();
-        try {
-            final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
-            if(json.get("errorCode").isJsonPrimitive()) {
-                this.append(buffer, json.getAsJsonPrimitive("errorCode").getAsString());
+        if(null != failure.getResponseBody()) {
+            try {
+                final JsonObject json = parser.parse(new StringReader(failure.getResponseBody())).getAsJsonObject();
+                if(json.get("errorCode").isJsonPrimitive()) {
+                    this.append(buffer, json.getAsJsonPrimitive("errorCode").getAsString());
+                }
+                if(json.get("debugInfo").isJsonPrimitive()) {
+                    this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+                }
             }
-            if(json.get("debugInfo").isJsonPrimitive()) {
-                this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+            catch(JsonParseException e) {
+                // Ignore
+                this.append(buffer, failure.getMessage());
             }
-        }
-        catch(JsonParseException e) {
-            // Ignore
-            this.append(buffer, failure.getMessage());
         }
         return new HttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
     }

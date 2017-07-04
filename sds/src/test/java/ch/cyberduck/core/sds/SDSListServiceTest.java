@@ -18,41 +18,33 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SDSWriteFeatureTest {
+public class SDSListServiceTest {
 
     @Test
-    public void testReadWrite() throws Exception {
+    public void testList() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
@@ -61,23 +53,16 @@ public class SDSWriteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path room = new SDSDirectoryFeature(session).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final byte[] content = RandomUtils.nextBytes(32769);
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
-        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final SDSWriteFeature writer = new SDSWriteFeature(session);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final VersionId version = out.getStatus();
-        assertNotNull(version);
-        assertTrue(new DefaultFindFeature(session).find(test));
-        final byte[] compare = new byte[content.length];
-        final InputStream stream = new SDSReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
-        IOUtils.readFully(stream, compare);
-        stream.close();
-        assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new SDSListService(session).list(room, new DisabledListProgressListener()).isEmpty());
+        new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(1, (new SDSListService(session).list(room, new DisabledListProgressListener(), 1).size()));
+        new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(2, (new SDSListService(session).list(room, new DisabledListProgressListener(), 1).size()));
+        assertEquals(2, (new SDSListService(session).list(room, new DisabledListProgressListener()).size()));
+        new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(3, (new SDSListService(session).list(room, new DisabledListProgressListener(), 1).size()));
+        assertEquals(3, (new SDSListService(session).list(room, new DisabledListProgressListener()).size()));
+        new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

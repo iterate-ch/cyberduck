@@ -15,17 +15,14 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -34,6 +31,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -41,7 +39,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileFileKeys;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
@@ -151,35 +148,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> children = new AttributedList<Path>();
-        try {
-            final NodeList nodes = new NodesApi(client).getFsNodes(token, null, 0,
-                    Long.parseLong(new SDSNodeIdProvider(this).getFileid(directory, new DisabledListProgressListener())),
-                    null, null, null, null, null);
-            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(this);
-            for(Node node : nodes.getItems()) {
-                final PathAttributes attributes = feature.toAttributes(node);
-                final EnumSet<AbstractPath.Type> type;
-                switch(node.getType()) {
-                    case ROOM:
-                        type = EnumSet.of(Path.Type.directory, Path.Type.volume);
-                        break;
-                    case FOLDER:
-                        type = EnumSet.of(Path.Type.directory);
-                        break;
-                    default:
-                        type = EnumSet.of(Path.Type.file);
-                        break;
-                }
-                final Path file = new Path(directory, node.getName(), type, attributes);
-                children.add(file);
-                listener.chunk(directory, children);
-            }
-        }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Listing directory {0} failed", e, directory);
-        }
-        return children;
+        return new SDSListService(this).list(directory, listener);
     }
 
     /**
@@ -205,6 +174,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Write.class) {
             return (T) new SDSWriteFeature(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new SDSMultipartWriteFeature(this);
         }
         if(type == Directory.class) {
             return (T) new SDSDirectoryFeature(this);
