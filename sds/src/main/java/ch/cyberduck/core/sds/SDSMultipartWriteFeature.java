@@ -42,6 +42,7 @@ import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
@@ -144,7 +145,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                             else {
                                 header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), overall.getOffset() + overall.getLength());
                             }
-                            request.addHeader("Content-Range", String.format("bytes %s", header));
+                            request.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %s", header));
                             final HttpResponse response = client.getClient().execute(request);
                             try {
                                 // Validate response
