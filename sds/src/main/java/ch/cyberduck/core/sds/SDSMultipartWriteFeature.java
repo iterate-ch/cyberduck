@@ -95,7 +95,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
     }
 
     private final class MultipartOutputStream extends OutputStream {
-        private final String id;
+        private final String uploadId;
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
@@ -104,8 +104,8 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
 
         private VersionId versionId;
 
-        public MultipartOutputStream(final String id, final Path file, final TransferStatus status) {
-            this.id = id;
+        public MultipartOutputStream(final String uploadId, final Path file, final TransferStatus status) {
+            this.uploadId = uploadId;
             this.file = file;
             this.overall = status;
         }
@@ -132,7 +132,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                     public Void call() throws BackgroundException {
                         try {
                             final SDSApiClient client = session.getClient();
-                            final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), id));
+                            final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                             request.setEntity(entity);
                             request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
                             request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
@@ -185,7 +185,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                 }
                 final CompleteUploadRequest body = new CompleteUploadRequest();
                 body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
-                final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), id, null, body);
+                final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), uploadId, null, body);
                 versionId = new VersionId(String.valueOf(upload.getId()));
             }
             catch(ApiException e) {
@@ -199,7 +199,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("MultipartOutputStream{");
-            sb.append("id='").append(id).append('\'');
+            sb.append("id='").append(uploadId).append('\'');
             sb.append(", file=").append(file);
             sb.append('}');
             return sb.toString();
