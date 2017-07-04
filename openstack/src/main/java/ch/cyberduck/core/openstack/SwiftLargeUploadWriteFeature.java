@@ -183,7 +183,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                     }
                 }, overall).call());
             }
-            catch(Exception e) {
+            catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
             }
         }
