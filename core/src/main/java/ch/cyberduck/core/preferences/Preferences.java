@@ -810,6 +810,8 @@ public abstract class Preferences {
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
+        defaults.put("sds.listing.chunksize", String.valueOf(500));
+
         /*
           NTLM Windows Domain
          */
