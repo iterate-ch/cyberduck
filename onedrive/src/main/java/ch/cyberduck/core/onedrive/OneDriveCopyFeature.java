@@ -45,9 +45,7 @@ public class OneDriveCopyFeature implements Copy {
         if(!StringUtils.equals(source.getName(), target.getName())) {
             copyOperation.rename(target.getName());
         }
-        if(!source.getParent().equals(target.getParent())) {
-            copyOperation.copy(session.toFolder(target.getParent()));
-        }
+        copyOperation.copy(session.toFolder(target.getParent()));
         try {
             session.toFile(source).copy(copyOperation);
         }
