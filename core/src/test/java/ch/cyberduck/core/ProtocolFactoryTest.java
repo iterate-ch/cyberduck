@@ -19,15 +19,15 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ProtocolFactoryTest {
 
     @Test
-    public void getProtocols() throws Exception {
+    public void testGetProtocols() throws Exception {
         final TestProtocol defaultProtocol = new TestProtocol(Scheme.ftp);
         final TestProtocol providerProtocol = new TestProtocol(Scheme.ftp) {
             @Override
@@ -47,5 +47,13 @@ public class ProtocolFactoryTest {
         assertTrue(protocols.contains(defaultProtocol));
         assertTrue(protocols.contains(providerProtocol));
         assertFalse(protocols.contains(disabledProtocol));
+    }
+
+    @Test
+    public void testFindUnknownDefaultProtokol() throws Exception {
+        final TestProtocol dav = new TestProtocol(Scheme.dav);
+        final TestProtocol davs = new TestProtocol(Scheme.davs);
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, davs)));
+        assertEquals(dav, f.forName("ftp"));
     }
 }
