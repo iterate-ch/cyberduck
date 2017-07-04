@@ -39,13 +39,12 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileFileKeys;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.MissingKeysResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetBatchRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetRequest;
@@ -63,7 +62,6 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
-import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
