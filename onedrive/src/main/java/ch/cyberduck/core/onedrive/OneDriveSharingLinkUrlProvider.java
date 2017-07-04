@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 
@@ -25,6 +26,7 @@ import org.nuxeo.onedrive.client.OneDriveSharingLink;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.MessageFormat;
 
 public class OneDriveSharingLinkUrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(OneDriveSharingLinkUrlProvider.class);
@@ -40,7 +42,7 @@ public class OneDriveSharingLinkUrlProvider implements UrlProvider {
         try {
             final DescriptiveUrlBag list = new DescriptiveUrlBag();
             list.add(new DescriptiveUrl(URI.create(session.toFile(file).createSharedLink(OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
-                    DescriptiveUrl.Type.signed));
+                    DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))));
             return list;
 
         }
