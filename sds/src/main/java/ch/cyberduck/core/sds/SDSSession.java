@@ -28,6 +28,9 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -60,6 +63,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private final SDSErrorResponseInterceptor retryHandler = new SDSErrorResponseInterceptor(this);
 
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
+            host.getProtocol().getOAuthTokenUrl(),
+            host.getProtocol().getOAuthAuthorizationUrl(),
+            host.getProtocol().getClientId(),
+            host.getProtocol().getClientSecret(),
+            host.getProtocol().getScopes()).withRedirectUri(PreferencesFactory.get().getProperty("sds.oauth.redirecturi"));
+
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -68,6 +78,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     protected SDSApiClient connect(final HostKeyCallback key) throws BackgroundException {
         final HttpClientBuilder builder = this.builder.build(this);
         switch(host.getProtocol().getAuthorization()) {
+            case "openid":
+                builder.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
+                break;
             default:
                 builder.setServiceUnavailableRetryStrategy(retryHandler);
                 break;
@@ -93,6 +106,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             try {
                 // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
                 switch(host.getProtocol().getAuthorization()) {
+                    case "openid":
+                        authorizationService.setTokens(authorizationService.authorize(host, keychain, controller, cancel));
+                        // Todo obtain authentiation token from OAuth credentials
+                        break;
                     default:
                         this.login(auth.login(new LoginRequest()
                                 .authType(host.getProtocol().getAuthorization())
