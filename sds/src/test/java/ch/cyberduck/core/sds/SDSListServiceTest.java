@@ -58,8 +58,10 @@ public class SDSListServiceTest {
         assertEquals(1, (new SDSListService(session).list(room, new DisabledListProgressListener(), 1).size()));
         new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(2, (new SDSListService(session).list(room, new DisabledListProgressListener(), 1).size()));
+        assertEquals(2, (new SDSListService(session).list(room, new DisabledListProgressListener()).size()));
         new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(3, (new SDSListService(session).list(room, new DisabledListProgressListener(), 1).size()));
+        assertEquals(3, (new SDSListService(session).list(room, new DisabledListProgressListener()).size()));
         new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

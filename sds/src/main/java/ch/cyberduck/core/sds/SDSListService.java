@@ -50,8 +50,9 @@ public class SDSListService implements ListService {
         try {
             Integer offset = 0;
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session);
+            NodeList nodes;
             do {
-                final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(session.getToken(), null, 0,
+                nodes = new NodesApi(session.getClient()).getFsNodes(session.getToken(), null, 0,
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(directory, new DisabledListProgressListener())),
                         null, null, null, offset, chunksize);
                 for(Node node : nodes.getItems()) {
@@ -73,11 +74,8 @@ public class SDSListService implements ListService {
                     listener.chunk(directory, children);
                 }
                 offset += chunksize;
-                if(nodes.getItems().isEmpty()) {
-                    break;
-                }
             }
-            while(true);
+            while(nodes.getItems().size() == chunksize);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Listing directory {0} failed", e, directory);
