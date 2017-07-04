@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -172,6 +173,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Write.class) {
             return (T) new SDSWriteFeature(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new SDSMultipartWriteFeature(this);
         }
         if(type == Directory.class) {
             return (T) new SDSDirectoryFeature(this);

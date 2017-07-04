@@ -49,7 +49,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SDSWriteFeatureTest {
+public class SDSMultipartWriteFeatureTest {
 
     @Test
     public void testReadWrite() throws Exception {
@@ -65,7 +65,7 @@ public class SDSWriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final SDSWriteFeature writer = new SDSWriteFeature(session);
+        final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
