@@ -60,7 +60,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
             if(StringUtils.equals("file_state_none", e.getMessage())) {
                 return PathAttributes.EMPTY;
             }
-            throw new B2ExceptionMappingService(session).map("Failure to read attributes of {0}", e, file);
+            throw new B2ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

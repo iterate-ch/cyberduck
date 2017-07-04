@@ -59,6 +59,8 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     private final Find finder;
     private final AttributesFinder attributes;
 
+    public static final int DEFAULT_CLASSIFICATION = 2;
+
     public SDSWriteFeature(final SDSSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
@@ -75,7 +77,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         final CreateFileUploadRequest body = new CreateFileUploadRequest();
         body.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file.getParent(), new DisabledListProgressListener())));
         body.setName(file.getName());
-        body.classification(2); // internal
+        body.classification(DEFAULT_CLASSIFICATION); // internal
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(session.getToken(), body);
             final String id = response.getUploadId();
@@ -85,11 +87,11 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                 public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                     try {
                         final SDSApiClient client = session.getClient();
-                        final HttpPost post = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), id));
-                        post.setEntity(entity);
-                        post.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
-                        post.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
-                        final HttpResponse response = client.getClient().execute(post);
+                        final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), id));
+                        request.setEntity(entity);
+                        request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
+                        request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
+                        final HttpResponse response = client.getClient().execute(request);
                         try {
                             // Validate response
                             switch(response.getStatusLine().getStatusCode()) {

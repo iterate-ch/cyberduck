@@ -180,7 +180,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                                 return session.getClient().uploadLargeFilePart(version.id, segment, entity, checksum.hash);
                             }
                             catch(B2ApiException e) {
-                                throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
+                                throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
                             }
                             catch(IOException e) {
                                 throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
@@ -193,7 +193,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                 throw new IOException(e.getMessage(), e);
             }
             catch(B2ApiException e) {
-                throw new IOException(new B2ExceptionMappingService(session).map("Upload {0} failed", e, file));
+                throw new IOException(new B2ExceptionMappingService().map("Upload {0} failed", e, file));
             }
         }
 
@@ -233,7 +233,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                 }
             }
             catch(B2ApiException e) {
-                throw new IOException(new B2ExceptionMappingService(session).map("Upload {0} failed", e, file));
+                throw new IOException(new B2ExceptionMappingService().map("Upload {0} failed", e, file));
             }
             finally {
                 close.set(true);

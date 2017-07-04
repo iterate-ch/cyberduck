@@ -56,6 +56,7 @@ public class SDSAttributesFinderFeatureTest {
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session);
         f.find(test);
+        session.close();
     }
 
     @Test

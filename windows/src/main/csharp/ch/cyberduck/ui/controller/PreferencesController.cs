@@ -762,7 +762,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DefaultProtocolChangedEvent()
         {
             Protocol selected = View.DefaultProtocol;
-            PreferencesFactory.get().setProperty("connection.protocol.default", selected.getProvider());
+            PreferencesFactory.get().setProperty("connection.protocol.default", selected.getIdentifier());
             PreferencesFactory.get().setProperty("connection.port.default", selected.getDefaultPort());
         }
 
@@ -1163,7 +1163,7 @@ namespace Ch.Cyberduck.Ui.Controller
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
             foreach (Protocol p in ProtocolFactory.get().find().toArray(new Protocol[] { }))
             {
-                protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getProvider()));
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getIdentifier()));
             }
             View.PopulateProtocols(protocols);
         }
@@ -1175,7 +1175,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (Host host in BookmarkCollection.defaultCollection())
             {
                 bookmarks.Add(new KeyValueIconTriple<Host, string>(host, BookmarkNameProvider.toString(host),
-                    host.getProtocol().getProvider()));
+                    host.getProtocol().getIdentifier()));
             }
             View.PopulateBookmarks(bookmarks);
         }

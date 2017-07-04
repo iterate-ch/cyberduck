@@ -24,18 +24,16 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -49,7 +47,6 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
-import java.util.EnumSet;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
 
@@ -141,34 +138,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> children = new AttributedList<Path>();
-        try {
-            final NodeList nodes = new NodesApi(client).getFsNodes(token, null, 0,
-                    Long.parseLong(new SDSNodeIdProvider(this).getFileid(directory, new DisabledListProgressListener())),
-                    null, null, null, null, null);
-            for(Node node : nodes.getItems()) {
-                final PathAttributes attributes = new SDSAttributesFinderFeature(this).toAttributes(node);
-                final EnumSet<AbstractPath.Type> type;
-                switch(node.getType()) {
-                    case ROOM:
-                        type = EnumSet.of(Path.Type.directory, Path.Type.volume);
-                        break;
-                    case FOLDER:
-                        type = EnumSet.of(Path.Type.directory);
-                        break;
-                    default:
-                        type = EnumSet.of(Path.Type.file);
-                        break;
-                }
-                final Path file = new Path(directory, node.getName(), type, attributes);
-                children.add(file);
-                listener.chunk(directory, children);
-            }
-        }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Listing directory {0} failed", e, directory);
-        }
-        return children;
+        return new SDSListService(this).list(directory, listener);
     }
 
     /**
@@ -194,6 +164,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Write.class) {
             return (T) new SDSWriteFeature(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new SDSMultipartWriteFeature(this);
         }
         if(type == Directory.class) {
             return (T) new SDSDirectoryFeature(this);

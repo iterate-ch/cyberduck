@@ -49,6 +49,7 @@ public class SDSTouchFeatureTest {
         assertTrue(new SDSTouchFeature(session).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
         assertTrue(new SDSTouchFeature(session).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))));
         assertFalse(new SDSTouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.directory))));
+        session.close();
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -67,6 +68,7 @@ public class SDSTouchFeatureTest {
             assertEquals("-80001. Parent ID must be positive. See API doc. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
+        session.close();
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -86,6 +88,7 @@ public class SDSTouchFeatureTest {
             assertEquals("-40755. Not allowed filename='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
+        session.close();
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -105,5 +108,6 @@ public class SDSTouchFeatureTest {
             assertEquals("-40755. Not allowed filename='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
+        session.close();
     }
 }

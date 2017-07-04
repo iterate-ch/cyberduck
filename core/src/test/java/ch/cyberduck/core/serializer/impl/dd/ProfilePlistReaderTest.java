@@ -37,7 +37,7 @@ public class ProfilePlistReaderTest {
 
     @Test
     public void testDeserializeDropbox() throws Exception {
-        final Profile profile = new ProfilePlistReader().read(
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory()).read(
                 new Local("src/test/resources/Dropbox.cyberduckprofile")
         );
         assertNull(profile);

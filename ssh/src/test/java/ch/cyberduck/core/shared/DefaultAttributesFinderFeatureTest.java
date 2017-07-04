@@ -81,7 +81,7 @@ public class DefaultAttributesFinderFeatureTest {
         assertTrue(cache.containsKey(file.getParent()));
         // Test wrong type
         try {
-            f.find(new Path(workdir, "test", EnumSet.of(Path.Type.directory)));
+            f.find(new Path(workdir, file.getName(), EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {

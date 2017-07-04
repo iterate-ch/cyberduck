@@ -82,6 +82,7 @@ public class SDSNodeIdProviderTest {
             // Expected
         }
         new SDSDeleteFeature(session).delete(Arrays.asList(file, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
     }
 
     @Test
@@ -105,5 +106,6 @@ public class SDSNodeIdProviderTest {
             //
         }
         new SDSDeleteFeature(session).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
     }
 }

@@ -36,6 +36,7 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
     @Override
     public BackgroundException map(final ApiException failure) {
         final StringBuilder buffer = new StringBuilder();
+        if(null != failure.getResponseBody()) {
         final JsonParser parser = new JsonParser();
         try {
             final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
@@ -58,6 +59,7 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
         catch(JsonParseException e) {
             // Ignore
             this.append(buffer, failure.getMessage());
+        }
         }
         switch(failure.getCode()) {
             case HttpStatus.SC_PRECONDITION_FAILED:
