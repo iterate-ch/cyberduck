@@ -37,29 +37,29 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
     public BackgroundException map(final ApiException failure) {
         final StringBuilder buffer = new StringBuilder();
         if(null != failure.getResponseBody()) {
-        final JsonParser parser = new JsonParser();
-        try {
-            final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
-            if(json.get("errorCode").isJsonPrimitive()) {
-                final JsonPrimitive errorCode = json.getAsJsonPrimitive("errorCode");
-                this.append(buffer, errorCode.getAsString());
-                switch(failure.getCode()) {
-                    case HttpStatus.SC_PRECONDITION_FAILED:
-                        // [-10108] Radius Access-Challenge required.
-                        switch(errorCode.getAsInt()) {
-                            case -10108:
-                                return new PartialLoginFailureException(buffer.toString(), failure);
-                        }
+            final JsonParser parser = new JsonParser();
+            try {
+                final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
+                if(json.get("errorCode").isJsonPrimitive()) {
+                    final JsonPrimitive errorCode = json.getAsJsonPrimitive("errorCode");
+                    this.append(buffer, errorCode.getAsString());
+                    switch(failure.getCode()) {
+                        case HttpStatus.SC_PRECONDITION_FAILED:
+                            // [-10108] Radius Access-Challenge required.
+                            switch(errorCode.getAsInt()) {
+                                case -10108:
+                                    return new PartialLoginFailureException(buffer.toString(), failure);
+                            }
+                    }
+                }
+                if(json.get("debugInfo").isJsonPrimitive()) {
+                    this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
                 }
             }
-            if(json.get("debugInfo").isJsonPrimitive()) {
-                this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+            catch(JsonParseException e) {
+                // Ignore
+                this.append(buffer, failure.getMessage());
             }
-        }
-        catch(JsonParseException e) {
-            // Ignore
-            this.append(buffer, failure.getMessage());
-        }
         }
         switch(failure.getCode()) {
             case HttpStatus.SC_PRECONDITION_FAILED:
