@@ -15,19 +15,9 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -77,7 +67,11 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     protected SDSApiClient connect(final HostKeyCallback key) throws BackgroundException {
         final HttpClientBuilder builder = this.builder.build(this);
-        builder.setServiceUnavailableRetryStrategy(retryHandler);
+        switch(host.getProtocol().getAuthorization()) {
+            default:
+                builder.setServiceUnavailableRetryStrategy(retryHandler);
+                break;
+        }
         final CloseableHttpClient apache = builder.build();
         final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext()));
@@ -91,25 +85,53 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+        final AuthApi auth = new AuthApi(client);
+        final String login = host.getCredentials().getUsername();
+        final String password = host.getCredentials().getPassword();
         try {
-            // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
-            final String login = host.getCredentials().getUsername();
-            final String password = host.getCredentials().getPassword();
-            final LoginResponse response = new AuthApi(client).login(new LoginRequest()
-                    .authType(host.getProtocol().getAuthorization())
-                    .language("en")
-                    .login(login)
-                    .password(password)
+            try {
+                // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
+                switch(host.getProtocol().getAuthorization()) {
+                    default:
+                        this.login(auth.login(new LoginRequest()
+                                .authType(host.getProtocol().getAuthorization())
+                                .language("en")
+                                .login(login)
+                                .password(password)
+                        ));
+                        // Save tokens for 401 error response when expired
+                        retryHandler.setTokens(login, password);
+                        break;
+                }
+            }
+            catch(ApiException e) {
+                throw new SDSExceptionMappingService().map(e);
+            }
+        }
+        catch(PartialLoginFailureException e) {
+            final Credentials additional = new Credentials(host.getCredentials().getUsername());
+            controller.prompt(host, additional, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    e.getDetail(), new LoginOptions().user(false).keychain(false)
             );
-            this.setToken(response.getToken());
-            account = new UserApi(client).getUserInfo(response.getToken(), null, false);
+            try {
+                this.login(auth.login(new LoginRequest()
+                        .authType(host.getProtocol().getAuthorization())
+                        .language("en")
+                        .token(additional.getPassword())
+                ));
+            }
+            catch(ApiException f) {
+                throw new SDSExceptionMappingService().map(f);
+            }
             // Save tokens for 401 error response when expired
             retryHandler.setTokens(login, password);
         }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map(e);
-        }
+    }
+
+    private void login(final LoginResponse response) throws ApiException {
+        token = response.getToken();
+        account = new UserApi(client).getUserInfo(response.getToken(), null, false);
     }
 
     @Override
