@@ -119,8 +119,9 @@ public class SDSSession extends HttpSession<ApiClient> {
             final NodeList nodes = new NodesApi(client).getFsNodes(token, null, 0,
                     Long.parseLong(new SDSNodeIdProvider(this).getFileid(directory, new DisabledListProgressListener())),
                     null, null, null, null, null);
+            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(this);
             for(Node node : nodes.getItems()) {
-                final PathAttributes attributes = new SDSAttributesFinderFeature(this).toAttributes(node);
+                final PathAttributes attributes = feature.toAttributes(node);
                 final EnumSet<AbstractPath.Type> type;
                 switch(node.getType()) {
                     case ROOM:
