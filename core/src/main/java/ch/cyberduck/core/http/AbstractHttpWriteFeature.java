@@ -71,17 +71,20 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
     @Override
     public HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
                                              final DelayedHttpEntityCallable<T> command) throws BackgroundException {
-        // Signal on enter streaming
-        final CountDownLatch entry = new CountDownLatch(1);
-        final CountDownLatch exit = new CountDownLatch(1);
+        return this.write(file, status, command, new DelayedHttpEntity() {
+            @Override
+            public long getContentLength() {
+                return command.getContentLength();
+            }
+        });
+    }
 
+    public HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
+                                             final DelayedHttpEntityCallable<T> command, final DelayedHttpEntity entity) throws BackgroundException {
+        // Signal on enter streaming
+        final CountDownLatch entry = entity.getEntry();
+        final CountDownLatch exit = new CountDownLatch(1);
         try {
-            final DelayedHttpEntity entity = new DelayedHttpEntity(entry) {
-                @Override
-                public long getContentLength() {
-                    return command.getContentLength();
-                }
-            };
             if(StringUtils.isNotBlank(status.getMime())) {
                 entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
             }

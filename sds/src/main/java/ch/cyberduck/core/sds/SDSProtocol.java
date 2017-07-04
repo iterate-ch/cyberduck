@@ -16,6 +16,8 @@ package ch.cyberduck.core.sds;/*
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class SDSProtocol extends AbstractProtocol {
     @Override
     public String getIdentifier() {
@@ -40,5 +42,15 @@ public class SDSProtocol extends AbstractProtocol {
     @Override
     public String getAuthorization() {
         return "sql";
+    }
+
+    @Override
+    public String disk() {
+        return String.format("%s.tiff", "ftp");
+    }
+
+    @Override
+    public String getPrefix() {
+        return String.format("%s.%s", SDSProtocol.class.getPackage().getName(), StringUtils.upperCase(this.getType().name()));
     }
 }
