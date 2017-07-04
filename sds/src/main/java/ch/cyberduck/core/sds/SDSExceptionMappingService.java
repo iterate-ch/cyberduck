@@ -17,8 +17,11 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+
+import org.apache.http.HttpStatus;
 
 import java.io.StringReader;
 
@@ -45,6 +48,12 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
             // Ignore
             this.append(buffer, failure.getMessage());
         }
-        return new HttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+        switch(failure.getCode()) {
+            case HttpStatus.SC_PRECONDITION_FAILED:
+                // [-10108] Radius Access-Challenge required.
+                return new PartialLoginFailureException(buffer.toString(), failure);
+            default:
+                return new HttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+        }
     }
 }
