@@ -185,7 +185,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                     }
                 }, overall).call());
             }
-            catch(Exception e) {
+            catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
             }
         }
