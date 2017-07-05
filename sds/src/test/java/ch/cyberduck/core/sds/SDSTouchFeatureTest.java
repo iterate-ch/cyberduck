@@ -25,6 +25,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -33,6 +34,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -88,7 +90,10 @@ public class SDSTouchFeatureTest {
             assertEquals("-40755. Not allowed filename='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
-        session.close();
+        finally {
+            new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            session.close();
+        }
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -108,6 +113,9 @@ public class SDSTouchFeatureTest {
             assertEquals("-40755. Not allowed filename='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
-        session.close();
+        finally {
+            new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            session.close();
+        }
     }
 }

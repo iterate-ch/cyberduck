@@ -77,6 +77,7 @@ public class SDSDirectoryFeatureTest {
         assertTrue(new DefaultFindFeature(session).find(target));
         new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(target));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
