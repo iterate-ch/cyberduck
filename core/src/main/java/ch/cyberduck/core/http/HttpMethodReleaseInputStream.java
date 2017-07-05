@@ -53,9 +53,12 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
     public void close() throws IOException {
         if(response instanceof CloseableHttpResponse) {
             long read = this.getByteCount();
-            if(-1 == response.getEntity().getContentLength()
-                    || read == response.getEntity().getContentLength()) {
-                // Fully consumed or unknown content length for decompressing HTTP entity
+            if(-1 == response.getEntity().getContentLength() && -1 == this.read()) {
+                // Fully consumed for unknown content length with decompressing HTTP entity
+                super.close();
+            }
+            else if(read == response.getEntity().getContentLength()) {
+                // Fully consumed
                 super.close();
             }
             else {
