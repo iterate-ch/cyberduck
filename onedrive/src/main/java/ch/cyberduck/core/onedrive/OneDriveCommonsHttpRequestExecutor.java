@@ -192,10 +192,11 @@ public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecu
 
         @Override
         public String getLocation() {
-            Header[] headers = response.getHeaders("Location");
-            if (headers.length == 0)
+            Header locationHeader = response.getFirstHeader("Location");
+            if (null == locationHeader) {
                 return null;
-            return headers[0].getValue();
+            }
+            return locationHeader.getValue();
         }
     }
 
