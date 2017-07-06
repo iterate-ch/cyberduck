@@ -1495,8 +1495,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 ISet<Path> folders = new HashSet<Path>();
                 foreach (Path path in View.VisiblePaths)
                 {
-                    if (null == path || !View.IsExpanded(path)) continue;
-                    folders.Add(path);
+                    if (null == path) continue;
+                    if (_cache.isCached(path))
+                    {
+                        _cache.invalidate(path);
+                        continue;
+                    }
+                    if (View.IsExpanded(path))
+                    {
+                        folders.Add(path);
+                    }
                 }
                 folders.Add(Workdir);
                 Reload(Workdir, folders, SelectedPaths, true);
@@ -2511,7 +2519,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    if (_cache.isCached(folder))
+                    if (_cache.isValid(folder))
                     {
                         Reload(workdir, selected, folder);
                         return;
