@@ -77,7 +77,6 @@ public class MantaSession extends SSLSession<MantaClient> {
 
     public MantaSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h, new ThreadLocalHostnameDelegatingTrustManager(trust, h.getHostname()), key);
-
         pathMapper = new MantaPathMapper(this);
         exceptionMapper = new MantaExceptionMappingService(this);
         config = new ChainedConfigContext(
