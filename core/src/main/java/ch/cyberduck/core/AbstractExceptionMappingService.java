@@ -30,6 +30,9 @@ import org.apache.log4j.Logger;
 
 import java.io.EOFException;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
@@ -83,6 +86,12 @@ public abstract class AbstractExceptionMappingService<T extends Throwable> imple
     }
 
     protected BackgroundException wrap(final T failure, final String title, final StringBuilder buffer) {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw);
+        failure.printStackTrace(pw);
+        log.error("DEBUG ONLY EXCEPTION DUMP" + sw.toString());
+
+
         if(buffer.toString().isEmpty()) {
             log.warn(String.format("No message for failure %s", failure));
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));

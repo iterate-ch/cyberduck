@@ -346,5 +346,10 @@
             <artifactId>cryptomator</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>manta</artifactId>
+            <version>6.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

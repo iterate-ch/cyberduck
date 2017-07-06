@@ -29,6 +29,7 @@
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>test</artifactId>
@@ -42,6 +43,13 @@
             <artifactId>java-manta-client</artifactId>
             <version>LATEST</version>
         </dependency>
+
+        <dependency>
+            <groupId>ch.iterate.ssh</groupId>
+            <artifactId>sshj</artifactId>
+            <version>0.20.3</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>

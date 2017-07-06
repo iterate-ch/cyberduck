@@ -54,72 +54,17 @@ public class MantaAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        try {
-            return convert(session.client.head(file.getAbsolute()));
 
+        final String remotePath = session.getPathMapper().toMantaPath(file);
+
+        try {
+            return new MantaObjectAttributeAdapter(session).from(session.getClient().head(remotePath));
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-        }
-    }
-
-    private PathAttributes convert(final MantaObject mantaObject) {
-        final PathAttributes attributes = new PathAttributes();
-
-        attributes.setSize(mantaObject.getContentLength());
-        attributes.setETag(mantaObject.getEtag());
-
-        attributes.setChecksum(
-                new Checksum(HashAlgorithm.md5, new String(mantaObject.getMd5Bytes())));
-
-        attributes.setModificationDate(mantaObject.getLastModifiedTime().getTime());
-
-        if(!mantaObject.isDirectory()) {
-            populateLinkAttributeFromPath(attributes, mantaObject.getPath());
-        }
-
-        String[] pathSegments = mantaObject.getPath().split(MantaClient.SEPARATOR);
-
-        attributes.setDisplayname(pathSegments[pathSegments.length - 1]);
-        attributes.setOwner(pathSegments[0]);
-
-        attributes.setStorageClass(mantaObject.getHeaderAsString(MantaSession.HEADER_KEY_STORAGE_CLASS));
-
-        attributes.setPermission(
-                new Permission(
-                        Permission.Action.all,
-                        Permission.Action.none,
-                        session.pathIsProtected()
-                                ? Permission.Action.none
-                                : Permission.Action.read
-                )
-        );
-
-        // TODO: directoryId for cryptomator?
-        // TODO: region?
-        // TODO: metadata extras?
-
-        return attributes;
-    }
-
-    private void populateLinkAttributeFromPath(final PathAttributes attributes, final String objectPath) {
-        final String joinedPath = session.getBaseWebURL() + MantaClient.SEPARATOR + objectPath;
-
-        // TODO: verify this urlType switch is actually what we want to do
-        final DescriptiveUrl.Type urlType = session.pathIsProtected()
-                ? DescriptiveUrl.Type.authenticated
-                : DescriptiveUrl.Type.http;
-
-        try {
-            final URI link = new URI(joinedPath);
-
-            attributes.setLink(new DescriptiveUrl(link, urlType));
-        }
-        catch(URISyntaxException e) {
-            log.warn(String.format("Cannot set link. Web URL returned %s", joinedPath), e);
         }
     }
 
