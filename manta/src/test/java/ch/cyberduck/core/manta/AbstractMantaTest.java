@@ -38,7 +38,7 @@ public abstract class AbstractMantaTest {
 
     @BeforeClass
     public static void protocol() {
-        ProtocolFactory.register(new MantaProtocol());
+        ProtocolFactory.get().register(new MantaProtocol());
     }
 
     @After
