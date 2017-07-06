@@ -38,13 +38,10 @@ public class MantaDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            if(containerService.isContainer(file)) {
-                continue;
-            }
-
             callback.delete(file);
             try {
-                session.getClient().deleteRecursive(session.getPathMapper().toMantaPath(file));
+                // TODO: verify deleteRecursive behavior
+                session.getClient().deleteRecursive(session.requestPath(file));
             }
             catch(IOException e) {
                 throw new MantaExceptionMappingService().map("Cannot delete {0}", e, file);

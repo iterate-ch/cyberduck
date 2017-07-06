@@ -44,24 +44,8 @@ public class MantaSearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
 
-        // The query text used to search for items. Values may be matched across several fields including filename, metadata, and file content.
-//        final Iterator<MantaItem.Metadata> iterator = session.toFolder(workdir).search(regex.toPattern().pattern()).iterator();
-//        while(iterator.hasNext()) {
-//            final MantaItem.Metadata metadata;
-//            try {
-//                metadata = iterator.next();
-//            }
-//            catch(MantaRuntimeException e) {
-//                log.warn(e);
-//                continue;
-//            }
-//            final PathAttributes attributes = this.attributes.convert(metadata);
-//            final String driveId = metadata.getParentReference().getDriveId();
-//            final String parentDrivePath = metadata.getParentReference().getPath();
-//            final String parentPath = parentDrivePath.substring(parentDrivePath.indexOf(':') + 2); // skip :/
-//            final String filePath = String.format("/%s/%s/%s", driveId, parentPath, metadata.getName());
-//            list.add(new Path(filePath, metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
-//        }
+        // TODO: make sure, but this might just not be a thing
+
         return list;
     }
 

@@ -17,24 +17,16 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
-import com.joyent.manta.client.MantaClient;
-import com.joyent.manta.client.MantaObject;
 import com.joyent.manta.exception.MantaException;
 
 public class MantaAttributesFinderFeature implements AttributesFinder {
@@ -55,8 +47,7 @@ public class MantaAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
 
-        final String remotePath = session.getPathMapper().toMantaPath(file);
-
+        final String remotePath = session.requestPath(file);
         try {
             return new MantaObjectAttributeAdapter(session).from(session.getClient().head(remotePath));
         }

@@ -37,13 +37,13 @@ public class MantaTouchFeature implements Touch {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
 
-        if (!session.getClient().existsAndIsAccessible(session.getPathMapper().toMantaPath(file.getParent()))) {
+        if (!session.getClient().existsAndIsAccessible(session.requestPath(file.getParent()))) {
             MantaSession.log.error("nyi. parent is missing, should create it");
             throw new MantaExceptionMappingService().map("Parent missing", new RuntimeException(), file.getParent());
         }
 
         try {
-            session.getClient().put(session.getPathMapper().toMantaPath(file), new byte[0]);
+            session.getClient().put(session.requestPath(file), new byte[0]);
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Cannot create file {0}", e, file);

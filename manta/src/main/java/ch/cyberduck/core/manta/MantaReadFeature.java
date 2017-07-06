@@ -40,7 +40,7 @@ public class MantaReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final String remotePath = session.getPathMapper().toMantaPath(file);
+        final String remotePath = session.requestPath(file);
 
         try {
             // requesting an empty file as an InputStream doesn't work, but we also don't want to

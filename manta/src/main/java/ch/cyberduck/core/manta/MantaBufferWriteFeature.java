@@ -31,6 +31,9 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 
+/**
+ * TODO: not sure how what triggers usage of this class
+ */
 public class MantaBufferWriteFeature extends MantaWriteFeature implements MultipartWrite<Void> {
 
     MantaBufferWriteFeature(final MantaSession session) {

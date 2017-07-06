@@ -54,9 +54,7 @@ public class MantaWriteFeature implements Write<Void> {
     public HttpResponseOutputStream<Void> write(final Path file,
                                           final TransferStatus status,
                                           final ConnectionCallback callback) throws BackgroundException {
-        MantaSession.log.error("write " + file);
-
-        final OutputStream putStream = session.getClient().putAsOutputStream(session.getPathMapper().toMantaPath(file));
+        final OutputStream putStream = session.getClient().putAsOutputStream(session.requestPath(file));
 
         return new HttpResponseOutputStream<Void>(putStream) {
             @Override

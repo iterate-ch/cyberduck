@@ -69,7 +69,6 @@ public class MantaSession extends SSLSession<MantaClient> {
     private String keyFingerprint;
     private String accountOwner;
 
-    private final MantaPathMapper pathMapper;
 
     public MantaSession(final Host h) {
         this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -77,7 +76,6 @@ public class MantaSession extends SSLSession<MantaClient> {
 
     public MantaSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h, new ThreadLocalHostnameDelegatingTrustManager(trust, h.getHostname()), key);
-        pathMapper = new MantaPathMapper(this);
         config = new ChainedConfigContext(
                 new DefaultsConfigContext(),
                 new StandardConfigContext()
@@ -144,10 +142,6 @@ public class MantaSession extends SSLSession<MantaClient> {
         accountOwner = username;
     }
 
-    String getAccountOwner() {
-        return accountOwner;
-    }
-
     boolean isUserWritable(final MantaObject mantaObject) {
         return isUserWritable(mantaObject.getPath());
     }
@@ -161,7 +155,7 @@ public class MantaSession extends SSLSession<MantaClient> {
     }
 
     boolean isWorldReadable(final MantaObject mantaObject) {
-        return isWorldReadable(mantaObject.getPath();
+        return isWorldReadable(mantaObject.getPath());
     }
 
     boolean isWorldReadable(final Path homeRelativePath) {
@@ -169,11 +163,7 @@ public class MantaSession extends SSLSession<MantaClient> {
     }
 
     private boolean isWorldReadable(final String path) {
-        return StringUtils.startsWith(path, MantaSession.HOME_PATH_PUBLIC);
-    }
-
-    MantaPathMapper getPathMapper() {
-        return this.pathMapper;
+        return StringUtils.startsWith(path, HOME_PATH_PUBLIC);
     }
 
     @Override
@@ -203,19 +193,13 @@ public class MantaSession extends SSLSession<MantaClient> {
         if(type == AttributesFinder.class) {
             return (T) new MantaAttributesFinderFeature(this);
         }
-        if(type == UrlProvider.class) {
-            return (T) new MantaUrlProvider();
-        }
-        if(type == Home.class) {
-            return (T) new MantaHomeFinderFeature(this);
-        }
-        if(type == Quota.class) {
-            return (T) new MantaQuotaFeature(this);
-        }
         if(type == Search.class) {
             return (T) new MantaSearchFeature(this);
         }
         return super._getFeature(type);
     }
 
+    String requestPath(final Path homeRelativeRemote) {
+        return accountOwner + homeRelativeRemote.getAbsolute();
+    }
 }

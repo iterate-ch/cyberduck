@@ -23,8 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
-import org.apache.commons.codec.binary.StringUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -54,9 +52,7 @@ public class MantaMoveFeature implements Move {
                 delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
             }
 
-            session.getClient().move(
-                    session.getPathMapper().toMantaPath(file),
-                    session.getPathMapper().toMantaPath(renamed));
+            session.getClient().move(session.requestPath(file), session.requestPath(renamed));
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Cannot rename {0}", e, file);

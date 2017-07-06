@@ -39,26 +39,18 @@ public class MantaExceptionMappingService extends AbstractExceptionMappingServic
 
     private static final Logger log = Logger.getLogger(MantaExceptionMappingService.class);
 
-    private static final boolean HTTP_FAILURE = false;
-    private static final int RESPONSE_CODE = 0;
-
     @Override
     public BackgroundException map(final Exception failure) {
 
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        failure.printStackTrace(pw);
-        log.error(sw.toString());
+        // StringWriter sw = new StringWriter();
+        // PrintWriter pw = new PrintWriter(sw);
+        // failure.printStackTrace(pw);
+        // log.error(sw.toString());
 
-        if (failure instanceof MantaClientException) {
-            // do something with the client part
-        }
+        /**
+         * TODO: more fine-grained mapping
+         */
 
-        if(HTTP_FAILURE) {
-            final StringAppender buffer = new StringAppender();
-            buffer.append(failure.getMessage());
-            return new HttpResponseExceptionMappingService().map(new HttpResponseException(RESPONSE_CODE, buffer.toString()));
-        }
         if(failure instanceof MantaIOException) {
             return new DefaultIOExceptionMappingService().map((IOException) ExceptionUtils.getRootCause(failure));
         }

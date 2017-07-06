@@ -50,22 +50,6 @@ public class MantaAttributesFinderFeatureTest extends AbstractMantaTest {
     }
 
     @Test
-    public void testFindDrive() throws Exception {
-        final AttributedList<Path> drives = new MantaContainerListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
-        assertFalse(drives.isEmpty());
-        for(Path drive : drives) {
-            final PathAttributes attributes = new MantaAttributesFinderFeature(session).find(drive);
-            assertNotNull(attributes);
-            assertNotEquals(-1L, attributes.getSize());
-            assertNotEquals(-1L, attributes.getCreationDate());
-            assertNotEquals(-1L, attributes.getModificationDate());
-            assertNotNull(attributes.getETag());
-            assertNull(attributes.getVersionId());
-            assertNotNull(attributes.getLink());
-        }
-    }
-
-    @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new MantaHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));

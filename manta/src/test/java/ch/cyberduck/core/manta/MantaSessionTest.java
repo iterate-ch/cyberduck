@@ -37,9 +37,7 @@ public class MantaSessionTest extends AbstractMantaTest {
 
     @Test
     public void testFeatures() throws Exception {
-        final MantaSession session = new MantaSession(new Host(new MantaProtocol())
-//                , new DisabledX509TrustManager(), new DefaultX509KeyManager()
-        );
+        final MantaSession session = new MantaSession(new Host(new MantaProtocol()));
         assertNotNull(session.getFeature(Read.class));
         assertNotNull(session.getFeature(Write.class));
         assertNotNull(session.getFeature(Directory.class));
@@ -56,4 +54,5 @@ public class MantaSessionTest extends AbstractMantaTest {
         assertFalse(session.isConnected());
     }
 
+    // TODO: WAY MORE TESTS
 }

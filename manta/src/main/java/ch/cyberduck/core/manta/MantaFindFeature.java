@@ -15,6 +15,7 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -24,6 +25,7 @@ import ch.cyberduck.core.features.Find;
 public class MantaFindFeature implements Find {
 
     private final MantaSession session;
+    private Cache<Path> cache;
 
     public MantaFindFeature(final MantaSession session) {
         this.session = session;
@@ -31,6 +33,30 @@ public class MantaFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
+
+        // TODO: the following block is duplicated in several other Find features?
+        // BEGIN duplicate code cache usage
+        if(file.isRoot()) {
+            return true;
+        }
+        final AttributedList<Path> list;
+        if(cache.isCached(file.getParent())) {
+            list = cache.get(file.getParent());
+        }
+        else {
+            list = new AttributedList<Path>();
+            cache.put(file.getParent(), list);
+        }
+        if(list.contains(file)) {
+            // Previously found
+            return true;
+        }
+        if(cache.isHidden(file)) {
+            // Previously not found
+            return false;
+        }
+        // END duplicate code cache usage
+
         try {
             new MantaAttributesFinderFeature(session).find(file);
             return true; // successfully found attributes for file
@@ -42,6 +68,7 @@ public class MantaFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }

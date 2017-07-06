@@ -37,12 +37,10 @@ public class MantaListService implements ListService {
 
     private final MantaSession session;
     private final MantaObjectAttributeAdapter adapter;
-    private final MantaPathMapper pathMapper;
 
     public MantaListService(final MantaSession session) {
         this.session = session;
         adapter = new MantaObjectAttributeAdapter(session);
-        pathMapper = new MantaPathMapper(session);
     }
 
     @Override
@@ -50,8 +48,7 @@ public class MantaListService implements ListService {
 
         final AttributedList<Path> children = new AttributedList<>();
         final MantaClient c = session.getClient();
-        final String remotePath = pathMapper.toMantaPath(directory);
-        MantaSession.log.error("listing " + remotePath);
+        final String remotePath = session.requestPath(directory);
 
         final Iterator<MantaObject> objectsIter;
         try {
@@ -64,9 +61,7 @@ public class MantaListService implements ListService {
             throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", ioe);
         }
 
-        int i = 0;
         while(objectsIter.hasNext()) {
-            i++;
             MantaObject o = objectsIter.next();
             final PathAttributes attr = adapter.from(o);
             final Path path = new Path(
@@ -80,8 +75,6 @@ public class MantaListService implements ListService {
             children.add(path);
             listener.chunk(directory, children);
         }
-
-        MantaSession.log.error("saw "+i+" entries in remote "+remotePath+" originally " + directory);
 
         return children;
     }
