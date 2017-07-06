@@ -118,10 +118,6 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
-            if(0 == len) {
-                // Skip empty segment
-                return;
-            }
             try {
                 final byte[] content = Arrays.copyOfRange(b, off, len);
                 final HttpEntity entity = MultipartEntityBuilder.create()
