@@ -45,6 +45,7 @@
         <module>hubic</module>
         <module>onedrive</module>
         <module>sds</module>
+        <module>manta</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->

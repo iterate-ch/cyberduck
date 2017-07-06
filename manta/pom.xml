@@ -36,6 +36,12 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.joyent.manta</groupId>
+            <artifactId>java-manta-client</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
     <repositories>
