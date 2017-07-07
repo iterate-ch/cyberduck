@@ -63,7 +63,7 @@ public class MantaListService implements ListService {
             throw uioe;
         }
         catch(MantaIOException me) {
-            throw session.exceptionMapper.map("Listing directory {0} failed", me, directory);
+            throw new MantaExceptionMappingService(session).map("Listing directory {0} failed", me, directory);
         }
         catch(IOException ioe) {
             throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", ioe);

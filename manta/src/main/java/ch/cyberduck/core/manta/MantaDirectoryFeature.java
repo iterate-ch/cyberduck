@@ -40,7 +40,7 @@ public class MantaDirectoryFeature implements Directory {
             session.getClient().putDirectory(session.pathMapper.requestPath(directory));
         }
         catch(MantaException e) {
-            throw session.exceptionMapper.map("Cannot create folder {0}", e, directory);
+            throw new MantaExceptionMappingService(session).map("Cannot create folder {0}", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, directory);

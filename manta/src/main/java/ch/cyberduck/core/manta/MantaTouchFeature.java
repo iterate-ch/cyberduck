@@ -47,7 +47,7 @@ public class MantaTouchFeature implements Touch {
             session.getClient().put(remotePath, "");
         }
         catch(MantaException | MantaIOException e) {
-            throw session.exceptionMapper.map("Cannot create file {0}", e, file);
+            throw new MantaExceptionMappingService(session).map("Cannot create file {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);

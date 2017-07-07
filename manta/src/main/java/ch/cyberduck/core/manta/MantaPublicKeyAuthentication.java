@@ -69,7 +69,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         log.info(String.format("Login using public key authentication with credentials %s", credentials));
 
         if(!credentials.isPublicKeyAuthentication()) {
-            throw session.exceptionMapper.map(new KeyException("Private Key Authentication is required"));
+            throw new MantaExceptionMappingService(session).map(new KeyException("Private Key Authentication is required"));
         }
 
         final Local identity = credentials.getIdentity();
@@ -82,7 +82,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                     new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), true);
         }
         catch(IOException e) {
-            throw session.exceptionMapper.mapLoginException(e);
+            throw new MantaExceptionMappingService(session).mapLoginException(e);
         }
 
         log.info(String.format("Reading private key %s with key format %s", identity, format));
@@ -150,7 +150,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
             fingerprint = KeyFingerprinter.md5Fingerprint(new KeyPair(provider.getPublic(), provider.getPrivate()));
         }
         catch(IOException e) {
-            throw session.exceptionMapper.map(e);
+            throw new MantaExceptionMappingService(session).map(e);
         }
 
         session.setFingerprint(fingerprint);

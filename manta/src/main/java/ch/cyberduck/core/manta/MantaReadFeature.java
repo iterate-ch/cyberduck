@@ -57,7 +57,7 @@ public class MantaReadFeature implements Read {
             return emptyFileFallback(file);
         }
         catch(IOException e) {
-            throw session.exceptionMapper.map(e);
+            throw new MantaExceptionMappingService(session).map(e);
         }
     }
 
@@ -73,7 +73,7 @@ public class MantaReadFeature implements Read {
             probablyEmptyFile = session.getClient().head(session.pathMapper.requestPath(file));
         }
         catch(IOException e) {
-            throw session.exceptionMapper.map("Cannot read file {0}", e, file);
+            throw new MantaExceptionMappingService(session).map("Cannot read file {0}", e, file);
         }
 
         if(probablyEmptyFile.getContentLength() != 0) {

@@ -17,7 +17,6 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -25,7 +24,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -33,7 +31,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -63,8 +60,6 @@ public class MantaSession extends SSLSession<MantaClient> {
 
     private final SettableConfigContext<BaseChainedConfigContext> config;
 
-    final MantaExceptionMappingService exceptionMapper;
-
     private String keyFingerprint;
 
     MantaPathMapper pathMapper;
@@ -76,7 +71,6 @@ public class MantaSession extends SSLSession<MantaClient> {
     public MantaSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h, new ThreadLocalHostnameDelegatingTrustManager(trust, h.getHostname()), key);
         pathMapper = new MantaPathMapper(this);
-        exceptionMapper = new MantaExceptionMappingService(this);
         config = new ChainedConfigContext(
                 new DefaultsConfigContext(),
                 new StandardConfigContext()
@@ -123,7 +117,7 @@ public class MantaSession extends SSLSession<MantaClient> {
             client.isDirectoryEmpty(pathMapper.getNormalizedHomePath().getAbsolute());
         }
         catch(IOException e) {
-            throw exceptionMapper.mapLoginException(e);
+            throw new MantaExceptionMappingService(this).mapLoginException(e);
         }
     }
 
@@ -137,15 +131,15 @@ public class MantaSession extends SSLSession<MantaClient> {
         return new MantaListService(this).list(directory, listener);
     }
 
-    void setFingerprint(final String f) {
+    protected void setFingerprint(final String f) {
         keyFingerprint = f;
     }
 
-    String getFingerprint() {
+    protected String getFingerprint() {
         return keyFingerprint;
     }
 
-    boolean userIsOwner() throws IllegalStateException {
+    protected boolean userIsOwner() throws IllegalStateException {
         if(pathMapper == null || pathMapper.getAccountRoot() == null) {
             throw new IllegalStateException("Account owner not set");
         }

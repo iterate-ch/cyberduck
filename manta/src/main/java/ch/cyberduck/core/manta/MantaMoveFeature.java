@@ -18,7 +18,6 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -49,7 +48,7 @@ public class MantaMoveFeature implements Move {
             session.getClient().move(session.pathMapper.requestPath(file), session.pathMapper.requestPath(renamed));
         }
         catch(MantaException | MantaIOException e) {
-            throw session.exceptionMapper.map("Cannot rename {0}", e, file);
+            throw new MantaExceptionMappingService(session).map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);

@@ -43,7 +43,7 @@ public class MantaDeleteFeature implements Delete {
                 session.getClient().deleteRecursive(session.pathMapper.requestPath(file));
             }
             catch(MantaException | MantaIOException e) {
-                throw session.exceptionMapper.map("Cannot delete {0}", e, file);
+                throw new MantaExceptionMappingService(session).map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
