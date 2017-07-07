@@ -128,6 +128,27 @@
                                     </outputDirectory>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>unpack-profiles</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <dependency>
+                                                <groupId>ch.cyberduck</groupId>
+                                                <artifactId>profiles</artifactId>
+                                                <version>${project.version}</version>
+                                            </dependency>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>
+                                        ${project.build.directory}/duck.bundle/Contents/Resources/Profiles
+                                    </outputDirectory>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
@@ -177,13 +198,13 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <property name="home" value="${main.basedir}" />
-                                        <property name="version" value="${project.version}" />
-                                        <property name="revision" value="${git.commitsCount}" />
-                                        <property name="git.revision" value="${git.revision}" />
-                                        <property name="sparkle.feed" value="${sparkle.feed}" />
-                                        <property name="installer.certificate" value="${installer.certificate}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
+                                        <property name="home" value="${main.basedir}"/>
+                                        <property name="version" value="${project.version}"/>
+                                        <property name="revision" value="${git.commitsCount}"/>
+                                        <property name="git.revision" value="${git.revision}"/>
+                                        <property name="sparkle.feed" value="${sparkle.feed}"/>
+                                        <property name="installer.certificate" value="${installer.certificate}"/>
+                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="."/>
                                     </tasks>
                                 </configuration>
                             </execution>

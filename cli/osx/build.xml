@@ -50,12 +50,6 @@
         <antcall target="runtime">
             <param name="bundle" value="${cli.bundle}"/>
         </antcall>
-        <mkdir dir="${cli.bundle}/${bundle.profiles}"/>
-        <copy todir="${cli.bundle}/${bundle.profiles}" overwrite="true">
-            <fileset dir="${profiles.default}">
-                <include name="*.cyberduckprofile"/>
-            </fileset>
-        </copy>
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${bundle.runtime.lib}"/>
