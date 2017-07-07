@@ -38,6 +38,7 @@ cp -r %{_sourcedir}/duck %{buildroot}/opt
 ln -sf /opt/duck/duck /usr/local/bin/duck
 
 %clean
+rm -rf %{buildroot}
+rm -f /usr/local/bin/duck
 
 %postun
-rm -f /usr/local/bin/duck
