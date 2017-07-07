@@ -53,8 +53,7 @@ public class MantaPublicKeyAuthenticationIT {
                     .authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback());
             assertEquals(session.getFingerprint(), System.getProperty("manta.key_id"));
             session.close();
-        } catch (BackgroundException e) {
-            assertTrue(e instanceof LoginFailureException);
+        } catch (LoginFailureException e) {
             assertTrue(e.getMessage().contains("Login failed"));
             assertTrue(e.getCause().getMessage().contains("Private Key Authentication is required"));
         }

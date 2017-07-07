@@ -61,8 +61,6 @@ public class MantaSession extends SSLSession<MantaClient> {
 
     public static final Logger log = Logger.getLogger(MantaSession.class);
 
-    static final String HEADER_KEY_STORAGE_CLASS = "Durability-Level";
-
     private final SettableConfigContext<BaseChainedConfigContext> config;
 
     final MantaExceptionMappingService exceptionMapper;

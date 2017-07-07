@@ -34,9 +34,6 @@ public class MantaMoveFeature implements Move {
     private final MantaSession session;
     private Delete delete;
 
-    private final PathContainerService containerService
-            = new PathContainerService();
-
     public MantaMoveFeature(MantaSession session) {
         this.session = session;
         this.delete = new MantaDeleteFeature(session);

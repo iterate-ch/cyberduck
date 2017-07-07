@@ -43,7 +43,6 @@ public class MantaListServiceIT extends AbstractMantaTest {
         for(Path f : list) {
             assertEquals(session.pathMapper.getAccountRoot(), f.getParent());
         }
-        // assertTrue(list.contains(new DefaultHomeFinderService(session).find()));
     }
 
     @Test
@@ -67,8 +66,6 @@ public class MantaListServiceIT extends AbstractMantaTest {
                 EnumSet.of(Path.Type.directory));
         final Path target = new MantaDirectoryFeature(session)
                 .mkdir(testDir, null, null);
-        final AttributedList<Path> list = new MantaListService(session)
-                .list(target, new DisabledListProgressListener());
 
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

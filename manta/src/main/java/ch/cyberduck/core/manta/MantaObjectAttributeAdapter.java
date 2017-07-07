@@ -35,6 +35,8 @@ public class MantaObjectAttributeAdapter {
 
     private final MantaSession session;
 
+    private static final String HEADER_KEY_STORAGE_CLASS = "Durability-Level";
+
     public MantaObjectAttributeAdapter(MantaSession session) {
         this.session = session;
     }
@@ -82,7 +84,7 @@ public class MantaObjectAttributeAdapter {
             attributes.setChecksum(new Checksum(HashAlgorithm.md5, new String(md5Bytes)));
         }
 
-        attributes.setStorageClass(mantaObject.getHeaderAsString(MantaSession.HEADER_KEY_STORAGE_CLASS));
+        attributes.setStorageClass(mantaObject.getHeaderAsString(HEADER_KEY_STORAGE_CLASS));
 
         return attributes;
     }

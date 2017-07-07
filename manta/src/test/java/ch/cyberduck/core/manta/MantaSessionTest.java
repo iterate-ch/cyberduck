@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MantaSessionTest {
 
@@ -58,10 +59,11 @@ public class MantaSessionTest {
                     new DisabledCancelCallback(),
                     PathCache.empty()
             );
-        } catch (BackgroundException e) {
-            assertTrue(e instanceof LoginFailureException);
+        } catch (LoginFailureException e) {
             assertTrue(e.getMessage().contains("Login failed"));
             assertTrue(e.getDetail().contains("Invalid username"));
+        } catch(BackgroundException e) {
+            fail("Unexpected exception thrown: " + e.getMessage());
         }
     }
 

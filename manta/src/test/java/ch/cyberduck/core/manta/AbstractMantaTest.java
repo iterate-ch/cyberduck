@@ -72,14 +72,6 @@ public abstract class AbstractMantaTest {
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
-    protected Path random(Volume vol, Type type) {
-        switch(type) {
-            case directory: return randomDirectory();
-            case file: return randomFile();
-            default: throw new Error("");
-        }
-    }
-
     protected Path randomFile() {
         return new Path(
                 Volume.PRIVATE.forAccount(session),

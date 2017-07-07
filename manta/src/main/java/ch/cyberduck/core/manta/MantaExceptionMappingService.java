@@ -18,14 +18,11 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.client.HttpResponseException;
 
@@ -65,7 +62,7 @@ public class MantaExceptionMappingService extends AbstractExceptionMappingServic
         return new InteroperabilityException(failure.getMessage(), failure);
     }
 
-    BackgroundException mapLoginException(final Exception failure) {
+    protected BackgroundException mapLoginException(final Exception failure) {
         if(!(failure instanceof MantaClientHttpResponseException)) {
             return map(failure);
         }

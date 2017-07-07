@@ -15,15 +15,8 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
-
-import org.apache.http.auth.UsernamePasswordCredentials;
-
-import java.util.EnumSet;
 
 /**
  * Created by tomascelaya on 5/25/17.

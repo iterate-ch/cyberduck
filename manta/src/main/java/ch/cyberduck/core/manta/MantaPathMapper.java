@@ -15,23 +15,21 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractPath.Type;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaObject;
+import com.joyent.manta.exception.MantaException;
 
 public class MantaPathMapper {
 
-    static final String HOME_PATH_PRIVATE = "stor";
-    static final String HOME_PATH_PUBLIC = "public";
+    public static final String HOME_PATH_PRIVATE = "stor";
+    public static final String HOME_PATH_PUBLIC = "public";
 
     enum Volume {
         PUBLIC,
@@ -39,14 +37,14 @@ public class MantaPathMapper {
 
         @Override
         public String toString() {
-            switch(this) {
-                case PUBLIC:
-                    return HOME_PATH_PUBLIC;
-                case PRIVATE:
-                    return HOME_PATH_PRIVATE;
-                default:
-                    throw new Error("Unreachable code");
+            if (this.equals(PUBLIC)) {
+                return HOME_PATH_PUBLIC;
             }
+            if (this.equals(PRIVATE)) {
+                return HOME_PATH_PRIVATE;
+            }
+            // unreachable
+            return null;
         }
 
         public Path forAccount(final MantaSession session) {
@@ -109,19 +107,19 @@ public class MantaPathMapper {
         return homePath;
     }
 
-    String requestPath(final Path homeRelativeRemote) {
+    protected String requestPath(final Path homeRelativeRemote) {
         return homeRelativeRemote.getAbsolute();
     }
 
-    Path getNormalizedHomePath() {
+    protected Path getNormalizedHomePath() {
         return normalizedHomePath;
     }
 
-    boolean isUserWritable(final MantaObject mantaObject) {
+    protected boolean isUserWritable(final MantaObject mantaObject) {
         return isUserWritable(mantaObject.getPath());
     }
 
-    boolean isUserWritable(final Path path) {
+    protected boolean isUserWritable(final Path path) {
         return isUserWritable(path.getAbsolute());
     }
 
@@ -132,11 +130,11 @@ public class MantaPathMapper {
                 getPrivateRoot().getAbsolute());
     }
 
-    boolean isWorldReadable(final MantaObject mantaObject) {
+    protected boolean isWorldReadable(final MantaObject mantaObject) {
         return isWorldReadable(mantaObject.getPath());
     }
 
-    boolean isWorldReadable(final Path path) {
+    protected boolean isWorldReadable(final Path path) {
         return isWorldReadable(path.getAbsolute());
     }
 
@@ -144,19 +142,19 @@ public class MantaPathMapper {
         return StringUtils.startsWithAny(path, getPublicRoot().getAbsolute());
     }
 
-    Path getAccountRoot() {
+    protected Path getAccountRoot() {
         return accountRoot;
     }
 
-    String getAccountOwner() {
+    protected String getAccountOwner() {
         return accountOwner;
     }
 
-    Path getPrivateRoot() {
+    protected Path getPrivateRoot() {
         return Volume.PRIVATE.forAccount(accountRoot);
     }
 
-    Path getPublicRoot() {
+    protected Path getPublicRoot() {
         return Volume.PUBLIC.forAccount(accountRoot);
     }
 }

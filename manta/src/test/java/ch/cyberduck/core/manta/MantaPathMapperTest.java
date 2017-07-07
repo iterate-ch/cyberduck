@@ -15,21 +15,14 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Path;
 
 import org.junit.Test;
-
-import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaObjectResponse;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by tomascelaya on 5/24/17.
- */
 public class MantaPathMapperTest {
 
     private MantaPathMapper buildMapper(final String username, final String homePath) {
