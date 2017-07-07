@@ -39,6 +39,5 @@ ln -sf /opt/duck/duck /usr/local/bin/duck
 
 %clean
 rm -rf %{buildroot}
-rm -f /usr/local/bin/duck
 
 %postun
