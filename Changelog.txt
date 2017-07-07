@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+6.1.1
+- [Feature] Server side copy of files (OneDrive)
+- [Bugfix] Missing x-amz-server-side-encryption header when creating folders (S3) (#9378)
+
 6.1
 - [Feature] Search files fast without recursively listing directories (OneDrive)
 - [Feature] Search files fast without recursively listing directories (S3)
