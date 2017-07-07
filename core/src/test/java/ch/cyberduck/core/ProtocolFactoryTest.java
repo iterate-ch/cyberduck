@@ -63,7 +63,7 @@ public class ProtocolFactoryTest {
         final TestProtocol dav = new TestProtocol(Scheme.dav) {
             @Override
             public String getIdentifier() {
-                return "provider-dav";
+                return "dav";
             }
 
             @Override
@@ -73,6 +73,6 @@ public class ProtocolFactoryTest {
         };
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(dav)));
         assertEquals(dav, f.forName("dav"));
-        assertEquals(dav, f.forName("provider-dav"));
+        assertEquals(dav, f.forName("dav-provider"));
     }
 }
