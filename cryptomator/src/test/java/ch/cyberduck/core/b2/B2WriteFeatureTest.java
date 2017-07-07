@@ -70,7 +70,8 @@ public class B2WriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        final byte[] content = RandomUtils.nextBytes(1048576);
+        final int length = 1048576;
+        final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         final Path home = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(

@@ -123,7 +123,8 @@ public class B2LargeUploadServiceTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus writeStatus = new TransferStatus();
-        final byte[] content = RandomUtils.nextBytes(5242885);
+        final int length = 5242885;
+        final byte[] content = RandomUtils.nextBytes(length);
         writeStatus.setLength(content.length);
         final CryptoBulkFeature<Void> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new B2DeleteFeature(session), cryptomator);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus), new DisabledConnectionCallback());

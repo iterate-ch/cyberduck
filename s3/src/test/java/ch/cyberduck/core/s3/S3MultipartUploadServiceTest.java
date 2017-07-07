@@ -25,6 +25,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.S3Object;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -35,7 +36,6 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -150,16 +150,16 @@ public class S3MultipartUploadServiceTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] random = new byte[5242881];
-        new Random().nextBytes(random);
-        IOUtils.write(random, local.getOutputStream(false));
+        final int length = 5242881;
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(random.length);
+        status.setLength(content.length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status, null);
-        assertEquals((long) random.length, status.getOffset(), 0L);
+        assertEquals((long) content.length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(random.length, session.list(container,
+        assertEquals(content.length, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
@@ -181,16 +181,16 @@ public class S3MultipartUploadServiceTest {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] random = new byte[5242881];
-        new Random().nextBytes(random);
-        IOUtils.write(random, local.getOutputStream(false));
+        final int length = 5242881;
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(random.length);
+        status.setLength(content.length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status, null);
-        assertEquals((long) random.length, status.getOffset(), 0L);
+        assertEquals((long) content.length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(random.length, session.list(container,
+        assertEquals(content.length, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
@@ -209,10 +209,10 @@ public class S3MultipartUploadServiceTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final byte[] random = new byte[12 * 1024 * 1024];
-        new Random().nextBytes(random);
+        final int length = 12 * 1024 * 1024;
+        final byte[] content = RandomUtils.nextBytes(length);
         Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        IOUtils.write(random, local.getOutputStream(false));
+        IOUtils.write(content, local.getOutputStream(false));
         final AtomicBoolean started = new AtomicBoolean();
         final TransferStatus status = new TransferStatus() {
             @Override
@@ -221,7 +221,7 @@ public class S3MultipartUploadServiceTest {
                 started.set(true);
             }
         };
-        status.setLength(random.length);
+        status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
             new S3MultipartUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()), 10L * 1024L * 1024L, 1).upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
@@ -259,11 +259,11 @@ public class S3MultipartUploadServiceTest {
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(12L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize(), 0L);
-        final byte[] buffer = new byte[random.length];
+        final byte[] buffer = new byte[content.length];
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
-        assertArrayEquals(random, buffer);
+        assertArrayEquals(content, buffer);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
@@ -282,9 +282,9 @@ public class S3MultipartUploadServiceTest {
         String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final byte[] random = new byte[32769];
-        new Random().nextBytes(random);
-        IOUtils.write(random, local.getOutputStream(false));
+        final int length = 32769;
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
         final AtomicBoolean started = new AtomicBoolean();
         final TransferStatus status = new TransferStatus() {
             @Override
@@ -293,7 +293,7 @@ public class S3MultipartUploadServiceTest {
                 started.set(true);
             }
         };
-        status.setLength(random.length);
+        status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
             new S3MultipartUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()), 10485760L, 1).upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
@@ -321,7 +321,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals(0L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(random.length);
+        final TransferStatus append = new TransferStatus().append(true).length(content.length);
         new S3MultipartUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()), 10485760L, 1).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), append,
@@ -329,13 +329,13 @@ public class S3MultipartUploadServiceTest {
         assertEquals(32769L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(random.length, session.list(container,
+        assertEquals(content.length, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getSize());
-        final byte[] buffer = new byte[random.length];
+        final byte[] buffer = new byte[content.length];
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
-        assertArrayEquals(random, buffer);
+        assertArrayEquals(content, buffer);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();

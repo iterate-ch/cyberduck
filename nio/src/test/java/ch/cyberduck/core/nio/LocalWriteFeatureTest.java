@@ -44,7 +44,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -66,8 +65,8 @@ public class LocalWriteFeatureTest {
             new LocalSymlinkFeature(session).symlink(symlink, target.getName());
             assertTrue(new LocalFindFeature(session).find(symlink));
             final TransferStatus status = new TransferStatus();
-            final byte[] content = new byte[1048576];
-            new Random().nextBytes(content);
+            final int length = 1048576;
+            final byte[] content = RandomUtils.nextBytes(length);
             status.setLength(content.length);
             status.setExists(true);
             final OutputStream out = new LocalWriteFeature(session).write(symlink, status, new DisabledConnectionCallback());
