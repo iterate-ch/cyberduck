@@ -511,7 +511,7 @@ public class BrowserController extends WindowController
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, pool,
-                        new SessionListWorker(cache, folder, listener) {
+                                new SessionListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache
@@ -2181,13 +2181,15 @@ public class BrowserController extends WindowController
                 case outline: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
-                        final Path folder = cache.lookup(new NSObjectPathReference(item));
-                        if(null == folder) {
+                        final Path file = cache.lookup(new NSObjectPathReference(item));
+                        if(null == file) {
                             continue;
                         }
-                        cache.invalidate(folder);
-                        if(browserOutlineView.isItemExpanded(item)) {
-                            folders.add(folder);
+                        if(file.isDirectory()) {
+                            cache.invalidate(file);
+                            if(browserOutlineView.isItemExpanded(item)) {
+                                folders.add(file);
+                            }
                         }
                     }
                     break;

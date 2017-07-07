@@ -1496,14 +1496,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 foreach (Path path in View.VisiblePaths)
                 {
                     if (null == path) continue;
-                    if (_cache.isCached(path))
+                    if (path.isDirectory())
                     {
                         _cache.invalidate(path);
-                        continue;
-                    }
-                    if (View.IsExpanded(path))
-                    {
-                        folders.Add(path);
+                        if (View.IsExpanded(path))
+                        {
+                            folders.Add(path);
+                        }
                     }
                 }
                 folders.Add(Workdir);
