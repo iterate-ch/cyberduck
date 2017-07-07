@@ -18,6 +18,7 @@ package ch.cyberduck.core;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -55,5 +56,23 @@ public class ProtocolFactoryTest {
         final TestProtocol davs = new TestProtocol(Scheme.davs);
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, davs)));
         assertEquals(dav, f.forName("ftp"));
+    }
+
+    @Test
+    public void testFindProtocolWithProviderInIdentifier() throws Exception {
+        final TestProtocol dav = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "provider-dav";
+            }
+
+            @Override
+            public String getProvider() {
+                return "provider";
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(dav)));
+        assertEquals(dav, f.forName("dav"));
+        assertEquals(dav, f.forName("provider-dav"));
     }
 }

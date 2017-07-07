@@ -86,7 +86,7 @@ public class Profile implements Protocol, Serializable {
 
     @Override
     public String getIdentifier() {
-        return String.format("%s-%s", parent.getIdentifier(), this.getProvider());
+        return parent.getIdentifier();
     }
 
     @Override
