@@ -59,7 +59,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public static final int DEFAULT_CLASSIFICATION = 2;
+    public static final int DEFAULT_CLASSIFICATION = 1; // public
 
     public SDSWriteFeature(final SDSSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
