@@ -504,7 +504,7 @@ public class BrowserController extends WindowController
                     cache.invalidate(folder);
                 }
                 else {
-                    if(cache.isCached(folder)) {
+                    if(cache.isValid(folder)) {
                         reload(browser, model, workdir, selected, folder);
                         return;
                     }
@@ -2181,12 +2181,16 @@ public class BrowserController extends WindowController
                 case outline: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
-                        if(browserOutlineView.isItemExpanded(item)) {
-                            final Path folder = cache.lookup(new NSObjectPathReference(item));
-                            if(null == folder) {
-                                continue;
+                        final Path file = cache.lookup(new NSObjectPathReference(item));
+                        if(null == file) {
+                            continue;
+                        }
+                        if(file.isDirectory()) {
+                            // Invalidate cache regardless if rendered. Fix CD-2340
+                            cache.invalidate(file);
+                            if(browserOutlineView.isItemExpanded(item)) {
+                                folders.add(file);
                             }
-                            folders.add(folder);
                         }
                     }
                     break;

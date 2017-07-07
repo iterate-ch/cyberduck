@@ -62,7 +62,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             return folder;
         }
         else {
-            if(null == status.getEncryption()) {
+            if(Encryption.Algorithm.NONE == status.getEncryption()) {
                 final Encryption encryption = session.getFeature(Encryption.class);
                 if(encryption != null) {
                     status.setEncryption(encryption.getDefault(folder));
