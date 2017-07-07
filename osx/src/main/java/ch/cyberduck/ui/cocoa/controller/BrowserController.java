@@ -500,7 +500,7 @@ public class BrowserController extends WindowController
         else {
             for(final Path folder : folders) {
                 if(invalidate) {
-                    // Invalidate cache
+                    // Invalidate cache regardless if rendered. Fix CD-2340
                     cache.invalidate(folder);
                 }
                 else {
@@ -2186,6 +2186,7 @@ public class BrowserController extends WindowController
                             continue;
                         }
                         if(file.isDirectory()) {
+                            // Invalidate cache regardless if rendered
                             cache.invalidate(file);
                             if(browserOutlineView.isItemExpanded(item)) {
                                 folders.add(file);

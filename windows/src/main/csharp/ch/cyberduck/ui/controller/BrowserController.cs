@@ -1498,6 +1498,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (null == path) continue;
                     if (path.isDirectory())
                     {
+                        // Invalidate cache regardless if rendered. Fix CD-2340
                         _cache.invalidate(path);
                         if (View.IsExpanded(path))
                         {
