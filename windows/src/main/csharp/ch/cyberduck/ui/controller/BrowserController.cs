@@ -2380,23 +2380,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return Workdir != null;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="preserveSelection">All selected files should be reselected after reloading the view</param>
-        public void _ReloadData(bool preserveSelection)
-        {
-            if (preserveSelection)
-            {
-                //Remember the previously selected paths
-                //_ReloadData(SelectedPaths);
-            }
-            else
-            {
-                //_ReloadData(new List<Path>());
-            }
-        }
-
         public override void start(BackgroundAction action)
         {
             Invoke(delegate { View.StartActivityAnimation(); });
