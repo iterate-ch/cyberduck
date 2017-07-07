@@ -56,10 +56,10 @@ public final class TerminalHelpPrinter {
                 case googlestorage:
                 case swift:
                 case azure:
-                    protocols.append("\t").append(String.format("%s://<container>/<key>", p.getProvider()));
+                    protocols.append("\t").append(String.format("%s://<container>/<key>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
                     break;
                 default:
-                    protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", p.getProvider()));
+                    protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
                     break;
             }
             protocols.append(StringUtils.LF);
