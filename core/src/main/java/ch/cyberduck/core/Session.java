@@ -169,11 +169,12 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will close to %s", host));
         }
-        state = State.closing;
         try {
-            if(client != null) {
-                this.logout();
-                this.disconnect();
+            switch(state) {
+                case open:
+                    state = State.closing;
+                    this.logout();
+                    this.disconnect();
             }
         }
         finally {
@@ -185,10 +186,11 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     }
 
     public void interrupt() throws BackgroundException {
-        state = State.closing;
         try {
-            if(client != null) {
-                this.disconnect();
+            switch(state) {
+                case open:
+                    state = State.closing;
+                    this.disconnect();
             }
         }
         finally {
