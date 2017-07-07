@@ -500,7 +500,7 @@ public class BrowserController extends WindowController
         else {
             for(final Path folder : folders) {
                 if(invalidate) {
-                    // Invalidate cache regardless if rendered. Fix CD-2340
+                    // Invalidate cache
                     cache.invalidate(folder);
                 }
                 else {
@@ -511,7 +511,7 @@ public class BrowserController extends WindowController
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, pool,
-                                new SessionListWorker(cache, folder, listener) {
+                        new SessionListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache
@@ -2186,7 +2186,7 @@ public class BrowserController extends WindowController
                             continue;
                         }
                         if(file.isDirectory()) {
-                            // Invalidate cache regardless if rendered
+                            // Invalidate cache regardless if rendered. Fix CD-2340
                             cache.invalidate(file);
                             if(browserOutlineView.isItemExpanded(item)) {
                                 folders.add(file);
