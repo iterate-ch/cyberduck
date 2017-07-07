@@ -48,11 +48,9 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <dependency>
-                                                <groupId>ch.cyberduck</groupId>
-                                                <artifactId>profiles</artifactId>
-                                                <version>${project.version}</version>
-                                            </dependency>
+                                            <groupId>ch.cyberduck</groupId>
+                                            <artifactId>profiles</artifactId>
+                                            <version>${project.version}</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}/profiles
