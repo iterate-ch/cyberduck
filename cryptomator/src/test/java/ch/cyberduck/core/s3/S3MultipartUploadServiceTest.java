@@ -58,7 +58,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -87,8 +86,8 @@ public class S3MultipartUploadServiceTest {
                 new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
                 new S3WriteFeature(session), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[5242880];
-        new Random().nextBytes(content);
+        final int length = 5242880;
+        final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus writeStatus = new TransferStatus();
         final Cryptor cryptor = cryptomator.getCryptor();

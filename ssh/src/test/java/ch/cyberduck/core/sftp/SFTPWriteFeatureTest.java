@@ -35,7 +35,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -52,8 +51,8 @@ public class SFTPWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        final byte[] content = new byte[1048576];
-        new Random().nextBytes(content);
+        final int length = 1048576;
+        final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = new ThrottledOutputStream(new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback()),
@@ -99,8 +98,8 @@ public class SFTPWriteFeatureTest {
         new SFTPSymlinkFeature(session).symlink(symlink, target.getName());
         assertTrue(new SFTPFindFeature(session).find(symlink));
         final TransferStatus status = new TransferStatus();
-        final byte[] content = new byte[1048576];
-        new Random().nextBytes(content);
+        final int length = 1048576;
+        final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         status.setExists(true);
         final OutputStream out = new SFTPWriteFeature(session).write(symlink, status, new DisabledConnectionCallback());

@@ -37,6 +37,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -45,7 +46,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -69,8 +69,8 @@ public class B2LargeUploadServiceTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 
         // Each segment, except the last, must be larger than 100MB.
-        final byte[] content = new byte[100 * 1024 * 1024 + 1];
-        new Random().nextBytes(content);
+        final int length = 100 * 1024 * 1024 + 1;
+        final byte[] content = RandomUtils.nextBytes(length);
 
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
@@ -116,11 +116,10 @@ public class B2LargeUploadServiceTest {
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 102 * 1024 * 1024;
-        final byte[] random = new byte[length];
-        new Random().nextBytes(random);
-        IOUtils.write(random, local.getOutputStream(false));
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(random.length);
+        status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         final B2LargeUploadService service = new B2LargeUploadService(session, new B2WriteFeature(session), 100 * 1024L * 1024L, 1);
         try {
@@ -144,19 +143,19 @@ public class B2LargeUploadServiceTest {
         assertEquals(0L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(random.length);
+        final TransferStatus append = new TransferStatus().append(true).length(content.length);
         service.upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertTrue(new B2FindFeature(session).find(test));
-        assertEquals(random.length, new B2AttributesFinderFeature(session).find(test).getSize());
-        assertEquals(random.length, append.getOffset(), 0L);
+        assertEquals(content.length, new B2AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
-        final byte[] buffer = new byte[random.length];
+        final byte[] buffer = new byte[content.length];
         final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
-        assertArrayEquals(random, buffer);
+        assertArrayEquals(content, buffer);
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
@@ -175,11 +174,10 @@ public class B2LargeUploadServiceTest {
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 102 * 1024 * 1024;
-        final byte[] random = new byte[length];
-        new Random().nextBytes(random);
-        IOUtils.write(random, local.getOutputStream(false));
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(random.length);
+        status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
             new B2LargeUploadService(session, new B2WriteFeature(session), 100L * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
@@ -210,11 +208,11 @@ public class B2LargeUploadServiceTest {
         assertTrue(append.isComplete());
         assertTrue(new B2FindFeature(session).find(test));
         assertEquals(102L * 1024L * 1024L, new B2AttributesFinderFeature(session).find(test).getSize(), 0L);
-        final byte[] buffer = new byte[random.length];
+        final byte[] buffer = new byte[content.length];
         final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
-        assertArrayEquals(random, buffer);
+        assertArrayEquals(content, buffer);
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
