@@ -123,9 +123,6 @@ public class Profile implements Protocol, Serializable {
 
     @Override
     public String getProvider() {
-        if(this.isBundled()) {
-            return parent.getProvider();
-        }
         final String v = this.value("Vendor");
         if(StringUtils.isBlank(v)) {
             return parent.getProvider();
