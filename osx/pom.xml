@@ -166,6 +166,27 @@
                                     </outputDirectory>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>unpack-profiles</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <dependency>
+                                                <groupId>ch.cyberduck</groupId>
+                                                <artifactId>profiles</artifactId>
+                                                <version>${project.version}</version>
+                                            </dependency>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>
+                                        ${project.build.directory}/Cyberduck.app/Contents/Resources/Profiles
+                                    </outputDirectory>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
