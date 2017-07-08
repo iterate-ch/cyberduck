@@ -15,6 +15,7 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -73,7 +74,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         server.setSubsystemFactories(Collections.singletonList(new SftpSubsystem.Factory()));
         final java.nio.file.Path tempDir = Files.createTempDirectory(String.format("%s-", this.getClass().getName()));
         final java.nio.file.Path vault = tempDir.resolve("vault");
-        passphrase = RandomStringUtils.randomAlphanumeric(25);
+        passphrase = new AlphanumericRandomStringService().random();
         cryptoFileSystem = new CryptoFileSystemProvider().newFileSystem(CryptoFileSystemUris.createUri(vault), CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
         server.setFileSystemFactory(new VirtualFileSystemFactory(cryptoFileSystem.getPathToVault().getParent().toAbsolutePath().toString()));
         server.start();
@@ -92,7 +93,7 @@ public class SFTPCryptomatorInteroperabilityTest {
     @Test
     public void testCryptomatorInteroperabilityTests() throws Exception {
         // create folder
-        final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/" + RandomStringUtils.random(100));
+        final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/", new AlphanumericRandomStringService().random());
         Files.createDirectory(targetFolder);
         // create file and write some random content
         java.nio.file.Path targetFile = targetFolder.resolve(RandomStringUtils.random(100));
@@ -127,10 +128,10 @@ public class SFTPCryptomatorInteroperabilityTest {
     @Test
     public void testCryptomatorInteroperability_longNames_Tests() throws Exception {
         // create folder
-        final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/" + RandomStringUtils.random(180));
+        final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/", new AlphanumericRandomStringService().random());
         Files.createDirectory(targetFolder);
         // create file and write some random content
-        java.nio.file.Path targetFile = targetFolder.resolve(RandomStringUtils.random(180));
+        java.nio.file.Path targetFile = targetFolder.resolve(new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(20);
         Files.write(targetFile, content);
 
