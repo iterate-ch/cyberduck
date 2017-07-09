@@ -49,7 +49,14 @@
 
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
-    <target name="build" depends="version">
+    <target name="nuget">
+        <exec executable="nuget">
+            <arg value="restore" />
+            <arg value="${home}/Cyberduck.sln" />
+        </exec>
+    </target>
+
+    <target name="build" depends="version,nuget">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
