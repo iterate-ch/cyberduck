@@ -79,6 +79,16 @@
           <netfx:NativeImage Id="ngen_ExceptionReporter.WinForms" Platform="32bit" Priority="3" />
         </File>
       </Component>
+      <Component Id="DotNetZip">
+        <File Source="$(var.cyberduck.TargetDir)/DotNetZip.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_DotNetZip" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="SimpleMapi">
+        <File Source="$(var.cyberduck.TargetDir)/SimpleMapi.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_SimpleMapi" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
       <Component Id="ActiveButtons">
         <File Source="$(var.cyberduck.TargetDir)/ActiveButtons.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ActiveButtons" Platform="32bit" Priority="3" />
