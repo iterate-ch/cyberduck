@@ -154,6 +154,9 @@
     <LayoutFile Include="$(OutputPath)\Microsoft.WindowsAPICodePack.dll">
       <PackagePath>$(PackageLayout)\Microsoft.WindowsAPICodePack.dll</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Microsoft.WindowsAPICodePack.Shell.dll">
+      <PackagePath>$(PackageLayout)\Microsoft.WindowsAPICodePack.Shell.dll</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\ikvm-native-win32-x86.dll">
       <PackagePath>$(PackageLayout)\ikvm-native-win32-x86.dll</PackagePath>
     </LayoutFile>
