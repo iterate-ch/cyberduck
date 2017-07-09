@@ -72,7 +72,7 @@
         </msbuild>
     </target>
 
-    <target name="verify" depends="version">
+    <target name="verify" depends="version,nuget">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
