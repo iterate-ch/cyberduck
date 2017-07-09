@@ -207,22 +207,6 @@
                     <version>1.0.0.0</version>
                     <scope>runtime</scope>
                 </dependency>
-                <dependency>
-                    <groupId>com.microsoft</groupId>
-                    <artifactId>VistaBridgeLibrary</artifactId>
-                    <classifier>native</classifier>
-                    <type>dll</type>
-                    <version>1.4.0.0</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.microsoft</groupId>
-                    <artifactId>Windows7.DesktopIntegration</artifactId>
-                    <classifier>native</classifier>
-                    <type>dll</type>
-                    <version>1.0.0.0</version>
-                    <scope>runtime</scope>
-                </dependency>
             </dependencies>
         </profile>
     </profiles>
