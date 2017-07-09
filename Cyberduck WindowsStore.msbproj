@@ -157,6 +157,15 @@
     <LayoutFile Include="$(OutputPath)\Microsoft.WindowsAPICodePack.Shell.dll">
       <PackagePath>$(PackageLayout)\Microsoft.WindowsAPICodePack.Shell.dll</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\DotNetZip.dll">
+      <PackagePath>$(PackageLayout)\DotNetZip.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ExceptionReporter.WinForms.dll">
+      <PackagePath>$(PackageLayout)\ExceptionReporter.WinForms.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\SimpleMapi.dll">
+      <PackagePath>$(PackageLayout)\SimpleMapi.dll</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\ikvm-native-win32-x86.dll">
       <PackagePath>$(PackageLayout)\ikvm-native-win32-x86.dll</PackagePath>
     </LayoutFile>
