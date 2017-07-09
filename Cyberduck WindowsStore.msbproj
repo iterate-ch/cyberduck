@@ -151,11 +151,8 @@
     <LayoutFile Include="$(OutputPath)\StructureMap.dll">
       <PackagePath>$(PackageLayout)\StructureMap.dll</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\VistaBridgeLibrary.dll">
-      <PackagePath>$(PackageLayout)\VistaBridgeLibrary.dll</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\Windows7.DesktopIntegration.dll">
-      <PackagePath>$(PackageLayout)\Windows7.DesktopIntegration.dll</PackagePath>
+    <LayoutFile Include="$(OutputPath)\Microsoft.WindowsAPICodePack.dll">
+      <PackagePath>$(PackageLayout)\Microsoft.WindowsAPICodePack.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\ikvm-native-win32-x86.dll">
       <PackagePath>$(PackageLayout)\ikvm-native-win32-x86.dll</PackagePath>
