@@ -19,17 +19,18 @@ package ch.cyberduck.core.aquaticprime;
  * dkocher@cyberduck.ch
  */
 
-public interface License {
+public interface License extends LicenseVerifier {
 
     /**
      * @return True if valid license key
+     * @param callback Verification callback
      */
-    boolean verify();
+    boolean verify(final LicenseVerifierCallback callback);
 
     /**
      * @param property Key in license file
      * @return The value of the given property in the license file.
-     *         Null if no property with the given key.
+     * Null if no property with the given key.
      */
     String getValue(String property);
 
@@ -44,4 +45,5 @@ public interface License {
      * @return True if this is a receipt from the store
      */
     boolean isReceipt();
+
 }

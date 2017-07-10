@@ -55,7 +55,7 @@ public class ReceiptFactory extends LicenseFactory {
     protected License open(final Local file) {
         // Verify immediately and exit if not a valid receipt
         final ReceiptVerifier verifier = new ReceiptVerifier(file);
-        if(verifier.verify()) {
+        if(verifier.verify(new DisabledLicenseVerifierCallback())) {
             // Set name
             final Receipt receipt = new Receipt(file, verifier.getGuid());
             if(log.isInfoEnabled()) {

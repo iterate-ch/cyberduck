@@ -78,7 +78,7 @@ public class ReceiptVerifier implements LicenseVerifier {
     }
 
     @Override
-    public boolean verify() {
+    public boolean verify(final LicenseVerifierCallback callback) {
         try {
             // For additional security, you may verify the fingerprint of the root CA and the OIDs of the
             // intermediate CA and signing certificate. The OID in the Certificate Policies Extension of the

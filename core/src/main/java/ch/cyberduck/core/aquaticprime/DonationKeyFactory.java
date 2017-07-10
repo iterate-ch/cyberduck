@@ -64,7 +64,7 @@ public class DonationKeyFactory extends LicenseFactory {
                 }
             })) {
                 final ReceiptVerifier verifier = new ReceiptVerifier(file);
-                if(verifier.verify()) {
+                if(verifier.verify(new DisabledLicenseVerifierCallback())) {
                     keys.add(new Receipt(file, verifier.getGuid()));
                 }
             }
