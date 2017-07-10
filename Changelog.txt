@@ -5,6 +5,7 @@ https://cyberduck.io/
 - [Feature] Server side copy of files (OneDrive)
 - [Bugfix] Missing x-amz-server-side-encryption header when creating folders (S3) (#9378)
 - [Bugfix] Preserve content type when overwriting files (Google Drive)
+- [Bugfix] Missing registered protocols (CLI)
 
 6.1
 - [Feature] Search files fast without recursively listing directories (OneDrive)
