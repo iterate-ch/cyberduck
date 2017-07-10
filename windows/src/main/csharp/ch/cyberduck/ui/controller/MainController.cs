@@ -258,7 +258,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if ("cyberducklicense".Equals(f.getExtension()))
                     {
                         License license = LicenseFactory.get(f);
-                        if (license.verify())
+                        if (license.verify(new DisabledLicenseVerifierCallback()))
                         {
                             f.copy(LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
                                 f.getName()));
@@ -687,7 +687,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Logger.debug("ApplicationShouldTerminateAfterDonationPrompt");
             License l = LicenseFactory.find();
-            if (!l.verify())
+            if (!l.verify(new DisabledLicenseVerifierCallback()))
             {
                 string appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 String lastversion = PreferencesFactory.get().getProperty("donate.reminder");
