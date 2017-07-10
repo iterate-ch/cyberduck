@@ -101,6 +101,9 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                     if(status.isExists()) {
                         final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
                         request = new HttpPatch(String.format("%s/upload/drive/v3/files/%s", base, fileid));
+                        if(StringUtils.isNotBlank(status.getMime())) {
+                            request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
+                        }
                         // Upload the file
                         request.setEntity(entity);
                     }
@@ -110,10 +113,10 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                                 + file.getName() + "\", \"parents\": [\""
                                 + new DriveFileidProvider(session).getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
                                 ContentType.create("application/json", "UTF-8")));
-                    }
-                    if(StringUtils.isNotBlank(status.getMime())) {
-                        // Set to the media MIME type of the upload data to be transferred in subsequent requests.
-                        request.addHeader("X-Upload-Content-Type", status.getMime());
+                        if(StringUtils.isNotBlank(status.getMime())) {
+                            // Set to the media MIME type of the upload data to be transferred in subsequent requests.
+                            request.addHeader("X-Upload-Content-Type", status.getMime());
+                        }
                     }
                     request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                     final HttpClient client = session.getHttpClient();
