@@ -145,6 +145,10 @@ public final class ProtocolFactory {
                     return StringUtils.equals(protocol.getProvider(), provider);
                 }
             }
+            // Fallback for bug in 6.1
+            if(StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)) {
+                return true;
+            }
             return false;
         }).findFirst().orElse(
                 registered.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(

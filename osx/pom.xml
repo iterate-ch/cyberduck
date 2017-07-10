@@ -162,8 +162,24 @@
                                             <destFileName>US_export_policy.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security
-                                    </outputDirectory>
+                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>unpack-profiles</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>ch.cyberduck</groupId>
+                                            <artifactId>profiles</artifactId>
+                                            <version>${project.version}</version>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Resources/Profiles</outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>
