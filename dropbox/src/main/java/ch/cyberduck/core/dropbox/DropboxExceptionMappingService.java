@@ -45,27 +45,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
     @Override
     public BackgroundException map(final DbxException failure) {
         final StringBuilder buffer = new StringBuilder();
-        final JsonParser parser = new JsonParser();
-        try {
-            final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
-            final JsonObject error = json.getAsJsonObject("error");
-            if(null == error) {
-                this.append(buffer, failure.getMessage());
-            }
-            else {
-                final JsonPrimitive tag = error.getAsJsonPrimitive(".tag");
-                if(null == tag) {
-                    this.append(buffer, failure.getMessage());
-                }
-                else {
-                    this.append(buffer, StringUtils.replace(tag.getAsString(), "_", " "));
-                }
-            }
-        }
-        catch(JsonParseException e) {
-            // Ignore
-            this.append(buffer, failure.getMessage());
-        }
+        this.parse(buffer, failure.getMessage());
         if(failure instanceof InvalidAccessTokenException) {
             return new LoginFailureException(buffer.toString(), failure);
         }
@@ -79,6 +59,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof GetMetadataErrorException) {
             final GetMetadataError error = ((GetMetadataErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case MALFORMED_PATH:
                 case OTHER:
@@ -94,6 +75,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof DeleteErrorException) {
             final DeleteError error = ((DeleteErrorException) failure).errorValue;
             final LookupError lookup = error.getPathLookupValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case MALFORMED_PATH:
                 case OTHER:
@@ -109,6 +91,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof ListFolderErrorException) {
             final ListFolderError error = ((ListFolderErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case INVALID_PATH_ROOT:
                     return new NotfoundException(buffer.toString(), failure);
@@ -126,6 +109,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof CreateFolderErrorException) {
             final CreateFolderError error = ((CreateFolderErrorException) failure).errorValue;
             final WriteError lookup = error.getPathValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case MALFORMED_PATH:
                 case OTHER:
@@ -141,6 +125,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof SearchErrorException) {
             final SearchError error = ((SearchErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case INVALID_PATH_ROOT:
                 case MALFORMED_PATH:
@@ -157,6 +142,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof DownloadErrorException) {
             final DownloadError error = ((DownloadErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case MALFORMED_PATH:
                 case OTHER:
@@ -172,6 +158,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof UploadErrorException) {
             final UploadError error = ((UploadErrorException) failure).errorValue;
             final UploadWriteFailed lookup = error.getPathValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.getReason().tag()) {
                 case CONFLICT:
                 case NO_WRITE_PERMISSION:
@@ -187,6 +174,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof UploadSessionFinishErrorException) {
             final UploadSessionFinishError error = ((UploadSessionFinishErrorException) failure).errorValue;
             final WriteError lookup = error.getPathValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case MALFORMED_PATH:
                 case OTHER:
@@ -202,6 +190,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof GetTemporaryLinkErrorException) {
             final GetTemporaryLinkError error = ((GetTemporaryLinkErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case NOT_FOUND:
                 case NOT_FILE:
@@ -217,6 +206,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof ListFolderContinueErrorException) {
             final ListFolderContinueError error = ((ListFolderContinueErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
+            this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case NOT_FOUND:
                 case NOT_FILE:
@@ -230,5 +220,28 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             }
         }
         return new InteroperabilityException(buffer.toString(), failure);
+    }
+
+    private void parse(final StringBuilder buffer, final String message) {
+        final JsonParser parser = new JsonParser();
+        try {
+            final JsonObject json = parser.parse(new StringReader(message)).getAsJsonObject();
+            final JsonObject error = json.getAsJsonObject("error");
+            if(null == error) {
+                this.append(buffer, message);
+            }
+            else {
+                final JsonPrimitive tag = error.getAsJsonPrimitive(".tag");
+                if(null == tag) {
+                    this.append(buffer, message);
+                }
+                else {
+                    this.append(buffer, StringUtils.replace(tag.getAsString(), "_", " "));
+                }
+            }
+        }
+        catch(JsonParseException e) {
+            // Ignore
+        }
     }
 }
