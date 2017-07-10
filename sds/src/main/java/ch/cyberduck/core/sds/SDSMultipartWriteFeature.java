@@ -133,15 +133,20 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                             request.setEntity(entity);
                             request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
                             request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
-                            final HttpRange range = HttpRange.byLength(offset, content.length);
-                            final String header;
-                            if(overall.getLength() == -1L) {
-                                header = String.format("%d-%d/*", range.getStart(), range.getEnd());
+                            if(0 == overall.getLength()) {
+                                // Write empty body
                             }
                             else {
-                                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), overall.getOffset() + overall.getLength());
+                                final HttpRange range = HttpRange.byLength(offset, content.length);
+                                final String header;
+                                if(overall.getLength() == -1L) {
+                                    header = String.format("%d-%d/*", range.getStart(), range.getEnd());
+                                }
+                                else {
+                                    header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), overall.getOffset() + overall.getLength());
+                                }
+                                request.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %s", header));
                             }
-                            request.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %s", header));
                             final HttpResponse response = client.getClient().execute(request);
                             try {
                                 // Validate response
