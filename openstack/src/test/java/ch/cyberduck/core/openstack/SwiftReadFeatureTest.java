@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import ch.iterate.openstack.swift.io.ContentLengthInputStream;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
@@ -77,8 +76,6 @@ public class SwiftReadFeatureTest {
         status.setOffset(100L);
         final InputStream in = new SwiftReadFeature(session, regionService).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
-        assertTrue(in instanceof ContentLengthInputStream);
-        assertEquals(content.length - 100, ((ContentLengthInputStream) in).getLength(), 0L);
         assertEquals(content.length, status.getLength(), 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -116,8 +113,6 @@ public class SwiftReadFeatureTest {
         status.setOffset(100L);
         final InputStream in = new SwiftReadFeature(session, regionService).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
-        assertTrue(in instanceof ContentLengthInputStream);
-        assertEquals(content.length - 100, ((ContentLengthInputStream) in).getLength(), 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
         final byte[] reference = new byte[content.length - 100];
