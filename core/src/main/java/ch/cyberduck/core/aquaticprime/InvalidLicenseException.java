@@ -1,8 +1,8 @@
 package ch.cyberduck.core.aquaticprime;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,12 +13,18 @@ package ch.cyberduck.core.aquaticprime;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
  */
 
-public interface LicenseVerifier {
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 
-    boolean verify(LicenseVerifierCallback callback);
+public class InvalidLicenseException extends BackgroundException {
+
+    public InvalidLicenseException() {
+        super();
+    }
+
+    public InvalidLicenseException(final String detail) {
+        super(LocaleFactory.localizedString("Not a valid registration key", "License"), detail);
+    }
 }

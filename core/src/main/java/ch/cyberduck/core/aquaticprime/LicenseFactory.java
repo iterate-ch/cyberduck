@@ -139,7 +139,7 @@ public abstract class LicenseFactory extends Factory<License> {
             try {
                 final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
                 final List<License> list = new ArrayList<License>(name.newInstance().open());
-                list.removeIf(key -> !key.verify());
+                list.removeIf(key -> !key.verify(new DisabledLicenseVerifierCallback()));
                 if(list.isEmpty()) {
                     return LicenseFactory.EMPTY_LICENSE;
                 }
@@ -157,7 +157,7 @@ public abstract class LicenseFactory extends Factory<License> {
 
     public static final License EMPTY_LICENSE = new License() {
         @Override
-        public boolean verify() {
+        public boolean verify(final LicenseVerifierCallback callback) {
             return false;
         }
 
