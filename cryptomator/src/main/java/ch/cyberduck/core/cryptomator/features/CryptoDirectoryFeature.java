@@ -16,9 +16,7 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
@@ -40,8 +38,6 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     private final Session<?> session;
     private final Directory<Reply> proxy;
     private final CryptoVault vault;
-    private final RandomStringService random
-            = new UUIDRandomStringService();
 
     public CryptoDirectoryFeature(final Session<?> session, final Directory<Reply> delegate, final Write<Reply> writer, final CryptoVault cryptomator) {
         this.session = session;
@@ -51,14 +47,13 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
-        final String directoryId = random.random();
-        final Path encrypt = vault.encrypt(session, folder, directoryId, false);
+        final Path encrypt = vault.encrypt(session, folder, false);
         // Create metadata file for directory
         final Path directoryMetadataFile = vault.encrypt(session, folder, true);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write metadata %s for folder %s", directoryMetadataFile, folder));
         }
-        new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(Charset.forName("UTF-8")));
+        new ContentWriter(session).write(directoryMetadataFile, encrypt.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(intermediate, region, new TransferStatus());
