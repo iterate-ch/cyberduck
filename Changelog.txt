@@ -3,9 +3,14 @@ https://cyberduck.io/
 
 6.1.1
 - [Feature] Server side copy of files (OneDrive)
+- [Feature] Support for wildcard host entries in known_hosts (SFTP)
 - [Bugfix] Missing x-amz-server-side-encryption header when creating folders (S3) (#9378)
 - [Bugfix] Preserve content type when overwriting files (Google Drive)
 - [Bugfix] Missing registered protocols (CLI)
+- [Bugfix] Long time preparing upload into vault (Cryptomator)
+- [Bugfix] Set charset for basic authentication scheme used for preemtive authentication (WebDAV)
+- [Bugfix] Timeout uploading larger files (Google Drive) (#10010)
+- [Bugfix] Set checksum for large file uploads in fileInfo metadata (Backblaze B2)
 
 6.1
 - [Feature] Search files fast without recursively listing directories (OneDrive)

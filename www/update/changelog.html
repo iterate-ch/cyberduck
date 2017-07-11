@@ -26,8 +26,6 @@
             border: 1px solid #cccccc;
             color: black;
         }
-
-
     </style>
 </head>
 
@@ -49,10 +47,18 @@
 </p>
 <ul>
     <li>[Feature] Server side copy of files (OneDrive)</li>
+    <li>[Feature] Support for wildcard host entries in known_hosts (SFTP)</li>
     <li>[Bugfix] Missing x-amz-server-side-encryption header when creating folders (S3) (<a
             href="https://trac.cyberduck.io/ticket/9378">#9378</a>)
     </li>
     <li>[Bugfix] Preserve content type when overwriting files (Google Drive)</li>
+    <li>[Bugfix] Missing registered protocols (CLI)</li>
+    <li>[Bugfix] Long time preparing upload into vault (Cryptomator)</li>
+    <li>[Bugfix] Set charset for basic authentication scheme used for preemtive authentication (WebDAV)</li>
+    <li>[Bugfix] Timeout uploading larger files (Google Drive) (<a
+            href="https://trac.cyberduck.io/ticket/10010">#10010</a>)
+    </li>
+    <li>[Bugfix] Set checksum for large file uploads in fileInfo metadata (Backblaze B2)</li>
 </ul>
 
 <p>
