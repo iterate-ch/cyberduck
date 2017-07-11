@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             return
                 LocalFactory.get(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                              PreferencesFactory.get().getProperty("application.name")));
+                                              PreferencesFactory.get().getProperty("application.container.name")));
         }
     }
 }

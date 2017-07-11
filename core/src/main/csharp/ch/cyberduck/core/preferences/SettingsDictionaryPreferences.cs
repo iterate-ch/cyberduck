@@ -227,6 +227,7 @@ namespace Ch.Cyberduck.Core.Preferences
             base.setDefaults();
 
             defaults.put("application.name", Application.ProductName);
+            defaults.put("application.container.name", Application.ProductName);
             defaults.put("application.version", ApplicationVersion);
             defaults.put("application.revision", ApplicationRevision);
             defaults.put("application.language", GetDefaultLanguage());
