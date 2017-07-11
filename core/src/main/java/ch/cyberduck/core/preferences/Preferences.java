@@ -278,6 +278,7 @@ public abstract class Preferences {
         defaults.put("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
         defaults.put("application.name", "Cyberduck");
+        defaults.put("application.container.name", "duck");
         final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
         defaults.put("application.support.path", support);
         defaults.put("application.receipt.path", support);
