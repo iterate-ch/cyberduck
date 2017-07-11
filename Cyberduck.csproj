@@ -163,10 +163,17 @@
       <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="ObjectListView, Version=2.4.1.20671, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>windows\target\ObjectListView.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="StructureMap, Version=2.6.1.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>windows\target\StructureMap.dll</HintPath>
@@ -181,14 +188,8 @@
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="VistaBridgeLibrary">
-      <HintPath>windows\target\VistaBridgeLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="Windows">
       <HintPath>$(MSBuildProgramFiles32)\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
-    </Reference>
-    <Reference Include="Windows7.DesktopIntegration">
-      <HintPath>windows\target\Windows7.DesktopIntegration.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -563,6 +564,7 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\TransferPromptForm.Designer.cs">
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="windows\src\main\csharp\ch\cyberduck\properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>

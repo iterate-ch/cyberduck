@@ -20,8 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Windows7.DesktopIntegration;
-using Windows7.DesktopIntegration.WindowsForms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.preferences;
@@ -30,6 +28,7 @@ using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using Utils = Ch.Cyberduck.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -296,7 +295,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void TaskbarOverlayIcon(Icon icon, string text)
         {
-            this.SetTaskbarOverlayIcon(icon, text);
+			TaskbarManager.Instance.SetOverlayIcon(Handle, icon, text);
         }
 
         public void UpdateOverallProgressState(long progress, long maximum)
@@ -305,12 +304,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 if (progress == 0 || maximum == 0)
                 {
-                    Windows7Taskbar.SetProgressState(Handle, Windows7Taskbar.ThumbnailProgressState.NoProgress);
+					TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
                 }
                 else
                 {
-                    Windows7Taskbar.SetProgressState(Handle, Windows7Taskbar.ThumbnailProgressState.Normal);
-                    Windows7Taskbar.SetProgressValue(Handle, (ulong) progress, (ulong) maximum);
+					TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
+					TaskbarManager.Instance.SetProgressValue((int)progress, (int)maximum);
                 }
             }
         }
