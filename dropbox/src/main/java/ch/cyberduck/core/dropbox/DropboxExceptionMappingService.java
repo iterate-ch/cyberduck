@@ -35,6 +35,7 @@ import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.RetryException;
 import com.dropbox.core.ServerException;
 import com.dropbox.core.v2.files.*;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -225,19 +226,25 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
     private void parse(final StringBuilder buffer, final String message) {
         final JsonParser parser = new JsonParser();
         try {
-            final JsonObject json = parser.parse(new StringReader(message)).getAsJsonObject();
-            final JsonObject error = json.getAsJsonObject("error");
-            if(null == error) {
-                this.append(buffer, message);
-            }
-            else {
-                final JsonPrimitive tag = error.getAsJsonPrimitive(".tag");
-                if(null == tag) {
+            final JsonElement element = parser.parse(new StringReader(message));
+            if(element.isJsonObject()) {
+                final JsonObject json = element.getAsJsonObject();
+                final JsonObject error = json.getAsJsonObject("error");
+                if(null == error) {
                     this.append(buffer, message);
                 }
                 else {
-                    this.append(buffer, StringUtils.replace(tag.getAsString(), "_", " "));
+                    final JsonPrimitive tag = error.getAsJsonPrimitive(".tag");
+                    if(null == tag) {
+                        this.append(buffer, message);
+                    }
+                    else {
+                        this.append(buffer, StringUtils.replace(tag.getAsString(), "_", " "));
+                    }
                 }
+            }
+            if(element.isJsonPrimitive()) {
+                this.append(buffer, element.getAsString());
             }
         }
         catch(JsonParseException e) {
