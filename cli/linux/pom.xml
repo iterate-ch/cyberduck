@@ -43,7 +43,7 @@
                                 <id>unpack-profiles</id>
                                 <phase>generate-sources</phase>
                                 <goals>
-                                    <goal>copy</goal>
+                                    <goal>unpack</goal>
                                 </goals>
                                 <configuration>
                                     <artifactItems>
