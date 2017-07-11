@@ -26,12 +26,15 @@ import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
+import java.util.Map;
 
 public class CryptoDirectoryProvider {
     private static final Logger log = Logger.getLogger(CryptoDirectoryProvider.class);
@@ -45,6 +48,9 @@ public class CryptoDirectoryProvider {
 
     private final RandomStringService random
             = new UUIDRandomStringService();
+
+    private final Map<Path, String> cache = new LRUMap<Path, String>(
+            PreferencesFactory.get().getInteger("browser.cache.size"));
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
         this.home = vault;
@@ -108,22 +114,42 @@ public class CryptoDirectoryProvider {
             return ROOT_DIR_ID;
         }
         if(StringUtils.isBlank(directoryId)) {
-            final Path parent = this.toEncrypted(session, directory.getParent().attributes().getDirectoryId(), directory.getParent());
-            final String cleartextName = directory.getName();
-            final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
-            // Read directory id from file
-            try {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Read directory ID for folder %s from %s", directory, ciphertextName));
-                }
-                final Path metadataFile = new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted));
-                return new ContentReader(session).read(metadataFile);
+            if(cache.containsKey(directory)) {
+                return cache.get(directory);
             }
-            catch(NotfoundException e) {
-                log.warn(String.format("Missing directory ID for folder %s", directory));
-                return random.random();
-            }
+            final String id = this.load(session, directory);
+            cache.put(directory, id);
+            return id;
         }
         return directoryId;
+    }
+
+    private String load(final Session<?> session, final Path directory) throws BackgroundException {
+        final Path parent = this.toEncrypted(session, directory.getParent().attributes().getDirectoryId(), directory.getParent());
+        final String cleartextName = directory.getName();
+        final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
+        // Read directory id from file
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Read directory ID for folder %s from %s", directory, ciphertextName));
+            }
+            final Path metadataFile = new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted));
+            return new ContentReader(session).read(metadataFile);
+        }
+        catch(NotfoundException e) {
+            log.warn(String.format("Missing directory ID for folder %s", directory));
+            return random.random();
+        }
+    }
+
+    /**
+     * Remove from cache
+     */
+    public void delete(final Path directory) {
+        cache.remove(directory);
+    }
+
+    public void destroy() {
+        cache.clear();
     }
 }
