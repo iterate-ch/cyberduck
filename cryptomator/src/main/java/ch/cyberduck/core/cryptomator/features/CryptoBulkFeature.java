@@ -66,11 +66,15 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
         for(Map.Entry<Path, TransferStatus> entry : sorted) {
             final Path file = entry.getKey();
             final TransferStatus status = entry.getValue();
-            // Write header to be reused in writer
-            final Cryptor cryptor = cryptomator.getCryptor();
-            final FileHeader header = cryptor.fileHeaderCryptor().create();
-            status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
-            status.setNonces(new RandomNonceGenerator());
+            if(null == status.getHeader()) {
+                // Write header to be reused in writer
+                final Cryptor cryptor = cryptomator.getCryptor();
+                final FileHeader header = cryptor.fileHeaderCryptor().create();
+                status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+            }
+            if(null == status.getNonces()) {
+                status.setNonces(new RandomNonceGenerator());
+            }
             if(file.isDirectory()) {
                 if(!status.isExists()) {
                     // Preset directory ID for new folders to avert lookup with not found failure in directory ID provider
