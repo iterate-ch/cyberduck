@@ -82,7 +82,7 @@ public class SFTPWriteFeatureTest {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
-        status.setChecksum(writer.checksum().compute(new ByteArrayInputStream(content), status));
+        status.setChecksum(writer.checksum(test).compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

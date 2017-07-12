@@ -20,18 +20,21 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
 
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
-    private Cache<Path> cache = PathCache.empty();
+
+    private final Map<Path, String> cache = new LRUMap<>();
 
     public DriveFileidProvider(final DriveSession session) {
         this.session = session;
@@ -45,14 +48,7 @@ public class DriveFileidProvider implements IdProvider {
         if(file.isRoot()) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
-        final AttributedList<Path> list;
-        if(!cache.isCached(file.getParent())) {
-            list = new FileidDriveListService(file).list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getParent(), list);
-        }
-        else {
-            list = cache.get(file.getParent());
-        }
+        final AttributedList<Path> list = new FileidDriveListService(file).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
@@ -62,7 +58,6 @@ public class DriveFileidProvider implements IdProvider {
 
     @Override
     public IdProvider withCache(final Cache<Path> cache) {
-        this.cache = cache;
         return this;
     }
 

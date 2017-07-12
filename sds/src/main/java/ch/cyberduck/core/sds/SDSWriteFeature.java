@@ -144,7 +144,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new DisabledChecksumCompute();
     }
 

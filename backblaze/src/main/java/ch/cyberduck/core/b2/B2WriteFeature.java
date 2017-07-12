@@ -149,7 +149,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
     }
 

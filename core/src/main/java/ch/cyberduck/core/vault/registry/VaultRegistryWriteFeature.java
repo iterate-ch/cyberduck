@@ -25,6 +25,7 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 public class VaultRegistryWriteFeature<T> implements Write<T> {
 
@@ -59,8 +60,14 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
-        return proxy.checksum();
+    public ChecksumCompute checksum(final Path file) {
+        try {
+            return registry.find(session, file).getFeature(session, Write.class, proxy).checksum(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            // Ignore
+        }
+        return proxy.checksum(file);
     }
 
     @Override

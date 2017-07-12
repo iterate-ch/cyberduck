@@ -401,7 +401,7 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public ChecksumCompute checksum() {
+                        public ChecksumCompute checksum(final Path file) {
                             return new DisabledChecksumCompute();
                         }
                     };
