@@ -377,6 +377,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     options, segment, callback, progress, stream);
                             // Recursive
                             if(item.remote.isDirectory()) {
+                                if(!cache.isCached(item)) {
+                                    log.warn(String.format("Missing entry for %s in cache", item));
+                                }
                                 for(TransferItem f : cache.get(item)) {
                                     // Recursive
                                     transfer(f, action);
