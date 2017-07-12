@@ -16,6 +16,8 @@ package ch.cyberduck.core.cryptomator.impl;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.CacheReference;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
@@ -49,7 +51,7 @@ public class CryptoDirectoryProvider {
     private final RandomStringService random
             = new UUIDRandomStringService();
 
-    private final Map<Path, String> cache = new LRUMap<Path, String>(
+    private final Map<CacheReference<Path>, String> cache = new LRUMap<CacheReference<Path>, String>(
             PreferencesFactory.get().getInteger("browser.cache.size"));
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
@@ -114,11 +116,11 @@ public class CryptoDirectoryProvider {
             return ROOT_DIR_ID;
         }
         if(StringUtils.isBlank(directoryId)) {
-            if(cache.containsKey(directory)) {
-                return cache.get(directory);
+            if(cache.containsKey(new DefaultPathPredicate(directory))) {
+                return cache.get(new DefaultPathPredicate(directory));
             }
             final String id = this.load(session, directory);
-            cache.put(directory, id);
+            cache.put(new DefaultPathPredicate(directory), id);
             return id;
         }
         return directoryId;
@@ -146,7 +148,7 @@ public class CryptoDirectoryProvider {
      * Remove from cache
      */
     public void delete(final Path directory) {
-        cache.remove(directory);
+        cache.remove(new DefaultPathPredicate(directory));
     }
 
     public void destroy() {
