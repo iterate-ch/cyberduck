@@ -19,7 +19,6 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Hex;
@@ -54,8 +53,6 @@ import java.util.Enumeration;
 
 public class ReceiptVerifier implements LicenseVerifier {
     private static final Logger log = Logger.getLogger(ReceiptVerifier.class);
-
-    private final Preferences preferences = PreferencesFactory.get();
 
     private final Local file;
     private final String application;
