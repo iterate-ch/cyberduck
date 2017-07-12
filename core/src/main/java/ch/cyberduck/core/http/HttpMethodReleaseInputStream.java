@@ -24,9 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HttpMethodReleaseInputStream extends CountingInputStream {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpMethodReleaseInputStream.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpMethodReleaseInputStream.class);
+
+    private final AtomicBoolean close = new AtomicBoolean();
 
     private HttpResponse response;
 
@@ -51,28 +54,37 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
      */
     @Override
     public void close() throws IOException {
-        if(response instanceof CloseableHttpResponse) {
-            long read = this.getByteCount();
-            if(-1 == response.getEntity().getContentLength() && -1 == this.read()) {
-                // Fully consumed for unknown content length with decompressing HTTP entity
-                super.close();
-            }
-            else if(read == response.getEntity().getContentLength()) {
-                // Fully consumed
-                super.close();
+        if(close.get()) {
+            log.warn(String.format("Skip double close of stream %s", this));
+            return;
+        }
+        try {
+            if(response instanceof CloseableHttpResponse) {
+                long read = this.getByteCount();
+                if(-1 == response.getEntity().getContentLength() && -1 == this.read()) {
+                    // Fully consumed for unknown content length with decompressing HTTP entity
+                    super.close();
+                }
+                else if(read == response.getEntity().getContentLength()) {
+                    // Fully consumed
+                    super.close();
+                }
+                else {
+                    log.warn("Abort connection for response '{}'", response);
+                    // Close an HTTP response as quickly as possible, avoiding consuming
+                    // response data unnecessarily though at the expense of making underlying
+                    // connections unavailable for reuse.
+                    // The response proxy will force close the connection.
+                    ((CloseableHttpResponse) response).close();
+                }
             }
             else {
-                LOGGER.warn("Abort connection for response '{}'", response);
-                // Close an HTTP response as quickly as possible, avoiding consuming
-                // response data unnecessarily though at the expense of making underlying
-                // connections unavailable for reuse.
-                // The response proxy will force close the connection.
-                ((CloseableHttpResponse) response).close();
+                // Consume and close
+                super.close();
             }
         }
-        else {
-            // Consume and close
-            super.close();
+        finally {
+            close.set(true);
         }
     }
 }
