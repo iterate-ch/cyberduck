@@ -123,7 +123,7 @@ public class CryptoDirectoryProvider {
             cache.put(new DefaultPathPredicate(directory), id);
             return id;
         }
-        cache.put(directory, directoryId);
+        cache.put(new DefaultPathPredicate(directory), directoryId);
         return directoryId;
     }
 
