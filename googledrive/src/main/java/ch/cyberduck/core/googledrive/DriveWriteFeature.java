@@ -175,7 +175,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new DisabledChecksumCompute();
     }
 }

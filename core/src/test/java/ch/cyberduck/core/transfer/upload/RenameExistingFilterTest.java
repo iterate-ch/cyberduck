@@ -198,7 +198,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public ChecksumCompute checksum() {
+                        public ChecksumCompute checksum(final Path file) {
                             return new DisabledChecksumCompute();
                         }
                     };
@@ -310,7 +310,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public ChecksumCompute checksum() {
+                        public ChecksumCompute checksum(final Path file) {
                             return new DisabledChecksumCompute();
                         }
                     };

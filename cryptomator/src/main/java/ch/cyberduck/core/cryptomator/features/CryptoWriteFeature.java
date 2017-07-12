@@ -103,8 +103,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
-        return new CryptoChecksumCompute(proxy.checksum(), vault);
+    public ChecksumCompute checksum(final Path file) {
+        return new CryptoChecksumCompute(proxy.checksum(file), vault);
     }
 
     @Override

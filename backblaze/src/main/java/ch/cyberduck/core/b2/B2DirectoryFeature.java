@@ -75,7 +75,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
             }
             else {
                 if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+                    status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
                 }
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));

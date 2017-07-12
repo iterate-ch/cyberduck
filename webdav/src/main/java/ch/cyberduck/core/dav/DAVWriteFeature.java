@@ -135,7 +135,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new DisabledChecksumCompute();
     }
 }
