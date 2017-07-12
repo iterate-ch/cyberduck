@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -111,14 +112,14 @@ public class SingleTransferWorkerTest {
 
         }.run(session, session));
         assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session), cryptomator).find(dir1));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session), cryptomator).find(file1).getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        assertEquals(content.length, new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session), cryptomator).find(file2).getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
