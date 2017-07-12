@@ -55,7 +55,7 @@ public class SDSDirectoryFeature implements Directory {
                 roomRequest.setName(folder.getName());
                 final Node r = new NodesApi(session.getClient()).createRoom(session.getToken(), null, roomRequest);
                 return new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                        new PathAttributes(folder.attributes()).withVersionId(String.valueOf(r.getId())));
+                        new PathAttributes(folder.attributes()));
             }
             else {
                 final CreateFolderRequest folderRequest = new CreateFolderRequest();
@@ -63,7 +63,7 @@ public class SDSDirectoryFeature implements Directory {
                 folderRequest.setName(folder.getName());
                 final Node f = new NodesApi(session.getClient()).createFolder(session.getToken(), folderRequest, null);
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                        new PathAttributes(folder.attributes()).withVersionId(String.valueOf(f.getId())));
+                        new PathAttributes(folder.attributes()));
             }
         }
         catch(ApiException e) {

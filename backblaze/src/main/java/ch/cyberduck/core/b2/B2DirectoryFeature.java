@@ -71,7 +71,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                         folder.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
                 }
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                        new PathAttributes(folder.attributes()).withVersionId(response.getBucketId()));
+                        new PathAttributes(folder.attributes()));
             }
             else {
                 if(Checksum.NONE == status.getChecksum()) {
