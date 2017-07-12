@@ -121,6 +121,7 @@ public class CryptoDirectoryProvider {
             cache.put(directory, id);
             return id;
         }
+        cache.put(directory, directoryId);
         return directoryId;
     }
 
