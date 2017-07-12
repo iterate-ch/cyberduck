@@ -22,10 +22,10 @@ package ch.cyberduck.core.aquaticprime;
 public interface License extends LicenseVerifier {
 
     /**
-     * @return True if valid license key
      * @param callback Verification callback
+     * @return True if valid license key
      */
-    boolean verify(final LicenseVerifierCallback callback);
+    boolean verify(LicenseVerifierCallback callback);
 
     /**
      * @param property Key in license file
