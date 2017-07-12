@@ -215,7 +215,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new DisabledChecksumCompute();
     }
 }

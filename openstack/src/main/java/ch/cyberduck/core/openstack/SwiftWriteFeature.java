@@ -172,7 +172,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new MD5ChecksumCompute();
     }
 }

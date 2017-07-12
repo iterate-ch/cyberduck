@@ -46,7 +46,7 @@ public class NullWriteFeature extends AppendWriteFeature<Void> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new DisabledChecksumCompute();
     }
 }

@@ -113,7 +113,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
     }
 
@@ -174,7 +174,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                         public B2UploadPartResponse call() throws BackgroundException {
                             final TransferStatus status = new TransferStatus().length(len);
                             final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
-                            final Checksum checksum = B2LargeUploadWriteFeature.this.checksum()
+                            final Checksum checksum = B2LargeUploadWriteFeature.this.checksum(file)
                                     .compute(new ByteArrayInputStream(content, off, len), status);
                             try {
                                 return session.getClient().uploadLargeFilePart(version.id, segment, entity, checksum.hash);
