@@ -55,7 +55,7 @@ import java.util.Enumeration;
 public class ReceiptVerifier implements LicenseVerifier {
     private static final Logger log = Logger.getLogger(ReceiptVerifier.class);
 
-    public final Preferences preferences = PreferencesFactory.get();
+    private final Preferences preferences = PreferencesFactory.get();
 
     private final Local file;
     private final String application;
@@ -74,7 +74,12 @@ public class ReceiptVerifier implements LicenseVerifier {
     }
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
+        final BouncyCastleProvider provider = new BouncyCastleProvider();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Install provider %s at position %d", provider, position));
+        }
+        Security.insertProviderAt(provider, position);
     }
 
     @Override
