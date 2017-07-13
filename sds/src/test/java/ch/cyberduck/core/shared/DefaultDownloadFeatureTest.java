@@ -26,9 +26,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
@@ -54,8 +56,7 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DefaultDownloadFeatureTest {
@@ -76,10 +77,11 @@ public class DefaultDownloadFeatureTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
-            final OutputStream out = new SDSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<VersionId> out = new SDSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
+            assertNotEquals(test.attributes().getVersionId(), out.getStatus().id);
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
