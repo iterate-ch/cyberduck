@@ -26,21 +26,16 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.b2.B2DeleteFeature;
+import ch.cyberduck.core.b2.B2Protocol;
+import ch.cyberduck.core.b2.B2ReadFeature;
+import ch.cyberduck.core.b2.B2Session;
+import ch.cyberduck.core.b2.B2TouchFeature;
+import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.sds.SDSDeleteFeature;
-import ch.cyberduck.core.sds.SDSDirectoryFeature;
-import ch.cyberduck.core.sds.SDSProtocol;
-import ch.cyberduck.core.sds.SDSReadFeature;
-import ch.cyberduck.core.sds.SDSSession;
-import ch.cyberduck.core.sds.SDSTouchFeature;
-import ch.cyberduck.core.sds.SDSWriteFeature;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -56,74 +51,67 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class DefaultDownloadFeatureTest {
 
     @Test
-    public void testTransferAppend() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+    public void testOverwrite() throws Exception {
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
-        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path test = new SDSTouchFeature(session).touch(
-                new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new B2TouchFeature(session).touch(
+                new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
-            final StatusOutputStream<VersionId> out = new SDSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new B2WriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
-            assertNotEquals(test.attributes().getVersionId(), out.getStatus().id);
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        {
-            final TransferStatus status = new TransferStatus().length(content.length / 2);
-            new DefaultDownloadFeature(new SDSReadFeature(session)).download(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                    status,
-                    new DisabledConnectionCallback());
-        }
-        {
-            final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
-            new DefaultDownloadFeature(new SDSReadFeature(session)).download(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                    status,
-                    new DisabledConnectionCallback());
-        }
+        final TransferStatus status = new TransferStatus().length(content.length);
+        new DefaultDownloadFeature(new B2ReadFeature(session)).download(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status,
+                new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
     @Test
     public void testTransferUnknownSize() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final B2Session session = new B2Session(
+                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                        )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
-        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session).touch(test, new TransferStatus());
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new B2TouchFeature(session).touch(test, new TransferStatus());
         final byte[] content = new byte[1];
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
-            final OutputStream out = new SDSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new B2WriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -131,7 +119,7 @@ public class DefaultDownloadFeatureTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().length(-1L);
-            new DefaultDownloadFeature(new SDSReadFeature(session)).download(
+            new DefaultDownloadFeature(new B2ReadFeature(session)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
@@ -141,7 +129,7 @@ public class DefaultDownloadFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

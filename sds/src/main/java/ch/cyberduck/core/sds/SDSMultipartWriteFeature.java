@@ -189,6 +189,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                 body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
                 final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), uploadId, null, body);
                 versionId = new VersionId(String.valueOf(upload.getId()));
+                file.attributes().setVersionId(versionId.id);
             }
             catch(ApiException e) {
                 throw new IOException(new SDSExceptionMappingService().map(e));

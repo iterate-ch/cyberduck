@@ -47,6 +47,7 @@ import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
+import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
@@ -110,11 +111,13 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                             }
                         }
                         try {
-                            return session.getClient().uploadFile(uploadUrl,
+                            final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                                     file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
                                     entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                                     status.getMime(),
                                     status.getMetadata());
+                            file.attributes().setVersionId(response.getFileId());
+                            return response;
                         }
                         catch(B2ApiException e) {
                             urls.remove();

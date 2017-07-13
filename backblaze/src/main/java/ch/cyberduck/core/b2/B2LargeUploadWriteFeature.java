@@ -57,6 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.B2FinishLargeFileResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2StartLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
@@ -226,10 +227,11 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     for(B2UploadPartResponse part : completed) {
                         checksums.add(part.getContentSha1());
                     }
-                    session.getClient().finishLargeFileUpload(version.id, checksums.toArray(new String[checksums.size()]));
+                    final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(version.id, checksums.toArray(new String[checksums.size()]));
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
                     }
+                    file.attributes().setVersionId(response.getFileId());
                 }
             }
             catch(B2ApiException e) {
