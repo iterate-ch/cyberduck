@@ -16,8 +16,10 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
@@ -85,8 +87,11 @@ public class SDSReadFeature implements Read {
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Download {0} failed", e, file);
         }
-        catch(CryptoException | IOException e) {
-            throw new BackgroundException("Decryption failed", e);
+        catch(CryptoException e) {
+            throw new AccessDeniedException(e.getMessage(), e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
