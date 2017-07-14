@@ -17,6 +17,8 @@ package ch.cyberduck.core.cryptomator.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoInputStream;
@@ -46,13 +48,13 @@ public class CryptoReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
         try {
             final Path encrypted = vault.encrypt(session, file);
             // Header
             final Cryptor cryptor = vault.getCryptor();
             final InputStream proxy = this.proxy.read(encrypted,
-                    new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
+                    new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), connectionCallback, new DisabledPasswordCallback());
             final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
             final int read = IOUtils.read(proxy, headerBuffer.array());
             final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);

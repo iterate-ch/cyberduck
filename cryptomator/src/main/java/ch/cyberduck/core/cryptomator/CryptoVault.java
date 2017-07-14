@@ -92,7 +92,7 @@ public class CryptoVault implements Vault {
     /**
      * Root of vault directory
      */
-    private Path home;
+    private final Path home;
 
     private Cryptor cryptor;
 

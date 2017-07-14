@@ -133,4 +133,73 @@ public class CryptoBulkFeatureTest {
             assertEquals(directoryId, file.getParent().attributes().getDirectoryId());
         }
     }
+
+    @Test
+    public void testPost() throws Exception {
+        final Path vault = new Path("/vault", EnumSet.of(Path.Type.directory));
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Directory.class) {
+                    return (T) new Directory() {
+                        @Override
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                            return folder;
+                        }
+
+                        @Override
+                        public boolean isSupported(final Path workdir) {
+                            return true;
+                        }
+
+                        @Override
+                        public Directory withWriter(final Write writer) {
+                            return this;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"));
+        final CryptoBulkFeature<Map<Path, TransferStatus>> bulk = new CryptoBulkFeature<Map<Path, TransferStatus>>(session, new Bulk<Map<Path, TransferStatus>>() {
+            @Override
+            public Map<Path, TransferStatus> pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+                return files;
+            }
+
+            @Override
+            public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+                //
+            }
+
+            @Override
+            public Bulk<Map<Path, TransferStatus>> withDelete(final Delete delete) {
+                return this;
+            }
+        }, new Delete() {
+            @Override
+            public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isSupported(final Path file) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isRecursive() {
+                throw new UnsupportedOperationException();
+            }
+        }, cryptomator);
+        final HashMap<Path, TransferStatus> files = new HashMap<>();
+        final Path directory = new Path("/vault/directory", EnumSet.of(Path.Type.directory));
+        files.put(directory, new TransferStatus().exists(false));
+        files.put(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new TransferStatus().exists(false));
+        files.put(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new TransferStatus().exists(false));
+        bulk.post(Transfer.Type.upload, files, new DisabledConnectionCallback());
+    }
 }

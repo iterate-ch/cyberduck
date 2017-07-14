@@ -98,7 +98,7 @@ public class B2LargeUploadServiceTest {
         assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -140,7 +140,7 @@ public class B2LargeUploadServiceTest {
         assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

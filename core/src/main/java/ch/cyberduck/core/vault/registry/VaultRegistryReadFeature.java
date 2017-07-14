@@ -16,6 +16,8 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,8 +40,8 @@ public class VaultRegistryReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Read.class, proxy).read(file, status, callback);
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Read.class, proxy).read(file, status, connectionCallback, new DisabledPasswordCallback());
     }
 
     @Override
