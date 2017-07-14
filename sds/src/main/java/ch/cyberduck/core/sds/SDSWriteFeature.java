@@ -111,9 +111,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         final CompleteUploadRequest body = new CompleteUploadRequest();
                         body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
                         final Node upload = new NodesApi(client).completeFileUpload(session.getToken(), id, null, body);
-                        final VersionId version = new VersionId(String.valueOf(upload.getId()));
-                        file.attributes().setVersionId(version.id);
-                        return version;
+                        return new VersionId(String.valueOf(upload.getId()));
                     }
                     catch(IOException e) {
                         throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);

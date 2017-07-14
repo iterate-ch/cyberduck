@@ -82,6 +82,7 @@ public class DefaultDownloadFeatureTest {
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
             assertNotEquals(test.attributes().getVersionId(), out.getStatus().id);
+            test.attributes().setVersionId(out.getStatus().id);
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
