@@ -126,9 +126,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                         containerService.getKey(file), status.getMime(), metadata).getFileId();
             }
-            // Save file id for use in part referencing this
-            file.attributes().setVersionId(fileid);
-
             // Submit file segments for concurrent upload
             final List<Future<B2UploadPartResponse>> parts = new ArrayList<Future<B2UploadPartResponse>>();
             long remaining = status.getLength();
