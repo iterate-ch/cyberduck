@@ -78,7 +78,7 @@ public class SDSReadFeature implements Read {
                 // TODO PasswordCallback
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(encryptedFileKey, privateKey,
                         "USER_PASSWORD");
-                return new CryptoInputStream(in, new FileDecryptionCipher(plainFileKey), status.getLength() - status.getOffset());
+                return new CryptoInputStream(in, new FileDecryptionCipher(plainFileKey), status.getLength() + status.getOffset());
             }
             return in;
         }
