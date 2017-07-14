@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
@@ -71,12 +72,9 @@ public class B2ObjectListServiceTest {
         out.close();
         final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
         final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
-        // Not found with missing version ID
-        assertFalse(list.contains(file));
-        file.attributes().setVersionId(resopnse.getFileId());
-        assertTrue(list.contains(file));
-        assertEquals("1", list.get(file).attributes().getRevision());
-        assertEquals(0L, list.get(file).attributes().getSize());
+        assertNotNull(list.find(new SimplePathPredicate(file)));
+        assertEquals("1", list.find(new SimplePathPredicate(file)).attributes().getRevision());
+        assertEquals(0L, list.find(new SimplePathPredicate(file)).attributes().getSize());
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new B2ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(file));
         new B2DeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -129,9 +127,9 @@ public class B2ObjectListServiceTest {
             final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
             file1.attributes().setVersionId(resopnse.getFileId());
             assertTrue(list.contains(file1));
-            assertEquals("1", list.get(file1).attributes().getRevision());
-            assertEquals(content.length, list.get(file1).attributes().getSize());
-            assertEquals(bucket, list.get(file1).getParent());
+            assertEquals("1", list.find(new SimplePathPredicate(file1)).attributes().getRevision());
+            assertEquals(content.length, list.find(new SimplePathPredicate(file1)).attributes().getSize());
+            assertEquals(bucket, list.find(new SimplePathPredicate(file1)).getParent());
         }
         // Replace
         {
@@ -156,8 +154,8 @@ public class B2ObjectListServiceTest {
         new B2DeleteFeature(session).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         {
             final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
-            assertFalse(list.contains(file1));
-            assertFalse(list.contains(file2));
+            assertNull(list.find(new SimplePathPredicate(file1)));
+            assertNull(list.find(new SimplePathPredicate(file2)));
         }
         new B2DeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -184,12 +182,12 @@ public class B2ObjectListServiceTest {
         // Path{path='/test-e9287cee-772a-4a69-86f5-05905a23a446/2b47b8c4-0d13-41e8-a76f-45e918dd88d6/b136e277-3ee0-49f0-b19f-4a66eb7d8f38', type=[directory, placeholder]}
         // Path{path='/test-e9287cee-772a-4a69-86f5-05905a23a446/2b47b8c4-0d13-41e8-a76f-45e918dd88d6/c2cbb949-2877-416d-9eb5-0855279adde3', type=[file]}
         assertEquals(3, list.size());
-        assertTrue(list.contains(file1));
-        assertTrue(list.contains(folder2));
-        assertFalse(list.contains(file2));
-        assertFalse(list.contains(folder1));
-        assertEquals(folder1, list.get(file1).getParent());
-        assertEquals(folder1, list.get(folder2).getParent());
+        assertNotNull(list.find(new SimplePathPredicate(file1)));
+        assertNotNull(list.find(new SimplePathPredicate(folder2)));
+        assertNull(list.find(new SimplePathPredicate(file2)));
+        assertNull(list.find(new SimplePathPredicate(folder1)));
+        assertEquals(folder1, list.find(new SimplePathPredicate(file1)).getParent());
+        assertEquals(folder1, list.find(new SimplePathPredicate(folder2)).getParent());
         new B2DeleteFeature(session).delete(Arrays.asList(bucket, folder1, file1, folder2, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
