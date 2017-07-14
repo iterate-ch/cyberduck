@@ -42,6 +42,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -59,6 +60,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private String token;
     private UserAccount account;
+    private UserKeyPairContainer keys;
 
     final static String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
 
@@ -100,6 +102,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             account = new UserApi(client).getUserInfo(response.getToken(), null, false);
             // Save tokens for 401 error response when expired
             retryHandler.setTokens(login, password);
+            if(account.getIsEncryptionEnabled()) {
+                keys = new UserApi(client).getUserKeyPair(token);
+            }
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
@@ -129,6 +134,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     public void setToken(final String token) {
         this.token = token;
+    }
+
+    public UserKeyPairContainer getKeys() {
+        return keys;
     }
 
     @Override
