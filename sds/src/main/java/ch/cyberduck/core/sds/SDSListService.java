@@ -69,6 +69,9 @@ public class SDSListService implements ListService {
                             type = EnumSet.of(Path.Type.file);
                             break;
                     }
+                    if(node.getIsEncrypted()) {
+                        type.add(Path.Type.encrypted);
+                    }
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);
                     listener.chunk(directory, children);
