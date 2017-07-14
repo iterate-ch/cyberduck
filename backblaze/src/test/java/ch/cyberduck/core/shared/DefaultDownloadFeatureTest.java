@@ -33,6 +33,7 @@ import ch.cyberduck.core.b2.B2Session;
 import ch.cyberduck.core.b2.B2TouchFeature;
 import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
@@ -50,6 +51,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
+
+import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.BaseB2Response;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
@@ -74,10 +78,11 @@ public class DefaultDownloadFeatureTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
-            final OutputStream out = new B2WriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
+            test.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus().length(content.length);
