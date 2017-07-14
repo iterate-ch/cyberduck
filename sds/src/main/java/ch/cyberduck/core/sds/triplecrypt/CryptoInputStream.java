@@ -29,15 +29,14 @@ import eu.ssp_europe.sds.crypto.model.PlainDataContainer;
 
 public class CryptoInputStream extends ProxyInputStream {
 
+    private static final int DEFAULT_CHUNKSIZE = 16;
+
     private final InputStream proxy;
-
-    private ByteBuffer buffer = ByteBuffer.allocate(0);
-
+    private final ByteBuffer buffer = ByteBuffer.allocate(0);
     private final FileDecryptionCipher cipher;
     private final long length;
 
     private long read;
-    private final int chunkSize = 16;
 
     public CryptoInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final long length) throws IOException {
         super(proxy);
@@ -73,7 +72,7 @@ public class CryptoInputStream extends ProxyInputStream {
     }
 
     private int readNextChunk() throws IOException {
-        final ByteBuffer ciphertextBuf = ByteBuffer.allocate(chunkSize);
+        final ByteBuffer ciphertextBuf = ByteBuffer.allocate(DEFAULT_CHUNKSIZE);
         final int read = IOUtils.read(proxy, ciphertextBuf.array());
         this.read += read;
         if(read == 0) {
