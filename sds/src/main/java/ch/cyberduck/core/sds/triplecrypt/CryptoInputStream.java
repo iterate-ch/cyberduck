@@ -87,7 +87,7 @@ public class CryptoInputStream extends ProxyInputStream {
             buffer.put(pDataContainer.getContent());
         }
         catch(CryptoException e) {
-            throw new IOException(e.getMessage(), e));
+            throw new IOException(e);
         }
         return read;
     }
