@@ -34,7 +34,6 @@ import java.io.InputStream;
 
 import eu.ssp_europe.sds.crypto.Crypto;
 import eu.ssp_europe.sds.crypto.CryptoException;
-import eu.ssp_europe.sds.crypto.FileDecryptionCipher;
 import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
 import eu.ssp_europe.sds.crypto.model.PlainFileKey;
 import eu.ssp_europe.sds.crypto.model.UserPrivateKey;
@@ -79,8 +78,8 @@ public class SDSReadFeature implements Read {
                 privateKey.setVersion(session.getKeys().getPrivateKeyContainer().getVersion());
                 // TODO PasswordCallback
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(encryptedFileKey, privateKey,
-                        "USER_PASSWORD");
-                return new CryptoInputStream(in, new FileDecryptionCipher(plainFileKey), status.getLength() + status.getOffset());
+                        "ahbic3Ae");
+                return new CryptoInputStream(in, Crypto.createFileDecryptionCipher(plainFileKey), status.getLength() + status.getOffset());
             }
             return in;
         }

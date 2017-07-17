@@ -15,6 +15,8 @@ package ch.cyberduck.core.sds.triplecrypt;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.sds.SDSSession;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 
@@ -28,8 +30,6 @@ import eu.ssp_europe.sds.crypto.model.EncryptedDataContainer;
 import eu.ssp_europe.sds.crypto.model.PlainDataContainer;
 
 public class CryptoInputStream extends ProxyInputStream {
-
-    private static final int DEFAULT_CHUNKSIZE = 16;
 
     private final InputStream proxy;
     private final ByteBuffer buffer = ByteBuffer.allocate(0);
@@ -72,7 +72,7 @@ public class CryptoInputStream extends ProxyInputStream {
     }
 
     private int readNextChunk() throws IOException {
-        final ByteBuffer ciphertextBuf = ByteBuffer.allocate(DEFAULT_CHUNKSIZE);
+        final ByteBuffer ciphertextBuf = ByteBuffer.allocate(SDSSession.DEFAULT_CHUNKSIZE);
         final int read = IOUtils.read(proxy, ciphertextBuf.array());
         this.read += read;
         if(read == 0) {
@@ -82,7 +82,13 @@ public class CryptoInputStream extends ProxyInputStream {
         ciphertextBuf.flip();
         try {
             final EncryptedDataContainer eDataContainer = createEncryptedDataContainer(ciphertextBuf.array(), read);
-            final PlainDataContainer pDataContainer = cipher.decryptBlock(eDataContainer, this.read == length);
+            final PlainDataContainer pDataContainer;
+            if(this.read == length) {
+                pDataContainer = cipher.decryptLastBlock(eDataContainer);
+            }
+            else {
+                pDataContainer = cipher.decryptBlock(eDataContainer);
+            }
             buffer.put(pDataContainer.getContent());
         }
         catch(CryptoException e) {
