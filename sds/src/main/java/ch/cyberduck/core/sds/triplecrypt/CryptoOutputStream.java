@@ -65,8 +65,6 @@ public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<Vers
         private final FileEncryptionCipher cipher;
         private final PlainFileKey key;
 
-        private int counter;
-
         public EncryptingOutputStream(final OutputStream proxy, final FileEncryptionCipher cipher,
                                       final PlainFileKey key) {
             super(proxy);
@@ -100,7 +98,7 @@ public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<Vers
             final PlainDataContainer data = new PlainDataContainer(new byte[0]);
             try {
                 final EncryptedDataContainer encrypted = cipher.encryptLastBlock(data);
-                this.write(encrypted.getContent());
+                super.write(encrypted.getContent());
                 final String tag = CryptoUtils.byteArrayToString(encrypted.getTag());
                 key.setTag(tag);
             }
