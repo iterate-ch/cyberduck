@@ -80,4 +80,33 @@ public class SDSWriteFeatureTest {
         new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
+
+    @Test
+    public void testReadWriteEncrypted() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.encrypted));
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SDSWriteFeature writer = new SDSWriteFeature(session);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        final VersionId version = out.getStatus();
+        assertNotNull(version);
+        assertTrue(new DefaultFindFeature(session).find(test));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new SDSReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
 }

@@ -36,8 +36,11 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.io.swagger.client.model.PublicKeyContainer;
 import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
+import ch.cyberduck.core.sds.triplecrypt.CryptoOutputStream;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -52,6 +55,14 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.Collections;
+
+import eu.ssp_europe.sds.crypto.Crypto;
+import eu.ssp_europe.sds.crypto.CryptoSystemException;
+import eu.ssp_europe.sds.crypto.InvalidFileKeyException;
+import eu.ssp_europe.sds.crypto.InvalidKeyPairException;
+import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
+import eu.ssp_europe.sds.crypto.model.PlainFileKey;
+import eu.ssp_europe.sds.crypto.model.UserPublicKey;
 
 public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
@@ -77,11 +88,12 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         final CreateFileUploadRequest body = new CreateFileUploadRequest();
         body.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file.getParent(), new DisabledListProgressListener())));
         body.setName(file.getName());
-        body.classification(DEFAULT_CLASSIFICATION); // internal
+        body.classification(DEFAULT_CLASSIFICATION);
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(session.getToken(), body);
             final String id = response.getUploadId();
             final DelayedHttpMultipartEntity entity = new DelayedHttpMultipartEntity(file.getName(), status);
+            final PlainFileKey fileKey = Crypto.generateFileKey();
             final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
                 @Override
                 public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
@@ -110,6 +122,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         }
                         final CompleteUploadRequest body = new CompleteUploadRequest();
                         body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                        if(file.getParent().getType().contains(Path.Type.encrypted)) {
+                            final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(fileKey, this.convert(session.getKeys().getPublicKeyContainer()));
+                            body.setFileKey(this.convert(encryptFileKey));
+                        }
                         final Node upload = new NodesApi(client).completeFileUpload(session.getToken(), id, null, body);
                         return new VersionId(String.valueOf(upload.getId()));
                     }
@@ -119,17 +135,42 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                     catch(ApiException e) {
                         throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
                     }
+                    catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException e) {
+                        throw new BackgroundException(String.format("Upload %s failed", file), e);
+                    }
                 }
 
                 @Override
                 public long getContentLength() {
                     return entity.getContentLength();
                 }
+
+                private FileKey convert(final EncryptedFileKey k) {
+                    final FileKey key = new FileKey();
+                    key.setIv(k.getIv());
+                    key.setKey(k.getKey());
+                    key.setTag(k.getTag());
+                    key.setVersion(k.getVersion());
+                    return key;
+                }
+
+                private UserPublicKey convert(final PublicKeyContainer c) {
+                    final UserPublicKey key = new UserPublicKey();
+                    key.setPublicKey(c.getPublicKey());
+                    key.setVersion(c.getVersion());
+                    return key;
+                }
             };
+            if(file.getParent().getType().contains(Path.Type.encrypted)) {
+                return new CryptoOutputStream<>(this.write(file, status, command, entity), Crypto.createFileEncryptionCipher(fileKey), fileKey);
+            }
             return this.write(file, status, command, entity);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+        catch(CryptoSystemException | InvalidFileKeyException e) {
+            throw new BackgroundException(String.format("Upload %s failed", file), e);
         }
     }
 
