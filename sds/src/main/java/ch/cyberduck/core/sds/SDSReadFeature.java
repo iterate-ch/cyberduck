@@ -69,16 +69,11 @@ public class SDSReadFeature implements Read {
             if(file.getType().contains(Path.Type.encrypted)) {
                 final FileKey key = new ExtendedNodesApi(session.getClient()).getUserFileKey(session.getToken(),
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
-                final EncryptedFileKey encryptedFileKey = new EncryptedFileKey();
-                encryptedFileKey.setIv(key.getIv());
-                encryptedFileKey.setKey(key.getKey());
-                encryptedFileKey.setTag(key.getTag());
-                encryptedFileKey.setVersion(key.getVersion());
                 final UserPrivateKey privateKey = new UserPrivateKey();
                 privateKey.setPrivateKey(session.getKeys().getPrivateKeyContainer().getPrivateKey());
                 privateKey.setVersion(session.getKeys().getPrivateKeyContainer().getVersion());
                 // TODO PasswordCallback
-                final PlainFileKey plainFileKey = Crypto.decryptFileKey(encryptedFileKey, privateKey,
+                final PlainFileKey plainFileKey = Crypto.decryptFileKey(convert(key), privateKey,
                         "ahbic3Ae");
                 return new CryptoInputStream(in, Crypto.createFileDecryptionCipher(plainFileKey),
                         CryptoUtils.stringToByteArray(plainFileKey.getTag()), status.getLength() + status.getOffset());
@@ -99,5 +94,14 @@ public class SDSReadFeature implements Read {
     @Override
     public boolean offset(final Path file) throws BackgroundException {
         return true;
+    }
+
+    private static EncryptedFileKey convert(final FileKey k) {
+        final EncryptedFileKey key = new EncryptedFileKey();
+        key.setIv(k.getIv());
+        key.setKey(k.getKey());
+        key.setTag(k.getTag());
+        key.setVersion(k.getVersion());
+        return key;
     }
 }
