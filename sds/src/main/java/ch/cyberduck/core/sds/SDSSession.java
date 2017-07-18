@@ -120,7 +120,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         final MissingKeysResponse keys = new NodesApi(client).missingFileKeys(token, null, null, null, null, account.getId());
                         final UserFileKeySetBatchRequest request = new UserFileKeySetBatchRequest();
                         for(FileFileKeys key : keys.getFiles()) {
-                            request.addItemsItem(new UserFileKeySetRequest().fileId(key.getId()));
+                            final UserFileKeySetRequest keySetRequest = new UserFileKeySetRequest();
+                            keySetRequest.setFileId(key.getId());
+                            keySetRequest.setUserId(account.getId());
+                            //Crypto.encryptFileKey()
+                            //keySetRequest.setFileKey();
+                            request.addItemsItem(keySetRequest.fileId(key.getId()));
                         }
                         if(!request.getItems().isEmpty()) {
                             new NodesApi(client).setUserFileKeys(token, request);
