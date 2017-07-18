@@ -58,10 +58,8 @@ public class CryptoCopyFeature implements Copy {
 
     @Override
     public boolean isRecursive(final Path source, final Path copy) {
-        if(vault.contains(source) && vault.contains(copy)) {
-            return proxy.withTarget(target).isRecursive(source, copy);
-        }
-        return new DefaultCopyFeature(session).withTarget(target).isRecursive(source, copy);
+        // Due to the encrypted folder layout copying is never recursive even when supported by the native implementation
+        return false;
     }
 
     @Override
