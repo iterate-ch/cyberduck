@@ -32,11 +32,11 @@ import eu.ssp_europe.sds.crypto.model.PlainDataContainer;
 public class CryptoInputStream extends ProxyInputStream {
 
     private final InputStream proxy;
-    private final ByteBuffer buffer = ByteBuffer.allocate(SDSSession.DEFAULT_CHUNKSIZE);
     private final FileDecryptionCipher cipher;
     private final byte[] tag;
     private final long length;
 
+    private ByteBuffer buffer = ByteBuffer.allocate(0);
     private long read;
 
     public CryptoInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final byte[] tag, final long length) throws IOException {
@@ -85,23 +85,31 @@ public class CryptoInputStream extends ProxyInputStream {
         try {
             final PlainDataContainer pDataContainer;
             if(this.read == length) {
-                pDataContainer = cipher.decryptLastBlock(new EncryptedDataContainer(new byte[0], tag));
+                pDataContainer = cipher.decryptLastBlock(createEncryptedDataContainer(ciphertextBuf.array(), read, tag));
             }
             else {
                 pDataContainer = cipher.decryptBlock(createEncryptedDataContainer(ciphertextBuf.array(), read));
             }
-            buffer.clear();
-            buffer.put(pDataContainer.getContent());
+            final byte[] content = pDataContainer.getContent();
+            buffer = ByteBuffer.allocate(content.length);
+            buffer.put(content);
+            buffer.flip();
+            return content.length;
         }
         catch(CryptoException e) {
             throw new IOException(e);
         }
-        return read;
     }
 
     private static EncryptedDataContainer createEncryptedDataContainer(final byte[] bytes, final int len) {
         final byte[] b = new byte[len];
         System.arraycopy(bytes, 0, b, 0, len);
         return new EncryptedDataContainer(b);
+    }
+
+    private static EncryptedDataContainer createEncryptedDataContainer(final byte[] bytes, final int len, final byte[] tag) {
+        final byte[] b = new byte[len];
+        System.arraycopy(bytes, 0, b, 0, len);
+        return new EncryptedDataContainer(b, tag);
     }
 }
