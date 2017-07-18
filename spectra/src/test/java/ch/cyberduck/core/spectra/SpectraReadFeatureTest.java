@@ -141,7 +141,7 @@ public class SpectraReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("CYBERDUCK-SPECTRA-67", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final HashMap<Path, TransferStatus> files = new HashMap<>();
-        for(int i = 1; i < 5; i++) {
+        for(int i = 1; i < 100; i++) {
             files.put(new Path(container, String.format("test-%d.f", i), EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         final SpectraBulkService bulk = new SpectraBulkService(session);
