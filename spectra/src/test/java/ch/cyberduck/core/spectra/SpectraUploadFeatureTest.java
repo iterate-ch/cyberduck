@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -84,7 +85,7 @@ public class SpectraUploadFeatureTest {
         final byte[] buffer = new byte[content.length];
         final TransferStatus readStatus = new TransferStatus().length(content.length);
         bulk.pre(Transfer.Type.download, Collections.singletonMap(test, readStatus), new DisabledConnectionCallback());
-        final InputStream in = new SpectraReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
+        final InputStream in = new SpectraReadFeature(session).read(test, readStatus, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

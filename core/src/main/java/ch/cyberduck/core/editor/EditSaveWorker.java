@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
@@ -91,7 +92,7 @@ public class EditSaveWorker extends TransferWorker<Transfer> {
         final SingleTransferWorker worker
                 = new SingleTransferWorker(source, source, upload, new TransferOptions(),
                 new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,
-                listener, new DisabledStreamListener(), new DisabledLoginCallback());
+                listener, new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback());
         worker.run(source, destination);
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", editor.getRemote()));

@@ -223,8 +223,8 @@ public class CopyTransfer extends Transfer {
     @Override
     public Path transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus status,
-                         final ConnectionCallback callback,
-                         final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
+                         final ConnectionCallback connectionCallback,
+                         final PasswordCallback passwordCallback, final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
