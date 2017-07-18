@@ -41,7 +41,16 @@ public class VaultRegistryCopyFeature implements Copy {
 
     @Override
     public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
-        registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
+        if(registry.find(session, source).equals(Vault.DISABLED)) {
+            registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
+        }
+        else if(registry.find(session, copy).equals(Vault.DISABLED)) {
+            registry.find(session, source).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
+        }
+        else {
+            // Move files inside vault. May use server side copy.
+            registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
+        }
     }
 
     @Override
@@ -53,6 +62,7 @@ public class VaultRegistryCopyFeature implements Copy {
             else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
                 return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(target).isRecursive(source, copy);
             }
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).isRecursive(source, copy);
         }
         catch(VaultUnlockCancelException e) {
             // Ignore
@@ -69,6 +79,7 @@ public class VaultRegistryCopyFeature implements Copy {
             else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
                 return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(target).isSupported(source, copy);
             }
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).isSupported(source, copy);
         }
         catch(VaultUnlockCancelException e) {
             // Ignore
