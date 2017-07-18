@@ -41,16 +41,7 @@ public class VaultRegistryCopyFeature implements Copy {
 
     @Override
     public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
-        if(registry.find(session, source).equals(Vault.DISABLED)) {
-            registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
-        }
-        else if(registry.find(session, copy).equals(Vault.DISABLED)) {
-            registry.find(session, source).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
-        }
-        else {
-            // Move files inside vault. May use server side copy.
-            proxy.copy(source, copy, status);
-        }
+        registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
     }
 
     @Override
