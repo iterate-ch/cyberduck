@@ -93,11 +93,11 @@ public class SDSWriteFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.encrypted));
+        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
         final SDSWriteFeature writer = new SDSWriteFeature(session);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -107,7 +107,7 @@ public class SDSWriteFeatureTest {
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session).find(test).getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new SDSReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new PasswordCallback() {
+        final InputStream stream = new SDSDelegatingReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new PasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("ahbic3Ae");

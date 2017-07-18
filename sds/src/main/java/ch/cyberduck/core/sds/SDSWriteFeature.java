@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -123,7 +124,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         }
                         final CompleteUploadRequest body = new CompleteUploadRequest();
                         body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
-                        if(file.getParent().getType().contains(Path.Type.encrypted)) {
+                        if(new PathContainerService().getContainer(file).getType().contains(Path.Type.vault)) {
                             final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(fileKey, this.convert(session.getKeys().getPublicKeyContainer()));
                             body.setFileKey(this.convert(encryptFileKey));
                         }
@@ -162,7 +163,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                     return key;
                 }
             };
-            if(file.getParent().getType().contains(Path.Type.encrypted)) {
+            if(new PathContainerService().getContainer(file).getType().contains(Path.Type.vault)) {
                 return new CryptoOutputStream<>(this.write(file, status, command, entity), Crypto.createFileEncryptionCipher(fileKey), fileKey);
             }
             return this.write(file, status, command, entity);

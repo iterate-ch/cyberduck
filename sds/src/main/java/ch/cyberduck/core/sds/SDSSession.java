@@ -145,7 +145,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
-            return (T) new SDSReadFeature(this);
+            return (T) new SDSDelegatingReadFeature(this);
         }
         if(type == Write.class) {
             return (T) new SDSWriteFeature(this);
