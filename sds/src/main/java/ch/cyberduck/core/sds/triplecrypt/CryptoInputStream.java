@@ -32,16 +32,18 @@ import eu.ssp_europe.sds.crypto.model.PlainDataContainer;
 public class CryptoInputStream extends ProxyInputStream {
 
     private final InputStream proxy;
-    private final ByteBuffer buffer = ByteBuffer.allocate(0);
+    private final ByteBuffer buffer = ByteBuffer.allocate(SDSSession.DEFAULT_CHUNKSIZE);
     private final FileDecryptionCipher cipher;
+    private final byte[] tag;
     private final long length;
 
     private long read;
 
-    public CryptoInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final long length) throws IOException {
+    public CryptoInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final byte[] tag, final long length) throws IOException {
         super(proxy);
         this.proxy = proxy;
         this.cipher = cipher;
+        this.tag = tag;
         this.length = length;
     }
 
@@ -81,14 +83,14 @@ public class CryptoInputStream extends ProxyInputStream {
         ciphertextBuf.position(read);
         ciphertextBuf.flip();
         try {
-            final EncryptedDataContainer eDataContainer = createEncryptedDataContainer(ciphertextBuf.array(), read);
             final PlainDataContainer pDataContainer;
             if(this.read == length) {
-                pDataContainer = cipher.decryptLastBlock(eDataContainer);
+                pDataContainer = cipher.decryptLastBlock(new EncryptedDataContainer(new byte[0], tag));
             }
             else {
-                pDataContainer = cipher.decryptBlock(eDataContainer);
+                pDataContainer = cipher.decryptBlock(createEncryptedDataContainer(ciphertextBuf.array(), read));
             }
+            buffer.clear();
             buffer.put(pDataContainer.getContent());
         }
         catch(CryptoException e) {
