@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -136,7 +137,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
                     }
                     catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException e) {
-                        throw new BackgroundException(String.format("Upload %s failed", file), e);
+                        throw new AccessDeniedException(e.getMessage(), e);
                     }
                 }
 
@@ -170,7 +171,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(CryptoSystemException | InvalidFileKeyException e) {
-            throw new BackgroundException(String.format("Upload %s failed", file), e);
+            throw new AccessDeniedException(e.getMessage(), e);
         }
     }
 
