@@ -20,6 +20,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -66,10 +67,12 @@ public class CryptoReadFeature implements Read {
             privateKey.setPrivateKey(session.getKeys().getPrivateKeyContainer().getPrivateKey());
             privateKey.setVersion(session.getKeys().getPrivateKeyContainer().getVersion());
             final Credentials passphrase = new Credentials();
-            passwordCallback.prompt(passphrase, "", "", new LoginOptions()
-                    .user(false)
-                    .anonymous(false)
-                    .icon(session.getHost().getProtocol().disk())
+            passwordCallback.prompt(passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
+                    LocaleFactory.localizedString("You must enter your encryption password to be able to decrypt this file.", "Credentials"),
+                    new LoginOptions()
+                            .user(false)
+                            .anonymous(false)
+                            .icon(session.getHost().getProtocol().disk())
             );
             if(null == passphrase.getPassword()) {
                 throw new LoginCanceledException();
