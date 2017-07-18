@@ -16,12 +16,15 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -73,9 +76,16 @@ public class SDSReadFeature implements Read {
                 final UserPrivateKey privateKey = new UserPrivateKey();
                 privateKey.setPrivateKey(session.getKeys().getPrivateKeyContainer().getPrivateKey());
                 privateKey.setVersion(session.getKeys().getPrivateKeyContainer().getVersion());
-                // TODO PasswordCallback
-                final PlainFileKey plainFileKey = Crypto.decryptFileKey(convert(key), privateKey,
-                        "ahbic3Ae");
+                final Credentials passphrase = new Credentials();
+                passwordCallback.prompt(passphrase, "", "", new LoginOptions()
+                        .user(false)
+                        .anonymous(false)
+                        .icon(session.getHost().getProtocol().disk())
+                );
+                if(null == passphrase.getPassword()) {
+                    throw new LoginCanceledException();
+                }
+                final PlainFileKey plainFileKey = Crypto.decryptFileKey(convert(key), privateKey, passphrase.getPassword());
                 return new CryptoInputStream(in, Crypto.createFileDecryptionCipher(plainFileKey),
                         CryptoUtils.stringToByteArray(plainFileKey.getTag()), status.getLength() + status.getOffset());
             }
