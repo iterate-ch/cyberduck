@@ -1,8 +1,8 @@
-package ch.cyberduck.core.s3;
+package ch.cyberduck.core.b2;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,21 +13,20 @@ package ch.cyberduck.core.s3;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 
-public class S3PathContainerService extends PathContainerService {
+public class B2PathContainerService extends PathContainerService {
+
+    protected static final String PLACEHOLDER = ".bzEmpty";
 
     @Override
     public String getKey(final Path file) {
         final String key = super.getKey(file);
         if(!file.isVolume() && file.isDirectory()) {
-            return key.concat(String.valueOf(Path.DELIMITER));
+            return key.concat(String.valueOf(Path.DELIMITER)).concat(PLACEHOLDER);
         }
         return key;
     }

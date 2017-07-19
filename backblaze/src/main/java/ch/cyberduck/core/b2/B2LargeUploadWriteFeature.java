@@ -66,7 +66,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(B2LargeUploadWriteFeature.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
     private final Find finder;
@@ -149,7 +149,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
                     final Checksum checksum = overall.getChecksum();
                     final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
-                            file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
+                            containerService.getKey(file),
                             new ByteArrayEntity(content, off, len), Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                             overall.getMime(), overall.getMetadata());
                     if(log.isDebugEnabled()) {

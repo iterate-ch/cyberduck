@@ -181,7 +181,7 @@ public class B2ObjectListServiceTest {
         // Path{path='/test-e9287cee-772a-4a69-86f5-05905a23a446/2b47b8c4-0d13-41e8-a76f-45e918dd88d6/.bzEmpty', type=[file]}
         // Path{path='/test-e9287cee-772a-4a69-86f5-05905a23a446/2b47b8c4-0d13-41e8-a76f-45e918dd88d6/b136e277-3ee0-49f0-b19f-4a66eb7d8f38', type=[directory, placeholder]}
         // Path{path='/test-e9287cee-772a-4a69-86f5-05905a23a446/2b47b8c4-0d13-41e8-a76f-45e918dd88d6/c2cbb949-2877-416d-9eb5-0855279adde3', type=[file]}
-        assertEquals(3, list.size());
+        assertEquals(2, list.size());
         assertNotNull(list.find(new SimplePathPredicate(file1)));
         assertNotNull(list.find(new SimplePathPredicate(folder2)));
         assertNull(list.find(new SimplePathPredicate(file2)));
