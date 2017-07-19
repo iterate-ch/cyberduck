@@ -26,7 +26,7 @@ public class S3PathContainerService extends PathContainerService {
     @Override
     public String getKey(final Path file) {
         final String key = super.getKey(file);
-        if(file.isDirectory()) {
+        if(!file.isVolume() && file.isDirectory()) {
             return key.concat(String.valueOf(Path.DELIMITER));
         }
         return key;
