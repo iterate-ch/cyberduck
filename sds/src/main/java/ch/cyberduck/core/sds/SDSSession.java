@@ -15,7 +15,18 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -86,23 +97,25 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         final String login = host.getCredentials().getUsername();
         final String password = host.getCredentials().getPassword();
         try {
-            // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
-            switch(host.getProtocol().getAuthorization()) {
-                default:
-                    final LoginResponse response = auth.login(new LoginRequest()
-                            .authType(host.getProtocol().getAuthorization())
-                            .language("en")
-                            .login(login)
-                            .password(password)
-                    );
-                    token = response.getToken();
-                    // Save tokens for 401 error response when expired
-                    retryHandler.setTokens(login, password);
-                    break;
+            try {
+                // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
+                switch(host.getProtocol().getAuthorization()) {
+                    default:
+                        final LoginResponse response = auth.login(new LoginRequest()
+                                .authType(host.getProtocol().getAuthorization())
+                                .language("en")
+                                .login(login)
+                                .password(password)
+                        );
+                        this.login(response);
+                        // Save tokens for 401 error response when expired
+                        retryHandler.setTokens(login, password);
+                        break;
+                }
             }
-        }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map(e);
+            catch(ApiException e) {
+                throw new SDSExceptionMappingService().map(e);
+            }
         }
         catch(PartialLoginFailureException e) {
             final Credentials additional = new Credentials(host.getCredentials().getUsername());
@@ -126,7 +139,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private void login(final LoginResponse response) throws ApiException {
         token = response.getToken();
-        account = new UserApi(client).getUserInfo(response.getToken(), null, false);
     }
 
     @Override
