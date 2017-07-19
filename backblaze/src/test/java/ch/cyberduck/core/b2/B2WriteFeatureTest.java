@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -112,7 +113,7 @@ public class B2WriteFeatureTest {
         assertTrue(append.override);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

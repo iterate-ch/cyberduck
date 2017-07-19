@@ -24,9 +24,11 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.EnumSet;
@@ -50,7 +52,8 @@ public class SDSDirectoryFeature implements Directory {
         try {
             if(containerService.isContainer(folder)) {
                 final CreateRoomRequest roomRequest = new CreateRoomRequest();
-                roomRequest.addAdminIdsItem(session.getUser());
+                final UserAccount user = new UserApi(session.getClient()).getUserInfo(session.getToken(), null, false);
+                roomRequest.addAdminIdsItem(user.getId());
                 roomRequest.setAdminGroupIds(null);
                 roomRequest.setName(folder.getName());
                 final Node r = new NodesApi(session.getClient()).createRoom(session.getToken(), null, roomRequest);

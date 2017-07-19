@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -63,9 +64,10 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error,
                                     final ConnectionCallback connectionCallback,
+                                    final PasswordCallback passwordCallback,
                                     final ProgressListener progressListener,
                                     final StreamListener streamListener) {
-        super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback);
+        super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback, passwordCallback);
         this.source = source;
         this.destination = destination;
         final ThreadPool pool = ThreadPoolFactory.get("transfer",

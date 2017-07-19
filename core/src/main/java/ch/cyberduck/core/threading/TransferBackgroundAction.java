@@ -18,6 +18,8 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.LoginCallbackFactory;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordCallbackFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
@@ -105,11 +107,12 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        this(LoginCallbackFactory.get(controller),
+        this(LoginCallbackFactory.get(controller), PasswordCallbackFactory.get(controller),
                 controller, source, destination, listener, progress, transfer, options, prompt, error, meter, stream);
     }
 
     public TransferBackgroundAction(final ConnectionCallback callback,
+                                    final PasswordCallback password,
                                     final Controller controller,
                                     final SessionPool source,
                                     final SessionPool destination,
@@ -121,7 +124,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        super(controller, source, destination, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, progress, stream));
+        super(controller, source, destination, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, password, progress, stream));
         this.options = options;
         this.meter = meter;
         this.transfer = transfer;

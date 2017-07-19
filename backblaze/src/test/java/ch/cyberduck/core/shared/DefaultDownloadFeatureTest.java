@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -89,7 +90,7 @@ public class DefaultDownloadFeatureTest {
         new DefaultDownloadFeature(new B2ReadFeature(session)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback());
+                new DisabledConnectionCallback(), new DisabledPasswordCallback());
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
         IOUtils.readFully(in, buffer);
@@ -127,7 +128,7 @@ public class DefaultDownloadFeatureTest {
             new DefaultDownloadFeature(new B2ReadFeature(session)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback());
+                    new DisabledConnectionCallback(), new DisabledPasswordCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();

@@ -88,12 +88,12 @@ public class DriveUploadFeatureTest {
         assertEquals(content.length, new DriveWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
-            IOUtils.readFully(new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
+            IOUtils.readFully(new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback()), buffer);
             assertArrayEquals(content, buffer);
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).skip(1L), new DisabledConnectionCallback(), new DisabledPasswordCallback());
             IOUtils.readFully(in, buffer);
             IOUtils.closeQuietly(in);
             final byte[] reference = new byte[content.length - 1];

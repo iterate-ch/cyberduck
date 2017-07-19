@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -63,7 +64,7 @@ public class FTPReadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        new FTPReadFeature(session).read(new Path(new FTPWorkdirService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new FTPReadFeature(session).read(new Path(new FTPWorkdirService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
     }
 
     @Test
@@ -89,7 +90,7 @@ public class FTPReadFeatureTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(in, buffer);
@@ -122,7 +123,7 @@ public class FTPReadFeatureTest {
         status.setAppend(true);
         final long offset = 2L;
         status.setOffset(offset);
-        final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream download = new ByteArrayOutputStream();
         new StreamCopier(status, status).withLimit(limit).transfer(in, download);
@@ -146,7 +147,7 @@ public class FTPReadFeatureTest {
         final Path workdir = new FTPWorkdirService(session).find();
         final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
-        final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback());
+        final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         // Send ABOR because stream was not read completly
         in.close();
@@ -174,7 +175,7 @@ public class FTPReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(20L);
         final Path workdir = new FTPWorkdirService(session).find();
-        final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         assertTrue(in.read() > 0);
         // Send ABOR because stream was not read completly
@@ -198,7 +199,7 @@ public class FTPReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(5L);
         final Path workdir = new FTPWorkdirService(session).find();
-        final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback());
+        final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         // Read 226 reply
         in.close();

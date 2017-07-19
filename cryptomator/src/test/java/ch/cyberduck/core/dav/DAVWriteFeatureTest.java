@@ -96,7 +96,7 @@ public class DAVWriteFeatureTest {
         assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DAVFindFeature(session), new DAVAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

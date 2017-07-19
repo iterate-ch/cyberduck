@@ -84,7 +84,7 @@ public class DriveWriteFeatureTest {
             assertTrue(append.override);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
-            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);

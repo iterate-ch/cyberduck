@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -65,13 +66,13 @@ public class SFTPWriteFeatureTest {
         assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
             new StreamCopier(status, status).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 1);
-            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().append(true).skip(1L), new DisabledConnectionCallback(), new DisabledPasswordCallback());
             new StreamCopier(status, status).transfer(in, buffer);
             final byte[] reference = new byte[content.length - 1];
             System.arraycopy(content, 1, reference, 0, content.length - 1);
@@ -107,13 +108,13 @@ public class SFTPWriteFeatureTest {
         out.close();
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new SFTPReadFeature(session).read(symlink, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(symlink, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
             new StreamCopier(status, status).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
         {
             final byte[] buffer = new byte[0];
-            final InputStream in = new SFTPReadFeature(session).read(target, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(new byte[0], buffer);
@@ -187,7 +188,7 @@ public class SFTPWriteFeatureTest {
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
+        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback()), out);
         assertArrayEquals(content, out.toByteArray());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -229,7 +230,7 @@ public class SFTPWriteFeatureTest {
         }
         assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
+        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback()), out);
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());

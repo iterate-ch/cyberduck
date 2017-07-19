@@ -22,8 +22,10 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -61,7 +63,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -124,7 +126,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -157,7 +159,7 @@ public class CryptoVaultTest {
         assertEquals(Vault.State.open, vault.getState());
         final AtomicBoolean found = new AtomicBoolean();
         assertEquals(vault, new DefaultVaultRegistry(new DisabledPasswordCallback()) {
-            protected Vault find(final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
+            protected Vault find(final Session<?> session, final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
                 found.set(true);
                 return vault;
             }
@@ -175,7 +177,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -219,7 +221,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -276,7 +278,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -323,7 +325,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +

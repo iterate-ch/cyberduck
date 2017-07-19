@@ -5,6 +5,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -92,7 +93,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals(content.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -152,7 +153,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -204,7 +205,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals(content.length, status.getOffset());
 
         assertTrue(new SwiftFindFeature(session).find(test));
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
         in.close();
