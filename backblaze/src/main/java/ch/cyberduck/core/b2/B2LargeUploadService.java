@@ -66,7 +66,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
 

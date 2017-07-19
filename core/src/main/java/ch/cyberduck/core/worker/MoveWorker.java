@@ -38,9 +38,7 @@ import java.util.Map;
 public class MoveWorker extends Worker<List<Path>> {
 
     private final Map<Path, Path> files;
-
     private final ProgressListener listener;
-
     private final Cache<Path> cache;
 
     public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache) {
