@@ -44,6 +44,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
@@ -55,7 +56,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -72,8 +72,8 @@ public class DAVWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        final byte[] content = new byte[1048576];
-        new Random().nextBytes(content);
+        final int length = 1048576;
+        final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -86,7 +86,7 @@ public class DAVWriteFeatureTest {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
-        status.setChecksum(writer.checksum().compute(new ByteArrayInputStream(content), status));
+        status.setChecksum(writer.checksum(test).compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -96,7 +96,7 @@ public class DAVWriteFeatureTest {
         assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DAVFindFeature(session), new DAVAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

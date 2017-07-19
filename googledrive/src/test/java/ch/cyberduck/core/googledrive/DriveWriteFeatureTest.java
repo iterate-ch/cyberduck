@@ -69,6 +69,7 @@ public class DriveWriteFeatureTest {
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus();
+            status.setMime("x-application/cyberduck");
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
             final OutputStream out = new DriveWriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -83,13 +84,15 @@ public class DriveWriteFeatureTest {
             assertTrue(append.override);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
-            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);
+            assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getVersionId()).execute().getMimeType());
         }
         {
             final TransferStatus status = new TransferStatus();
+            status.setMime("x-application/cyberduck");
             status.setExists(true);
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
@@ -99,6 +102,7 @@ public class DriveWriteFeatureTest {
             out.close();
             final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
             assertEquals(content.length, attributes.getSize());
+            assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getVersionId()).execute().getMimeType());
         }
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

@@ -158,7 +158,7 @@ public class ConcurrentTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+                new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
         pool.withMaxTotal(connections);
         final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);

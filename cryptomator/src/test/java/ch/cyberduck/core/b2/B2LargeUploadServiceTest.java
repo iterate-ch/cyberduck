@@ -46,6 +46,7 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
@@ -56,7 +57,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -83,8 +83,7 @@ public class B2LargeUploadServiceTest {
                 new B2LargeUploadService(session, new B2WriteFeature(session), 5242880L, 5),
                 new B2WriteFeature(session), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[5242885];
-        new Random().nextBytes(content);
+        final byte[] content = RandomUtils.nextBytes(5242885);
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus writeStatus = new TransferStatus();
         final Cryptor cryptor = cryptomator.getCryptor();
@@ -99,7 +98,7 @@ public class B2LargeUploadServiceTest {
         assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -124,7 +123,8 @@ public class B2LargeUploadServiceTest {
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus writeStatus = new TransferStatus();
-        final byte[] content = new byte[5242885];
+        final int length = 5242885;
+        final byte[] content = RandomUtils.nextBytes(length);
         writeStatus.setLength(content.length);
         final CryptoBulkFeature<Void> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new B2DeleteFeature(session), cryptomator);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus), new DisabledConnectionCallback());
@@ -132,7 +132,6 @@ public class B2LargeUploadServiceTest {
                 new B2LargeUploadService(session, new B2WriteFeature(session), 5242880L, 5),
                 new B2WriteFeature(session), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        new Random().nextBytes(content);
         IOUtils.write(content, local.getOutputStream(false));
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
         assertEquals((long) content.length, writeStatus.getOffset(), 0L);
@@ -141,7 +140,7 @@ public class B2LargeUploadServiceTest {
         assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

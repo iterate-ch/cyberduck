@@ -25,7 +25,7 @@ import java.util.EnumSet;
 public class B2HomeFinderService extends DefaultHomeFinderService {
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     public B2HomeFinderService(final B2Session session) {
         super(session);

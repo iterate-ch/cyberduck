@@ -17,6 +17,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -36,7 +37,8 @@ public class SDSReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback,
+                            final PasswordCallback passwordCallback) throws BackgroundException {
         try {
             final String header;
             if(status.isAppend()) {

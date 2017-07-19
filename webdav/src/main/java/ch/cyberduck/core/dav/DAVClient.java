@@ -18,17 +18,24 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 import com.github.sardine.impl.SardineImpl;
+import com.github.sardine.impl.handler.VoidResponseHandler;
+import com.github.sardine.impl.io.ContentLengthInputStream;
 
 public class DAVClient extends SardineImpl {
 
@@ -59,6 +66,27 @@ public class DAVClient extends SardineImpl {
             request.setURI(URI.create(String.format("%s%s", uri, request.getURI().getRawPath())));
         }
         return super.execute(request);
+    }
+
+    @Override
+    public ContentLengthInputStream get(final String url, final List<Header> headers) throws IOException {
+        HttpGet get = new HttpGet(url);
+        for(Header header : headers) {
+            get.addHeader(header);
+        }
+        // Must use #execute without handler, otherwise the entity is consumed
+        // already after the handler exits.
+        HttpResponse response = this.execute(get);
+        VoidResponseHandler handler = new VoidResponseHandler();
+        try {
+            handler.handleResponse(response);
+            // Will abort the read when closed before EOF.
+            return new ContentLengthInputStream(new HttpMethodReleaseInputStream(response), response.getEntity().getContentLength());
+        }
+        catch(IOException ex) {
+            get.abort();
+            throw ex;
+        }
     }
 
     public HttpClientContext context() {

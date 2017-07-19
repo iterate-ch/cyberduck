@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -37,15 +39,16 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -69,14 +72,16 @@ public class B2LargeUploadServiceTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 
         // Each segment, except the last, must be larger than 100MB.
-        final byte[] content = new byte[100 * 1024 * 1024 + 1];
-        new Random().nextBytes(content);
+        final int length = 100 * 1024 * 1024 + 1;
+        final byte[] content = RandomUtils.nextBytes(length);
 
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
+        final Checksum checksum = new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus());
+        status.setChecksum(checksum);
 
         final B2LargeUploadService upload = new B2LargeUploadService(session, new B2WriteFeature(session),
                 PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
@@ -84,15 +89,14 @@ public class B2LargeUploadServiceTest {
 
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
-        // Large files do not have a SHA1 checksum. The value will always be "none".
-        assertEquals(Checksum.NONE, new B2AttributesFinderFeature(session).find(test).getChecksum());
+        assertEquals(checksum, new B2AttributesFinderFeature(session).find(test).getChecksum());
 
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());
         assertEquals(content.length, status.getOffset());
 
         assertTrue(new DefaultFindFeature(session).find(test));
-        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
         in.close();
@@ -116,11 +120,10 @@ public class B2LargeUploadServiceTest {
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 102 * 1024 * 1024;
-        final byte[] random = new byte[length];
-        new Random().nextBytes(random);
-        IOUtils.write(random, local.getOutputStream(false));
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(random.length);
+        status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         final B2LargeUploadService service = new B2LargeUploadService(session, new B2WriteFeature(session), 100 * 1024L * 1024L, 1);
         try {
@@ -144,19 +147,19 @@ public class B2LargeUploadServiceTest {
         assertEquals(0L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(random.length);
+        final TransferStatus append = new TransferStatus().append(true).length(content.length);
         service.upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertTrue(new B2FindFeature(session).find(test));
-        assertEquals(random.length, new B2AttributesFinderFeature(session).find(test).getSize());
-        assertEquals(random.length, append.getOffset(), 0L);
+        assertEquals(content.length, new B2AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
-        final byte[] buffer = new byte[random.length];
-        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final byte[] buffer = new byte[content.length];
+        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         IOUtils.readFully(in, buffer);
         in.close();
-        assertArrayEquals(random, buffer);
+        assertArrayEquals(content, buffer);
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
@@ -175,11 +178,10 @@ public class B2LargeUploadServiceTest {
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 102 * 1024 * 1024;
-        final byte[] random = new byte[length];
-        new Random().nextBytes(random);
-        IOUtils.write(random, local.getOutputStream(false));
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(random.length);
+        status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
             new B2LargeUploadService(session, new B2WriteFeature(session), 100L * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
@@ -210,11 +212,11 @@ public class B2LargeUploadServiceTest {
         assertTrue(append.isComplete());
         assertTrue(new B2FindFeature(session).find(test));
         assertEquals(102L * 1024L * 1024L, new B2AttributesFinderFeature(session).find(test).getSize(), 0L);
-        final byte[] buffer = new byte[random.length];
-        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final byte[] buffer = new byte[content.length];
+        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         IOUtils.readFully(in, buffer);
         in.close();
-        assertArrayEquals(random, buffer);
+        assertArrayEquals(content, buffer);
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();

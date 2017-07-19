@@ -19,7 +19,6 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Hex;
@@ -55,8 +54,6 @@ import java.util.Enumeration;
 public class ReceiptVerifier implements LicenseVerifier {
     private static final Logger log = Logger.getLogger(ReceiptVerifier.class);
 
-    public final Preferences preferences = PreferencesFactory.get();
-
     private final Local file;
     private final String application;
     private final String version;
@@ -74,11 +71,16 @@ public class ReceiptVerifier implements LicenseVerifier {
     }
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
+        final BouncyCastleProvider provider = new BouncyCastleProvider();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Install provider %s at position %d", provider, position));
+        }
+        Security.insertProviderAt(provider, position);
     }
 
     @Override
-    public boolean verify() {
+    public boolean verify(final LicenseVerifierCallback callback) {
         try {
             // For additional security, you may verify the fingerprint of the root CA and the OIDs of the
             // intermediate CA and signing certificate. The OID in the Certificate Policies Extension of the

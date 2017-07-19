@@ -26,7 +26,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using Windows.Services.Store;
-using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.azure;
@@ -67,6 +66,8 @@ using StructureMap;
 using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
+using Microsoft.WindowsAPICodePack.Shell;
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -79,7 +80,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public static readonly string StartupLanguage;
         private static readonly IList<BrowserController> _browsers = new List<BrowserController>();
         private static MainController _application;
-        private static JumpListManager _jumpListManager;
+        private static JumpList _jumpListManager;
+        private static JumpListCustomCategory bookmarkCategory;
         private readonly BaseController _controller = new BaseController();
         private readonly PathKindDetector _detector = new DefaultPathKindDetector();
 
@@ -258,7 +260,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if ("cyberducklicense".Equals(f.getExtension()))
                     {
                         License license = LicenseFactory.get(f);
-                        if (license.verify())
+                        if (license.verify(new DisabledLicenseVerifierCallback()))
                         {
                             f.copy(LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
                                 f.getName()));
@@ -687,7 +689,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Logger.debug("ApplicationShouldTerminateAfterDonationPrompt");
             License l = LicenseFactory.find();
-            if (!l.verify())
+            if (!l.verify(new DisabledLicenseVerifierCallback()))
             {
                 string appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 String lastversion = PreferencesFactory.get().getProperty("donate.reminder");
@@ -816,7 +818,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static BrowserController NewBrowser(bool force, bool show)
         {
-            InitJumpList();
             Logger.debug("NewBrowser");
             if (!force)
             {
@@ -876,9 +877,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 try
                 {
-                    Windows7Taskbar.SetCurrentProcessAppId(PreferencesFactory.get().getProperty("application.name"));
-                    _jumpListManager = new JumpListManager(PreferencesFactory.get().getProperty("application.name"));
-                    _jumpListManager.UserRemovedItems += (o, e) => { };
+                    if (_jumpListManager == null)
+                    {
+                        TaskbarManager.Instance.ApplicationId = PreferencesFactory.get().getProperty("application.name");
+                        _jumpListManager = JumpList.CreateJumpList();
+                        _jumpListManager.AddCustomCategories(bookmarkCategory = new JumpListCustomCategory("History"));
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -894,24 +898,25 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RefreshJumpList()
         {
+            InitJumpList();
+
             if (Utils.IsWin7OrLater)
             {
                 try
                 {
-                    _jumpListManager.ClearCustomDestinations();
                     Iterator iterator = HistoryCollection.defaultCollection().iterator();
+                    _jumpListManager.ClearAllUserTasks();
                     while (iterator.hasNext())
                     {
-                        Host host = (Host) iterator.next();
-                        _jumpListManager.AddCustomDestination(new ShellLink
+                        Host host = (Host)iterator.next();
+                        var file = FolderBookmarkCollection.favoritesCollection().getFile(host);
+                        if (file.exists())
                         {
-                            Path = FolderBookmarkCollection.favoritesCollection().getFile(host).getAbsolute(),
-                            Title = BookmarkNameProvider.toString(host, true),
-                            Category = LocaleFactory.localizedString("History"),
-                            IconLocation =
-                                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
-                            IconIndex = 0
-                        });
+                            bookmarkCategory.AddJumpListItems(new JumpListLink(file.getAbsolute(), BookmarkNameProvider.toString(host))
+                            {
+                                IconReference = new IconReference(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-application.ico"), 0),
+                            });
+                        }
                     }
                     _jumpListManager.Refresh();
                 }

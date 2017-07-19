@@ -31,10 +31,15 @@ import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
+import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -58,6 +63,13 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.fasterxml.jackson.databind.ObjectReader;
+import eu.ssp_europe.sds.crypto.Crypto;
+import eu.ssp_europe.sds.crypto.CryptoSystemException;
+import eu.ssp_europe.sds.crypto.InvalidFileKeyException;
+import eu.ssp_europe.sds.crypto.InvalidKeyPairException;
+import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
 
 public class SDSMultipartWriteFeature extends SDSWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
@@ -118,10 +130,6 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
-            if(0 == len) {
-                // Skip empty segment
-                return;
-            }
             try {
                 final byte[] content = Arrays.copyOfRange(b, off, len);
                 final HttpEntity entity = MultipartEntityBuilder.create()
@@ -137,15 +145,20 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                             request.setEntity(entity);
                             request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
                             request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
-                            final HttpRange range = HttpRange.byLength(offset, content.length);
-                            final String header;
-                            if(overall.getLength() == -1L) {
-                                header = String.format("%d-%d/*", range.getStart(), range.getEnd());
+                            if(0L == overall.getLength()) {
+                                // Write empty body
                             }
                             else {
-                                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), overall.getOffset() + overall.getLength());
+                                final HttpRange range = HttpRange.byLength(offset, content.length);
+                                final String header;
+                                if(overall.getLength() == -1L) {
+                                    header = String.format("%d-%d/*", range.getStart(), range.getEnd());
+                                }
+                                else {
+                                    header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), overall.getOffset() + overall.getLength());
+                                }
+                                request.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %s", header));
                             }
-                            request.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %s", header));
                             final HttpResponse response = client.getClient().execute(request);
                             try {
                                 // Validate response
@@ -186,11 +199,24 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                 }
                 final CompleteUploadRequest body = new CompleteUploadRequest();
                 body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                if(overall.getHeader() != null) {
+                    final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+                    final FileKey fileKey = reader.readValue(overall.getHeader().array());
+                    final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(session.getToken());
+                    final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
+                            TripleCryptConverter.toCryptoPlainFileKey(fileKey),
+                            TripleCryptConverter.toCryptoUserPublicKey(keyPairContainer.getPublicKeyContainer())
+                    );
+                    body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
+                }
                 final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), uploadId, null, body);
                 versionId = new VersionId(String.valueOf(upload.getId()));
             }
             catch(ApiException e) {
-                throw new IOException(new SDSExceptionMappingService().map(e));
+                throw new IOException(new SDSExceptionMappingService().map("Upload {0} failed", e, file));
+            }
+            catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException e) {
+                throw new IOException(new CryptoExceptionMappingService().map("Upload {0} failed", e, file));
             }
             finally {
                 close.set(true);

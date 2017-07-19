@@ -27,7 +27,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -59,8 +58,8 @@ public class DAVCopyFeatureTest {
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(test));
-        assertTrue(session.getFeature(Find.class).find(copy));
+        assertTrue(new DAVFindFeature(session).find(test));
+        assertTrue(new DAVFindFeature(session).find(copy));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -82,9 +81,9 @@ public class DAVCopyFeatureTest {
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVCopyFeature(session).copy(directory, copy, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(file));
-        assertTrue(session.getFeature(Find.class).find(copy));
-        assertTrue(session.getFeature(Find.class).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
+        assertTrue(new DAVFindFeature(session).find(file));
+        assertTrue(new DAVFindFeature(session).find(copy));
+        assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
         new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

@@ -40,7 +40,7 @@ public class Receipt extends AbstractLicense {
      * @return False if receipt validation failed.
      */
     @Override
-    public boolean verify() {
+    public boolean verify(final LicenseVerifierCallback callback) {
         // Always return true to dismiss donation prompt.
         return true;
     }

@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -44,7 +45,9 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -63,13 +66,15 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
 
     private final Long partSize;
 
     private final Integer concurrency;
+
+    private static final String X_BZ_INFO_LARGE_FILE_SHA1 = "large_file_sha1";
 
     private Write<BaseB2Response> writer;
 
@@ -94,13 +99,23 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             // this is important for building the manifest, and is not a problem in terms of performance
             // because we should only continue when all segments have uploaded successfully
             final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
+            final Map<String, String> metadata = new HashMap<>(status.getMetadata());
+            final Checksum checksum = status.getChecksum();
+            if(Checksum.NONE != checksum) {
+                switch(checksum.algorithm) {
+                    case sha1:
+                        metadata.put(X_BZ_INFO_LARGE_FILE_SHA1, status.getChecksum().hash);
+                        break;
+                }
+            }
+            metadata.put(B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()));
             if(status.isAppend() || status.isRetry()) {
                 // Add already completed parts
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session);
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
                     fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                            containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
+                            containerService.getKey(file), status.getMime(), metadata).getFileId();
                 }
                 else {
                     fileid = uploads.iterator().next().getFileId();
@@ -109,11 +124,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             else {
                 fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                        containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
+                        containerService.getKey(file), status.getMime(), metadata).getFileId();
             }
-            // Save file id for use in part referencing this
-            file.attributes().setVersionId(fileid);
-
             // Submit file segments for concurrent upload
             final List<Future<B2UploadPartResponse>> parts = new ArrayList<Future<B2UploadPartResponse>>();
             long remaining = status.getLength();
@@ -212,7 +224,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                         .skip(offset);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
-                status.setChecksum(writer.checksum().compute(
+                status.setChecksum(writer.checksum(file).compute(
                         StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset),
                         status));
                 status.setSegment(true);

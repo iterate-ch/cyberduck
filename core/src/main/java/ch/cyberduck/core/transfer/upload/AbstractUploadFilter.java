@@ -41,7 +41,6 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
@@ -252,11 +251,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(options.checksum) {
             if(local.isFile()) {
-                if(null == session.getFeature(MultipartWrite.class)) {
-                    final ChecksumCompute feature = session.getFeature(Write.class).checksum();
-                    if(feature != null) {
-                        status.setChecksum(feature.compute(local.getInputStream(), new TransferStatus()));
-                    }
+                final ChecksumCompute feature = session.getFeature(Write.class).checksum(file);
+                if(feature != null) {
+                    status.setChecksum(feature.compute(local.getInputStream(), status));
                 }
             }
         }

@@ -15,8 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -24,13 +22,8 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.StreamCancelation;
-import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -54,16 +47,6 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
     public B2SingleUploadService(final Write<BaseB2Response> writer) {
         super(writer);
         this.writer = writer;
-    }
-
-    @Override
-    public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                                 final StreamListener listener, final TransferStatus status,
-                                 final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
-        if(Checksum.NONE == status.getChecksum()) {
-            status.setChecksum(writer.checksum().compute(local.getInputStream(), status));
-        }
-        return super.upload(file, local, throttle, listener, status, cancel, progress, callback);
     }
 
     @Override
