@@ -89,7 +89,7 @@ public class VaultRegistryCopyFeature implements Copy {
 
     @Override
     public Copy withTarget(final Session<?> session) {
-        this.target = session;
+        this.target = session.withRegistry(registry);
         return this;
     }
 
