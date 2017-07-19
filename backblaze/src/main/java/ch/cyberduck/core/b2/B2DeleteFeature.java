@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.Delete;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -36,7 +35,7 @@ public class B2DeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(B2DeleteFeature.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
 
@@ -59,14 +58,14 @@ public class B2DeleteFeature implements Delete {
                     // Delete /.bzEmpty if any
                     final String fileid;
                     try {
-                        fileid = new B2FileidProvider(session).getFileid(new Path(file, B2DirectoryFeature.PLACEHOLDER, EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+                        fileid = new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener());
                     }
                     catch(NotfoundException e) {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getDetail(), file));
                         continue;
                     }
                     try {
-                        session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), fileid);
+                        session.getClient().deleteFileVersion(containerService.getKey(file), fileid);
                     }
                     catch(B2ApiException e) {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getMessage(), file));
