@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -38,11 +39,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -59,8 +57,6 @@ import javax.ws.rs.client.ClientBuilder;
 public class SDSSession extends HttpSession<SDSApiClient> {
 
     private String token;
-    private UserAccount account;
-    private UserKeyPairContainer keys;
 
     final static String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static int DEFAULT_CHUNKSIZE = 16;
@@ -99,13 +95,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     .login(login)
                     .password(password)
             );
-            this.setToken(response.getToken());
-            account = new UserApi(client).getUserInfo(response.getToken(), null, false);
+            token = response.getToken();
             // Save tokens for 401 error response when expired
             retryHandler.setTokens(login, password);
-            if(account.getIsEncryptionEnabled()) {
-                keys = new UserApi(client).getUserKeyPair(token);
-            }
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
@@ -122,13 +114,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         return new SDSListService(this).list(directory, listener);
     }
 
-    /**
-     * @return User id of the current logged in user
-     */
-    public Long getUser() {
-        return account.getId();
-    }
-
     public String getToken() {
         return token;
     }
@@ -137,21 +122,17 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         this.token = token;
     }
 
-    public UserKeyPairContainer getKeys() {
-        return keys;
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
-            return (T) new SDSDelegatingReadFeature(this);
+            return (T) new SDSDelegatingReadFeature(this, new SDSReadFeature(this));
         }
         if(type == Write.class) {
-            return (T) new SDSWriteFeature(this);
+            return (T) new SDSDelegatingWriteFeature(this, new SDSWriteFeature(this));
         }
         if(type == MultipartWrite.class) {
-            return (T) new SDSMultipartWriteFeature(this);
+            return (T) new SDSDelegatingWriteFeature(this, new SDSMultipartWriteFeature(this));
         }
         if(type == Directory.class) {
             return (T) new SDSDirectoryFeature(this);
@@ -173,6 +154,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Move.class) {
             return (T) new SDSMoveFeature(this);
+        }
+        if(type == Bulk.class) {
+            return (T) new SDSEncryptionBulkFeature(this);
         }
         return super._getFeature(type);
     }

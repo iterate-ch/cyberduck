@@ -20,29 +20,35 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.sds.SDSSession;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import eu.ssp_europe.sds.crypto.CryptoException;
 import eu.ssp_europe.sds.crypto.CryptoSystemException;
 import eu.ssp_europe.sds.crypto.CryptoUtils;
 import eu.ssp_europe.sds.crypto.FileEncryptionCipher;
 import eu.ssp_europe.sds.crypto.model.EncryptedDataContainer;
 import eu.ssp_europe.sds.crypto.model.PlainDataContainer;
-import eu.ssp_europe.sds.crypto.model.PlainFileKey;
 
 public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<VersionId> {
 
+    private final SDSSession session;
     private final StatusOutputStream<VersionId> proxy;
 
-    public CryptoOutputStream(final StatusOutputStream<VersionId> proxy, final FileEncryptionCipher cipher,
-                              final PlainFileKey key) {
-        super(new MemorySegementingOutputStream(new EncryptingOutputStream(proxy, cipher, key),
+    public CryptoOutputStream(final SDSSession session, final StatusOutputStream<VersionId> proxy, final FileEncryptionCipher cipher, final TransferStatus key) {
+        super(new MemorySegementingOutputStream(new EncryptingOutputStream(session, proxy, cipher, key),
                 SDSSession.DEFAULT_CHUNKSIZE));
+        this.session = session;
         this.proxy = proxy;
     }
 
@@ -62,14 +68,16 @@ public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<Vers
     }
 
     private static final class EncryptingOutputStream extends ProxyOutputStream {
+        private final SDSSession session;
         private final FileEncryptionCipher cipher;
-        private final PlainFileKey key;
+        private final TransferStatus status;
 
-        public EncryptingOutputStream(final OutputStream proxy, final FileEncryptionCipher cipher,
-                                      final PlainFileKey key) {
+        public EncryptingOutputStream(final SDSSession session, final OutputStream proxy, final FileEncryptionCipher cipher,
+                                      final TransferStatus key) {
             super(proxy);
+            this.session = session;
             this.cipher = cipher;
-            this.key = key;
+            this.status = key;
         }
 
         @Override
@@ -100,7 +108,13 @@ public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<Vers
                 final EncryptedDataContainer encrypted = cipher.encryptLastBlock(data);
                 super.write(encrypted.getContent());
                 final String tag = CryptoUtils.byteArrayToString(encrypted.getTag());
-                key.setTag(tag);
+                final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+                final FileKey fileKey = reader.readValue(status.getHeader().array());
+                fileKey.setTag(tag);
+                final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                writer.writeValue(out, fileKey);
+                status.setHeader(ByteBuffer.wrap(out.toByteArray()));
             }
             catch(CryptoSystemException e) {
                 throw new IOException(e);

@@ -24,12 +24,9 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.VersionId;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -82,41 +79,6 @@ public class SDSWriteFeatureTest {
         stream.close();
         assertArrayEquals(content, compare);
         new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
-    }
-
-    @Test
-    public void testReadWriteEncrypted() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        final byte[] content = RandomUtils.nextBytes(32769);
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
-        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
-        final SDSWriteFeature writer = new SDSWriteFeature(session);
-        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final VersionId version = out.getStatus();
-        assertNotNull(version);
-        assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new SDSAttributesFinderFeature(session).find(test).getSize());
-        final byte[] compare = new byte[content.length];
-        final InputStream stream = new SDSDelegatingReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new PasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("ahbic3Ae");
-            }
-        });
-        IOUtils.readFully(stream, compare);
-        stream.close();
-        assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
