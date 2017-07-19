@@ -30,27 +30,32 @@ public class SDSDelegatingReadFeature implements Read {
 
     private final SDSSession session;
 
+    private final PathContainerService containerService
+            = new PathContainerService();
+
     public SDSDelegatingReadFeature(final SDSSession session) {
         this.session = session;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
-        if(new PathContainerService().getContainer(file).getType().contains(Path.Type.vault)) {
-            return new CryptoReadFeature(session, new SDSReadFeature(session)).read(file, status, connectionCallback, passwordCallback);
+        final SDSReadFeature proxy = new SDSReadFeature(session);
+        if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+            return new CryptoReadFeature(session, proxy).read(file, status, connectionCallback, passwordCallback);
         }
         else {
-            return new SDSReadFeature(session).read(file, status, connectionCallback, passwordCallback);
+            return proxy.read(file, status, connectionCallback, passwordCallback);
         }
     }
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        if(new PathContainerService().getContainer(file).getType().contains(Path.Type.vault)) {
-            return new CryptoReadFeature(session, new SDSReadFeature(session)).offset(file);
+        final SDSReadFeature proxy = new SDSReadFeature(session);
+        if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+            return new CryptoReadFeature(session, proxy).offset(file);
         }
         else {
-            return new SDSReadFeature(session).offset(file);
+            return proxy.offset(file);
         }
     }
 }
