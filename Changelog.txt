@@ -1,7 +1,7 @@
 Cyberduck
 https://cyberduck.io/
 
-6.1.1
+6.2
 - [Feature] Server side copy of files (OneDrive)
 - [Feature] Support for wildcard host entries in known_hosts (SFTP)
 - [Bugfix] Missing x-amz-server-side-encryption header when creating folders (S3) (#9378)
