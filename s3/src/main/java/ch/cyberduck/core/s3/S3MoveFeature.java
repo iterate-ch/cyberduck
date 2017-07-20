@@ -37,17 +37,23 @@ public class S3MoveFeature implements Move {
             = new S3PathContainerService();
 
     private final S3Session session;
+    private final S3AccessControlListFeature accessControlListFeature;
 
     private Delete delete;
 
     public S3MoveFeature(final S3Session session) {
+        this(session, new S3AccessControlListFeature(session));
+    }
+
+    public S3MoveFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
+        this.accessControlListFeature = accessControlListFeature;
         this.delete = new S3DefaultDeleteFeature(session);
     }
 
     @Override
     public void move(final Path source, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
-        new S3ThresholdCopyFeature(session).copy(source, renamed, new TransferStatus().length(source.attributes().getSize()));
+        new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, new TransferStatus().length(source.attributes().getSize()));
         delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
