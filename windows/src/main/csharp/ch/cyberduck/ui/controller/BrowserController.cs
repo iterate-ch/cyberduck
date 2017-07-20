@@ -1227,10 +1227,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 bookmark =
-                    new Host(
-                        ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
-                        PreferencesFactory.get().getProperty("connection.hostname.default"),
-                        PreferencesFactory.get().getInteger("connection.port.default"));
+                    new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")));
             }
             ToggleView(BrowserView.Bookmark);
             AddBookmark(bookmark);

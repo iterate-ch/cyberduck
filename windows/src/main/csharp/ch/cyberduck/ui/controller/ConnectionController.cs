@@ -63,10 +63,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ConnectionController c;
             if (!Controllers.TryGetValue(parent, out c))
             {
-                c = new ConnectionController(new Host(
-                    ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
-                    PreferencesFactory.get().getProperty("connection.hostname.default"),
-                    PreferencesFactory.get().getInteger("connection.port.default")));
+                c = new ConnectionController(new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")));
                 Controllers.Add(parent, c);
                 parent.View.ViewClosedEvent += delegate
                 {
