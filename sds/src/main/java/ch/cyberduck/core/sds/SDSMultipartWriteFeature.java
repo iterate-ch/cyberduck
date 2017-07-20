@@ -199,9 +199,9 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                 }
                 final CompleteUploadRequest body = new CompleteUploadRequest();
                 body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
-                if(overall.getHeader() != null) {
+                if(overall.getFilekey() != null) {
                     final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-                    final FileKey fileKey = reader.readValue(overall.getHeader().array());
+                    final FileKey fileKey = reader.readValue(overall.getFilekey().array());
                     final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(session.getToken());
                     final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
                             TripleCryptConverter.toCryptoPlainFileKey(fileKey),

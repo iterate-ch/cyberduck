@@ -50,7 +50,7 @@ public class CryptoWriteFeature implements Write<VersionId> {
     public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-            final FileKey fileKey = reader.readValue(status.getHeader().array());
+            final FileKey fileKey = reader.readValue(status.getFilekey().array());
             return new CryptoOutputStream<VersionId>(session, proxy.write(file, status, callback),
                     Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
             );
