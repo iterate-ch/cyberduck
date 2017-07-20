@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -48,7 +47,7 @@ public class S3MoveFeature implements Move {
 
     @Override
     public void move(final Path source, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
-        session.getFeature(Copy.class).copy(source, renamed, new TransferStatus().length(source.attributes().getSize()));
+        new S3ThresholdCopyFeature(session).copy(source, renamed, new TransferStatus().length(source.attributes().getSize()));
         delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
