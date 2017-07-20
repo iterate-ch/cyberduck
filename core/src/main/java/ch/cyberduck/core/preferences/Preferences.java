@@ -659,7 +659,7 @@ public abstract class Preferences {
         /*
           Authentication header version
          */
-//        defaults.put("s3.signature.version", "AWS2");
+        //defaults.put("s3.signature.version", "AWS2");
         defaults.put("s3.signature.version", "AWS4HMACSHA256");
         /*
           Default bucket location
@@ -670,10 +670,8 @@ public abstract class Preferences {
         defaults.put("s3.domain", "amazonaws.com");
         defaults.put("s3.hostname.default", "s3.amazonaws.com");
 
-        defaults.put("s3.bucket.acl.default", "public-read");
-        //defaults.put("s3.bucket.acl.default", "private");
-        defaults.put("s3.key.acl.default", "public-read");
-        //defaults.put("s3.key.acl.default", "private");
+        //defaults.put("s3.bucket.acl.default", "public-read");
+        defaults.put("s3.bucket.acl.default", "private");
 
         /*
           Default redundancy level
