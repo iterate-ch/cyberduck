@@ -34,7 +34,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
-import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -68,7 +67,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     private final ClientConfiguration configuration;
 
-    private final S3LocationFeature locationFeature;
+    private final Location locationFeature;
 
     public KMSEncryptionFeature(final S3Session session) {
         this(session, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
@@ -92,7 +91,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                 configuration.setProxyHost(proxy.getHostname());
                 configuration.setProxyPort(proxy.getPort());
         }
-        locationFeature = new S3LocationFeature(session);
+        locationFeature = session.getFeature(Location.class);
     }
 
     private interface Authenticated<T> extends Callable<T> {

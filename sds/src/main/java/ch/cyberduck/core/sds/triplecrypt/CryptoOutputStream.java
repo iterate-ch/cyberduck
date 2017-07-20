@@ -109,12 +109,12 @@ public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<Vers
                 super.write(encrypted.getContent());
                 final String tag = CryptoUtils.byteArrayToString(encrypted.getTag());
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-                final FileKey fileKey = reader.readValue(status.getHeader().array());
+                final FileKey fileKey = reader.readValue(status.getFilekey().array());
                 fileKey.setTag(tag);
                 final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();
                 writer.writeValue(out, fileKey);
-                status.setHeader(ByteBuffer.wrap(out.toByteArray()));
+                status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
             }
             catch(CryptoSystemException e) {
                 throw new IOException(e);

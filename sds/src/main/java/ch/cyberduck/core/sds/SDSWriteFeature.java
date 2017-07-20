@@ -126,9 +126,9 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         }
                         final CompleteUploadRequest body = new CompleteUploadRequest();
                         body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
-                        if(status.getHeader() != null) {
+                        if(status.getFilekey() != null) {
                             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-                            final FileKey fileKey = reader.readValue(status.getHeader().array());
+                            final FileKey fileKey = reader.readValue(status.getFilekey().array());
                             final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(session.getToken());
                             final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
                                     TripleCryptConverter.toCryptoPlainFileKey(fileKey),

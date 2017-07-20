@@ -25,7 +25,7 @@ public class B2PathContainerService extends PathContainerService {
     @Override
     public String getKey(final Path file) {
         final String key = super.getKey(file);
-        if(!file.isVolume() && file.isDirectory()) {
+        if(!file.isRoot() && !this.isContainer(file) && file.isDirectory()) {
             return key.concat(String.valueOf(Path.DELIMITER)).concat(PLACEHOLDER);
         }
         return key;

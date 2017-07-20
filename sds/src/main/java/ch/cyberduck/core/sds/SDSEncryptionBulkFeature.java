@@ -60,7 +60,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                             final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
                             final ByteArrayOutputStream out = new ByteArrayOutputStream();
                             writer.writeValue(out, fileKey);
-                            status.setHeader(ByteBuffer.wrap(out.toByteArray()));
+                            status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
                         }
                     }
             }

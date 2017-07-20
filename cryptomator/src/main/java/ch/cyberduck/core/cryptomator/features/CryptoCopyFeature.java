@@ -51,9 +51,17 @@ public class CryptoCopyFeature implements Copy {
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
             status.setNonces(new RandomNonceGenerator());
         }
-        proxy.withTarget(target).copy(
+        if(vault.contains(source) && vault.contains(copy)) {
+            proxy.withTarget(target).copy(
+                    vault.contains(source) ? vault.encrypt(session, source) : source,
+                    vault.contains(copy) ? vault.encrypt(session, copy) : copy, status);
+        }
+        // Copy files from or into vault requires to pass through encryption features
+        new DefaultCopyFeature(session).withTarget(target).copy(
                 vault.contains(source) ? vault.encrypt(session, source) : source,
-                vault.contains(copy) ? vault.encrypt(session, copy) : copy, status);
+                vault.contains(copy) ? vault.encrypt(session, copy) : copy,
+                status
+        );
     }
 
     @Override
