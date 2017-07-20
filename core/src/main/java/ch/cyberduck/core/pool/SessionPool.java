@@ -17,14 +17,16 @@ package ch.cyberduck.core.pool;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.vault.VaultRegistry;
+
+import org.apache.commons.lang3.StringUtils;
 
 public interface SessionPool {
     SessionPool DISCONNECTED = new DisconnectedSessionPool();
@@ -83,7 +85,7 @@ public interface SessionPool {
     }
 
     final class DisconnectedSessionPool implements SessionPool {
-        private static final Host DISCONNECTED = new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")));
+        private static final Host DISCONNECTED = new Host(new DisabledProtocol());
 
         @Override
         public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
@@ -128,6 +130,23 @@ public interface SessionPool {
         @Override
         public void shutdown() {
             //
+        }
+
+        private static class DisabledProtocol extends AbstractProtocol {
+            @Override
+            public String getIdentifier() {
+                return StringUtils.EMPTY;
+            }
+
+            @Override
+            public String getDescription() {
+                return StringUtils.EMPTY;
+            }
+
+            @Override
+            public Scheme getScheme() {
+                return Scheme.file;
+            }
         }
     }
 }
