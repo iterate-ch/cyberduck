@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -76,7 +77,7 @@ public class SpectraBulkServiceTest {
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        final Path file = new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        final Path file = new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         files.put(file,
                 status.length(1L)
         );
@@ -110,11 +111,11 @@ public class SpectraBulkServiceTest {
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Map<Path, TransferStatus> files = new HashMap<>();
-        final Path directory = new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
+        final Path directory = new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory));
         final TransferStatus directoryStatus = new TransferStatus().length(0L);
         files.put(directory, directoryStatus);
         final TransferStatus fileStatus = new TransferStatus().length(1L);
-        files.put(new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), fileStatus);
+        files.put(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), fileStatus);
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final Set<UUID> set = bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertEquals(1, set.size());
@@ -145,7 +146,7 @@ public class SpectraBulkServiceTest {
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
-                new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus().length(1L)
+                new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().length(1L)
         ), new DisabledConnectionCallback());
         session.close();
     }
@@ -171,7 +172,7 @@ public class SpectraBulkServiceTest {
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Set<UUID> keys = new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
-                new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus()
+                new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus()
         ), new DisabledConnectionCallback());
         assertTrue(keys.isEmpty());
         session.close();
@@ -199,7 +200,7 @@ public class SpectraBulkServiceTest {
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        final Path file = new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        final Path file = new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         files.put(file,
                 // 11GB
                 status.length(112640000000L)
@@ -249,11 +250,11 @@ public class SpectraBulkServiceTest {
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        files.put(new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)),
+        files.put(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)),
                 // 11GB
                 status.length(118111600640L)
         );
-        files.put(new Path(String.format("/cyberduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)),
+        files.put(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)),
                 // 11GB
                 status.length(118111600640L)
         );
