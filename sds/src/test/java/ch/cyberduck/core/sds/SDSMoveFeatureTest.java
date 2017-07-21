@@ -21,14 +21,17 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.triplecrypt.CryptoReadFeature;
@@ -119,11 +122,16 @@ public class SDSMoveFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
+        session.getFeature(Move.class).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new SDSReadFeature(session).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new SDSReadFeature(session).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new PasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("ahbic3Ae");
+            }
+        });
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -151,11 +159,16 @@ public class SDSMoveFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
+        session.getFeature(Move.class).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new PasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("ahbic3Ae");
+            }
+        });
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

@@ -53,7 +53,9 @@ public class SDSMoveFeature implements Move {
                 // Change parent node
                 new NodesApi(session.getClient()).moveNodes(session.getToken(),
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
-                        new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener()))), null);
+                        new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(
+                                Long.parseLong(new SDSNodeIdProvider(session).getFileid(source,
+                                        new DisabledListProgressListener()))), null);
             }
             if(!StringUtils.equals(source.getName(), target.getName())) {
                 if(pathContainerService.isContainer(source)) {

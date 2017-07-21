@@ -49,9 +49,9 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
     public Void pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         try {
             switch(type) {
-                case upload:
-                case sync:
-                case copy:
+                case download:
+                    break;
+                default:
                     final UserAccount user = new UserApi(session.getClient()).getUserInfo(session.getToken(), null, false);
                     if(user.getIsEncryptionEnabled()) {
                         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
