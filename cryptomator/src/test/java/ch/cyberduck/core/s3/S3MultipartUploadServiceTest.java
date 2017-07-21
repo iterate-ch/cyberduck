@@ -58,7 +58,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -87,8 +86,8 @@ public class S3MultipartUploadServiceTest {
                 new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
                 new S3WriteFeature(session), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[5242880];
-        new Random().nextBytes(content);
+        final int length = 5242880;
+        final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus writeStatus = new TransferStatus();
         final Cryptor cryptor = cryptomator.getCryptor();
@@ -102,7 +101,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -145,7 +144,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -187,7 +186,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

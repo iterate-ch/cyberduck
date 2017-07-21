@@ -210,7 +210,7 @@ public class GoogleStorageSession extends S3Session {
             return (T) new GoogleStorageDirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
         }
         if(type == Move.class) {
-            return (T) new S3MoveFeature(this);
+            return (T) new S3MoveFeature(this, new GoogleStorageAccessControlListFeature(this));
         }
         if(type == Headers.class) {
             return (T) new S3MetadataFeature(this, new GoogleStorageAccessControlListFeature(this));

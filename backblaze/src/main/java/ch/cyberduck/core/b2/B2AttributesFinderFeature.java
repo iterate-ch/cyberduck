@@ -35,6 +35,7 @@ import java.util.Map;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
 
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_LARGE_FILE_SHA1;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2AttributesFinderFeature implements AttributesFinder {
@@ -60,7 +61,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
             if(StringUtils.equals("file_state_none", e.getMessage())) {
                 return PathAttributes.EMPTY;
             }
-            throw new B2ExceptionMappingService(session).map("Failure to read attributes of {0}", e, file);
+            throw new B2ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -70,9 +71,12 @@ public class B2AttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final B2FileResponse response) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(response.getContentLength());
-        attributes.setChecksum(
-                Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
-        );
+        if(response.getFileInfo().containsKey(X_BZ_INFO_LARGE_FILE_SHA1)) {
+            attributes.setChecksum(Checksum.parse(response.getFileInfo().get(X_BZ_INFO_LARGE_FILE_SHA1)));
+        }
+        else {
+            attributes.setChecksum(Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:")));
+        }
         final Map<String, String> metadata = new HashMap<>();
         for(Map.Entry<String, String> entry : response.getFileInfo().entrySet()) {
             metadata.put(entry.getKey(), entry.getValue());

@@ -36,7 +36,7 @@ import synapticloop.b2.response.B2BucketResponse;
 public class B2FindFeature implements Find {
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
 
@@ -68,7 +68,7 @@ public class B2FindFeature implements Find {
             return false;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map(e);
+            throw new B2ExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

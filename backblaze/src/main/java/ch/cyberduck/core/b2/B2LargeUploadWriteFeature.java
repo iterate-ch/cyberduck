@@ -57,6 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.B2FinishLargeFileResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2StartLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
@@ -65,7 +66,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(B2LargeUploadWriteFeature.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
     private final Find finder;
@@ -113,7 +114,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
     }
 
@@ -148,7 +149,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
                     final Checksum checksum = overall.getChecksum();
                     final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
-                            file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
+                            containerService.getKey(file),
                             new ByteArrayEntity(content, off, len), Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                             overall.getMime(), overall.getMetadata());
                     if(log.isDebugEnabled()) {
@@ -174,13 +175,13 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                         public B2UploadPartResponse call() throws BackgroundException {
                             final TransferStatus status = new TransferStatus().length(len);
                             final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
-                            final Checksum checksum = B2LargeUploadWriteFeature.this.checksum()
+                            final Checksum checksum = B2LargeUploadWriteFeature.this.checksum(file)
                                     .compute(new ByteArrayInputStream(content, off, len), status);
                             try {
                                 return session.getClient().uploadLargeFilePart(version.id, segment, entity, checksum.hash);
                             }
                             catch(B2ApiException e) {
-                                throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
+                                throw new B2ExceptionMappingService().map("Upload {0} failed", e, file);
                             }
                             catch(IOException e) {
                                 throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
@@ -193,7 +194,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                 throw new IOException(e.getMessage(), e);
             }
             catch(B2ApiException e) {
-                throw new IOException(new B2ExceptionMappingService(session).map("Upload {0} failed", e, file));
+                throw new IOException(new B2ExceptionMappingService().map("Upload {0} failed", e, file));
             }
         }
 
@@ -226,14 +227,14 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     for(B2UploadPartResponse part : completed) {
                         checksums.add(part.getContentSha1());
                     }
-                    session.getClient().finishLargeFileUpload(version.id, checksums.toArray(new String[checksums.size()]));
+                    final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(version.id, checksums.toArray(new String[checksums.size()]));
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
                     }
                 }
             }
             catch(B2ApiException e) {
-                throw new IOException(new B2ExceptionMappingService(session).map("Upload {0} failed", e, file));
+                throw new IOException(new B2ExceptionMappingService().map("Upload {0} failed", e, file));
             }
             finally {
                 close.set(true);

@@ -17,6 +17,7 @@ package ch.cyberduck.core.vault.registry;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,8 +41,8 @@ public class VaultRegistryDownloadFeature implements Download {
     }
 
     @Override
-    public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        registry.find(session, file).getFeature(session, Download.class, proxy).download(file, local, throttle, listener, status, callback);
+    public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
+        registry.find(session, file).getFeature(session, Download.class, proxy).download(file, local, throttle, listener, status, connectionCallback, passwordCallback);
     }
 
     @Override

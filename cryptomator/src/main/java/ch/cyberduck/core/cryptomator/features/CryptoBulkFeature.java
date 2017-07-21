@@ -17,7 +17,9 @@ package ch.cyberduck.core.cryptomator.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -25,14 +27,20 @@ import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.download.PathPriorityComparator;
 
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CryptoBulkFeature<R> implements Bulk<R> {
+
+    private final RandomStringService random
+            = new UUIDRandomStringService();
 
     private final Session<?> session;
     private final Bulk<R> delegate;
@@ -47,15 +55,39 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     @Override
     public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Map<Path, TransferStatus> encrypted = new HashMap<>(files.size());
-        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
+        final ArrayList<Map.Entry<Path, TransferStatus>> sorted = new ArrayList<>(files.entrySet());
+        // Sort with folder first in list
+        sorted.sort(new Comparator<Map.Entry<Path, TransferStatus>>() {
+            @Override
+            public int compare(final Map.Entry<Path, TransferStatus> o1, final Map.Entry<Path, TransferStatus> o2) {
+                return new PathPriorityComparator().compare(o1.getKey(), o2.getKey());
+            }
+        });
+        for(Map.Entry<Path, TransferStatus> entry : sorted) {
             final Path file = entry.getKey();
             final TransferStatus status = entry.getValue();
-            // Write header to be reused in writer
-            final Cryptor cryptor = cryptomator.getCryptor();
-            final FileHeader header = cryptor.fileHeaderCryptor().create();
-            status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
-            status.setNonces(new RandomNonceGenerator());
-            encrypted.put(cryptomator.encrypt(session, file), status);
+            if(null == status.getHeader()) {
+                // Write header to be reused in writer
+                final Cryptor cryptor = cryptomator.getCryptor();
+                final FileHeader header = cryptor.fileHeaderCryptor().create();
+                status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+            }
+            if(null == status.getNonces()) {
+                status.setNonces(new RandomNonceGenerator());
+            }
+            if(file.isDirectory()) {
+                if(!status.isExists()) {
+                    // Preset directory ID for new folders to avert lookup with not found failure in directory ID provider
+                    final String directoryId = random.random();
+                    encrypted.put(cryptomator.encrypt(session, file, directoryId, false), status);
+                }
+                else {
+                    encrypted.put(cryptomator.encrypt(session, file), status);
+                }
+            }
+            else {
+                encrypted.put(cryptomator.encrypt(session, file), status);
+            }
         }
         return delegate.pre(type, encrypted, callback);
     }

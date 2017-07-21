@@ -92,7 +92,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         assertEquals(content.length, progress.getOffset());
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new CryptoReadFeature(session, new SwiftReadFeature(session, regionService), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new CryptoReadFeature(session, new SwiftReadFeature(session, regionService), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

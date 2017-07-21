@@ -32,6 +32,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
      * Flag set to true if any bytes have been written to the proxy stream
      */
     private final AtomicBoolean after = new AtomicBoolean();
+    private final AtomicBoolean close = new AtomicBoolean();
 
     private final OutputStream buffer;
     private final OutputStream proxy;
@@ -98,11 +99,20 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
 
     @Override
     public void close() throws IOException {
-        if(written > 0L || !after.get()) {
-            this.copy();
-            this.reset();
+        if(close.get()) {
+            log.warn(String.format("Skip double close of stream %s", this));
+            return;
         }
-        proxy.close();
+        try {
+            if(written > 0L || !after.get()) {
+                this.copy();
+                this.reset();
+            }
+            proxy.close();
+        }
+        finally {
+            close.set(true);
+        }
     }
 
     /**

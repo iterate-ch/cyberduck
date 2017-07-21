@@ -19,7 +19,7 @@ package ch.cyberduck.core;
  */
 
 public interface ProviderHelpService {
+    String help();
     String help(Protocol provider);
-
     String help(Scheme scheme);
 }

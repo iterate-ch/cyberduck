@@ -43,10 +43,8 @@ import synapticloop.b2.response.BaseB2Response;
 
 public class B2DirectoryFeature implements Directory<BaseB2Response> {
 
-    protected static final String PLACEHOLDER = "/.bzEmpty";
-
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
     private Write<BaseB2Response> writer;
@@ -71,11 +69,11 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                         folder.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
                 }
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                        new PathAttributes(folder.attributes()).withVersionId(response.getBucketId()));
+                        new PathAttributes(folder.attributes()));
             }
             else {
                 if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+                    status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
                 }
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
@@ -85,7 +83,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
             }
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Cannot create folder {0}", e, folder);
+            throw new B2ExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

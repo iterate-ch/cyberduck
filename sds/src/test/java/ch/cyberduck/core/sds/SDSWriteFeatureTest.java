@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -61,7 +62,7 @@ public class SDSWriteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path room = new SDSDirectoryFeature(session).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final byte[] content = RandomUtils.nextBytes(32768);
+        final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -73,7 +74,7 @@ public class SDSWriteFeatureTest {
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new SDSReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new SDSReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

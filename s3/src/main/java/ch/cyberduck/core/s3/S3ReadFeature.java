@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -53,7 +54,7 @@ public class S3ReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
         try {
             final S3Object object;
             final HttpRange range = HttpRange.withStatus(status);

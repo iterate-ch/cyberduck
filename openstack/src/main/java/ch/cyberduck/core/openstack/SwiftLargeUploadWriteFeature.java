@@ -121,7 +121,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new DisabledChecksumCompute();
     }
 
@@ -153,7 +153,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                     @Override
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().length(len);
-                        status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum()
+                        status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum(file)
                                 .compute(new ByteArrayInputStream(content, off, len), status)
                         );
                         // Segment name with left padded segment number
@@ -183,7 +183,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                     }
                 }, overall).call());
             }
-            catch(Exception e) {
+            catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
             }
         }

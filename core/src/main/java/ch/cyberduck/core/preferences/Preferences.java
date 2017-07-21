@@ -18,6 +18,7 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLocale;
@@ -278,6 +279,7 @@ public abstract class Preferences {
         defaults.put("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
         defaults.put("application.name", "Cyberduck");
+        defaults.put("application.container.name", "duck");
         final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
         defaults.put("application.support.path", support);
         defaults.put("application.receipt.path", support);
@@ -658,7 +660,7 @@ public abstract class Preferences {
         /*
           Authentication header version
          */
-//        defaults.put("s3.signature.version", "AWS2");
+        //defaults.put("s3.signature.version", "AWS2");
         defaults.put("s3.signature.version", "AWS4HMACSHA256");
         /*
           Default bucket location
@@ -669,10 +671,8 @@ public abstract class Preferences {
         defaults.put("s3.domain", "amazonaws.com");
         defaults.put("s3.hostname.default", "s3.amazonaws.com");
 
-        defaults.put("s3.bucket.acl.default", "public-read");
-        //defaults.put("s3.bucket.acl.default", "private");
-        defaults.put("s3.key.acl.default", "public-read");
-        //defaults.put("s3.key.acl.default", "private");
+        //defaults.put("s3.bucket.acl.default", "public-read");
+        defaults.put("s3.bucket.acl.default", "private");
 
         /*
           Default redundancy level
@@ -813,6 +813,8 @@ public abstract class Preferences {
         defaults.put("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
+
+        defaults.put("sds.listing.chunksize", String.valueOf(500));
 
         /*
           NTLM Windows Domain
@@ -1288,6 +1290,7 @@ public abstract class Preferences {
         defaults.put("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
         defaults.put("factory.vault.class", DisabledVault.class.getName());
         defaults.put("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
+        defaults.put("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
     }
 
     /**

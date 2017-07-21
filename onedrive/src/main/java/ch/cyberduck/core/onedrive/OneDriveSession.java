@@ -29,6 +29,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
@@ -189,6 +190,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == Move.class) {
             return (T) new OneDriveMoveFeature(this);
+        }
+        if (type == Copy.class) {
+            return  (T) new OneDriveCopyFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new OneDriveAttributesFinderFeature(this);

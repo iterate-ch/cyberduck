@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -91,7 +92,7 @@ public class IRODSReadFeatureTest {
         out.close();
         assertTrue(session.getFeature(Find.class).find(test));
 
-        final InputStream in = new IRODSReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         in.close();
 
@@ -115,7 +116,7 @@ public class IRODSReadFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        new IRODSReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        new IRODSReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
     }
 
 
@@ -146,7 +147,7 @@ public class IRODSReadFeatureTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new IRODSReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

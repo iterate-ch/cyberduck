@@ -36,7 +36,7 @@ import synapticloop.b2.response.B2BucketResponse;
 public class B2LifecycleFeature implements Lifecycle {
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
 
@@ -63,7 +63,7 @@ public class B2LifecycleFeature implements Lifecycle {
             throw new NotfoundException(container.getAbsolute());
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Failure to write attributes of {0}", e, container);
+            throw new B2ExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, container);
@@ -82,7 +82,7 @@ public class B2LifecycleFeature implements Lifecycle {
                             StringUtils.EMPTY));
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Failure to write attributes of {0}", e, container);
+            throw new B2ExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, container);

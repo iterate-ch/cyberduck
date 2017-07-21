@@ -17,11 +17,6 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import java.io.InputStream;
-
 public final class ChecksumComputeFactory {
 
     private ChecksumComputeFactory() {
@@ -41,12 +36,7 @@ public final class ChecksumComputeFactory {
             case crc32:
                 return new CRC32ChecksumCompute();
             default:
-                return new ChecksumCompute() {
-                    @Override
-                    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
-                        return Checksum.NONE;
-                    }
-                };
+                return new DisabledChecksumCompute();
         }
     }
 }

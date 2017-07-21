@@ -504,7 +504,7 @@ public class BrowserController extends WindowController
                     cache.invalidate(folder);
                 }
                 else {
-                    if(cache.isCached(folder)) {
+                    if(cache.isValid(folder)) {
                         reload(browser, model, workdir, selected, folder);
                         return;
                     }
@@ -1853,9 +1853,7 @@ public class BrowserController extends WindowController
             bookmark.setDefaultPath(selected.getAbsolute());
         }
         else {
-            bookmark = new Host(ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default")),
-                    preferences.getProperty("connection.hostname.default"),
-                    preferences.getInteger("connection.port.default"));
+            bookmark = new Host(ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default")));
         }
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         this.addBookmark(bookmark);
@@ -2181,12 +2179,16 @@ public class BrowserController extends WindowController
                 case outline: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
-                        if(browserOutlineView.isItemExpanded(item)) {
-                            final Path folder = cache.lookup(new NSObjectPathReference(item));
-                            if(null == folder) {
-                                continue;
+                        final Path file = cache.lookup(new NSObjectPathReference(item));
+                        if(null == file) {
+                            continue;
+                        }
+                        if(file.isDirectory()) {
+                            // Invalidate cache regardless if rendered. Fix CD-2340
+                            cache.invalidate(file);
+                            if(browserOutlineView.isItemExpanded(item)) {
+                                folders.add(file);
                             }
-                            folders.add(folder);
                         }
                     }
                     break;
@@ -2986,8 +2988,8 @@ public class BrowserController extends WindowController
             @Override
             public void run() {
                 // The browser has no session, we are allowed to proceed
-                final SessionPool pool = SessionPoolFactory.create(BrowserController.this, cache, bookmark, SessionPoolFactory.Usage.browser);
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
+                final SessionPool connection = SessionPoolFactory.create(BrowserController.this, cache, bookmark, SessionPoolFactory.Usage.browser);
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, connection,
                         new MountWorker(bookmark, cache, listener) {
                             @Override
                             public void cleanup(final Path workdir) {
@@ -2997,7 +2999,7 @@ public class BrowserController extends WindowController
                                     });
                                 }
                                 else {
-                                    BrowserController.this.pool = pool;
+                                    pool = connection;
                                     pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
                                     // Update status icon
                                     bookmarkTable.setNeedsDisplay();

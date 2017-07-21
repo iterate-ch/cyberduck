@@ -97,7 +97,7 @@ public class B2ObjectListService implements ListService {
             return objects;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Listing directory {0} failed", e, directory);
+            throw new B2ExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -107,6 +107,9 @@ public class B2ObjectListService implements ListService {
     protected Marker parse(final Path directory, final AttributedList<Path> objects,
                            final B2ListFilesResponse response, final Map<String, Integer> revisions) throws BackgroundException {
         for(B2FileInfoResponse info : response.getFiles()) {
+            if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
+                continue;
+            }
             if(StringUtils.isBlank(info.getFileId())) {
                 // Common prefix
                 final Path placeholder = new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));

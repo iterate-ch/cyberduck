@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -47,8 +48,8 @@ public class SingleTransferWorker extends AbstractTransferWorker {
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error,
                                 final ProgressListener listener, final StreamListener streamListener,
-                                final ConnectionCallback connectionCallback) {
-        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback);
+                                final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) {
+        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, passwordCallback);
         this.source = source;
         this.destination = destination;
     }
@@ -57,8 +58,9 @@ public class SingleTransferWorker extends AbstractTransferWorker {
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error,
                                 final ProgressListener listener, final StreamListener streamListener,
-                                final ConnectionCallback connectionCallback, final Cache<TransferItem> cache) {
-        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, cache);
+                                final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
+                                final Cache<TransferItem> cache) {
+        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, passwordCallback, cache);
         this.source = source;
         this.destination = destination;
     }
@@ -66,9 +68,10 @@ public class SingleTransferWorker extends AbstractTransferWorker {
     public SingleTransferWorker(final Session source, final Session destination, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error,
-                                final ProgressListener progress, final StreamListener stream, final ConnectionCallback connectionCallback,
+                                final ProgressListener progress, final StreamListener stream,
+                                final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
                                 final Cache<TransferItem> cache, final Map<Path, TransferStatus> table) {
-        super(transfer, options, prompt, meter, error, progress, stream, connectionCallback, cache, table);
+        super(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, cache, table);
         this.source = source;
         this.destination = destination;
     }

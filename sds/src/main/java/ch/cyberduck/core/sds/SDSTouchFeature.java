@@ -15,19 +15,48 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.transfer.TransferStatus;
 
-public class SDSTouchFeature extends DefaultTouchFeature<VersionId> {
+import java.io.IOException;
+
+public class SDSTouchFeature implements Touch<VersionId> {
+
+    private Write<VersionId> writer;
 
     public SDSTouchFeature(final SDSSession session) {
-        super(new DefaultUploadFeature<VersionId>(new SDSWriteFeature(session)));
+        this.writer = new SDSWriteFeature(session);
+    }
+
+    @Override
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+        final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
+        try {
+            out.close();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
+        }
+        return new Path(file.getParent(), file.getName(), file.getType(),
+                new PathAttributes(file.attributes()).withVersionId(out.getStatus().toString()));
     }
 
     @Override
     public boolean isSupported(final Path workdir) {
         return !workdir.isRoot();
+    }
+
+    @Override
+    public Touch<VersionId> withWriter(final Write<VersionId> writer) {
+        this.writer = writer;
+        return this;
     }
 }

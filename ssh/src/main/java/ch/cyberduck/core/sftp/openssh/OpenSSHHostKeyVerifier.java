@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.PreferencesHostKeyVerifier;
 
 import org.apache.commons.codec.binary.Base64;
@@ -52,7 +53,12 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     private static final Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
+        final BouncyCastleProvider provider = new BouncyCastleProvider();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Install provider %s at position %d", provider, position));
+        }
+        Security.insertProviderAt(provider, position);
     }
 
     /**
@@ -104,8 +110,8 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         else {
             try {
                 // Add the host key to the in-memory database
-                final OpenSSHKnownHosts.HashedEntry entry
-                        = new OpenSSHKnownHosts.HashedEntry(null, hash(hostname), KeyType.fromKey(key), key);
+                final OpenSSHKnownHosts.HostEntry entry
+                        = new OpenSSHKnownHosts.HostEntry(null, hash(hostname), KeyType.fromKey(key), key);
                 database.entries().add(entry);
                 if(persist) {
                     if(file.attributes().getPermission().isWritable()) {
@@ -166,6 +172,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     public String toString() {
         final StringBuilder sb = new StringBuilder("OpenSSHHostKeyVerifier{");
         sb.append("database=").append(database);
+        sb.append(", file=").append(file);
         sb.append('}');
         return sb.toString();
     }
@@ -176,20 +183,17 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         }
 
         @Override
-        protected boolean hostKeyUnverifiableAction(String hostname, PublicKey key) {
+        protected boolean hostKeyUnverifiableAction(final String hostname, final PublicKey key) {
             try {
                 return isUnknownKeyAccepted(hostname, key);
             }
-            catch(ConnectionCanceledException e) {
-                return false;
-            }
-            catch(ChecksumException e) {
+            catch(ConnectionCanceledException | ChecksumException e) {
                 return false;
             }
         }
 
         @Override
-        protected boolean hostKeyChangedAction(HostEntry entry, String hostname, PublicKey key) {
+        protected boolean hostKeyChangedAction(final KnownHostEntry entry, final String hostname, final PublicKey key) {
             try {
                 final boolean accepted = isChangedKeyAccepted(hostname, key);
                 if(accepted) {
@@ -203,10 +207,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
                 }
                 return accepted;
             }
-            catch(ConnectionCanceledException e) {
-                return false;
-            }
-            catch(ChecksumException e) {
+            catch(ConnectionCanceledException | ChecksumException e) {
                 return false;
             }
         }

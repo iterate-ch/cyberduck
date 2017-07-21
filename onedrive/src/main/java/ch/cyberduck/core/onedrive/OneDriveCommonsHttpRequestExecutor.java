@@ -20,6 +20,7 @@ import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -187,6 +188,15 @@ public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecu
         @Override
         public String getStatusMessage() throws IOException {
             return response.getStatusLine().getReasonPhrase();
+        }
+
+        @Override
+        public String getLocation() {
+            Header locationHeader = response.getFirstHeader("Location");
+            if (null == locationHeader) {
+                return null;
+            }
+            return locationHeader.getValue();
         }
     }
 

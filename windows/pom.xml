@@ -18,7 +18,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>6.1.0-SNAPSHOT</version>
+        <version>6.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>Cyberduck.Native</artifactId>
@@ -188,7 +188,7 @@
                     <artifactId>ActiveButtons</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
-                    <version>1.0.1.0.win10</version>
+                    <version>1.0.1.1</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
@@ -204,23 +204,7 @@
                     <artifactId>CustomOpenFileFolderDialog</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
-                    <version>1.0.0.0</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.microsoft</groupId>
-                    <artifactId>VistaBridgeLibrary</artifactId>
-                    <classifier>native</classifier>
-                    <type>dll</type>
-                    <version>1.4.0.0</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.microsoft</groupId>
-                    <artifactId>Windows7.DesktopIntegration</artifactId>
-                    <classifier>native</classifier>
-                    <type>dll</type>
-                    <version>1.0.0.0</version>
+                    <version>1.0.0.1</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>

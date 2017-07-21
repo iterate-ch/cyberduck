@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                         LocaleFactory.localizedString("Deny")), false, LocaleFactory.localizedString("Always"),
                     TaskDialogIcon.Question,
-                    PreferencesFactory.get().getProperty("website.help") + "/" + Scheme.sftp.name(),
+                    ProviderHelpServiceFactory.get().help(Scheme.sftp),
                     delegate(int option, bool verificationChecked)
                     {
                         switch (option)
@@ -86,7 +86,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                         LocaleFactory.localizedString("Deny")), false, LocaleFactory.localizedString("Always"),
                     TaskDialogIcon.Warning,
-                    PreferencesFactory.get().getProperty("website.help") + "/" + Scheme.sftp.name(),
+                    ProviderHelpServiceFactory.get().help(Scheme.sftp),
                     delegate(int option, bool verificationChecked)
                     {
                         switch (option)

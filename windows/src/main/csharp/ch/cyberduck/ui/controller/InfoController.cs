@@ -420,26 +420,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View.ShowHelp += delegate(object sender, InfoHelpArgs args)
             {
-                StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
-                switch (args.Section)
-                {
-                    case InfoHelpArgs.Context.General:
-                        site.Append("/howto/info");
-                        break;
-                    case InfoHelpArgs.Context.Permissions:
-                        site.Append("/howto/info");
-                        break;
-                    case InfoHelpArgs.Context.Metdadata:
-                        site.Append("/").Append(_controller.Session.getHost().getProtocol().getProvider());
-                        break;
-                    case InfoHelpArgs.Context.Cdn:
-                        site.Append("/howto/cdn");
-                        break;
-                    case InfoHelpArgs.Context.S3:
-                        site.Append("/").Append(_controller.Session.getHost().getProtocol().getProvider());
-                        break;
-                }
-                BrowserLauncherFactory.get().open(site.ToString());
+                BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
             };
         }
 

@@ -22,7 +22,7 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.core.DefaultProviderHelpService;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.ui.InputValidator;
 
@@ -130,7 +130,7 @@ public abstract class AlertController extends SheetController implements SheetCa
      * Open help page.
      */
     protected String help() {
-        return new DefaultProviderHelpService().help();
+        return ProviderHelpServiceFactory.get().help();
     }
 
     /**

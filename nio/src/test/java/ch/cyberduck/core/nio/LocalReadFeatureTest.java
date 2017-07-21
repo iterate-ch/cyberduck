@@ -19,6 +19,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -36,7 +38,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -51,7 +52,7 @@ public class LocalReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Path workdir = new LocalHomeFinderFeature(session).find();
-        new LocalReadFeature(session).read(new Path(workdir, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new LocalReadFeature(session).read(new Path(workdir, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
     }
 
     @Test
@@ -62,8 +63,8 @@ public class LocalReadFeatureTest {
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(test, new TransferStatus());
-        final byte[] content = new byte[39865];
-        new Random().nextBytes(content);
+        final int length = 39865;
+        final byte[] content = RandomUtils.nextBytes(length);
         {
             final TransferStatus status = new TransferStatus().length(content.length).exists(true);
             final OutputStream out = new LocalWriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -74,7 +75,7 @@ public class LocalReadFeatureTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            final InputStream in = new LocalReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new LocalReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(in, buffer);
@@ -93,8 +94,8 @@ public class LocalReadFeatureTest {
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(test, new TransferStatus());
-        final byte[] content = new byte[1048576];
-        new Random().nextBytes(content);
+        final int length = 1048576;
+        final byte[] content = RandomUtils.nextBytes(length);
         {
             final TransferStatus status = new TransferStatus().length(content.length).exists(true);
             final OutputStream out = new LocalWriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -107,7 +108,7 @@ public class LocalReadFeatureTest {
             status.setLength(content.length);
             status.setAppend(true);
             status.setOffset(100L);
-            final InputStream in = new LocalReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new LocalReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
             new StreamCopier(status, status).withLimit(new Long(content.length - 100)).transfer(in, buffer);

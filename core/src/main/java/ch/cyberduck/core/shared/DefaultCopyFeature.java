@@ -16,6 +16,7 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,7 +27,6 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
@@ -58,20 +58,14 @@ public class DefaultCopyFeature implements Copy {
             }
             InputStream in = null;
             OutputStream out = null;
-            try {
-                in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-                Write write = to.getFeature(MultipartWrite.class);
-                if(null == write) {
-                    // Fallback if multipart write is not available
-                    write = to.getFeature(Write.class);
-                }
-                out = new ThrottledOutputStream(write.write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-                new StreamCopier(status, status).transfer(in, out);
+            in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(status), new DisabledConnectionCallback(), new DisabledPasswordCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+            Write write = to.getFeature(MultipartWrite.class);
+            if(null == write) {
+                // Fallback if multipart write is not available
+                write = to.getFeature(Write.class);
             }
-            finally {
-                new DefaultStreamCloser().close(in);
-                new DefaultStreamCloser().close(out);
-            }
+            out = new ThrottledOutputStream(write.write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+            new StreamCopier(status, status).transfer(in, out);
         }
     }
 

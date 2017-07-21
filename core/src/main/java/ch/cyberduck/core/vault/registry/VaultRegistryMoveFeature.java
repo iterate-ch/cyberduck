@@ -52,7 +52,8 @@ public class VaultRegistryMoveFeature implements Move {
                 log.debug(String.format("Move %s to %s inside vault %s", source, target, vault));
             }
             // Move files inside vault
-            vault.getFeature(session, Move.class, proxy).move(source, target, exists, callback);
+            final Move move = vault.getFeature(session, Move.class, proxy);
+            move.move(source, target, exists, callback);
         }
         else {
             // Move files from or into vault requires to pass through encryption features

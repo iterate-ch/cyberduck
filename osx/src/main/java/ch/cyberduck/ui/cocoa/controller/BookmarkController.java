@@ -511,7 +511,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Override
     @Action
     public void helpButtonClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help(bookmark.getProtocol()));
+        BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help(bookmark.getProtocol()));
     }
 
     /**

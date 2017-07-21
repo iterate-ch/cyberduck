@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.aquaticprime.DisabledLicenseVerifierCallback;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -49,17 +50,16 @@ public final class TerminalHelpPrinter {
         protocols.append("Supported protocols");
         protocols.append(StringUtils.LF);
         for(Protocol p : ProtocolFactory.get().find()) {
-            protocols.append(p.getProvider()).append("\t").append(p.getDescription());
+            protocols.append(p.getDescription());
             protocols.append(StringUtils.LF);
             switch(p.getType()) {
                 case s3:
                 case googlestorage:
                 case swift:
-                case azure:
-                    protocols.append("\t").append(String.format("%s://<container>/<key>", p.getProvider()));
+                    protocols.append("\t").append(String.format("%s://<container>/<key>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
                     break;
                 default:
-                    protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", p.getProvider()));
+                    protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
                     break;
             }
             protocols.append(StringUtils.LF);
@@ -82,7 +82,7 @@ public final class TerminalHelpPrinter {
                 preferences.getProperty("website.cli"), preferences.getProperty("website.help"), MessageFormat.format(preferences.getProperty("website.bug"), preferences.getProperty("application.version"))));
         final License l = LicenseFactory.find();
         footer.append(StringUtils.LF);
-        if(l.verify()) {
+        if(l.verify(new DisabledLicenseVerifierCallback())) {
             footer.append(l.toString());
         }
         else {

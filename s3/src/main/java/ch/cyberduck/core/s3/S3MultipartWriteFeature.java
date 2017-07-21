@@ -159,7 +159,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                         final TransferStatus status = new TransferStatus().withParameters(parameters).length(len);
                         switch(session.getSignatureVersion()) {
                             case AWS4HMACSHA256:
-                                status.setChecksum(S3MultipartWriteFeature.this.checksum()
+                                status.setChecksum(S3MultipartWriteFeature.this.checksum(file)
                                         .compute(new ByteArrayInputStream(content, off, len), status)
                                 );
                                 break;
@@ -185,7 +185,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                     }
                 }, overall).call());
             }
-            catch(Exception e) {
+            catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
             }
         }
@@ -265,7 +265,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }
 }

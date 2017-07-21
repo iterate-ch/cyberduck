@@ -28,7 +28,8 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
@@ -92,8 +93,8 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     }
 
     @Override
-    public ChecksumCompute checksum() {
-        return new MD5ChecksumCompute();
+    public ChecksumCompute checksum(final Path file) {
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 
     @Override
