@@ -44,7 +44,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -93,25 +92,27 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
-        final AuthApi auth = new AuthApi(client);
         final String login = host.getCredentials().getUsername();
         final String password = host.getCredentials().getPassword();
+        // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
+        switch(host.getProtocol().getAuthorization()) {
+            default:
+                this.login(controller, new LoginRequest()
+                        .authType(host.getProtocol().getAuthorization())
+                        .language("en")
+                        .login(login)
+                        .password(password)
+                );
+                // Save tokens for 401 error response when expired
+                retryHandler.setTokens(login, password);
+                break;
+        }
+    }
+
+    private void login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
         try {
             try {
-                // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
-                switch(host.getProtocol().getAuthorization()) {
-                    default:
-                        final LoginResponse response = auth.login(new LoginRequest()
-                                .authType(host.getProtocol().getAuthorization())
-                                .language("en")
-                                .login(login)
-                                .password(password)
-                        );
-                        this.login(response);
-                        // Save tokens for 401 error response when expired
-                        retryHandler.setTokens(login, password);
-                        break;
-                }
+                token = new AuthApi(client).login(request).getToken();
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService().map(e);
@@ -122,23 +123,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             controller.prompt(host, additional, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     e.getDetail(), new LoginOptions().user(false).keychain(false)
             );
-            try {
-                this.login(auth.login(new LoginRequest()
-                        .authType(host.getProtocol().getAuthorization())
-                        .language("en")
-                        .token(additional.getPassword())
-                ));
-            }
-            catch(ApiException f) {
-                throw new SDSExceptionMappingService().map(f);
-            }
-            // Save tokens for 401 error response when expired
-            retryHandler.setTokens(login, password);
+            this.login(controller, new LoginRequest()
+                    .authType(host.getProtocol().getAuthorization())
+                    .language("en")
+                    .token(additional.getPassword())
+            );
         }
-    }
-
-    private void login(final LoginResponse response) throws ApiException {
-        token = response.getToken();
     }
 
     @Override
