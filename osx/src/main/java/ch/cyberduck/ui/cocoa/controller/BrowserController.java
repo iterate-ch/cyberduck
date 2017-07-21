@@ -1853,9 +1853,7 @@ public class BrowserController extends WindowController
             bookmark.setDefaultPath(selected.getAbsolute());
         }
         else {
-            bookmark = new Host(ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default")),
-                    preferences.getProperty("connection.hostname.default"),
-                    preferences.getInteger("connection.port.default"));
+            bookmark = new Host(ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default")));
         }
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         this.addBookmark(bookmark);
