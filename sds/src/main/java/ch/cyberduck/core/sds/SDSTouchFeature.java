@@ -33,7 +33,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
     private Write<VersionId> writer;
 
     public SDSTouchFeature(final SDSSession session) {
-        this.writer = new SDSWriteFeature(session);
+        this.writer = new SDSDelegatingWriteFeature(session, new SDSWriteFeature(session));
     }
 
     @Override
