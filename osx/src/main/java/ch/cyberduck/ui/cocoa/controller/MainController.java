@@ -441,7 +441,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void helpMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(preferences.getProperty("website.help"));
+        BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
     }
 
     @Action
@@ -612,9 +612,7 @@ public class MainController extends BundleController implements NSApplication.De
                     alert.setDelegate(new ProxyController() {
                         @Action
                         public boolean alertShowHelp(NSAlert alert) {
-                            StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
-                            site.append("/").append("faq");
-                            BrowserLauncherFactory.get().open(site.toString());
+                            BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
                             return true;
                         }
 
