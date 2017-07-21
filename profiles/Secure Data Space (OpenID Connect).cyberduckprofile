@@ -37,5 +37,13 @@
         <true/>
         <key>Authorization</key>
         <string>openid</string>
+        <key>OAuth Authorization Url</key>
+        <string>https://duck.ssp-europe.eu/oauth/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>https://duck.ssp-europe.eu/oauth/token</string>
+        <key>OAuth Client ID</key>
+        <string>chuu9ooceeph3eekie7Uan4dapae4Wae</string>
+        <key>OAuth Client Secret</key>
+        <string>Eif3sei9zaiy</string>
     </dict>
 </plist>
