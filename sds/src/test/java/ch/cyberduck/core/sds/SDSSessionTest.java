@@ -22,13 +22,19 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -38,6 +44,11 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SDSSessionTest {
+
+    @BeforeClass
+    public static void protocol() {
+        ProtocolFactory.get().register(new SDSProtocol());
+    }
 
     @Test
     public void testLogin() throws Exception {
@@ -49,6 +60,33 @@ public class SDSSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        session.close();
+    }
+
+    @Test
+    public void testLoginOAuth() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/Secure Data Space (OpenID Connect).cyberduckprofile"));
+        final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore() {
+            @Override
+            public String getPassword(Scheme scheme, int port, String hostname, String user) {
+                if(user.equals("SDS OAuth2 Access Token")) {
+                    return System.getProperties().getProperty("sds.accesstoken");
+                }
+                if(user.equals("SDS Refresh Token")) {
+                    return System.getProperties().getProperty("sds.refreshtoken");
+                }
+                return null;
+            }
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
         session.close();
     }
