@@ -36,7 +36,7 @@
         <key>Port Configurable</key>
         <true/>
         <key>Authorization</key>
-        <string>openid</string>
+        <string>oauth</string>
         <key>OAuth Authorization Url</key>
         <string>https://duck.ssp-europe.eu/oauth/authorize</string>
         <key>OAuth Token Url</key>
