@@ -56,7 +56,6 @@ public final class TerminalHelpPrinter {
                 case s3:
                 case googlestorage:
                 case swift:
-                case azure:
                     protocols.append("\t").append(String.format("%s://<container>/<key>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
                     break;
                 default:
