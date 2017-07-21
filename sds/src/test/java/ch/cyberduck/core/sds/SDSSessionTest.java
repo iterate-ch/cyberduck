@@ -67,7 +67,7 @@ public class SDSSessionTest {
     @Test
     public void testLoginOAuth() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/Secure Data Space (OpenID Connect).cyberduckprofile"));
+                new Local("../profiles/Secure Data Space (OAuth).cyberduckprofile"));
         final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
@@ -78,10 +78,10 @@ public class SDSSessionTest {
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                if(user.equals("SDS OAuth2 Access Token")) {
+                if(user.equals("Secure Data Space (post@iterate.ch) OAuth2 Access Token")) {
                     return System.getProperties().getProperty("sds.accesstoken");
                 }
-                if(user.equals("SDS Refresh Token")) {
+                if(user.equals("Secure Data Space (post@iterate.ch) OAuth2 Refresh Token")) {
                     return System.getProperties().getProperty("sds.refreshtoken");
                 }
                 return null;
