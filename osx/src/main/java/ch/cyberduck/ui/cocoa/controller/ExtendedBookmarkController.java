@@ -38,6 +38,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -315,8 +316,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     @Override
     @Action
     public void helpButtonClicked(final ID sender) {
-        final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
-        site.append("/howto/bookmarks");
-        BrowserLauncherFactory.get().open(site.toString());
+        BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
     }
 }

@@ -2473,9 +2473,7 @@ public class InfoController extends ToolbarWindowController {
     @Override
     @Action
     public void helpButtonClicked(final ID sender) {
-        final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
-        site.append("/howto/info");
-        BrowserLauncherFactory.get().open(site.toString());
+        BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
     }
 
     private enum AclColumns {

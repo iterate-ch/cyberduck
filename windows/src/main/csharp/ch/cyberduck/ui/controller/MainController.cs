@@ -284,7 +284,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 LocaleFactory.localizedString("This registration key does not appear to be valid.",
                                     "License"), null,
                                 String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), false,
-                                PreferencesFactory.get().getProperty("website.help") + "/faq", delegate { });
+                                ProviderHelpServiceFactory.get().help(), delegate { });
                         }
                     }
                     else if ("cyberduckprofile".Equals(f.getExtension()))
