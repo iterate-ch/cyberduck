@@ -20,7 +20,6 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.DefaultPathKindDetector;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LocalFactory;
@@ -28,6 +27,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -100,6 +100,6 @@ public class DownloadController extends AlertController {
 
     @Override
     protected String help() {
-        return new DefaultProviderHelpService().help("/howto/download");
+        return ProviderHelpServiceFactory.get().help();
     }
 }

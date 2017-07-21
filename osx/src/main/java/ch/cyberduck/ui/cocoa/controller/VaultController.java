@@ -26,10 +26,10 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordStrengthValidator;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -134,7 +134,7 @@ public class VaultController extends FolderController {
 
     @Override
     protected String help() {
-        return new DefaultProviderHelpService().help("/howto/cryptomator");
+        return ProviderHelpServiceFactory.get().help();
     }
 
     @Override

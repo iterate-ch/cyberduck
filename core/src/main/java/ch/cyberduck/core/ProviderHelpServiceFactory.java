@@ -1,8 +1,8 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,13 +13,15 @@ package ch.cyberduck.core;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
  */
 
-public interface ProviderHelpService {
-    String help();
-    String help(Protocol provider);
-    String help(Scheme scheme);
+public class ProviderHelpServiceFactory extends Factory<ProviderHelpService> {
+
+    public ProviderHelpServiceFactory() {
+        super("factory.providerhelpservice.class");
+    }
+
+    public static ProviderHelpService get() {
+        return new ProviderHelpServiceFactory().create();
+    }
 }
