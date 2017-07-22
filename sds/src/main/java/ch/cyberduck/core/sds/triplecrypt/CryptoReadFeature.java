@@ -16,14 +16,16 @@ package ch.cyberduck.core.sds.triplecrypt;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
@@ -36,10 +38,15 @@ import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.swagger.ExtendedNodesApi;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
+
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 
 import eu.ssp_europe.sds.crypto.Crypto;
 import eu.ssp_europe.sds.crypto.CryptoException;
@@ -48,6 +55,7 @@ import eu.ssp_europe.sds.crypto.model.PlainFileKey;
 import eu.ssp_europe.sds.crypto.model.UserPrivateKey;
 
 public class CryptoReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(CryptoReadFeature.class);
 
     private final SDSSession session;
     private final SDSReadFeature proxy;
@@ -67,19 +75,31 @@ public class CryptoReadFeature implements Read {
             final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(session.getToken());
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
             privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
-            final Credentials passphrase = new Credentials();
+            final Host bookmark = session.getHost();
+            final Path room = new PathContainerService().getContainer(file);
+            final VaultCredentials passphrase = new VaultCredentials(
+                    PasswordStoreFactory.get().getPassword(String.format("Triple-Crypt Passphrase %s", bookmark.getHostname()),
+                            new DefaultUrlProvider(bookmark).toUrl(room).find(DescriptiveUrl.Type.provider).getUrl())) {
+            };
             passwordCallback.prompt(passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
-                    LocaleFactory.localizedString("You must enter your encryption password to be able to decrypt this file.", "Credentials"),
+                    MessageFormat.format(LocaleFactory.localizedString("Enter your encryption password to decrypt {0}.", "Credentials"), file.getName()),
                     new LoginOptions()
                             .user(false)
                             .anonymous(false)
-                            .icon(session.getHost().getProtocol().disk())
+                            .icon(bookmark.getProtocol().disk())
             );
             if(null == passphrase.getPassword()) {
                 throw new LoginCanceledException();
             }
             final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
-            return new CryptoInputStream(proxy.read(file, status, connectionCallback, new DisabledPasswordCallback()),
+            if(passphrase.isSaved()) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Save passphrase for %s", room));
+                }
+                PasswordStoreFactory.get().addPassword(String.format("Triple-Crypt Passphrase %s", bookmark.getHostname()),
+                        new DefaultUrlProvider(bookmark).toUrl(room).find(DescriptiveUrl.Type.provider).getUrl(), passphrase.getPassword());
+            }
+            return new CryptoInputStream(proxy.read(file, status, connectionCallback, passwordCallback),
                     Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()),
                     status.getLength() + status.getOffset());
         }
