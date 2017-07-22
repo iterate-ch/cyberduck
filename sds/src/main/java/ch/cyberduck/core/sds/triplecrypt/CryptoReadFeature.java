@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 
 import eu.ssp_europe.sds.crypto.Crypto;
 import eu.ssp_europe.sds.crypto.CryptoException;
@@ -81,7 +82,7 @@ public class CryptoReadFeature implements Read {
                             new DefaultUrlProvider(bookmark).toUrl(room).find(DescriptiveUrl.Type.provider).getUrl())) {
             };
             passwordCallback.prompt(passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
-                    LocaleFactory.localizedString("You must enter your encryption password to be able to decrypt this file.", "Credentials"),
+                    MessageFormat.format(LocaleFactory.localizedString("Enter your encryption password to decrypt {0}.", "Credentials"), file.getName()),
                     new LoginOptions()
                             .user(false)
                             .anonymous(false)
