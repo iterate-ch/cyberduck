@@ -78,7 +78,7 @@ public class CryptoReadFeature implements Read {
             final Host bookmark = session.getHost();
             final Path room = new PathContainerService().getContainer(file);
             final VaultCredentials passphrase = new VaultCredentials(
-                    PasswordStoreFactory.get().getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+                    PasswordStoreFactory.get().getPassword(String.format("Triple-Crypt Passphrase %s", bookmark.getHostname()),
                             new DefaultUrlProvider(bookmark).toUrl(room).find(DescriptiveUrl.Type.provider).getUrl())) {
             };
             passwordCallback.prompt(passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
@@ -96,7 +96,7 @@ public class CryptoReadFeature implements Read {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save passphrase for %s", room));
                 }
-                PasswordStoreFactory.get().addPassword(String.format("Triple Crypt Passphrase %s", bookmark.getHostname()),
+                PasswordStoreFactory.get().addPassword(String.format("Triple-Crypt Passphrase %s", bookmark.getHostname()),
                         new DefaultUrlProvider(bookmark).toUrl(room).find(DescriptiveUrl.Type.provider).getUrl(), passphrase.getPassword());
             }
             return new CryptoInputStream(proxy.read(file, status, connectionCallback, passwordCallback),
