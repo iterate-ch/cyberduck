@@ -25,6 +25,11 @@ public class SDSProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getName() {
+        return "SDS";
+    }
+
+    @Override
     public String getDescription() {
         return "SSP Secure Data Space";
     }
