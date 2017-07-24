@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -32,32 +31,32 @@ import java.util.Collections;
 public class SDSDelegatingMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SDSDelegatingMoveFeature.class);
 
-    private final Session<?> session;
+    private final SDSSession session;
     private final Move proxy;
 
     private final PathContainerService containerService
             = new PathContainerService();
 
-    public SDSDelegatingMoveFeature(final Session<?> session, final Move proxy) {
+    public SDSDelegatingMoveFeature(final SDSSession session, final Move proxy) {
         this.session = session;
         this.proxy = proxy;
     }
 
     @Override
-    public void move(final Path source, final Path target, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
             if(srcContainer.equals(targetContainer)) {
-                proxy.move(source, target, exists, callback);
+                proxy.move(source, target, status, callback);
             }
             else {
-                // Moving from or into an encrypted room
-                final Copy copy = session.getFeature(Copy.class);
+                // Moving into an encrypted room
+                final Copy copy = new SDSCopyFeature(session);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
                 }
-                copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()));
+                copy.copy(source, target, status.length(source.attributes().getSize()));
                 // Delete source file after copy is complete
                 final Delete delete = session.getFeature(Delete.class);
                 if(delete.isSupported(source)) {
@@ -66,7 +65,7 @@ public class SDSDelegatingMoveFeature implements Move {
             }
         }
         else {
-            proxy.move(source, target, exists, callback);
+            proxy.move(source, target, status, callback);
         }
     }
 
