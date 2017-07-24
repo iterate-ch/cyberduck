@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class MoveWorker extends Worker<List<Path>> {
             }
             final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), source, target);
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                move.move(r.getKey(), r.getValue(), exists, new Delete.Callback() {
+                move.move(r.getKey(), r.getValue(), new TransferStatus().exists(exists), new Delete.Callback() {
                     @Override
                     public void delete(final Path file) {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),

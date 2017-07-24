@@ -45,7 +45,7 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path source, final Path target, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
         if(registry.find(session, source).equals(registry.find(session, target))) {
             final Vault vault = registry.find(session, source);
             if(log.isDebugEnabled()) {
@@ -53,7 +53,7 @@ public class VaultRegistryMoveFeature implements Move {
             }
             // Move files inside vault
             final Move move = vault.getFeature(session, Move.class, proxy);
-            move.move(source, target, exists, callback);
+            move.move(source, target, status, callback);
         }
         else {
             // Move files from or into vault requires to pass through encryption features

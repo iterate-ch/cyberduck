@@ -40,7 +40,7 @@ public class AzureMoveFeatureTest {
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureMoveFeature(session, null).move(test, target, false, new Delete.DisabledCallback());
+        new AzureMoveFeature(session, null).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(target));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
