@@ -81,14 +81,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         @Override
         public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
             request.addHeader(HttpHeaders.AUTHORIZATION,
-                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getClientId(), host.getProtocol().getClientSecret()).getBytes("UTF-8"), false)));
+                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
         }
     }).build(),
-            host.getProtocol().getOAuthTokenUrl(),
-            host.getProtocol().getOAuthAuthorizationUrl(),
-            host.getProtocol().getClientId(),
-            host.getProtocol().getClientSecret(),
-            host.getProtocol().getScopes()).withRedirectUri(PreferencesFactory.get().getProperty("sds.oauth.redirecturi"));
+            host.getProtocol()).withRedirectUri(PreferencesFactory.get().getProperty("sds.oauth.redirecturi"));
 
     private String token = StringUtils.EMPTY;
 

@@ -42,16 +42,13 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
-import java.util.Collections;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
 
 public class DriveSession extends HttpSession<Drive> {
 
@@ -65,12 +62,8 @@ public class DriveSession extends HttpSession<Drive> {
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
-            GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-            host.getProtocol().getClientId(),
-            host.getProtocol().getClientSecret(),
-            Collections.singletonList(DriveScopes.DRIVE))
-            .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
     private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
             authorizationService);
