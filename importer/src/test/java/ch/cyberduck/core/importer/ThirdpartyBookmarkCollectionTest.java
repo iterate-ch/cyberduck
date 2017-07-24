@@ -9,7 +9,7 @@ import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
@@ -25,7 +25,7 @@ public class ThirdpartyBookmarkCollectionTest {
     public void testLoad() throws Exception {
         final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(source);
-        IOUtils.write(RandomStringUtils.random(1000), source.getOutputStream(false), Charset.defaultCharset());
+        IOUtils.write(new RandomStringGenerator.Builder().build().generate(1000), source.getOutputStream(false), Charset.defaultCharset());
         final AtomicBoolean r = new AtomicBoolean();
         final ThirdpartyBookmarkCollection c = new ThirdpartyBookmarkCollection() {
             @Override
@@ -52,7 +52,7 @@ public class ThirdpartyBookmarkCollectionTest {
         c.load();
         assertFalse(r.get());
         // Modify bookmarks file
-//        IOUtils.write(RandomStringUtils.random(1), source.getOutputStream(true));
+//        IOUtils.write(new RandomStringGenerator.Builder().build().generate(1), source.getOutputStream(true));
 //        c.load();
 //        assertTrue(r.get());
         AbstractHostCollection bookmarks = new AbstractHostCollection() {
