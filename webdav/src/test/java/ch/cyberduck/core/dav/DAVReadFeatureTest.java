@@ -72,7 +72,7 @@ public class DAVReadFeatureTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path test = new Path("/trunk/LICENSE", EnumSet.of(Path.Type.file));
+        final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         // Unknown length in status
         final TransferStatus status = new TransferStatus() {
             @Override
@@ -97,7 +97,7 @@ public class DAVReadFeatureTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path test = new Path("/trunk/LICENSE", EnumSet.of(Path.Type.file));
+        final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         // Unknown length in status
         final TransferStatus status = new TransferStatus();
         // Read a single byte
@@ -199,7 +199,7 @@ public class DAVReadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        final Path test = new Path("/trunk/LICENSE", EnumSet.of(Path.Type.file));
+        final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         final CountingInputStream in = new CountingInputStream(new DAVReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
