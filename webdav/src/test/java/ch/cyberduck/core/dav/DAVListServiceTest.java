@@ -93,7 +93,7 @@ public class DAVListServiceTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk/LICENSE", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         session.close();
     }

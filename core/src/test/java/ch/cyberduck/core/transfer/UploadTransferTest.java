@@ -22,7 +22,7 @@ import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 
 import java.io.OutputStream;
@@ -280,7 +280,7 @@ public class UploadTransferTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer", name);
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
-        final byte[] bytes = RandomStringUtils.random(1000).getBytes();
+        final byte[] bytes = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
         IOUtils.write(bytes, out);
         out.close();
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "transfer") {
