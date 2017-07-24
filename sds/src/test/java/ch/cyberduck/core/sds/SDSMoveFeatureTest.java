@@ -121,7 +121,7 @@ public class SDSMoveFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
+        new SDSDelegatingMoveFeature(session, new SDSMoveFeature(session)).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         final byte[] compare = new byte[content.length];
@@ -158,7 +158,7 @@ public class SDSMoveFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
+        new SDSDelegatingMoveFeature(session, new SDSMoveFeature(session)).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         final byte[] compare = new byte[content.length];
