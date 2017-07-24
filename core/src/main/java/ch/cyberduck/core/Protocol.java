@@ -277,10 +277,13 @@ public interface Protocol extends Comparable<Protocol> {
     String getOAuthTokenUrl();
 
     /**
-     * @return Requested scopes
+     * @return OAuth 2 Requested scopes
      */
     List<String> getOAuthScopes();
 
+    /**
+     * @return OAuth 2 Redirect URI
+     */
     String getOAuthRedirectUrl();
 
     /**
