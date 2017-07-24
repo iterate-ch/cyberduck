@@ -46,7 +46,7 @@ public class SDSProtocol extends AbstractProtocol {
 
     @Override
     public String getAuthorization() {
-        return "sql";
+        return Authorization.sql.name();
     }
 
     @Override
@@ -57,5 +57,12 @@ public class SDSProtocol extends AbstractProtocol {
     @Override
     public String getPrefix() {
         return String.format("%s.%s", SDSProtocol.class.getPackage().getName(), StringUtils.upperCase(this.getType().name()));
+    }
+
+    public enum Authorization {
+        sql,
+        radius,
+        ad,
+        oauth
     }
 }

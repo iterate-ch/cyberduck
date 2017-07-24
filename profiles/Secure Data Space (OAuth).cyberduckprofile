@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>sds</string>
+        <key>Vendor</key>
+        <string>SSP</string>
+        <key>Description</key>
+        <string>Secure Data Space</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Default Port</key>
+        <string>443</string>
+        <key>Username Placeholder</key>
+        <string>SDS Username</string>
+        <key>Password Placeholder</key>
+        <string>SDS Password</string>
+        <key>Hostname Configurable</key>
+        <true/>
+        <key>Port Configurable</key>
+        <true/>
+        <key>Authorization</key>
+        <string>oauth</string>
+        <key>OAuth Authorization Url</key>
+        <string>https://duck.ssp-europe.eu/oauth/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>https://duck.ssp-europe.eu/oauth/token</string>
+        <key>OAuth Client ID</key>
+        <string>chuu9ooceeph3eekie7Uan4dapae4Wae</string>
+        <key>OAuth Client Secret</key>
+        <string>Eif3sei9zaiy</string>
+    </dict>
+</plist>
