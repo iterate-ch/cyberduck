@@ -15,9 +15,7 @@ package ch.cyberduck.core.sds.provider;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
-
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.glassfish.jersey.client.spi.Connector;
 import org.glassfish.jersey.client.spi.ConnectorProvider;
 
@@ -26,16 +24,14 @@ import javax.ws.rs.core.Configuration;
 
 public class HttpComponentsProvider implements ConnectorProvider {
 
-    private final HttpConnectionPoolBuilder builder;
-    private final TranscriptListener transcript;
+    private final CloseableHttpClient apache;
 
-    public HttpComponentsProvider(final HttpConnectionPoolBuilder builder, final TranscriptListener transcript) {
-        this.builder = builder;
-        this.transcript = transcript;
+    public HttpComponentsProvider(final CloseableHttpClient apache) {
+        this.apache = apache;
     }
 
     @Override
-    public Connector getConnector(final Client client, final Configuration runtimeConfig) {
-        return new HttpComponentsConnector(builder, transcript, client, runtimeConfig);
+    public Connector getConnector(final Client client, final Configuration runtime) {
+        return new HttpComponentsConnector(apache, runtime);
     }
 }
