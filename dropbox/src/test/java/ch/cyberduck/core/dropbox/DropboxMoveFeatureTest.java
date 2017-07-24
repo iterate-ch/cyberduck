@@ -74,7 +74,7 @@ public class DropboxMoveFeatureTest {
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
-        new DropboxMoveFeature(session).move(file, target, false, new Delete.DisabledCallback());
+        new DropboxMoveFeature(session).move(file, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

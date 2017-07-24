@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
@@ -39,7 +40,7 @@ public class DAVMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl();
             if(file.isDirectory()) {

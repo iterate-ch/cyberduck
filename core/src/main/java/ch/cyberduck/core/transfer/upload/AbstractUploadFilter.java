@@ -322,7 +322,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Rename file %s to %s", file, status.getDisplayname().remote));
                     }
-                    move.move(file, status.getDisplayname().remote, status.isExists(), new Delete.DisabledCallback());
+                    move.move(file, status.getDisplayname().remote, status, new Delete.DisabledCallback());
                 }
             }
         }

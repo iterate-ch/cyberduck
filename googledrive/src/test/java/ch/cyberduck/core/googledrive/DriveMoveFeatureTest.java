@@ -76,7 +76,7 @@ public class DriveMoveFeatureTest {
         final Path folder = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path target = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DriveMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
+        new DriveMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         final Find find = new DefaultFindFeature(session);
         assertFalse(find.find(test));
         assertTrue(find.find(target));
@@ -117,7 +117,7 @@ public class DriveMoveFeatureTest {
         final Path sourceFile = new Path(sourceDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(sourceFile, new TransferStatus());
         final Path targetFile = new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file));
-        new DriveMoveFeature(session).move(sourceDirectory, targetDirectory, false, new Delete.DisabledCallback());
+        new DriveMoveFeature(session).move(sourceDirectory, targetDirectory, new TransferStatus(), new Delete.DisabledCallback());
         final Find find = new DefaultFindFeature(session);
         assertFalse(find.find(sourceDirectory));
         assertTrue(find.find(targetDirectory));

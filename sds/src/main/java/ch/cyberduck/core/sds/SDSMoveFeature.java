@@ -28,6 +28,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.sds.swagger.MoveNodesRequest;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,9 +45,9 @@ public class SDSMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path source, final Path target, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
         try {
-            if(exists) {
+            if(status.isExists()) {
                 new SDSDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
             if(!source.getParent().equals(target.getParent())) {
