@@ -25,8 +25,8 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.jets3t.service.model.S3Object;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -59,7 +59,7 @@ public class S3MultipartUploadServiceTest {
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final String random = RandomStringUtils.random(1000);
+        final String random = new RandomStringGenerator.Builder().build().generate(1000);
         IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
         final TransferStatus status = new TransferStatus();
         status.setLength((long) random.getBytes().length);
@@ -95,7 +95,7 @@ public class S3MultipartUploadServiceTest {
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final String random = RandomStringUtils.random(1000);
+        final String random = new RandomStringGenerator.Builder().build().generate(1000);
         IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
         final TransferStatus status = new TransferStatus();
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);

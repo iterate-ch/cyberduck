@@ -21,7 +21,7 @@ import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -148,7 +148,7 @@ public class S3WriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(5 * 1024 * 1024).getBytes("UTF-8");
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         try {
             feature.write(file, status, new DisabledConnectionCallback());
@@ -175,7 +175,7 @@ public class S3WriteFeatureTest {
         final S3WriteFeature feature = new S3WriteFeature(session);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(5 * 1024 * 1024).getBytes("UTF-8");
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));

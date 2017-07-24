@@ -18,6 +18,7 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLocale;
@@ -1285,6 +1286,7 @@ public abstract class Preferences {
         defaults.put("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
         defaults.put("factory.vault.class", DisabledVault.class.getName());
         defaults.put("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
+        defaults.put("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
     }
 
     /**
