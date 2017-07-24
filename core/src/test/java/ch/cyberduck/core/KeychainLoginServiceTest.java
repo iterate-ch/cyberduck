@@ -90,9 +90,10 @@ public class KeychainLoginServiceTest {
         final AtomicBoolean select = new AtomicBoolean(false);
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options)
+            public Credentials prompt(String username, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 fail();
+                return null;
             }
 
             @Override
@@ -128,9 +129,10 @@ public class KeychainLoginServiceTest {
         final AtomicBoolean keychain = new AtomicBoolean(false);
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options)
+            public Credentials prompt(String username, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 fail();
+                return null;
             }
         }, new DisabledPasswordStore() {
             @Override

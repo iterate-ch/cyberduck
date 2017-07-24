@@ -59,10 +59,9 @@ public class DriveSessionTest {
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 if("https://accounts.google.com/o/oauth2/auth?client_id=996125414232.apps.googleusercontent.com&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/drive".equals(reason)) {
-                    credentials.setPassword("t");
-                    return;
+                    return new Credentials(username, "t");
                 }
                 throw new LoginCanceledException();
             }
@@ -80,8 +79,9 @@ public class DriveSessionTest {
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 fail(reason);
+                return null;
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore() {

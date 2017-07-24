@@ -291,11 +291,11 @@ public class SFTPSession extends Session<SSHClient> {
         // Check if authentication is partial
         if(!client.isAuthenticated()) {
             if(client.getUserAuth().hadPartialSuccess()) {
-                final Credentials additional = new HostCredentials(host, credentials.getUsername());
-                prompt.prompt(host, additional,
+                final Credentials additional = prompt.prompt(credentials.getUsername(),
                         LocaleFactory.localizedString("Partial authentication success", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().user(false).keychain(false).publickey(false));
+                        new LoginOptions(host.getProtocol()).user(false).keychain(false).publickey(false)
+                                .usernamePlaceholder(credentials.getUsername()));
                 if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
                     throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
                             "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));

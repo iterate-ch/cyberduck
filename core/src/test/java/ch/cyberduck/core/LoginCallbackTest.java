@@ -12,8 +12,8 @@ public class LoginCallbackTest {
     public void testCheckFTP() throws Exception {
         LoginCallback c = new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(new TestProtocol(), bookmark.getProtocol());
+            public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                assertEquals("username", username);
                 assertEquals("t", title);
                 assertEquals("r", reason);
                 assertTrue(options.keychain);
@@ -26,15 +26,15 @@ public class LoginCallbackTest {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.prompt(new Host(new TestProtocol()), new Credentials(), "t", "r", options);
+        c.prompt("username", "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testCheckSFTP() throws Exception {
         LoginCallback c = new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(new TestProtocol(), bookmark.getProtocol());
+            public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                assertEquals("username", username);
                 assertEquals("t", title);
                 assertEquals("r", reason);
                 assertTrue(options.keychain);
@@ -47,17 +47,15 @@ public class LoginCallbackTest {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.prompt(new Host(new TestProtocol()), new Credentials(), "t", "r", options);
+        c.prompt("username", "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testFail() throws Exception {
-        final Credentials user = new Credentials("t", "p");
         LoginCallback c = new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(new TestProtocol(), bookmark.getProtocol());
-                assertEquals(user, credentials);
+            public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                assertEquals("username", username);
                 assertEquals("r", reason);
                 assertEquals("t", title);
                 assertTrue(options.keychain);
@@ -66,6 +64,6 @@ public class LoginCallbackTest {
                 throw new LoginCanceledException();
             }
         };
-        c.prompt(new Host(new TestProtocol()), user, "t", "r", new LoginOptions(new TestProtocol()));
+        c.prompt("username", "t", "r", new LoginOptions(new TestProtocol()));
     }
 }

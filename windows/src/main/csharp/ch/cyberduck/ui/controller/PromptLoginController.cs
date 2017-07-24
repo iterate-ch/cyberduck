@@ -41,7 +41,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly HostPasswordStore keychain = PasswordStoreFactory.get();
 
         private Host _bookmark;
-        private Credentials _credentials;
+        private Credentials _credentials = new Credentials();
         private LoginOptions _options;
 
         public PromptLoginController(WindowController c)
@@ -77,19 +77,18 @@ namespace Ch.Cyberduck.Ui.Controller
             //Proceed nevertheless.
         }
 
-        public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options)
+        public Credentials prompt(Host bookmark, String title, String reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
             InitEventHandlers();
 
             _bookmark = bookmark;
-            _credentials = credentials;
             _options = options;
 
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
-            View.Username = credentials.getUsername();
-            View.SavePasswordState = credentials.isSaved();
+            View.Username = _credentials.getUsername();
+            View.SavePasswordState = _credentials.isSaved();
 
             if(_options.icon() != null) {
                 View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
@@ -109,6 +108,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             };
             _browser.Invoke(d);
+            return _credentials;
         }
 
         public Local select(Local identity)

@@ -32,6 +32,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -109,8 +110,8 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).load(session, new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword(passphrase);
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials(passphrase);
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
@@ -144,8 +145,8 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).load(session, new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword(passphrase);
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials(passphrase);
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));

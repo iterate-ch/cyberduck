@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
@@ -49,12 +48,7 @@ public class DriveUploadFeatureTest {
     public void testWrite() throws Exception {
         final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {

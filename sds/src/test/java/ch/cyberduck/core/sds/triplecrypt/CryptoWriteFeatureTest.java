@@ -44,6 +44,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -89,8 +90,8 @@ public class CryptoWriteFeatureTest {
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new PasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("ahbic3Ae");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("ahbic3Ae");
             }
         });
         IOUtils.readFully(stream, compare);
@@ -127,8 +128,8 @@ public class CryptoWriteFeatureTest {
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new PasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("ahbic3Ae");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("ahbic3Ae");
             }
         });
         IOUtils.readFully(stream, compare);

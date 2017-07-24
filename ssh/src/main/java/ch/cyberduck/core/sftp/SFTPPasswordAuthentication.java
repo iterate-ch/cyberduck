@@ -73,9 +73,10 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
                     try {
                         final StringAppender message = new StringAppender().append(prompt);
                         final Credentials credentials = bookmark.getCredentials();
-                        final Credentials changed = new Credentials(credentials.getUsername());
-                        callback.prompt(bookmark, changed, LocaleFactory.localizedString("Change Password", "Credentials"), message.toString(),
-                                new LoginOptions(bookmark.getProtocol()).anonymous(false).user(false).publickey(false));
+                        final Credentials changed;
+                        changed = callback.prompt(credentials.getUsername(), LocaleFactory.localizedString("Change Password", "Credentials"), message.toString(),
+                                new LoginOptions(bookmark.getProtocol()).anonymous(false).user(false).publickey(false)
+                                        .usernamePlaceholder(credentials.getUsername()));
                         return changed.getPassword().toCharArray();
                     }
                     catch(LoginCanceledException e) {

@@ -208,11 +208,12 @@ public class S3VersioningFeature implements Versioning {
      */
     @Override
     public Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
-        final Credentials credentials = new MultifactorCredentials();
         // Prompt for multi factor authentication credentials.
-        controller.prompt(session.getHost(), credentials,
+        final Credentials credentials = controller.prompt(PreferencesFactory.get().getProperty("s3.mfa.serialnumber"),
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions());
+                LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions()
+                        .usernamePlaceholder(LocaleFactory.localizedString("MFA Serial Number", "S3"))
+                        .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3")));
 
         PreferencesFactory.get().setProperty("s3.mfa.serialnumber", credentials.getUsername());
         return credentials;

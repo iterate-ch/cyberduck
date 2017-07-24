@@ -16,29 +16,10 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class VaultCredentials extends Credentials {
 
-    public VaultCredentials() {
-        // Disable save in keychain by default
-        this.setSaved(PreferencesFactory.get().getBoolean("vault.keychain"));
-    }
-
     public VaultCredentials(final String password) {
         super(null, password);
-        // Disable save in keychain by default
-        this.setSaved(PreferencesFactory.get().getBoolean("vault.keychain"));
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
-    }
-
-    @Override
-    public String getPasswordPlaceholder() {
-        return LocaleFactory.localizedString("Passphrase", "Cryptomator");
     }
 }

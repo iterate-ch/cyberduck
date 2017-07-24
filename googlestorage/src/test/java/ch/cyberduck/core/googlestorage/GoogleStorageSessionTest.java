@@ -149,8 +149,8 @@ public class GoogleStorageSessionTest {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials,
-                               final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final String username,
+                                      final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 Assert.assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
             }
@@ -200,10 +200,9 @@ public class GoogleStorageSessionTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 // OAuth2
-                credentials.setUsername("");
-                credentials.setPassword("");
+                return new Credentials("", "");
             }
         }, new DisabledCancelCallback(), PathCache.empty());
         session.close();

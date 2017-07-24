@@ -34,10 +34,11 @@ public class PromptPasswordCallback implements PasswordCallback {
     }
 
     @Override
-    public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         if(suppressed) {
             throw new LoginCanceledException();
         }
+        final Credentials credentials = new Credentials();
         final PasswordController controller = new PasswordController(credentials, title, reason, options);
         final int option = controller.beginSheet(parent);
         if(option == SheetCallback.CANCEL_OPTION) {
@@ -46,5 +47,6 @@ public class PromptPasswordCallback implements PasswordCallback {
             }
             throw new LoginCanceledException();
         }
+        return credentials;
     }
 }

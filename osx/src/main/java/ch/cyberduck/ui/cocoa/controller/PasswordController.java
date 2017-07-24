@@ -100,7 +100,7 @@ public class PasswordController extends AlertController {
             view.addSubview(keychainCheckbox);
         }
         inputField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
-        inputField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
+        inputField.cell().setPlaceholderString(options.getPasswordPlaceholder());
         inputField.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(inputField);
         return view;

@@ -114,8 +114,8 @@ public class SFTPSessionTest {
         final AtomicBoolean fail = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials,
-                               String title, String reason, LoginOptions options)
+            public Credentials prompt(String username,
+                                      String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login failed", title);
 //                assertEquals("Too many authentication failures for jenkins. Please contact your web hosting service provider for assistance.", reason);
@@ -183,12 +183,9 @@ public class SFTPSessionTest {
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials,
-                               String title, String reason, LoginOptions options)
-                    throws LoginCanceledException {
+            public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login failed", title);
                 assertEquals("Login test.cyberduck.ch – SFTP with username and password. Please contact your web hosting service provider for assistance.", reason);
-                credentials.setUsername("u");
                 change.set(true);
                 throw new LoginCanceledException();
             }
@@ -210,12 +207,11 @@ public class SFTPSessionTest {
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials,
-                               String title, String reason, LoginOptions options)
+            public Credentials prompt(String username,
+                                      String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
                 assertEquals("Login test.cyberduck.ch – SFTP with username and password. No login credentials could be found in the Keychain.", reason);
-                credentials.setUsername("u");
                 change.set(true);
                 throw new LoginCanceledException();
             }
@@ -249,19 +245,18 @@ public class SFTPSessionTest {
             }
 
             @Override
-            public void prompt(Host bookmark, Credentials credentials,
-                               String title, String reason, LoginOptions options)
+            public Credentials prompt(String username, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 if(change.get()) {
                     assertEquals("Change of username or service not allowed: (u1,ssh-connection) -> (jenkins,ssh-connection). Please contact your web hosting service provider for assistance.", reason);
+                    return null;
                 }
                 else {
                     assertEquals("Login failed", title);
 //                    assertEquals("Too many authentication failures for u1. Please contact your web hosting service provider for assistance.", reason);
 //                    assertEquals("Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
-                    credentials.setUsername(System.getProperties().getProperty("sftp.user"));
-                    credentials.setPassword(System.getProperties().getProperty("sftp.password"));
                     change.set(true);
+                    return new Credentials(System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password"));
                 }
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),

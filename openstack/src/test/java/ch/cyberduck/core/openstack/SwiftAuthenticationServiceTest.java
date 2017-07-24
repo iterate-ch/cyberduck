@@ -110,9 +110,8 @@ public class SwiftAuthenticationServiceTest {
                 s.getRequest(host,
                         new DisabledLoginCallback() {
                             @Override
-                            public void prompt(final Host bookmark, final Credentials credentials,
-                                               final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                                credentials.setUsername("");
+                            public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                                return new Credentials("");
                             }
                         }).iterator().next().getVersion());
         assertEquals(":u", host.getCredentials().getUsername());
@@ -166,15 +165,16 @@ public class SwiftAuthenticationServiceTest {
         ));
         s.getRequest(host, new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                credentials.setUsername("");
+            public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                return new Credentials("");
             }
         });
         assertEquals(":u", host.getCredentials().getUsername());
         s.getRequest(host, new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 fail();
+                return null;
             }
         });
     }

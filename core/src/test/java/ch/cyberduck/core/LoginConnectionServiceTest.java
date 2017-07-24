@@ -97,10 +97,10 @@ public class LoginConnectionServiceTest {
             }
 
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                // New password entered
-                credentials.setPassword("b");
+            public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 prompt.set(true);
+                // New password entered
+                return new Credentials(username, "b");
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore() {
             @Override

@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds.triplecrypt;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -29,6 +30,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.SDSExceptionMappingService;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSReadFeature;
@@ -40,8 +42,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.swagger.ExtendedNodesApi;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.VaultCredentials;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -77,27 +79,31 @@ public class CryptoReadFeature implements Read {
             privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
             final Host bookmark = session.getHost();
             final Path room = new PathContainerService().getContainer(file);
-            final VaultCredentials passphrase = new VaultCredentials(
-                    PasswordStoreFactory.get().getPassword(String.format("Triple-Crypt Passphrase %s", bookmark.getHostname()),
-                            new DefaultUrlProvider(bookmark).toUrl(room).find(DescriptiveUrl.Type.provider).getUrl())) {
-            };
-            passwordCallback.prompt(passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
-                    MessageFormat.format(LocaleFactory.localizedString("Enter your encryption password to decrypt {0}.", "Credentials"), file.getName()),
-                    new LoginOptions()
-                            .user(false)
-                            .anonymous(false)
-                            .icon(bookmark.getProtocol().disk())
-            );
-            if(null == passphrase.getPassword()) {
-                throw new LoginCanceledException();
+            String passphrase = PasswordStoreFactory.get().getPassword(String.format("Triple-Crypt Passphrase %s", bookmark.getHostname()),
+                    new DefaultUrlProvider(bookmark).toUrl(room).find(DescriptiveUrl.Type.provider).getUrl());
+            boolean saved = PreferencesFactory.get().getBoolean("vault.keychain");
+            if(StringUtils.isBlank(passphrase)) {
+                final Credentials credentials = passwordCallback.prompt(LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
+                        MessageFormat.format(LocaleFactory.localizedString("Enter your encryption password to decrypt {0}.", "Credentials"), file.getName()),
+                        new LoginOptions()
+                                .user(false)
+                                .anonymous(false)
+                                .icon(bookmark.getProtocol().disk())
+                                .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator"))
+                );
+                if(null == credentials.getPassword()) {
+                    throw new LoginCanceledException();
+                }
+                passphrase = credentials.getPassword();
+                saved = credentials.isSaved();
             }
-            final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
-            if(passphrase.isSaved()) {
+            final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase);
+            if(saved) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save passphrase for %s", room));
                 }
                 PasswordStoreFactory.get().addPassword(String.format("Triple-Crypt Passphrase %s", bookmark.getHostname()),
-                        new DefaultUrlProvider(bookmark).toUrl(room).find(DescriptiveUrl.Type.provider).getUrl(), passphrase.getPassword());
+                        new DefaultUrlProvider(bookmark).toUrl(room).find(DescriptiveUrl.Type.provider).getUrl(), passphrase);
             }
             return new CryptoInputStream(proxy.read(file, status, connectionCallback, passwordCallback),
                     Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()),

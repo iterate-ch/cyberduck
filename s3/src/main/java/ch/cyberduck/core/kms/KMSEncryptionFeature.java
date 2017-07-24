@@ -15,6 +15,7 @@ package ch.cyberduck.core.kms;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -59,6 +60,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static final Logger log = Logger.getLogger(KMSEncryptionFeature.class);
 
     private final S3Session session;
+    private final Host bookmark;
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -76,6 +78,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     public KMSEncryptionFeature(final S3Session session, final int timeout) {
         super(session);
         this.session = session;
+        this.bookmark = session.getHost();
         configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
         configuration.setSocketTimeout(timeout);
@@ -84,7 +87,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         configuration.setMaxErrorRetry(0);
         configuration.setMaxConnections(1);
         configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
-        final Proxy proxy = ProxyFactory.get().find(session.getHost());
+        final Proxy proxy = ProxyFactory.get().find(bookmark);
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:
@@ -99,15 +102,15 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     }
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
-        final LoginOptions options = new LoginOptions().anonymous(false).publickey(false);
+        final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false);
         try {
             final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
-            login.validate(session.getHost(), LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
+            login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.prompt(session.getHost(), session.getHost().getCredentials(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
+            bookmark.setCredentials(prompt.prompt(bookmark.getCredentials().getUsername(),
+                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
             return this.authenticated(run, prompt);
         }
     }
@@ -155,12 +158,12 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                             .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
                                 @Override
                                 public String getAWSAccessKeyId() {
-                                    return session.getHost().getCredentials().getUsername();
+                                    return bookmark.getCredentials().getUsername();
                                 }
 
                                 @Override
                                 public String getAWSSecretKey() {
-                                    return session.getHost().getCredentials().getPassword();
+                                    return bookmark.getCredentials().getPassword();
                                 }
                             }))
                             .withClientConfiguration(configuration)

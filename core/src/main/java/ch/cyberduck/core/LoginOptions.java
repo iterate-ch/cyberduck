@@ -46,6 +46,9 @@ public final class LoginOptions {
      */
     public String icon;
 
+    public String usernamePlaceholder;
+    public String passwordPlaceholder;
+
     public LoginOptions() {
         //
     }
@@ -104,6 +107,24 @@ public final class LoginOptions {
         return icon;
     }
 
+    public LoginOptions usernamePlaceholder(final String usernamePlaceholder) {
+        this.usernamePlaceholder = usernamePlaceholder;
+        return this;
+    }
+
+    public LoginOptions passwordPlaceholder(final String passwordPlaceholder) {
+        this.passwordPlaceholder = passwordPlaceholder;
+        return this;
+    }
+
+    public String getUsernamePlaceholder() {
+        return usernamePlaceholder;
+    }
+
+    public String getPasswordPlaceholder() {
+        return passwordPlaceholder;
+    }
+
     /**
      * Defer login options from protocol
      */
@@ -116,6 +137,9 @@ public final class LoginOptions {
         anonymous = protocol.isAnonymousConfigurable();
         user = protocol.isUsernameConfigurable();
         password = protocol.isPasswordConfigurable();
+        icon = protocol.disk();
+        usernamePlaceholder = protocol.getUsernamePlaceholder();
+        passwordPlaceholder = protocol.getPasswordPlaceholder();
     }
 
     @Override

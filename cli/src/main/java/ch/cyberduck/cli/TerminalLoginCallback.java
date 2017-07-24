@@ -19,7 +19,6 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -57,17 +56,17 @@ public class TerminalLoginCallback implements LoginCallback {
     }
 
     @Override
-    public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason,
-                       final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
+            final Credentials credentials = new Credentials(username);
             if(options.user) {
                 if(StringUtils.isBlank(credentials.getUsername())) {
-                    final String user = console.readLine("%n%s: ", credentials.getUsernamePlaceholder());
+                    final String user = console.readLine("%n%s: ", options.getUsernamePlaceholder());
                     credentials.setUsername(user);
                 }
                 else {
-                    final String user = console.readLine("%n%s (%s): ", credentials.getUsernamePlaceholder(), credentials.getUsername());
+                    final String user = console.readLine("%n%s (%s): ", options.getUsernamePlaceholder(), credentials.getUsername());
                     if(StringUtils.isNotBlank(user)) {
                         credentials.setUsername(user);
                     }
@@ -75,13 +74,11 @@ public class TerminalLoginCallback implements LoginCallback {
                 console.printf("Login as %s", credentials.getUsername());
             }
             if(options.password) {
-                final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
+                final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
                 credentials.setPassword(String.valueOf(input));
                 Arrays.fill(input, ' ');
-                if(!credentials.validate(bookmark.getProtocol(), options)) {
-                    this.prompt(bookmark, credentials, title, reason, options);
-                }
             }
+            return credentials;
         }
         catch(ConnectionCanceledException e) {
             throw new LoginCanceledException(e);

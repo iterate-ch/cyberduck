@@ -18,6 +18,7 @@
 
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.vault;
 using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
@@ -34,7 +35,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _browser = c;
         }
 
-        public void prompt(Credentials credentials, string title, string reason, LoginOptions options)
+        public Credentials prompt(string title, string reason, LoginOptions options)
         {
             AsyncDelegate d = delegate
             {
@@ -49,10 +50,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     throw new LoginCanceledException();
                 }
+                Credentials credentials = new VaultCredentials();
                 credentials.setPassword(View.InputText);
                 credentials.setSaved(View.SavePassword);
             };
             _browser.Invoke(d);
+            return credentials;
         }
 
         private bool ValidateInputEventHandler()

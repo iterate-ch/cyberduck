@@ -26,16 +26,13 @@ public interface LoginCallback extends ConnectionCallback {
      * Call this to allow the user to reenter the new login credentials.
      * A concrete subclass should display a login prompt.
      *
-     * @param bookmark    Used to determine login prompt options.
-     * @param credentials The credentials to obtain.
-     * @param title       The title for the login prompt
-     * @param reason      The detail message for the login prompt. Any additional information why the login failed.
-     * @param options     Enable checkbox to save password in keychain. Enable public key authentication checkbox. Enable anynomous login option checkbox
+     * @param username Username
+     * @param title    The title for the login prompt
+     * @param reason   The detail message for the login prompt. Any additional information why the login failed.
+     * @param options  Enable checkbox to save password in keychain. Enable public key authentication checkbox. Enable anynomous login option checkbox
      * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
-    void prompt(Host bookmark, Credentials credentials,
-                String title, String reason,
-                LoginOptions options) throws LoginCanceledException;
+    Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException;
 
     /**
      * Prompt to open file for reading.
