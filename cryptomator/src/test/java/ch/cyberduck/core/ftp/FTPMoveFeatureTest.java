@@ -74,12 +74,12 @@ public class FTPMoveFeatureTest {
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new FTPMoveFeature(session), new FTPDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
-        move.move(file, fileRenamed, false, new Delete.DisabledCallback());
+        move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
+        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));

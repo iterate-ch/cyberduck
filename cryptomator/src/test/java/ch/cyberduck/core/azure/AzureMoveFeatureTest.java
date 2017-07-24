@@ -71,12 +71,12 @@ public class AzureMoveFeatureTest {
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new AzureMoveFeature(session, null), new AzureDeleteFeature(session, null), cryptomator);
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
-        move.move(file, fileRenamed, false, new Delete.DisabledCallback());
+        move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(file));
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
+        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
