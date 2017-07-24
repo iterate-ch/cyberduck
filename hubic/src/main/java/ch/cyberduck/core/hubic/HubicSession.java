@@ -28,7 +28,6 @@ import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
 import ch.cyberduck.core.openstack.SwiftSession;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -39,7 +38,6 @@ import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
-import java.util.Collections;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -47,13 +45,8 @@ import ch.iterate.openstack.swift.exception.GenericException;
 public class HubicSession extends SwiftSession {
     private static final Logger log = Logger.getLogger(HubicSession.class);
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
-            "https://api.hubic.com/oauth/token",
-            "https://api.hubic.com/oauth/auth",
-            host.getProtocol().getClientId(),
-            host.getProtocol().getClientSecret(),
-            Collections.singletonList("credentials.r")
-    ).withRedirectUri(PreferencesFactory.get().getProperty("hubic.oauth.redirecturi"));
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
     private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
             authorizationService);

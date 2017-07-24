@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class OneDriveProtocol extends AbstractProtocol {
     @Override
@@ -70,15 +69,5 @@ public class OneDriveProtocol extends AbstractProtocol {
     public boolean isPasswordConfigurable() {
         // Only provide account email
         return false;
-    }
-
-    @Override
-    public String getClientId() {
-        return PreferencesFactory.get().getProperty("onedrive.oauth.clientid");
-    }
-
-    @Override
-    public String getClientSecret() {
-        return PreferencesFactory.get().getProperty("onedrive.oauth.secret");
     }
 }

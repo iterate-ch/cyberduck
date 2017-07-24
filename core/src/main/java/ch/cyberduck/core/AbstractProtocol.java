@@ -131,12 +131,12 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public String getClientId() {
+    public String getOAuthClientId() {
         return null;
     }
 
     @Override
-    public String getClientSecret() {
+    public String getOAuthClientSecret() {
         return null;
     }
 
@@ -177,7 +177,7 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public List<String> getScopes() {
+    public List<String> getOAuthScopes() {
         return Collections.emptyList();
     }
 

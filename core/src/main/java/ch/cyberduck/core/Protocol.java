@@ -235,21 +235,6 @@ public interface Protocol extends Comparable<Protocol> {
     String getAuthorization();
 
     /**
-     * @return OAuth 2 Authorization Server URL
-     */
-    String getOAuthAuthorizationUrl();
-
-    /**
-     * @return OAuth 2 Token Server URL
-     */
-    String getOAuthTokenUrl();
-
-    /**
-     * @return Requested scopes
-     */
-    List<String> getScopes();
-
-    /**
      * @return Available regions
      */
     Set<Location.Name> getRegions();
@@ -282,12 +267,29 @@ public interface Protocol extends Comparable<Protocol> {
     String getPasswordPlaceholder();
 
     /**
+     * @return OAuth 2 Authorization Server URL
+     */
+    String getOAuthAuthorizationUrl();
+
+    /**
+     * @return OAuth 2 Token Server URL
+     */
+    String getOAuthTokenUrl();
+
+    /**
+     * @return Requested scopes
+     */
+    List<String> getOAuthScopes();
+
+    String getOAuthRedirectUrl();
+
+    /**
      * @return Default OAuth 2.0 client id
      */
-    String getClientId();
+    String getOAuthClientId();
 
     /**
      * @return Default OAuth 2.0 client secret
      */
-    String getClientSecret();
+    String getOAuthClientSecret();
 }
