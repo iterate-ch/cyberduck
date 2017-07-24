@@ -31,7 +31,6 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.triplecrypt.CryptoReadFeature;
@@ -74,7 +73,7 @@ public class SDSMoveFeatureTest {
         new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
-        new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -122,7 +121,7 @@ public class SDSMoveFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        session.getFeature(Move.class).move(test, target, false, new Delete.DisabledCallback());
+        new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         final byte[] compare = new byte[content.length];
@@ -159,7 +158,7 @@ public class SDSMoveFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        session.getFeature(Move.class).move(test, target, false, new Delete.DisabledCallback());
+        new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         final byte[] compare = new byte[content.length];
@@ -192,7 +191,7 @@ public class SDSMoveFeatureTest {
         new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
-        new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -210,7 +209,7 @@ public class SDSMoveFeatureTest {
         new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
-        new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -231,7 +230,7 @@ public class SDSMoveFeatureTest {
         new SDSMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
-        new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
