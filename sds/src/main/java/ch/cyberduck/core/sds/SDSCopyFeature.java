@@ -46,14 +46,12 @@ public class SDSCopyFeature extends DefaultCopyFeature {
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         try {
-            if(containerService.getContainer(source).getType().contains(Path.Type.vault) || containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-                if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
-                    final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
-                    final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-                    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    writer.writeValue(out, fileKey);
-                    status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
-                }
+            if(containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+                final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+                final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                writer.writeValue(out, fileKey);
+                status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
             }
             super.copy(source, target, status);
         }
