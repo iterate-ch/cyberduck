@@ -16,24 +16,11 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -43,34 +30,14 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class DriveMoveFeatureTest {
+public class DriveMoveFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testMoveFile() throws Exception {
-        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
-        final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Google Drive OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("googledrive.accesstoken");
-                        }
-                        if(user.equals("Google Drive OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("googledrive.refreshtoken");
-                        }
-                        return null;
-                    }
-                }, new DisabledProgressListener()
-        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());
         final Path folder = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -85,32 +52,6 @@ public class DriveMoveFeatureTest {
 
     @Test
     public void testMoveDirectory() throws Exception {
-        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
-        final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Google Drive OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("googledrive.accesstoken");
-                        }
-                        if(user.equals("Google Drive OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("googledrive.refreshtoken");
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener()
-        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path sourceDirectory = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetDirectory = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session).mkdir(sourceDirectory, null, new TransferStatus());

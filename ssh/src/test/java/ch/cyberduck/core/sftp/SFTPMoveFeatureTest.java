@@ -74,7 +74,7 @@ public class SFTPMoveFeatureTest {
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target, new TransferStatus());
-        new SFTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
+        new SFTPMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback());
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

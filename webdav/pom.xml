@@ -41,6 +41,12 @@
             <artifactId>sardine</artifactId>
             <version>5.8.6</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
 

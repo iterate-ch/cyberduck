@@ -54,6 +54,12 @@
             </exclusions>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
 

@@ -31,6 +31,12 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
             <artifactId>test</artifactId>
             <type>pom</type>
             <scope>test</scope>

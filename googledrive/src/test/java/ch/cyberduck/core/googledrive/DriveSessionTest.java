@@ -70,7 +70,6 @@ public class DriveSessionTest {
                 new DisabledPasswordStore(), new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
-        session.close();
         assertFalse(session.isConnected());
     }
 
@@ -98,7 +97,6 @@ public class DriveSessionTest {
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
-        session.close();
         assertFalse(session.isConnected());
     }
 }

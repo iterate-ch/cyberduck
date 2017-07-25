@@ -63,6 +63,12 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-cloudfront</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
 
