@@ -21,12 +21,17 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -35,9 +40,16 @@ import static org.junit.Assert.assertEquals;
 @Category(IntegrationTest.class)
 public class HubicSessionTest {
 
+    @BeforeClass
+    public static void protocol() {
+        ProtocolFactory.get().register(new HubicProtocol());
+    }
+
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidRefreshToken() throws Exception {
-        final HubicSession session = new HubicSession(new Host(new HubicProtocol(),
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/hubiC.cyberduckprofile"));
+        final HubicSession session = new HubicSession(new Host(profile,
                 new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
         session.open(new DisabledHostKeyCallback());
         try {
@@ -55,9 +67,11 @@ public class HubicSessionTest {
         session.close();
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidAccessToken() throws Exception {
-        final HubicSession session = new HubicSession(new Host(new HubicProtocol(),
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/hubiC.cyberduckprofile"));
+        final HubicSession session = new HubicSession(new Host(profile,
                 new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore() {
