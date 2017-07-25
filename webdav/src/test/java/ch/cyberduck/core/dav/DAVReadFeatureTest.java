@@ -85,7 +85,7 @@ public class DAVReadFeatureTest {
         assertEquals(-1L, local.attributes().getSize());
         new DefaultDownloadFeature(session.getFeature(Read.class)).download(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback(), new DisabledPasswordCallback());
-        assertEquals(923L, local.attributes().getSize());
+        assertEquals(35147L, local.attributes().getSize());
     }
 
     @Test
