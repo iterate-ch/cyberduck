@@ -54,7 +54,7 @@ public class DAVAttributesFinderFeatureTest {
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
-        assertEquals(923, attributes.getSize());
+        assertEquals(35147, attributes.getSize());
         assertNotNull(attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         // Test wrong type
