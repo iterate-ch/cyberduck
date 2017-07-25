@@ -16,3 +16,4 @@ addons:
     packages:
     - gnupg
     - fakeroot
+    - oracle-java8-unlimited-jce-policy
