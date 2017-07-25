@@ -15,14 +15,12 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractDropboxTest;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class DropboxProtocolTest extends AbstractDropboxTest {
+public class DropboxProtocolTest {
 
     @Test
     public void testPrefix() {
