@@ -129,7 +129,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                                 return null; // user cancelled
                             }
 
-                            if (credentials.getPassword() == null || credentials.getPassword().isEmpty()) {
+                            if (StringUtils.isEmpty(credentials.getPassword())) {
                                 return null;
                             }
 
