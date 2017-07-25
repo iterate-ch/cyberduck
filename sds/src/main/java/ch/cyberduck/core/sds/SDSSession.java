@@ -43,7 +43,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
@@ -84,7 +83,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
         }
     }).build(),
-            host.getProtocol()).withRedirectUri(PreferencesFactory.get().getProperty("sds.oauth.redirecturi"));
+            host.getProtocol()).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
     private String token = StringUtils.EMPTY;
 
