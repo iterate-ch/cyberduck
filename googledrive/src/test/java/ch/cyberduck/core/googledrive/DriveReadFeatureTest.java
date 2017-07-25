@@ -15,15 +15,16 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -42,7 +43,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DriveReadFeatureTest {
+public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testAppend() throws Exception {
@@ -51,54 +52,12 @@ public class DriveReadFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
-        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
-        final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Google Drive OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("googledrive.accesstoken");
-                        }
-                        if(user.equals("Google Drive OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("googledrive.refreshtoken");
-                        }
-                        return null;
-                    }
-                }, new DisabledProgressListener()
-        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         new DriveReadFeature(session).read(new Path(new DriveHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
     }
 
     @Test
     public void testReadRange() throws Exception {
-        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
-        final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Google Drive OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("googledrive.accesstoken");
-                        }
-                        if(user.equals("Google Drive OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("googledrive.refreshtoken");
-                        }
-                        return null;
-                    }
-                }, new DisabledProgressListener()
-        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final String name = "ä-" + UUID.randomUUID().toString();
         final Path test = new Path(new DriveHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
@@ -125,6 +84,5 @@ public class DriveReadFeatureTest {
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

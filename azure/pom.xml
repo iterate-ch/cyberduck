@@ -41,7 +41,12 @@
             <artifactId>azure-storage</artifactId>
             <version>5.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
 </project>
 

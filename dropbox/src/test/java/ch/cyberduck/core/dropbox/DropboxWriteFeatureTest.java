@@ -15,13 +15,16 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -41,31 +44,10 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DropboxWriteFeatureTest {
+public class DropboxWriteFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testReadWrite() throws Exception {
-        final DropboxSession session = new DropboxSession(new Host(new DropboxProtocol(), new DropboxProtocol().getDefaultHostname()),
-                new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Dropbox OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("dropbox.accesstoken");
-                        }
-                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("dropbox.refreshtoken");
-                        }
-                        return null;
-                    }
-                }, new DisabledProgressListener())
-                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final DropboxWriteFeature write = new DropboxWriteFeature(session);
 
@@ -100,32 +82,10 @@ public class DropboxWriteFeatureTest {
             public void delete(final Path file) {
             }
         });
-        session.close();
     }
 
     @Test
     public void testWriteAppendChunks() throws Exception {
-        final DropboxSession session = new DropboxSession(new Host(new DropboxProtocol(), new DropboxProtocol().getDefaultHostname()),
-                new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Dropbox OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("dropbox.accesstoken");
-                        }
-                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("dropbox.refreshtoken");
-                        }
-                        return null;
-                    }
-                }, new DisabledProgressListener())
-                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final DropboxWriteFeature write = new DropboxWriteFeature(session, 44000L);
 
@@ -160,6 +120,5 @@ public class DropboxWriteFeatureTest {
             public void delete(final Path file) {
             }
         });
-        session.close();
     }
 }
