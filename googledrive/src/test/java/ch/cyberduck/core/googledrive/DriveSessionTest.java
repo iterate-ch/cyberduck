@@ -22,10 +22,12 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
@@ -42,7 +44,7 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DriveSessionTest {
+public class DriveSessionTest extends AbstractDriveTest {
 
     @Test
     public void testFeatures() throws Exception {
@@ -55,7 +57,9 @@ public class DriveSessionTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidKey() throws Exception {
-        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/default/Google Drive.cyberduckprofile"));
+        final Host host = new Host(profile, "www.googleapis.com", new Credentials());
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -70,33 +74,14 @@ public class DriveSessionTest {
                 new DisabledPasswordStore(), new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
+        session.close();
         assertFalse(session.isConnected());
     }
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials("u"));
-        final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Google Drive (u) OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("googledrive.accesstoken");
-                        }
-                        if(user.equals("Google Drive (u) OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("googledrive.refreshtoken");
-                        }
-                        return null;
-                    }
-                }, new DisabledProgressListener()
-        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
+        session.close();
         assertFalse(session.isConnected());
     }
 }
