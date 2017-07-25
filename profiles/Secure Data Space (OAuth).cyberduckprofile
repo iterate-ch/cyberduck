@@ -18,38 +18,32 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>onedrive</string>
+        <string>sds</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>SSP</string>
         <key>Description</key>
-        <string>Microsoft OneDrive Business</string>
+        <string>Secure Data Space</string>
         <key>Scheme</key>
         <string>https</string>
-        <key>Default Hostname</key>
-        <string>graph.microsoft.com</string>
-        <key>Hostname Configurable</key>
-        <false/>
         <key>Default Port</key>
         <string>443</string>
+        <key>Username Placeholder</key>
+        <string>SDS Username</string>
+        <key>Password Placeholder</key>
+        <string>SDS Password</string>
+        <key>Hostname Configurable</key>
+        <true/>
         <key>Port Configurable</key>
-        <false/>
-        <key>Context</key>
-        <string>/v1.0</string>
+        <true/>
+        <key>Authorization</key>
+        <string>oauth</string>
         <key>OAuth Authorization Url</key>
-        <string>https://login.microsoftonline.com/common/oauth2/v2.0/authorize</string>
+        <string>https://duck.ssp-europe.eu/oauth/authorize</string>
         <key>OAuth Token Url</key>
-        <string>https://login.microsoftonline.com/common/oauth2/v2.0/token</string>
-        <key>Scopes</key>
-        <array>
-            <string>sites.readwrite.all</string>
-            <string>files.readwrite.all</string>
-            <string>offline_access</string>
-        </array>
+        <string>https://duck.ssp-europe.eu/oauth/token</string>
         <key>OAuth Client ID</key>
-        <string>372770ba-bb24-436b-bbd4-19bc86310c0e</string>
+        <string>chuu9ooceeph3eekie7Uan4dapae4Wae</string>
         <key>OAuth Client Secret</key>
-        <string>mJjWVkmfD9FVHNFTpbrdowv</string>
-        <key>OAuth Redirect Url</key>
-        <string>https://cyberduck.io/oauth</string>
+        <string>Eif3sei9zaiy</string>
     </dict>
 </plist>

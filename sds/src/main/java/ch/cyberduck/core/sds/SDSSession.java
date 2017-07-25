@@ -41,6 +41,9 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
@@ -50,21 +53,40 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
+import java.io.IOException;
+
+import com.migcomponents.migbase64.Base64;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
 
-    private String token;
-
-    final static String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
-    public static int DEFAULT_CHUNKSIZE = 16;
+    public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
+    public static final int DEFAULT_CHUNKSIZE = 16;
 
     private final SDSErrorResponseInterceptor retryHandler = new SDSErrorResponseInterceptor(this);
+
+    private final OAuth2RequestInterceptor authorizationService
+            = new OAuth2RequestInterceptor(builder.build(this).addInterceptorLast(new HttpRequestInterceptor() {
+        @Override
+        public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+            request.addHeader(HttpHeaders.AUTHORIZATION,
+                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
+        }
+    }).build(),
+            host.getProtocol()).withRedirectUri(PreferencesFactory.get().getProperty("sds.oauth.redirecturi"));
+
+    private String token = StringUtils.EMPTY;
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -72,30 +94,41 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     @Override
     protected SDSApiClient connect(final HostKeyCallback key) throws BackgroundException {
-        final HttpClientBuilder builder = this.builder.build(this);
-        switch(host.getProtocol().getAuthorization()) {
+        final HttpClientBuilder configuration = builder.build(this);
+        switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
+            case oauth:
+                configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
+                configuration.addInterceptorLast(authorizationService);
+                configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                    @Override
+                    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                        request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
+                    }
+                });
+                break;
             default:
-                builder.setServiceUnavailableRetryStrategy(retryHandler);
+                configuration.setServiceUnavailableRetryStrategy(retryHandler);
                 break;
         }
-        final CloseableHttpClient apache = builder.build();
+        final CloseableHttpClient apache = configuration.build();
         final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext()));
-        final ClientConfig configuration = new ClientConfig();
-        configuration.register(new InputStreamProvider());
-        configuration.connectorProvider(new HttpComponentsProvider(this.builder, this));
-        client.setHttpClient(ClientBuilder.newClient(configuration));
+        client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
+                .register(new InputStreamProvider())
+                .connectorProvider(new HttpComponentsProvider(apache))));
         client.setUserAgent(new PreferencesUseragentProvider().get());
         return client;
     }
-
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         final String login = host.getCredentials().getUsername();
         final String password = host.getCredentials().getPassword();
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
-        switch(host.getProtocol().getAuthorization()) {
+        switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
+            case oauth:
+                authorizationService.setTokens(authorizationService.authorize(host, keychain, controller, cancel));
+                break;
             default:
                 this.login(controller, new LoginRequest()
                         .authType(host.getProtocol().getAuthorization())
