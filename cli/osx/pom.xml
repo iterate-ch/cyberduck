@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>6.1.1-SNAPSHOT</version>
+        <version>6.2.0</version>
     </parent>
     <artifactId>cli-osx</artifactId>
     <description>Cyberduck CLI Mac</description>
@@ -193,13 +193,13 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <property name="home" value="${main.basedir}"/>
-                                        <property name="version" value="${project.version}"/>
-                                        <property name="revision" value="${git.commitsCount}"/>
-                                        <property name="git.revision" value="${git.revision}"/>
-                                        <property name="sparkle.feed" value="${sparkle.feed}"/>
-                                        <property name="installer.certificate" value="${installer.certificate}"/>
-                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="."/>
+                                        <property name="home" value="${main.basedir}" />
+                                        <property name="version" value="${project.version}" />
+                                        <property name="revision" value="${git.commitsCount}" />
+                                        <property name="git.revision" value="${git.revision}" />
+                                        <property name="sparkle.feed" value="${sparkle.feed}" />
+                                        <property name="installer.certificate" value="${installer.certificate}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </tasks>
                                 </configuration>
                             </execution>
