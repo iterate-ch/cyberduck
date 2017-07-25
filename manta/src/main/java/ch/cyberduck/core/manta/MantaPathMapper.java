@@ -24,7 +24,7 @@ import org.apache.commons.lang3.Validate;
 import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaObject;
-import com.joyent.manta.exception.MantaException;
+import com.joyent.manta.util.MantaUtils;
 
 public class MantaPathMapper {
 
@@ -61,24 +61,15 @@ public class MantaPathMapper {
     private final Path accountRoot;
     private final Path normalizedHomePath;
 
-    MantaPathMapper(MantaSession session) {
+    public MantaPathMapper(MantaSession session) {
         Validate.notNull(session.getHost().getCredentials(), "Credentials missing");
         Validate.notNull(session.getHost().getCredentials().getUsername(), "Username missing");
         final String username = session.getHost().getCredentials().getUsername();
 
         // try to create a root path. at worst the user will fail to list global buckets later
-        Path accountRootPath;
-        try {
-            accountRootPath = new Path(
-                    (StringUtils.contains(username, "/") ? username.split("/")[0] : username),
-                    EnumSet.of(Type.placeholder)
-            );
-        }
-        catch(NullPointerException npe) {
-            accountRootPath = new Path("/", EnumSet.of(Type.placeholder));
-        }
+        String[] accountPathParts = MantaUtils.parseAccount(username);
 
-        accountRoot = accountRootPath;
+        accountRoot = new Path(accountPathParts[0], EnumSet.of(Type.placeholder));
         accountOwner = accountRoot.getName();
         normalizedHomePath = buildNormalizedHomePath(session.getHost().getDefaultPath());
     }
@@ -107,12 +98,12 @@ public class MantaPathMapper {
         return homePath;
     }
 
-    protected String requestPath(final Path homeRelativeRemote) {
-        return homeRelativeRemote.getAbsolute();
-    }
-
     protected Path getNormalizedHomePath() {
         return normalizedHomePath;
+    }
+
+    protected String requestPath(final Path homeRelativeRemote) {
+        return homeRelativeRemote.getAbsolute();
     }
 
     protected boolean isUserWritable(final MantaObject mantaObject) {

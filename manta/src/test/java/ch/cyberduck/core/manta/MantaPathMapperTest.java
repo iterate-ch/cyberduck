@@ -67,9 +67,4 @@ public class MantaPathMapperTest {
         assertEquals("/account/public", buildMapper("account/sub", "~~/public").getNormalizedHomePath().getAbsolute());
         assertEquals("/account/public", buildMapper("account/sub", "/~~/public").getNormalizedHomePath().getAbsolute());
     }
-
-    @Test
-    public void testRequestPathMapping() {
-        // TODO: tests
-    }
 }

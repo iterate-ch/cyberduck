@@ -153,28 +153,28 @@ public class MantaSession extends SSLSession<MantaClient> {
         if(type == Directory.class) {
             return (T) new MantaDirectoryFeature(this);
         }
-        if(type == Read.class) {
+        else if(type == Read.class) {
             return (T) new MantaReadFeature(this);
         }
-        if(type == Write.class) {
+        else if(type == Write.class) {
             return (T) new MantaWriteFeature(this);
         }
-        if(type == Delete.class) {
+        else if(type == Delete.class) {
             return (T) new MantaDeleteFeature(this);
         }
-        if(type == Touch.class) {
+        else if(type == Touch.class) {
             return (T) new MantaTouchFeature(this);
         }
-        if(type == Move.class) {
+        else if(type == Move.class) {
             return (T) new MantaMoveFeature(this);
         }
-        if(type == AttributesFinder.class) {
+        else if(type == AttributesFinder.class) {
             return (T) new MantaAttributesFinderFeature(this);
         }
-        if(type == UrlProvider.class) {
+        else if(type == UrlProvider.class) {
             return (T) new MantaUrlProviderFeature();
         }
-        if(type == Home.class) {
+        else if(type == Home.class) {
             return (T) new MantaHomeFinderFeature(this);
         }
 

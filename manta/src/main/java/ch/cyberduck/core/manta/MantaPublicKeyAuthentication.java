@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyException;
 import java.security.KeyPair;
@@ -113,29 +114,28 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
                         final String password = keychain.find(bookmark);
+                        if(StringUtils.isEmpty(password)) {
+                            try {
+                                prompt.prompt(
+                                        bookmark,
+                                        credentials,
+                                        LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                        String.format("%s (%s)",
+                                                LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                                identity.getAbbreviatedPath()),
+                                        new LoginOptions(bookmark.getProtocol()));
+                            }
+                            catch(LoginCanceledException e) {
+                                return null; // user cancelled
+                            }
 
-                        if(!StringUtils.isEmpty(password)) {
-                            return password.toCharArray();
+                            if (credentials.getPassword() == null || credentials.getPassword().isEmpty()) {
+                                return null;
+                            }
+
+                            return credentials.getPassword().toCharArray();
                         }
-
-                        try {
-                            final String reason = String.format(
-                                    "%s (%s)",
-                                    LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                    identity.getAbbreviatedPath());
-
-                            prompt.prompt(
-                                    bookmark,
-                                    credentials,
-                                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                    reason,
-                                    new LoginOptions(bookmark.getProtocol()));
-                        }
-                        catch(LoginCanceledException e) {
-                            return null; // user canceled
-                        }
-
-                        return credentials.getPassword().toCharArray();
+                        return password.toCharArray();
                     }
 
                     @Override

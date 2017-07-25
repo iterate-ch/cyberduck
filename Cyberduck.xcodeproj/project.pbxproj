@@ -249,6 +249,7 @@
 		47FB79DC1C2E9E67008D3B9C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FB79D71C2E9E67008D3B9C /* main.m */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
 		47FFEAAB1CE37DBB00BAFE41 /* fileinfo.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47FFEAAA1CE37DBB00BAFE41 /* fileinfo.pdf */; };
+		9DFB54281F26ACFC006523EA /* manta.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 9DFB54271F26ACFC006523EA /* manta.tiff */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1592,6 +1593,7 @@
 		47FFBEF3199B91A1005155CB /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pt_PT; path = i18n/src/main/resources/pt_PT.lproj/Sftp.strings; sourceTree = "<group>"; };
 		47FFBEF4199B91A1005155CB /* ko */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ko; path = i18n/src/main/resources/ko.lproj/Sftp.strings; sourceTree = "<group>"; };
 		47FFEAAA1CE37DBB00BAFE41 /* fileinfo.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = fileinfo.pdf; path = toolbar/fileinfo.pdf; sourceTree = "<group>"; };
+		9DFB54271F26ACFC006523EA /* manta.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = manta.tiff; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1791,6 +1793,7 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				9DFB54271F26ACFC006523EA /* manta.tiff */,
 				478DB2671DF3418D00BEAA45 /* unlockedbadge.tiff */,
 				47A40B311DEF1C09004E6084 /* cryptomator.tiff */,
 				4749604A1CD75C7200B020C9 /* toolbar */,
@@ -2258,6 +2261,7 @@
 				4767310416108E1300B28D35 /* unlocked.tiff in Resources */,
 				4767310516108E1300B28D35 /* update.tiff in Resources */,
 				4767310616108E1300B28D35 /* upload.tiff in Resources */,
+				9DFB54281F26ACFC006523EA /* manta.tiff in Resources */,
 				47B3318C16680FF100C9FFA0 /* ftp.tiff in Resources */,
 				47B2EA001E2CF5E1007BE83D /* Progress.xib in Resources */,
 				47B331931668102400C9FFA0 /* s3.tiff in Resources */,

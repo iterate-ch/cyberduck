@@ -44,26 +44,7 @@ public class MantaObjectAttributeAdapter {
     public PathAttributes from(final MantaObject mantaObject) {
         final PathAttributes attributes = new PathAttributes();
 
-        final String[] pathSegments = mantaObject.getPath().split(MantaClient.SEPARATOR);
-
-        attributes.setDisplayname(pathSegments[pathSegments.length - 1]);
-        attributes.setOwner(session.pathMapper.getAccountOwner());
-
-        final Permission.Action userPermissions =
-                session.pathMapper.isUserWritable(mantaObject)
-                        ? Permission.Action.all
-                        : Permission.Action.read;
-        final Permission.Action otherPermissions =
-                session.pathMapper.isWorldReadable(mantaObject)
-                        ? Permission.Action.read
-                        : Permission.Action.none;
-
-        attributes.setPermission(new Permission(userPermissions, Permission.Action.none, otherPermissions));
-
-        if (mantaObject.getLastModifiedTime() != null) {
-            attributes.setModificationDate(mantaObject.getLastModifiedTime().getTime());
-            attributes.setCreationDate(attributes.getModificationDate());
-        }
+        populateGenericAttributes(mantaObject, attributes);
 
         if(mantaObject.isDirectory()) {
             return attributes;
@@ -87,6 +68,33 @@ public class MantaObjectAttributeAdapter {
         attributes.setStorageClass(mantaObject.getHeaderAsString(HEADER_KEY_STORAGE_CLASS));
 
         return attributes;
+    }
+
+    private void populateGenericAttributes(final MantaObject mantaObject, final PathAttributes attributes) {
+        final String[] pathSegments = mantaObject.getPath().split(MantaClient.SEPARATOR);
+
+        attributes.setDisplayname(pathSegments[pathSegments.length - 1]);
+        attributes.setOwner(session.pathMapper.getAccountOwner());
+
+        populatePermissionsAttribute(mantaObject, attributes);
+
+        if (mantaObject.getLastModifiedTime() != null) {
+            attributes.setModificationDate(mantaObject.getLastModifiedTime().getTime());
+            attributes.setCreationDate(attributes.getModificationDate());
+        }
+    }
+
+    private void populatePermissionsAttribute(final MantaObject mantaObject, final PathAttributes attributes) {
+        final Permission.Action userPermissions =
+                session.pathMapper.isUserWritable(mantaObject)
+                        ? Permission.Action.all
+                        : Permission.Action.read;
+        final Permission.Action otherPermissions =
+                session.pathMapper.isWorldReadable(mantaObject)
+                        ? Permission.Action.read
+                        : Permission.Action.none;
+
+        attributes.setPermission(new Permission(userPermissions, Permission.Action.none, otherPermissions));
     }
 
     private void populateLinkAttribute(final PathAttributes attributes, final MantaObject mantaObject) {

@@ -23,27 +23,30 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.log4j.Logger;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.util.EnumSet;
 import java.util.UUID;
 
+import com.joyent.manta.client.MantaClient;
+import com.joyent.manta.util.MantaUtils;
+
 import static org.junit.Assert.fail;
 
 public abstract class AbstractMantaTest {
 
+    private static final Logger log = Logger.getLogger(AbstractMantaTest.class);
+
     protected MantaSession session;
+    protected String testPathPrefix;
 
     @BeforeClass
     public static void protocol() {
         ProtocolFactory.get().register(new MantaProtocol());
-    }
-
-    @After
-    public void disconnect() throws Exception {
-        session.close();
     }
 
     @Before
@@ -52,10 +55,11 @@ public abstract class AbstractMantaTest {
                 new Local("../profiles/Triton Manta.cyberduckprofile"));
 
         final String keyPath = ObjectUtils.firstNonNull(System.getProperty("manta.key_path"), "");
+        final String username = System.getProperty("manta.user");
         final Host host = new Host(
                 profile,
                 profile.getDefaultHostname(),
-                new Credentials(System.getProperty("manta.user"))
+                new Credentials(username)
                         .withIdentity(new Local(keyPath)));
 
         session = new MantaSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
@@ -70,6 +74,15 @@ public abstract class AbstractMantaTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
+
+        testPathPrefix = randomDirectory().getAbsolute();
+    }
+
+    @AfterClass
+    public void disconnect() throws Exception {
+        log.debug("cleaning up test directory: " + testPathPrefix);
+        session.getClient().deleteRecursive(testPathPrefix);
+        session.close();
     }
 
     protected Path randomFile() {
