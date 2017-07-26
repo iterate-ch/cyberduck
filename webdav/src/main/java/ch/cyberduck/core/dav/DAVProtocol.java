@@ -47,6 +47,11 @@ public class DAVProtocol extends AbstractProtocol {
     }
 
     @Override
+    public Scheme[] getSchemes() {
+        return new Scheme[]{Scheme.dav, Scheme.http};
+    }
+
+    @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
