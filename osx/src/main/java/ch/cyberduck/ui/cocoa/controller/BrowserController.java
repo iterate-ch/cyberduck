@@ -40,6 +40,8 @@ import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Background;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
@@ -59,7 +61,9 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.threading.DisabledAlertCallback;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
@@ -205,6 +209,9 @@ public class BrowserController extends WindowController
      */
     private final PathCache cache
             = new PathCache(preferences.getInteger("browser.cache.size"));
+
+
+    private Background background;
 
     @Outlet
     protected NSProgressIndicator statusSpinner;
@@ -3015,6 +3022,18 @@ public class BrowserController extends WindowController
                                     securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                                             : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
                                     securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
+                                    final Background background = pool.getFeature(Background.class);
+                                    if(background != null) {
+                                        BrowserController.this.background = background;
+                                        background(new SessionBackgroundAction<Object>(pool, new DisabledAlertCallback(),
+                                                new DisabledProgressListener(), new DisabledTranscriptListener()) {
+                                            @Override
+                                            public Object run(final Session<?> session) throws BackgroundException {
+                                                background.run(PasswordCallbackFactory.get(BrowserController.this));
+                                                return null;
+                                            }
+                                        });
+                                    }
                                 }
                             }
                         }
@@ -3095,6 +3114,9 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
+                if(background != null) {
+                    background.shutdown();
+                }
                 pool.shutdown();
                 pool = SessionPool.DISCONNECTED;
                 cache.clear();

@@ -30,6 +30,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Background;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -216,6 +217,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Bulk.class) {
             return (T) new SDSEncryptionBulkFeature(this);
+        }
+        if(type == Background.class) {
+            return (T) new SDSBackgroundFeature(this);
         }
         return super._getFeature(type);
     }
