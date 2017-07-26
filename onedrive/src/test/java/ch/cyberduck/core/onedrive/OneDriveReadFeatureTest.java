@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -49,7 +50,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path drive = new OneDriveHomeFinderFeature(session).find();
-        new OneDriveReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new OneDriveReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
     }
 
     @Test
@@ -61,12 +62,12 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new OneDriveReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new OneDriveReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new OneDriveReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new OneDriveReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
             assertNotNull(in);
             in.close();
         }
@@ -95,7 +96,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         status.setOffset(100L);
         final OneDriveReadFeature read = new OneDriveReadFeature(session);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, status.length(content.length - 100), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -112,7 +113,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(test, new TransferStatus());
         final OneDriveReadFeature read = new OneDriveReadFeature(session);
-        final InputStream in = read.read(test, new TransferStatus().skip(1).append(true), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, new TransferStatus().skip(1).append(true), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNull(in);
     }
 
@@ -136,7 +137,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new OneDriveReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new OneDriveReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

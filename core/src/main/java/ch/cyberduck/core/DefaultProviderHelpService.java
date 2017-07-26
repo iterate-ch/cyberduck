@@ -18,24 +18,14 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
-import org.apache.commons.lang3.StringUtils;
-
-public class DefaultProviderHelpService implements ProviderHelpService {
-
-    public final String base;
+public class DefaultProviderHelpService extends RootProviderHelpService {
 
     public DefaultProviderHelpService() {
-        this(PreferencesFactory.get().getProperty("website.help"));
+        super();
     }
 
     public DefaultProviderHelpService(final String base) {
-        this.base = base;
-    }
-
-    public String help() {
-        return this.help(StringUtils.EMPTY);
+        super(base);
     }
 
     @Override
@@ -46,13 +36,5 @@ public class DefaultProviderHelpService implements ProviderHelpService {
     @Override
     public String help(final Scheme scheme) {
         return this.help(scheme.name());
-    }
-
-    public String help(final String page) {
-        final StringBuilder site = new StringBuilder(base);
-        if(StringUtils.isNotBlank(page)) {
-            site.append("/").append(page);
-        }
-        return site.toString();
     }
 }

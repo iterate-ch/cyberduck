@@ -52,7 +52,7 @@ public class SwiftMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
         if(file.isFile()) {
             new SwiftCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()));
             delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), callback);

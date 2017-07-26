@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>6.1.1-SNAPSHOT</version>
+        <version>6.3.0-SNAPSHOT</version>
     </parent>
     <artifactId>ssh</artifactId>
     <packaging>jar</packaging>
@@ -76,6 +76,24 @@
             <groupId>com.jcraft</groupId>
             <artifactId>jsch.agentproxy.usocket-jna</artifactId>
             <version>0.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.cryptomator</groupId>
+            <artifactId>cryptofs</artifactId>
+            <version>1.2.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-core</artifactId>
+            <version>0.11.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

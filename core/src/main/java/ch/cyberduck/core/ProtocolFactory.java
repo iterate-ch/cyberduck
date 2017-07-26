@@ -102,6 +102,10 @@ public final class ProtocolFactory {
     }
 
     public void register(final Protocol protocol) {
+        if(null == protocol) {
+            log.error("Attempt to register unknown protocol");
+            return;
+        }
         registered.add(protocol);
     }
 
@@ -144,6 +148,10 @@ public final class ProtocolFactory {
                 else {
                     return StringUtils.equals(protocol.getProvider(), provider);
                 }
+            }
+            // Fallback for bug in 6.1
+            if(StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)) {
+                return true;
             }
             return false;
         }).findFirst().orElse(

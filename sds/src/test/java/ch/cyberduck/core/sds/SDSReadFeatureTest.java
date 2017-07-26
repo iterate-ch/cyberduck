@@ -15,20 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -42,8 +29,8 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -68,7 +55,7 @@ public class SDSReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Path room = new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SDSReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new SDSReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
     }
 
     @Test
@@ -85,12 +72,12 @@ public class SDSReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
             assertNotNull(in);
             in.close();
         }
@@ -110,7 +97,7 @@ public class SDSReadFeatureTest {
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);
@@ -123,7 +110,7 @@ public class SDSReadFeatureTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SDSReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new SDSReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -161,7 +148,7 @@ public class SDSReadFeatureTest {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -183,7 +170,7 @@ public class SDSReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Path test = new Path(new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume)), "eetaik4R", EnumSet.of(Path.Type.file));
-        final CountingInputStream in = new CountingInputStream(new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         session.close();

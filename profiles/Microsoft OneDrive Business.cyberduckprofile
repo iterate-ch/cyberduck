@@ -45,5 +45,11 @@
             <string>files.readwrite.all</string>
             <string>offline_access</string>
         </array>
+        <key>OAuth Client ID</key>
+        <string>372770ba-bb24-436b-bbd4-19bc86310c0e</string>
+        <key>OAuth Client Secret</key>
+        <string>mJjWVkmfD9FVHNFTpbrdowv</string>
+        <key>OAuth Redirect Url</key>
+        <string>https://cyberduck.io/oauth</string>
     </dict>
 </plist>

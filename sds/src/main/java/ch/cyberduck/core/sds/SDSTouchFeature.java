@@ -24,29 +24,52 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import com.fasterxml.jackson.databind.ObjectWriter;
+import eu.ssp_europe.sds.crypto.Crypto;
 
 public class SDSTouchFeature implements Touch<VersionId> {
 
+    private final SDSSession session;
     private Write<VersionId> writer;
 
     public SDSTouchFeature(final SDSSession session) {
-        this.writer = new SDSWriteFeature(session);
+        this.session = session;
+        this.writer = new SDSDelegatingWriteFeature(session, new SDSWriteFeature(session));
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
         try {
+            final UserAccount user = new UserApi(session.getClient()).getUserInfo(session.getToken(), null, false);
+            if(user.getIsEncryptionEnabled()) {
+                final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+                final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                writer.writeValue(out, fileKey);
+                status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
+            }
+            final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
             out.close();
+            return new Path(file.getParent(), file.getName(), file.getType(),
+                    new PathAttributes(file.attributes()).withVersionId(out.getStatus().toString()));
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map("Cannot create file {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
         }
-        return new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributes(file.attributes()).withVersionId(out.getStatus().toString()));
     }
 
     @Override

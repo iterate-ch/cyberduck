@@ -17,6 +17,7 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -26,7 +27,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public interface Download {
 
     void download(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
-                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
+                  TransferStatus status, ConnectionCallback connectionCallback, PasswordCallback passwordCallback) throws BackgroundException;
 
     boolean offset(Path file) throws BackgroundException;
 

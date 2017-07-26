@@ -5,6 +5,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -18,7 +19,8 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.output.NullOutputStream;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -28,7 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -46,7 +47,7 @@ public class S3ReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3ReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new S3ReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
     }
 
     @Test
@@ -60,7 +61,7 @@ public class S3ReadFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -69,7 +70,7 @@ public class S3ReadFeatureTest {
         out.close();
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new S3ReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new S3ReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -92,7 +93,7 @@ public class S3ReadFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -102,7 +103,7 @@ public class S3ReadFeatureTest {
         status.setAppend(true);
         status.setOffset(100L);
         status.setLength(-1L);
-        final InputStream in = new S3ReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new S3ReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -122,8 +123,8 @@ public class S3ReadFeatureTest {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final byte[] content = new byte[1457];
-        new Random().nextBytes(content);
+        final int length = 1457;
+        final byte[] content = RandomUtils.nextBytes(length);
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().length(content.length);
@@ -131,7 +132,7 @@ public class S3ReadFeatureTest {
         final OutputStream out = new S3WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final InputStream in = new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback());
+        final InputStream in = new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         new StreamCopier(status, status).transfer(in, new NullOutputStream());
         assertEquals(content.length, status.getOffset());
@@ -151,14 +152,14 @@ public class S3ReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = new byte[2048];
-        new Random().nextBytes(content);
+        final int length = 2048;
+        final byte[] content = RandomUtils.nextBytes(length);
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final CountingInputStream in = new CountingInputStream(new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback(), new DisabledPasswordCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

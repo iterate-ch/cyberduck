@@ -62,8 +62,8 @@ public class SingleTransferWorkerTest {
             @Override
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
-                                 final ConnectionCallback callback,
-                                 final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ConnectionCallback connectionCallback,
+                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 //
                 return file;
             }
@@ -75,7 +75,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), cache) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -123,8 +123,8 @@ public class SingleTransferWorkerTest {
             @Override
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
-                                 final ConnectionCallback callback,
-                                 final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ConnectionCallback connectionCallback,
+                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -146,7 +146,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), cache) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -191,8 +191,8 @@ public class SingleTransferWorkerTest {
             @Override
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
-                                 final ConnectionCallback callback,
-                                 final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ConnectionCallback connectionCallback,
+                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -232,7 +232,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), cache) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -276,7 +276,7 @@ public class SingleTransferWorkerTest {
                     return TransferAction.overwrite;
                 }
             }, new DisabledTransferErrorCallback(),
-                    new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty()) {
+                    new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty()) {
                 @Override
                 public Future<TransferStatus> transfer(final TransferItem file, final TransferAction action) throws BackgroundException {
                     // Expected not found

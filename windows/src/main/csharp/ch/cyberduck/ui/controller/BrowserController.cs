@@ -1227,10 +1227,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 bookmark =
-                    new Host(
-                        ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
-                        PreferencesFactory.get().getProperty("connection.hostname.default"),
-                        PreferencesFactory.get().getInteger("connection.port.default"));
+                    new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")));
             }
             ToggleView(BrowserView.Bookmark);
             AddBookmark(bookmark);
@@ -1495,8 +1492,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 ISet<Path> folders = new HashSet<Path>();
                 foreach (Path path in View.VisiblePaths)
                 {
-                    if (null == path || !View.IsExpanded(path)) continue;
-                    folders.Add(path);
+                    if (null == path) continue;
+                    if (path.isDirectory())
+                    {
+                        // Invalidate cache regardless if rendered. Fix CD-2340
+                        _cache.invalidate(path);
+                        if (View.IsExpanded(path))
+                        {
+                            folders.Add(path);
+                        }
+                    }
                 }
                 folders.Add(Workdir);
                 Reload(Workdir, folders, SelectedPaths, true);
@@ -1887,6 +1892,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewVault()
         {
             return IsMounted() && Session.getVault() != VaultRegistry.DISABLED &&
+                   null == Workdir.attributes().getVault() &&
                    ((Directory) Session.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath));
         }
@@ -2373,23 +2379,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return Workdir != null;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="preserveSelection">All selected files should be reselected after reloading the view</param>
-        public void _ReloadData(bool preserveSelection)
-        {
-            if (preserveSelection)
-            {
-                //Remember the previously selected paths
-                //_ReloadData(SelectedPaths);
-            }
-            else
-            {
-                //_ReloadData(new List<Path>());
-            }
-        }
-
         public override void start(BackgroundAction action)
         {
             Invoke(delegate { View.StartActivityAnimation(); });
@@ -2511,7 +2500,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    if (_cache.isCached(folder))
+                    if (_cache.isValid(folder))
                     {
                         Reload(workdir, selected, folder);
                         return;

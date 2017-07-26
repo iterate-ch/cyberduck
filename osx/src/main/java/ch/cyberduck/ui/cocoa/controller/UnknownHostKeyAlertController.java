@@ -17,8 +17,8 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.Scheme;
 
 import java.security.PublicKey;
@@ -53,6 +53,6 @@ public class UnknownHostKeyAlertController extends AlertController {
 
     @Override
     protected String help() {
-        return new DefaultProviderHelpService().help(Scheme.sftp);
+        return ProviderHelpServiceFactory.get().help(Scheme.sftp);
     }
 }

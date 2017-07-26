@@ -36,9 +36,8 @@ public final class ConnectionControllerFactory {
     public static ConnectionController create(final WindowController parent) {
         synchronized(NSApplication.sharedApplication()) {
             if(!open.containsKey(parent)) {
-                final ConnectionController c = new ConnectionController(new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
-                        PreferencesFactory.get().getProperty("connection.hostname.default"),
-                        PreferencesFactory.get().getInteger("connection.port.default"))) {
+                final ConnectionController c = new ConnectionController(new Host(ProtocolFactory.get().forName(
+                        PreferencesFactory.get().getProperty("connection.protocol.default")))) {
                     @Override
                     public void invalidate() {
                         open.remove(parent);

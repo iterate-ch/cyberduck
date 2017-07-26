@@ -21,8 +21,8 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -96,6 +96,6 @@ public abstract class FileController extends AlertController {
 
     @Override
     protected String help() {
-        return new DefaultProviderHelpService().help("/howto/browser");
+        return ProviderHelpServiceFactory.get().help();
     }
 }

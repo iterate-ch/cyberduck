@@ -5,6 +5,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
@@ -17,7 +18,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -45,7 +46,7 @@ public class AzureReadFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        new AzureReadFeature(session, null).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new AzureReadFeature(session, null).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
     }
 
     @Test
@@ -59,7 +60,7 @@ public class AzureReadFeatureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final byte[] content = new RandomStringGenerator.Builder().build().generate((1000)).getBytes();
         final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -67,7 +68,7 @@ public class AzureReadFeatureTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new AzureReadFeature(session, null).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new AzureReadFeature(session, null).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

@@ -66,6 +66,7 @@ import org.apache.log4j.Logger;
 import javax.net.SocketFactory;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 
 import com.github.sardine.impl.SardineException;
@@ -141,7 +142,9 @@ public class DAVSession extends HttpSession<DAVClient> {
             // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
             client.enablePreemptiveAuthentication(host.getHostname(),
                     host.getPort(),
-                    host.getPort());
+                    host.getPort(),
+                    Charset.forName(preferences.getProperty("http.credentials.charset"))
+            );
         }
         else {
             client.disablePreemptiveAuthentication();

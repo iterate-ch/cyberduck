@@ -17,9 +17,9 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 
 public class InsecureLoginAlertController extends AlertController {
     private final String title;
@@ -52,6 +52,6 @@ public class InsecureLoginAlertController extends AlertController {
 
     @Override
     protected String help() {
-        return new DefaultProviderHelpService().help(protocol);
+        return ProviderHelpServiceFactory.get().help(protocol);
     }
 }

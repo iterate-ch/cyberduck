@@ -27,6 +27,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public class MoveWorkerTest {
                         private final AtomicInteger count = new AtomicInteger();
 
                         @Override
-                        public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+                        public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
                             if(count.get() == 0) {
                                 assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), file);
                                 assertEquals(new Path("/t2/a", EnumSet.of(Path.Type.file)), renamed);

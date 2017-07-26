@@ -18,9 +18,11 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2DownloadFileResponse;
 
 public class B2ReadFeature implements Read {
 
@@ -38,7 +41,7 @@ public class B2ReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
         try {
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
@@ -47,7 +50,8 @@ public class B2ReadFeature implements Read {
                         range.getStart(), range.getEnd()
                 );
             }
-            return session.getClient().downloadFileByIdToStream(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
+            final B2DownloadFileResponse response = session.getClient().downloadFileById(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
+            return new HttpMethodReleaseInputStream(response.getResponse());
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Download {0} failed", e, file);

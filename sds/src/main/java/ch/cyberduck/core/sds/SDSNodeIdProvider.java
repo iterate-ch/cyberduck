@@ -29,14 +29,17 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 public class SDSNodeIdProvider implements IdProvider {
-
-    private final SDSSession session;
+    private static final Logger log = Logger.getLogger(SDSNodeIdProvider.class);
 
     private static final String ROOT_NODE_ID = "0";
 
-    private final PathContainerService containerService = new PathContainerService();
+    private final SDSSession session;
+
+    private final PathContainerService containerService
+            = new PathContainerService();
 
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
@@ -45,6 +48,9 @@ public class SDSNodeIdProvider implements IdProvider {
     @Override
     public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Return cached node %s for file %s", file.attributes().getVersionId(), file));
+            }
             return file.attributes().getVersionId();
         }
         if(file.isRoot()) {
@@ -69,6 +75,9 @@ public class SDSNodeIdProvider implements IdProvider {
                     null, null, null);
             for(Node node : nodes.getItems()) {
                 if(node.getName().equals(file.getName())) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Return node %s for file %s", node.getId(), file));
+                    }
                     return node.getId().toString();
                 }
             }

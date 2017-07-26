@@ -49,7 +49,7 @@ public class VaultRegistryCopyFeature implements Copy {
         }
         else {
             // Move files inside vault. May use server side copy.
-            proxy.copy(source, copy, status);
+            registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status);
         }
     }
 
@@ -62,6 +62,7 @@ public class VaultRegistryCopyFeature implements Copy {
             else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
                 return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(target).isRecursive(source, copy);
             }
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).isRecursive(source, copy);
         }
         catch(VaultUnlockCancelException e) {
             // Ignore
@@ -78,6 +79,7 @@ public class VaultRegistryCopyFeature implements Copy {
             else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
                 return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(target).isSupported(source, copy);
             }
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).isSupported(source, copy);
         }
         catch(VaultUnlockCancelException e) {
             // Ignore
@@ -87,7 +89,7 @@ public class VaultRegistryCopyFeature implements Copy {
 
     @Override
     public Copy withTarget(final Session<?> session) {
-        this.target = session;
+        this.target = session.withRegistry(registry);
         return this;
     }
 

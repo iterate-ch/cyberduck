@@ -14,9 +14,9 @@ public class DonationKeyTest {
     public void testVerifyInvalidFile() throws Exception {
         final Local f = new Local(System.getProperty("java.io.tmpdir"), "f.cyberducklicense");
         DonationKey r = new DonationKey(f);
-        assertFalse(r.verify());
+        assertFalse(r.verify(new DisabledLicenseVerifierCallback()));
         LocalTouchFactory.get().touch(f);
-        assertFalse(r.verify());
+        assertFalse(r.verify(new DisabledLicenseVerifierCallback()));
         f.delete();
     }
 
@@ -24,7 +24,7 @@ public class DonationKeyTest {
     public void testVerifyFailure() throws Exception {
         final Local f = new Local("src/test/resources/test.cyberducklicense");
         DonationKey r = new DonationKey(f);
-        assertFalse(r.verify());
+        assertFalse(r.verify(new DisabledLicenseVerifierCallback()));
     }
 
     @Test

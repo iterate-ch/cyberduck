@@ -47,3 +47,5 @@ Thumbs.db
 *.opensdf
 *.DotSettings.user
 obj/
+
+packages/

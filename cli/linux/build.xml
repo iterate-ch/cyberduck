@@ -87,9 +87,9 @@
                 <fx:fileset dir="${home}" type="icon">
                     <include name="*.ico"/>
                 </fx:fileset>
-                <fx:fileset type="license" file="${home}/LICENSE"/>
-                <fx:fileset dir="${home}" type="data">
-                    <include name="profiles/default/*.cyberduckprofile"/>
+                <fx:fileset type="license" file="${home}/LICENSE.txt"/>
+                <fx:fileset dir="${build}" type="data">
+                    <include name="profiles/*.cyberduckprofile"/>
                 </fx:fileset>
                 <!-- Localizations -->
                 <fx:fileset dir="${home}" type="data">

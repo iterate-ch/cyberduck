@@ -36,7 +36,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -80,7 +80,7 @@ public class S3SingleUploadServiceTest {
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final String random = RandomStringUtils.random(1000);
+        final String random = new RandomStringGenerator.Builder().build().generate(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out, Charset.defaultCharset());
         out.close();
@@ -114,7 +114,7 @@ public class S3SingleUploadServiceTest {
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final String random = RandomStringUtils.random(1000);
+        final String random = new RandomStringGenerator.Builder().build().generate(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out, Charset.defaultCharset());
         out.close();
@@ -153,7 +153,7 @@ public class S3SingleUploadServiceTest {
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final String random = RandomStringUtils.random(1000);
+        final String random = new RandomStringGenerator.Builder().build().generate(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out, Charset.defaultCharset());
         out.close();

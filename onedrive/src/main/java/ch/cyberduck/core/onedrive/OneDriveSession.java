@@ -29,6 +29,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
@@ -42,7 +43,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -69,19 +69,14 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     private final PathContainerService containerService
             = new PathContainerService();
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
-            host.getProtocol().getOAuthTokenUrl(),
-            host.getProtocol().getOAuthAuthorizationUrl(),
-            host.getProtocol().getClientId(),
-            host.getProtocol().getClientSecret(),
-            host.getProtocol().getScopes()) {
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol()) {
         @Override
         public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
             if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
                 super.process(request, context);
             }
         }
-    }.withRedirectUri(PreferencesFactory.get().getProperty("onedrive.oauth.redirecturi"));
+    }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
     private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
             authorizationService);
@@ -189,6 +184,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == Move.class) {
             return (T) new OneDriveMoveFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new OneDriveCopyFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new OneDriveAttributesFinderFeature(this);

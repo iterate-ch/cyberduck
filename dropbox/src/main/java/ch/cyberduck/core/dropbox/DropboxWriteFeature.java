@@ -50,7 +50,7 @@ import com.dropbox.core.v2.files.WriteMode;
 public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 
-    private static final long DEFAULT_CHUNK_SIZE = 150000000L;
+    private static final long DEFAULT_CHUNK_SIZE = 5 * 1024L * 1024L;
 
     private final DropboxSession session;
 
@@ -215,7 +215,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new DisabledChecksumCompute();
     }
 }

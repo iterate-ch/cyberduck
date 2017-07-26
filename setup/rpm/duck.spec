@@ -31,13 +31,13 @@ mkdir -p %{buildroot}/opt
 cp -r %{_sourcedir}/duck %{buildroot}/opt
 
 %files
-%doc /opt/duck/app/LICENSE
+%doc /opt/duck/app/LICENSE.txt
 /opt/duck
 
 %post
 ln -sf /opt/duck/duck /usr/local/bin/duck
 
 %clean
+rm -rf %{buildroot}
 
 %postun
-rm -f /usr/local/bin/duck

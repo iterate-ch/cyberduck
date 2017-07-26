@@ -60,7 +60,7 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
             }
             else {
                 // You should organize the contents of this directory in the same way that any other Library folder is organized
-                final String application = "duck";
+                final String application = PreferencesFactory.get().getProperty("application.container.name");
                 final Local folder = LocalFactory.get(String.format("%s/Library/Application Support", group.path()), application);
                 try {
                     // In previous versions of OS X, although the group container directory is part of your sandbox,

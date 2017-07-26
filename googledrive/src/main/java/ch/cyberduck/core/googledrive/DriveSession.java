@@ -27,20 +27,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -55,16 +42,13 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
-import java.util.Collections;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
 
 public class DriveSession extends HttpSession<Drive> {
 
@@ -78,12 +62,8 @@ public class DriveSession extends HttpSession<Drive> {
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
-            GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-            host.getProtocol().getClientId(),
-            host.getProtocol().getClientSecret(),
-            Collections.singletonList(DriveScopes.DRIVE))
-            .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
     private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
             authorizationService);
@@ -175,6 +155,12 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Search.class) {
             return (T) new DriveSearchFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new DriveFindFeature(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new DriveFindFeature(this);
         }
         return super._getFeature(type);
     }

@@ -1,6 +1,19 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2
+- [Feature] Server side copy of files (OneDrive)
+- [Feature] Support for wildcard host entries in known_hosts (SFTP)
+- [Bugfix] Missing x-amz-server-side-encryption header when creating folders (S3) (#9378)
+- [Bugfix] Preserve content type when overwriting files (Google Drive)
+- [Bugfix] Missing registered protocols (CLI)
+- [Bugfix] Long time preparing upload into vault (Cryptomator)
+- [Bugfix] Set charset for basic authentication scheme used for preemtive authentication (WebDAV)
+- [Bugfix] Timeout uploading larger files (Google Drive) (#10010)
+- [Bugfix] Set checksum for large file uploads in fileInfo metadata (Backblaze B2)
+- [Bugfix] Default ACL for new buckets has changed to private (S3)
+- [Bugfix] Failure duplicating files in vault (Cryptomator) (#10017)
+
 6.1
 - [Feature] Search files fast without recursively listing directories (OneDrive)
 - [Feature] Search files fast without recursively listing directories (S3)
@@ -13,6 +26,8 @@ https://cyberduck.io/
 - [Bugfix] Always trust invalid certificate setting not remembered (Windows)
 - [Bugfix] Unable to rename files larger than 5 GB (S3) (#9983)
 - [Bugfix] Handle expired authentication token (Backblaze B2)
+- [Bugfix] "Open in Putty" toolbar button always disabled (Windows) (#9965)
+- [Bugfix] Updater ignores custom installation location (Windows) (#9782)
 
 6.0.4 [https://trac.cyberduck.io/milestone/6.0.4]
 - [Bugfix] Failure to upload to root of vault (Cryptomator)

@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -33,6 +34,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -42,7 +44,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -59,7 +60,7 @@ public class SFTPReadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        new SFTPReadFeature(session).read(new Path(new SFTPHomeDirectoryService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new SFTPReadFeature(session).read(new Path(new SFTPHomeDirectoryService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
     }
 
     @Test
@@ -73,8 +74,8 @@ public class SFTPReadFeatureTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
-        final byte[] content = new byte[39865];
-        new Random().nextBytes(content);
+        final int length = 39865;
+        final byte[] content = RandomUtils.nextBytes(length);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
             final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -85,7 +86,7 @@ public class SFTPReadFeatureTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(in, buffer);
@@ -107,8 +108,8 @@ public class SFTPReadFeatureTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
-        final byte[] content = new byte[1048576];
-        new Random().nextBytes(content);
+        final int length = 1048576;
+        final byte[] content = RandomUtils.nextBytes(length);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
             final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -121,7 +122,7 @@ public class SFTPReadFeatureTest {
             status.setLength(content.length);
             status.setAppend(true);
             status.setOffset(100L);
-            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
             new StreamCopier(status, status).withLimit(new Long(content.length - 100)).transfer(in, buffer);

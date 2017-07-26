@@ -28,9 +28,14 @@ import ch.cyberduck.core.transfer.TransferProgress;
 
 import org.apache.log4j.Logger;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 public class TransferCollection extends Collection<Transfer> {
     private static final Logger log = Logger.getLogger(TransferCollection.class);
@@ -51,6 +56,51 @@ public class TransferCollection extends Collection<Transfer> {
 
     protected TransferCollection(final Local file) {
         this.file = file;
+    }
+
+    @Override
+    public void trimToSize() {
+        FolderTransferCollection.defaultCollection().trimToSize();
+    }
+
+    @Override
+    public void ensureCapacity(final int minCapacity) {
+        FolderTransferCollection.defaultCollection().ensureCapacity(minCapacity);
+    }
+
+    @Override
+    public Transfer set(final int index, final Transfer element) {
+        return FolderTransferCollection.defaultCollection().set(index, element);
+    }
+
+    @Override
+    public boolean retainAll(final java.util.Collection<?> c) {
+        return FolderTransferCollection.defaultCollection().retainAll(c);
+    }
+
+    @Override
+    public void forEach(final Consumer<? super Transfer> action) {
+        FolderTransferCollection.defaultCollection().forEach(action);
+    }
+
+    @Override
+    public Spliterator<Transfer> spliterator() {
+        return FolderTransferCollection.defaultCollection().spliterator();
+    }
+
+    @Override
+    public boolean removeIf(final Predicate<? super Transfer> filter) {
+        return FolderTransferCollection.defaultCollection().removeIf(filter);
+    }
+
+    @Override
+    public void replaceAll(final UnaryOperator<Transfer> operator) {
+        FolderTransferCollection.defaultCollection().replaceAll(operator);
+    }
+
+    @Override
+    public void sort(final Comparator<? super Transfer> c) {
+        FolderTransferCollection.defaultCollection().sort(c);
     }
 
     @Override

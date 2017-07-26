@@ -7,7 +7,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -22,7 +22,7 @@ public class StreamCopierTest {
 
     @Test
     public void testIntegrity() throws Exception {
-        final String random = RandomStringUtils.random(39865);
+        final String random = new RandomStringGenerator.Builder().build().generate(39865);
         final byte[] bytes = random.getBytes();
         final TransferStatus status = new TransferStatus();
         final ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);

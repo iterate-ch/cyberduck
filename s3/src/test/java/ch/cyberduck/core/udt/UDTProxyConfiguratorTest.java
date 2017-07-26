@@ -49,8 +49,8 @@ import ch.cyberduck.core.udt.qloudsonic.QloudsonicProxyProvider;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -237,7 +237,7 @@ public class UDTProxyConfiguratorTest {
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 
-        final String random = RandomStringUtils.random(1000);
+        final String random = new RandomStringGenerator.Builder().build().generate(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out, Charset.defaultCharset());
         out.close();
@@ -254,12 +254,12 @@ public class UDTProxyConfiguratorTest {
         assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength(), PathCache.empty()).override);
         {
             final byte[] buffer = new byte[random.getBytes().length];
-            IOUtils.readFully(new S3ReadFeature(tunneled).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
+            IOUtils.readFully(new S3ReadFeature(tunneled).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback()), buffer);
             assertArrayEquals(random.getBytes(), buffer);
         }
         {
             final byte[] buffer = new byte[random.getBytes().length - 1];
-            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().length(random.getBytes().length).append(true).skip(1L), new DisabledConnectionCallback());
+            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().length(random.getBytes().length).append(true).skip(1L), new DisabledConnectionCallback(), new DisabledPasswordCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[random.getBytes().length - 1];
@@ -293,7 +293,7 @@ public class UDTProxyConfiguratorTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(tunneled).touch(test, new TransferStatus());
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
         final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -302,7 +302,7 @@ public class UDTProxyConfiguratorTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new S3ReadFeature(tunneled).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new S3ReadFeature(tunneled).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

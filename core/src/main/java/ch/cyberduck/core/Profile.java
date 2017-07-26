@@ -86,7 +86,7 @@ public class Profile implements Protocol, Serializable {
 
     @Override
     public String getIdentifier() {
-        return String.format("%s-%s", parent.getIdentifier(), this.getProvider());
+        return parent.getIdentifier();
     }
 
     @Override
@@ -274,29 +274,6 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public String getOAuthAuthorizationUrl() {
-        final String v = this.value("OAuth Authorization Url");
-        if(StringUtils.isBlank(v)) {
-            return parent.getOAuthAuthorizationUrl();
-        }
-        return v;
-    }
-
-    @Override
-    public String getOAuthTokenUrl() {
-        final String v = this.value("OAuth Token Url");
-        if(StringUtils.isBlank(v)) {
-            return parent.getOAuthAuthorizationUrl();
-        }
-        return v;
-    }
-
-    @Override
-    public List<String> getScopes() {
-        return this.list("Scopes");
-    }
-
-    @Override
     public Set<Location.Name> getRegions() {
         final List<String> regions = this.list("Regions");
         if(regions.isEmpty()) {
@@ -355,19 +332,55 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public String getClientId() {
-        final String v = this.value("OAuth Client ID");
+    public String getOAuthAuthorizationUrl() {
+        final String v = this.value("OAuth Authorization Url");
         if(StringUtils.isBlank(v)) {
-            return parent.getClientId();
+            return parent.getOAuthAuthorizationUrl();
         }
         return v;
     }
 
     @Override
-    public String getClientSecret() {
+    public String getOAuthTokenUrl() {
+        final String v = this.value("OAuth Token Url");
+        if(StringUtils.isBlank(v)) {
+            return parent.getOAuthTokenUrl();
+        }
+        return v;
+    }
+
+    @Override
+    public List<String> getOAuthScopes() {
+        final List<String> scopes = this.list("Scopes");
+        if(scopes.isEmpty()) {
+            return parent.getOAuthScopes();
+        }
+        return scopes;
+    }
+
+    @Override
+    public String getOAuthRedirectUrl() {
+        final String v = this.value("OAuth Redirect Url");
+        if(StringUtils.isBlank(v)) {
+            return parent.getOAuthRedirectUrl();
+        }
+        return v;
+    }
+
+    @Override
+    public String getOAuthClientId() {
+        final String v = this.value("OAuth Client ID");
+        if(StringUtils.isBlank(v)) {
+            return parent.getOAuthClientId();
+        }
+        return v;
+    }
+
+    @Override
+    public String getOAuthClientSecret() {
         final String v = this.value("OAuth Client Secret");
         if(StringUtils.isBlank(v)) {
-            return parent.getClientSecret();
+            return parent.getOAuthClientSecret();
         }
         return v;
     }

@@ -58,7 +58,7 @@ public class SDSMoveFeatureTest {
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SDSMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
+        new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -80,7 +80,7 @@ public class SDSMoveFeatureTest {
         final Path test = new Path(room1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(room2, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SDSMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
+        new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         new SDSDeleteFeature(session).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -100,7 +100,7 @@ public class SDSMoveFeatureTest {
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SDSDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final Path target = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SDSMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
+        new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -118,7 +118,7 @@ public class SDSMoveFeatureTest {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SDSDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SDSMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
+        new SDSMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -139,7 +139,7 @@ public class SDSMoveFeatureTest {
         new SDSTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(target, new TransferStatus());
-        new SDSMoveFeature(session).move(test, target, true, new Delete.DisabledCallback());
+        new SDSMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(target));
         new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -157,7 +157,7 @@ public class SDSMoveFeatureTest {
         final Path room = new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SDSMoveFeature(session).move(test, new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new Delete.DisabledCallback());
+        new SDSMoveFeature(session).move(test, new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback());
         session.close();
     }
 }

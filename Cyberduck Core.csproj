@@ -38,8 +38,11 @@
     <Reference Include="core">
       <HintPath>core\dll\target\Cyberduck.Core.dll</HintPath>
     </Reference>
-    <Reference Include="ExceptionReporter.WinForms">
-      <HintPath>core\dll\target\ExceptionReporter.WinForms.dll</HintPath>
+    <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetZip.1.10.1\lib\net20\DotNetZip.dll</HintPath>
+    </Reference>
+    <Reference Include="ExceptionReporter.WinForms, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\ExceptionReporter.2.2.1\lib\net40-client\ExceptionReporter.WinForms.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
       <HintPath>core\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
@@ -84,10 +87,14 @@
       <HintPath>core\native\target\ikvm-8.1.5717.0\bin\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="SimpleMapi, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Simple-MAPI.NET.1.0.1\lib\net20\SimpleMapi.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Runtime.WindowsRuntime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(MSBuildBinPath)\System.Runtime.WindowsRuntime.dll</HintPath>
@@ -195,6 +202,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

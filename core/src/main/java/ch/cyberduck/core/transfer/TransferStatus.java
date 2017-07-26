@@ -156,6 +156,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private ByteBuffer header;
 
     /**
+     * File key
+     */
+    private ByteBuffer filekey;
+
+    /**
      * Chunk nonces
      */
     private NonceGenerator nonces;
@@ -195,6 +200,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.segment = copy.segment;
         this.part = copy.part;
         this.header = copy.header;
+        this.filekey = copy.filekey;
         this.nonces = copy.nonces;
         this.retry = copy.retry;
     }
@@ -537,6 +543,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public TransferStatus withHeader(final ByteBuffer header) {
         this.setHeader(header);
+        return this;
+    }
+
+    public ByteBuffer getFilekey() {
+        return filekey;
+    }
+
+    public void setFilekey(final ByteBuffer filekey) {
+        this.filekey = filekey;
+    }
+
+    public TransferStatus withFileKey(final ByteBuffer filekey) {
+        this.setFilekey(filekey);
         return this;
     }
 

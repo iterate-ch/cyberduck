@@ -56,7 +56,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     private static final Logger log = Logger.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
     private final Find finder;
@@ -111,7 +111,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                         }
                         try {
                             return session.getClient().uploadFile(uploadUrl,
-                                    file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
+                                    containerService.getKey(file),
                                     entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                                     status.getMime(),
                                     status.getMetadata());
@@ -149,7 +149,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
     }
 
