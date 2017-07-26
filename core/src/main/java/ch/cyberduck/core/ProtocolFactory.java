@@ -102,6 +102,10 @@ public final class ProtocolFactory {
     }
 
     public void register(final Protocol protocol) {
+        if(null == protocol) {
+            log.error("Attempt to register unknown protocol");
+            return;
+        }
         registered.add(protocol);
     }
 
