@@ -16,19 +16,31 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
-import ch.cyberduck.core.sds.swagger.ExtendedNodesApi;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.message.BasicHeader;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
 import java.io.InputStream;
 
 public class SDSReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(SDSReadFeature.class);
 
     private final SDSSession session;
 
@@ -40,25 +52,38 @@ public class SDSReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback,
                             final PasswordCallback passwordCallback) throws BackgroundException {
         try {
-            final String header;
+            final SDSApiClient client = session.getClient();
+            final HttpUriRequest request = new HttpGet(String.format("%s/nodes/files/%s/downloads", client.getBasePath(),
+                    new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
+            request.addHeader("X-Sds-Auth-Token", session.getToken());
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
+                final String header;
                 if(-1 == range.getEnd()) {
                     header = String.format("bytes=%d-", range.getStart());
                 }
                 else {
                     header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
                 }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Add range header %s for file %s", header, file));
+                }
+                request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
+                // Disable compression
+                request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
             }
-            else {
-                header = null;
+            final HttpResponse response = client.getClient().execute(request);
+            switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_OK:
+                case HttpStatus.SC_PARTIAL_CONTENT:
+                    return new HttpMethodReleaseInputStream(response);
+                default:
+                    throw new HttpResponseExceptionMappingService().map(new HttpResponseException(
+                            response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
             }
-            return new ExtendedNodesApi(session.getClient()).getFileData(session.getToken(),
-                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())),
-                    header, true);
         }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Download {0} failed", e, file);
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 
