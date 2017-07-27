@@ -35,6 +35,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserIdFileIdItem;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserUserPublicKey;
+import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -142,7 +143,8 @@ public class SDSBackgroundFeature implements Background {
                 log.warn(String.format("Failure refreshing missing file keys. %s", failure.getDetail()));
             }
             catch(InvalidKeyPairException | CryptoSystemException | InvalidPasswordException | InvalidFileKeyException e) {
-                log.warn(String.format("Failure while processing missing file keys. %s", e.getMessage()));
+                final BackgroundException failure = new CryptoExceptionMappingService().map(e);
+                log.warn(String.format("Failure while processing missing file keys. %s", failure.getDetail()));
             }
             catch(LoginCanceledException e) {
                 log.warn("Password prompt cancelled");
