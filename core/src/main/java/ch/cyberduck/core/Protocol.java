@@ -212,7 +212,7 @@ public interface Protocol extends Comparable<Protocol> {
     /**
      * @return Protocol schemes
      */
-    String[] getSchemes();
+    Scheme[] getSchemes();
 
     /**
      * @return Default hostname for server

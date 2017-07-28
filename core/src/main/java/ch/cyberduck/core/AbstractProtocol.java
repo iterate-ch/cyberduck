@@ -57,8 +57,8 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name(), this.getIdentifier()};
+    public Scheme[] getSchemes() {
+        return new Scheme[]{this.getScheme()};
     }
 
     @Override
