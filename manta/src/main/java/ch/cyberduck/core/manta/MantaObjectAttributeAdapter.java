@@ -21,6 +21,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
@@ -50,9 +51,7 @@ public class MantaObjectAttributeAdapter {
             return attributes;
         }
 
-        // Directories return null for the remaining properties.
-
-        if(session.pathMapper.isWorldReadable(mantaObject)) {
+        if(session.isWorldReadable(mantaObject)) {
             populateLinkAttribute(attributes, mantaObject);
         }
 
@@ -74,7 +73,7 @@ public class MantaObjectAttributeAdapter {
         final String[] pathSegments = mantaObject.getPath().split(MantaClient.SEPARATOR);
 
         attributes.setDisplayname(pathSegments[pathSegments.length - 1]);
-        attributes.setOwner(session.pathMapper.getAccountOwner());
+        attributes.setOwner(session.getAccountOwner());
 
         populatePermissionsAttribute(mantaObject, attributes);
 
@@ -86,11 +85,11 @@ public class MantaObjectAttributeAdapter {
 
     private void populatePermissionsAttribute(final MantaObject mantaObject, final PathAttributes attributes) {
         final Permission.Action userPermissions =
-                session.pathMapper.isUserWritable(mantaObject)
+                session.isUserWritable(mantaObject)
                         ? Permission.Action.all
                         : Permission.Action.read;
         final Permission.Action otherPermissions =
-                session.pathMapper.isWorldReadable(mantaObject)
+                session.isWorldReadable(mantaObject)
                         ? Permission.Action.read
                         : Permission.Action.none;
 

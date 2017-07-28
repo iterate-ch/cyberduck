@@ -50,7 +50,7 @@ public class MantaDirectoryFeatureIT extends AbstractMantaTest {
         final Path target = new MantaDirectoryFeature(session)
                 .mkdir(
                         new Path(
-                                MantaPathMapper.Volume.PRIVATE.forAccount(session),
+                                testPathPrefix,
                                 String.format("%s %s", randomStringService.random(), randomStringService.random()),
                                 EnumSet.of(Path.Type.directory)
                         ), null, null);

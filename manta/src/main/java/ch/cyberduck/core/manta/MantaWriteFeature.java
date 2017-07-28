@@ -48,7 +48,7 @@ public class MantaWriteFeature implements Write<Void> {
     public HttpResponseOutputStream<Void> write(final Path file,
                                           final TransferStatus status,
                                           final ConnectionCallback callback) throws BackgroundException {
-        final OutputStream putStream = session.getClient().putAsOutputStream(session.pathMapper.requestPath(file));
+        final OutputStream putStream = session.getClient().putAsOutputStream(file.getAbsolute());
 
         return new HttpResponseOutputStream<Void>(putStream) {
             @Override
@@ -58,17 +58,14 @@ public class MantaWriteFeature implements Write<Void> {
         };
     }
 
+    /**
+     * Manta does not support raw append operations.
+     *
+     * {@inheritDoc}
+     */
     @Override
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        PathAttributes attributes;
-        try {
-            attributes = attrFinder.withCache(cache).find(file);
-        } catch (Exception e) {
-            return Write.notfound;
-        }
-
-        // TODO: figure out what override does here and if we're even doing anything that makes sense really
-        return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        return Write.override;
     }
 
     @Override
@@ -81,7 +78,6 @@ public class MantaWriteFeature implements Write<Void> {
         return false;
     }
 
-    // TODO: what does this checksum do? can we combine it with our MD5 checksum?
     @Override
     public ChecksumCompute checksum() {
         // TODO: verify this is actually used

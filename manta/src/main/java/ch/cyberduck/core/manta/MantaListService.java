@@ -47,12 +47,10 @@ public class MantaListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
 
         final AttributedList<Path> children = new AttributedList<>();
-        final MantaClient c = session.getClient();
-        final String remotePath = session.pathMapper.requestPath(directory);
 
         final Iterator<MantaObject> objectsIter;
         try {
-            objectsIter = c.listObjects(remotePath).iterator();
+            objectsIter = session.getClient().listObjects(directory.getAbsolute()).iterator();
         }
         catch(UncheckedIOException uioe) {
             if (directory.isRoot()) {

@@ -40,7 +40,7 @@ public class MantaDeleteFeature implements Delete {
         for(Path file : files) {
             callback.delete(file);
             try {
-                session.getClient().deleteRecursive(session.pathMapper.requestPath(file));
+                session.getClient().deleteRecursive(file.getAbsolute());
             }
             catch(MantaException | MantaIOException e) {
                 throw new MantaExceptionMappingService(session).map("Cannot delete {0}", e, file);
@@ -53,7 +53,7 @@ public class MantaDeleteFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path file) {
-        return session.pathMapper.isUserWritable(file);
+        return session.isUserWritable(file);
     }
 
     @Override

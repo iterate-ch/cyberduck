@@ -15,58 +15,29 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.RandomStringService;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
-import java.util.EnumSet;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 
 @Category(IntegrationTest.class)
 public class MantaListServiceIT extends AbstractMantaTest {
 
     @Test
-    public void testListDrives() throws Exception {
+    public void testListBuckets() throws Exception {
         final AttributedList<Path> list = new MantaListService(session)
-                .list(session.pathMapper.getAccountRoot(), new DisabledListProgressListener());
+                .list(session.getAccountRoot(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            assertEquals(session.pathMapper.getAccountRoot(), f.getParent());
+            assertSame(session.getAccountRoot(), f.getParent());
+            assertEquals(session.getAccountRoot().getName(), f.getParent().getName());
         }
-    }
-
-    @Test
-    public void testListDriveChildren() throws Exception {
-        final Path drive = MantaPathMapper.Volume.PRIVATE.forAccount(session);
-        final AttributedList<Path> list = new MantaListService(session)
-                .list(drive, new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        for(Path f : list) {
-            assertEquals(drive.getName(), f.getParent().getName());
-            assertNotNull(f.getName());
-        }
-    }
-
-    @Test
-    public void testWhitespacedChild() throws Exception {
-        final RandomStringService randomStringService = new AlphanumericRandomStringService();
-        final Path testDir = new Path(
-                MantaPathMapper.Volume.PRIVATE.forAccount(session),
-                String.format("%s %s", randomStringService.random(), randomStringService.random()),
-                EnumSet.of(Path.Type.directory));
-        final Path target = new MantaDirectoryFeature(session)
-                .mkdir(testDir, null, null);
-
-        new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

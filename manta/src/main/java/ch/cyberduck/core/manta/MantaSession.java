@@ -15,6 +15,7 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
@@ -23,6 +24,7 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -34,27 +36,30 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaClient;
+import com.joyent.manta.client.MantaObject;
+import com.joyent.manta.client.crypto.ExternalSecurityProviderLoader;
 import com.joyent.manta.config.BaseChainedConfigContext;
 import com.joyent.manta.config.ChainedConfigContext;
 import com.joyent.manta.config.DefaultsConfigContext;
 import com.joyent.manta.config.SettableConfigContext;
 import com.joyent.manta.config.StandardConfigContext;
+import com.joyent.manta.util.MantaUtils;
 
-public class MantaSession extends SSLSession<MantaClient> {
+public class MantaSession extends Session<MantaClient> {
+
+    static {
+        ExternalSecurityProviderLoader.getBouncyCastleProvider();
+    }
 
     public static final Logger log = Logger.getLogger(MantaSession.class);
 
@@ -62,22 +67,41 @@ public class MantaSession extends SSLSession<MantaClient> {
 
     private String keyFingerprint;
 
-    MantaPathMapper pathMapper;
+    private final String accountOwner;
 
-    public MantaSession(final Host h) {
-        this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    }
+    public static final String HOME_PATH_PRIVATE = "stor";
+    public static final String HOME_PATH_PUBLIC = "public";
 
-    public MantaSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
-        super(h, new ThreadLocalHostnameDelegatingTrustManager(trust, h.getHostname()), key);
-        pathMapper = new MantaPathMapper(this);
+    private final Path accountRoot;
+    private final Path normalizedHomePath;
+    private final Path accountPublicRoot;
+    private final Path accountPrivateRoot;
+
+    public MantaSession(final Host host) {
+        super(host);
+
+        String[] accountPathParts = MantaUtils.parseAccount(host.getCredentials().getUsername());
+
+        accountRoot = new Path(accountPathParts[0], EnumSet.of(AbstractPath.Type.placeholder));
+        accountOwner = accountRoot.getName();
+        normalizedHomePath = buildNormalizedHomePath(host.getDefaultPath());
+
+        accountPublicRoot = new Path(
+                accountRoot,
+                HOME_PATH_PUBLIC,
+                EnumSet.of(AbstractPath.Type.volume, AbstractPath.Type.directory));
+        accountPrivateRoot = new Path(
+                accountRoot,
+                HOME_PATH_PRIVATE,
+                EnumSet.of(AbstractPath.Type.volume, AbstractPath.Type.directory));
+
         config = new ChainedConfigContext(
                 new DefaultsConfigContext(),
                 new StandardConfigContext()
                         .setHttpsProtocols(DefaultsConfigContext.DEFAULT_HTTPS_PROTOCOLS)
                         .setDisableNativeSignatures(true)
                         .setNoAuth(false)
-                        .setMantaURL("https://" + h.getHostname())
+                        .setMantaURL("https://" + host.getHostname())
                         .setMantaUser(host.getCredentials().getUsername()));
     }
 
@@ -93,13 +117,17 @@ public class MantaSession extends SSLSession<MantaClient> {
                       final Cache<Path> cache) throws BackgroundException {
         keyFingerprint = null;
 
-        if(host.getCredentials() != null
-                && host.getCredentials().getUsername() != null
-                && !host.getCredentials().getUsername().matches("[A-z0-9._]+(/[A-z0-9._]+)?")) {
+        if(host.getCredentials() == null
+                || host.getCredentials().getUsername() == null
+                || !host.getCredentials().getUsername().matches("[A-z0-9._]+(/[A-z0-9._]+)?")) {
             throw new LoginFailureException("Invalid username given: " + host.getCredentials().getUsername());
         }
 
         final boolean success = new MantaPublicKeyAuthentication(this, keychain).authenticate(host, prompt, cancel);
+
+        if (host.getCredentials().getPassword() != null) {
+            config.setPassword(host.getCredentials().getPassword());
+        }
 
         if(!success) {
             throw new LoginFailureException("Failed to calculate key fingerprint");
@@ -114,7 +142,8 @@ public class MantaSession extends SSLSession<MantaClient> {
 
         try {
             // instantiation of a MantaClient does not validate credentials,
-            client.isDirectoryEmpty(pathMapper.getNormalizedHomePath().getAbsolute());
+            // let's list the home path to test the connection
+            client.isDirectoryEmpty(normalizedHomePath.getAbsolute());
         }
         catch(IOException e) {
             throw new MantaExceptionMappingService(this).mapLoginException(e);
@@ -123,7 +152,7 @@ public class MantaSession extends SSLSession<MantaClient> {
 
     @Override
     protected void logout() throws BackgroundException {
-        client.close();
+        client.closeWithWarning();
     }
 
     @Override
@@ -139,12 +168,78 @@ public class MantaSession extends SSLSession<MantaClient> {
         return keyFingerprint;
     }
 
+    protected SettableConfigContext<BaseChainedConfigContext> getConfig() {
+        return config;
+    }
+
     protected boolean userIsOwner() throws IllegalStateException {
-        if(pathMapper == null || pathMapper.getAccountRoot() == null) {
-            throw new IllegalStateException("Account owner not set");
+        return StringUtils.equals(host.getCredentials().getUsername(), accountOwner);
+    }
+
+    private Path buildNormalizedHomePath(final String rawHomePath) {
+        final String defaultPath = StringUtils.defaultIfBlank(rawHomePath, Path.HOME);
+        final String accountRootRegex = "^/?(" + accountRoot.getAbsolute() + "|~~?)/?";
+        final String subdirectoryRawPath = defaultPath.replaceFirst(accountRootRegex, "");
+
+        if(StringUtils.isEmpty(subdirectoryRawPath)) {
+            return accountRoot;
         }
 
-        return pathMapper.getAccountRoot().getName().equals(host.getCredentials().getUsername());
+        final String[] subdirectoryPathSegments = StringUtils.split(subdirectoryRawPath, Path.DELIMITER);
+        Path homePath = accountRoot;
+
+        for(final String pathSegment : subdirectoryPathSegments) {
+            EnumSet<AbstractPath.Type> types = EnumSet.of(AbstractPath.Type.directory);
+            if(homePath.getParent().equals(accountRoot)
+                    && StringUtils.equalsAny(pathSegment, HOME_PATH_PRIVATE, HOME_PATH_PUBLIC)) {
+                types.add(AbstractPath.Type.volume);
+            }
+
+            homePath = new Path(homePath, pathSegment, types);
+        }
+
+        return homePath;
+    }
+
+    protected Path getNormalizedHomePath() {
+        return normalizedHomePath;
+    }
+
+    protected Path getAccountRoot() {
+        return accountRoot;
+    }
+
+    protected String getAccountOwner() {
+        return accountOwner;
+    }
+
+    protected Path getAccountPublicRoot() {
+        return accountPublicRoot;
+    }
+
+    protected Path getAccountPrivateRoot() {
+        return accountPrivateRoot;
+    }
+
+    protected boolean isUserWritable(final MantaObject mantaObject) {
+        return StringUtils.startsWithAny(
+                mantaObject.getPath(),
+                accountPublicRoot.getAbsolute(),
+                accountPrivateRoot.getAbsolute());
+    }
+
+    protected boolean isUserWritable(final Path path) {
+        return path.isChild(accountPublicRoot) || path.isChild(accountPrivateRoot);
+    }
+
+    protected boolean isWorldReadable(final MantaObject mantaObject) {
+        return StringUtils.startsWithAny(
+                mantaObject.getPath(),
+                accountPublicRoot.getAbsolute());
+    }
+
+    protected boolean isWorldReadable(final Path path) {
+        return path.isChild(accountPublicRoot);
     }
 
     @Override
@@ -172,7 +267,7 @@ public class MantaSession extends SSLSession<MantaClient> {
             return (T) new MantaAttributesFinderFeature(this);
         }
         else if(type == UrlProvider.class) {
-            return (T) new MantaUrlProviderFeature();
+            return (T) new MantaUrlProviderFeature(this);
         }
         else if(type == Home.class) {
             return (T) new MantaHomeFinderFeature(this);

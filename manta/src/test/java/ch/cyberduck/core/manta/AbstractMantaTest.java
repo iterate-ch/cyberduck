@@ -15,25 +15,32 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
 import ch.cyberduck.core.AbstractPath.Type;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.manta.MantaPathMapper.Volume;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.log4j.Logger;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.util.EnumSet;
 import java.util.UUID;
-
-import com.joyent.manta.client.MantaClient;
-import com.joyent.manta.util.MantaUtils;
 
 import static org.junit.Assert.fail;
 
@@ -42,7 +49,7 @@ public abstract class AbstractMantaTest {
     private static final Logger log = Logger.getLogger(AbstractMantaTest.class);
 
     protected MantaSession session;
-    protected String testPathPrefix;
+    protected Path testPathPrefix;
 
     @BeforeClass
     public static void protocol() {
@@ -62,7 +69,7 @@ public abstract class AbstractMantaTest {
                 new Credentials(username)
                         .withIdentity(new Local(keyPath)));
 
-        session = new MantaSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        session = new MantaSession(host);
         new LoginConnectionService(
                 new DisabledLoginCallback() {
                     @Override
@@ -75,26 +82,27 @@ public abstract class AbstractMantaTest {
                 new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
 
-        testPathPrefix = randomDirectory().getAbsolute();
+        testPathPrefix = new Path(session.getAccountPrivateRoot(), UUID.randomUUID().toString(), EnumSet.of(Type.directory));
+        session.getClient().putDirectory(testPathPrefix.getAbsolute());
     }
 
     @AfterClass
     public void disconnect() throws Exception {
         log.debug("cleaning up test directory: " + testPathPrefix);
-        session.getClient().deleteRecursive(testPathPrefix);
+        session.getClient().deleteRecursive(testPathPrefix.getAbsolute());
         session.close();
     }
 
     protected Path randomFile() {
         return new Path(
-                Volume.PRIVATE.forAccount(session),
+                testPathPrefix,
                 UUID.randomUUID().toString(),
                 EnumSet.of(Type.file));
     }
 
     protected Path randomDirectory() {
         return new Path(
-                Volume.PRIVATE.forAccount(session),
+                testPathPrefix,
                 UUID.randomUUID().toString(),
                 EnumSet.of(Type.directory));
     }

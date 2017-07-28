@@ -25,13 +25,13 @@ import static org.junit.Assert.*;
 
 public class MantaPathMapperTest {
 
-    private MantaPathMapper buildMapper(final String username, final String homePath) {
-        return SessionFactory.create(new Credentials(username), homePath).pathMapper;
+    private MantaSession buildSession(final String username, final String homePath) {
+        return SessionFactory.create(new Credentials(username), homePath);
     }
 
     @Test
     public void testCheckingRootFolderPermissions() {
-        final MantaPathMapper pm = buildMapper("account", "");
+        final MantaSession pm = buildSession("account", "");
 
         assertTrue(pm.isUserWritable(new MantaObjectResponse("/account/public")));
         assertTrue(pm.isWorldReadable(new MantaObjectResponse("/account/public")));
@@ -42,29 +42,29 @@ public class MantaPathMapperTest {
 
     @Test
     public void testNormalizingHomePathsForNormalAccounts() {
-        assertEquals("/account", buildMapper("account", "").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account", "~").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account", "~~").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account", "/~~").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account", "~~/").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account", "/~~/").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account/public", buildMapper("account", "~/public").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account/public", buildMapper("account", "/~/public").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account/public", buildMapper("account", "~~/public").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account/public", buildMapper("account", "/~~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account", "").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account", "~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account", "~~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account", "/~~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account", "~~/").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account", "/~~/").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildSession("account", "~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildSession("account", "/~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildSession("account", "~~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildSession("account", "/~~/public").getNormalizedHomePath().getAbsolute());
     }
 
     @Test
     public void testNormalizingHomePathsForSubAccounts() {
-        assertEquals("/account", buildMapper("account/sub", "").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account/sub", "~").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account/sub", "~~").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account/sub", "/~~").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account/sub", "~~/").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account", buildMapper("account/sub", "/~~/").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account/public", buildMapper("account/sub", "~/public").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account/public", buildMapper("account/sub", "/~/public").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account/public", buildMapper("account/sub", "~~/public").getNormalizedHomePath().getAbsolute());
-        assertEquals("/account/public", buildMapper("account/sub", "/~~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account/sub", "").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account/sub", "~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account/sub", "~~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account/sub", "/~~").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account/sub", "~~/").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account", buildSession("account/sub", "/~~/").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildSession("account/sub", "~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildSession("account/sub", "/~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildSession("account/sub", "~~/public").getNormalizedHomePath().getAbsolute());
+        assertEquals("/account/public", buildSession("account/sub", "/~~/public").getNormalizedHomePath().getAbsolute());
     }
 }

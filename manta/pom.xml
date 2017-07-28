@@ -39,16 +39,23 @@
         </dependency>
 
         <dependency>
-            <groupId>com.joyent.manta</groupId>
-            <artifactId>java-manta-client</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>ch.iterate.ssh</groupId>
             <artifactId>sshj</artifactId>
             <version>0.20.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.joyent.manta</groupId>
+            <artifactId>java-manta-client</artifactId>
+            <version>3.1.5-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.56</version>
+        </dependency>
+
 
     </dependencies>
 

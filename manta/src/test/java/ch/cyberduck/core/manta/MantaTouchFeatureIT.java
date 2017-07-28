@@ -37,7 +37,7 @@ public class MantaTouchFeatureIT extends AbstractMantaTest {
     @Test
     public void testTouch() throws Exception {
         final Path file = new Path(
-                MantaPathMapper.Volume.PRIVATE.forAccount(session),
+                testPathPrefix,
                 new AlphanumericRandomStringService().random(),
                 EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
@@ -49,7 +49,7 @@ public class MantaTouchFeatureIT extends AbstractMantaTest {
     public void testWhitespaceTouch() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path file = new Path(
-                MantaPathMapper.Volume.PRIVATE.forAccount(session),
+                testPathPrefix,
                 String.format("%s %s", randomStringService.random(), randomStringService.random()),
                 EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));

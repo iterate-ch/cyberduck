@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyException;
 import java.security.KeyPair;
@@ -130,9 +129,10 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                             }
 
                             if (StringUtils.isEmpty(credentials.getPassword())) {
-                                return null;
+                                return null; // user left field blank
                             }
 
+                            session.getConfig().setPassword(credentials.getPassword());
                             return credentials.getPassword().toCharArray();
                         }
                         return password.toCharArray();
@@ -147,7 +147,8 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
 
         final String fingerprint;
         try {
-            fingerprint = KeyFingerprinter.md5Fingerprint(new KeyPair(provider.getPublic(), provider.getPrivate()));
+            final KeyPair keyPair = new KeyPair(provider.getPublic(), provider.getPrivate());
+            fingerprint = KeyFingerprinter.md5Fingerprint(keyPair);
         }
         catch(IOException e) {
             throw new MantaExceptionMappingService(session).map(e);

@@ -86,5 +86,8 @@ public class MantaPublicKeyAuthenticationIT {
         }
     }
 
-    // TODO: add a test that uses the passphrase input
+    @Test
+    public void testAuthenticateOpenSSHKeyWithPassphrase() {
+
+    }
 }

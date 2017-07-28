@@ -32,7 +32,7 @@ public class MantaHomeFinderFeature extends DefaultHomeFinderService {
     public Path find() throws BackgroundException {
         final Path home = super.find();
         if(home == DEFAULT_HOME) {
-            return session.pathMapper.getNormalizedHomePath();
+            return session.getNormalizedHomePath();
         }
         return home;
     }

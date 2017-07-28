@@ -42,9 +42,7 @@ public class MantaTouchFeature implements Touch {
                 session.getClient().putDirectory(file.getParent().getAbsolute());
             }
 
-            final String remotePath = session.pathMapper.requestPath(file);
-            // put(String, byte[]) does not urlencode paths, manta bug forthcoming
-            session.getClient().put(remotePath, "");
+            session.getClient().put(file.getAbsolute(), new byte[0]);
         }
         catch(MantaException | MantaIOException e) {
             throw new MantaExceptionMappingService(session).map("Cannot create file {0}", e, file);
@@ -57,7 +55,8 @@ public class MantaTouchFeature implements Touch {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return session.pathMapper.isUserWritable(workdir);
+        return workdir.isChild(session.getAccountPublicRoot())
+                || workdir.isChild(session.getAccountPrivateRoot());
     }
 
     @Override

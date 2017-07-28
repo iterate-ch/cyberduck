@@ -37,7 +37,7 @@ public class MantaDirectoryFeature implements Directory {
     @Override
     public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            session.getClient().putDirectory(session.pathMapper.requestPath(directory));
+            session.getClient().putDirectory(directory.getAbsolute());
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService(session).map("Cannot create folder {0}", e, directory);
@@ -50,7 +50,8 @@ public class MantaDirectoryFeature implements Directory {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return session.pathMapper.isUserWritable(workdir);
+        return workdir.isChild(session.getAccountPublicRoot())
+                || workdir.isChild(session.getAccountPrivateRoot());
     }
 
     @Override

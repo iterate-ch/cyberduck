@@ -51,7 +51,8 @@ public class MantaReadFeature implements Read {
 
             // requesting an empty file as an InputStream doesn't work, but we also don't want to
             // perform a HEAD request for every read so we'll opt to handle the exception instead
-            return session.getClient().getAsInputStream(session.pathMapper.requestPath(file), headers);
+            // see https://github.com/joyent/java-manta/issues/248
+            return session.getClient().getAsInputStream(file.getAbsolute(), headers);
         }
         catch(UnsupportedOperationException e) {
             return emptyFileFallback(file);
@@ -70,7 +71,7 @@ public class MantaReadFeature implements Read {
     private InputStream emptyFileFallback(final Path file) throws BackgroundException {
         final MantaObject probablyEmptyFile;
         try {
-            probablyEmptyFile = session.getClient().head(session.pathMapper.requestPath(file));
+            probablyEmptyFile = session.getClient().head(file.getAbsolute());
         }
         catch(IOException e) {
             throw new MantaExceptionMappingService(session).map("Cannot read file {0}", e, file);

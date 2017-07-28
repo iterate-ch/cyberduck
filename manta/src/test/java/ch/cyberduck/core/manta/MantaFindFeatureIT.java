@@ -34,7 +34,7 @@ public class MantaFindFeatureIT extends AbstractMantaTest {
     public void testFindFileNotFound() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertFalse(f.find(new Path(
-                randomFile(),
+                session.getAccountPrivateRoot(),
                 UUID.randomUUID().toString(),
                 EnumSet.of(Path.Type.file))));
     }
@@ -43,8 +43,8 @@ public class MantaFindFeatureIT extends AbstractMantaTest {
     public void testFindPrivate() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertTrue(f.find(new Path(
-                session.pathMapper.getAccountRoot(),
-                MantaPathMapper.HOME_PATH_PRIVATE,
+                session.getAccountRoot(),
+                MantaSession.HOME_PATH_PRIVATE,
                 EnumSet.of(Path.Type.directory))));
     }
 
@@ -52,8 +52,8 @@ public class MantaFindFeatureIT extends AbstractMantaTest {
     public void testFindPublic() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertTrue(f.find(new Path(
-                session.pathMapper.getAccountRoot(),
-                MantaPathMapper.HOME_PATH_PUBLIC,
+                session.getAccountRoot(),
+                MantaSession.HOME_PATH_PUBLIC,
                 EnumSet.of(Path.Type.directory))));
     }
 }

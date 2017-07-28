@@ -45,7 +45,7 @@ public class MantaMoveFeature implements Move {
                 delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
             }
 
-            session.getClient().move(session.pathMapper.requestPath(file), session.pathMapper.requestPath(renamed));
+            session.getClient().move(file.getAbsolute(), renamed.getAbsolute());
         }
         catch(MantaException | MantaIOException e) {
             throw new MantaExceptionMappingService(session).map("Cannot rename {0}", e, file);
@@ -62,7 +62,7 @@ public class MantaMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return session.pathMapper.isUserWritable(target);
+        return session.isUserWritable(target);
     }
 
     @Override
