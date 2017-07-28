@@ -34,10 +34,10 @@ import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSReadFeature;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
-import ch.cyberduck.core.sds.swagger.ExtendedNodesApi;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -69,7 +69,7 @@ public class CryptoReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback,
                             final PasswordCallback passwordCallback) throws BackgroundException {
         try {
-            final FileKey key = new ExtendedNodesApi(session.getClient()).getUserFileKey(session.getToken(),
+            final FileKey key = new NodesApi(session.getClient()).getUserFileKey(session.getToken(),
                     Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
             final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(session.getToken());
