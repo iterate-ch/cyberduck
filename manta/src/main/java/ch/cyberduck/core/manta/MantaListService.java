@@ -29,7 +29,6 @@ import java.io.UncheckedIOException;
 import java.util.EnumSet;
 import java.util.Iterator;
 
-import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
 import com.joyent.manta.exception.MantaIOException;
 

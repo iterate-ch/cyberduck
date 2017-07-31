@@ -18,7 +18,6 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -31,11 +30,9 @@ import java.io.OutputStream;
 public class MantaWriteFeature implements Write<Void> {
 
     private final MantaSession session;
-    private final MantaAttributesFinderFeature attrFinder;
 
     public MantaWriteFeature(final MantaSession session) {
         this.session = session;
-        this.attrFinder = new MantaAttributesFinderFeature(session);
     }
 
     /**
@@ -79,7 +76,7 @@ public class MantaWriteFeature implements Write<Void> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(Path path) {
         // TODO: verify this is actually used
         return new MD5ChecksumCompute();
     }
