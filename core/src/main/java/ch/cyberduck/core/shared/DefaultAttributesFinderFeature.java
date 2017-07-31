@@ -21,6 +21,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -70,7 +71,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         else {
             list = cache.get(file.getParent());
         }
-        final Path result = list.find(new SimplePathPredicate(file));
+        final Path result = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
         if(null == result) {
             throw new NotfoundException(file.getAbsolute());
         }
