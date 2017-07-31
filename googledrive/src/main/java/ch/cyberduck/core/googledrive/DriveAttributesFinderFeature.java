@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -36,7 +37,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         final AttributedList<Path> list = new FileidDriveListService(session, new DriveFileidProvider(session), file).list(file.getParent(), new DisabledListProgressListener());
-        final Path found = list.find(new SimplePathPredicate(file));
+        final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
