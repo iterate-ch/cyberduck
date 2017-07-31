@@ -35,12 +35,6 @@ public final class QuartzQuickLook implements QuickLook {
     private final List<QLPreviewItem> previews
             = new ArrayList<QLPreviewItem>();
 
-    private final QLPreviewPanel panel;
-
-    public QuartzQuickLook() {
-        panel = QLPreviewPanel.sharedPreviewPanel();
-    }
-
     @Override
     public void select(final List<Local> files) {
         previews.clear();
@@ -73,16 +67,18 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public boolean isOpen() {
-        return QLPreviewPanel.sharedPreviewPanelExists() && panel.isVisible();
+        return QLPreviewPanel.sharedPreviewPanelExists()
+                && QLPreviewPanel.sharedPreviewPanel().isVisible();
     }
 
     @Override
     public void willBeginQuickLook() {
-        panel.setDataSource(model.id());
+        QLPreviewPanel.sharedPreviewPanel().setDataSource(model.id());
     }
 
     @Override
     public void open() {
+        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.makeKeyAndOrderFront(null);
         if(null == panel.dataSource()) {
             log.warn("Do not reload data yet because datasource is not yet setup. Focus has probably changed to another application since");
@@ -93,6 +89,7 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public void close() {
+        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.setDataSource(null);
         panel.orderOut(null);
     }
