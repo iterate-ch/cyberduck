@@ -37,6 +37,9 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public void select(final List<Local> files) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Select files for %s", files));
+        }
         previews.clear();
         for(final Local selected : files) {
             previews.add(new QLPreviewItem() {
@@ -73,16 +76,26 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public void willBeginQuickLook() {
-        QLPreviewPanel.sharedPreviewPanel().setDataSource(model.id());
+        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set datasource for panel %s", panel));
+        }
+        panel.setDataSource(model.id());
     }
 
     @Override
     public void open() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Order front panel %s", panel));
+        }
         panel.makeKeyAndOrderFront(null);
         if(null == panel.dataSource()) {
             log.warn("Do not reload data yet because datasource is not yet setup. Focus has probably changed to another application since");
             return;
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Reload data for panel %s", panel));
         }
         panel.reloadData();
     }
@@ -90,12 +103,18 @@ public final class QuartzQuickLook implements QuickLook {
     @Override
     public void close() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Order out panel %s", panel));
+        }
         panel.setDataSource(null);
         panel.orderOut(null);
     }
 
     @Override
     public void didEndQuickLook() {
+        if(log.isDebugEnabled()) {
+            log.debug("Clear previews");
+        }
         previews.clear();
     }
 }
