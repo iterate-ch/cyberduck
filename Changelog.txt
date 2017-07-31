@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2.1
+- [Bugfix] Default to WebDAV for http:// scheme in quick connect and CLI
+
 6.2
 - [Feature] Server side copy of files (OneDrive)
 - [Feature] Support for wildcard host entries in known_hosts (SFTP)
