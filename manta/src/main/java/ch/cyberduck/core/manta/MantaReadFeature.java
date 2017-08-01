@@ -16,6 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,7 +41,10 @@ public class MantaReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public InputStream read(final Path file,
+                            final TransferStatus status,
+                            final ConnectionCallback connectionCallback,
+                            final PasswordCallback passwordCallback) throws BackgroundException {
         final MantaHttpHeaders headers = new MantaHttpHeaders();
 
         try {

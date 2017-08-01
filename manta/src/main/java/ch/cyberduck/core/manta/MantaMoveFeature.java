@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -39,12 +40,8 @@ public class MantaMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final TransferStatus transferStatus, final Delete.Callback callback) throws BackgroundException {
         try {
-            if(exists) {
-                delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
-            }
-
             session.getClient().move(file.getAbsolute(), renamed.getAbsolute());
         }
         catch(MantaException | MantaIOException e) {
