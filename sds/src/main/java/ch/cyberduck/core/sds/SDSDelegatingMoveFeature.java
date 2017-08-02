@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -43,20 +44,21 @@ public class SDSDelegatingMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback,
+                     final ConnectionCallback connectionCallback) throws BackgroundException {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
             if(srcContainer.equals(targetContainer)) {
-                proxy.move(source, target, status, callback);
+                proxy.move(source, target, status, callback, connectionCallback);
             }
             else {
-                // Moving into an encrypted room
+                // Moving into or from an encrypted room
                 final Copy copy = new SDSCopyFeature(session);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
                 }
-                copy.copy(source, target, status.length(source.attributes().getSize()));
+                copy.copy(source, target, status, connectionCallback);
                 // Delete source file after copy is complete
                 final Delete delete = session.getFeature(Delete.class);
                 if(delete.isSupported(source)) {
@@ -65,7 +67,7 @@ public class SDSDelegatingMoveFeature implements Move {
             }
         }
         else {
-            proxy.move(source, target, status, callback);
+            proxy.move(source, target, status, callback, connectionCallback);
         }
     }
 

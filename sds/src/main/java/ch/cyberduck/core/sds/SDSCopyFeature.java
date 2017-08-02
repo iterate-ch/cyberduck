@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -44,7 +45,7 @@ public class SDSCopyFeature extends DefaultCopyFeature {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(containerService.getContainer(target).getType().contains(Path.Type.vault)) {
                 final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
@@ -53,7 +54,7 @@ public class SDSCopyFeature extends DefaultCopyFeature {
                 writer.writeValue(out, fileKey);
                 status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
             }
-            super.copy(source, target, status);
+            super.copy(source, target, status, callback);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
