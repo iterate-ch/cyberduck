@@ -135,8 +135,7 @@ public class MantaSession extends Session<MantaClient> {
 
         Validate.notNull(keyFingerprint, "Key fingerprint missing.");
 
-        config.setMantaKeyId(keyFingerprint)
-                .setMantaKeyPath(host.getCredentials().getIdentity().getAbsolute());
+        config.setMantaKeyId(keyFingerprint);
 
         client = new MantaClient(config);
 

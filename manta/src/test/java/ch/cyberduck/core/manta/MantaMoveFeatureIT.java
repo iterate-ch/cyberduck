@@ -51,7 +51,7 @@ public class MantaMoveFeatureIT extends AbstractMantaTest {
         assertNotNull(attributesFinder.find(file));
         Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(file, rename));
-        move.move(file, rename, false, new Delete.DisabledCallback());
+        move.move(file, rename, new TransferStatus(), new Delete.DisabledCallback());
         assertNotNull(attributesFinder.find(rename));
         delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -74,7 +74,7 @@ public class MantaMoveFeatureIT extends AbstractMantaTest {
 
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, rename));
-        move.move(touchedFile, rename, false, new Delete.DisabledCallback());
+        move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback());
         assertNotNull(attributesFinder.find(rename));
 
         delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -98,7 +98,7 @@ public class MantaMoveFeatureIT extends AbstractMantaTest {
 
         Path rename = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, rename));
-        move.move(touchedFile, rename, false, new Delete.DisabledCallback());
+        move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback());
         assertNotNull(attributesFinder.find(rename));
 
         delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -22,11 +22,18 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -52,7 +59,8 @@ public class MantaPublicKeyAuthenticationIT {
                     .authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback());
             assertEquals(session.getFingerprint(), System.getProperty("manta.key_id"));
             session.close();
-        } catch (LoginFailureException e) {
+        }
+        catch(LoginFailureException e) {
             assertTrue(e.getMessage().contains("Login failed"));
             assertTrue(e.getCause().getMessage().contains("Private Key Authentication is required"));
         }
@@ -87,7 +95,42 @@ public class MantaPublicKeyAuthenticationIT {
     }
 
     @Test
-    public void testAuthenticateOpenSSHKeyWithPassphrase() {
+    public void testAuthenticateOpenSSHKeyWithPassphrase() throws Exception {
+        final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        credentials.setIdentity(key);
+        final String passphrasedKeyPath = System.getProperty("manta.passphrase.key_path");
+        if(passphrasedKeyPath == null) {
+            Assert.fail("No passphrase key configured, please set 'manta.passphrase.key_path' and 'manta.passphrase.key_passphrase' to a key path and passphrase respectively");
+        }
+
+        try {
+            new DefaultLocalTouchFeature().touch(key);
+            IOUtils.copy(
+                    new FileReader(passphrasedKeyPath),
+                    key.getOutputStream(false),
+                    StandardCharsets.UTF_8
+            );
+            final Host host = new Host(new MantaProtocol(), "test.cyberduck.ch", credentials);
+            final MantaSession session = new MantaSession(host);
+            session.open(new DisabledHostKeyCallback());
+            session.login(new DisabledPasswordStore(),
+                    new DisabledLoginCallback() {
+                        @Override
+                        public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                            final String passphrase = System.getProperty("manta.passphrase.key_passphrase");
+                            credentials.setPassword(passphrase);
+                        }
+                    },
+                    new DisabledCancelCallback(),
+                    new PathCache(0)
+            );
+            assertEquals(System.getProperty("manta.passphrase.key_id"), session.getFingerprint());
+            session.close();
+        }
+        finally {
+            key.delete();
+        }
 
     }
 }

@@ -115,6 +115,10 @@
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>sds</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>manta</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

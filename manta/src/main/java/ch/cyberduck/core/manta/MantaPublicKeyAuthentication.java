@@ -27,12 +27,16 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.KeyException;
 import java.security.KeyPair;
 
@@ -77,9 +81,19 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         final FileKeyProvider provider;
         // TODO: see if we can simplify keyReader instantiation
 
-        try {
+        try (InputStream is = identity.getInputStream()) {
             format = KeyProviderUtil.detectKeyFileFormat(
-                    new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), true);
+                    new InputStreamReader(is, StandardCharsets.UTF_8),
+                    true);
+        }
+        catch(IOException e) {
+            throw new MantaExceptionMappingService(session).mapLoginException(e);
+        }
+
+        try (InputStream is = identity.getInputStream();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            IOUtils.copy(is, baos);
+            session.getConfig().setPrivateKeyContent(new String(baos.toByteArray(), StandardCharsets.UTF_8));
         }
         catch(IOException e) {
             throw new MantaExceptionMappingService(session).mapLoginException(e);
@@ -128,7 +142,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                                 return null; // user cancelled
                             }
 
-                            if (StringUtils.isEmpty(credentials.getPassword())) {
+                            if(StringUtils.isEmpty(credentials.getPassword())) {
                                 return null; // user left field blank
                             }
 
