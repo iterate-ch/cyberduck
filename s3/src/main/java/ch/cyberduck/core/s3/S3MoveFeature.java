@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -55,8 +54,8 @@ public class S3MoveFeature implements Move {
 
     @Override
     public void move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), new DisabledConnectionCallback());
-        delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
+        delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
     }
 
     @Override

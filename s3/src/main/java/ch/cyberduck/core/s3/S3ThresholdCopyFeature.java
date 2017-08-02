@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
@@ -48,10 +47,10 @@ public class S3ThresholdCopyFeature extends S3CopyFeature {
 
     public void copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(status.getLength() > multipartThreshold) {
-            new S3MultipartCopyFeature(session, accessControlListFeature).copy(source, copy, status, new DisabledConnectionCallback());
+            new S3MultipartCopyFeature(session, accessControlListFeature).copy(source, copy, status, callback);
         }
         else {
-            new S3CopyFeature(session, accessControlListFeature).copy(source, copy, status, new DisabledConnectionCallback());
+            new S3CopyFeature(session, accessControlListFeature).copy(source, copy, status, callback);
         }
     }
 }
