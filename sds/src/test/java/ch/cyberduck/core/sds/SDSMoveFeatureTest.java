@@ -54,7 +54,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -142,7 +141,7 @@ public class SDSMoveFeatureTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session).delete(singletonList(room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -184,7 +183,7 @@ public class SDSMoveFeatureTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session).delete(singletonList(room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
