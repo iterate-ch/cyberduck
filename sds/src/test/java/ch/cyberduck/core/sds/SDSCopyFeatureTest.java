@@ -50,7 +50,7 @@ public class SDSCopyFeatureTest {
         final Path room = new SDSDirectoryFeature(session).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path copy = new Path(new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus()), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path copy = new Path(new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus()), test.getName(), EnumSet.of(Path.Type.file));
         new SDSCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(copy));
