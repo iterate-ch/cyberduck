@@ -3322,7 +3322,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerMoveWorker(BrowserController controller, Map files, PathCache cache)
-                    : base(files, controller, cache)
+                    : base(files, controller, cache, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;
                     _files = files;
