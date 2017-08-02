@@ -107,6 +107,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 break;
             default:
                 configuration.setServiceUnavailableRetryStrategy(retryHandler);
+                configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                    @Override
+                    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                        if(StringUtils.isNotBlank(token)) {
+                            request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
+                            request.addHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, token);
+                        }
+                    }
+                });
                 break;
         }
         final CloseableHttpClient apache = configuration.build();
