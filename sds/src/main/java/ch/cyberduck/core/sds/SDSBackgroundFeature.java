@@ -173,7 +173,7 @@ public class SDSBackgroundFeature implements Background {
 
     @Override
     public void shutdown() {
-        exit.countDown();
         userFileKeyScheduler.shutdown();
+        exit.countDown();
     }
 }
