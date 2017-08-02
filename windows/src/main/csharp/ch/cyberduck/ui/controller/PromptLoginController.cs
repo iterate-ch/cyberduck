@@ -32,7 +32,7 @@ using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class PromptLoginController : LoginCallback
+    public class PromptLoginController : PromptPasswordController, LoginCallback
     {
         private static readonly Logger Log = Logger.getLogger(typeof(PromptLoginController).FullName);
         private readonly WindowController _browser;
@@ -44,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private Credentials _credentials;
         private LoginOptions _options;
 
-        public PromptLoginController(WindowController c)
+        public PromptLoginController(WindowController c) : base(c)
         {
             _browser = c;
         }

@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,12 +39,12 @@ public class SDSDelegatingReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
-            return new CryptoReadFeature(session, proxy).read(file, status, connectionCallback, passwordCallback);
+            return new CryptoReadFeature(session, proxy).read(file, status, callback);
         }
         else {
-            return proxy.read(file, status, connectionCallback, passwordCallback);
+            return proxy.read(file, status, callback);
         }
     }
 
