@@ -205,7 +205,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingMoveFeature(this, new SDSMoveFeature(this));
         }
         if(type == Copy.class) {
-            return (T) new SDSCopyFeature(this);
+            return (T) new SDSDelegatingCopyFeature(this, new SDSCopyFeature(this));
         }
         if(type == Bulk.class) {
             return (T) new SDSEncryptionBulkFeature(this);

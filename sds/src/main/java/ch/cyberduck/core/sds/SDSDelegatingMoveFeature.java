@@ -33,12 +33,12 @@ public class SDSDelegatingMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SDSDelegatingMoveFeature.class);
 
     private final SDSSession session;
-    private final Move proxy;
+    private final SDSMoveFeature proxy;
 
     private final PathContainerService containerService
             = new PathContainerService();
 
-    public SDSDelegatingMoveFeature(final SDSSession session, final Move proxy) {
+    public SDSDelegatingMoveFeature(final SDSSession session, final SDSMoveFeature proxy) {
         this.session = session;
         this.proxy = proxy;
     }
@@ -54,7 +54,7 @@ public class SDSDelegatingMoveFeature implements Move {
             }
             else {
                 // Moving into or from an encrypted room
-                final Copy copy = new SDSCopyFeature(session);
+                final Copy copy = session.getFeature(Copy.class);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
                 }

@@ -16,23 +16,20 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
-import ch.cyberduck.core.shared.DefaultCopyFeature;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.swagger.CopyNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.databind.ObjectWriter;
-import eu.ssp_europe.sds.crypto.Crypto;
-
-public class SDSCopyFeature extends DefaultCopyFeature {
+public class SDSCopyFeature implements Copy {
 
     private final SDSSession session;
 
@@ -40,24 +37,44 @@ public class SDSCopyFeature extends DefaultCopyFeature {
             = new PathContainerService();
 
     public SDSCopyFeature(final SDSSession session) {
-        super(session);
         this.session = session;
     }
 
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            if(containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-                final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
-                final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-                final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                writer.writeValue(out, fileKey);
-                status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
-            }
-            super.copy(source, target, status, callback);
+            new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
+                    // Target Parent Node ID
+                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
+                    new CopyNodesRequest()
+                            .addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())))
+                            .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        if(containerService.isContainer(source)) {
+            // Rooms cannot be copied
+            return false;
+        }
+        if(containerService.getContainer(source).equals(containerService.getContainer(target))) {
+            // Nodes must be in same source parent
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Copy withTarget(final Session<?> session) {
+        return this;
     }
 }
