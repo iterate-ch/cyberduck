@@ -134,6 +134,9 @@ public class SDSBackgroundFeature implements Background {
                         plainFileKey, TripleCryptConverter.toCryptoUserPublicKey(publicKey.getPublicKeyContainer())
                 );
                 keySetRequest.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Missing file key for file with id %d processed", item.getFileId()));
+                }
                 request.addItemsItem(keySetRequest);
             }
             if(!request.getItems().isEmpty()) {
