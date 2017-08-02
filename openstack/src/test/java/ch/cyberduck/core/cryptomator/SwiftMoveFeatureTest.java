@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -82,12 +83,12 @@ public class SwiftMoveFeatureTest {
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new SwiftMoveFeature(session, regionService), new SwiftDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
-        move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback());
+        move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(file));
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback());
+        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));

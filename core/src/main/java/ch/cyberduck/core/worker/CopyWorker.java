@@ -15,6 +15,7 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -40,11 +41,14 @@ public class CopyWorker extends Worker<List<Path>> {
     private final Map<Path, Path> files;
     private final SessionPool target;
     private final ProgressListener listener;
+    private final ConnectionCallback callback;
 
-    public CopyWorker(final Map<Path, Path> files, final SessionPool target, final ProgressListener listener) {
+    public CopyWorker(final Map<Path, Path> files, final SessionPool target, final ProgressListener listener,
+                      final ConnectionCallback callback) {
         this.files = files;
         this.target = target;
         this.listener = listener;
+        this.callback = callback;
     }
 
     @Override
@@ -75,7 +79,7 @@ public class CopyWorker extends Worker<List<Path>> {
                         directory.mkdir(target, null, new TransferStatus().length(0L));
                     }
                     else {
-                        copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()));
+                        copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()), callback);
                     }
                 }
             }
