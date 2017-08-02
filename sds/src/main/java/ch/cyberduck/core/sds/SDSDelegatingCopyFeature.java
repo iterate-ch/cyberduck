@@ -16,13 +16,23 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import com.fasterxml.jackson.databind.ObjectWriter;
+import eu.ssp_europe.sds.crypto.Crypto;
 
 public class SDSDelegatingCopyFeature implements Copy {
 
@@ -42,6 +52,16 @@ public class SDSDelegatingCopyFeature implements Copy {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
+            final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+            final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try {
+                writer.writeValue(out, fileKey);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
+            status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
             new DefaultCopyFeature(session).copy(source, target, status, callback);
         }
         else {
