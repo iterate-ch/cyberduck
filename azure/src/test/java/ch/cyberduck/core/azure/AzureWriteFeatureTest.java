@@ -5,7 +5,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
@@ -68,7 +67,7 @@ public class AzureWriteFeatureTest {
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
         assertEquals(content.length, new AzureWriteFeature(session, context).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

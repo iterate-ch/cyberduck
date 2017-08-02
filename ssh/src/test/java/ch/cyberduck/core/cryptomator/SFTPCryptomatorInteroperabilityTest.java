@@ -121,7 +121,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
-        final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), new DisabledConnectionCallback());
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);
         assertArrayEquals(content, readContent);
@@ -156,7 +156,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
-        final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), new DisabledConnectionCallback());
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);
         assertArrayEquals(content, readContent);

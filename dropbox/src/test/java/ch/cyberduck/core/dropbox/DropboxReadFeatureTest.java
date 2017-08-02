@@ -17,7 +17,6 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,12 +40,12 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         final TransferStatus status = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new DropboxReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new DropboxReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             in.close();
         }

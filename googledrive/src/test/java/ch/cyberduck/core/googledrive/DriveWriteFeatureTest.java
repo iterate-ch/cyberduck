@@ -18,7 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -66,7 +65,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertTrue(append.override);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
-            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);

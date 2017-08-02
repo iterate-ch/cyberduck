@@ -69,7 +69,7 @@ public class B2ReadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        new B2ReadFeature(session).read(new Path(new B2HomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        new B2ReadFeature(session).read(new Path(new B2HomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -128,12 +128,12 @@ public class B2ReadFeatureTest {
         {
             // Unknown length in status
             // Read a single byte
-            final InputStream in = new B2ReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new B2ReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new B2ReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new B2ReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback());
             assertNotNull(in);
             in.close();
         }
@@ -169,7 +169,7 @@ public class B2ReadFeatureTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new B2ReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new B2ReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -209,7 +209,7 @@ public class B2ReadFeatureTest {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new B2ReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new B2ReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

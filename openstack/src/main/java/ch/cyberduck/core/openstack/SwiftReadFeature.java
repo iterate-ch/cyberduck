@@ -20,7 +20,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -54,7 +53,7 @@ public class SwiftReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             // Do not set checksum when metadata key X-Static-Large-Object is present. Disable checksum verification in download filter.
             status.setChecksum(Checksum.NONE);

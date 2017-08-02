@@ -19,11 +19,17 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 
 public class DisabledConnectionCallback implements ConnectionCallback {
     @Override
     public void warn(final Protocol protocol, final String title, final String message,
                      final String continueButton, final String disconnectButton, final String preference) throws ConnectionCanceledException {
         throw new ConnectionCanceledException();
+    }
+
+    @Override
+    public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+        throw new LoginCanceledException();
     }
 }
