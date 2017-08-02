@@ -16,25 +16,12 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AbstractPath.Type;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
-import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -86,7 +73,7 @@ public abstract class AbstractMantaTest {
         session.getClient().putDirectory(testPathPrefix.getAbsolute());
     }
 
-    @AfterClass
+    @After
     public void disconnect() throws Exception {
         log.debug("cleaning up test directory: " + testPathPrefix);
         session.getClient().deleteRecursive(testPathPrefix.getAbsolute());

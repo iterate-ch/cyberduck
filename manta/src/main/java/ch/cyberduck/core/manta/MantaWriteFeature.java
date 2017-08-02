@@ -62,7 +62,7 @@ public class MantaWriteFeature implements Write<Void> {
      */
     @Override
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return Write.override;
+        return new MantaFindFeature(session).find(file) ? Write.override : Write.notfound;
     }
 
     @Override

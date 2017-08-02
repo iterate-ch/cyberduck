@@ -50,8 +50,7 @@ public class MantaDirectoryFeature implements Directory {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return workdir.isChild(session.getAccountPublicRoot())
-                || workdir.isChild(session.getAccountPrivateRoot());
+        return session.isUserWritable(workdir);
     }
 
     @Override

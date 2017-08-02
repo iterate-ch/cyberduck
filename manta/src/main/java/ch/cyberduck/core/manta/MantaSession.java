@@ -125,7 +125,7 @@ public class MantaSession extends Session<MantaClient> {
 
         final boolean success = new MantaPublicKeyAuthentication(this, keychain).authenticate(host, prompt, cancel);
 
-        if (host.getCredentials().getPassword() != null) {
+        if(host.getCredentials().getPassword() != null) {
             config.setPassword(host.getCredentials().getPassword());
         }
 
@@ -228,7 +228,10 @@ public class MantaSession extends Session<MantaClient> {
     }
 
     protected boolean isUserWritable(final Path path) {
-        return path.isChild(accountPublicRoot) || path.isChild(accountPrivateRoot);
+        return path.equals(accountPublicRoot)
+                || path.equals(accountPrivateRoot)
+                || path.isChild(accountPublicRoot)
+                || path.isChild(accountPrivateRoot);
     }
 
     protected boolean isWorldReadable(final MantaObject mantaObject) {

@@ -135,6 +135,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         .login(login)
                         .password(password)
                 );
+
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password);
                 break;

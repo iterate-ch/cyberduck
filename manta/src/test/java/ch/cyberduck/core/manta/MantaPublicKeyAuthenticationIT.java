@@ -99,15 +99,17 @@ public class MantaPublicKeyAuthenticationIT {
         final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         credentials.setIdentity(key);
-        final String passphrasedKeyPath = System.getProperty("manta.passphrase.key_path");
-        if(passphrasedKeyPath == null) {
+        final String passphraseKeyPassword = System.getProperty("manta.passphrase.password");
+        final String passphraseKeyPath = System.getProperty("manta.passphrase.key_path");
+        if(true || passphraseKeyPassword == null || passphraseKeyPath == null) {
             Assert.fail("No passphrase key configured, please set 'manta.passphrase.key_path' and 'manta.passphrase.key_passphrase' to a key path and passphrase respectively");
         }
 
         try {
+
             new DefaultLocalTouchFeature().touch(key);
             IOUtils.copy(
-                    new FileReader(passphrasedKeyPath),
+                    new FileReader(passphraseKeyPath),
                     key.getOutputStream(false),
                     StandardCharsets.UTF_8
             );
@@ -118,8 +120,7 @@ public class MantaPublicKeyAuthenticationIT {
                     new DisabledLoginCallback() {
                         @Override
                         public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                            final String passphrase = System.getProperty("manta.passphrase.key_passphrase");
-                            credentials.setPassword(passphrase);
+                            credentials.setPassword(passphraseKeyPassword);
                         }
                     },
                     new DisabledCancelCallback(),

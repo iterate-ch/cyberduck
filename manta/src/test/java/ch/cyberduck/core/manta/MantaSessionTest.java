@@ -41,7 +41,7 @@ public class MantaSessionTest {
 
     @Test
     public void testFeatures() throws Exception {
-        final MantaSession session = new MantaSession(new Host(new MantaProtocol()));
+        final MantaSession session = new MantaSession(new Host(new MantaProtocol(), "username"));
         assertTrue(session.getFeature(Read.class) instanceof MantaReadFeature);
         assertTrue(session.getFeature(Write.class) instanceof MantaWriteFeature);
         assertTrue(session.getFeature(Directory.class) instanceof MantaDirectoryFeature);
