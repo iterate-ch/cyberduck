@@ -16,7 +16,6 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -58,7 +57,7 @@ public class DefaultCopyFeature implements Copy {
             }
             InputStream in = null;
             OutputStream out = null;
-            in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(status), new DisabledConnectionCallback(), new DisabledPasswordCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+            in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(status), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
             Write write = to.getFeature(MultipartWrite.class);
             if(null == write) {
                 // Fallback if multipart write is not available

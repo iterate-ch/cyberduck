@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -66,8 +65,7 @@ public class CryptoReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback,
-                            final PasswordCallback passwordCallback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final FileKey key = new NodesApi(session.getClient()).getUserFileKey(session.getToken(),
                     Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
@@ -83,7 +81,7 @@ public class CryptoReadFeature implements Read {
             final UserKeyPair userKeyPair = new UserKeyPair();
             userKeyPair.setUserPrivateKey(privateKey);
             while(null == passphrase.getPassword() || !Crypto.checkUserKeyPair(userKeyPair, passphrase.getPassword())) {
-                passwordCallback.prompt(passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
+                callback.prompt(passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
                         MessageFormat.format(LocaleFactory.localizedString("Enter your encryption password to decrypt {0}.", "Credentials"), file.getName()),
                         new LoginOptions()
                                 .user(false)
@@ -102,7 +100,7 @@ public class CryptoReadFeature implements Read {
                 PasswordStoreFactory.get().addPassword(bookmark.getHostname(),
                         String.format("Triple-Crypt (%s)", bookmark.getCredentials().getUsername()), passphrase.getPassword());
             }
-            return new CryptoInputStream(proxy.read(file, status, connectionCallback, passwordCallback),
+            return new CryptoInputStream(proxy.read(file, status, callback),
                     Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()),
                     status.getLength() + status.getOffset());
         }

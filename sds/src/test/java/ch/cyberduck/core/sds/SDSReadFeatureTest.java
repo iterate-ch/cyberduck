@@ -55,7 +55,7 @@ public class SDSReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Path room = new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SDSReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        new SDSReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -72,12 +72,12 @@ public class SDSReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             in.close();
         }
@@ -110,7 +110,7 @@ public class SDSReadFeatureTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SDSReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new SDSReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -148,7 +148,7 @@ public class SDSReadFeatureTest {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -170,7 +170,7 @@ public class SDSReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Path test = new Path(new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume)), "eetaik4R", EnumSet.of(Path.Type.file));
-        final CountingInputStream in = new CountingInputStream(new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback()));
+        final CountingInputStream in = new CountingInputStream(new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         session.close();
