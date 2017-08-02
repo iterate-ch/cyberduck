@@ -29,7 +29,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class GoogleStorageUrlProviderTest {
+public class GoogleStorageUrlProviderTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testGet() throws Exception {

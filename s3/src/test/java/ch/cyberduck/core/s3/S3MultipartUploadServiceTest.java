@@ -6,7 +6,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -25,8 +24,8 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.jets3t.service.model.S3Object;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -59,7 +58,7 @@ public class S3MultipartUploadServiceTest {
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final String random = RandomStringUtils.random(1000);
+        final String random = new RandomStringGenerator.Builder().build().generate(1000);
         IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
         final TransferStatus status = new TransferStatus();
         status.setLength((long) random.getBytes().length);
@@ -95,7 +94,7 @@ public class S3MultipartUploadServiceTest {
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
-        final String random = RandomStringUtils.random(1000);
+        final String random = new RandomStringGenerator.Builder().build().generate(1000);
         IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
         final TransferStatus status = new TransferStatus();
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
@@ -261,7 +260,7 @@ public class S3MultipartUploadServiceTest {
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(12L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -333,7 +332,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals(content.length, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getSize());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

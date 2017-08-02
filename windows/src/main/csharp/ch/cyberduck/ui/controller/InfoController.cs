@@ -420,9 +420,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View.ShowHelp += delegate(object sender, InfoHelpArgs args)
             {
-                StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
-                site.Append("/howto/info");
-                BrowserLauncherFactory.get().open(site.ToString());
+                BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
             };
         }
 

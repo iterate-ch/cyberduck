@@ -15,15 +15,8 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
@@ -44,32 +37,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class S3DefaultDeleteFeatureTest {
+public class S3DefaultDeleteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testDeleteContainer() throws Exception {
-        final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore() {
-            @Override
-            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
-                    return System.getProperties().getProperty("google.accesstoken");
-                }
-                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
-                    return System.getProperties().getProperty("google.refreshtoken");
-                }
-                return null;
-            }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
         new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(container, null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(container));
-        session.close();
     }
 }

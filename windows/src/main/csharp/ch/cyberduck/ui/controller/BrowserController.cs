@@ -1892,6 +1892,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewVault()
         {
             return IsMounted() && Session.getVault() != VaultRegistry.DISABLED &&
+                   null == Workdir.attributes().getVault() &&
                    ((Directory) Session.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath));
         }

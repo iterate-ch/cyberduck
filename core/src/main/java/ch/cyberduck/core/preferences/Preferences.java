@@ -18,6 +18,7 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLocale;
@@ -726,20 +727,6 @@ public abstract class Preferences {
         defaults.put("google.logging.prefix", "log");
         defaults.put("cloudfront.logging.prefix", "logs/");
 
-        defaults.put("googlestorage.oauth.clientid", "996125414232.apps.googleusercontent.com");
-        defaults.put("googlestorage.oauth.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
-        defaults.put("googlestorage.oauth.redirecturi", "urn:ietf:wg:oauth:2.0:oob");
-//        defaults.put("googlestorage.oauth.redirecturi", "x-cyberduck-action:oauth");
-
-        defaults.put("hubic.oauth.clientid", "api_hubic_Hoh1lpzGzsLxUV6VKI3BuiFcyJECBEPH");
-        defaults.put("hubic.oauth.secret", "IIm0EkjdyPquS9SpIZXAdNlGbcf3mL9s3UiOFLnWLeTxLosjvAHGIbomvAcBZQb2");
-        defaults.put("hubic.oauth.redirecturi", "https://cyberduck.io/oauth");
-//        defaults.put("hubic.oauth.redirecturi", "x-cyberduck-action:oauth");
-
-        defaults.put("onedrive.oauth.clientid", "372770ba-bb24-436b-bbd4-19bc86310c0e");
-        defaults.put("onedrive.oauth.secret", "mJjWVkmfD9FVHNFTpbrdowv");
-        defaults.put("onedrive.oauth.redirecturi", "https://cyberduck.io/oauth/");
-
         defaults.put("onedrive.listing.chunksize", String.valueOf(1000));
         defaults.put("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
 
@@ -786,11 +773,6 @@ public abstract class Preferences {
         defaults.put("openstack.upload.largeobject.cleanup", String.valueOf(true));
 
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
-
-        defaults.put("googledrive.oauth.clientid", "996125414232.apps.googleusercontent.com");
-        defaults.put("googledrive.oauth.clientsecret", "YdaFjo2t74-Q0sThsXgeTv3l");
-        defaults.put("googledrive.oauth.redirecturi", "urn:ietf:wg:oauth:2.0:oob");
-//        defaults.put("googledrive.oauth.redirecturi", "x-cyberduck-action:oauth");
 
         defaults.put("googledrive.list.limit", String.valueOf(1000));
 
@@ -1061,11 +1043,6 @@ public abstract class Preferences {
         defaults.put("threading.pool.size.max", String.valueOf(20));
         defaults.put("threading.pool.keepalive.seconds", String.valueOf(60L));
 
-        defaults.put("dropbox.oauth.clientid", "rjqgs45ntjp1va9");
-        defaults.put("dropbox.oauth.clientsecret", "yg1uopbf5c1h1rk");
-        defaults.put("dropbox.oauth.redirecturi", "https://cyberduck.io/oauth");
-//        defaults.put("dropbox.oauth.redirecturi", "x-cyberduck-action:oauth");
-
         defaults.put("cryptomator.enable", String.valueOf(true));
         defaults.put("cryptomator.vault.autodetect", String.valueOf(true));
     }
@@ -1285,6 +1262,7 @@ public abstract class Preferences {
         defaults.put("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
         defaults.put("factory.vault.class", DisabledVault.class.getName());
         defaults.put("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
+        defaults.put("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
     }
 
     /**

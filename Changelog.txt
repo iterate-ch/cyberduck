@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2.1
+- [Bugfix] Default to WebDAV for http:// scheme in quick connect and CLI
+- [Bugfix] Selecting multiple files to copy URL will only copy first item in list (#10024)
+- [Bugfix] Quick Look only works one time (#9889) (Mac)
+
 6.2
 - [Feature] Server side copy of files (OneDrive)
 - [Feature] Support for wildcard host entries in known_hosts (SFTP)
@@ -12,6 +17,7 @@ https://cyberduck.io/
 - [Bugfix] Timeout uploading larger files (Google Drive) (#10010)
 - [Bugfix] Set checksum for large file uploads in fileInfo metadata (Backblaze B2)
 - [Bugfix] Default ACL for new buckets has changed to private (S3)
+- [Bugfix] Failure duplicating files in vault (Cryptomator) (#10017)
 
 6.1
 - [Feature] Search files fast without recursively listing directories (OneDrive)
@@ -25,6 +31,8 @@ https://cyberduck.io/
 - [Bugfix] Always trust invalid certificate setting not remembered (Windows)
 - [Bugfix] Unable to rename files larger than 5 GB (S3) (#9983)
 - [Bugfix] Handle expired authentication token (Backblaze B2)
+- [Bugfix] "Open in Putty" toolbar button always disabled (Windows) (#9965)
+- [Bugfix] Updater ignores custom installation location (Windows) (#9782)
 
 6.0.4 [https://trac.cyberduck.io/milestone/6.0.4]
 - [Bugfix] Failure to upload to root of vault (Cryptomator)

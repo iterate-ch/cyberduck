@@ -1712,7 +1712,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         .open(PreferencesFactory.get().getProperty("website.acknowledgments")), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
                 (sender, args) =>
-                    BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help")),
+                    BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help()),
                 () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {donateMainMenuItem},
                 (sender, args) =>

@@ -39,7 +39,7 @@ import synapticloop.b2.response.B2ListFilesResponse;
 public class B2SearchFeature implements Search {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 

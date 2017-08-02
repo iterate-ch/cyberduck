@@ -92,7 +92,7 @@ public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<Vers
                     int chunkLen = Math.min(SDSSession.DEFAULT_CHUNKSIZE, len - chunkOffset);
                     final byte[] bytes = Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen);
                     final PlainDataContainer data = createPlainDataContainer(bytes, bytes.length);
-                    final EncryptedDataContainer encrypted = cipher.encryptBlock(data);
+                    final EncryptedDataContainer encrypted = cipher.processBytes(data);
                     super.write(encrypted.getContent());
                 }
             }
@@ -103,9 +103,8 @@ public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<Vers
 
         @Override
         public void close() throws IOException {
-            final PlainDataContainer data = new PlainDataContainer(new byte[0]);
             try {
-                final EncryptedDataContainer encrypted = cipher.encryptLastBlock(data);
+                final EncryptedDataContainer encrypted = cipher.doFinal();
                 super.write(encrypted.getContent());
                 final String tag = CryptoUtils.byteArrayToString(encrypted.getTag());
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);

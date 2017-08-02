@@ -23,6 +23,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.pool.SessionPool;
 
@@ -59,9 +60,10 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
     }
 
     @Override
-    public void handle(final List<String> selected) {
-        for(String url : selected) {
-            BrowserLauncherFactory.get().open(url);
+    public void handle(final List<DescriptiveUrl> selected) {
+        final BrowserLauncher browser = BrowserLauncherFactory.get();
+        for(DescriptiveUrl url : selected) {
+            browser.open(url.getUrl());
         }
     }
 }

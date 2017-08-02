@@ -23,5 +23,19 @@
         <string>iterate GmbH</string>
         <key>Bundled</key>
         <true/>
+        <key>OAuth Authorization Url</key>
+        <string>https://accounts.google.com/o/oauth2/auth</string>
+        <key>OAuth Token Url</key>
+        <string>https://accounts.google.com/o/oauth2/token</string>
+        <key>Scopes</key>
+        <array>
+            <string>https://www.googleapis.com/auth/drive</string>
+        </array>
+        <key>OAuth Client ID</key>
+        <string>996125414232.apps.googleusercontent.com</string>
+        <key>OAuth Client Secret</key>
+        <string>YdaFjo2t74-Q0sThsXgeTv3l</string>
+        <key>OAuth Redirect Url</key>
+        <string>urn:ietf:wg:oauth:2.0:oob</string>
     </dict>
 </plist>
