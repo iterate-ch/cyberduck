@@ -21,6 +21,7 @@ import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -70,7 +71,7 @@ public class MoveController extends ProxyController {
             @Override
             public void run() {
                 parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
-                        new MoveWorker(selected, parent, cache) {
+                                new MoveWorker(selected, parent, cache, LoginCallbackFactory.get(MoveController.this)) {
                                     @Override
                                     public void cleanup(final List<Path> moved) {
                                         parent.reload(parent.workdir(), moved, new ArrayList<Path>(selected.values()));

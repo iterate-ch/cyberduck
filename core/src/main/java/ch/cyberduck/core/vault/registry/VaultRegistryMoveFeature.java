@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -45,7 +46,7 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(registry.find(session, source).equals(registry.find(session, target))) {
             final Vault vault = registry.find(session, source);
             if(log.isDebugEnabled()) {
@@ -53,7 +54,7 @@ public class VaultRegistryMoveFeature implements Move {
             }
             // Move files inside vault
             final Move move = vault.getFeature(session, Move.class, proxy);
-            move.move(source, target, status, callback);
+            move.move(source, target, status, callback, connectionCallback);
         }
         else {
             // Move files from or into vault requires to pass through encryption features
@@ -61,7 +62,7 @@ public class VaultRegistryMoveFeature implements Move {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
             }
-            copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()));
+            copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()), connectionCallback);
             // Delete source file after copy is complete
             final Delete delete = session.getFeature(Delete.class);
             if(delete.isSupported(source)) {

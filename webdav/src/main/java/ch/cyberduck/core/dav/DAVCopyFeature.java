@@ -17,6 +17,7 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -39,7 +40,7 @@ public class DAVCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
             session.getClient().copy(new DAVPathEncoder().encode(source), target);
