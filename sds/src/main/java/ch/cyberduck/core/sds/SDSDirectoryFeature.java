@@ -31,6 +31,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 
 public class SDSDirectoryFeature implements Directory {
@@ -52,11 +54,11 @@ public class SDSDirectoryFeature implements Directory {
         try {
             if(containerService.isContainer(folder)) {
                 final CreateRoomRequest roomRequest = new CreateRoomRequest();
-                final UserAccount user = new UserApi(session.getClient()).getUserInfo(session.getToken(), null, false);
+                final UserAccount user = new UserApi(session.getClient()).getUserInfo(StringUtils.EMPTY, null, false);
                 roomRequest.addAdminIdsItem(user.getId());
                 roomRequest.setAdminGroupIds(null);
                 roomRequest.setName(folder.getName());
-                final Node r = new NodesApi(session.getClient()).createRoom(session.getToken(), null, roomRequest);
+                final Node r = new NodesApi(session.getClient()).createRoom(StringUtils.EMPTY, null, roomRequest);
                 return new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume),
                         new PathAttributes(folder.attributes()));
             }
@@ -64,7 +66,7 @@ public class SDSDirectoryFeature implements Directory {
                 final CreateFolderRequest folderRequest = new CreateFolderRequest();
                 folderRequest.setParentId(Long.parseLong(idProvider.getFileid(folder.getParent(), new DisabledListProgressListener())));
                 folderRequest.setName(folder.getName());
-                final Node f = new NodesApi(session.getClient()).createFolder(session.getToken(), folderRequest, null);
+                final Node f = new NodesApi(session.getClient()).createFolder(StringUtils.EMPTY, folderRequest, null);
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
                         new PathAttributes(folder.attributes()));
             }

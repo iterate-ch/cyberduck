@@ -69,7 +69,7 @@ public class SDSNodeIdProvider implements IdProvider {
             else {
                 type = "file";
             }
-            final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(session.getToken(), null, 0,
+            final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, 0,
                     Long.parseLong(this.getFileid(file.getParent(), new DisabledListProgressListener())),
                     null, String.format("type:eq:%s|name:cn:%s", type, file.getName()),
                     null, null, null);
