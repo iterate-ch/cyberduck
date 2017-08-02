@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -201,7 +202,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSAttributesFinderFeature(this);
         }
         if(type == Move.class) {
-            return (T) new SDSMoveFeature(this);
+            return (T) new SDSDelegatingMoveFeature(this, new SDSMoveFeature(this));
+        }
+        if(type == Copy.class) {
+            return (T) new SDSDelegatingCopyFeature(this, new SDSCopyFeature(this));
         }
         if(type == Bulk.class) {
             return (T) new SDSEncryptionBulkFeature(this);
