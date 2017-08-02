@@ -115,6 +115,7 @@
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>sds</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
