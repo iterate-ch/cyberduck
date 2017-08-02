@@ -35,7 +35,8 @@ public class SDSCopyFeature extends DefaultCopyFeature {
 
     private final SDSSession session;
 
-    private final PathContainerService containerService = new PathContainerService();
+    private final PathContainerService containerService
+            = new PathContainerService();
 
     public SDSCopyFeature(final SDSSession session) {
         super(session);
@@ -45,16 +46,12 @@ public class SDSCopyFeature extends DefaultCopyFeature {
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         try {
-            final Path srcContainer = containerService.getContainer(source);
-            final Path targetContainer = containerService.getContainer(target);
-            if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
-                if(!srcContainer.equals(targetContainer)) {
-                    final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
-                    final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-                    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    writer.writeValue(out, fileKey);
-                    status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
-                }
+            if(containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+                final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+                final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                writer.writeValue(out, fileKey);
+                status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
             }
             super.copy(source, target, status);
         }
