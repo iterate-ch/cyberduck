@@ -19,6 +19,7 @@ import ch.cyberduck.core.sds.SDSSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,10 +86,12 @@ public class CryptoInputStream extends ProxyInputStream {
         try {
             final PlainDataContainer pDataContainer;
             if(this.read == length) {
-                pDataContainer = cipher.decryptLastBlock(createEncryptedDataContainer(ciphertextBuf.array(), read, tag));
+                final PlainDataContainer c1 = cipher.processBytes(createEncryptedDataContainer(ciphertextBuf.array(), read, null));
+                final PlainDataContainer c2 = cipher.doFinal(new EncryptedDataContainer(null, tag));
+                pDataContainer = new PlainDataContainer(ArrayUtils.addAll(c1.getContent(), c2.getContent()));
             }
             else {
-                pDataContainer = cipher.decryptBlock(createEncryptedDataContainer(ciphertextBuf.array(), read));
+                pDataContainer = cipher.processBytes(createEncryptedDataContainer(ciphertextBuf.array(), read, null));
             }
             final byte[] content = pDataContainer.getContent();
             buffer = ByteBuffer.allocate(content.length);
@@ -99,12 +102,6 @@ public class CryptoInputStream extends ProxyInputStream {
         catch(CryptoException e) {
             throw new IOException(e);
         }
-    }
-
-    private static EncryptedDataContainer createEncryptedDataContainer(final byte[] bytes, final int len) {
-        final byte[] b = new byte[len];
-        System.arraycopy(bytes, 0, b, 0, len);
-        return new EncryptedDataContainer(b);
     }
 
     private static EncryptedDataContainer createEncryptedDataContainer(final byte[] bytes, final int len, final byte[] tag) {
