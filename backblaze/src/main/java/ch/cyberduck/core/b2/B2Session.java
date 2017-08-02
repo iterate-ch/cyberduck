@@ -69,6 +69,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     public B2ApiClient connect(final HostKeyCallback key) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(this);
         configuration.setServiceUnavailableRetryStrategy(retryHandler);
+        configuration.addInterceptorLast(retryHandler);
         return new B2ApiClient(configuration.build());
     }
 
@@ -93,9 +94,8 @@ public class B2Session extends HttpSession<B2ApiClient> {
         try {
             final String accountId = host.getCredentials().getUsername();
             final String applicationKey = host.getCredentials().getPassword();
-            client.authenticate(accountId, applicationKey);
             // Save tokens for 401 error response when expired
-            retryHandler.setTokens(accountId, applicationKey);
+            retryHandler.setTokens(accountId, applicationKey, client.authenticate(accountId, applicationKey).getAuthorizationToken());
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map(e);
