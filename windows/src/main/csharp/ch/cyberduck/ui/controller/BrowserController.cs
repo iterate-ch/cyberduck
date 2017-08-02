@@ -3350,7 +3350,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerCopyWorker(BrowserController controller, Map files)
-                    : base(files, SessionPoolFactory.create(controller, controller.Cache, controller.Session.getHost()), controller)
+                    : base(files, SessionPoolFactory.create(controller, controller.Cache, controller.Session.getHost()), controller, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;
                     _files = files;

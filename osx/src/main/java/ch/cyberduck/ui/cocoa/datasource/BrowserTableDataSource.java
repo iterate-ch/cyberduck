@@ -30,20 +30,7 @@ import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.SessionPoolFactory;
-import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Copy;
@@ -401,7 +388,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         @Override
                         public void callback(final Map<Path, Path> selected) {
                             controller.background(new WorkerBackgroundAction<List<Path>>(controller, controller.getSession(),
-                                            new CopyWorker(selected, SessionPoolFactory.create(controller, cache, controller.getSession().getHost()), new DisabledProgressListener()) {
+                                            new CopyWorker(selected, SessionPoolFactory.create(controller, cache, controller.getSession().getHost()), new DisabledProgressListener(), LoginCallbackFactory.get(controller)) {
                                                 @Override
                                                 public void cleanup(final List<Path> copied) {
                                                     controller.reload(controller.workdir(), copied, new ArrayList<Path>(selected.values()));

@@ -62,7 +62,7 @@ public class VaultRegistryMoveFeature implements Move {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
             }
-            copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()));
+            copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()), connectionCallback);
             // Delete source file after copy is complete
             final Delete delete = session.getFeature(Delete.class);
             if(delete.isSupported(source)) {

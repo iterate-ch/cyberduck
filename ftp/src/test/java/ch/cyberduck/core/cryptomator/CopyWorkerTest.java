@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -83,7 +84,7 @@ public class CopyWorkerTest {
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(copySession, registry), new DisabledProgressListener());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(copySession, registry), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
@@ -116,7 +117,7 @@ public class CopyWorkerTest {
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(copySession, registry), new DisabledProgressListener());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(copySession, registry), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
@@ -149,7 +150,7 @@ public class CopyWorkerTest {
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(copySession, registry), new DisabledProgressListener());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(copySession, registry), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
@@ -183,12 +184,12 @@ public class CopyWorkerTest {
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        new CopyWorker(Collections.singletonMap(file, fileRenamed), new TestSessionPool(copySession, registry), new DisabledProgressListener()).run(session);
+        new CopyWorker(Collections.singletonMap(file, fileRenamed), new TestSessionPool(copySession, registry), new DisabledProgressListener(), new DisabledConnectionCallback()).run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamed));
         // copy folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new CopyWorker(Collections.singletonMap(folder, folderRenamed), new TestSessionPool(copySession, registry), new DisabledProgressListener()).run(session);
+        new CopyWorker(Collections.singletonMap(folder, folderRenamed), new TestSessionPool(copySession, registry), new DisabledProgressListener(), new DisabledConnectionCallback()).run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
@@ -223,7 +224,7 @@ public class CopyWorkerTest {
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFile, encryptedFile), new TestSessionPool(copySession, registry), new DisabledProgressListener());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFile, encryptedFile), new TestSessionPool(copySession, registry), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DefaultFindFeature(session).find(cleartextFile));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
@@ -258,7 +259,7 @@ public class CopyWorkerTest {
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFolder, encryptedFolder), new TestSessionPool(copySession, registry), new DisabledProgressListener());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFolder, encryptedFolder), new TestSessionPool(copySession, registry), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
@@ -296,7 +297,7 @@ public class CopyWorkerTest {
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFile, cleartextFile), new TestSessionPool(copySession, registry), new DisabledProgressListener());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFile, cleartextFile), new TestSessionPool(copySession, registry), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         assertTrue(new DefaultFindFeature(session).find(cleartextFile));
@@ -330,7 +331,7 @@ public class CopyWorkerTest {
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFolder, cleartextFolder), new TestSessionPool(copySession, registry), new DisabledProgressListener());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFolder, cleartextFolder), new TestSessionPool(copySession, registry), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
