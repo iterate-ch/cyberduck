@@ -41,7 +41,7 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler {
     protected abstract R operate(PasswordCallback callback, Path file) throws BackgroundException;
 
     @Override
-    public void run(final PasswordCallback callback) throws BackgroundException {
+    public void repeat(final PasswordCallback callback) throws BackgroundException {
         scheduler.repeat(() -> {
             try {
                 this.operate(callback, null);

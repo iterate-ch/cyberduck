@@ -19,9 +19,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Scheduler {
-
-    void run(PasswordCallback callback) throws BackgroundException;
-
+    void repeat(PasswordCallback callback) throws BackgroundException;
     void shutdown();
 
 }

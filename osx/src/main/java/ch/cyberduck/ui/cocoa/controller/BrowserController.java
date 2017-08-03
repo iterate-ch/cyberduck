@@ -3029,7 +3029,7 @@ public class BrowserController extends WindowController
                                                 new DisabledProgressListener(), new DisabledTranscriptListener()) {
                                             @Override
                                             public Object run(final Session<?> session) throws BackgroundException {
-                                                scheduler.run(PasswordCallbackFactory.get(BrowserController.this));
+                                                scheduler.repeat(PasswordCallbackFactory.get(BrowserController.this));
                                                 return null;
                                             }
                                         });

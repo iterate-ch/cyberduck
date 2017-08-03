@@ -3333,7 +3333,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override object run(Session s)
                 {
-                    _background.run(PasswordCallbackFactory.get(_controller));
+                    _background.repeat(PasswordCallbackFactory.get(_controller));
                     return null;
                 }
             }
