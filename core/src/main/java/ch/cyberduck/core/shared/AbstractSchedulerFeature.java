@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
@@ -45,6 +46,9 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler {
         scheduler.repeat(() -> {
             try {
                 this.operate(callback, null);
+            }
+            catch(ConnectionCanceledException e) {
+                this.shutdown();
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure processing missing file keys. %s", e.getDetail()));
