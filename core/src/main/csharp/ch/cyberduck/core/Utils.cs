@@ -83,7 +83,8 @@ namespace Ch.Cyberduck.Core
                 var major = Environment.OSVersion.Version.Major;
                 var minor = Environment.OSVersion.Version.Minor;
                 var minorReduced = minor / 10.0;
-                var win7OrOlder = (major + minorReduced) <= 6.1;
+                var combined = major + minorReduced;
+                var win7OrOlder = combined <= 6.1;
                 if (win7OrOlder)
                     return false;
                 try
@@ -95,7 +96,7 @@ namespace Ch.Cyberduck.Core
                 }
                 catch (EntryPointNotFoundException entryPointNotFoundException) // Fix for MD-3274
                 {
-                    Log.error($"Environment Version Check returned wrong version. {major} {minor} result is {win7OrOlder}", entryPointNotFoundException);
+                    Log.error($"Environment Version Check returned wrong version. {major} {minor} ({minorReduced}) combined is {combined} result is {win7OrOlder}", entryPointNotFoundException);
                     return false;
                 }
             }
