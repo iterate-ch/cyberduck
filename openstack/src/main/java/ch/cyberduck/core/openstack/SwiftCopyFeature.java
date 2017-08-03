@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -49,7 +50,7 @@ public class SwiftCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(source.isFile()) {
                 session.getClient().copyObject(regionService.lookup(source),

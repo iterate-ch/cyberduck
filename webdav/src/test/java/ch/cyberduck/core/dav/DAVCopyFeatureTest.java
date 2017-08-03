@@ -20,6 +20,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -57,7 +58,7 @@ public class DAVCopyFeatureTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVCopyFeature(session).copy(test, copy, new TransferStatus());
+        new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(copy));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -80,7 +81,7 @@ public class DAVCopyFeatureTest {
         new DAVDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DAVCopyFeature(session).copy(directory, copy, new TransferStatus());
+        new DAVCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new DAVFindFeature(session).find(file));
         assertTrue(new DAVFindFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));

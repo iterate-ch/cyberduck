@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -36,7 +37,7 @@ public class DriveCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             session.getClient().files().copy(new DriveFileidProvider(session).getFileid(source, new DisabledListProgressListener()), new File()
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())))

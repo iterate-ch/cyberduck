@@ -15,6 +15,7 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -26,8 +27,10 @@ public interface Move {
      * @param renamed  Target file or folder
      * @param status   True if the target file exists
      * @param callback Progress
+     * @param connectionCallback
      */
-    void move(Path file, Path renamed, TransferStatus status, Delete.Callback callback) throws BackgroundException;
+    void move(Path file, Path renamed, TransferStatus status, Delete.Callback callback,
+              ConnectionCallback connectionCallback) throws BackgroundException;
 
     boolean isRecursive(final Path source, final Path target);
     boolean isSupported(Path source, final Path target);

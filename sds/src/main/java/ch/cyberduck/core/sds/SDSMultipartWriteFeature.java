@@ -46,6 +46,7 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -92,7 +93,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
         body.setName(file.getName());
         body.classification(DEFAULT_CLASSIFICATION); // internal
         try {
-            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(session.getToken(), body);
+            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(StringUtils.EMPTY, body);
             final String id = response.getUploadId();
             final MultipartOutputStream proxy = new MultipartOutputStream(id, file, status);
             return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("connection.chunksize"))) {
@@ -143,7 +144,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                             final SDSApiClient client = session.getClient();
                             final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                             request.setEntity(entity);
-                            request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
+                            request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                             request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
                             if(0L == overall.getLength()) {
                                 // Write empty body
@@ -202,14 +203,14 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                 if(overall.getFilekey() != null) {
                     final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                     final FileKey fileKey = reader.readValue(overall.getFilekey().array());
-                    final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(session.getToken());
+                    final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(StringUtils.EMPTY);
                     final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
                             TripleCryptConverter.toCryptoPlainFileKey(fileKey),
                             TripleCryptConverter.toCryptoUserPublicKey(keyPairContainer.getPublicKeyContainer())
                     );
                     body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                 }
-                final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), uploadId, null, body);
+                final Node upload = new NodesApi(session.getClient()).completeFileUpload(StringUtils.EMPTY, uploadId, null, body);
                 versionId = new VersionId(String.valueOf(upload.getId()));
             }
             catch(ApiException e) {

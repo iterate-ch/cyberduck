@@ -1,4 +1,4 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.sds;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -16,51 +16,42 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.swagger.CopyNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.codec.binary.StringUtils;
-import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveCopyOperation;
+import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
+public class SDSCopyFeature implements Copy {
 
-public class OneDriveCopyFeature implements Copy {
-    private static final Logger logger = Logger.getLogger(OneDriveCopyFeature.class);
-    private final OneDriveSession session;
+    private final SDSSession session;
 
     private final PathContainerService containerService
             = new PathContainerService();
 
-    public OneDriveCopyFeature(OneDriveSession session) {
+    public SDSCopyFeature(final SDSSession session) {
         this.session = session;
     }
 
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final OneDriveCopyOperation copyOperation = new OneDriveCopyOperation();
-        if(!StringUtils.equals(source.getName(), target.getName())) {
-            copyOperation.rename(target.getName());
-        }
-        copyOperation.copy(session.toFolder(target.getParent()));
         try {
-            session.toFile(source).copy(copyOperation).await(statusObject -> logger.info(
-                    String.format("Copy Progress Operation %s progress %f status %s",
-                            statusObject.getOperation(),
-                            statusObject.getPercentage(),
-                            statusObject.getStatus())));
+            new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
+                    // Target Parent Node ID
+                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
+                    new CopyNodesRequest()
+                            .addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())))
+                            .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
         }
-        catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Cannot copy {0}", e, source);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
 
@@ -72,12 +63,14 @@ public class OneDriveCopyFeature implements Copy {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         if(containerService.isContainer(source)) {
+            // Rooms cannot be copied
             return false;
         }
-        if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
-            return false;
+        if(containerService.getContainer(source).equals(containerService.getContainer(target))) {
+            // Nodes must be in same source parent
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override

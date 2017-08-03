@@ -26,6 +26,7 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -53,7 +54,7 @@ public class SDSReadFeature implements Read {
             final SDSApiClient client = session.getClient();
             final HttpUriRequest request = new HttpGet(String.format("%s/nodes/files/%s/downloads", client.getBasePath(),
                     new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
-            request.addHeader("X-Sds-Auth-Token", session.getToken());
+            request.addHeader("X-Sds-Auth-Token", StringUtils.EMPTY);
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;

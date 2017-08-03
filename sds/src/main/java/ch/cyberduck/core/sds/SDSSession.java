@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Background;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -53,7 +54,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
@@ -86,8 +86,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }).build(),
             host.getProtocol()).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
-    private String token = StringUtils.EMPTY;
-
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -108,6 +106,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 break;
             default:
                 configuration.setServiceUnavailableRetryStrategy(retryHandler);
+                configuration.addInterceptorLast(retryHandler);
                 break;
         }
         final CloseableHttpClient apache = configuration.build();
@@ -130,22 +129,21 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 authorizationService.setTokens(authorizationService.authorize(host, keychain, controller, cancel));
                 break;
             default:
-                this.login(controller, new LoginRequest()
+                // Save tokens for 401 error response when expired
+                retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
                         .authType(host.getProtocol().getAuthorization())
                         .language("en")
                         .login(login)
                         .password(password)
-                );
-                // Save tokens for 401 error response when expired
-                retryHandler.setTokens(login, password);
+                ));
                 break;
         }
     }
 
-    private void login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
+    private String login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
         try {
             try {
-                token = new AuthApi(client).login(request).getToken();
+                return new AuthApi(client).login(request).getToken();
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService().map(e);
@@ -156,7 +154,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             controller.prompt(host, additional, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     e.getDetail(), new LoginOptions().user(false).keychain(false)
             );
-            this.login(controller, new LoginRequest()
+            return this.login(controller, new LoginRequest()
                     .authType(host.getProtocol().getAuthorization())
                     .language("en")
                     .token(additional.getPassword())
@@ -172,14 +170,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return new SDSListService(this).list(directory, listener);
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(final String token) {
-        this.token = token;
     }
 
     @Override
@@ -213,7 +203,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSAttributesFinderFeature(this);
         }
         if(type == Move.class) {
-            return (T) new SDSMoveFeature(this);
+            return (T) new SDSDelegatingMoveFeature(this, new SDSMoveFeature(this));
+        }
+        if(type == Copy.class) {
+            return (T) new SDSDelegatingCopyFeature(this, new SDSCopyFeature(this));
         }
         if(type == Bulk.class) {
             return (T) new SDSEncryptionBulkFeature(this);

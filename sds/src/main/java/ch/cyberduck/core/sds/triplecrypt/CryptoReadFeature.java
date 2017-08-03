@@ -38,6 +38,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -65,10 +66,10 @@ public class CryptoReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileKey key = new NodesApi(session.getClient()).getUserFileKey(session.getToken(),
+            final FileKey key = new NodesApi(session.getClient()).getUserFileKey(StringUtils.EMPTY,
                     Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
             final UserPrivateKey privateKey = new UserPrivateKey();
-            final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(session.getToken());
+            final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(StringUtils.EMPTY);
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
             privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
             final Host bookmark = session.getHost();
