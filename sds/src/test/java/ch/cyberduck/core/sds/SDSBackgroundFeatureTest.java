@@ -78,14 +78,13 @@ public class SDSBackgroundFeatureTest {
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session).find(test).getSize());
-
         final SDSBackgroundFeature background = new SDSBackgroundFeature(session);
         final List<UserFileKeySetRequest> processed = background.processMissingKeys(new PasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("ahbic3Ae");
             }
-        });
+        }, test);
         assertFalse(processed.isEmpty());
         boolean found = false;
         for(UserFileKeySetRequest p : processed) {
