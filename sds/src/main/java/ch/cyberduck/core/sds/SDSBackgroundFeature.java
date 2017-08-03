@@ -67,12 +67,18 @@ public class SDSBackgroundFeature implements Background {
     private static final Logger log = Logger.getLogger(SDSBackgroundFeature.class);
 
     private final SDSSession session;
+    private final long period;
 
-    private final ScheduledThreadPool userFileKeyScheduler = new ScheduledThreadPool();
+    private final ScheduledThreadPool scheduler = new ScheduledThreadPool();
     private final CountDownLatch exit = new CountDownLatch(1);
 
     public SDSBackgroundFeature(final SDSSession session) {
+        this(session, PreferencesFactory.get().getLong("sds.encryption.missingkeys.scheduler.period"));
+    }
+
+    public SDSBackgroundFeature(final SDSSession session, final long period) {
         this.session = session;
+        this.period = period;
     }
 
     protected List<UserFileKeySetRequest> processMissingKeys(final PasswordCallback passwordCallback) {
@@ -156,9 +162,9 @@ public class SDSBackgroundFeature implements Background {
 
     @Override
     public void run(final PasswordCallback passwordCallback) throws BackgroundException {
-        userFileKeyScheduler.repeat(() -> {
+        scheduler.repeat(() -> {
             this.processMissingKeys(passwordCallback);
-        }, PreferencesFactory.get().getLong("sds.encryption.missingkeys.scheduler.period"), TimeUnit.MILLISECONDS);
+        }, period, TimeUnit.MILLISECONDS);
         try {
             exit.await();
         }
@@ -171,6 +177,6 @@ public class SDSBackgroundFeature implements Background {
     @Override
     public void shutdown() {
         exit.countDown();
-        userFileKeyScheduler.shutdown();
+        scheduler.shutdown();
     }
 }
