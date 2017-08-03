@@ -3307,7 +3307,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.SecureConnection = _pool.getHost().getProtocol().isSecure();
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
-                        Scheduler background = (Background) _pool.getFeature(typeof(Scheduler));
+                        Scheduler background = (Scheduler) _pool.getFeature(typeof(Scheduler));
                         if (background != null)
                         {
                             _controller._background = background;
