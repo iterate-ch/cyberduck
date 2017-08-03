@@ -18,8 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
@@ -40,6 +38,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserUserPublicKey;
 import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
@@ -102,7 +101,7 @@ public class SDSBackgroundFeature implements Background {
             };
             final UserKeyPair userKeyPair = new UserKeyPair();
             userKeyPair.setUserPrivateKey(privateKey);
-            this.unlock(callback, bookmark, passphrase, userKeyPair);
+            new TripleCryptKeyPair().unlock(callback, bookmark, passphrase, userKeyPair);
             final Long fileId = file != null ? Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())) : null;
             final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(StringUtils.EMPTY,
                     null, null, null, fileId, null);
@@ -148,36 +147,6 @@ public class SDSBackgroundFeature implements Background {
             log.warn(String.format("Failure while processing missing file keys. %s", e.getDetail()));
         }
         return processed;
-    }
-
-    private void unlock(final PasswordCallback callback, final Host bookmark, final VaultCredentials passphrase, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
-        if(null == passphrase.getPassword()) {
-            callback.prompt(passphrase,
-                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                    LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
-                    new LoginOptions()
-                            .user(false)
-                            .anonymous(false)
-                            .icon(bookmark.getProtocol().disk())
-            );
-            if(passphrase.getPassword() == null) {
-                throw new LoginCanceledException();
-            }
-        }
-        if(!Crypto.checkUserKeyPair(keypair, passphrase.getPassword())) {
-            passphrase.setPassword(null);
-            this.unlock(callback, bookmark, passphrase, keypair);
-        }
-        else {
-            if(passphrase.isSaved()) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Save encryption password for %s", bookmark));
-                }
-                keychain.addPassword(bookmark.getHostname(),
-                        String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
-                        passphrase.getPassword());
-            }
-        }
     }
 
     @Override
