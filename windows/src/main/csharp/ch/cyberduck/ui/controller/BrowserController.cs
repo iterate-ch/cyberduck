@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
-        private Background _background;
+        private Scheduler _background;
         private Comparator _comparator = new NullComparator();
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
@@ -3307,7 +3307,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.SecureConnection = _pool.getHost().getProtocol().isSecure();
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
-                        Background background = (Background) _pool.getFeature(typeof(Background));
+                        Scheduler background = (Background) _pool.getFeature(typeof(Scheduler));
                         if (background != null)
                         {
                             _controller._background = background;
@@ -3320,11 +3320,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private class BackgroundAction : SessionBackgroundAction
             {
-                private readonly Background _background;
+                private readonly Scheduler _background;
                 private readonly BrowserController _controller;
 
                 public BackgroundAction(BrowserController controller, SessionPool pool, AlertCallback alert,
-                    ProgressListener progress, TranscriptListener transcript, Background background) : base(pool, alert,
+                    ProgressListener progress, TranscriptListener transcript, Scheduler background) : base(pool, alert,
                     progress, transcript)
                 {
                     _controller = controller;

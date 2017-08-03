@@ -41,9 +41,9 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Background;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -211,7 +211,7 @@ public class BrowserController extends WindowController
             = new PathCache(preferences.getInteger("browser.cache.size"));
 
 
-    private Background background;
+    private Scheduler scheduler;
 
     @Outlet
     protected NSProgressIndicator statusSpinner;
@@ -3022,14 +3022,14 @@ public class BrowserController extends WindowController
                                     securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                                             : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
                                     securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
-                                    final Background background = pool.getFeature(Background.class);
-                                    if(background != null) {
-                                        BrowserController.this.background = background;
+                                    final Scheduler scheduler = pool.getFeature(Scheduler.class);
+                                    if(scheduler != null) {
+                                        BrowserController.this.scheduler = scheduler;
                                         background(new SessionBackgroundAction<Object>(pool, new DisabledAlertCallback(),
                                                 new DisabledProgressListener(), new DisabledTranscriptListener()) {
                                             @Override
                                             public Object run(final Session<?> session) throws BackgroundException {
-                                                background.run(PasswordCallbackFactory.get(BrowserController.this));
+                                                scheduler.run(PasswordCallbackFactory.get(BrowserController.this));
                                                 return null;
                                             }
                                         });
@@ -3114,8 +3114,8 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
-                if(background != null) {
-                    background.shutdown();
+                if(scheduler != null) {
+                    scheduler.shutdown();
                 }
                 pool.shutdown();
                 pool = SessionPool.DISCONNECTED;
