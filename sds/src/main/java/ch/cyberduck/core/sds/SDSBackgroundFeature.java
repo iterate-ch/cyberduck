@@ -44,6 +44,7 @@ import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class SDSBackgroundFeature implements Background {
             userKeyPair.setUserPrivateKey(privateKey);
             this.unlock(callback, bookmark, passphrase, userKeyPair);
             final Long fileId = file != null ? Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())) : null;
-            final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(session.getToken(),
+            final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(StringUtils.EMPTY,
                     null, null, null, fileId, null);
             final Map<Long, UserUserPublicKey> publicKeys =
                     missingKeys.getUsers().stream().collect(Collectors.toMap(UserUserPublicKey::getId, Function.identity()));

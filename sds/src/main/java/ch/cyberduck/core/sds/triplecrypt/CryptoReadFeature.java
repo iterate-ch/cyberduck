@@ -79,7 +79,7 @@ public class CryptoReadFeature implements Read {
             final UserKeyPair userKeyPair = new UserKeyPair();
             userKeyPair.setUserPrivateKey(privateKey);
             while(null == passphrase.getPassword() || !Crypto.checkUserKeyPair(userKeyPair, passphrase.getPassword())) {
-                passwordCallback.prompt(passphrase,
+                callback.prompt(passphrase,
                         LocaleFactory.localizedString("Private key password protected", "Credentials"),
                         LocaleFactory.localizedString("Enter your encryption password", "Credentials"),
                         new LoginOptions()
