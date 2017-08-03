@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2.1
+- [Bugfix] Default to WebDAV for http:// scheme in quick connect and CLI
+- [Bugfix] Selecting multiple files to copy URL will only copy first item in list (#10024)
+- [Bugfix] Quick Look only works one time (#9889) (Mac)
+
 6.2
 - [Feature] Server side copy of files (OneDrive)
 - [Feature] Support for wildcard host entries in known_hosts (SFTP)

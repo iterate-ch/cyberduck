@@ -518,7 +518,7 @@ public class BrowserController extends WindowController
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, pool,
-                        new SessionListWorker(cache, folder, listener) {
+                                new SessionListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache
@@ -2289,7 +2289,7 @@ public class BrowserController extends WindowController
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
-                                        new CopyWorker(selected, SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()), new DisabledProgressListener()) {
+                                        new CopyWorker(selected, SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()), new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
                                             @Override
                                             public void cleanup(final List<Path> copied) {
                                                 reload(workdir(), copied, new ArrayList<Path>(selected.values()));

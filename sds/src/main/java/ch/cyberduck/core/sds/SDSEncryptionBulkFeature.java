@@ -29,6 +29,8 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -52,7 +54,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 case download:
                     break;
                 default:
-                    final UserAccount user = new UserApi(session.getClient()).getUserInfo(session.getToken(), null, false);
+                    final UserAccount user = new UserApi(session.getClient()).getUserInfo(StringUtils.EMPTY, null, false);
                     if(user.getIsEncryptionEnabled()) {
                         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
                             final TransferStatus status = entry.getValue();
@@ -76,7 +78,15 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     @Override
     public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        //
+        switch(type) {
+            case download:
+                break;
+            default:
+                final SDSBackgroundFeature background = new SDSBackgroundFeature(session);
+                for(Path p : files.keySet()) {
+                    background.processMissingKeys(callback, p);
+                }
+        }
     }
 
     @Override

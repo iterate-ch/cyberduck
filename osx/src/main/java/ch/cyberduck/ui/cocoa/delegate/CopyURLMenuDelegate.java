@@ -64,10 +64,10 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
     }
 
     @Override
-    public void handle(final List<String> selected) {
+    public void handle(final List<DescriptiveUrl> selected) {
         final StringBuilder url = new StringBuilder();
-        for(Iterator<String> iter = selected.iterator(); iter.hasNext(); ) {
-            url.append(iter.next());
+        for(Iterator<DescriptiveUrl> iter = selected.iterator(); iter.hasNext(); ) {
+            url.append(iter.next().getUrl());
             if(iter.hasNext()) {
                 url.append("\n");
             }

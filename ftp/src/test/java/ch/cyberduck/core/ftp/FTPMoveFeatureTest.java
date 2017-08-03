@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -58,7 +59,7 @@ public class FTPMoveFeatureTest {
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new FTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
+        new FTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -78,7 +79,7 @@ public class FTPMoveFeatureTest {
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(target, new TransferStatus());
-        new FTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
+        new FTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -95,7 +96,7 @@ public class FTPMoveFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final DefaultHomeFinderService workdir = new FTPWorkdirService(session);
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new FTPMoveFeature(session).move(test, new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback());
+        new FTPMoveFeature(session).move(test, new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         session.close();
     }
 }

@@ -232,7 +232,7 @@ public class CopyTransfer extends Transfer {
         progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
         final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
-        feature.copy(source, copy, status);
+        feature.copy(source, copy, status, connectionCallback);
         this.addTransferred(status.getLength());
         return copy;
     }

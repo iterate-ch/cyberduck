@@ -106,14 +106,14 @@ public class SingleTransferWorkerTest {
         Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
         Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }

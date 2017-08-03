@@ -21,6 +21,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -58,7 +59,7 @@ public class DefaultFindFeature implements Find {
             else {
                 list = cache.get(file.getParent());
             }
-            final Path existing = list.find(new DuplicateFilterPathPredicate(file));
+            final Path existing = list.filter(new NullFilter<>()).find(new DuplicateFilterPathPredicate(file));
             final boolean found = existing != null;
             if(!found) {
                 switch(session.getCase()) {

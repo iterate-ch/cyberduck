@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -45,32 +46,34 @@ public class SDSMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
                 new SDSDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
             if(!source.getParent().equals(target.getParent())) {
                 // Change parent node
-                new NodesApi(session.getClient()).moveNodes(session.getToken(),
+                new NodesApi(session.getClient()).moveNodes(StringUtils.EMPTY,
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
-                        new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener()))), null);
+                        new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(
+                                Long.parseLong(new SDSNodeIdProvider(session).getFileid(source,
+                                        new DisabledListProgressListener()))), null);
             }
             if(!StringUtils.equals(source.getName(), target.getName())) {
                 if(pathContainerService.isContainer(source)) {
-                    new NodesApi(session.getClient()).updateRoom(session.getToken(),
+                    new NodesApi(session.getClient()).updateRoom(StringUtils.EMPTY,
                             Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())),
                             new UpdateRoomRequest().name(target.getName()), null);
                 }
                 // Rename
                 else if(source.isDirectory()) {
-                    new NodesApi(session.getClient()).updateFolder(session.getToken(),
+                    new NodesApi(session.getClient()).updateFolder(StringUtils.EMPTY,
                             Long.parseLong(new SDSNodeIdProvider(session).getFileid(
                                     new Path(target.getParent(), source.getName(), source.getType()), new DisabledListProgressListener())),
                             new UpdateFolderRequest().name(target.getName()), null);
                 }
                 else {
-                    new NodesApi(session.getClient()).updateFile(session.getToken(),
+                    new NodesApi(session.getClient()).updateFile(StringUtils.EMPTY,
                             Long.parseLong(new SDSNodeIdProvider(session).getFileid(
                                     new Path(target.getParent(), source.getName(), source.getType()), new DisabledListProgressListener())),
                             new UpdateFileRequest().name(target.getName()), null);

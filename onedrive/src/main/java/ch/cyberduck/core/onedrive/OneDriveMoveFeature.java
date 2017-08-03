@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -41,7 +42,7 @@ public class OneDriveMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
         if(!StringUtils.equals(file.getName(), renamed.getName())) {
             patchOperation.rename(renamed.getName());

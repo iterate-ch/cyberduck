@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -61,7 +60,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -84,7 +83,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
