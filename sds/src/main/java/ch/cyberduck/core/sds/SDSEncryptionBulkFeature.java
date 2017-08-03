@@ -82,7 +82,10 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             case download:
                 break;
             default:
-                new SDSBackgroundFeature(session).processMissingKeys(callback);
+                final SDSBackgroundFeature background = new SDSBackgroundFeature(session);
+                for(Path p : files.keySet()) {
+                    background.processMissingKeys(callback, p);
+                }
         }
     }
 
