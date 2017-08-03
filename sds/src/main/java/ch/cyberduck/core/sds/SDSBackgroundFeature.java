@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
@@ -94,14 +93,9 @@ public class SDSBackgroundFeature implements Background {
             final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(StringUtils.EMPTY);
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
             privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
-            final Host bookmark = session.getHost();
-            final VaultCredentials passphrase = new VaultCredentials(
-                    keychain.getPassword(bookmark.getHostname(),
-                            String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()))) {
-            };
             final UserKeyPair userKeyPair = new UserKeyPair();
             userKeyPair.setUserPrivateKey(privateKey);
-            new TripleCryptKeyPair().unlock(callback, bookmark, passphrase, userKeyPair);
+            final VaultCredentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
             final Long fileId = file != null ? Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())) : null;
             final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(StringUtils.EMPTY,
                     null, null, null, fileId, null);

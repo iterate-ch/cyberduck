@@ -18,8 +18,6 @@ package ch.cyberduck.core.sds.triplecrypt;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -68,14 +66,9 @@ public class CryptoReadFeature implements Read {
             final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(StringUtils.EMPTY);
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
             privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
-            final Host bookmark = session.getHost();
-            final VaultCredentials passphrase = new VaultCredentials(
-                    PasswordStoreFactory.get().getPassword(bookmark.getHostname(),
-                            String.format("Triple-Crypt (%s)", bookmark.getCredentials().getUsername()))) {
-            };
             final UserKeyPair userKeyPair = new UserKeyPair();
             userKeyPair.setUserPrivateKey(privateKey);
-            new TripleCryptKeyPair().unlock(callback, bookmark, passphrase, userKeyPair);
+            final VaultCredentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
             final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
             return new CryptoInputStream(proxy.read(file, status, callback),
                     Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()),

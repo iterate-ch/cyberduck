@@ -35,7 +35,16 @@ public class TripleCryptKeyPair {
 
     private final HostPasswordStore keychain = PasswordStoreFactory.get();
 
-    public void unlock(final PasswordCallback callback, final Host bookmark, final VaultCredentials passphrase, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
+    public VaultCredentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
+        final VaultCredentials passphrase = new VaultCredentials(
+                keychain.getPassword(bookmark.getHostname(),
+                        String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()))) {
+        };
+        this.unlock(callback, bookmark, keypair, passphrase);
+        return passphrase;
+    }
+
+    private void unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair, final VaultCredentials passphrase) throws LoginCanceledException, CryptoException {
         if(null == passphrase.getPassword()) {
             callback.prompt(passphrase,
                     LocaleFactory.localizedString("Private key password protected", "Credentials"),
@@ -51,7 +60,7 @@ public class TripleCryptKeyPair {
         }
         if(!Crypto.checkUserKeyPair(keypair, passphrase.getPassword())) {
             passphrase.setPassword(null);
-            this.unlock(callback, bookmark, passphrase, keypair);
+            this.unlock(callback, bookmark, keypair, passphrase);
         }
         else {
             if(passphrase.isSaved()) {
