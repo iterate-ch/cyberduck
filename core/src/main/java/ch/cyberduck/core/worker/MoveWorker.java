@@ -96,7 +96,7 @@ public class MoveWorker extends Worker<List<Path>> {
         }
         else if(source.isDirectory()) {
             if(!move.isRecursive(source, target)) {
-                for(Path child : list.list(source, new ActionListProgressListener(this, listener))) {
+                for(Path child : list.list(source, new WorkerListProgressListener(this, listener))) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }

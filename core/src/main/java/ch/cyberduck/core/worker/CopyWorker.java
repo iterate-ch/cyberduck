@@ -103,7 +103,7 @@ public class CopyWorker extends Worker<List<Path>> {
             // Add parent before children
             recursive.put(source, target);
             if(!copy.isRecursive(source, target)) {
-                for(Path child : list.list(source, new ActionListProgressListener(this, listener))) {
+                for(Path child : list.list(source, new WorkerListProgressListener(this, listener))) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
