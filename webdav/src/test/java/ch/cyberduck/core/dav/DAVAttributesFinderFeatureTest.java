@@ -55,7 +55,7 @@ public class DAVAttributesFinderFeatureTest {
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(35147, attributes.getSize());
-        assertNotNull(attributes.getModificationDate());
+        assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         // Test wrong type
         try {
