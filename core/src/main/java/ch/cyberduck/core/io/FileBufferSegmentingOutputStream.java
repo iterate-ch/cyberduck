@@ -40,7 +40,7 @@ public abstract class FileBufferSegmentingOutputStream extends SegmentingOutputS
         buffer.close();
     }
 
-    protected void copy() throws IOException {
+    public void flush() throws IOException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Copy buffer%s to output", buffer));
         }
