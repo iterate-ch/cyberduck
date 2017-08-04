@@ -25,14 +25,19 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
+import ch.cyberduck.core.onedrive.OneDriveAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.OneDriveFindFeature;
 import ch.cyberduck.core.onedrive.OneDriveHomeFinderFeature;
+import ch.cyberduck.core.onedrive.OneDriveReadFeature;
 import ch.cyberduck.core.onedrive.OneDriveWriteFeature;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -47,15 +52,19 @@ import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class CopyWorkerTest extends AbstractOneDriveTest {
@@ -158,7 +167,9 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         final Path home = new OneDriveHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new OneDriveWriteFeature(session))).touch(cleartextFile, new TransferStatus());
+        final OneDriveWriteFeature write = new OneDriveWriteFeature(session);
+        final byte[] content = RandomUtils.nextBytes(66800);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), write.write(cleartextFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()));
         assertTrue(new OneDriveFindFeature(session).find(cleartextFile));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -173,6 +184,10 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         worker.run(session);
         assertTrue(new OneDriveFindFeature(session).find(cleartextFile));
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(encryptedFile));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(encryptedFile).getSize());
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        IOUtils.copy(new CryptoReadFeature(session, new OneDriveReadFeature(session), cryptomator).read(encryptedFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
+        assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
         registry.clear();
     }
