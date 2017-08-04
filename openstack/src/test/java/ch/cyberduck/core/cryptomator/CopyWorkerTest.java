@@ -30,11 +30,14 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.openstack.SwiftDirectoryFeature;
 import ch.cyberduck.core.openstack.SwiftFindFeature;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.openstack.SwiftReadFeature;
 import ch.cyberduck.core.openstack.SwiftRegionService;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.openstack.SwiftTouchFeature;
@@ -52,17 +55,21 @@ import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class CopyWorkerTest {
@@ -199,7 +206,9 @@ public class CopyWorkerTest {
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(cleartextFile, new TransferStatus());
+        final SwiftWriteFeature write = new SwiftWriteFeature(session, new SwiftRegionService(session));
+        final byte[] content = RandomUtils.nextBytes(40500);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), write.write(cleartextFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()));
         assertTrue(new SwiftFindFeature(session).find(cleartextFile));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -214,6 +223,9 @@ public class CopyWorkerTest {
         worker.run(session);
         assertTrue(new SwiftFindFeature(session).find(cleartextFile));
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(encryptedFile));
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new SwiftReadFeature(session, new SwiftRegionService(session)), cryptomator).read(encryptedFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
+        assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
