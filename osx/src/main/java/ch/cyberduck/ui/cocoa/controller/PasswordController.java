@@ -69,7 +69,7 @@ public class PasswordController extends AlertController {
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
         alert.setMessageText(title);
         alert.setInformativeText(reason);
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
         this.loadBundle(alert);
     }
