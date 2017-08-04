@@ -26,7 +26,7 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class OneDriveHomeFeatureTest extends AbstractOneDriveTest{
+public class OneDriveHomeFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testHomeFeature() throws BackgroundException {
