@@ -78,7 +78,15 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     @Override
     public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        //
+        switch(type) {
+            case download:
+                break;
+            default:
+                final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
+                for(Path p : files.keySet()) {
+                    background.operate(callback, p);
+                }
+        }
     }
 
     @Override

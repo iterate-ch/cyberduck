@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds.triplecrypt;
  */
 
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKeyContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicKeyContainer;
 
 import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
@@ -40,6 +41,15 @@ public class TripleCryptConverter {
 
     public static PlainFileKey toCryptoPlainFileKey(final FileKey key) {
         final PlainFileKey fileKey = new PlainFileKey();
+        fileKey.setKey(key.getKey());
+        fileKey.setIv(key.getIv());
+        fileKey.setTag(key.getTag());
+        fileKey.setVersion(key.getVersion());
+        return fileKey;
+    }
+
+    public static EncryptedFileKey toCryptoEncryptedFileKey(final FileKeyContainer key) {
+        final EncryptedFileKey fileKey = new EncryptedFileKey();
         fileKey.setKey(key.getKey());
         fileKey.setIv(key.getIv());
         fileKey.setTag(key.getTag());

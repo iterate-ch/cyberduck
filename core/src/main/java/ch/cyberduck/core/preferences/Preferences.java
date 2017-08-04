@@ -1045,6 +1045,8 @@ public abstract class Preferences {
 
         defaults.put("cryptomator.enable", String.valueOf(true));
         defaults.put("cryptomator.vault.autodetect", String.valueOf(true));
+
+        defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(300000)); // 5 minutes
     }
 
     protected void setLogging() {

@@ -33,7 +33,6 @@ using ch.cyberduck.core.pasteboard;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.serializer;
-using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
@@ -76,6 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
+        private Scheduler _background;
         private Comparator _comparator = new NullComparator();
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
@@ -505,7 +505,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateOpenInTerminal()
         {
-            return IsMounted() && Session.getHost().getProtocol().getType() == Protocol.Type.sftp && TerminalServiceFactory.get() != null;
+            return IsMounted() && Session.getHost().getProtocol().getType() == Protocol.Type.sftp &&
+                   TerminalServiceFactory.get() != null;
         }
 
         private void View_OpenInTerminal()
@@ -1206,7 +1207,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.SelectedBookmarks.Count == 1)
             {
-                BookmarkController.Factory.Create(View.SelectedBookmark).View.Show(View);
+                BookmarkController<IBookmarkView>.Factory.Create(View.SelectedBookmark).View.Show(View);
             }
         }
 
@@ -1227,7 +1228,8 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 bookmark =
-                    new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")));
+                    new Host(ProtocolFactory.get().forName(PreferencesFactory.get()
+                        .getProperty("connection.protocol.default")));
             }
             ToggleView(BrowserView.Bookmark);
             AddBookmark(bookmark);
@@ -1251,7 +1253,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.SelectBookmark(item);
             View.EnsureBookmarkVisible(item);
-            BookmarkController.Factory.Create(item).View.Show(View);
+            BookmarkController<IBookmarkView>.Factory.Create(item).View.Show(View);
         }
 
         private void View_DeleteBookmark()
@@ -2717,6 +2719,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             CallbackDelegate run = delegate
             {
+                _background?.shutdown();
                 Session.shutdown();
                 Session = SessionPool.DISCONNECTED;
                 SetWorkdir(null);
@@ -3132,7 +3135,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object result)
                 {
                     base.cleanup(result);
-                    _controller.SetFilter(new RecursiveSearchFilter((AttributedList)result));
+                    _controller.SetFilter(new RecursiveSearchFilter((AttributedList) result));
                     _controller.Reload();
                 }
             }
@@ -3304,7 +3307,34 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.SecureConnection = _pool.getHost().getProtocol().isSecure();
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
+                        Scheduler background = (Scheduler) _pool.getFeature(typeof(Scheduler));
+                        if (background != null)
+                        {
+                            _controller._background = background;
+                            _controller.background(new BackgroundAction(_controller, _pool, new DisabledAlertCallback(),
+                                new DisabledProgressListener(), new DisabledTranscriptListener(), background));
+                        }
                     }
+                }
+            }
+
+            private class BackgroundAction : SessionBackgroundAction
+            {
+                private readonly Scheduler _background;
+                private readonly BrowserController _controller;
+
+                public BackgroundAction(BrowserController controller, SessionPool pool, AlertCallback alert,
+                    ProgressListener progress, TranscriptListener transcript, Scheduler background) : base(pool, alert,
+                    progress, transcript)
+                {
+                    _controller = controller;
+                    _background = background;
+                }
+
+                public override object run(Session s)
+                {
+                    _background.repeat(PasswordCallbackFactory.get(_controller));
+                    return null;
                 }
             }
         }
@@ -3350,7 +3380,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerCopyWorker(BrowserController controller, Map files)
-                    : base(files, SessionPoolFactory.create(controller, controller.Cache, controller.Session.getHost()), controller, LoginCallbackFactory.get(controller))
+                    : base(files, SessionPoolFactory.create(controller, controller.Cache, controller.Session.getHost()),
+                        controller, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;
                     _files = files;
