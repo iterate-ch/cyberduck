@@ -88,9 +88,15 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        if(StringUtils.isNotBlank(authorizationToken)) {
-            request.removeHeaders(HttpHeaders.AUTHORIZATION);
-            request.addHeader(HttpHeaders.AUTHORIZATION, authorizationToken);
+        switch(request.getRequestLine().getMethod()) {
+            case "POST":
+                // Do not override Authorization header for upload requests with upload URL token
+                break;
+            default:
+                if(StringUtils.isNotBlank(authorizationToken)) {
+                    request.removeHeaders(HttpHeaders.AUTHORIZATION);
+                    request.addHeader(HttpHeaders.AUTHORIZATION, authorizationToken);
+                }
         }
     }
 }
