@@ -49,11 +49,12 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SDSBackgroundFeatureTest {
+public class SDSMissingFileKeysSchedulerFeatureTest {
 
     @Test
     public void testMissingKeys() throws Exception {
@@ -95,6 +96,30 @@ public class SDSBackgroundFeatureTest {
         }
         assertTrue(found);
         new SDSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testWrongPassword() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
+        final AtomicBoolean prompt = new AtomicBoolean();
+        final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                if(prompt.get()) {
+                    throw new LoginCanceledException();
+                }
+                credentials.setPassword("n");
+                prompt.set(true);
+            }
+        }, null);
+        assertTrue(prompt.get());
         session.close();
     }
 }
