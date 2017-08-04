@@ -55,8 +55,8 @@ public class DefaultCopyFeature implements Copy {
             if(!to.getFeature(Find.class).find(target.getParent())) {
                 this.copy(source.getParent(), target.getParent(), new TransferStatus().length(source.getParent().attributes().getSize()), callback);
             }
-            InputStream in = null;
-            OutputStream out = null;
+            InputStream in;
+            OutputStream out;
             in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(status), callback), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
             Write write = to.getFeature(MultipartWrite.class);
             if(null == write) {
