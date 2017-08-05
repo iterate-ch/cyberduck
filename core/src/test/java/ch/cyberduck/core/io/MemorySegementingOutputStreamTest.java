@@ -20,6 +20,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class MemorySegementingOutputStreamTest {
 
@@ -29,6 +30,7 @@ public class MemorySegementingOutputStreamTest {
         final MemorySegementingOutputStream out = new MemorySegementingOutputStream(proxy, 32768);
         final byte[] content = RandomUtils.nextBytes(40500);
         out.write(content, 0, 32800);
+        assertEquals(32768, proxy.toByteArray().length);
         out.write(content, 32800, 7700);
         out.close();
         assertArrayEquals(content, proxy.toByteArray());
@@ -51,7 +53,10 @@ public class MemorySegementingOutputStreamTest {
         final MemorySegementingOutputStream out = new MemorySegementingOutputStream(proxy, 32768);
         final byte[] content = RandomUtils.nextBytes(40500);
         out.write(content, 0, 32767);
-        out.write(content, 32767, 7733);
+        assertEquals(0, proxy.toByteArray().length);
+        out.write(content, 32767, 2);
+        assertEquals(32768, proxy.toByteArray().length);
+        out.write(content, 32769, 7731);
         out.close();
         assertArrayEquals(content, proxy.toByteArray());
     }
