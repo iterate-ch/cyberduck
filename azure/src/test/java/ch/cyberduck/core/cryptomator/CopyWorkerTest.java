@@ -31,13 +31,16 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.azure.AzureDirectoryFeature;
 import ch.cyberduck.core.azure.AzureFindFeature;
 import ch.cyberduck.core.azure.AzureProtocol;
+import ch.cyberduck.core.azure.AzureReadFeature;
 import ch.cyberduck.core.azure.AzureSession;
 import ch.cyberduck.core.azure.AzureTouchFeature;
 import ch.cyberduck.core.azure.AzureWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -51,15 +54,19 @@ import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class CopyWorkerTest {
@@ -197,7 +204,8 @@ public class CopyWorkerTest {
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(cleartextFile, new TransferStatus());
+        final byte[] content = RandomUtils.nextBytes(40500);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new AzureWriteFeature(session, null).write(cleartextFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()));
         assertTrue(new AzureFindFeature(session, null).find(cleartextFile));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -212,6 +220,9 @@ public class CopyWorkerTest {
         worker.run(session);
         assertTrue(new AzureFindFeature(session, null).find(cleartextFile));
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(encryptedFile));
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new AzureReadFeature(session, null), cryptomator).read(encryptedFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
+        assertArrayEquals(content, out.toByteArray());
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
