@@ -299,7 +299,10 @@ public class CopyWorkerTest {
         session.withRegistry(registry);
         new CryptoDirectoryFeature<String>(session, new DAVDirectoryFeature(session), new DAVWriteFeature(session), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
-        new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DAVWriteFeature(session))), new DAVWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
+        final byte[] content = RandomUtils.nextBytes(40500);
+        final TransferStatus status = new TransferStatus().length(content.length);
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new DAVDeleteFeature(session), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(encryptedFile, status), new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator).write(encryptedFile, status, new DisabledConnectionCallback()));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // move file outside vault
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -307,6 +310,9 @@ public class CopyWorkerTest {
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(encryptedFile));
         assertTrue(new DAVFindFeature(session).find(cleartextFile));
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        assertEquals(content.length, IOUtils.copy(new DAVReadFeature(session).read(cleartextFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
+        assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
