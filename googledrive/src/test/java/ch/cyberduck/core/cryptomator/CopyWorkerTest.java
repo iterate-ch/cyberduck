@@ -25,21 +25,29 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
+import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFindFeature;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
+import ch.cyberduck.core.googledrive.DriveReadFeature;
 import ch.cyberduck.core.googledrive.DriveTouchFeature;
 import ch.cyberduck.core.googledrive.DriveWriteFeature;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
+import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -48,14 +56,20 @@ import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class CopyWorkerTest extends AbstractDriveTest {
@@ -70,14 +84,20 @@ public class CopyWorkerTest extends AbstractDriveTest {
         cryptomator.create(session, null, new VaultCredentials("test"));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new DriveWriteFeature(session))), new DriveWriteFeature(session), cryptomator).touch(source, new TransferStatus());
-        Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
+        final byte[] content = RandomUtils.nextBytes(40500);
+        final TransferStatus status = new TransferStatus();
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new DriveDeleteFeature(session), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(source, status), new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new DriveWriteFeature(session), cryptomator).write(source, status.length(content.length), new DisabledConnectionCallback()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session, registry), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
-        registry.clear();
+        assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session), cryptomator).find(source));
+        assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session), cryptomator).find(target));
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
+        assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new DriveReadFeature(session), cryptomator).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
+        assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        session.close();
     }
 
     @Test
