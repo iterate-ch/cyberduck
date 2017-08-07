@@ -102,6 +102,10 @@ public final class ProtocolFactory {
     }
 
     public void register(final Protocol protocol) {
+        if(null == protocol) {
+            log.error("Attempt to register unknown protocol");
+            return;
+        }
         registered.add(protocol);
     }
 
@@ -125,17 +129,19 @@ public final class ProtocolFactory {
      * @return Matching protocol or null if no match
      */
     public Protocol forName(final String identifier) {
-        return registered.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
-                this.forName(identifier, null)
+        final List<Protocol> enabled = this.find();
+        return enabled.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
+                this.forName(enabled, identifier, null)
         );
     }
 
     public Protocol forName(final String identifier, final String provider) {
-        return this.forName(this.find(), identifier, provider);
+        final List<Protocol> enabled = this.find();
+        return this.forName(enabled, identifier, provider);
     }
 
-    public Protocol forName(final List<Protocol> registered, final String identifier, final String provider) {
-        final Protocol match = registered.stream().filter(protocol -> {
+    public Protocol forName(final List<Protocol> enabled, final String identifier, final String provider) {
+        final Protocol match = enabled.stream().filter(protocol -> {
             if(StringUtils.equals(protocol.getIdentifier(), identifier)) {
                 if(null == provider) {
                     // Matching protocol with no custom provider
@@ -145,38 +151,70 @@ public final class ProtocolFactory {
                     return StringUtils.equals(protocol.getProvider(), provider);
                 }
             }
+            // Fallback for bug in 6.1
+            if(StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)) {
+                return true;
+            }
             return false;
         }).findFirst().orElse(
-                registered.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
-                        registered.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(identifier)).findFirst().orElse(null)
+                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+                        this.forScheme(enabled, identifier)
                 )
         );
         if(null == match) {
-            if(registered.isEmpty()) {
+            if(enabled.isEmpty()) {
                 log.error("List of registered protocols is empty");
                 return null;
             }
-            final Protocol next = registered.iterator().next();
+            final Protocol next = enabled.iterator().next();
             log.warn(String.format("Missing registered protocol for identifier %s. Return first in list %s", identifier, next));
             return next;
         }
         return match;
     }
 
+    public Protocol forType(final Protocol.Type type) {
+        final List<Protocol> enabled = this.find();
+        return this.forType(enabled, type);
+    }
+
+    private Protocol forType(final List<Protocol> enabled, final Protocol.Type type) {
+        return enabled.stream().filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
+    }
+
     /**
      * @param scheme Protocol scheme
-     * @return Standard protocol for this scheme. This is ambigous
+     * @return Standard protocol for this scheme. This is ambiguous
      */
+    public Protocol forScheme(final List<Protocol> enabled, final String scheme) {
+        try {
+            return this.forScheme(Scheme.valueOf(scheme));
+        }
+        catch(IllegalArgumentException e) {
+            log.warn(String.format("Unknown scheme %s", scheme));
+            return null;
+        }
+    }
+
     public Protocol forScheme(final Scheme scheme) {
-        return forScheme(scheme.name());
+        final List<Protocol> enabled = this.find();
+        return this.forScheme(enabled, scheme);
     }
 
-    public Protocol forType(final Protocol.Type type) {
-        return this.find().stream().filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
-    }
-
-    public Protocol forScheme(final String scheme) {
-        return this.find().stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null);
+    private Protocol forScheme(final List<Protocol> enabled, final Scheme scheme) {
+        final Scheme filter;
+        switch(scheme) {
+            case http:
+                filter = Scheme.dav;
+                break;
+            case https:
+                filter = Scheme.davs;
+                break;
+            default:
+                filter = scheme;
+                break;
+        }
+        return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(null);
     }
 
     private static final class ProfileFilter implements Filter<Local> {

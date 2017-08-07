@@ -22,7 +22,7 @@ import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 
 import java.io.OutputStream;
@@ -143,8 +143,8 @@ public class UploadTransferTest {
             @Override
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
-                                 final ConnectionCallback callback,
-                                 final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ConnectionCallback connectionCallback,
+                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertEquals(true, options.resumeRequested);
                 return file;
             }
@@ -158,7 +158,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session, null);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()).run(session, null);
         assertEquals(1, c.get());
     }
 
@@ -207,8 +207,8 @@ public class UploadTransferTest {
             @Override
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
-                                 final ConnectionCallback callback,
-                                 final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ConnectionCallback connectionCallback,
+                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 //
                 return file;
             }
@@ -219,7 +219,7 @@ public class UploadTransferTest {
                 return TransferAction.rename;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session, null);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()).run(session, null);
         assertEquals(1, c.get());
     }
 
@@ -253,7 +253,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
                 TransferAction.overwrite);
         assertEquals(new TransferStatus().exists(true), table.get(test));
@@ -280,7 +280,7 @@ public class UploadTransferTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer", name);
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
-        final byte[] bytes = RandomStringUtils.random(1000).getBytes();
+        final byte[] bytes = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
         IOUtils.write(bytes, out);
         out.close();
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "transfer") {
@@ -300,7 +300,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, directory, new TransferStatus().exists(true),
                 TransferAction.resume);
         assertEquals(new TransferStatus().exists(true), table.get(test));
@@ -339,7 +339,7 @@ public class UploadTransferTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
+                        public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             assertEquals(test, renamed);
                             moved.set(true);
                         }
@@ -401,7 +401,7 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public ChecksumCompute checksum() {
+                        public ChecksumCompute checksum(final Path file) {
                             return new DisabledChecksumCompute();
                         }
                     };
@@ -418,7 +418,7 @@ public class UploadTransferTest {
             @Override
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
-                                 final ConnectionCallback callback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertEquals(table.get(test).getRename().remote, file);
                 status.setComplete();
                 set.set(true);
@@ -438,7 +438,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.overwrite);
         assertNotNull(table.get(test));
         assertNotNull(table.get(test).getRename());

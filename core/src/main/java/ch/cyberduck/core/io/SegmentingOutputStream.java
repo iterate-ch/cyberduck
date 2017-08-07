@@ -32,6 +32,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
      * Flag set to true if any bytes have been written to the proxy stream
      */
     private final AtomicBoolean after = new AtomicBoolean();
+    private final AtomicBoolean close = new AtomicBoolean();
 
     private final OutputStream buffer;
     private final OutputStream proxy;
@@ -91,24 +92,36 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
 
     protected void checkThreshold(final int count) throws IOException {
         if(written >= threshold) {
-            this.copy();
             this.reset();
+            this.flush();
         }
-    }
-
-    @Override
-    public void close() throws IOException {
-        if(written > 0L || !after.get()) {
-            this.copy();
-            this.reset();
-        }
-        proxy.close();
     }
 
     /**
      * Copy from temporary buffer to output
      */
-    protected abstract void copy() throws IOException;
+    @Override
+    public void flush() throws IOException {
+        proxy.flush();
+    }
+
+    @Override
+    public void close() throws IOException {
+        if(close.get()) {
+            log.warn(String.format("Skip double close of stream %s", this));
+            return;
+        }
+        try {
+            if(written > 0L || !after.get()) {
+                this.reset();
+                this.flush();
+            }
+            proxy.close();
+        }
+        finally {
+            close.set(true);
+        }
+    }
 
     protected void reset() {
         // Wait for trigger of next threshold

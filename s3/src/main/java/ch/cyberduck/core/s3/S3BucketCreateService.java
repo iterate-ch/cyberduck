@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -61,7 +62,7 @@ public class S3BucketCreateService {
                 region = location;
             }
             // Create bucket
-            session.getClient().createBucket(containerService.getContainer(bucket).getName(), region, acl);
+            session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(bucket).getName()), region, acl);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, bucket);

@@ -51,6 +51,8 @@ public abstract class Updater extends NSObject {
 
     public abstract Updater init();
 
+    public abstract void setDelegate(ID delegate);
+
     /**
      * Explicitly checks for updates and displays a progress dialog while doing so.
      * <p>
@@ -75,4 +77,10 @@ public abstract class Updater extends NSObject {
     public abstract void checkForUpdatesInBackground();
 
     public abstract void setUserAgentString(String userAgentString);
+
+    public abstract void setSendsSystemProfile(boolean sendsSystemProfile);
+
+    public abstract void setAutomaticallyChecksForUpdates(boolean automaticallyChecks);
+
+    public abstract void setAutomaticallyDownloadsUpdates(boolean automaticallyDownloadsUpdates);
 }

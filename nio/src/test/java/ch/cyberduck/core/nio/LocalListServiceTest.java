@@ -94,7 +94,7 @@ public class LocalListServiceTest {
             assertTrue(list.contains(new Path(home, "Recent", EnumSet.of(Path.Type.directory))));
             final Path recent = list.get(new Path(home, "Recent", EnumSet.of(Path.Type.directory)));
             assertFalse(recent.attributes().getPermission().isReadable());
-            assertFalse(recent.attributes().getPermission().isExecutable());
+            assertTrue(recent.attributes().getPermission().isExecutable());
             try {
                 new LocalListService(session).list(recent, new DisabledListProgressListener());
                 fail();

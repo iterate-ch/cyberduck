@@ -62,7 +62,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             return folder;
         }
         else {
-            if(null == status.getEncryption()) {
+            if(Encryption.Algorithm.NONE == status.getEncryption()) {
                 final Encryption encryption = session.getFeature(Encryption.class);
                 if(encryption != null) {
                     status.setEncryption(encryption.getDefault(folder));
@@ -75,7 +75,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                 }
             }
             if(Checksum.NONE == status.getChecksum()) {
-                status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+                status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
             }
             // Add placeholder object
             status.setMime(MIMETYPE);

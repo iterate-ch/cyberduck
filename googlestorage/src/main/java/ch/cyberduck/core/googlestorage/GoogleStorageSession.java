@@ -68,7 +68,6 @@ import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.ProviderCredentials;
-import org.jets3t.service.utils.oauth.OAuthConstants;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -78,13 +77,8 @@ public class GoogleStorageSession extends S3Session {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
-            OAuthConstants.GSOAuth2_10.Endpoints.Token,
-            OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
-            host.getProtocol().getClientId(),
-            host.getProtocol().getClientSecret(),
-            Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
-    ).withRedirectUri(preferences.getProperty("googlestorage.oauth.redirecturi"));
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
     private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
             authorizationService);
@@ -210,7 +204,7 @@ public class GoogleStorageSession extends S3Session {
             return (T) new GoogleStorageDirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
         }
         if(type == Move.class) {
-            return (T) new S3MoveFeature(this);
+            return (T) new S3MoveFeature(this, new GoogleStorageAccessControlListFeature(this));
         }
         if(type == Headers.class) {
             return (T) new S3MetadataFeature(this, new GoogleStorageAccessControlListFeature(this));

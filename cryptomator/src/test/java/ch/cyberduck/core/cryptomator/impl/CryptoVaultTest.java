@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -157,7 +158,7 @@ public class CryptoVaultTest {
         assertEquals(Vault.State.open, vault.getState());
         final AtomicBoolean found = new AtomicBoolean();
         assertEquals(vault, new DefaultVaultRegistry(new DisabledPasswordCallback()) {
-            protected Vault find(final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
+            protected Vault find(final Session<?> session, final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
                 found.set(true);
                 return vault;
             }

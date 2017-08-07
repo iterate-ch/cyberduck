@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -27,17 +28,23 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -82,6 +89,35 @@ public class SDSNodeIdProviderTest {
             // Expected
         }
         new SDSDeleteFeature(session).delete(Arrays.asList(file, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void getFileIdFileVersions() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener());
+        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final String name = new AlphanumericRandomStringService().random();
+        final Path file = new SDSTouchFeature(session).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String versionIdTouch = file.attributes().getVersionId();
+        assertEquals(versionIdTouch, new SDSNodeIdProvider(session).getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        final SDSWriteFeature writer = new SDSWriteFeature(session);
+        final HttpResponseOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        final VersionId versionIdWrite = out.getStatus();
+        assertNotNull(versionIdWrite);
+        assertNotEquals(versionIdTouch, versionIdWrite);
+        assertEquals(versionIdWrite.toString(), new SDSNodeIdProvider(session).getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

@@ -15,6 +15,7 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,10 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
      * Currently valid tokens
      */
     private Tokens tokens = Tokens.EMPTY;
+
+    public OAuth2RequestInterceptor(final HttpClient client, final Protocol protocol) {
+        this(client, protocol.getOAuthTokenUrl(), protocol.getOAuthAuthorizationUrl(), protocol.getOAuthClientId(), protocol.getOAuthClientSecret(), protocol.getOAuthScopes());
+    }
 
     public OAuth2RequestInterceptor(final HttpClient client, final String tokenServerUrl, final String authorizationServerUrl, final String clientid, final String clientsecret, final List<String> scopes) {
         super(client, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);

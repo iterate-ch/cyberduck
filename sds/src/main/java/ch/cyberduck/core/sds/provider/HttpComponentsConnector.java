@@ -16,16 +16,11 @@ package ch.cyberduck.core.sds.provider;
  */
 
 import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
@@ -44,7 +39,6 @@ import org.glassfish.jersey.message.internal.OutboundMessageContext;
 import org.glassfish.jersey.message.internal.Statuses;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -63,15 +57,11 @@ import jersey.repackaged.com.google.common.util.concurrent.MoreExecutors;
 public class HttpComponentsConnector implements Connector {
     private static final Logger log = Logger.getLogger(HttpComponentsConnector.class);
 
-    private final CloseableHttpClient apache;
-    private final RequestConfig requestConfig;
+    private final CloseableHttpClient client;
     private final HttpClientContext context;
 
-    public HttpComponentsConnector(final HttpConnectionPoolBuilder builder, final TranscriptListener transcript,
-                                   final Client client, final Configuration runtimeConfig) {
-        final Preferences preferences = PreferencesFactory.get();
-        this.requestConfig = builder.createRequestConfig(preferences.getInteger("connection.timeout.seconds") * 1000);
-        this.apache = builder.build(transcript).build();
+    public HttpComponentsConnector(final CloseableHttpClient client, final Configuration runtimeConfig) {
+        this.client = client;
         this.context = HttpClientContext.create();
     }
 
@@ -82,7 +72,7 @@ public class HttpComponentsConnector implements Connector {
 
         try {
             final CloseableHttpResponse response;
-            response = apache.execute(new HttpHost(request.getURI().getHost(), request.getURI().getPort(), request.getURI().getScheme()), request, new BasicHttpContext(context));
+            response = client.execute(new HttpHost(request.getURI().getHost(), request.getURI().getPort(), request.getURI().getScheme()), request, new BasicHttpContext(context));
             HeaderUtils.checkHeaderChanges(clientHeadersSnapshot, clientRequest.getHeaders(), this.getClass().getName());
 
             final Response.StatusType status = response.getStatusLine().getReasonPhrase() == null
@@ -136,7 +126,6 @@ public class HttpComponentsConnector implements Connector {
         return RequestBuilder
                 .create(request.getMethod())
                 .setUri(request.getUri())
-                .setConfig(requestConfig)
                 .setEntity(entity)
                 .build();
     }
@@ -192,7 +181,7 @@ public class HttpComponentsConnector implements Connector {
 
     @Override
     public Future<?> apply(final ClientRequest request, final AsyncConnectorCallback callback) {
-        return MoreExecutors.sameThreadExecutor().submit(new Runnable() {
+        return MoreExecutors.newDirectExecutorService().submit(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -213,7 +202,7 @@ public class HttpComponentsConnector implements Connector {
     @Override
     public void close() {
         try {
-            apache.close();
+            client.close();
         }
         catch(final IOException e) {
             throw new ProcessingException(LocalizationMessages.FAILED_TO_STOP_CLIENT(), e);

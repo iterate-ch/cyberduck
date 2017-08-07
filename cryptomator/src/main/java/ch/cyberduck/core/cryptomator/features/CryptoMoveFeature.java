@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -22,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public class CryptoMoveFeature implements Move {
 
@@ -36,12 +38,12 @@ public class CryptoMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         // Move inside vault moves actual files and only metadata files for directories but not the actual directories
         proxy.move(
                 vault.contains(file) ? vault.encrypt(session, file, file.isDirectory()) : file,
                 vault.contains(renamed) ? vault.encrypt(session, renamed, file.isDirectory()) : renamed,
-                exists, callback);
+                status, callback, connectionCallback);
     }
 
     @Override

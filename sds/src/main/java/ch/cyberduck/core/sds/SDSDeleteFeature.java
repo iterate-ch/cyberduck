@@ -23,6 +23,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 
 public class SDSDeleteFeature implements Delete {
@@ -37,7 +39,7 @@ public class SDSDeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             try {
-                new NodesApi(session.getClient()).deleteNode(session.getToken(),
+                new NodesApi(session.getClient()).deleteNode(StringUtils.EMPTY,
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
             }
             catch(ApiException e) {

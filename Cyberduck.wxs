@@ -79,6 +79,16 @@
           <netfx:NativeImage Id="ngen_ExceptionReporter.WinForms" Platform="32bit" Priority="3" />
         </File>
       </Component>
+      <Component Id="DotNetZip">
+        <File Source="$(var.cyberduck.TargetDir)/DotNetZip.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_DotNetZip" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="SimpleMapi">
+        <File Source="$(var.cyberduck.TargetDir)/SimpleMapi.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_SimpleMapi" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
       <Component Id="ActiveButtons">
         <File Source="$(var.cyberduck.TargetDir)/ActiveButtons.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ActiveButtons" Platform="32bit" Priority="3" />
@@ -249,14 +259,14 @@
           <netfx:NativeImage Id="ngen_structuremap" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="VistaBridgeLibrary">
-        <File Source="$(var.cyberduck.TargetDir)/VistaBridgeLibrary.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_VistaBridgeLibrary" Platform="32bit" Priority="3" />
+      <Component Id="WAPICP">
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_WAPICP" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="Windows7.DesktopIntegration">
-        <File Source="$(var.cyberduck.TargetDir)/Windows7.DesktopIntegration.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_Windows7.DesktopIntegration" Platform="32bit" Priority="3" />
+      <Component Id="WAPICPShell">
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.Shell.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_WAPICPShell" Platform="32bit" Priority="3" />
         </File>
       </Component>
       <Component Id="ikvm.native">

@@ -33,7 +33,6 @@ using ch.cyberduck.core.pasteboard;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.serializer;
-using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
@@ -76,6 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
+        private Scheduler _background;
         private Comparator _comparator = new NullComparator();
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
@@ -505,7 +505,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateOpenInTerminal()
         {
-            return IsMounted() && Session.getHost().getProtocol().getType() == Protocol.Type.sftp && TerminalServiceFactory.get() != null;
+            return IsMounted() && Session.getHost().getProtocol().getType() == Protocol.Type.sftp &&
+                   TerminalServiceFactory.get() != null;
         }
 
         private void View_OpenInTerminal()
@@ -1206,7 +1207,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.SelectedBookmarks.Count == 1)
             {
-                BookmarkController.Factory.Create(View.SelectedBookmark).View.Show(View);
+                BookmarkController<IBookmarkView>.Factory.Create(View.SelectedBookmark).View.Show(View);
             }
         }
 
@@ -1227,10 +1228,8 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 bookmark =
-                    new Host(
-                        ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
-                        PreferencesFactory.get().getProperty("connection.hostname.default"),
-                        PreferencesFactory.get().getInteger("connection.port.default"));
+                    new Host(ProtocolFactory.get().forName(PreferencesFactory.get()
+                        .getProperty("connection.protocol.default")));
             }
             ToggleView(BrowserView.Bookmark);
             AddBookmark(bookmark);
@@ -1254,7 +1253,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.SelectBookmark(item);
             View.EnsureBookmarkVisible(item);
-            BookmarkController.Factory.Create(item).View.Show(View);
+            BookmarkController<IBookmarkView>.Factory.Create(item).View.Show(View);
         }
 
         private void View_DeleteBookmark()
@@ -1495,8 +1494,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 ISet<Path> folders = new HashSet<Path>();
                 foreach (Path path in View.VisiblePaths)
                 {
-                    if (null == path || !View.IsExpanded(path)) continue;
-                    folders.Add(path);
+                    if (null == path) continue;
+                    if (path.isDirectory())
+                    {
+                        // Invalidate cache regardless if rendered. Fix CD-2340
+                        _cache.invalidate(path);
+                        if (View.IsExpanded(path))
+                        {
+                            folders.Add(path);
+                        }
+                    }
                 }
                 folders.Add(Workdir);
                 Reload(Workdir, folders, SelectedPaths, true);
@@ -1887,6 +1894,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewVault()
         {
             return IsMounted() && Session.getVault() != VaultRegistry.DISABLED &&
+                   null == Workdir.attributes().getVault() &&
                    ((Directory) Session.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath));
         }
@@ -2373,23 +2381,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return Workdir != null;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="preserveSelection">All selected files should be reselected after reloading the view</param>
-        public void _ReloadData(bool preserveSelection)
-        {
-            if (preserveSelection)
-            {
-                //Remember the previously selected paths
-                //_ReloadData(SelectedPaths);
-            }
-            else
-            {
-                //_ReloadData(new List<Path>());
-            }
-        }
-
         public override void start(BackgroundAction action)
         {
             Invoke(delegate { View.StartActivityAnimation(); });
@@ -2511,7 +2502,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    if (_cache.isCached(folder))
+                    if (_cache.isValid(folder))
                     {
                         Reload(workdir, selected, folder);
                         return;
@@ -2728,6 +2719,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             CallbackDelegate run = delegate
             {
+                _background?.shutdown();
                 Session.shutdown();
                 Session = SessionPool.DISCONNECTED;
                 SetWorkdir(null);
@@ -3143,7 +3135,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object result)
                 {
                     base.cleanup(result);
-                    _controller.SetFilter(new RecursiveSearchFilter((AttributedList)result));
+                    _controller.SetFilter(new RecursiveSearchFilter((AttributedList) result));
                     _controller.Reload();
                 }
             }
@@ -3315,7 +3307,34 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.SecureConnection = _pool.getHost().getProtocol().isSecure();
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
+                        Scheduler background = (Scheduler) _pool.getFeature(typeof(Scheduler));
+                        if (background != null)
+                        {
+                            _controller._background = background;
+                            _controller.background(new BackgroundAction(_controller, _pool, new DisabledAlertCallback(),
+                                new DisabledProgressListener(), new DisabledTranscriptListener(), background));
+                        }
                     }
+                }
+            }
+
+            private class BackgroundAction : SessionBackgroundAction
+            {
+                private readonly Scheduler _background;
+                private readonly BrowserController _controller;
+
+                public BackgroundAction(BrowserController controller, SessionPool pool, AlertCallback alert,
+                    ProgressListener progress, TranscriptListener transcript, Scheduler background) : base(pool, alert,
+                    progress, transcript)
+                {
+                    _controller = controller;
+                    _background = background;
+                }
+
+                public override object run(Session s)
+                {
+                    _background.repeat(PasswordCallbackFactory.get(_controller));
+                    return null;
                 }
             }
         }
@@ -3333,7 +3352,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerMoveWorker(BrowserController controller, Map files, PathCache cache)
-                    : base(files, controller, cache)
+                    : base(files, controller, cache, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;
                     _files = files;
@@ -3361,7 +3380,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerCopyWorker(BrowserController controller, Map files)
-                    : base(files, SessionPoolFactory.create(controller, controller.Cache, controller.Session.getHost()), controller)
+                    : base(files, controller.Session, controller, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;
                     _files = files;

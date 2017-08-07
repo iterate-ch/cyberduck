@@ -21,6 +21,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -31,7 +32,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -55,11 +55,10 @@ public class SwiftLargeObjectUploadFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 2 * 1024 * 1024;
-        final byte[] random = new byte[length];
-        new Random().nextBytes(random);
-        IOUtils.write(random, local.getOutputStream(false));
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(random.length);
+        status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
             new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
@@ -83,20 +82,20 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals(0L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(random.length);
+        final TransferStatus append = new TransferStatus().append(true).length(content.length);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
                 1 * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertTrue(new SwiftFindFeature(session).find(test));
-        assertEquals(random.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
-        assertEquals(random.length, append.getOffset(), 0L);
+        assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
-        final byte[] buffer = new byte[random.length];
+        final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
-        assertArrayEquals(random, buffer);
+        assertArrayEquals(content, buffer);
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
@@ -116,11 +115,10 @@ public class SwiftLargeObjectUploadFeatureTest {
         final String name = UUID.randomUUID().toString();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final int length = 2 * 1024 * 1024;
-        final byte[] random = new byte[length];
-        new Random().nextBytes(random);
-        IOUtils.write(random, local.getOutputStream(false));
+        final byte[] content = RandomUtils.nextBytes(length);
+        IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
-        status.setLength(random.length);
+        status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
             new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
@@ -153,11 +151,11 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertTrue(append.isComplete());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize(), 0L);
-        final byte[] buffer = new byte[random.length];
+        final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
-        assertArrayEquals(random, buffer);
+        assertArrayEquals(content, buffer);
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
@@ -179,8 +177,8 @@ public class SwiftLargeObjectUploadFeatureTest {
 
         // Each segment, except the last, must be larger than 1048576 bytes.
         //2MB + 1
-        final byte[] content = new byte[1048576 + 1048576 + 1];
-        new Random().nextBytes(content);
+        final int length = 1048576 + 1048576 + 1;
+        final byte[] content = RandomUtils.nextBytes(length);
 
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);

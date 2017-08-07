@@ -212,7 +212,7 @@ public interface Protocol extends Comparable<Protocol> {
     /**
      * @return Protocol schemes
      */
-    String[] getSchemes();
+    Scheme[] getSchemes();
 
     /**
      * @return Default hostname for server
@@ -233,21 +233,6 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Authentication header version
      */
     String getAuthorization();
-
-    /**
-     * @return OAuth 2 Authorization Server URL
-     */
-    String getOAuthAuthorizationUrl();
-
-    /**
-     * @return OAuth 2 Token Server URL
-     */
-    String getOAuthTokenUrl();
-
-    /**
-     * @return Requested scopes
-     */
-    List<String> getScopes();
 
     /**
      * @return Available regions
@@ -282,12 +267,32 @@ public interface Protocol extends Comparable<Protocol> {
     String getPasswordPlaceholder();
 
     /**
+     * @return OAuth 2 Authorization Server URL
+     */
+    String getOAuthAuthorizationUrl();
+
+    /**
+     * @return OAuth 2 Token Server URL
+     */
+    String getOAuthTokenUrl();
+
+    /**
+     * @return OAuth 2 Requested scopes
+     */
+    List<String> getOAuthScopes();
+
+    /**
+     * @return OAuth 2 Redirect URI
+     */
+    String getOAuthRedirectUrl();
+
+    /**
      * @return Default OAuth 2.0 client id
      */
-    String getClientId();
+    String getOAuthClientId();
 
     /**
      * @return Default OAuth 2.0 client secret
      */
-    String getClientSecret();
+    String getOAuthClientSecret();
 }

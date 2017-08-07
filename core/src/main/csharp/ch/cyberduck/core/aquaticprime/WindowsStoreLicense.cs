@@ -52,7 +52,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
             return string.Format(LocaleFactory.localizedString("Registered to {0}", "License"), getName());
         }
 
-        public bool verify()
+        public bool verify(LicenseVerifierCallback callback)
         {
             StoreContext storeContext = StoreContext.GetDefault();
             StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;

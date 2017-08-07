@@ -23,6 +23,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -166,7 +167,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        log.warn(String.format("Skip pre transfer bulk operation for %s", files));
+        // Bulk operation is in transfer implementation
     }
 
     @Override
@@ -178,17 +179,10 @@ public class SyncTransfer extends Transfer {
         final Set<TransferItem> children = new HashSet<TransferItem>();
         final Find finder = source.getFeature(Find.class, new DefaultFindFeature(source)).withCache(cache);
         if(finder.find(directory)) {
-            final List<TransferItem> list = download.list(source, destination, directory, local, listener);
-            for(TransferItem item : list) {
-                // Nullify attributes not available for local file to fix default comparison with DefaultPathReference.
-                item.remote.attributes().setVersionId(null);
-                item.remote.attributes().setRegion(null);
-            }
-            children.addAll(list);
+            children.addAll(download.list(source, destination, directory, local, listener));
         }
         if(local.exists()) {
-            final List<TransferItem> list = upload.list(source, destination, directory, local, listener);
-            children.addAll(list);
+            children.addAll(upload.list(source, destination, directory, local, listener));
         }
         return new ArrayList<TransferItem>(children);
     }
@@ -211,19 +205,19 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
-                         final TransferOptions options, final TransferStatus status, final ConnectionCallback callback,
-                         final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
+                         final TransferOptions options, final TransferStatus status, final ConnectionCallback connectionCallback,
+                         final PasswordCallback passwordCallback, final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            download.pre(source, destination, Collections.singletonMap(file, status), callback);
-            download.transfer(source, destination, file, local, options, status, callback, progressListener, streamListener);
+            download.pre(source, destination, Collections.singletonMap(file, status), connectionCallback);
+            download.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
         }
         else if(compare.equals(Comparison.local)) {
-            upload.pre(source, destination, Collections.singletonMap(file, status), callback);
-            upload.transfer(source, destination, file, local, options, status, callback, progressListener, streamListener);
+            upload.pre(source, destination, Collections.singletonMap(file, status), connectionCallback);
+            upload.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
         }
         return file;
     }

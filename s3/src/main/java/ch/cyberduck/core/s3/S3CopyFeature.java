@@ -17,6 +17,8 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
@@ -51,7 +53,7 @@ public class S3CopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(source.isFile() || source.isPlaceholder()) {
             if(null == status.getStorageClass()) {
                 // Keep same storage class
@@ -61,7 +63,7 @@ public class S3CopyFeature implements Copy {
                 // Keep encryption setting
                 status.setEncryption(new S3EncryptionFeature(session).getEncryption(source));
             }
-            if(null == status.getAcl()) {
+            if(Acl.EMPTY == status.getAcl()) {
                 // Apply non standard ACL
                 try {
                     status.setAcl(accessControlListFeature.getPermission(source));

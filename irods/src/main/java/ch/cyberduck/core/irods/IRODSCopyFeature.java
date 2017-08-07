@@ -17,6 +17,7 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,7 +41,7 @@ public class IRODSCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()

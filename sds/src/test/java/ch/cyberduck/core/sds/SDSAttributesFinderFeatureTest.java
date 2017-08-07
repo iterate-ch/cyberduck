@@ -55,8 +55,13 @@ public class SDSAttributesFinderFeatureTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session);
-        f.find(test);
-        session.close();
+        try {
+            f.find(test);
+        }
+        finally {
+            new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            session.close();
+        }
     }
 
     @Test
@@ -73,7 +78,7 @@ public class SDSAttributesFinderFeatureTest {
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        assertNotNull(attributes.getModificationDate());
+        assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getChecksum().algorithm);
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
@@ -103,7 +108,7 @@ public class SDSAttributesFinderFeatureTest {
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        assertNotNull(attributes.getModificationDate());
+        assertNotEquals(-1L, attributes.getModificationDate());
         assertNull(attributes.getChecksum().algorithm);
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());

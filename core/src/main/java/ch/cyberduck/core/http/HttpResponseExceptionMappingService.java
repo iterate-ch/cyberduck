@@ -64,12 +64,12 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
             case HttpStatus.SC_REQUEST_URI_TOO_LONG:
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
             case HttpStatus.SC_NOT_IMPLEMENTED:
-            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                 return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_REQUEST_TIMEOUT:
             case HttpStatus.SC_GATEWAY_TIMEOUT:
             case HttpStatus.SC_BAD_GATEWAY:
                 return new ConnectionTimeoutException(buffer.toString(), failure);
+            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
             case 429:
                 // Too Many Requests. Rate limiting

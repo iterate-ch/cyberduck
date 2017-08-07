@@ -45,6 +45,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.identity.IdentityConfiguration;
@@ -53,7 +54,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
-import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -97,7 +97,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final S3LocationFeature locationFeature;
+    private final Location locationFeature;
 
     public CloudFrontDistributionConfiguration(final S3Session session) {
         this.session = session;
@@ -117,7 +117,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 configuration.setProxyHost(proxy.getHostname());
                 configuration.setProxyPort(proxy.getPort());
         }
-        locationFeature = new S3LocationFeature(session);
+        locationFeature = session.getFeature(Location.class);
     }
 
     private interface Authenticated<T> extends Callable<T> {

@@ -27,6 +27,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Windows.Storage;
+using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Properties;
 using java.security;
@@ -227,6 +228,11 @@ namespace Ch.Cyberduck.Core.Preferences
             base.setDefaults();
 
             defaults.put("application.name", Application.ProductName);
+            defaults.put("application.container.name", Application.ProductName);
+            String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
+            defaults.put("application.support.path", support);
+            defaults.put("application.receipt.path", support);
+
             defaults.put("application.version", ApplicationVersion);
             defaults.put("application.revision", ApplicationRevision);
             defaults.put("application.language", GetDefaultLanguage());
@@ -258,7 +264,8 @@ namespace Ch.Cyberduck.Core.Preferences
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlashFXP", "4",
                     "Sites.dat"));
             defaults.put("bookmark.import.flashfxp4.common.location",
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "FlashFXP", "4",
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "FlashFXP",
+                    "4",
                     "Sites.dat"));
             defaults.put("bookmark.import.wsftp.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Ipswitch", "WS_FTP",

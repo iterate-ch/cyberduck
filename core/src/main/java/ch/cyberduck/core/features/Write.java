@@ -53,7 +53,7 @@ public interface Write<Reply> {
      */
     boolean random();
 
-    ChecksumCompute checksum();
+    ChecksumCompute checksum(Path file);
 
     final class Append {
         /**

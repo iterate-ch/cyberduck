@@ -39,6 +39,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -49,7 +50,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -75,8 +75,8 @@ public class IRODSUploadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[32770];
-        new Random().nextBytes(content);
+        final int length = 32770;
+        final byte[] content = RandomUtils.nextBytes(length);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
@@ -122,8 +122,8 @@ public class IRODSUploadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[32770];
-        new Random().nextBytes(content);
+        final int length = 32770;
+        final byte[] content = RandomUtils.nextBytes(length);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
@@ -158,8 +158,8 @@ public class IRODSUploadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[32770];
-        new Random().nextBytes(content);
+        final int length = 32770;
+        final byte[] content = RandomUtils.nextBytes(length);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();

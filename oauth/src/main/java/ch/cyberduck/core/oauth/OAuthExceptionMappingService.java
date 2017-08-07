@@ -26,9 +26,11 @@ public class OAuthExceptionMappingService extends AbstractExceptionMappingServic
 
     @Override
     public BackgroundException map(final TokenResponseException failure) {
-        final TokenErrorResponse details = failure.getDetails();
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, details.getErrorDescription());
+        final TokenErrorResponse details = failure.getDetails();
+        if(null != details) {
+            this.append(buffer, details.getErrorDescription());
+        }
         return new LoginFailureException(buffer.toString(), failure);
     }
 }

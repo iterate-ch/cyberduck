@@ -17,20 +17,7 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
-import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -41,8 +28,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -230,7 +217,7 @@ public class IRODSWriteFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        final byte[] content = RandomStringUtils.random(100).getBytes();
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(100).getBytes();
         {
             final TransferStatus status = new TransferStatus();
             status.setAppend(false);
@@ -256,7 +243,7 @@ public class IRODSWriteFeatureTest {
             assertArrayEquals(content, buffer);
         }
         {
-            final byte[] newcontent = RandomStringUtils.random(10).getBytes();
+            final byte[] newcontent = new RandomStringGenerator.Builder().build().generate(10).getBytes();
 
             final TransferStatus status = new TransferStatus();
             status.setAppend(false);
@@ -302,7 +289,7 @@ public class IRODSWriteFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        final byte[] content = RandomStringUtils.random((int) (Math.random() * 100)).getBytes();
+        final byte[] content = new RandomStringGenerator.Builder().build().generate((int) (Math.random() * 100)).getBytes();
 
         final TransferStatus status = new TransferStatus();
         status.setAppend(true);
@@ -328,7 +315,7 @@ public class IRODSWriteFeatureTest {
 
         // Append
 
-        final byte[] content_append = RandomStringUtils.random((int) (Math.random() * 100)).getBytes();
+        final byte[] content_append = new RandomStringGenerator.Builder().build().generate((int) (Math.random() * 100)).getBytes();
 
         final TransferStatus status_append = new TransferStatus();
         status_append.setAppend(true);

@@ -36,6 +36,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -45,7 +46,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -68,8 +68,8 @@ public class SpectraUploadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[32770];
-        new Random().nextBytes(content);
+        final int length = 32770;
+        final byte[] content = RandomUtils.nextBytes(length);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
@@ -110,8 +110,8 @@ public class SpectraUploadFeatureTest {
         final Local local1 = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status1;
         {
-            final byte[] content = new byte[32770];
-            new Random().nextBytes(content);
+            final int length = 32770;
+            final byte[] content = RandomUtils.nextBytes(length);
             final OutputStream out = local1.getOutputStream(false);
             IOUtils.write(content, out);
             out.close();
@@ -120,8 +120,8 @@ public class SpectraUploadFeatureTest {
         final Local local2 = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status2;
         {
-            final byte[] content = new byte[32770];
-            new Random().nextBytes(content);
+            final int length = 32770;
+            final byte[] content = RandomUtils.nextBytes(length);
             final OutputStream out = local2.getOutputStream(false);
             IOUtils.write(content, out);
             out.close();

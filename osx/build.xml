@@ -74,12 +74,6 @@
             <param name="newname" value="${bundle.runtime.lib}"/>
             <param name="directory" value="${app.bundle}/${bundle.frameworks}"/>
         </antcall>
-        <mkdir dir="${app.bundle}/${bundle.profiles}"/>
-        <copy todir="${app.bundle}/${bundle.profiles}" overwrite="true">
-            <fileset dir="${profiles.default}">
-                <include name="*.cyberduckprofile"/>
-            </fileset>
-        </copy>
     </target>
 
     <target name="package" depends="build">

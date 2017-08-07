@@ -19,8 +19,8 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -31,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
-    private Cache<Path> cache = PathCache.empty();
 
     public DriveFileidProvider(final DriveSession session) {
         this.session = session;
@@ -45,15 +44,8 @@ public class DriveFileidProvider implements IdProvider {
         if(file.isRoot()) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
-        final AttributedList<Path> list;
-        if(!cache.isCached(file.getParent())) {
-            list = new FileidDriveListService(file).list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getParent(), list);
-        }
-        else {
-            list = cache.get(file.getParent());
-        }
-        final Path found = list.find(new SimplePathPredicate(file));
+        final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
+        final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
@@ -62,21 +54,7 @@ public class DriveFileidProvider implements IdProvider {
 
     @Override
     public IdProvider withCache(final Cache<Path> cache) {
-        this.cache = cache;
         return this;
     }
 
-    private final class FileidDriveListService extends AbstractDriveListService {
-        private final Path file;
-
-        public FileidDriveListService(final Path file) {
-            super(DriveFileidProvider.this.session, 1);
-            this.file = file;
-        }
-
-        @Override
-        protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
-            return String.format("name = '%s' and '%s' in parents", file.getName(), DriveFileidProvider.this.getFileid(directory, new DisabledListProgressListener()));
-        }
-    }
 }

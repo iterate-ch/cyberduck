@@ -36,12 +36,16 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
+import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
@@ -53,11 +57,20 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.util.Collections;
 
+import com.fasterxml.jackson.databind.ObjectReader;
+import eu.ssp_europe.sds.crypto.Crypto;
+import eu.ssp_europe.sds.crypto.CryptoSystemException;
+import eu.ssp_europe.sds.crypto.InvalidFileKeyException;
+import eu.ssp_europe.sds.crypto.InvalidKeyPairException;
+import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
+
 public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
     private final SDSSession session;
     private final Find finder;
     private final AttributesFinder attributes;
+
+    public static final int DEFAULT_CLASSIFICATION = 1; // public
 
     public SDSWriteFeature(final SDSSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
@@ -75,21 +88,21 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         final CreateFileUploadRequest body = new CreateFileUploadRequest();
         body.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file.getParent(), new DisabledListProgressListener())));
         body.setName(file.getName());
-        body.classification(2); // internal
+        body.classification(DEFAULT_CLASSIFICATION);
         try {
-            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(session.getToken(), body);
-            final String id = response.getUploadId();
+            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(StringUtils.EMPTY, body);
+            final String uploadId = response.getUploadId();
             final DelayedHttpMultipartEntity entity = new DelayedHttpMultipartEntity(file.getName(), status);
             final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
                 @Override
                 public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                     try {
                         final SDSApiClient client = session.getClient();
-                        final HttpPost post = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), id));
-                        post.setEntity(entity);
-                        post.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
-                        post.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
-                        final HttpResponse response = client.getClient().execute(post);
+                        final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), uploadId));
+                        request.setEntity(entity);
+                        request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
+                        request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
+                        final HttpResponse response = client.getClient().execute(request);
                         try {
                             // Validate response
                             switch(response.getStatusLine().getStatusCode()) {
@@ -108,7 +121,16 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         }
                         final CompleteUploadRequest body = new CompleteUploadRequest();
                         body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
-                        final Node upload = new NodesApi(client).completeFileUpload(session.getToken(), id, null, body);
+                        if(status.getFilekey() != null) {
+                            final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+                            final FileKey fileKey = reader.readValue(status.getFilekey().array());
+                            final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
+                                    TripleCryptConverter.toCryptoPlainFileKey(fileKey),
+                                    TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
+                            );
+                            body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
+                        }
+                        final Node upload = new NodesApi(client).completeFileUpload(StringUtils.EMPTY, uploadId, null, body);
                         return new VersionId(String.valueOf(upload.getId()));
                     }
                     catch(IOException e) {
@@ -116,6 +138,9 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                     }
                     catch(ApiException e) {
                         throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+                    }
+                    catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException e) {
+                        throw new CryptoExceptionMappingService().map("Upload {0} failed", e, file);
                     }
                 }
 
@@ -142,7 +167,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new DisabledChecksumCompute();
     }
 

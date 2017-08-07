@@ -30,6 +30,8 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 
 public class SDSListService implements ListService {
@@ -52,7 +54,7 @@ public class SDSListService implements ListService {
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session);
             NodeList nodes;
             do {
-                nodes = new NodesApi(session.getClient()).getFsNodes(session.getToken(), null, 0,
+                nodes = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, 0,
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(directory, new DisabledListProgressListener())),
                         null, null, null, offset, chunksize);
                 for(Node node : nodes.getItems()) {
@@ -61,13 +63,21 @@ public class SDSListService implements ListService {
                     switch(node.getType()) {
                         case ROOM:
                             type = EnumSet.of(Path.Type.directory, Path.Type.volume);
+                            if(node.getIsEncrypted()) {
+                                type.add(Path.Type.vault);
+                            }
                             break;
                         case FOLDER:
                             type = EnumSet.of(Path.Type.directory);
+                            if(node.getIsEncrypted()) {
+                                type.add(Path.Type.decrypted);
+                            }
                             break;
                         default:
                             type = EnumSet.of(Path.Type.file);
-                            break;
+                            if(node.getIsEncrypted()) {
+                                type.add(Path.Type.decrypted);
+                            }
                     }
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);

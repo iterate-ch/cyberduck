@@ -16,6 +16,8 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -27,6 +29,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -51,7 +54,7 @@ public class MoveWorkerTest {
                         private final AtomicInteger count = new AtomicInteger();
 
                         @Override
-                        public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+                        public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             if(count.get() == 0) {
                                 assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), file);
                                 assertEquals(new Path("/t2/a", EnumSet.of(Path.Type.file)), renamed);
@@ -109,7 +112,7 @@ public class MoveWorkerTest {
         };
         final MoveWorker worker = new MoveWorker(
                 Collections.singletonMap(new Path("/t", EnumSet.of(Path.Type.directory)), new Path("/t2", EnumSet.of(Path.Type.directory))),
-                new DisabledProgressListener(), PathCache.empty());
+                new DisabledProgressListener(), PathCache.empty(), new DisabledConnectionCallback());
         assertEquals(2, worker.run(session).size());
     }
 }

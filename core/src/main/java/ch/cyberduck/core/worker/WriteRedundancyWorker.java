@@ -89,7 +89,7 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
         }
         if(file.isDirectory()) {
             if(callback.recurse(file, level)) {
-                for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener))) {
+                for(Path child : session.getFeature(ListService.class).list(file, new WorkerListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }
             }

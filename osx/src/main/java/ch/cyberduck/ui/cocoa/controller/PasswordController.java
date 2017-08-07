@@ -28,9 +28,9 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,7 +69,7 @@ public class PasswordController extends AlertController {
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
         alert.setMessageText(title);
         alert.setInformativeText(reason);
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
         this.loadBundle(alert);
     }
@@ -123,6 +123,6 @@ public class PasswordController extends AlertController {
 
     @Override
     protected String help() {
-        return new DefaultProviderHelpService().help("/howto/cryptomator");
+        return ProviderHelpServiceFactory.get().help();
     }
 }

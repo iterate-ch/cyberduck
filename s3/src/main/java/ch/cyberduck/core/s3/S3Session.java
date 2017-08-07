@@ -287,10 +287,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3WriteFeature(this);
         }
         if(type == Upload.class) {
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                // With S3 Transfer Acceleration enabled
-                return (T) new S3ThresholdUploadService(this);
-            }
             return (T) new S3ThresholdUploadService(this);
         }
         if(type == Directory.class) {

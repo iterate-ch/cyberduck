@@ -97,5 +97,7 @@ public class TransferCollectionTest {
         assertEquals("ftp.heise.de", transfer.getSource().getHostname());
 //        assertEquals("sudo.ch", ((CopyTransfer) transfer).getDestination().getHost().getHostname());
         assertEquals("1301-130.zip", transfer.getName());
+        c.removeIf(Transfer::isComplete);
+        assertTrue(c.isEmpty());
     }
 }

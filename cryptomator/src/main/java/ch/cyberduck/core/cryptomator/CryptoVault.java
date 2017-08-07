@@ -92,7 +92,7 @@ public class CryptoVault implements Vault {
     /**
      * Root of vault directory
      */
-    private Path home;
+    private final Path home;
 
     private Cryptor cryptor;
 
@@ -220,6 +220,9 @@ public class CryptoVault implements Vault {
             }
             if(cryptor != null) {
                 cryptor.destroy();
+            }
+            if(directoryProvider != null) {
+                directoryProvider.destroy();
             }
         }
         cryptor = null;
