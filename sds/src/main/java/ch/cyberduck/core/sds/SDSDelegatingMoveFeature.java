@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -49,7 +50,7 @@ public class SDSDelegatingMoveFeature implements Move {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
-            if(srcContainer.equals(targetContainer)) {
+            if(StringUtils.equals(source.getName(), target.getName())) {
                 proxy.move(source, target, status, callback, connectionCallback);
             }
             else {
@@ -76,7 +77,7 @@ public class SDSDelegatingMoveFeature implements Move {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
-            if(!srcContainer.equals(targetContainer)) {
+            if(!StringUtils.equals(source.getName(), target.getName())) {
                 return session.getFeature(Copy.class).isRecursive(source, target);
             }
         }
@@ -88,7 +89,7 @@ public class SDSDelegatingMoveFeature implements Move {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
-            if(!srcContainer.equals(targetContainer)) {
+            if(!StringUtils.equals(source.getName(), target.getName())) {
                 return session.getFeature(Copy.class).isSupported(source, target);
             }
         }
