@@ -26,7 +26,7 @@ public interface Copy {
      * @param source   Source file or folder
      * @param target   Target file or folder
      * @param status   Write status
-     * @param callback
+     * @param callback Prompt
      */
     void copy(Path source, Path target, TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
