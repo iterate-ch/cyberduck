@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sds;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -19,8 +19,8 @@ public class ExpiringObjectHolder<T> {
 
     private final Long timeToLiveMillis;
 
-    T object;
-    Long updated = Long.MIN_VALUE;
+    private T object;
+    private Long updated = Long.MIN_VALUE;
 
     public ExpiringObjectHolder(final Long timeToLiveMillis) {
         this.timeToLiveMillis = timeToLiveMillis;
@@ -28,13 +28,13 @@ public class ExpiringObjectHolder<T> {
 
     public void set(final T object) {
         this.object = object;
-        updated = System.currentTimeMillis();
+        this.updated = System.currentTimeMillis();
     }
 
     public T get() {
         if(updated + timeToLiveMillis > System.currentTimeMillis()) {
             return object;
         }
-        return null;
+        return object = null;
     }
 }
