@@ -20,7 +20,7 @@ public class ExpiringObjectHolder<T> {
     private final long timeToLiveMillis;
 
     T object;
-    Long updated;
+    Long updated = Long.MIN_VALUE;
 
     public ExpiringObjectHolder(final Long timeToLiveMillis) {
         this.timeToLiveMillis = timeToLiveMillis;
