@@ -30,7 +30,18 @@ import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Copy;
@@ -48,13 +59,11 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCache;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import ch.cyberduck.ui.cocoa.controller.CopyController;
@@ -384,20 +393,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         Path renamed = new Path(destination, next.getName(), next.getType());
                         files.put(next, renamed);
                     }
-                    new CopyController(controller, new CopyController.Callback() {
-                        @Override
-                        public void callback(final Map<Path, Path> selected) {
-                            controller.background(new WorkerBackgroundAction<List<Path>>(controller, controller.getSession(),
-                                            new CopyWorker(selected, SessionPoolFactory.create(controller, cache, controller.getSession().getHost()), new DisabledProgressListener(), LoginCallbackFactory.get(controller)) {
-                                                @Override
-                                                public void cleanup(final List<Path> copied) {
-                                                    controller.reload(controller.workdir(), copied, new ArrayList<Path>(selected.values()));
-                                                }
-                                            }
-                                    )
-                            );
-                        }
-                    }).copy(files);
+                    new CopyController(controller).copy(files);
                 }
                 else {
                     // The file should be renamed

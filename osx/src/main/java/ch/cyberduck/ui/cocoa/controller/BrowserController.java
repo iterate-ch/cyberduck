@@ -2716,7 +2716,7 @@ public class BrowserController extends WindowController
         return pool;
     }
 
-    public Cache<Path> getCache() {
+    public PathCache getCache() {
         return cache;
     }
 
