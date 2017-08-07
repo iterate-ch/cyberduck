@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MemorySegementingOutputStream extends SegmentingOutputStream {
     private static final Logger log = Logger.getLogger(MemorySegementingOutputStream.class);
@@ -28,6 +29,8 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
     private final OutputStream proxy;
     private final ByteArrayOutputStream buffer;
     private final Integer threshold;
+
+    private final AtomicBoolean close = new AtomicBoolean();
 
     public MemorySegementingOutputStream(final OutputStream proxy, final Integer threshold) {
         this(proxy, threshold, new ByteArrayOutputStream(threshold));
@@ -62,7 +65,18 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
 
     @Override
     public void close() throws IOException {
-        proxy.write(buffer.toByteArray());
-        super.close();
+        if(close.get()) {
+            log.warn(String.format("Skip double close of stream %s", this));
+            return;
+        }
+        try {
+            proxy.write(buffer.toByteArray());
+            // Re-use buffer
+            buffer.reset();
+            super.close();
+        }
+        finally {
+            close.set(true);
+        }
     }
 }
