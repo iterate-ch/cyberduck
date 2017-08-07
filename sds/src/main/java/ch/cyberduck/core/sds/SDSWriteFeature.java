@@ -20,7 +20,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -35,12 +34,10 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
 import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -74,9 +71,6 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     private final AttributesFinder attributes;
 
     public static final int DEFAULT_CLASSIFICATION = 1; // public
-
-    private final PathContainerService containerService
-            = new PathContainerService();
 
     public SDSWriteFeature(final SDSSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
@@ -130,10 +124,9 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         if(status.getFilekey() != null) {
                             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                             final FileKey fileKey = reader.readValue(status.getFilekey().array());
-                            final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(StringUtils.EMPTY);
                             final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
                                     TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                                    TripleCryptConverter.toCryptoUserPublicKey(keyPairContainer.getPublicKeyContainer())
+                                    TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                             );
                             body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                         }

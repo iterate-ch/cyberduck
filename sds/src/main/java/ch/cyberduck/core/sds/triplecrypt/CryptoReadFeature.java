@@ -27,7 +27,6 @@ import ch.cyberduck.core.sds.SDSReadFeature;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -63,7 +62,7 @@ public class CryptoReadFeature implements Read {
             final FileKey key = new NodesApi(session.getClient()).getUserFileKey(StringUtils.EMPTY,
                     Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
             final UserPrivateKey privateKey = new UserPrivateKey();
-            final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(StringUtils.EMPTY);
+            final UserKeyPairContainer keyPairContainer = session.keyPair();
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
             privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
             final UserKeyPair userKeyPair = new UserKeyPair();

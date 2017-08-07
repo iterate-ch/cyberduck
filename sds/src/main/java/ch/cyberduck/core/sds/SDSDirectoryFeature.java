@@ -54,7 +54,7 @@ public class SDSDirectoryFeature implements Directory {
         try {
             if(containerService.isContainer(folder)) {
                 final CreateRoomRequest roomRequest = new CreateRoomRequest();
-                final UserAccount user = new UserApi(session.getClient()).getUserInfo(StringUtils.EMPTY, null, false);
+                final UserAccount user = session.userAccount();
                 roomRequest.addAdminIdsItem(user.getId());
                 roomRequest.setAdminGroupIds(null);
                 roomRequest.setName(folder.getName());
