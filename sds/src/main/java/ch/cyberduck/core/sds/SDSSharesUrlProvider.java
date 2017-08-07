@@ -30,6 +30,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
@@ -48,7 +49,7 @@ public class SDSSharesUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         try {
-            final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(session.getToken(),
+            final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(StringUtils.EMPTY,
                     new CreateDownloadShareRequest()
                             .nodeId(Long.valueOf(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())))
                             .mailBody(null)
