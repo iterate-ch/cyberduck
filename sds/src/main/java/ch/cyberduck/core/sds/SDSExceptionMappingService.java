@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
@@ -44,10 +45,16 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                     final JsonPrimitive errorCode = json.getAsJsonPrimitive("errorCode");
                     this.append(buffer, errorCode.getAsString());
                     switch(failure.getCode()) {
+                        case HttpStatus.SC_NOT_FOUND:
+                            switch(errorCode.getAsInt()) {
+                                case -40761:
+                                    // [-40761] Filekey not found for encrypted file
+                                    return new AccessDeniedException(buffer.toString(), failure);
+                            }
                         case HttpStatus.SC_PRECONDITION_FAILED:
-                            // [-10108] Radius Access-Challenge required.
                             switch(errorCode.getAsInt()) {
                                 case -10108:
+                                    // [-10108] Radius Access-Challenge required.
                                     return new PartialLoginFailureException(buffer.toString(), failure);
                             }
                     }
