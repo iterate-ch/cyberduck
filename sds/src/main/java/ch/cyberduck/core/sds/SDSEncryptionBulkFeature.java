@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -38,6 +39,9 @@ import eu.ssp_europe.sds.crypto.Crypto;
 public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     private final SDSSession session;
+
+    private final PathContainerService containerService
+            = new PathContainerService();
 
     public SDSEncryptionBulkFeature(final SDSSession session) {
         this.session = session;
@@ -79,7 +83,9 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             default:
                 final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
                 for(Path p : files.keySet()) {
-                    background.operate(callback, p);
+                    if(containerService.getContainer(p).getType().contains(Path.Type.vault)) {
+                        background.operate(callback, p);
+                    }
                 }
         }
     }
