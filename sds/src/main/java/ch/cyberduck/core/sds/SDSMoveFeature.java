@@ -39,7 +39,8 @@ public class SDSMoveFeature implements Move {
 
     private final SDSSession session;
 
-    private final PathContainerService pathContainerService = new PathContainerService();
+    private final PathContainerService containerService
+            = new PathContainerService();
 
     public SDSMoveFeature(final SDSSession session) {
         this.session = session;
@@ -60,7 +61,7 @@ public class SDSMoveFeature implements Move {
                                         new DisabledListProgressListener()))), null);
             }
             if(!StringUtils.equals(source.getName(), target.getName())) {
-                if(pathContainerService.isContainer(source)) {
+                if(containerService.isContainer(source)) {
                     new NodesApi(session.getClient()).updateRoom(StringUtils.EMPTY,
                             Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())),
                             new UpdateRoomRequest().name(target.getName()), null);
@@ -92,7 +93,7 @@ public class SDSMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(pathContainerService.isContainer(source)) {
+        if(containerService.isContainer(source)) {
             if(!source.getParent().equals(target.getParent())) {
                 // Cannot move data room but only rename
                 return false;

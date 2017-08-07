@@ -66,7 +66,7 @@ public class SDSCopyFeature implements Copy {
             // Rooms cannot be copied
             return false;
         }
-        if(containerService.getContainer(source).equals(containerService.getContainer(target))) {
+        if(StringUtils.equals(containerService.getContainer(source).getName(), containerService.getContainer(target).getName())) {
             // Nodes must be in same source parent
             return true;
         }
