@@ -137,7 +137,7 @@ public class FTPWriteFeature extends AppendWriteFeature<Integer> {
     }
 
     @Override
-    public ChecksumCompute checksum() {
+    public ChecksumCompute checksum(final Path file) {
         return new DisabledChecksumCompute();
     }
 }

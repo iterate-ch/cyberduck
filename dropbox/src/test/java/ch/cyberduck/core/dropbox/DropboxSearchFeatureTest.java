@@ -15,13 +15,16 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
@@ -36,31 +39,10 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DropboxSearchFeatureTest {
+public class DropboxSearchFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testSearch() throws Exception {
-        final DropboxSession session = new DropboxSession(new Host(new DropboxProtocol(), new DropboxProtocol().getDefaultHostname()),
-                new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Dropbox OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("dropbox.accesstoken");
-                        }
-                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("dropbox.refreshtoken");
-                        }
-                        return null;
-                    }
-                }, new DisabledProgressListener())
-                .connect(session, PathCache.empty(), new DisabledCancelCallback());
         final String name = new AlphanumericRandomStringService().random();
         final Path workdir = new DefaultHomeFinderService(session).find();
         final Path file = new Path(workdir, name, EnumSet.of(Path.Type.file));
@@ -87,6 +69,5 @@ public class DropboxSearchFeatureTest {
             assertEquals(subdir, result.find(new SimplePathPredicate(filesubdir)).getParent());
         }
         new DropboxDeleteFeature(session).delete(Arrays.asList(file, filesubdir, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

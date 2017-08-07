@@ -70,13 +70,13 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
         else {
             Permission.Action actions = Permission.Action.none;
             if(Files.isReadable(file)) {
-                actions.or(Permission.Action.read);
+                actions = actions.or(Permission.Action.read);
             }
             if(Files.isWritable(file)) {
-                actions.or(Permission.Action.write);
+                actions = actions.or(Permission.Action.write);
             }
             if(Files.isExecutable(file)) {
-                actions.or(Permission.Action.execute);
+                actions = actions.or(Permission.Action.execute);
             }
             attributes.setPermission(new Permission(
                     actions, Permission.Action.none, Permission.Action.none

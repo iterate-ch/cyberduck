@@ -43,7 +43,7 @@ public class B2UrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(B2UrlProvider.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
 

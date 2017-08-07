@@ -223,8 +223,8 @@ public class CopyTransfer extends Transfer {
     @Override
     public Path transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus status,
-                         final ConnectionCallback callback,
-                         final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
+                         final ConnectionCallback connectionCallback,
+                         final PasswordCallback passwordCallback, final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
@@ -232,7 +232,7 @@ public class CopyTransfer extends Transfer {
         progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
         final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
-        feature.copy(source, copy, status);
+        feature.copy(source, copy, status, connectionCallback);
         this.addTransferred(status.getLength());
         return copy;
     }

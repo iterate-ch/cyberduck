@@ -15,7 +15,7 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
@@ -46,7 +45,7 @@ public class DefaultCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(source.isDirectory()) {
             if(!to.getFeature(Find.class).find(target)) {
                 to.getFeature(Directory.class).mkdir(target, null, new TransferStatus().length(0L));
@@ -54,24 +53,18 @@ public class DefaultCopyFeature implements Copy {
         }
         else {
             if(!to.getFeature(Find.class).find(target.getParent())) {
-                this.copy(source.getParent(), target.getParent(), new TransferStatus().length(source.getParent().attributes().getSize()));
+                this.copy(source.getParent(), target.getParent(), new TransferStatus().length(source.getParent().attributes().getSize()), callback);
             }
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-                Write write = to.getFeature(MultipartWrite.class);
-                if(null == write) {
-                    // Fallback if multipart write is not available
-                    write = to.getFeature(Write.class);
-                }
-                out = new ThrottledOutputStream(write.write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-                new StreamCopier(status, status).transfer(in, out);
+            InputStream in;
+            OutputStream out;
+            in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(status), callback), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+            Write write = to.getFeature(MultipartWrite.class);
+            if(null == write) {
+                // Fallback if multipart write is not available
+                write = to.getFeature(Write.class);
             }
-            finally {
-                new DefaultStreamCloser().close(in);
-                new DefaultStreamCloser().close(out);
-            }
+            out = new ThrottledOutputStream(write.write(target, status, callback), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+            new StreamCopier(status, status).transfer(in, out);
         }
     }
 

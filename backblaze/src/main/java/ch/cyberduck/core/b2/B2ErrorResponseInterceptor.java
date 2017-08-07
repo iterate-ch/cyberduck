@@ -18,6 +18,10 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -30,7 +34,7 @@ import java.io.IOException;
 
 import synapticloop.b2.exception.B2ApiException;
 
-public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
+public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements HttpRequestInterceptor {
     private static final Logger log = Logger.getLogger(B2ErrorResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
@@ -39,6 +43,7 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
 
     private String accountId = StringUtils.EMPTY;
     private String applicationKey = StringUtils.EMPTY;
+    private String authorizationToken = StringUtils.EMPTY;
 
     public B2ErrorResponseInterceptor(final B2Session session) {
         this.session = session;
@@ -62,7 +67,7 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
                     if("expired_auth_token".equalsIgnoreCase(failure.getCode())) {
                         //  The authorization token is valid for at most 24 hours.
                         try {
-                            session.getClient().authenticate(accountId, applicationKey);
+                            authorizationToken = session.getClient().authenticate(accountId, applicationKey).getAuthorizationToken();
                             return true;
                         }
                         catch(B2ApiException | IOException e) {
@@ -75,8 +80,23 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
         return false;
     }
 
-    public void setTokens(final String accountId, final String applicationKey) {
+    public void setTokens(final String accountId, final String applicationKey, final String authorizationToken) {
         this.accountId = accountId;
         this.applicationKey = applicationKey;
+        this.authorizationToken = authorizationToken;
+    }
+
+    @Override
+    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+        switch(request.getRequestLine().getMethod()) {
+            case "POST":
+                // Do not override Authorization header for upload requests with upload URL token
+                break;
+            default:
+                if(StringUtils.isNotBlank(authorizationToken)) {
+                    request.removeHeaders(HttpHeaders.AUTHORIZATION);
+                    request.addHeader(HttpHeaders.AUTHORIZATION, authorizationToken);
+                }
+        }
     }
 }

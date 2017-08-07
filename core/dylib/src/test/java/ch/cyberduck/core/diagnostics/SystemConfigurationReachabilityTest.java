@@ -9,6 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class SystemConfigurationReachabilityTest {
 
     @Test
@@ -44,7 +45,6 @@ public class SystemConfigurationReachabilityTest {
     }
 
     @Test
-    @Ignore
     public void testNotReachableWrongPort() throws Exception {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(

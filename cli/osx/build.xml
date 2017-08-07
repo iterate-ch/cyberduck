@@ -88,7 +88,7 @@
                            value="https://dist.duck.sh/${sparkle.feed}/duck-${version}.${revision}.tar.gz"/>
             <replacefilter token="${SOURCE.SHA256}" value="${source.sha256}"/>
             <replacefilter token="${SOURCE}"
-                           value="https://dist.duck.sh/${sparkle.feed}/duck-src-${version}.${revision}.tar.gz"/>
+                           value="https://dist.duck.sh/duck-src-${version}.${revision}.tar.gz"/>
         </replace>
         <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
             <arg line="--component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>

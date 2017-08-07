@@ -61,7 +61,7 @@ public class SwiftAttributesFinderFeatureTest {
         assertEquals(0L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.file), test.getType());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
-        assertNotNull(attributes.getModificationDate());
+        assertNotEquals(-1L, attributes.getModificationDate());
         // Test wrong type
         try {
             f.find(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder)));

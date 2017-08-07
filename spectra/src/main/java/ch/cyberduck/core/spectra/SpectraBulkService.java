@@ -134,7 +134,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             if(file.isDirectory()) {
                 switch(type) {
                     case upload:
-                        objects.get(container).add(new Ds3Object(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), 0L));
+                        objects.get(container).add(new Ds3Object(containerService.getKey(file), 0L));
                         // Do not include folders when creating a GET job
                         break;
                 }
@@ -300,8 +300,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Found object %s looking for %s", object, file));
                 }
-                if(file.isDirectory() ? object.getName().equals(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)))
-                        : object.getName().equals(containerService.getKey(file))) {
+                if(object.getName().equals(containerService.getKey(file))) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Found chunk %s matching file %s", object, file));
                     }

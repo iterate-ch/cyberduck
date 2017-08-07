@@ -37,7 +37,7 @@ public class TerminalTransferBackgroundAction extends TransferBackgroundAction {
                                             final TransferPrompt prompt,
                                             final TransferSpeedometer meter,
                                             final StreamListener listener) {
-        super(new TerminalLoginCallback(reader), controller, source, destination,
+        super(new TerminalLoginCallback(reader), new TerminalPasswordCallback(), controller, source, destination,
                 new TerminalTransferListener(), controller, transfer, options,
                 prompt, new TerminalTransferErrorCallback(reader), meter, listener);
     }

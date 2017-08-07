@@ -45,6 +45,14 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
     }
 
     @Test
+    public void testTouchEqualSign() throws Exception {
+        final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%s====", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        new OneDriveTouchFeature(session).touch(file, new TransferStatus());
+        assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
+        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testWhitespaceTouch() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.file));

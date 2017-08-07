@@ -21,6 +21,7 @@ package ch.cyberduck.core.udt.qloudsonic;
 import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.aquaticprime.DisabledLicenseVerifierCallback;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -71,7 +72,7 @@ public class QloudsonicProxyProvider implements UDTProxyProvider {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Using voucher %s", receipt));
             }
-            if(!receipt.verify()) {
+            if(!receipt.verify(new DisabledLicenseVerifierCallback())) {
                 throw new InvalidReceiptException();
             }
             headers.add(new Header(Headers.HEADER_VOUCHER, receipt.getValue("Voucher")));

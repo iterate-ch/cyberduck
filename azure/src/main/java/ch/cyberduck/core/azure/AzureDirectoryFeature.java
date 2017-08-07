@@ -68,7 +68,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
             }
             else {
                 if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+                    status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
                 }
                 final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);

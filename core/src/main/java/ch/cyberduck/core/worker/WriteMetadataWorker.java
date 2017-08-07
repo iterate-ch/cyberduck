@@ -103,7 +103,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         }
         if(file.isDirectory()) {
             if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
-                for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener))) {
+                for(Path child : session.getFeature(ListService.class).list(file, new WorkerListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }
             }

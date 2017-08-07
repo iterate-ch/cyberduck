@@ -15,6 +15,8 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -43,34 +45,33 @@ public class CryptoCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        if(vault.contains(copy)) {
+            // Write header to be reused in writer
+            final Cryptor cryptor = vault.getCryptor();
+            final FileHeader header = cryptor.fileHeaderCryptor().create();
+            status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+            status.setNonces(new RandomNonceGenerator());
+        }
         if(vault.contains(source) && vault.contains(copy)) {
-            // Copy inside vault may use server side copy
-            proxy.withTarget(target).copy(vault.encrypt(session, source), vault.encrypt(session, copy), status);
+            proxy.withTarget(target).copy(
+                    vault.contains(source) ? vault.encrypt(session, source) : source,
+                    vault.contains(copy) ? vault.encrypt(session, copy) : copy, status, callback);
         }
         else {
-            if(vault.contains(copy)) {
-                // Write header to be reused in writer
-                final Cryptor cryptor = vault.getCryptor();
-                final FileHeader header = cryptor.fileHeaderCryptor().create();
-                status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
-                status.setNonces(new RandomNonceGenerator());
-            }
             // Copy files from or into vault requires to pass through encryption features
             new DefaultCopyFeature(session).withTarget(target).copy(
                     vault.contains(source) ? vault.encrypt(session, source) : source,
                     vault.contains(copy) ? vault.encrypt(session, copy) : copy,
-                    status
-            );
+                    status,
+                    new DisabledConnectionCallback());
         }
     }
 
     @Override
     public boolean isRecursive(final Path source, final Path copy) {
-        if(vault.contains(source) && vault.contains(copy)) {
-            return proxy.withTarget(target).isRecursive(source, copy);
-        }
-        return new DefaultCopyFeature(session).withTarget(target).isRecursive(source, copy);
+        // Due to the encrypted folder layout copying is never recursive even when supported by the native implementation
+        return false;
     }
 
     @Override

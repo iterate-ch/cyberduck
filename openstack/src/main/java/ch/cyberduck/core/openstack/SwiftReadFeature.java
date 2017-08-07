@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -33,8 +34,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 
+import ch.iterate.openstack.swift.Response;
 import ch.iterate.openstack.swift.exception.GenericException;
-import ch.iterate.openstack.swift.io.ContentLengthInputStream;
 
 public class SwiftReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SwiftReadFeature.class);
@@ -56,29 +57,25 @@ public class SwiftReadFeature implements Read {
         try {
             // Do not set checksum when metadata key X-Static-Large-Object is present. Disable checksum verification in download filter.
             status.setChecksum(Checksum.NONE);
-
-            final ContentLengthInputStream stream;
+            final Response response;
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 if(-1 == range.getEnd()) {
-                    stream = session.getClient().getObject(regionService.lookup(file),
+                    response = session.getClient().getObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             range.getStart());
                 }
                 else {
-                    stream = session.getClient().getObject(regionService.lookup(file),
+                    response = session.getClient().getObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             range.getStart(), range.getLength());
                 }
             }
             else {
-                stream = session.getClient().getObject(regionService.lookup(file),
+                response = session.getClient().getObject(regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Reading stream with content length %d", stream.getLength()));
-            }
-            return stream;
+            return new HttpMethodReleaseInputStream(response.getResponse());
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Download {0} failed", e, file);

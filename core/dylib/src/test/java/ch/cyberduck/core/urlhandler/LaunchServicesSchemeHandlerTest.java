@@ -4,12 +4,14 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
 
 import static org.junit.Assert.*;
 
+@Ignore
 public class LaunchServicesSchemeHandlerTest {
 
     @Test

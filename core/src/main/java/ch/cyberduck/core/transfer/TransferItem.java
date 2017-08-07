@@ -21,6 +21,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Referenceable;
 import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.serializer.Serializer;
 
 public class TransferItem implements Referenceable, Serializable {
@@ -70,7 +71,7 @@ public class TransferItem implements Referenceable, Serializable {
         if(local != null ? !local.equals(that.local) : that.local != null) {
             return false;
         }
-        if(remote != null ? !remote.equals(that.remote) : that.remote != null) {
+        if(remote != null ? !new SimplePathPredicate(remote).equals(new SimplePathPredicate(that.remote)) : that.remote != null) {
             return false;
         }
         return true;
@@ -78,7 +79,7 @@ public class TransferItem implements Referenceable, Serializable {
 
     @Override
     public int hashCode() {
-        int result = remote != null ? remote.hashCode() : 0;
+        int result = remote != null ? new SimplePathPredicate(remote).hashCode() : 0;
         result = 31 * result + (local != null ? local.hashCode() : 0);
         return result;
     }

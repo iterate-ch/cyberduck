@@ -32,6 +32,7 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.aquaticprime.DisabledLicenseVerifierCallback;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.NotificationRendezvousListener;
@@ -440,7 +441,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void helpMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(preferences.getProperty("website.help"));
+        BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
     }
 
     @Action
@@ -574,7 +575,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberducklicense".equals(f.getExtension())) {
                 final License l = LicenseFactory.get(f);
-                if(l.verify()) {
+                if(l.verify(new DisabledLicenseVerifierCallback())) {
                     try {
                         f.copy(LocalFactory.get(preferences.getProperty("application.support.path"), f.getName()));
                         final NSAlert alert = NSAlert.alert(
@@ -611,9 +612,7 @@ public class MainController extends BundleController implements NSApplication.De
                     alert.setDelegate(new ProxyController() {
                         @Action
                         public boolean alertShowHelp(NSAlert alert) {
-                            StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
-                            site.append("/").append("faq");
-                            BrowserLauncherFactory.get().open(site.toString());
+                            BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
                             return true;
                         }
 
@@ -1243,8 +1242,8 @@ public class MainController extends BundleController implements NSApplication.De
             // Already displayed
             return NSApplication.NSTerminateNow;
         }
-        final License l = LicenseFactory.find();
-        if(!l.verify()) {
+        final License key = LicenseFactory.find();
+        if(!key.verify(new DisabledLicenseVerifierCallback())) {
             final String lastversion = preferences.getProperty("donate.reminder");
             if(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString().equals(lastversion)) {
                 // Do not display if same version is installed

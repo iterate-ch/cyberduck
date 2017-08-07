@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>sds</string>
         <key>Vendor</key>
-        <string>SSP</string>
+        <string>ssp</string>
         <key>Description</key>
         <string>Secure Data Space</string>
         <key>Scheme</key>

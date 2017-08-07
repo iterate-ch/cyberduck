@@ -15,11 +15,13 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,9 +38,9 @@ public class LocalMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
-            if(exists) {
+            if(status.isExists()) {
                 delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
             }
             Files.move(session.toPath(file), session.toPath(renamed));

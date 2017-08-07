@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -70,7 +71,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Rename existing file %s to %s", file, rename));
             }
-            move.move(file, rename, false, new Delete.DisabledCallback());
+            move.move(file, rename, new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Clear exist flag for file %s", file));
             }

@@ -36,7 +36,7 @@ import synapticloop.b2.response.B2BucketResponse;
 public class B2LifecycleFeature implements Lifecycle {
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
 

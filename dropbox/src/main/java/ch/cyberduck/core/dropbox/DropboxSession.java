@@ -54,7 +54,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import com.dropbox.core.DbxHost;
@@ -70,13 +69,8 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
-            "https://api.dropboxapi.com/1/oauth2/token",
-            "https://www.dropbox.com/1/oauth2/authorize",
-            host.getProtocol().getClientId(),
-            host.getProtocol().getClientSecret(),
-            Collections.emptyList())
-            .withRedirectUri(preferences.getProperty("dropbox.oauth.redirecturi"));
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
     private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
             authorizationService);

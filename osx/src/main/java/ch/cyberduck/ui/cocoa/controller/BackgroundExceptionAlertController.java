@@ -17,9 +17,9 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
@@ -60,6 +60,6 @@ public class BackgroundExceptionAlertController extends AlertController {
 
     @Override
     protected String help() {
-        return new DefaultProviderHelpService().help(host.getProtocol());
+        return ProviderHelpServiceFactory.get().help(host.getProtocol());
     }
 }

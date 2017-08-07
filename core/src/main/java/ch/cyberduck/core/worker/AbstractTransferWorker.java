@@ -25,6 +25,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -78,7 +79,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
      */
     private final TransferErrorCallback error;
 
-    private final ConnectionCallback callback;
+    private final ConnectionCallback connectionCallback;
+    private final PasswordCallback passwordCallback;
 
     private final TransferOptions options;
 
@@ -103,8 +105,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final TransferErrorCallback error,
                                   final ProgressListener progress,
                                   final StreamListener stream,
-                                  final ConnectionCallback callback) {
-        this(transfer, options, prompt, meter, error, progress, stream, callback, new TransferItemCache(Integer.MAX_VALUE));
+                                  final ConnectionCallback connectionCallback,
+                                  final PasswordCallback passwordCallback) {
+        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, new TransferItemCache(Integer.MAX_VALUE));
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -112,9 +115,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final TransferErrorCallback error,
                                   final ProgressListener progress,
                                   final StreamListener stream,
-                                  final ConnectionCallback callback,
+                                  final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
                                   final Cache<TransferItem> cache) {
-        this(transfer, options, prompt, meter, error, progress, stream, callback, cache, new HashMap<Path, TransferStatus>());
+        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, cache, new HashMap<Path, TransferStatus>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -122,7 +125,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final TransferErrorCallback error,
                                   final ProgressListener progress,
                                   final StreamListener stream,
-                                  final ConnectionCallback callback,
+                                  final ConnectionCallback connectionCallback,
+                                  final PasswordCallback passwordCallback,
                                   final Cache<TransferItem> cache,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
@@ -132,7 +136,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         this.error = new SynchronizingTransferErrorCallback(error);
         this.progress = progress;
         this.stream = stream;
-        this.callback = callback;
+        this.connectionCallback = connectionCallback;
+        this.passwordCallback = passwordCallback;
         this.cache = cache;
         this.table = table;
     }
@@ -203,7 +208,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             }
             this.await();
             meter.reset();
-            transfer.pre(source, destination, table, callback);
+            transfer.pre(source, destination, table, connectionCallback);
             // Transfer all files sequentially
             for(TransferItem next : transfer.getRoots()) {
                 this.transfer(next, action);
@@ -211,7 +216,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             this.await();
         }
         finally {
-            transfer.post(source, destination, table, callback);
+            transfer.post(source, destination, table, connectionCallback);
             if(transfer.isReset()) {
                 growl.notify(transfer.isComplete() ?
                         String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
@@ -280,7 +285,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             if(file.isDirectory()) {
                                 final List<TransferItem> children;
                                 // Call recursively for all children
-                                children = transfer.list(source, destination, file, local, new ActionListProgressListener(AbstractTransferWorker.this, progress));
+                                children = transfer.list(source, destination, file, local, new WorkerListProgressListener(AbstractTransferWorker.this, progress));
                                 // Put into cache for later reference when transferring
                                 cache.put(item, new AttributedList<TransferItem>(children));
                                 // Call recursively
@@ -374,9 +379,12 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             item.remote = transfer.transfer(source, destination,
                                     segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                     segment.getRename().local != null ? segment.getRename().local : item.local,
-                                    options, segment, callback, progress, stream);
+                                    options, segment, connectionCallback, passwordCallback, progress, stream);
                             // Recursive
                             if(item.remote.isDirectory()) {
+                                if(!cache.isCached(item)) {
+                                    log.warn(String.format("Missing entry for %s in cache", item));
+                                }
                                 for(TransferItem f : cache.get(item)) {
                                     // Recursive
                                     transfer(f, action);

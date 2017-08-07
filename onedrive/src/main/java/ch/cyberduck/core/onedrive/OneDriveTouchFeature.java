@@ -28,7 +28,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.IOException;
 
-public class OneDriveTouchFeature implements Touch {
+public class OneDriveTouchFeature implements Touch<Void> {
 
     private final OneDriveSession session;
 
@@ -56,7 +56,7 @@ public class OneDriveTouchFeature implements Touch {
     }
 
     @Override
-    public Touch withWriter(final Write writer) {
+    public Touch<Void> withWriter(final Write writer) {
         return this;
     }
 }

@@ -19,6 +19,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
@@ -42,8 +43,8 @@ public class DefaultDownloadFeature implements Download {
 
     @Override
     public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final InputStream in = reader.read(file, status, callback);
+                         final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
+        final InputStream in = reader.read(file, status, connectionCallback);
         final OutputStream out = local.getOutputStream(status.isAppend());
         new StreamCopier(status, status)
                 .withOffset(0L)

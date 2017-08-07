@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -38,15 +40,16 @@ import java.util.Map;
 public class MoveWorker extends Worker<List<Path>> {
 
     private final Map<Path, Path> files;
-
     private final ProgressListener listener;
-
     private final Cache<Path> cache;
+    private final ConnectionCallback callback;
 
-    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache) {
+    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache,
+                      final ConnectionCallback callback) {
         this.files = files;
         this.listener = listener;
         this.cache = cache;
+        this.callback = callback;
     }
 
     @Override
@@ -70,13 +73,13 @@ public class MoveWorker extends Worker<List<Path>> {
             }
             final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), source, target);
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                move.move(r.getKey(), r.getValue(), exists, new Delete.Callback() {
+                move.move(r.getKey(), r.getValue(), new TransferStatus().exists(exists), new Delete.Callback() {
                     @Override
                     public void delete(final Path file) {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                                 file.getName()));
                     }
-                });
+                }, callback);
             }
         }
         final List<Path> changed = new ArrayList<Path>();
@@ -93,7 +96,7 @@ public class MoveWorker extends Worker<List<Path>> {
         }
         else if(source.isDirectory()) {
             if(!move.isRecursive(source, target)) {
-                for(Path child : list.list(source, new ActionListProgressListener(this, listener))) {
+                for(Path child : list.list(source, new WorkerListProgressListener(this, listener))) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }

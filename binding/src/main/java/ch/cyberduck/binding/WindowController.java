@@ -27,8 +27,8 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -226,7 +226,7 @@ public abstract class WindowController extends BundleController implements NSWin
 
     @Action
     public void helpButtonClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help"));
+        BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
     }
 
     protected void print(NSView view) {

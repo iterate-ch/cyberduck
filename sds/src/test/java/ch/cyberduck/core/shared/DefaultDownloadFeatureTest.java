@@ -21,14 +21,17 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
@@ -54,8 +57,7 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DefaultDownloadFeatureTest {
@@ -76,10 +78,12 @@ public class DefaultDownloadFeatureTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
-            final OutputStream out = new SDSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<VersionId> out = new SDSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
+            assertNotEquals(test.attributes().getVersionId(), out.getStatus().id);
+            test.attributes().setVersionId(out.getStatus().id);
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
@@ -87,14 +91,14 @@ public class DefaultDownloadFeatureTest {
             new DefaultDownloadFeature(new SDSReadFeature(session)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback());
+                    new DisabledConnectionCallback(), new DisabledPasswordCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
             new DefaultDownloadFeature(new SDSReadFeature(session)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback());
+                    new DisabledConnectionCallback(), new DisabledPasswordCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
@@ -132,7 +136,7 @@ public class DefaultDownloadFeatureTest {
             new DefaultDownloadFeature(new SDSReadFeature(session)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback());
+                    new DisabledConnectionCallback(), new DisabledPasswordCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();

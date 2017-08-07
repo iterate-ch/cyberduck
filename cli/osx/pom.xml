@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>6.1.1-SNAPSHOT</version>
+        <version>6.3.0-SNAPSHOT</version>
     </parent>
     <artifactId>cli-osx</artifactId>
     <description>Cyberduck CLI Mac</description>
@@ -124,8 +124,24 @@
                                             <destFileName>US_export_policy.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security
-                                    </outputDirectory>
+                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>unpack-profiles</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>ch.cyberduck</groupId>
+                                            <artifactId>profiles</artifactId>
+                                            <version>${project.version}</version>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/Resources/Profiles</outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>
