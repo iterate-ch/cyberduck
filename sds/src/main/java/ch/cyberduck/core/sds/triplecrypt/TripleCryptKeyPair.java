@@ -40,6 +40,7 @@ public class TripleCryptKeyPair {
                 keychain.getPassword(bookmark.getHostname(),
                         String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()))) {
         };
+        passphrase.setSaved(true);
         this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"));
         return passphrase;
     }
