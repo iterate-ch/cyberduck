@@ -95,7 +95,7 @@ public class SDSMoveFeature implements Move {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         if(containerService.isContainer(source)) {
-            if(!source.getParent().equals(target.getParent())) {
+            if(!new SimplePathPredicate(source.getParent()).test(target.getParent())) {
                 // Cannot move data room but only rename
                 return false;
             }
