@@ -17,7 +17,7 @@ package ch.cyberduck.core.sds;
 
 public class ExpiringObjectHolder<T> {
 
-    private final long timeToLiveMillis;
+    private final Long timeToLiveMillis;
 
     T object;
     Long updated = Long.MIN_VALUE;
