@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Protocol;
@@ -90,7 +89,7 @@ public class CryptoWriteFeatureTest {
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session).find(test).getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus().length(content.length), new ConnectionCallback() {
+        final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus(), new ConnectionCallback() {
             @Override
             public void warn(final Protocol protocol, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
                 //
@@ -133,7 +132,7 @@ public class CryptoWriteFeatureTest {
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session).find(test).getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus().length(content.length), new ConnectionCallback() {
+        final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus(), new ConnectionCallback() {
             @Override
             public void warn(final Protocol protocol, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
                 //

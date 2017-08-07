@@ -70,8 +70,7 @@ public class CryptoReadFeature implements Read {
             final VaultCredentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
             final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
             return new CryptoInputStream(proxy.read(file, status, callback),
-                    Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()),
-                    status.getLength() + status.getOffset());
+                    Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Download {0} failed", e, file);

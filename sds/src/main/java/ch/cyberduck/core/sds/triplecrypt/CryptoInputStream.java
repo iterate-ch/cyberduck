@@ -35,17 +35,15 @@ public class CryptoInputStream extends ProxyInputStream {
     private final InputStream proxy;
     private final FileDecryptionCipher cipher;
     private final byte[] tag;
-    private final long length;
 
     private ByteBuffer buffer = ByteBuffer.allocate(0);
-    private long read;
+    private long lastread = -1;
 
-    public CryptoInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final byte[] tag, final long length) throws IOException {
+    public CryptoInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final byte[] tag) throws IOException {
         super(proxy);
         this.proxy = proxy;
         this.cipher = cipher;
         this.tag = tag;
-        this.length = length;
     }
 
     @Override
@@ -77,15 +75,14 @@ public class CryptoInputStream extends ProxyInputStream {
     private int readNextChunk() throws IOException {
         final ByteBuffer ciphertextBuf = ByteBuffer.allocate(SDSSession.DEFAULT_CHUNKSIZE);
         final int read = IOUtils.read(proxy, ciphertextBuf.array());
-        this.read += read;
-        if(read == 0) {
+        if(lastread == 0) {
             return IOUtils.EOF;
         }
         ciphertextBuf.position(read);
         ciphertextBuf.flip();
         try {
             final PlainDataContainer pDataContainer;
-            if(this.read == length) {
+            if(read < SDSSession.DEFAULT_CHUNKSIZE) {
                 final PlainDataContainer c1 = cipher.processBytes(createEncryptedDataContainer(ciphertextBuf.array(), read, null));
                 final PlainDataContainer c2 = cipher.doFinal(new EncryptedDataContainer(null, tag));
                 pDataContainer = new PlainDataContainer(ArrayUtils.addAll(c1.getContent(), c2.getContent()));
@@ -97,6 +94,7 @@ public class CryptoInputStream extends ProxyInputStream {
             buffer = ByteBuffer.allocate(content.length);
             buffer.put(content);
             buffer.flip();
+            lastread = read;
             return content.length;
         }
         catch(CryptoException e) {
