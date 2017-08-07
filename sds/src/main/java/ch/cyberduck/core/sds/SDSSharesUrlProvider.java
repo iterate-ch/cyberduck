@@ -27,6 +27,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.PublicApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.SharesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
+import ch.cyberduck.core.sds.io.swagger.client.model.ObjectExpiration;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateResponse;
 
@@ -52,6 +53,9 @@ public class SDSSharesUrlProvider implements UrlProvider {
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(StringUtils.EMPTY,
                     new CreateDownloadShareRequest()
                             .nodeId(Long.valueOf(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())))
+                            .expiration(new ObjectExpiration().enableExpiration(false))
+                            .notifyCreator(false)
+                            .password(null)
                             .mailBody(null)
                             .mailRecipients(null)
                             .mailSubject(null)
