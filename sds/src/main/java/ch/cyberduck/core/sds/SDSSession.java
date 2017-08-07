@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -45,15 +46,20 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
@@ -85,6 +91,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
     }).build(),
             host.getProtocol()).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+
+    private final ExpiringObjectHolder<UserAccount> userAccount = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+    private final ExpiringObjectHolder<UserKeyPairContainer> keyPair = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -160,6 +169,20 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     .token(additional.getPassword())
             );
         }
+    }
+
+    public UserAccount userAccount() throws ApiException {
+        if(this.userAccount.get() == null) {
+            this.userAccount.set(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false));
+        }
+        return this.userAccount.get();
+    }
+
+    public UserKeyPairContainer keyPair() throws ApiException {
+        if(this.keyPair.get() == null) {
+            this.keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+        }
+        return this.keyPair.get();
     }
 
     @Override
