@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -52,7 +53,7 @@ public class SDSMoveFeature implements Move {
             if(status.isExists()) {
                 new SDSDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
-            if(!source.getParent().equals(target.getParent())) {
+            if(!new SimplePathPredicate(source.getParent()).test(target.getParent())) {
                 // Change parent node
                 new NodesApi(session.getClient()).moveNodes(StringUtils.EMPTY,
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
