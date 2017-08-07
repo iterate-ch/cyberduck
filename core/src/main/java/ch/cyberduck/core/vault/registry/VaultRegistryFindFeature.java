@@ -16,30 +16,60 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.vault.VaultFinderListProgressListener;
+import ch.cyberduck.core.vault.VaultFoundListCanceledException;
+import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
 
+import org.apache.log4j.Logger;
+
 public class VaultRegistryFindFeature implements Find {
+    private static final Logger log = Logger.getLogger(VaultRegistryFindFeature.class);
 
     private final Session<?> session;
     private final Find proxy;
     private final VaultRegistry registry;
+    private final VaultLookupListener lookup;
+    private final PasswordStore keychain;
 
     private Cache<Path> cache = PathCache.empty();
 
-    public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry) {
+    public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry, final VaultLookupListener lookup, final PasswordStore keychain) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
+        this.lookup = lookup;
+        this.keychain = keychain;
     }
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Find.class, proxy)
+        final Vault vault = registry.find(session, file);
+        if(vault.equals(Vault.DISABLED)) {
+            if(PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect")) {
+                try {
+                    session.list(file.getParent(), new VaultFinderListProgressListener(keychain, lookup));
+                }
+                catch(VaultFoundListCanceledException finder) {
+                    final Vault cryptomator = finder.getVault();
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Found vault %s", cryptomator));
+                    }
+                    return cryptomator.getFeature(session, Find.class, proxy)
+                            .withCache(cache)
+                            .find(file);
+                }
+            }
+        }
+        return vault.getFeature(session, Find.class, proxy)
                 .withCache(cache)
                 .find(file);
     }
