@@ -82,7 +82,7 @@ public class CryptoInputStream extends ProxyInputStream {
         ciphertextBuf.flip();
         try {
             final PlainDataContainer pDataContainer;
-            if(read < SDSSession.DEFAULT_CHUNKSIZE) {
+            if(read == 0) {
                 final PlainDataContainer c1 = cipher.processBytes(createEncryptedDataContainer(ciphertextBuf.array(), read, null));
                 final PlainDataContainer c2 = cipher.doFinal(new EncryptedDataContainer(null, tag));
                 pDataContainer = new PlainDataContainer(ArrayUtils.addAll(c1.getContent(), c2.getContent()));
