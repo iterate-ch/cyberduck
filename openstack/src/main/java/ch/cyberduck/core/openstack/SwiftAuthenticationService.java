@@ -85,7 +85,7 @@ public class SwiftAuthenticationService {
             }
             else {
                 user = credentials.getUsername();
-                tenant = prompt.prompt(credentials.getUsername(),
+                tenant = prompt.prompt(host, credentials.getUsername(),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         LocaleFactory.localizedString("Tenant Name", "Mosso"), options
                                 .usernamePlaceholder(LocaleFactory.localizedString("Tenant Name", "Mosso"))).getUsername();
@@ -121,7 +121,7 @@ public class SwiftAuthenticationService {
                 else {
                     project = parts[0];
                     user = parts[1];
-                    domain = prompt.prompt(credentials.getUsername(),
+                    domain = prompt.prompt(host, credentials.getUsername(),
                             LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                             LocaleFactory.localizedString("Project Domain Name", "Mosso"), options
                                     .usernamePlaceholder(LocaleFactory.localizedString("Project Domain Name", "Mosso"))).getUsername();
@@ -131,7 +131,7 @@ public class SwiftAuthenticationService {
             }
             else {
                 user = credentials.getUsername();
-                final Credentials projectName = prompt.prompt(credentials.getUsername(),
+                final Credentials projectName = prompt.prompt(host, credentials.getUsername(),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         LocaleFactory.localizedString("Project Name", "Mosso"), options
                                 .usernamePlaceholder(LocaleFactory.localizedString("Project Name", "Mosso")));
@@ -142,7 +142,7 @@ public class SwiftAuthenticationService {
                 }
                 else {
                     project = projectName.getUsername();
-                    domain = prompt.prompt(credentials.getUsername(),
+                    domain = prompt.prompt(host, credentials.getUsername(),
                             LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                             LocaleFactory.localizedString("Project Domain Name", "Mosso"), options
                                     .usernamePlaceholder(LocaleFactory.localizedString("Project Domain Name", "Mosso"))).getUsername();

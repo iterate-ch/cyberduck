@@ -97,7 +97,7 @@ public class LoginConnectionServiceTest {
             }
 
             @Override
-            public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 prompt.set(true);
                 // New password entered
                 return new Credentials(username, "b");

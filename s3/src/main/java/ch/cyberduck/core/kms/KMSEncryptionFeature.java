@@ -109,7 +109,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             return run.call();
         }
         catch(LoginFailureException failure) {
-            bookmark.setCredentials(prompt.prompt(bookmark.getCredentials().getUsername(),
+            bookmark.setCredentials(prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
             return this.authenticated(run, prompt);
         }

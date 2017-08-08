@@ -25,6 +25,7 @@ import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -76,12 +77,12 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     @Override
-    public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for credentials for %s", username));
         }
         final Credentials credentials = new Credentials(username);
-        final LoginController controller = new LoginController(title, reason, credentials, options);
+        final LoginController controller = new LoginController(title, reason, bookmark, credentials, options);
         final SheetInvoker sheet = new SheetInvoker(controller, parent, controller);
         final int option = sheet.beginSheet();
         if(option == SheetCallback.CANCEL_OPTION) {

@@ -117,7 +117,7 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
                             final StringAppender title = new StringAppender().append(name).append(
                                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             );
-                            additional = controller.prompt(credentials.getUsername(), title.toString(),
+                            additional = controller.prompt(host, credentials.getUsername(), title.toString(),
                                     message.toString(), new LoginOptions(host.getProtocol()).user(false).publickey(false).keychain(false)
                                             .usernamePlaceholder(credentials.getUsername())
                             );

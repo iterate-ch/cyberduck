@@ -43,7 +43,7 @@ public class SFTPPublicKeyAuthenticationTest {
             session.open(new DisabledHostKeyCallback());
             assertTrue(new SFTPPublicKeyAuthentication(session, new DisabledPasswordStore()).authenticate(host, new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     fail();
                     return null;
                 }
@@ -71,7 +71,7 @@ public class SFTPPublicKeyAuthenticationTest {
             final AtomicBoolean p = new AtomicBoolean();
             assertFalse(new SFTPPublicKeyAuthentication(session, new DisabledPasswordStore()).authenticate(host, new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     p.set(true);
                     return null;
                 }
@@ -100,7 +100,7 @@ public class SFTPPublicKeyAuthenticationTest {
             final AtomicBoolean p = new AtomicBoolean();
             assertTrue(new SFTPPublicKeyAuthentication(session, new DisabledPasswordStore()).authenticate(host, new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     p.set(true);
                     return null;
                 }
@@ -128,7 +128,7 @@ public class SFTPPublicKeyAuthenticationTest {
             session.open(new DisabledHostKeyCallback());
             assertTrue(new SFTPPublicKeyAuthentication(session, new DisabledPasswordStore()).authenticate(host, new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     fail();
                     return null;
                 }

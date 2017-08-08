@@ -19,6 +19,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -56,7 +57,7 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
     }
 
     @Override
-    public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
             final Credentials credentials = new Credentials(username);

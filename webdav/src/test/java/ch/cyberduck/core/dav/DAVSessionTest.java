@@ -319,7 +319,7 @@ public class DAVSessionTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final String username, final String title, final String reason,
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason,
                                       final LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login failed", title);
                 assertEquals("Authorization Required.", reason);
@@ -361,7 +361,7 @@ public class DAVSessionTest {
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService c = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 prompt.set(true);
                 return new Credentials(System.getProperties().getProperty("webdav.user"),
                         System.getProperties().getProperty("webdav.password")
@@ -407,7 +407,7 @@ public class DAVSessionTest {
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginCallback() {
                     @Override
-                    public Credentials prompt(String username,
+                    public Credentials prompt(final Host bookmark, String username,
                                               String title, String reason, LoginOptions options) throws LoginCanceledException {
                         //
                         return new Credentials();

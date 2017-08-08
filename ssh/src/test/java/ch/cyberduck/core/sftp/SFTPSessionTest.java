@@ -114,7 +114,7 @@ public class SFTPSessionTest {
         final AtomicBoolean fail = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(String username,
+            public Credentials prompt(final Host bookmark, String username,
                                       String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login failed", title);
@@ -183,7 +183,7 @@ public class SFTPSessionTest {
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login failed", title);
                 assertEquals("Login test.cyberduck.ch – SFTP with username and password. Please contact your web hosting service provider for assistance.", reason);
                 change.set(true);
@@ -207,7 +207,7 @@ public class SFTPSessionTest {
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(String username,
+            public Credentials prompt(final Host bookmark, String username,
                                       String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
@@ -245,7 +245,7 @@ public class SFTPSessionTest {
             }
 
             @Override
-            public Credentials prompt(String username, String title, String reason, LoginOptions options)
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 if(change.get()) {
                     assertEquals("Change of username or service not allowed: (u1,ssh-connection) -> (jenkins,ssh-connection). Please contact your web hosting service provider for assistance.", reason);

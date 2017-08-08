@@ -32,7 +32,7 @@ public class DisabledLoginCallback implements LoginCallback {
     }
 
     @Override
-    public Credentials prompt(final String username, final String title, final String reason,
+    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason,
                               final LoginOptions options) throws LoginCanceledException {
         throw new LoginCanceledException();
     }

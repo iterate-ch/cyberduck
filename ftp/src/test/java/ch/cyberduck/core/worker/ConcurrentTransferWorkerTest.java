@@ -138,7 +138,7 @@ public class ConcurrentTransferWorkerTest {
         final DefaultSessionPool pool = new DefaultSessionPool(
                 new LoginConnectionService(new DisabledLoginCallback() {
                     @Override
-                    public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                         return new Credentials(username, "test");
                     }
 

@@ -77,7 +77,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //Proceed nevertheless.
         }
 
-        public Credentials prompt(Host bookmark, String title, String reason, LoginOptions options)
+        public Credentials prompt(Host bookmark, String username, String title, String reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
             InitEventHandlers();
@@ -89,13 +89,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = _credentials.getUsername();
             View.SavePasswordState = _options.save();
+            View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
 
-            if(_options.icon() != null) {
-                View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
-            }
-            else {
-                View.DiskIcon = IconCache.Instance.IconForName(_bookmark.getProtocol().disk(), 64);
-            }
             InitPrivateKeys();
 
             Update();

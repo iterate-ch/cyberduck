@@ -78,7 +78,7 @@ public class KeychainLoginService implements LoginService {
         }
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
-            bookmark.setCredentials(callback.prompt(bookmark.getCredentials().getUsername(),
+            bookmark.setCredentials(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
                     new LoginOptions(bookmark.getProtocol())));
             throw e;
@@ -108,7 +108,7 @@ public class KeychainLoginService implements LoginService {
                             final StringAppender appender = new StringAppender();
                             appender.append(message);
                             appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                            bookmark.setCredentials(callback.prompt(credentials.getUsername(),
+                            bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
                                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                                     appender.toString(),
                                     options));
@@ -126,7 +126,7 @@ public class KeychainLoginService implements LoginService {
                         final StringAppender appender = new StringAppender();
                         appender.append(message);
                         appender.append(LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
-                        bookmark.setCredentials(callback.prompt(credentials.getUsername(),
+                        bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
                                 String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                                 appender.toString(), options));
                     }
@@ -139,7 +139,7 @@ public class KeychainLoginService implements LoginService {
                 final StringAppender appender = new StringAppender();
                 appender.append(message);
                 appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                bookmark.setCredentials(callback.prompt(credentials.getUsername(),
+                bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
                         String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                         appender.toString(), options));
             }

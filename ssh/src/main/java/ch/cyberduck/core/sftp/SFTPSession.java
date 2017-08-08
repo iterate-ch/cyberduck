@@ -291,7 +291,7 @@ public class SFTPSession extends Session<SSHClient> {
         // Check if authentication is partial
         if(!client.isAuthenticated()) {
             if(client.getUserAuth().hadPartialSuccess()) {
-                final Credentials additional = prompt.prompt(credentials.getUsername(),
+                final Credentials additional = prompt.prompt(host, credentials.getUsername(),
                         LocaleFactory.localizedString("Partial authentication success", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         new LoginOptions(host.getProtocol()).user(false).keychain(false).publickey(false)
