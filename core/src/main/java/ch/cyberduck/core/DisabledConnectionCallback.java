@@ -29,7 +29,7 @@ public class DisabledConnectionCallback implements ConnectionCallback {
     }
 
     @Override
-    public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         throw new LoginCanceledException();
     }
 }
