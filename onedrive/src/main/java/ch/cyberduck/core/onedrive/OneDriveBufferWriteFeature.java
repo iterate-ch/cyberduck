@@ -63,11 +63,11 @@ public class OneDriveBufferWriteFeature extends OneDriveWriteFeature implements 
                         new OneDriveTouchFeature(session).touch(file, status);
                     }
                     else {
-                        final HttpResponseOutputStream<Void> proxy = OneDriveBufferWriteFeature.super.write(file, status.length(buffer.length()), callback);
+                        final HttpResponseOutputStream<Void> proxy = OneDriveBufferWriteFeature.super.write(file, new TransferStatus(status).length(buffer.length()), callback);
                         IOUtils.copy(new BufferInputStream(buffer), proxy);
-                        // Re-use buffer
-                        buffer.truncate(0L);
+                        proxy.close();
                     }
+                    super.close();
                 }
                 catch(BackgroundException e) {
                     throw new IOException(e);
