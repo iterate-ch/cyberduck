@@ -53,17 +53,17 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
     }
 
     @Override
-    public void collectionItemAdded(T item) {
+    public void collectionItemAdded(final T item) {
         this.setNeedsUpdate(true);
     }
 
     @Override
-    public void collectionItemRemoved(T item) {
+    public void collectionItemRemoved(final T item) {
         this.setNeedsUpdate(true);
     }
 
     @Override
-    public void collectionItemChanged(T item) {
+    public void collectionItemChanged(final T item) {
         this.setNeedsUpdate(true);
     }
 
