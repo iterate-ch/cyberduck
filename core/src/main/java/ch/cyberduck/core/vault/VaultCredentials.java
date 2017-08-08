@@ -19,6 +19,10 @@ import ch.cyberduck.core.Credentials;
 
 public class VaultCredentials extends Credentials {
 
+    public VaultCredentials() {
+        super();
+    }
+
     public VaultCredentials(final String password) {
         super(null, password);
     }
