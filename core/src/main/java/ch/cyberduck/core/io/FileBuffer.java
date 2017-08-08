@@ -98,6 +98,7 @@ public class FileBuffer implements Buffer {
             finally {
                 try {
                     temporary.delete();
+                    file = null;
                 }
                 catch(AccessDeniedException e) {
                     log.warn(String.format("Failure removing temporary file %s for buffer %s. Schedule for delete on exit.", temporary, this));
