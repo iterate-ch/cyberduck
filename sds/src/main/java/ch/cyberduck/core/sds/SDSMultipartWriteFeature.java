@@ -94,7 +94,8 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(StringUtils.EMPTY, body);
             final String id = response.getUploadId();
             final MultipartOutputStream proxy = new MultipartOutputStream(id, file, status);
-            return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("connection.chunksize"))) {
+            return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
+                    PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
                 @Override
                 public VersionId getStatus() throws BackgroundException {
                     return proxy.getVersionId();
