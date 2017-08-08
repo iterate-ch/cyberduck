@@ -53,6 +53,7 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
         final byte[] buffer = new byte[32 * 1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
+        out.flush();
         out.close();
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
@@ -77,6 +78,7 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
         final byte[] buffer = new byte[1 * 1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
+        out.flush();
         out.close();
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
@@ -100,6 +102,7 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
+        out.flush();
         out.close();
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
