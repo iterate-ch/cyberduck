@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds.triplecrypt;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
@@ -30,7 +31,6 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -67,7 +67,7 @@ public class CryptoReadFeature implements Read {
             privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
             final UserKeyPair userKeyPair = new UserKeyPair();
             userKeyPair.setUserPrivateKey(privateKey);
-            final VaultCredentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
+            final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
             final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
             return new CryptoInputStream(proxy.read(file, status, callback),
                     Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
