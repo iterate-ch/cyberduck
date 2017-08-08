@@ -152,32 +152,38 @@ public class CryptoVault implements Vault {
             throw new VaultException(String.format("Failure reading vault master key file %s", masterKeyFile.getName()), e);
         }
         final Host bookmark = session.getHost();
-        this.unlock(session, masterKeyFile, masterKeyFileContent, bookmark, prompt,
+        final String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+                new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl());
+        this.unlock(session, masterKeyFile, masterKeyFileContent, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         home.attributes().setVault(home);
         return this;
     }
 
     private void unlock(final Session<?> session, final Path masterKeyFile, final KeyFile masterKeyFileContent,
-                        final Host bookmark, final PasswordCallback prompt, final String message) throws BackgroundException {
-        String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl());
-        boolean saved = PreferencesFactory.get().getBoolean("vault.keychain");
+                        String passphrase, final Host bookmark, final PasswordCallback prompt, final String message) throws BackgroundException {
+        final Credentials credentials;
         if(null == passphrase) {
-            final Credentials credentials = prompt.prompt(
+            credentials = prompt.prompt(
                     LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     message,
-                    new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff")
+                    new LoginOptions()
+                            .save(PreferencesFactory.get().getBoolean("vault.keychain"))
+                            .user(false)
+                            .anonymous(false)
+                            .icon("cryptomator.tiff")
                             .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
             if(null == credentials.getPassword()) {
                 throw new LoginCanceledException();
             }
-            passphrase = credentials.getPassword();
-            saved = credentials.isSaved();
+        }
+        else {
+            credentials = new VaultCredentials(passphrase);
+            credentials.setSaved(PreferencesFactory.get().getBoolean("vault.keychain"));
         }
         try {
-            this.open(this.upgrade(session, masterKeyFileContent, passphrase), passphrase);
-            if(saved) {
+            this.open(this.upgrade(session, masterKeyFileContent, credentials.getPassword()), credentials.getPassword());
+            if(credentials.isSaved()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save passphrase for %s", masterKeyFile));
                 }
@@ -190,7 +196,7 @@ public class CryptoVault implements Vault {
             }
         }
         catch(CryptoAuthenticationException e) {
-            this.unlock(session, masterKeyFile, masterKeyFileContent, bookmark,
+            this.unlock(session, masterKeyFile, masterKeyFileContent, null, bookmark,
                     prompt, String.format("%s %s.", e.getDetail(),
                             MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
         }
