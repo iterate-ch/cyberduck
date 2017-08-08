@@ -19,7 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.collections.Partition;
@@ -60,7 +60,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         if(files.size() == 1) {
             new SwiftDeleteFeature(session, regionService).delete(files, prompt, callback);
         }

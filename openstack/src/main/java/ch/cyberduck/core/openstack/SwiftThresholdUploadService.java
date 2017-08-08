@@ -19,7 +19,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -101,7 +100,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
         final StorageObject checksum = feature.upload(file, local, throttle, listener, status, callback);
         if(!segments.isEmpty()) {
             // Clean up any old segments
-            new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new SwiftMultipleDeleteFeature(session).delete(segments, callback, new Delete.DisabledCallback());
         }
         return checksum;
     }

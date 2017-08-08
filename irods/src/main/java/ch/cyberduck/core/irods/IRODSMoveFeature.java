@@ -18,7 +18,6 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -51,7 +50,7 @@ public class IRODSMoveFeature implements Move {
                 throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
             }
             if(status.isExists()) {
-                delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
+                delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
             final IRODSFile d = fs.getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
             s.renameTo(d);
