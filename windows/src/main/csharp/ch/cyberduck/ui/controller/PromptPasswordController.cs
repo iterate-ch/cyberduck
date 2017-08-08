@@ -44,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Reason = reason;
                 View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
                 View.IconView = IconCache.Instance.IconForName(options.icon(), 64);
-                View.SavePassword = credentials.isSaved();
+                View.SavePassword = options.save();
                 View.ValidateInput += ValidateInputEventHandler;
                 if (DialogResult.Cancel == View.ShowDialog(_browser.View))
                 {
