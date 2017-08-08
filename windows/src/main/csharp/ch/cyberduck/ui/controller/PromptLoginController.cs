@@ -88,7 +88,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = _credentials.getUsername();
-            View.SavePasswordState = _credentials.isSaved();
+            View.SavePasswordState = _options.save();
 
             if(_options.icon() != null) {
                 View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
