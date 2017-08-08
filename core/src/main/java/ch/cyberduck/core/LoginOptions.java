@@ -17,6 +17,8 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import java.util.Objects;
 
 public final class LoginOptions {
@@ -48,6 +50,11 @@ public final class LoginOptions {
 
     public String usernamePlaceholder;
     public String passwordPlaceholder;
+
+    /**
+     * Save in keychain checked by default
+     */
+    public boolean save = PreferencesFactory.get().getBoolean("connection.login.keychain");
 
     public LoginOptions() {
         //
@@ -83,6 +90,11 @@ public final class LoginOptions {
         return this;
     }
 
+    public LoginOptions save(final boolean save) {
+        this.save = save;
+        return this;
+    }
+
     public boolean user() {
         return user;
     }
@@ -105,6 +117,10 @@ public final class LoginOptions {
 
     public String icon() {
         return icon;
+    }
+
+    public boolean save() {
+        return save;
     }
 
     public LoginOptions usernamePlaceholder(final String usernamePlaceholder) {
