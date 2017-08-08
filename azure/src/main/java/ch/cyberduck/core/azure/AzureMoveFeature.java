@@ -19,8 +19,6 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -63,7 +61,7 @@ public class AzureMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
-        delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), callback);
+        delete.delete(Collections.singletonList(file), connectionCallback, callback);
     }
 
     @Override

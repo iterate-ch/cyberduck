@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
@@ -66,7 +67,7 @@ public class MoveWorker extends Worker<List<Path>> {
             }
             final boolean exists;
             if(cache.isCached(target.getParent())) {
-                exists = cache.get(target.getParent()).contains(target);
+                exists = cache.get(target.getParent()).find(new SimplePathPredicate(target)) != null;
             }
             else {
                 exists = false;

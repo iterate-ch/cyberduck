@@ -15,14 +15,14 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
 
 public interface Delete {
-    void delete(List<Path> files, LoginCallback prompt, Callback callback) throws BackgroundException;
+    void delete(List<Path> files, PasswordCallback prompt, Callback callback) throws BackgroundException;
 
     boolean isSupported(final Path file);
     boolean isRecursive();
