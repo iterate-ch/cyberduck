@@ -51,14 +51,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public ILoginView View { get; set; }
 
-        public void warn(Protocol protocol, String title, String message, String continueButton, String disconnectButton,
+        public void warn(Host bookmark, String title, String message, String continueButton, String disconnectButton,
             String preference)
         {
             AsyncController.AsyncDelegate d = delegate
             {
                 _browser.CommandBox(title, title, message, String.Format("{0}|{1}", continueButton, disconnectButton),
                     false, LocaleFactory.localizedString("Don't show again", "Credentials"), TaskDialogIcon.Question,
-                    ProviderHelpServiceFactory.get().help(protocol.getScheme()),
+                    ProviderHelpServiceFactory.get().help(host.getProtocol().getScheme()),
                     delegate(int option, Boolean verificationChecked)
                     {
                         if (verificationChecked)

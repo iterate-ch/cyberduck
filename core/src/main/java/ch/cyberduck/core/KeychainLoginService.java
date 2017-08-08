@@ -49,7 +49,7 @@ public class KeychainLoginService implements LoginService {
         final Host bookmark = session.getHost();
         if(session.alert(callback)) {
             // Warning if credentials are sent plaintext.
-            callback.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
+            callback.warn(bookmark, MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
                     bookmark.getProtocol().getName()),
                     MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
                             bookmark.getProtocol().getPasswordPlaceholder()),

@@ -26,7 +26,7 @@ public class DisabledLoginCallback implements LoginCallback {
     }
 
     @Override
-    public void warn(final Protocol protocol, final String title, final String message,
+    public void warn(final Host bookmark, final String title, final String message,
                      final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
         throw new LoginCanceledException();
     }

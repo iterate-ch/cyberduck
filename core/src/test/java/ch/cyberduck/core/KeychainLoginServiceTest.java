@@ -63,7 +63,7 @@ public class KeychainLoginServiceTest {
         session.open(new DisabledHostKeyCallback());
         LoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message,
+            public void warn(final Host bookmark, final String title, final String message,
                              final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 warned.set(true);
                 throw new LoginCanceledException();

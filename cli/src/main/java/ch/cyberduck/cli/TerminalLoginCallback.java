@@ -23,7 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -47,7 +46,7 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
     }
 
     @Override
-    public void warn(final Protocol protocol, final String title, final String reason,
+    public void warn(final Host bookmark, final String title, final String reason,
                      final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
         console.printf("%n%s", reason);
         if(!prompt.prompt(String.format("%s (y) or %s (n): ", defaultButton, cancelButton))) {

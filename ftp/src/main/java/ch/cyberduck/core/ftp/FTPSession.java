@@ -236,7 +236,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                         && client.hasFeature("PROT")) {
                     // Propose protocol change if AUTH TLS is available.
                     try {
-                        callback.warn(host.getProtocol(),
+                        callback.warn(host,
                                 MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                                 MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
                                         ProtocolFactory.get().forScheme(Scheme.ftps).getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),

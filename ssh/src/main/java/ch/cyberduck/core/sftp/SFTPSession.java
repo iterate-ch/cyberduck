@@ -208,7 +208,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     private void alert(final ConnectionCallback prompt, final String algorithm) throws ConnectionCanceledException {
-        prompt.warn(host.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Insecure algorithm {0} negotiated with server", "Credentials"),
+        prompt.warn(host, MessageFormat.format(LocaleFactory.localizedString("Insecure algorithm {0} negotiated with server", "Credentials"),
                 algorithm),
                 MessageFormat.format("{0}. {1}.", LocaleFactory.localizedString("The algorithm is possibly too weak to meet current cryptography standards", "Credentials"),
                         LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),

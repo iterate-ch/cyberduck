@@ -369,7 +369,7 @@ public class DAVSessionTest {
             }
 
             @Override
-            public void warn(Protocol protocol, String title, String message,
+            public void warn(Host bookmark, String title, String message,
                              String continueButton, String disconnectButton, String preference) throws LoginCanceledException {
                 //
             }
@@ -549,7 +549,7 @@ public class DAVSessionTest {
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginCallback() {
                     @Override
-                    public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                         assertEquals("Unsecured WebDAV (HTTP) connection", title);
                         assertEquals("connection.unsecure.svn.cyberduck.io", preference);
                         warning.set(true);

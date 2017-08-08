@@ -31,7 +31,6 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -58,12 +57,12 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     @Override
-    public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference)
+    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference)
             throws LoginCanceledException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Display insecure connection alert for %s", protocol));
+            log.debug(String.format("Display insecure connection alert for %s", bookmark));
         }
-        final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton, protocol);
+        final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton, bookmark.getProtocol());
         int option = alert.beginSheet(parent);
         if(alert.isSuppressed()) {
             // Never show again.

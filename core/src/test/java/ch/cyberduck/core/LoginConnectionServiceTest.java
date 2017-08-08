@@ -92,7 +92,7 @@ public class LoginConnectionServiceTest {
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 //
             }
 
