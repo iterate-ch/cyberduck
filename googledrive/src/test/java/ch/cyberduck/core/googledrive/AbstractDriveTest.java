@@ -48,8 +48,9 @@ public class AbstractDriveTest {
         session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 fail(reason);
+                return null;
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore() {

@@ -41,6 +41,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -130,8 +131,8 @@ public class SDSMoveFeatureTest {
             }
 
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("ahbic3Ae");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("ahbic3Ae");
             }
         });
         assertFalse(new SDSFindFeature(session).find(test));
@@ -144,8 +145,8 @@ public class SDSMoveFeatureTest {
             }
 
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("ahbic3Ae");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("ahbic3Ae");
             }
         });
         IOUtils.readFully(stream, compare);
@@ -186,8 +187,8 @@ public class SDSMoveFeatureTest {
             }
 
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("ahbic3Ae");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("ahbic3Ae");
             }
         });
         IOUtils.readFully(stream, compare);
