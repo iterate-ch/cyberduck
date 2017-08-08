@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -63,7 +62,7 @@ public class SDSDelegatingMoveFeature implements Move {
                 // Delete source file after copy is complete
                 final Delete delete = session.getFeature(Delete.class);
                 if(delete.isSupported(source)) {
-                    delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
+                    delete.delete(Collections.singletonList(source), connectionCallback, callback);
                 }
             }
         }

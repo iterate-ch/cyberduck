@@ -16,7 +16,7 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -48,7 +48,7 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
             final ArrayList<Path> filtered = new ArrayList<Path>(files);
             for(Iterator<Path> iter = filtered.iterator(); iter.hasNext(); ) {

@@ -17,7 +17,6 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -125,7 +124,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     case upload:
                         if(status.isExists()) {
                             log.warn(String.format("Delete existing file %s", file));
-                            delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                            delete.delete(Collections.singletonList(file), callback, new Delete.DisabledCallback());
                         }
                         break;
                 }
