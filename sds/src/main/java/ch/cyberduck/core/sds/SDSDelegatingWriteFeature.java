@@ -21,13 +21,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.sds.triplecrypt.CryptoWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class SDSDelegatingWriteFeature implements Write<VersionId> {
+public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
 
     private final SDSSession session;
     private final Write<VersionId> proxy;

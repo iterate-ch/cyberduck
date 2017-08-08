@@ -61,10 +61,10 @@ public class OneDriveBusinessContextLoginTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.endsWith("OAuth2 Access Token")) {
+                        if("Microsoft OneDrive Business OAuth2 Access Token".equals(user)) {
                             return System.getProperties().getProperty("onedrive.business.accesstoken");
                         }
-                        if(user.endsWith("OAuth2 Refresh Token")) {
+                        if("Microsoft OneDrive Business OAuth2 Refresh Token".equals(user)) {
                             return System.getProperties().getProperty("onedrive.business.refreshtoken");
                         }
                         return null;

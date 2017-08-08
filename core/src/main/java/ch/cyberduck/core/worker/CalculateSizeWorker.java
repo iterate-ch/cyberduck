@@ -69,7 +69,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
                 p.getName()));
         if(p.isDirectory()) {
-            for(Path next : session.getFeature(ListService.class).list(p, new ActionListProgressListener(this, listener))) {
+            for(Path next : session.getFeature(ListService.class).list(p, new WorkerListProgressListener(this, listener))) {
                 size += this.calculateSize(session, next);
             }
         }

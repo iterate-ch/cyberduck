@@ -17,6 +17,7 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,7 +43,7 @@ public class IRODSMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile s = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());

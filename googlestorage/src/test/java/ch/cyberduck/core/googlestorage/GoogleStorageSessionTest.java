@@ -43,17 +43,10 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class GoogleStorageSessionTest {
+public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
@@ -66,18 +59,10 @@ public class GoogleStorageSessionTest {
                 return null;
             }
         }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        session.close();
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidRefreshToken() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
@@ -94,13 +79,6 @@ public class GoogleStorageSessionTest {
 
     @Test
     public void testConnectInvalidAccessTokenRefreshToken() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
@@ -119,11 +97,9 @@ public class GoogleStorageSessionTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidProjectId() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+        session.getHost().setCredentials(
                 System.getProperties().getProperty("google.projectid") + "1", null
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback());
+        );
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
@@ -140,13 +116,6 @@ public class GoogleStorageSessionTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectMissingKey() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final String username,
@@ -159,10 +128,6 @@ public class GoogleStorageSessionTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testCallbackOauth() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                "a", "s"
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -182,22 +147,17 @@ public class GoogleStorageSessionTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testInvalidProjectId() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+        session.getHost().setCredentials(
                 "duck-1432", ""
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback());
+        );
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        session.close();
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testProjectIdNoAuthorization() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+        session.getHost().setCredentials(
                 "stellar-perigee-775", ""
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback());
+        );
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -205,6 +165,5 @@ public class GoogleStorageSessionTest {
                 return new Credentials("", "");
             }
         }, new DisabledCancelCallback(), PathCache.empty());
-        session.close();
     }
 }

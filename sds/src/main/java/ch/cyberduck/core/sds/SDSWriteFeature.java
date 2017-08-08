@@ -20,7 +20,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -35,12 +34,10 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
 import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -48,6 +45,7 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
@@ -74,9 +72,6 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
     public static final int DEFAULT_CLASSIFICATION = 1; // public
 
-    private final PathContainerService containerService
-            = new PathContainerService();
-
     public SDSWriteFeature(final SDSSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
@@ -95,7 +90,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         body.setName(file.getName());
         body.classification(DEFAULT_CLASSIFICATION);
         try {
-            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(session.getToken(), body);
+            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(StringUtils.EMPTY, body);
             final String uploadId = response.getUploadId();
             final DelayedHttpMultipartEntity entity = new DelayedHttpMultipartEntity(file.getName(), status);
             final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
@@ -105,7 +100,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         final SDSApiClient client = session.getClient();
                         final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                         request.setEntity(entity);
-                        request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
+                        request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                         request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
                         final HttpResponse response = client.getClient().execute(request);
                         try {
@@ -129,14 +124,13 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         if(status.getFilekey() != null) {
                             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                             final FileKey fileKey = reader.readValue(status.getFilekey().array());
-                            final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(session.getToken());
                             final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
                                     TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                                    TripleCryptConverter.toCryptoUserPublicKey(keyPairContainer.getPublicKeyContainer())
+                                    TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                             );
                             body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                         }
-                        final Node upload = new NodesApi(client).completeFileUpload(session.getToken(), uploadId, null, body);
+                        final Node upload = new NodesApi(client).completeFileUpload(StringUtils.EMPTY, uploadId, null, body);
                         return new VersionId(String.valueOf(upload.getId()));
                     }
                     catch(IOException e) {

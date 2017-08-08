@@ -25,9 +25,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
-import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -51,8 +49,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final UserAccount user = new UserApi(session.getClient()).getUserInfo(session.getToken(), null, false);
-            if(user.getIsEncryptionEnabled()) {
+            if(session.userAccount().getIsEncryptionEnabled()) {
                 final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                 final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();

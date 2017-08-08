@@ -121,6 +121,10 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
                     new LoadingVaultLookupListener(session, this, prompt), keychain);
         }
+        if(type == Find.class) {
+            return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
+                    new LoadingVaultLookupListener(session, this, prompt), keychain);
+        }
         if(type == Bulk.class) {
             return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);
         }
@@ -143,16 +147,13 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             return (T) new VaultRegistryWriteFeature(session, (Write) proxy, this);
         }
         if(type == MultipartWrite.class) {
-            return (T) new VaultRegistryMultipartWriteFeature(session, (Write) proxy, this);
+            return (T) new VaultRegistryMultipartWriteFeature(session, (MultipartWrite) proxy, this);
         }
         if(type == Move.class) {
             return (T) new VaultRegistryMoveFeature(session, (Move) proxy, this);
         }
         if(type == AttributesFinder.class) {
             return (T) new VaultRegistryAttributesFeature(session, (AttributesFinder) proxy, this);
-        }
-        if(type == Find.class) {
-            return (T) new VaultRegistryFindFeature(session, (Find) proxy, this);
         }
         if(type == UrlProvider.class) {
             return (T) new VaultRegistryUrlProvider(session, (UrlProvider) proxy, this);

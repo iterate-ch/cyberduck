@@ -16,30 +16,72 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.vault.VaultFactory;
+import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
+
+import org.apache.log4j.Logger;
+
+import java.util.EnumSet;
 
 public class VaultRegistryFindFeature implements Find {
+    private static final Logger log = Logger.getLogger(VaultRegistryFindFeature.class);
+
+    private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
 
     private final Session<?> session;
     private final Find proxy;
     private final VaultRegistry registry;
+    private final VaultLookupListener lookup;
+    private final PasswordStore keychain;
 
     private Cache<Path> cache = PathCache.empty();
 
-    public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry) {
+    public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry, final VaultLookupListener lookup, final PasswordStore keychain) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
+        this.lookup = lookup;
+        this.keychain = keychain;
     }
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Find.class, proxy)
+        final Vault vault = registry.find(session, file);
+        if(vault.equals(Vault.DISABLED)) {
+            if(PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect")) {
+                if(proxy.find(new Path(file.getParent(), MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Found master key %s", file));
+                    }
+                    final Vault cryptomator = VaultFactory.get(file.getParent(), keychain);
+                    if(!cryptomator.equals(Vault.DISABLED)) {
+                        try {
+                            lookup.found(cryptomator);
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Found vault %s", cryptomator));
+                            }
+                            return cryptomator.getFeature(session, Find.class, proxy)
+                                    .withCache(cache)
+                                    .find(file);
+                        }
+                        catch(VaultUnlockCancelException e) {
+                            // Continue
+                        }
+                    }
+                }
+            }
+        }
+        return vault.getFeature(session, Find.class, proxy)
                 .withCache(cache)
                 .find(file);
     }

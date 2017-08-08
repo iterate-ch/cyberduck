@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -53,7 +54,7 @@ public class S3MoveFeatureTest {
         new S3TouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback());
+        new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -74,7 +75,7 @@ public class S3MoveFeatureTest {
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final Path renamed = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback());
+        new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -105,7 +106,7 @@ public class S3MoveFeatureTest {
         touch.touch(test, status);
         assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback());
+        new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());

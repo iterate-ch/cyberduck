@@ -76,7 +76,7 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
         this.context = context;
     }
 
-    protected AzureWriteFeature(final AzureSession session, final OperationContext context, final Find finder, final AttributesFinder attributes) {
+    public AzureWriteFeature(final AzureSession session, final OperationContext context, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.context = context;

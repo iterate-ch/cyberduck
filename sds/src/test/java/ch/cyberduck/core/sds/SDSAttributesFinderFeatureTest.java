@@ -78,7 +78,7 @@ public class SDSAttributesFinderFeatureTest {
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        assertNotNull(attributes.getModificationDate());
+        assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getChecksum().algorithm);
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
@@ -108,7 +108,7 @@ public class SDSAttributesFinderFeatureTest {
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        assertNotNull(attributes.getModificationDate());
+        assertNotEquals(-1L, attributes.getModificationDate());
         assertNull(attributes.getChecksum().algorithm);
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());

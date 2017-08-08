@@ -27,6 +27,8 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class SDSAttributesFinderFeature implements AttributesFinder {
 
     private final SDSSession session;
@@ -38,7 +40,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final Node node = new NodesApi(session.getClient()).getFsNode(session.getToken(),
+            final Node node = new NodesApi(session.getClient()).getFsNode(StringUtils.EMPTY,
                     Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())), null);
             return this.toAttributes(node);
         }

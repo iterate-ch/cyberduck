@@ -730,8 +730,6 @@ public abstract class Preferences {
         defaults.put("onedrive.listing.chunksize", String.valueOf(1000));
         defaults.put("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
 
-        defaults.put("sds.oauth.redirecturi", "https://cyberduck.io/oauth/");
-
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(month));
 
@@ -794,6 +792,7 @@ public abstract class Preferences {
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
         defaults.put("sds.listing.chunksize", String.valueOf(500));
+        defaults.put("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
 
         /*
           NTLM Windows Domain
@@ -1047,6 +1046,9 @@ public abstract class Preferences {
 
         defaults.put("cryptomator.enable", String.valueOf(true));
         defaults.put("cryptomator.vault.autodetect", String.valueOf(true));
+
+        defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(300000)); // 5 minutes
+        defaults.put("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
     }
 
     protected void setLogging() {

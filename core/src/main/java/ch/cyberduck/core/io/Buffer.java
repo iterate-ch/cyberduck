@@ -32,7 +32,7 @@ public interface Buffer {
     /**
      * @param buffer Fill this buffer length
      * @param offset Position in buffer to read from
-     * @return Length read. Should be equal input buffer length
+     * @return Length read. Should be equal input buffer length. -1 when there is no more data
      */
     int read(byte[] buffer, Long offset) throws IOException;
 

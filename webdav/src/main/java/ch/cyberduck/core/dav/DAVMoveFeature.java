@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,7 +41,7 @@ public class DAVMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl();
             if(file.isDirectory()) {

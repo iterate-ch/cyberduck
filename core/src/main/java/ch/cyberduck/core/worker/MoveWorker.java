@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -41,11 +42,14 @@ public class MoveWorker extends Worker<List<Path>> {
     private final Map<Path, Path> files;
     private final ProgressListener listener;
     private final Cache<Path> cache;
+    private final ConnectionCallback callback;
 
-    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache) {
+    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache,
+                      final ConnectionCallback callback) {
         this.files = files;
         this.listener = listener;
         this.cache = cache;
+        this.callback = callback;
     }
 
     @Override
@@ -75,7 +79,7 @@ public class MoveWorker extends Worker<List<Path>> {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                                 file.getName()));
                     }
-                });
+                }, callback);
             }
         }
         final List<Path> changed = new ArrayList<Path>();
@@ -92,7 +96,7 @@ public class MoveWorker extends Worker<List<Path>> {
         }
         else if(source.isDirectory()) {
             if(!move.isRecursive(source, target)) {
-                for(Path child : list.list(source, new ActionListProgressListener(this, listener))) {
+                for(Path child : list.list(source, new WorkerListProgressListener(this, listener))) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }

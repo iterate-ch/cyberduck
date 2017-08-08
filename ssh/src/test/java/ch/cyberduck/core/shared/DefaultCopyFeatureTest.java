@@ -79,7 +79,7 @@ public class DefaultCopyFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new DefaultCopyFeature(session).copy(source, target, new TransferStatus());
+        new DefaultCopyFeature(session).copy(source, target, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());

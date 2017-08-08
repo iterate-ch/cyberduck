@@ -28,7 +28,7 @@ public class DefaultProtocolPredicate implements Predicate<Protocol> {
     @Override
     public boolean test(final Protocol protocol) {
         if(types.contains(protocol.getType())) {
-            return protocol.isBundled();
+            return protocol.isEnabled() && protocol.isBundled();
         }
         return false;
     }

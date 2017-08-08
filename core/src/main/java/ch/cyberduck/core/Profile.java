@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -243,16 +244,31 @@ public class Profile implements Protocol, Serializable {
         if(StringUtils.isBlank(v)) {
             return parent.getScheme();
         }
-        return Scheme.valueOf(v);
+        try {
+            return Scheme.valueOf(v);
+        }
+        catch(IllegalArgumentException e) {
+            log.warn(String.format("Unknown scheme %s", v));
+            return null;
+        }
     }
 
     @Override
-    public String[] getSchemes() {
-        final List<String> v = this.list("Schemes");
-        if(v.isEmpty()) {
+    public Scheme[] getSchemes() {
+        final List<String> values = this.list("Schemes");
+        if(values.isEmpty()) {
             return parent.getSchemes();
         }
-        return v.toArray(new String[v.size()]);
+        final List<Scheme> schemes = new ArrayList<>();
+        for(String s : values) {
+            try {
+                schemes.add(Scheme.valueOf(s));
+            }
+            catch(IllegalArgumentException e) {
+                log.warn(String.format("Unknown scheme %s", s));
+            }
+        }
+        return schemes.toArray(new Scheme[schemes.size()]);
     }
 
     @Override

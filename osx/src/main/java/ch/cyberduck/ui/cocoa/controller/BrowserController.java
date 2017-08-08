@@ -40,8 +40,10 @@ import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -59,7 +61,9 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.threading.DisabledAlertCallback;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
@@ -205,6 +209,9 @@ public class BrowserController extends WindowController
      */
     private final PathCache cache
             = new PathCache(preferences.getInteger("browser.cache.size"));
+
+
+    private Scheduler scheduler;
 
     @Outlet
     protected NSProgressIndicator statusSpinner;
@@ -511,7 +518,7 @@ public class BrowserController extends WindowController
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, pool,
-                        new SessionListWorker(cache, folder, listener) {
+                                new SessionListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache
@@ -2282,7 +2289,7 @@ public class BrowserController extends WindowController
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
-                                        new CopyWorker(selected, SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()), new DisabledProgressListener()) {
+                                new CopyWorker(selected, pool, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
                                             @Override
                                             public void cleanup(final List<Path> copied) {
                                                 reload(workdir(), copied, new ArrayList<Path>(selected.values()));
@@ -2709,7 +2716,7 @@ public class BrowserController extends WindowController
         return pool;
     }
 
-    public Cache<Path> getCache() {
+    public PathCache getCache() {
         return cache;
     }
 
@@ -3015,6 +3022,18 @@ public class BrowserController extends WindowController
                                     securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                                             : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
                                     securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
+                                    final Scheduler scheduler = pool.getFeature(Scheduler.class);
+                                    if(scheduler != null) {
+                                        BrowserController.this.scheduler = scheduler;
+                                        background(new SessionBackgroundAction<Object>(pool, new DisabledAlertCallback(),
+                                                new DisabledProgressListener(), new DisabledTranscriptListener()) {
+                                            @Override
+                                            public Object run(final Session<?> session) throws BackgroundException {
+                                                scheduler.repeat(PasswordCallbackFactory.get(BrowserController.this));
+                                                return null;
+                                            }
+                                        });
+                                    }
                                 }
                             }
                         }
@@ -3095,6 +3114,9 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
+                if(scheduler != null) {
+                    scheduler.shutdown();
+                }
                 pool.shutdown();
                 pool = SessionPool.DISCONNECTED;
                 cache.clear();

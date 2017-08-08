@@ -128,13 +128,17 @@ public class OneDriveWriteFeature implements Write<Void> {
         public void write(final byte[] b, final int off, final int len) throws IOException {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             if(content.length == 0) {
-                upload.cancelUpload();
-                try {
-                    new OneDriveTouchFeature(session).touch(file, status);
+                if(0L == offset) {
+                    // Use touch feature for empty file upload
+                    upload.cancelUpload();
+                    try {
+                        new OneDriveTouchFeature(session).touch(file, status);
+                    }
+                    catch(BackgroundException e) {
+                        throw new IOException(e);
+                    }
                 }
-                catch(BackgroundException e) {
-                    throw new IOException(e);
-                }
+                // Ignore empty content
             }
             else {
                 final HttpRange range = HttpRange.byLength(offset, content.length);

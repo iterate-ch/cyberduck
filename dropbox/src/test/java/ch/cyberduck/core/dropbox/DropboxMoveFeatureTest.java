@@ -15,20 +15,12 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -43,34 +35,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class DropboxMoveFeatureTest {
+public class DropboxMoveFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testMove() throws Exception {
-        final DropboxSession session = new DropboxSession(new Host(new DropboxProtocol(), new DropboxProtocol().getDefaultHostname()),
-                new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Dropbox OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("dropbox.accesstoken");
-                        }
-                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("dropbox.refreshtoken");
-                        }
-                        return null;
-                    }
-                }, new DisabledProgressListener())
-                .connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
-        new DropboxMoveFeature(session).move(file, target, new TransferStatus(), new Delete.DisabledCallback());
+        new DropboxMoveFeature(session).move(file, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

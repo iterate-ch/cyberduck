@@ -80,12 +80,25 @@ namespace Ch.Cyberduck.Core
         {
             get
             {
-                if (Environment.OSVersion.Version.Major + Environment.OSVersion.Version.Minor/10.0 <= 6.1)
+                var major = Environment.OSVersion.Version.Major;
+                var minor = Environment.OSVersion.Version.Minor;
+                var minorReduced = minor / 10.0;
+                var combined = major + minorReduced;
+                var win7OrOlder = combined <= 6.1;
+                if (win7OrOlder)
                     return false;
-                StringBuilder sb = new StringBuilder(1024);
-                int length = 0;
-                int result = GetCurrentPackageFullName(ref length, ref sb);
-                return result != 15700;
+                try
+                {
+                    StringBuilder sb = new StringBuilder(1024);
+                    int length = 0;
+                    int result = GetCurrentPackageFullName(ref length, ref sb);
+                    return result != 15700;
+                }
+                catch (EntryPointNotFoundException entryPointNotFoundException) // Fix for MD-3274
+                {
+                    Log.error($"Environment Version Check returned wrong version. {major} {minor} ({minorReduced}) combined is {combined} result is {win7OrOlder}", entryPointNotFoundException);
+                    return false;
+                }
             }
         }
 

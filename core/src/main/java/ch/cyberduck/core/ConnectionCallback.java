@@ -20,7 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-public interface ConnectionCallback {
+public interface ConnectionCallback extends PasswordCallback {
     /**
      * Display warning sheet. Block connection until decision is made.
      *

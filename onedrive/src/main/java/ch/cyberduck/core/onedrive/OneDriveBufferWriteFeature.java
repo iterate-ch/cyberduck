@@ -24,10 +24,12 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Buffer;
 import ch.cyberduck.core.io.BufferInputStream;
-import ch.cyberduck.core.io.FileBufferSegmentingOutputStream;
+import ch.cyberduck.core.io.BufferSegmentingOutputStream;
+import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 
 import java.io.IOException;
 
@@ -47,22 +49,25 @@ public class OneDriveBufferWriteFeature extends OneDriveWriteFeature implements 
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return new HttpResponseOutputStream<Void>(new FileBufferSegmentingOutputStream(status.getLength()) {
+        final Buffer buffer = new FileBuffer();
+        return new HttpResponseOutputStream<Void>(new BufferSegmentingOutputStream(new NullOutputStream(), Long.MAX_VALUE, buffer) {
             @Override
-            protected void copy(final Buffer buffer) throws IOException {
+            public void flush() throws IOException {
+                //
+            }
+
+            @Override
+            public void close() throws IOException {
                 try {
-                    if(buffer.length() == 0L) {
+                    if(0L == buffer.length()) {
                         new OneDriveTouchFeature(session).touch(file, status);
                     }
                     else {
-                        // Write full content length of buffer in a single request
-                        final HttpResponseOutputStream<Void> proxy = OneDriveBufferWriteFeature.super.write(file,
-                                new TransferStatus(status).skip(0L).length(buffer.length()), callback);
+                        final HttpResponseOutputStream<Void> proxy = OneDriveBufferWriteFeature.super.write(file, new TransferStatus(status).length(buffer.length()), callback);
                         IOUtils.copy(new BufferInputStream(buffer), proxy);
-                        // Re-use buffer
-                        buffer.truncate(0L);
                         proxy.close();
                     }
+                    super.close();
                 }
                 catch(BackgroundException e) {
                     throw new IOException(e);

@@ -65,17 +65,17 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
         try {
             final Path encrypted = vault.encrypt(session, file);
             final Cryptor cryptor = vault.getCryptor();
-            final StatusOutputStream<Reply> proxy;
+            final StatusOutputStream<Reply> out;
             if(status.getOffset() == 0) {
-                proxy = this.proxy.write(encrypted,
+                out = proxy.write(encrypted,
                         new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
-                proxy.write(status.getHeader().array());
+                out.write(status.getHeader().array());
             }
             else {
-                proxy = this.proxy.write(encrypted,
+                out = proxy.write(encrypted,
                         new TransferStatus(status).length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()), callback);
             }
-            return new CryptoOutputStream<Reply>(proxy, cryptor, cryptor.fileHeaderCryptor().decryptHeader(status.getHeader()),
+            return new CryptoOutputStream<Reply>(out, cryptor, cryptor.fileHeaderCryptor().decryptHeader(status.getHeader()),
                     status.getNonces(), vault.numberOfChunks(status.getOffset()));
         }
         catch(IOException e) {

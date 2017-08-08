@@ -42,7 +42,6 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -97,7 +96,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
                 Iterator<Path> iter = selected.iterator();
                 final DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
-                item.setRepresentedObject(url.getUrl());
                 item.setTitle(url.getHelp());
                 if(url.getType().equals(DescriptiveUrl.Type.provider)) {
                     this.setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
@@ -128,13 +126,13 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Action
     public void menuItemClicked(final NSMenuItem item) {
-        this.handle(Collections.singletonList(item.representedObject()));
+        this.handle(this.getURLs(item.menu().indexOfItem(item), this.getSelected()));
     }
 
     /**
      * @param selected URLs of selected files.
      */
-    public abstract void handle(final List<String> selected);
+    public abstract void handle(final List<DescriptiveUrl> selected);
 
     @Override
     public boolean validateMenuItem(final NSMenuItem item) {

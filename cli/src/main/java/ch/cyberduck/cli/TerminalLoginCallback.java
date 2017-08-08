@@ -31,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 
-public class TerminalLoginCallback implements LoginCallback {
+public class TerminalLoginCallback extends TerminalPasswordCallback implements LoginCallback {
 
     private final Console console = new Console();
 

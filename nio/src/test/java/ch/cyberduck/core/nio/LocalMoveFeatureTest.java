@@ -16,6 +16,7 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -46,7 +47,7 @@ public class LocalMoveFeatureTest {
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback());
+        new LocalMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new LocalFindFeature(session).find(test));
         assertTrue(new LocalFindFeature(session).find(target));
         new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -62,7 +63,7 @@ public class LocalMoveFeatureTest {
         new LocalTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(target, new TransferStatus());
-        new LocalMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback());
+        new LocalMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new LocalFindFeature(session).find(test));
         assertTrue(new LocalFindFeature(session).find(target));
         new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -75,6 +76,6 @@ public class LocalMoveFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalMoveFeature(session).move(test, new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback());
+        new LocalMoveFeature(session).move(test, new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 }

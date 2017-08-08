@@ -40,7 +40,7 @@ import ch.cyberduck.ui.cocoa.controller.LoginController;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
-public final class PromptLoginCallback implements LoginCallback {
+public final class PromptLoginCallback extends PromptPasswordCallback implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginCallback.class);
 
     private final Preferences preferences
@@ -52,6 +52,7 @@ public final class PromptLoginCallback implements LoginCallback {
     private NSOpenPanel select;
 
     public PromptLoginCallback(final WindowController parent) {
+        super(parent);
         this.parent = parent;
     }
 
@@ -113,5 +114,4 @@ public final class PromptLoginCallback implements LoginCallback {
         }
         throw new LoginCanceledException();
     }
-
 }
