@@ -58,7 +58,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _browser.CommandBox(title, title, message, String.Format("{0}|{1}", continueButton, disconnectButton),
                     false, LocaleFactory.localizedString("Don't show again", "Credentials"), TaskDialogIcon.Question,
-                    ProviderHelpServiceFactory.get().help(host.getProtocol().getScheme()),
+                    ProviderHelpServiceFactory.get().help(bookmark.getProtocol().getScheme()),
                     delegate(int option, Boolean verificationChecked)
                     {
                         if (verificationChecked)
@@ -208,8 +208,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
             View.PasswordEnabled = _options.password() && !_credentials.isAnonymousLogin();
-            View.UsernameLabel = _credentials.getUsernamePlaceholder() + ":";
-            View.PasswordLabel = _credentials.getPasswordPlaceholder() + ":";
+            View.UsernameLabel = _options.getUsernamePlaceholder() + ":";
+            View.PasswordLabel = _options.getPasswordPlaceholder() + ":";
             {
                 View.SavePasswordEnabled = _options.keychain() && !_credentials.isAnonymousLogin();;
                 View.SavePasswordState = _credentials.isSaved();
