@@ -37,6 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public Credentials prompt(string title, string reason, LoginOptions options)
         {
+            Credentials credentials = new VaultCredentials();
             AsyncDelegate d = delegate
             {
                 View = ObjectFactory.GetInstance<IPasswordPromptView>();
@@ -50,7 +51,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     throw new LoginCanceledException();
                 }
-                Credentials credentials = new VaultCredentials();
                 credentials.setPassword(View.InputText);
                 credentials.setSaved(View.SavePassword);
             };
