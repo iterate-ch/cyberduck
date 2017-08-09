@@ -214,7 +214,9 @@ public final class ProtocolFactory {
                 filter = scheme;
                 break;
         }
-        return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(null);
+        return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
+                enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null)
+        );
     }
 
     private static final class ProfileFilter implements Filter<Local> {
