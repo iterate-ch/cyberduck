@@ -65,7 +65,7 @@ namespace Ch.Cyberduck.Core
                 host.getCredentials().setUsername(user);
                 return getPassword(host);
             }
-            return password;
+            return DataProtector.Decrypt(password);
         }
 
         private string getPassword(Host host)
