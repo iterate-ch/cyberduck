@@ -55,8 +55,13 @@ namespace Ch.Cyberduck.Core
             String password = PreferencesFactory.get().getProperty($"{serviceName} - {user}");
             if (null == password)
             {
-                // legacy
-                Host host = new Host(ProtocolFactory.get().forScheme(Scheme.ftp), serviceName);
+                // Legacy implementation
+                Protocol ftp = ProtocolFactory.get().forScheme(Scheme.ftp);
+                if (null == ftp)
+                {
+                    return null;
+                }
+                Host host = new Host(ftp, serviceName);
                 host.getCredentials().setUsername(user);
                 return getPassword(host);
             }
