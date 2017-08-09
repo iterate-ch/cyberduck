@@ -61,7 +61,7 @@ namespace Ch.Cyberduck.Core
                 {
                     return null;
                 }
-                Host host = new Host(ProtocolFactory.get().forScheme(Scheme.ftp), serviceName);
+                Host host = new Host(ftp, serviceName);
                 host.getCredentials().setUsername(user);
                 return getPassword(host);
             }
