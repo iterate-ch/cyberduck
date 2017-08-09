@@ -21,8 +21,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,6 +32,7 @@ import java.util.HashSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Category(IntegrationTest.class)
 public class SDSProtocolTest {
 
     @Test
@@ -38,8 +41,7 @@ public class SDSProtocolTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(protocol)));
         final Profile profile = new ProfilePlistReader(factory).read(
                 new Local(this.getClass().getResource("/test.cyberduckprofile").getPath()));
-        factory.register(profile
-        );
+        factory.register(profile);
         {
             final Host host = new HostParser(factory).get("sds://duck");
             assertNotNull(host);
