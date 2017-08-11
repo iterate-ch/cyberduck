@@ -53,7 +53,7 @@ public class SDSDelegatingCopyFeature implements Copy {
     public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
-        if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
+        if(targetContainer.getType().contains(Path.Type.vault)) {
             final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
             final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -64,6 +64,8 @@ public class SDSDelegatingCopyFeature implements Copy {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
             status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
+        }
+        if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
             new DefaultCopyFeature(session).copy(source, target, status, callback);
         }
         else {

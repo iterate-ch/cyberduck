@@ -16,7 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -36,7 +36,7 @@ public class SDSDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             try {
                 new NodesApi(session.getClient()).deleteNode(StringUtils.EMPTY,

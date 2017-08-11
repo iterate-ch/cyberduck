@@ -62,7 +62,7 @@ public class SDSProtocol extends AbstractProtocol {
     public enum Authorization {
         sql,
         radius,
-        ad,
+        active_directory,
         oauth
     }
 }

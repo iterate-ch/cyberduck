@@ -792,6 +792,7 @@ public abstract class Preferences {
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
         defaults.put("sds.listing.chunksize", String.valueOf(500));
+        defaults.put("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
 
         /*
           NTLM Windows Domain

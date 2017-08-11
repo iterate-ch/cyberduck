@@ -15,16 +15,21 @@ package ch.cyberduck.core.sds.triplecrypt;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.log4j.Logger;
+
+import java.util.EnumSet;
 
 import eu.ssp_europe.sds.crypto.Crypto;
 import eu.ssp_europe.sds.crypto.CryptoException;
@@ -37,9 +42,9 @@ public class TripleCryptKeyPair {
 
     public VaultCredentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
         final VaultCredentials passphrase = new VaultCredentials(
-                keychain.getPassword(bookmark.getHostname(),
-                        String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()))) {
-        };
+                keychain.getPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
+                        new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl())
+        );
         passphrase.setSaved(true);
         this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"));
         return passphrase;
@@ -68,8 +73,8 @@ public class TripleCryptKeyPair {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save encryption password for %s", bookmark));
                 }
-                keychain.addPassword(bookmark.getHostname(),
-                        String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
+                keychain.addPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
+                        new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl(),
                         passphrase.getPassword());
             }
         }

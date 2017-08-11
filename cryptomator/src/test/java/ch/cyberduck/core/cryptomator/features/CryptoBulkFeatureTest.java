@@ -19,8 +19,8 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -94,7 +94,7 @@ public class CryptoBulkFeatureTest {
             }
         }, new Delete() {
             @Override
-            public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+            public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
                 throw new UnsupportedOperationException();
             }
 
@@ -181,7 +181,7 @@ public class CryptoBulkFeatureTest {
             }
         }, new Delete() {
             @Override
-            public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+            public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
                 throw new UnsupportedOperationException();
             }
 

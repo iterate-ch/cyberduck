@@ -22,8 +22,8 @@ public interface PasswordStore {
     /**
      * Find generic password for application
      *
-     * @param serviceName Hostname
-     * @param accountName        Credentials
+     * @param serviceName Service
+     * @param accountName Account
      * @return Password if found or null otherwise
      */
     String getPassword(String serviceName, String accountName);
@@ -31,8 +31,8 @@ public interface PasswordStore {
     /**
      * Add generic password for application
      *
-     * @param serviceName Hostname
-     * @param accountName Credentials
+     * @param serviceName Service
+     * @param accountName Account
      * @param password    Password to save for service
      */
     void addPassword(String serviceName, String accountName, String password);

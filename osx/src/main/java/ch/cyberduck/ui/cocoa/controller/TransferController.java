@@ -143,7 +143,7 @@ public final class TransferController extends WindowController implements Transf
             }
 
             @Override
-            public void collectionItemAdded(Transfer item) {
+            public void collectionItemAdded(final Transfer item) {
                 invoke(new ControllerMainAction(TransferController.this) {
                     @Override
                     public void run() {
@@ -153,7 +153,7 @@ public final class TransferController extends WindowController implements Transf
             }
 
             @Override
-            public void collectionItemRemoved(Transfer item) {
+            public void collectionItemRemoved(final Transfer item) {
                 invoke(new ControllerMainAction(TransferController.this) {
                     @Override
                     public void run() {

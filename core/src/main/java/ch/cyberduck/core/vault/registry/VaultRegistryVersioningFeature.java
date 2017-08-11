@@ -16,7 +16,7 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
@@ -51,7 +51,7 @@ public class VaultRegistryVersioningFeature implements Versioning {
     }
 
     @Override
-    public void setConfiguration(final Path container, final LoginCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path container, final PasswordCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
         registry.find(session, container).getFeature(session, Versioning.class, proxy).setConfiguration(container, prompt, configuration);
     }
 
@@ -61,8 +61,8 @@ public class VaultRegistryVersioningFeature implements Versioning {
     }
 
     @Override
-    public Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
-        return proxy.getToken(controller);
+    public Credentials getToken(final PasswordCallback prompt) throws ConnectionCanceledException {
+        return proxy.getToken(prompt);
     }
 
     @Override

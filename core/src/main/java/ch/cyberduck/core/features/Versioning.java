@@ -16,7 +16,7 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,9 +30,9 @@ public interface Versioning {
 
     VersioningConfiguration getConfiguration(Path container) throws BackgroundException;
 
-    void setConfiguration(Path container, LoginCallback prompt, VersioningConfiguration configuration) throws BackgroundException;
+    void setConfiguration(Path container, PasswordCallback prompt, VersioningConfiguration configuration) throws BackgroundException;
 
     void revert(Path file) throws BackgroundException;
 
-    Credentials getToken(LoginCallback controller) throws ConnectionCanceledException;
+    Credentials getToken(PasswordCallback prompt) throws ConnectionCanceledException;
 }
