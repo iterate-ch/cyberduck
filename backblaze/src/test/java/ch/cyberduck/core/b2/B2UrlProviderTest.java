@@ -55,9 +55,8 @@ public class B2UrlProviderTest {
         new B2TouchFeature(session).touch(test, new TransferStatus());
         final B2UrlProvider provider = new B2UrlProvider(session);
         assertEquals(0, provider.toUrl(bucket).size());
-        assertEquals(2, provider.toUrl(test).size());
+        assertEquals(1, provider.toUrl(test).size());
         assertNotNull(provider.toUrl(test).find(DescriptiveUrl.Type.http).getUrl());
-        assertNotNull(provider.toUrl(test).find(DescriptiveUrl.Type.signed).getUrl());
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
