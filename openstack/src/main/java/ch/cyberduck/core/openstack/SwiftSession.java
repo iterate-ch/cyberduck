@@ -26,10 +26,12 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
+import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -45,6 +47,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -52,25 +55,23 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.threading.DefaultThreadPool;
-import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -87,26 +88,9 @@ public class SwiftSession extends HttpSession<Client> {
     private final SwiftRegionService regionService
             = new SwiftRegionService(this);
 
-    private final SwiftDistributionConfiguration cdn
-            = new SwiftDistributionConfiguration(this, regionService);
+    private Map<Region, AccountInfo> accounts = Collections.emptyMap();
+    private Map<Path, Distribution> distributions = Collections.emptyMap();
 
-    protected final Map<Region, AccountInfo> accounts
-            = new HashMap<Region, AccountInfo>();
-
-    /**
-     * Preload account info
-     */
-    private boolean accountPreload = preferences.getBoolean("openstack.account.preload");
-
-    /**
-     * Preload CDN configuration
-     */
-    private boolean cdnPreload = preferences.getBoolean("openstack.cdn.preload");
-
-    /**
-     * Preload container size
-     */
-    private boolean containerPreload = preferences.getBoolean("openstack.container.size.preload");
 
     public SwiftSession(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -171,32 +155,6 @@ public class SwiftSession extends HttpSession<Client> {
                 }
                 cancel.verify();
             }
-            if(host.getCredentials().isPassed()) {
-                log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
-                return;
-            }
-            if(accountPreload) {
-                final ThreadPool pool = new DefaultThreadPool("accounts");
-                try {
-                    for(Region region : client.getRegions()) {
-                        pool.execute(new Callable<AccountInfo>() {
-                            @Override
-                            public AccountInfo call() throws IOException {
-                                final AccountInfo info = client.getAccountInfo(region);
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Signing key is %s", info.getTempUrlKey()));
-                                }
-                                accounts.put(region, info);
-                                return info;
-                            }
-                        });
-                    }
-                }
-                finally {
-                    // Shutdown gracefully
-                    pool.shutdown(true);
-                }
-            }
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
@@ -209,27 +167,12 @@ public class SwiftSession extends HttpSession<Client> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new SwiftContainerListService(this, regionService,
-                    new SwiftLocationFeature.SwiftRegion(host.getRegion()), cdnPreload, containerPreload).list(directory, listener);
+            return new SwiftContainerListService(this,
+                    new SwiftLocationFeature.SwiftRegion(host.getRegion())).list(directory, listener);
         }
         else {
             return new SwiftObjectListService(this, regionService).list(directory, listener);
         }
-    }
-
-    public SwiftSession withAccountPreload(final boolean preload) {
-        this.accountPreload = preload;
-        return this;
-    }
-
-    public SwiftSession withCdnPreload(final boolean preload) {
-        this.cdnPreload = preload;
-        return this;
-    }
-
-    public SwiftSession withContainerPreload(final boolean preload) {
-        this.containerPreload = preload;
-        return this;
     }
 
     @Override
@@ -278,7 +221,7 @@ public class SwiftSession extends HttpSession<Client> {
                     return null;
                 }
             }
-            return (T) cdn;
+            return (T) new SwiftDistributionConfiguration(this, distributions, regionService);
         }
         if(type == UrlProvider.class) {
             return (T) new SwiftUrlProvider(this, accounts, regionService);
@@ -288,6 +231,21 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Home.class) {
             return (T) new SwiftHomeFinderService(this);
+        }
+        if(type == Scheduler.class) {
+            return (T) new DelegatingSchedulerFeature(
+                    new SwiftAccountLoader(this) {
+                        @Override
+                        public Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
+                            return accounts = super.repeat(callback);
+                        }
+                    },
+                    new SwiftDistributionConfigurationLoader(this) {
+                        @Override
+                        public Map<Path, Distribution> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
+                            return distributions = super.repeat(callback);
+                        }
+                    });
         }
         return super._getFeature(type);
     }
