@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -27,6 +26,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.ObjectExpiration;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -50,10 +51,18 @@ public class SDSSharesUrlProviderTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final DescriptiveUrlBag list = new SDSSharesUrlProvider(session).toUrl(test);
-        assertFalse(list.isEmpty());
-        assertNotNull(list.find(DescriptiveUrl.Type.signed));
-        assertTrue(list.find(DescriptiveUrl.Type.signed).getUrl().startsWith("https://duck.ssp-europe.eu/api/v4/public/shares/downloads/"));
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+                new CreateDownloadShareRequest()
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .password(null)
+                        .mailBody(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .maxDownloads(null));
+        assertNotEquals(DescriptiveUrl.EMPTY, url);
+        assertEquals(DescriptiveUrl.Type.signed, url.getType());
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/api/v4/public/shares/downloads/"));
         new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
