@@ -51,11 +51,15 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testFindUnknownDefaultProtokol() throws Exception {
+    public void testFindUnknownDefaultProtocol() throws Exception {
         final TestProtocol dav = new TestProtocol(Scheme.dav);
         final TestProtocol davs = new TestProtocol(Scheme.davs);
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, davs)));
-        assertEquals(dav, f.forName("ftp"));
+        assertEquals(dav, f.forName("dav"));
+        assertEquals(dav, f.forScheme(Scheme.http));
+        assertEquals(davs, f.forName("davs"));
+        assertEquals(davs, f.forScheme(Scheme.https));
+        assertNull(f.forName("ftp"));
     }
 
     @Test
