@@ -1,4 +1,4 @@
-package ch.cyberduck.core.features;
+package ch.cyberduck.core.shared;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -16,10 +16,20 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public interface Scheduler<R> {
-    R repeat(PasswordCallback callback) throws BackgroundException;
-    void shutdown();
+public abstract class OneTimeSchedulerFeature<R> extends AbstractSchedulerFeature<R> {
 
+    private final Path file;
+
+    public OneTimeSchedulerFeature(final Path file) {
+        super(Long.MAX_VALUE);
+        this.file = file;
+    }
+
+    @Override
+    public R repeat(final PasswordCallback callback) throws BackgroundException {
+        return this.operate(callback, file);
+    }
 }
