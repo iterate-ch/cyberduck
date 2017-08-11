@@ -20,18 +20,13 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RootListService;
-import ch.cyberduck.core.cdn.Distribution;
-import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.DefaultThreadPool;
-import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,7 +34,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -54,32 +48,11 @@ public class SwiftContainerListService implements RootListService {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    /**
-     * Preload CDN configuration
-     */
-    private final boolean cdnPreload;
-
-    /**
-     * Preload container size
-     */
-    private final boolean containerPreload;
-
     private final SwiftLocationFeature.SwiftRegion region;
 
-    public SwiftContainerListService(final SwiftSession session, final SwiftRegionService regionService, final SwiftLocationFeature.SwiftRegion region) {
-        this(session, regionService, region,
-                PreferencesFactory.get().getBoolean("openstack.cdn.preload"),
-                PreferencesFactory.get().getBoolean("openstack.container.size.preload"));
-    }
-
-    public SwiftContainerListService(final SwiftSession session,
-                                     final SwiftRegionService regionService,
-                                     final SwiftLocationFeature.SwiftRegion region,
-                                     final boolean cdnPreload, final boolean containerPreload) {
+    public SwiftContainerListService(final SwiftSession session, final SwiftLocationFeature.SwiftRegion region) {
         this.session = session;
         this.region = region;
-        this.cdnPreload = cdnPreload;
-        this.containerPreload = containerPreload;
     }
 
     @Override
@@ -91,10 +64,10 @@ public class SwiftContainerListService implements RootListService {
             final AttributedList<Path> containers = new AttributedList<Path>();
             final int limit = preferences.getInteger("openstack.list.container.limit");
             final Client client = session.getClient();
-            for(final Region r : client.getRegions()) {
-                if(region.getIdentifier() != null) {
-                    if(!StringUtils.equals(r.getRegionId(), region.getIdentifier())) {
-                        log.warn(String.format("Skip region %s", r));
+            for(final Region region : client.getRegions()) {
+                if(this.region.getIdentifier() != null) {
+                    if(!StringUtils.equals(region.getRegionId(), this.region.getIdentifier())) {
+                        log.warn(String.format("Skip region %s", region));
                         continue;
                     }
                 }
@@ -102,7 +75,7 @@ public class SwiftContainerListService implements RootListService {
                 List<Container> chunk;
                 String marker = null;
                 do {
-                    chunk = client.listContainers(r, limit, marker);
+                    chunk = client.listContainers(region, limit, marker);
                     for(final Container f : chunk) {
                         final PathAttributes attributes = new PathAttributes();
                         attributes.setRegion(f.getRegion().getRegionId());
@@ -113,54 +86,6 @@ public class SwiftContainerListService implements RootListService {
                     listener.chunk(directory, containers);
                 }
                 while(!chunk.isEmpty());
-                if(cdnPreload) {
-                    final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
-                    final ThreadPool pool = new DefaultThreadPool("cdn", 2);
-                    try {
-                        for(final Path container : containers) {
-                            pool.execute(new Callable<Void>() {
-                                @Override
-                                public Void call() {
-                                    for(Distribution.Method method : feature.getMethods(container)) {
-                                        try {
-                                            final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
-                                            if(log.isInfoEnabled()) {
-                                                log.info(String.format("Cached distribution %s", distribution));
-                                            }
-                                        }
-                                        catch(BackgroundException e) {
-                                            log.warn(String.format("Failure caching CDN configuration for container %s %s", container, e.getMessage()));
-                                        }
-                                    }
-                                    return null;
-                                }
-                            });
-                        }
-                    }
-                    finally {
-                        // Shutdown gracefully
-                        pool.shutdown(true);
-                    }
-                }
-                if(containerPreload) {
-                    final ThreadPool pool = new DefaultThreadPool("container", 2);
-                    try {
-                        for(final Path container : containers) {
-                            pool.execute(new Callable<Long>() {
-                                @Override
-                                public Long call() throws IOException {
-                                    final long size = client.getContainerInfo(r, container.getName()).getTotalSize();
-                                    container.attributes().setSize(size);
-                                    return size;
-                                }
-                            });
-                        }
-                    }
-                    finally {
-                        // Shutdown gracefully
-                        pool.shutdown(true);
-                    }
-                }
             }
             return containers;
         }
