@@ -24,10 +24,10 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -65,13 +65,7 @@ public class MoveWorker extends Worker<List<Path>> {
             if(!move.isSupported(source, target)) {
                 continue;
             }
-            final boolean exists;
-            if(cache.isCached(target.getParent())) {
-                exists = cache.get(target.getParent()).find(new SimplePathPredicate(target)) != null;
-            }
-            else {
-                exists = false;
-            }
+            final boolean exists = session.getFeature(Find.class).withCache(cache).find(target);
             final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), source, target);
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                 move.move(r.getKey(), r.getValue(), new TransferStatus().exists(exists), new Delete.Callback() {
