@@ -109,6 +109,12 @@ public class MoveWorkerTest {
                 if(file.equals(new Path("/", EnumSet.of(Path.Type.directory)))) {
                     return AttributedList.emptyList();
                 }
+                if(file.equals(new Path("/t2", EnumSet.of(Path.Type.directory)))) {
+                    return AttributedList.emptyList();
+                }
+                if(file.equals(new Path("/t2/d", EnumSet.of(Path.Type.directory)))) {
+                    return AttributedList.emptyList();
+                }
                 fail();
                 return null;
             }
