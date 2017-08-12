@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
@@ -45,8 +46,7 @@ public class MoveWorker extends Worker<List<Path>> {
     private final Cache<Path> cache;
     private final ConnectionCallback callback;
 
-    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache,
-                      final ConnectionCallback callback) {
+    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache, final ConnectionCallback callback) {
         this.files = files;
         this.listener = listener;
         this.cache = cache;
@@ -60,21 +60,20 @@ public class MoveWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            final Path source = entry.getKey();
-            final Path target = entry.getValue();
-            if(!move.isSupported(source, target)) {
+            if(!move.isSupported(entry.getKey(), entry.getValue())) {
                 continue;
             }
-            final boolean exists = session.getFeature(Find.class).withCache(cache).find(target);
-            final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), source, target);
+            final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), entry.getKey(), entry.getValue());
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                move.move(r.getKey(), r.getValue(), new TransferStatus().exists(exists), new Delete.Callback() {
-                    @Override
-                    public void delete(final Path file) {
-                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                                file.getName()));
-                    }
-                }, callback);
+                move.move(r.getKey(), r.getValue(), new TransferStatus()
+                                .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue())),
+                        new Delete.Callback() {
+                            @Override
+                            public void delete(final Path file) {
+                                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                                        file.getName()));
+                            }
+                        }, callback);
             }
         }
         final List<Path> changed = new ArrayList<Path>();
