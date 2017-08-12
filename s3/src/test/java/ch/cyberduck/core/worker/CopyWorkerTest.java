@@ -65,7 +65,7 @@ public class CopyWorkerTest {
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(source, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(source));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new S3FindFeature(session).find(source));
         assertTrue(new S3FindFeature(session).find(target));
@@ -90,7 +90,7 @@ public class CopyWorkerTest {
         new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(targetFolder));
         // copy file into vault
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new TestSessionPool(session), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new S3FindFeature(session).find(sourceFile));
         assertTrue(new S3FindFeature(session).find(targetFile));
@@ -116,7 +116,7 @@ public class CopyWorkerTest {
         // move directory into vault
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new TestSessionPool(session), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new S3FindFeature(session).find(targetFolder));
         assertTrue(new S3FindFeature(session).find(targetFile));
