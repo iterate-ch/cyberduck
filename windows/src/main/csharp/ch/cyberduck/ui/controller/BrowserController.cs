@@ -2794,7 +2794,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (CheckCopy(selected))
             {
-                CopyAction copy = new CopyAction(this, Utils.ConvertToJavaMap(selected));
+                CopyAction copy = new CopyAction(this, Utils.ConvertToJavaMap(selected), _cache);
                 Background(copy);
             }
         }
@@ -3368,8 +3368,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class CopyAction : WorkerBackgroundAction
         {
-            public CopyAction(BrowserController controller, Map selected)
-                : base(controller, controller.Session, new InnerCopyWorker(controller, selected))
+            public CopyAction(BrowserController controller, Map selected, PathCache cache)
+                : base(controller, controller.Session, new InnerCopyWorker(controller, selected, cache))
             {
             }
 
@@ -3378,8 +3378,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly BrowserController _controller;
                 private readonly Map _files;
 
-                public InnerCopyWorker(BrowserController controller, Map files)
-                    : base(files, controller.Session, controller, LoginCallbackFactory.get(controller))
+                public InnerCopyWorker(BrowserController controller, Map files, PathCache cache)
+                    : base(files, controller.Session, cache, controller, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;
                     _files = files;

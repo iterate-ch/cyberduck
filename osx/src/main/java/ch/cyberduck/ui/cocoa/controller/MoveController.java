@@ -44,8 +44,7 @@ public class MoveController extends ProxyController {
     private final PathCache cache;
 
     public MoveController(final BrowserController parent) {
-        this.parent = parent;
-        this.cache = parent.getCache();
+        this(parent, parent.getCache());
     }
 
     public MoveController(final BrowserController parent, final PathCache cache) {
