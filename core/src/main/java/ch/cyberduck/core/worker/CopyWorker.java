@@ -86,9 +86,8 @@ public class CopyWorker extends Worker<List<Path>> {
                         directory.mkdir(r.getValue(), null, new TransferStatus());
                     }
                     else {
-                        final Find find = session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache);
                         copy.copy(r.getKey(), r.getValue(), new TransferStatus()
-                                .exists(session.getFeature(Find.class).withCache(cache).find(r.getValue()))
+                                .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
                                 .length(r.getKey().attributes().getSize()), callback);
                     }
                 }
