@@ -3022,9 +3022,8 @@ public class BrowserController extends WindowController
                                     securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                                             : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
                                     securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
-                                    final Scheduler scheduler = pool.getFeature(Scheduler.class);
+                                    scheduler = pool.getFeature(Scheduler.class);
                                     if(scheduler != null) {
-                                        BrowserController.this.scheduler = scheduler;
                                         background(new SessionBackgroundAction<Object>(pool, new DisabledAlertCallback(),
                                                 new DisabledProgressListener(), new DisabledTranscriptListener()) {
                                             @Override
