@@ -145,7 +145,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                             request.setEntity(entity);
                             request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                             request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
-                            if(0L == overall.getLength()) {
+                            if(0L == overall.getLength() || 0 == content.length) {
                                 // Write empty body
                             }
                             else {
