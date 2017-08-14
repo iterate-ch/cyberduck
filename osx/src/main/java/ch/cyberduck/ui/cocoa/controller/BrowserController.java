@@ -53,6 +53,7 @@ import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -2289,7 +2290,9 @@ public class BrowserController extends WindowController
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
-                                new CopyWorker(selected, pool, cache, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
+                                new CopyWorker(selected,
+                                        pool instanceof StatelessSessionPool ? pool : SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()),
+                                        cache, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
                                             @Override
                                             public void cleanup(final List<Path> copied) {
                                                 reload(workdir(), copied, new ArrayList<Path>(selected.values()));
