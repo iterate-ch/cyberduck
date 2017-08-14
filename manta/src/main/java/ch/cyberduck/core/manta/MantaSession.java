@@ -15,7 +15,6 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
@@ -43,7 +42,6 @@ import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
@@ -53,7 +51,6 @@ import com.joyent.manta.config.ChainedConfigContext;
 import com.joyent.manta.config.DefaultsConfigContext;
 import com.joyent.manta.config.SettableConfigContext;
 import com.joyent.manta.config.StandardConfigContext;
-import com.joyent.manta.util.MantaUtils;
 
 public class MantaSession extends Session<MantaClient> {
 
@@ -63,46 +60,18 @@ public class MantaSession extends Session<MantaClient> {
 
     public static final Logger log = Logger.getLogger(MantaSession.class);
 
-    private final SettableConfigContext<BaseChainedConfigContext> config;
+    private SettableConfigContext<BaseChainedConfigContext> config;
+
+    private MantaAccountHomeInfo accountHomeInfo;
 
     private String keyFingerprint;
-
-    private final String accountOwner;
 
     public static final String HOME_PATH_PRIVATE = "stor";
     public static final String HOME_PATH_PUBLIC = "public";
 
-    private final Path accountRoot;
-    private final Path normalizedHomePath;
-    private final Path accountPublicRoot;
-    private final Path accountPrivateRoot;
 
     public MantaSession(final Host host) {
         super(host);
-
-        String[] accountPathParts = MantaUtils.parseAccount(host.getCredentials().getUsername());
-
-        accountRoot = new Path(accountPathParts[0], EnumSet.of(AbstractPath.Type.placeholder));
-        accountOwner = accountRoot.getName();
-        normalizedHomePath = buildNormalizedHomePath(host.getDefaultPath());
-
-        accountPublicRoot = new Path(
-                accountRoot,
-                HOME_PATH_PUBLIC,
-                EnumSet.of(AbstractPath.Type.volume, AbstractPath.Type.directory));
-        accountPrivateRoot = new Path(
-                accountRoot,
-                HOME_PATH_PRIVATE,
-                EnumSet.of(AbstractPath.Type.volume, AbstractPath.Type.directory));
-
-        config = new ChainedConfigContext(
-                new DefaultsConfigContext(),
-                new StandardConfigContext()
-                        .setHttpsProtocols(DefaultsConfigContext.DEFAULT_HTTPS_PROTOCOLS)
-                        .setDisableNativeSignatures(true)
-                        .setNoAuth(false)
-                        .setMantaURL("https://" + host.getHostname())
-                        .setMantaUser(host.getCredentials().getUsername()));
     }
 
     @Override
@@ -115,13 +84,25 @@ public class MantaSession extends Session<MantaClient> {
                       final LoginCallback prompt,
                       final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        keyFingerprint = null;
 
         if(host.getCredentials() == null
                 || host.getCredentials().getUsername() == null
                 || !host.getCredentials().getUsername().matches("[A-z0-9._]+(/[A-z0-9._]+)?")) {
             throw new LoginFailureException("Invalid username given: " + host.getCredentials().getUsername());
         }
+
+        initializeHomeInfo();
+
+        config = new ChainedConfigContext(
+                new DefaultsConfigContext(),
+                new StandardConfigContext()
+                        .setHttpsProtocols(DefaultsConfigContext.DEFAULT_HTTPS_PROTOCOLS)
+                        .setDisableNativeSignatures(true)
+                        .setNoAuth(false)
+                        .setMantaURL("https://" + host.getHostname())
+                        .setMantaUser(host.getCredentials().getUsername()));
+
+        keyFingerprint = null;
 
         final boolean success = new MantaPublicKeyAuthentication(this, keychain).authenticate(host, prompt, cancel);
 
@@ -142,16 +123,22 @@ public class MantaSession extends Session<MantaClient> {
         try {
             // instantiation of a MantaClient does not validate credentials,
             // let's list the home path to test the connection
-            client.isDirectoryEmpty(normalizedHomePath.getAbsolute());
+            client.isDirectoryEmpty(accountHomeInfo.getNormalizedHomePath().getAbsolute());
         }
         catch(IOException e) {
             throw new MantaExceptionMappingService(this).mapLoginException(e);
         }
     }
 
+    protected void initializeHomeInfo() {
+        accountHomeInfo = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
+    }
+
     @Override
     protected void logout() throws BackgroundException {
-        client.closeWithWarning();
+        if(client != null) {
+            client.closeWithWarning();
+        }
     }
 
     @Override
@@ -172,76 +159,51 @@ public class MantaSession extends Session<MantaClient> {
     }
 
     protected boolean userIsOwner() throws IllegalStateException {
-        return StringUtils.equals(host.getCredentials().getUsername(), accountOwner);
-    }
-
-    private Path buildNormalizedHomePath(final String rawHomePath) {
-        final String defaultPath = StringUtils.defaultIfBlank(rawHomePath, Path.HOME);
-        final String accountRootRegex = "^/?(" + accountRoot.getAbsolute() + "|~~?)/?";
-        final String subdirectoryRawPath = defaultPath.replaceFirst(accountRootRegex, "");
-
-        if(StringUtils.isEmpty(subdirectoryRawPath)) {
-            return accountRoot;
-        }
-
-        final String[] subdirectoryPathSegments = StringUtils.split(subdirectoryRawPath, Path.DELIMITER);
-        Path homePath = accountRoot;
-
-        for(final String pathSegment : subdirectoryPathSegments) {
-            EnumSet<AbstractPath.Type> types = EnumSet.of(AbstractPath.Type.directory);
-            if(homePath.getParent().equals(accountRoot)
-                    && StringUtils.equalsAny(pathSegment, HOME_PATH_PRIVATE, HOME_PATH_PUBLIC)) {
-                types.add(AbstractPath.Type.volume);
-            }
-
-            homePath = new Path(homePath, pathSegment, types);
-        }
-
-        return homePath;
+        return StringUtils.equals(host.getCredentials().getUsername(), accountHomeInfo.getAccountOwner());
     }
 
     protected Path getNormalizedHomePath() {
-        return normalizedHomePath;
+        return accountHomeInfo.getNormalizedHomePath();
     }
 
     protected Path getAccountRoot() {
-        return accountRoot;
+        return accountHomeInfo.getAccountRoot();
     }
 
     protected String getAccountOwner() {
-        return accountOwner;
+        return accountHomeInfo.getAccountOwner();
     }
 
     protected Path getAccountPublicRoot() {
-        return accountPublicRoot;
+        return accountHomeInfo.getAccountPublicRoot();
     }
 
     protected Path getAccountPrivateRoot() {
-        return accountPrivateRoot;
+        return accountHomeInfo.getAccountPrivateRoot();
     }
 
     protected boolean isUserWritable(final MantaObject mantaObject) {
         return StringUtils.startsWithAny(
                 mantaObject.getPath(),
-                accountPublicRoot.getAbsolute(),
-                accountPrivateRoot.getAbsolute());
+                accountHomeInfo.getAccountPublicRoot().getAbsolute(),
+                accountHomeInfo.getAccountPrivateRoot().getAbsolute());
     }
 
     protected boolean isUserWritable(final Path path) {
-        return path.equals(accountPublicRoot)
-                || path.equals(accountPrivateRoot)
-                || path.isChild(accountPublicRoot)
-                || path.isChild(accountPrivateRoot);
+        return path.equals(accountHomeInfo.getAccountPublicRoot())
+                || path.equals(accountHomeInfo.getAccountPrivateRoot())
+                || path.isChild(accountHomeInfo.getAccountPublicRoot())
+                || path.isChild(accountHomeInfo.getAccountPrivateRoot());
     }
 
     protected boolean isWorldReadable(final MantaObject mantaObject) {
         return StringUtils.startsWithAny(
                 mantaObject.getPath(),
-                accountPublicRoot.getAbsolute());
+                accountHomeInfo.getAccountPublicRoot().getAbsolute());
     }
 
     protected boolean isWorldReadable(final Path path) {
-        return path.isChild(accountPublicRoot);
+        return path.isChild(accountHomeInfo.getAccountPublicRoot());
     }
 
     @Override

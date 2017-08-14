@@ -20,6 +20,8 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,6 +34,11 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 
 import org.junit.Test;
+
+import javax.crypto.SecretKey;
+
+import com.joyent.manta.client.crypto.SecretKeyUtils;
+import com.joyent.manta.config.DefaultsConfigContext;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -76,9 +83,13 @@ public class MantaSessionTest {
 
 
     @Test
-    public void testUserOwnerIdentification() {
-        assertTrue(SessionFactory.create(new Credentials("theOwner")).userIsOwner());
-        assertFalse(SessionFactory.create(new Credentials("theOwner/theSubUser")).userIsOwner());
+    public void testUserOwnerIdentification() throws BackgroundException {
+        final MantaSession ownerSession = SessionFactory.create(new Credentials("theOwner"));
+        ownerSession.initializeHomeInfo();
+        assertTrue(ownerSession.userIsOwner());
+        final MantaSession subuserSession = SessionFactory.create(new Credentials("theOwner/theSubUser"));
+        subuserSession.initializeHomeInfo();
+        assertFalse(subuserSession.userIsOwner());
     }
 
 }
