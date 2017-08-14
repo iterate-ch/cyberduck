@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.features;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -15,6 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface PromptUrlProvider<Options> {

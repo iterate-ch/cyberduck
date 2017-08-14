@@ -19,8 +19,8 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PromptUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
