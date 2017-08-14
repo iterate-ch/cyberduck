@@ -81,7 +81,7 @@ public class CopyWorker extends Worker<List<Path>> {
                 final ListService list = session.getFeature(ListService.class);
                 final Map<Path, Path> recursive = this.compile(copy, list, entry.getKey(), entry.getValue());
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                    if(r.getKey().isDirectory()) {
+                    if(r.getKey().isDirectory() && !copy.isRecursive(r.getKey(), r.getValue())) {
                         final Directory directory = session.getFeature(Directory.class);
                         directory.mkdir(r.getValue(), null, new TransferStatus());
                     }
