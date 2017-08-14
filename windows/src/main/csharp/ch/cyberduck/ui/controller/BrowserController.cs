@@ -3379,7 +3379,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerCopyWorker(BrowserController controller, Map files, PathCache cache)
-                    : base(files, controller.Session, cache, controller, LoginCallbackFactory.get(controller))
+                    : base(files, controller.Session is StatelessSessionPool ? controller.Session : SessionPoolFactory.create(controller, cache, controller.Session.getHost()), cache, controller, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;
                     _files = files;
