@@ -166,6 +166,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
             default:
                 throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
         }
+        return provider;
     }
 
     private KeyFormat detectKeyFormat(final Local identity) throws BackgroundException {
