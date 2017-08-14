@@ -18,7 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.collections.Partition;
@@ -63,7 +63,7 @@ public class S3MultipleDeleteFeature implements Delete {
         this.versioningService = session.getFeature(Versioning.class);
     }
 
-    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
         final List<Path> containers = new ArrayList<Path>();
         for(Path file : files) {
@@ -116,9 +116,10 @@ public class S3MultipleDeleteFeature implements Delete {
     /**
      * @param container Bucket
      * @param keys      Key and version ID for versioned object or null
+     * @param prompt    Password input
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Authentication canceled for MFA delete
      */
-    public void delete(final Path container, final List<ObjectKeyAndVersion> keys, final LoginCallback prompt)
+    public void delete(final Path container, final List<ObjectKeyAndVersion> keys, final PasswordCallback prompt)
             throws BackgroundException {
         try {
             if(versioningService != null

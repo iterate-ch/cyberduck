@@ -72,7 +72,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -99,7 +99,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         assertEquals(content.length, progress.getOffset());
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new CryptoReadFeature(session, new SwiftReadFeature(session, regionService), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new CryptoReadFeature(session, new SwiftReadFeature(session, regionService), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

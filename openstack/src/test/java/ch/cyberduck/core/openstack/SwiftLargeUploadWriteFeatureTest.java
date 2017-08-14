@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -57,7 +56,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final SwiftRegionService regionService = new SwiftRegionService(session);
@@ -78,7 +77,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         out.close();
         assertTrue(new SwiftFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -91,7 +90,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final SwiftRegionService regionService = new SwiftRegionService(session);
@@ -110,7 +109,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         assertNotNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

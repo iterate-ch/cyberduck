@@ -19,7 +19,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -75,7 +74,7 @@ public class SpectraReadFeatureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "nosuchname", EnumSet.of(Path.Type.file));
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status), new DisabledConnectionCallback());
-        new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -102,7 +101,7 @@ public class SpectraReadFeatureTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status), new DisabledConnectionCallback());
-        final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -151,7 +150,7 @@ public class SpectraReadFeatureTest {
         assertFalse(uuid.isEmpty());
         assertEquals(1, uuid.size());
         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-            final InputStream in = new SpectraReadFeature(session).read(entry.getKey(), entry.getValue(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new SpectraReadFeature(session).read(entry.getKey(), entry.getValue(), new DisabledConnectionCallback());
             assertNotNull(in);
             IOUtils.closeQuietly(in);
         }

@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2.2
+- [Bugfix] Failure copying files in vault (Cryptomator)
+- [Bugfix] Failure detecting vault when uploading, copying or moving files to locked vault (Cryptomator)
+
 6.2.1
 - [Bugfix] Default to WebDAV for http:// scheme in quick connect and CLI
 - [Bugfix] Selecting multiple files to copy URL will only copy first item in list (#10024)

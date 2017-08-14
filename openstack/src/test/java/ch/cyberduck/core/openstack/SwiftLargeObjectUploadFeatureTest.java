@@ -5,7 +5,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -93,7 +92,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals(content.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -153,7 +152,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -169,7 +168,7 @@ public class SwiftLargeObjectUploadFeatureTest {
                         System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
@@ -205,7 +204,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals(content.length, status.getOffset());
 
         assertTrue(new SwiftFindFeature(session).find(test));
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
         in.close();

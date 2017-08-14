@@ -99,7 +99,7 @@ public class B2WriteFeatureTest {
         assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session), cryptomator).find(test).getSize());
         assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

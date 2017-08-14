@@ -74,7 +74,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -104,7 +104,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        final InputStream in = new CryptoReadFeature(session, new SwiftReadFeature(session, new SwiftRegionService(session)), cryptomator).read(test, readStatus, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new CryptoReadFeature(session, new SwiftReadFeature(session, new SwiftRegionService(session)), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new SwiftDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

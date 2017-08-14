@@ -31,12 +31,10 @@ import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
 import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -46,6 +44,7 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -92,10 +91,11 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
         body.setName(file.getName());
         body.classification(DEFAULT_CLASSIFICATION); // internal
         try {
-            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(session.getToken(), body);
+            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(StringUtils.EMPTY, body);
             final String id = response.getUploadId();
             final MultipartOutputStream proxy = new MultipartOutputStream(id, file, status);
-            return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("connection.chunksize"))) {
+            return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
+                    PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
                 @Override
                 public VersionId getStatus() throws BackgroundException {
                     return proxy.getVersionId();
@@ -143,9 +143,9 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                             final SDSApiClient client = session.getClient();
                             final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                             request.setEntity(entity);
-                            request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, session.getToken());
+                            request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                             request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
-                            if(0L == overall.getLength()) {
+                            if(0L == overall.getLength() || 0 == content.length) {
                                 // Write empty body
                             }
                             else {
@@ -202,14 +202,13 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                 if(overall.getFilekey() != null) {
                     final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                     final FileKey fileKey = reader.readValue(overall.getFilekey().array());
-                    final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(session.getToken());
                     final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
                             TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                            TripleCryptConverter.toCryptoUserPublicKey(keyPairContainer.getPublicKeyContainer())
+                            TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                     );
                     body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                 }
-                final Node upload = new NodesApi(session.getClient()).completeFileUpload(session.getToken(), uploadId, null, body);
+                final Node upload = new NodesApi(session.getClient()).completeFileUpload(StringUtils.EMPTY, uploadId, null, body);
                 versionId = new VersionId(String.valueOf(upload.getId()));
             }
             catch(ApiException e) {

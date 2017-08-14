@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -26,7 +27,9 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
@@ -41,11 +44,13 @@ public class MoveWorker extends Worker<List<Path>> {
     private final Map<Path, Path> files;
     private final ProgressListener listener;
     private final Cache<Path> cache;
+    private final ConnectionCallback callback;
 
-    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache) {
+    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache, final ConnectionCallback callback) {
         this.files = files;
         this.listener = listener;
         this.cache = cache;
+        this.callback = callback;
     }
 
     @Override
@@ -55,27 +60,20 @@ public class MoveWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            final Path source = entry.getKey();
-            final Path target = entry.getValue();
-            if(!move.isSupported(source, target)) {
+            if(!move.isSupported(entry.getKey(), entry.getValue())) {
                 continue;
             }
-            final boolean exists;
-            if(cache.isCached(target.getParent())) {
-                exists = cache.get(target.getParent()).contains(target);
-            }
-            else {
-                exists = false;
-            }
-            final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), source, target);
+            final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), entry.getKey(), entry.getValue());
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                move.move(r.getKey(), r.getValue(), new TransferStatus().exists(exists), new Delete.Callback() {
-                    @Override
-                    public void delete(final Path file) {
-                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                                file.getName()));
-                    }
-                });
+                move.move(r.getKey(), r.getValue(), new TransferStatus()
+                                .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue())),
+                        new Delete.Callback() {
+                            @Override
+                            public void delete(final Path file) {
+                                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                                        file.getName()));
+                            }
+                        }, callback);
             }
         }
         final List<Path> changed = new ArrayList<Path>();
@@ -92,7 +90,7 @@ public class MoveWorker extends Worker<List<Path>> {
         }
         else if(source.isDirectory()) {
             if(!move.isRecursive(source, target)) {
-                for(Path child : list.list(source, new ActionListProgressListener(this, listener))) {
+                for(Path child : list.list(source, new WorkerListProgressListener(this, listener))) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }

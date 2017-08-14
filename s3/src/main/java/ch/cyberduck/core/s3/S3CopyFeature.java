@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
@@ -52,7 +53,7 @@ public class S3CopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(source.isFile() || source.isPlaceholder()) {
             if(null == status.getStorageClass()) {
                 // Keep same storage class

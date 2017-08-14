@@ -19,9 +19,10 @@ import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -40,15 +41,13 @@ public class MoveController extends ProxyController {
             = PreferencesFactory.get();
 
     private final BrowserController parent;
-
-    private final Cache<Path> cache;
+    private final PathCache cache;
 
     public MoveController(final BrowserController parent) {
-        this.parent = parent;
-        this.cache = parent.getCache();
+        this(parent, parent.getCache());
     }
 
-    public MoveController(final BrowserController parent, final Cache<Path> cache) {
+    public MoveController(final BrowserController parent, final PathCache cache) {
         this.parent = parent;
         this.cache = cache;
     }
@@ -70,7 +69,7 @@ public class MoveController extends ProxyController {
             @Override
             public void run() {
                 parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
-                        new MoveWorker(selected, parent, cache) {
+                        new MoveWorker(selected, parent, cache, LoginCallbackFactory.get(parent)) {
                                     @Override
                                     public void cleanup(final List<Path> moved) {
                                         parent.reload(parent.workdir(), moved, new ArrayList<Path>(selected.values()));

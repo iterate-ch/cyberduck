@@ -41,9 +41,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 View = ObjectFactory.GetInstance<IPasswordPromptView>();
                 View.Title = title;
                 View.Reason = reason;
-                View.OkButtonText = LocaleFactory.localizedString("Unlock Vault", "Cryptomator");
+                View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
                 View.IconView = IconCache.Instance.IconForName(options.icon(), 64);
-                View.SavePassword = false;
+                View.SavePassword = credentials.isSaved();
                 View.ValidateInput += ValidateInputEventHandler;
                 if (DialogResult.Cancel == View.ShowDialog(_browser.View))
                 {

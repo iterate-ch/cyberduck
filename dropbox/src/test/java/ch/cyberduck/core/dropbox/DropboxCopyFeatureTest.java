@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -42,7 +43,7 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
-        new DropboxCopyFeature(session).copy(file, target, new TransferStatus());
+        new DropboxCopyFeature(session).copy(file, target, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -57,7 +58,7 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DropboxCopyFeature(session).copy(directory, copy, new TransferStatus());
+        new DropboxCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(copy));
         assertTrue(new DropboxFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));

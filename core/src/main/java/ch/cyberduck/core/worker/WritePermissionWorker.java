@@ -97,7 +97,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
         feature.setUnixPermission(file, permission);
         if(file.isDirectory()) {
             if(callback.recurse(file, permission)) {
-                for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener))) {
+                for(Path child : session.getFeature(ListService.class).list(file, new WorkerListProgressListener(this, listener))) {
                     this.write(session, feature, child, permission);
                 }
             }

@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -55,7 +56,7 @@ public class OneDriveCopyFeatureTest extends AbstractOneDriveTest {
 
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(copy.isSupported(touchedFile, rename));
-        copy.copy(touchedFile, rename, null);
+        copy.copy(touchedFile, rename, null, new DisabledConnectionCallback());
 
         assertNotNull(attributesFinder.find(rename));
 

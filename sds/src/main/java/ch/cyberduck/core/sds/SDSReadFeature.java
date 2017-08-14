@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -27,6 +26,7 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -49,13 +49,12 @@ public class SDSReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback,
-                            final PasswordCallback passwordCallback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final SDSApiClient client = session.getClient();
             final HttpUriRequest request = new HttpGet(String.format("%s/nodes/files/%s/downloads", client.getBasePath(),
                     new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
-            request.addHeader("X-Sds-Auth-Token", session.getToken());
+            request.addHeader("X-Sds-Auth-Token", StringUtils.EMPTY);
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;

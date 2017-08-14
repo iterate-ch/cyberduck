@@ -91,4 +91,13 @@ public class StatefulSessionPool extends StatelessSessionPool {
             log.warn(String.format("Failure releasing lock for %s", session));
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("StatefulSessionPool{");
+        sb.append("lock=").append(lock);
+        sb.append(", session=").append(session);
+        sb.append('}');
+        return sb.toString();
+    }
 }

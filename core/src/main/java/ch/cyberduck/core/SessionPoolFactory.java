@@ -59,7 +59,7 @@ public class SessionPoolFactory {
     public static SessionPool create(final ConnectionService connect, final TranscriptListener transcript,
                                      final PathCache cache, final Host bookmark,
                                      final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
-                                     final VaultRegistry vault, final Usage... usage) {
+                                     final VaultRegistry registry, final Usage... usage) {
         switch(bookmark.getProtocol().getType()) {
             case file:
             case sftp:
@@ -74,19 +74,19 @@ public class SessionPoolFactory {
             case b2:
             case sds:
                 // Stateless protocol
-                return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, vault);
+                return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
             case ftp:
             case irods:
                 // Stateful
                 if(Arrays.asList(usage).contains(Usage.browser)) {
-                    return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, vault);
+                    return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
                 }
                 // Break through to default pool
             default:
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
                 }
-                return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, vault, cache, transcript, bookmark)
+                return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, registry, cache, transcript, bookmark)
                         .withMinIdle(preferences.getInteger("connection.pool.minidle"))
                         .withMaxIdle(preferences.getInteger("connection.pool.maxidle"))
                         .withMaxTotal(preferences.getInteger("connection.pool.maxtotal"));

@@ -20,12 +20,17 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MemorySegementingOutputStream extends SegmentingOutputStream {
     private static final Logger log = Logger.getLogger(MemorySegementingOutputStream.class);
 
     private final OutputStream proxy;
     private final ByteArrayOutputStream buffer;
+    private final Integer threshold;
+
+    private final AtomicBoolean close = new AtomicBoolean();
 
     public MemorySegementingOutputStream(final OutputStream proxy, final Integer threshold) {
         this(proxy, threshold, new ByteArrayOutputStream(threshold));
@@ -35,13 +40,43 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
         super(proxy, (long) threshold, buffer);
         this.proxy = proxy;
         this.buffer = buffer;
+        this.threshold = threshold;
     }
 
     @Override
-    protected void copy() throws IOException {
+    public void flush() throws IOException {
         // Copy from memory file to output
-        buffer.writeTo(proxy);
+        final byte[] content = buffer.toByteArray();
         // Re-use buffer
         buffer.reset();
+        for(int offset = 0; offset < content.length; offset += threshold) {
+            int len = Math.min(threshold, content.length - offset);
+            final byte[] bytes = Arrays.copyOfRange(content, offset, offset + len);
+            if(len < threshold) {
+                // Write to start of buffer
+                this.write(bytes);
+            }
+            else {
+                // Write out
+                proxy.write(bytes);
+            }
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        if(close.get()) {
+            log.warn(String.format("Skip double close of stream %s", this));
+            return;
+        }
+        try {
+            proxy.write(buffer.toByteArray());
+            // Re-use buffer
+            buffer.reset();
+            super.close();
+        }
+        finally {
+            close.set(true);
+        }
     }
 }

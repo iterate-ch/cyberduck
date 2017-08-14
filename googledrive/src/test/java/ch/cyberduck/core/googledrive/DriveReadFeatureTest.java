@@ -17,7 +17,6 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -53,7 +52,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new DriveReadFeature(session).read(new Path(new DriveHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        new DriveReadFeature(session).read(new Path(new DriveHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -75,7 +74,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DriveReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new DriveReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

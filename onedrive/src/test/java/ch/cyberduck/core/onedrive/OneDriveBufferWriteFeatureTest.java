@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -43,7 +42,7 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWrite() throws Exception {
-        final OneDriveWriteFeature feature = new OneDriveBufferWriteFeature(session);
+        final OneDriveBufferWriteFeature feature = new OneDriveBufferWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
@@ -54,11 +53,12 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
         final byte[] buffer = new byte[32 * 1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
+        out.flush();
         out.close();
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -66,8 +66,54 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
     }
 
     @Test
+    public void testWriteOverwrite() throws Exception {
+        final OneDriveBufferWriteFeature feature = new OneDriveBufferWriteFeature(session);
+        final Path container = new OneDriveHomeFinderFeature(session).find();
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        {
+            final byte[] content = RandomUtils.nextBytes(42512);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+            final ByteArrayInputStream in = new ByteArrayInputStream(content);
+            final byte[] buffer = new byte[32 * 1024];
+            assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
+            in.close();
+            out.flush();
+            out.close();
+            assertNull(out.getStatus());
+            assertTrue(new DefaultFindFeature(session).find(file));
+            final byte[] compare = new byte[content.length];
+            final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            IOUtils.readFully(stream, compare);
+            stream.close();
+            assertArrayEquals(content, compare);
+        }
+        {
+            final byte[] content = RandomUtils.nextBytes(33221);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+            final ByteArrayInputStream in = new ByteArrayInputStream(content);
+            final byte[] buffer = new byte[32 * 1024];
+            assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
+            in.close();
+            out.flush();
+            out.close();
+            assertNull(out.getStatus());
+            assertTrue(new DefaultFindFeature(session).find(file));
+            final byte[] compare = new byte[content.length];
+            final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            IOUtils.readFully(stream, compare);
+            stream.close();
+            assertArrayEquals(content, compare);
+        }
+        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testWriteUnknownLength() throws Exception {
-        final OneDriveWriteFeature feature = new OneDriveBufferWriteFeature(session);
+        final OneDriveBufferWriteFeature feature = new OneDriveBufferWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
@@ -78,11 +124,12 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
         final byte[] buffer = new byte[1 * 1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
+        out.flush();
         out.close();
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -91,7 +138,7 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteZeroLength() throws Exception {
-        final OneDriveWriteFeature feature = new OneDriveBufferWriteFeature(session);
+        final OneDriveBufferWriteFeature feature = new OneDriveBufferWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
@@ -101,11 +148,12 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
+        out.flush();
         out.close();
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

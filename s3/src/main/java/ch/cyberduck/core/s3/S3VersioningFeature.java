@@ -20,8 +20,8 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
@@ -68,7 +68,7 @@ public class S3VersioningFeature implements Versioning {
     }
 
     @Override
-    public void setConfiguration(final Path file, final LoginCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path file, final PasswordCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
         final Path container = containerService.getContainer(file);
         try {
             final VersioningConfiguration current = this.getConfiguration(container);
@@ -202,17 +202,19 @@ public class S3VersioningFeature implements Versioning {
     /**
      * Prompt for MFA credentials
      *
-     * @param controller Prompt controller
+     * @param callback Prompt controller
      * @return MFA one time authentication password.
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Prompt dismissed
      */
     @Override
-    public Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
+    public Credentials getToken(final PasswordCallback callback) throws ConnectionCanceledException {
         final Credentials credentials = new MultifactorCredentials();
         // Prompt for multi factor authentication credentials.
-        controller.prompt(session.getHost(), credentials,
+        callback.prompt(credentials,
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions());
+                LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions()
+                        .keychain(false)
+                        .user(false));
 
         PreferencesFactory.get().setProperty("s3.mfa.serialnumber", credentials.getUsername());
         return credentials;

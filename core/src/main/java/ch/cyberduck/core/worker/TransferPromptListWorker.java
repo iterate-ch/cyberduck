@@ -58,7 +58,7 @@ public class TransferPromptListWorker extends TransferWorker<List<TransferItem>>
         if(log.isDebugEnabled()) {
             log.debug(String.format("List directory %s", directory));
         }
-        return transfer.list(source, destination, directory, local, new ActionListProgressListener(this, listener));
+        return transfer.list(source, destination, directory, local, new WorkerListProgressListener(this, listener));
     }
 
     @Override

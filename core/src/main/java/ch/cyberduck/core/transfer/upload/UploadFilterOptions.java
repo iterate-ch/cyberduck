@@ -24,28 +24,21 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 public final class UploadFilterOptions {
 
     public boolean permissions;
-
     public boolean acl;
-
     public boolean timestamp;
-
     public boolean metadata;
-
     /**
      * Create temporary filename with an UUID and rename when upload is complete
      */
     public boolean temporary;
-
     /**
      * Enable server side encryption if available
      */
     public boolean encryption;
-
     /**
      * Set storage class
      */
     public boolean redundancy;
-
     /**
      * Calculate checksum for file
      */

@@ -17,7 +17,7 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -38,7 +38,7 @@ public class IRODSDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> deleted = new ArrayList<Path>();
         for(Path file : files) {
             boolean skip = false;

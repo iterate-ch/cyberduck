@@ -83,7 +83,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
         feature.setEncryption(file, algorithm);
         if(file.isDirectory()) {
             if(callback.recurse(file, algorithm)) {
-                for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener))) {
+                for(Path child : session.getFeature(ListService.class).list(file, new WorkerListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }
             }

@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -46,7 +47,7 @@ public class SwiftCopyFeatureTest {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -54,7 +55,7 @@ public class SwiftCopyFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftCopyFeature(session).copy(test, copy, new TransferStatus());
+        new SwiftCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(copy));
         new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());

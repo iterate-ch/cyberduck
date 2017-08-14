@@ -26,7 +26,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.IOException;
 
-public class OneDriveDirectoryFeature implements Directory {
+public class OneDriveDirectoryFeature implements Directory<Void> {
 
     private final OneDriveSession session;
 
@@ -54,7 +54,7 @@ public class OneDriveDirectoryFeature implements Directory {
     }
 
     @Override
-    public Directory withWriter(final Write writer) {
+    public Directory<Void> withWriter(final Write writer) {
         return this;
     }
 }

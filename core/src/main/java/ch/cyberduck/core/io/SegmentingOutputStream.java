@@ -92,9 +92,17 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
 
     protected void checkThreshold(final int count) throws IOException {
         if(written >= threshold) {
-            this.copy();
             this.reset();
+            this.flush();
         }
+    }
+
+    /**
+     * Copy from temporary buffer to output
+     */
+    @Override
+    public void flush() throws IOException {
+        proxy.flush();
     }
 
     @Override
@@ -105,8 +113,8 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
         }
         try {
             if(written > 0L || !after.get()) {
-                this.copy();
                 this.reset();
+                this.flush();
             }
             proxy.close();
         }
@@ -114,11 +122,6 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
             close.set(true);
         }
     }
-
-    /**
-     * Copy from temporary buffer to output
-     */
-    protected abstract void copy() throws IOException;
 
     protected void reset() {
         // Wait for trigger of next threshold

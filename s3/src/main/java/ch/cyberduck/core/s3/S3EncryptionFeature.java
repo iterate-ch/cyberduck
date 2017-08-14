@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -96,7 +97,7 @@ public class S3EncryptionFeature implements Encryption {
             final TransferStatus status = new TransferStatus();
             status.setEncryption(setting);
             status.setLength(file.attributes().getSize());
-            copy.copy(file, file, status);
+            copy.copy(file, file, status, new DisabledConnectionCallback());
         }
     }
 

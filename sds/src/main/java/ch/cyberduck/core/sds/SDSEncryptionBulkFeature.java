@@ -18,13 +18,12 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
-import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,6 +40,9 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     private final SDSSession session;
 
+    private final PathContainerService containerService
+            = new PathContainerService();
+
     public SDSEncryptionBulkFeature(final SDSSession session) {
         this.session = session;
     }
@@ -52,15 +54,16 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 case download:
                     break;
                 default:
-                    final UserAccount user = new UserApi(session.getClient()).getUserInfo(session.getToken(), null, false);
-                    if(user.getIsEncryptionEnabled()) {
+                    if(session.userAccount().getIsEncryptionEnabled()) {
                         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-                            final TransferStatus status = entry.getValue();
-                            final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
-                            final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-                            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                            writer.writeValue(out, fileKey);
-                            status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
+                            if(containerService.getContainer(entry.getKey()).getType().contains(Path.Type.vault)) {
+                                final TransferStatus status = entry.getValue();
+                                final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+                                final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+                                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                writer.writeValue(out, fileKey);
+                                status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
+                            }
                         }
                     }
             }
@@ -76,7 +79,24 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     @Override
     public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        //
+        try {
+            switch(type) {
+                case download:
+                    break;
+                default:
+                    if(session.userAccount().getIsEncryptionEnabled()) {
+                        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
+                        for(Path file : files.keySet()) {
+                            if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+                                background.operate(callback, file);
+                            }
+                        }
+                    }
+            }
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map(e);
+        }
     }
 
     @Override

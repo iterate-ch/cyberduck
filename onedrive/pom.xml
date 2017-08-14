@@ -46,5 +46,11 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

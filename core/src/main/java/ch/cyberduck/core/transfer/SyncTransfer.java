@@ -167,7 +167,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        log.warn(String.format("Skip pre transfer bulk operation for %s", files));
+        // Bulk operation is in transfer implementation
     }
 
     @Override

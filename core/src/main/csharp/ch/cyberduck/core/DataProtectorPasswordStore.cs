@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -25,8 +25,17 @@ namespace Ch.Cyberduck.Core
 {
     public class DataProtectorPasswordStore : HostPasswordStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (DataProtectorPasswordStore).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(DataProtectorPasswordStore).FullName);
 
+        // Login Password
+        public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
+        {
+            Host host = new Host(ProtocolFactory.get().forScheme(scheme), hostName, port);
+            host.getCredentials().setUsername(user);
+            PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
+        }
+
+        // Login Password
         public override string getPassword(Scheme scheme, int port, String hostName, String user)
         {
             Host host = new Host(ProtocolFactory.get().forScheme(scheme), hostName, port);
@@ -34,25 +43,29 @@ namespace Ch.Cyberduck.Core
             return getPassword(host);
         }
 
-        public override string getPassword(String hostName, String user)
+        // Generic Password
+        public override void addPassword(String serviceName, String user, String password)
         {
-            Host host = new Host(ProtocolFactory.get().forScheme(Scheme.ftp), hostName);
-            host.getCredentials().setUsername(user);
-            return getPassword(host);
+            PreferencesFactory.get().setProperty($"{serviceName} - {user}", DataProtector.Encrypt(password));
         }
 
-        public override void addPassword(String hostName, String user, String password)
+        // Generic Password
+        public override string getPassword(String serviceName, String user)
         {
-            Host host = new Host(ProtocolFactory.get().forScheme(Scheme.ftp), hostName);
-            host.getCredentials().setUsername(user);
-            PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
-        }
-
-        public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
-        {
-            Host host = new Host(ProtocolFactory.get().forScheme(scheme), hostName, port);
-            host.getCredentials().setUsername(user);
-            PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
+            String password = PreferencesFactory.get().getProperty($"{serviceName} - {user}");
+            if (null == password)
+            {
+                // Legacy implementation
+                Protocol ftp = ProtocolFactory.get().forScheme(Scheme.ftp);
+                if (null == ftp)
+                {
+                    return null;
+                }
+                Host host = new Host(ftp, serviceName);
+                host.getCredentials().setUsername(user);
+                return getPassword(host);
+            }
+            return DataProtector.Decrypt(password);
         }
 
         private string getPassword(Host host)

@@ -24,13 +24,12 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
-public class ActionListProgressListener implements ListProgressListener {
+public class WorkerListProgressListener implements ListProgressListener {
 
     private final Worker worker;
-
     private final ProgressListener delegate;
 
-    public ActionListProgressListener(final Worker worker, final ProgressListener delegate) {
+    public WorkerListProgressListener(final Worker worker, final ProgressListener delegate) {
         this.worker = worker;
         this.delegate = delegate;
     }

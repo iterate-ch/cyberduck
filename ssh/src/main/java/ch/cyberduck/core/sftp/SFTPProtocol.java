@@ -51,11 +51,6 @@ public class SFTPProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isEncodingConfigurable() {
-        return false;
-    }
-
-    @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
