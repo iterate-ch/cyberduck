@@ -58,8 +58,6 @@ public class MantaSession extends Session<MantaClient> {
         ExternalSecurityProviderLoader.getBouncyCastleProvider();
     }
 
-    public static final Logger log = Logger.getLogger(MantaSession.class);
-
     private SettableConfigContext<BaseChainedConfigContext> config;
 
     private MantaAccountHomeInfo accountHomeInfo;

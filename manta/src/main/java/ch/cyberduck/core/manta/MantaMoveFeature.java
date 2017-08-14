@@ -16,7 +16,6 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -24,7 +23,6 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.exception.MantaIOException;
@@ -32,11 +30,9 @@ import com.joyent.manta.exception.MantaIOException;
 public class MantaMoveFeature implements Move {
 
     private final MantaSession session;
-    private Delete delete;
 
     public MantaMoveFeature(MantaSession session) {
         this.session = session;
-        this.delete = new MantaDeleteFeature(session);
     }
 
     @Override
@@ -64,7 +60,6 @@ public class MantaMoveFeature implements Move {
 
     @Override
     public Move withDelete(final Delete delete) {
-        this.delete = delete;
         return this;
     }
 }

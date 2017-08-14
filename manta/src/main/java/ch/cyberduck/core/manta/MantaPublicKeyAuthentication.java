@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -36,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.KeyException;
 import java.security.KeyPair;
 
@@ -77,50 +77,24 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         }
 
         final Local identity = credentials.getIdentity();
-        final KeyFormat format;
-        final FileKeyProvider provider;
-        // TODO: see if we can simplify keyReader instantiation
-
-        try (InputStream is = identity.getInputStream()) {
-            format = KeyProviderUtil.detectKeyFileFormat(
-                    new InputStreamReader(is, StandardCharsets.UTF_8),
-                    true);
-        }
-        catch(IOException e) {
-            throw new MantaExceptionMappingService(session).mapLoginException(e);
-        }
-
-        try (InputStream is = identity.getInputStream();
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            IOUtils.copy(is, baos);
-            session.getConfig().setPrivateKeyContent(new String(baos.toByteArray(), StandardCharsets.UTF_8));
-        }
-        catch(IOException e) {
-            throw new MantaExceptionMappingService(session).mapLoginException(e);
-        }
+        final KeyFormat format = detectKeyFormat(identity);
+        final FileKeyProvider provider = buildProvider(identity, format);
 
         log.info(String.format("Reading private key %s with key format %s", identity, format));
 
-        switch(format) {
-            case PKCS5:
-                provider = new PKCS5KeyFile.Factory().create();
-                break;
-            case PKCS8:
-                provider = new PKCS8KeyFile.Factory().create();
-                break;
-            case OpenSSH:
-                provider = new OpenSSHKeyFile.Factory().create();
-                break;
-            case OpenSSHv1:
-                provider = new OpenSSHKeyV1KeyFile.Factory().create();
-                break;
-            case PuTTY:
-                provider = new PuTTYKeyFile.Factory().create();
-                break;
-            default:
-                throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
-        }
+        initializePasswordProvider(bookmark, prompt, credentials, identity, provider);
 
+        final String fingerprint = computeFingerprint(provider);
+
+        session.setFingerprint(fingerprint);
+        return true;
+    }
+
+    private void initializePasswordProvider(final Host bookmark,
+                                            final LoginCallback prompt,
+                                            final Credentials credentials,
+                                            final Local identity,
+                                            final FileKeyProvider provider) throws AccessDeniedException {
         provider.init(
                 new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8),
                 new PasswordFinder() {
@@ -157,8 +131,9 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                         return false;
                     }
                 });
+    }
 
-
+    private String computeFingerprint(final FileKeyProvider provider) throws BackgroundException {
         final String fingerprint;
         try {
             final KeyPair keyPair = new KeyPair(provider.getPublic(), provider.getPrivate());
@@ -167,8 +142,53 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         catch(IOException e) {
             throw new MantaExceptionMappingService(session).map(e);
         }
+        return fingerprint;
+    }
 
-        session.setFingerprint(fingerprint);
-        return true;
+    private FileKeyProvider buildProvider(final Local identity, final KeyFormat format) throws InteroperabilityException {
+        final FileKeyProvider provider;
+        switch(format) {
+            case PKCS5:
+                provider = new PKCS5KeyFile.Factory().create();
+                break;
+            case PKCS8:
+                provider = new PKCS8KeyFile.Factory().create();
+                break;
+            case OpenSSH:
+                provider = new OpenSSHKeyFile.Factory().create();
+                break;
+            case OpenSSHv1:
+                provider = new OpenSSHKeyV1KeyFile.Factory().create();
+                break;
+            case PuTTY:
+                provider = new PuTTYKeyFile.Factory().create();
+                break;
+            default:
+                throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
+        }
+    }
+
+    private KeyFormat detectKeyFormat(final Local identity) throws BackgroundException {
+        final KeyFormat format;
+        try (InputStream is = identity.getInputStream()) {
+            format = KeyProviderUtil.detectKeyFileFormat(
+                    new InputStreamReader(is, StandardCharsets.UTF_8),
+                    true);
+        }
+        catch(IOException e) {
+            throw new MantaExceptionMappingService(session).mapLoginException(e);
+        }
+        return format;
+    }
+
+    private void readKeyContents(final Local identity) throws BackgroundException {
+        try (InputStream is = identity.getInputStream();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            IOUtils.copy(is, baos);
+            session.getConfig().setPrivateKeyContent(new String(baos.toByteArray(), StandardCharsets.UTF_8));
+        }
+        catch(IOException e) {
+            throw new MantaExceptionMappingService(session).mapLoginException(e);
+        }
     }
 }

@@ -20,8 +20,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,14 +33,7 @@ import ch.cyberduck.core.features.Write;
 
 import org.junit.Test;
 
-import javax.crypto.SecretKey;
-
-import com.joyent.manta.client.crypto.SecretKeyUtils;
-import com.joyent.manta.config.DefaultsConfigContext;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class MantaSessionTest {
 

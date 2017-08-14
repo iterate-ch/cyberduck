@@ -84,6 +84,7 @@ public class MantaPublicKeyAuthenticationIT {
                     new DisabledLoginCallback() {
                         @Override
                         public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                            // no passphrase to set
                         }
                     },
                     new DisabledCancelCallback(),
