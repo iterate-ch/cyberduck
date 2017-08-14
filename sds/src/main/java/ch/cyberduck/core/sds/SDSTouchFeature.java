@@ -19,6 +19,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -41,6 +42,9 @@ public class SDSTouchFeature implements Touch<VersionId> {
     private final SDSSession session;
     private Write<VersionId> writer;
 
+    private final PathContainerService containerService
+            = new PathContainerService();
+
     public SDSTouchFeature(final SDSSession session) {
         this.session = session;
         this.writer = new SDSDelegatingWriteFeature(session, new SDSWriteFeature(session));
@@ -49,7 +53,8 @@ public class SDSTouchFeature implements Touch<VersionId> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            if(session.userAccount().getIsEncryptionEnabled()) {
+            if(session.userAccount().getIsEncryptionEnabled() &&
+                    containerService.getContainer(file).getType().contains(Path.Type.vault)) {
                 final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                 final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();
