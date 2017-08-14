@@ -45,11 +45,10 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
-    public DescriptiveUrl toUrl(final Path file, final CreateDownloadShareRequest createDownloadShareRequest) throws BackgroundException {
+    public DescriptiveUrl toUrl(final Path file, final CreateDownloadShareRequest options) throws BackgroundException {
         try {
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(StringUtils.EMPTY,
-                    createDownloadShareRequest
-                            .nodeId(Long.valueOf(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()))),
+                    options.nodeId(Long.valueOf(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()))),
                     null);
             final PublicDownloadTokenGenerateResponse token = new PublicApi(session.getClient())
                     .createPublicDownloadShareToken(share.getAccessKey(), new PublicDownloadTokenGenerateRequest().password(null));

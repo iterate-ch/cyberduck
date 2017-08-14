@@ -55,10 +55,12 @@ public class SDSSharesUrlProviderTest {
                 new CreateDownloadShareRequest()
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
                         .password(null)
-                        .mailBody(null)
                         .mailRecipients(null)
                         .mailSubject(null)
+                        .mailBody(null)
                         .maxDownloads(null));
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
