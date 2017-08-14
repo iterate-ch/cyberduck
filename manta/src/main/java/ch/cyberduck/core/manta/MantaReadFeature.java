@@ -16,7 +16,6 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
