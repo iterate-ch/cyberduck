@@ -16,7 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -36,7 +36,7 @@ public class MantaDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             callback.delete(file);
             try {

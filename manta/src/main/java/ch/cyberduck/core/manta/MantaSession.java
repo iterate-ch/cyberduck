@@ -39,7 +39,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 

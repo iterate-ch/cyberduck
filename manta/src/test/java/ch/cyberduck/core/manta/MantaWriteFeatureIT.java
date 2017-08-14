@@ -18,7 +18,6 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -59,7 +58,7 @@ public class MantaWriteFeatureIT extends AbstractMantaTest {
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new MantaReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream stream = new MantaReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

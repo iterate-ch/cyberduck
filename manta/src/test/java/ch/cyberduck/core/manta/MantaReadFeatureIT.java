@@ -18,7 +18,6 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -51,7 +50,7 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
         final TransferStatus status = new TransferStatus();
         try {
             final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
-            new MantaReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            new MantaReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
         catch(NotfoundException e) {
             assertEquals("Not Found. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -68,12 +67,12 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
         final TransferStatus status = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new MantaReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new MantaReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new MantaReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+            final InputStream in = new MantaReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             in.close();
         }
@@ -110,7 +109,7 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
         status.setOffset(BYTES_OFFSET);
         final MantaReadFeature read = new MantaReadFeature(session);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.length(content.length - BYTES_OFFSET), new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = read.read(test, status.length(content.length - BYTES_OFFSET), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - BYTES_OFFSET);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -141,7 +140,7 @@ public class MantaReadFeatureIT extends AbstractMantaTest {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new MantaReadFeature(session).read(test, status, new DisabledConnectionCallback(), new DisabledPasswordCallback());
+        final InputStream in = new MantaReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

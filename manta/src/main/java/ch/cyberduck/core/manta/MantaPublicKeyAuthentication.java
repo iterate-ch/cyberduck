@@ -79,6 +79,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         final Local identity = credentials.getIdentity();
         final KeyFormat format = detectKeyFormat(identity);
         final FileKeyProvider provider = buildProvider(identity, format);
+        readKeyContentsIntoConfig(identity);
 
         log.info(String.format("Reading private key %s with key format %s", identity, format));
 
@@ -182,7 +183,13 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         return format;
     }
 
-    private void readKeyContents(final Local identity) throws BackgroundException {
+    /**
+     * This method is required as a result of https://github.com/joyent/java-manta/issues/294
+     *
+     * @param identity credentials identity to read
+     * @throws BackgroundException when reading the key contents fails
+     */
+    private void readKeyContentsIntoConfig(final Local identity) throws BackgroundException {
         try (InputStream is = identity.getInputStream();
              ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             IOUtils.copy(is, baos);
