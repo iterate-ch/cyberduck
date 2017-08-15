@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -59,8 +60,17 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 options.fileKey(key).keyPair(session.keyPair());
             }
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(StringUtils.EMPTY,
-                    options.nodeId(fileid),
-                    null);
+                    options.nodeId(fileid), null);
+            final String help;
+            final Long expiry = share.getExpireAt().getTime();
+            if(null == share.getExpireAt()) {
+                help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
+            }
+            else {
+                help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                        UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
+                );
+            }
             final PublicDownloadTokenGenerateResponse token = new PublicApi(session.getClient())
                     .createPublicDownloadShareToken(share.getAccessKey(), new PublicDownloadTokenGenerateRequest().password(null));
             return new DescriptiveUrl(
@@ -70,9 +80,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                             URI.create(session.getClient().getBasePath()).getPath(),
                             share.getAccessKey(), token.getToken())
                     ),
-                    DescriptiveUrl.Type.signed,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-            );
+                    DescriptiveUrl.Type.signed, help);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
