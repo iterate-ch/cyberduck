@@ -35,7 +35,9 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveUploadSession;
 
 import java.io.IOException;
@@ -43,6 +45,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 public class OneDriveWriteFeature implements Write<Void> {
+    private static final Logger log = Logger.getLogger(OneDriveWriteFeature.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -149,7 +152,12 @@ public class OneDriveWriteFeature implements Write<Void> {
                 else {
                     header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), status.getOffset() + status.getLength());
                 }
-                upload.uploadFragment(header, content);
+                if(upload.uploadFragment(header, content) instanceof OneDriveFile.Metadata) {
+                    log.info(String.format("Completed upload for %s", file));
+                }
+                else {
+                    log.debug(String.format("Uploaded fragement %s for file %s", header, file));
+                }
                 offset += content.length;
             }
         }

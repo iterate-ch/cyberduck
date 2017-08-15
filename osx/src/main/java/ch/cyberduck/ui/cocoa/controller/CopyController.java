@@ -70,7 +70,7 @@ public class CopyController extends ProxyController {
             @Override
             public void run() {
                 parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
-                                new CopyWorker(selected, SessionPoolFactory.create(parent, cache, parent.getSession().getHost()), parent, LoginCallbackFactory.get(parent)) {
+                        new CopyWorker(selected, SessionPoolFactory.create(parent, cache, parent.getSession().getHost()), cache, parent, LoginCallbackFactory.get(parent)) {
                                     @Override
                                     public void cleanup(final List<Path> copied) {
                                         parent.reload(parent.workdir(), copied, new ArrayList<Path>(selected.values()));

@@ -53,6 +53,7 @@ import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -2289,7 +2290,9 @@ public class BrowserController extends WindowController
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
-                                new CopyWorker(selected, pool, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
+                                new CopyWorker(selected,
+                                        pool instanceof StatefulSessionPool ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool,
+                                        cache, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
                                             @Override
                                             public void cleanup(final List<Path> copied) {
                                                 reload(workdir(), copied, new ArrayList<Path>(selected.values()));
@@ -3022,9 +3025,8 @@ public class BrowserController extends WindowController
                                     securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                                             : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
                                     securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
-                                    final Scheduler scheduler = pool.getFeature(Scheduler.class);
+                                    scheduler = pool.getFeature(Scheduler.class);
                                     if(scheduler != null) {
-                                        BrowserController.this.scheduler = scheduler;
                                         background(new SessionBackgroundAction<Object>(pool, new DisabledAlertCallback(),
                                                 new DisabledProgressListener(), new DisabledTranscriptListener()) {
                                             @Override

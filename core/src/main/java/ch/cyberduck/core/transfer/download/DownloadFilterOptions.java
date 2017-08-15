@@ -27,15 +27,10 @@ public final class DownloadFilterOptions {
      * Split download into segments
      */
     public final boolean segments;
-
     public final boolean permissions;
-
     public final boolean timestamp;
-
     public final boolean wherefrom;
-
     public boolean icon;
-
     public final boolean checksum;
 
     public DownloadFilterOptions() {

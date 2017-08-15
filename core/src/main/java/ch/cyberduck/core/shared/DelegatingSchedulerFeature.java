@@ -1,4 +1,4 @@
-package ch.cyberduck.core.features;
+package ch.cyberduck.core.shared;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -17,9 +17,28 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Scheduler;
 
-public interface Scheduler<R> {
-    R repeat(PasswordCallback callback) throws BackgroundException;
-    void shutdown();
+public class DelegatingSchedulerFeature implements Scheduler<Void> {
 
+    private final Scheduler[] features;
+
+    public DelegatingSchedulerFeature(final Scheduler... features) {
+        this.features = features;
+    }
+
+    @Override
+    public Void repeat(final PasswordCallback callback) throws BackgroundException {
+        for(Scheduler scheduler : features) {
+            scheduler.repeat(callback);
+        }
+        return null;
+    }
+
+    @Override
+    public void shutdown() {
+        for(Scheduler scheduler : features) {
+            scheduler.shutdown();
+        }
+    }
 }

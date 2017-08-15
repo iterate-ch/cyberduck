@@ -35,14 +35,24 @@ import java.util.concurrent.Semaphore;
 
 public class Console {
 
-    private final java.io.Console console
-            = System.console();
+    private final java.io.Console console;
 
     private final PrintStream out
             = AnsiConsole.out();
 
     private static final Semaphore lock
             = new Semaphore(1);
+
+    public Console() {
+        switch(Factory.Platform.getDefault()) {
+            case windows:
+                console = null;
+                break;
+            default:
+                console = System.console();
+                break;
+        }
+    }
 
     public String readLine(String format, Object... args) throws ConnectionCanceledException {
         if(console != null) {
@@ -76,28 +86,24 @@ public class Console {
         try {
             lock.acquire();
             if(console != null) {
-                switch(Factory.Platform.getDefault()) {
-                    case windows:
-                        break;
-                    default:
-                        final PrintWriter writer = console.writer();
-                        if(Arrays.asList(args).isEmpty()) {
-                            writer.print(format);
-                        }
-                        else {
-                            writer.printf(format, args);
-                        }
-                        writer.flush();
-                        return;
+                final PrintWriter writer = console.writer();
+                if(Arrays.asList(args).isEmpty()) {
+                    writer.print(format);
                 }
-            }
-            if(Arrays.asList(args).isEmpty()) {
-                out.printf(format);
+                else {
+                    writer.printf(format, args);
+                }
+                writer.flush();
             }
             else {
-                out.printf(format, args);
+                if(Arrays.asList(args).isEmpty()) {
+                    out.printf(format);
+                }
+                else {
+                    out.printf(format, args);
+                }
+                out.flush();
             }
-            out.flush();
         }
         catch(InterruptedException e) {
             //
