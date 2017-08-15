@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.features.Touch;
@@ -236,6 +237,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Scheduler.class) {
             return (T) new SDSMissingFileKeysSchedulerFeature(this);
+        }
+        if(type == PromptUrlProvider.class) {
+            return (T) new SDSSharesUrlProvider(this);
         }
         return super._getFeature(type);
     }

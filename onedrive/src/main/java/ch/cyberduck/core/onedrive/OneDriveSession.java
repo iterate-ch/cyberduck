@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
@@ -193,6 +194,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
+        }
+        if(type == PromptUrlProvider.class) {
+            return (T) new OneDriveSharingLinkUrlProvider(this);
         }
         if(type == Home.class) {
             return (T) new OneDriveHomeFinderFeature(this);
