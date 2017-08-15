@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
 public class SDSSharesUrlProviderTest {
 
     @Test
-    public void toUrl() throws Exception {
+    public void testToUrl() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
@@ -69,6 +69,34 @@ public class SDSSharesUrlProviderTest {
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
         assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/api/v4/public/shares/downloads/"));
         new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testEncrypted() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+                new CreateDownloadShareRequest()
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxDownloads(null));
+        assertNotEquals(DescriptiveUrl.EMPTY, url);
+        assertEquals(DescriptiveUrl.Type.signed, url.getType());
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/api/v4/public/shares/downloads/"));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

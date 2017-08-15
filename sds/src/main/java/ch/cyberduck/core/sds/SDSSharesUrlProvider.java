@@ -19,13 +19,16 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.PublicApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.SharesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateResponse;
 
@@ -38,6 +41,9 @@ import java.text.MessageFormat;
 public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest> {
     private static final Logger log = Logger.getLogger(SDSSharesUrlProvider.class);
 
+    private final PathContainerService containerService
+            = new PathContainerService();
+
     private final SDSSession session;
 
     public SDSSharesUrlProvider(final SDSSession session) {
@@ -47,8 +53,13 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     @Override
     public DescriptiveUrl toUrl(final Path file, final CreateDownloadShareRequest options) throws BackgroundException {
         try {
+            final Long fileid = Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
+            if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+                final FileKey key = new NodesApi(session.getClient()).getUserFileKey(StringUtils.EMPTY, fileid);
+                options.fileKey(key).keyPair(session.keyPair());
+            }
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(StringUtils.EMPTY,
-                    options.nodeId(Long.valueOf(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()))),
+                    options.nodeId(fileid),
                     null);
             final PublicDownloadTokenGenerateResponse token = new PublicApi(session.getClient())
                     .createPublicDownloadShareToken(share.getAccessKey(), new PublicDownloadTokenGenerateRequest().password(null));
