@@ -157,8 +157,10 @@ public final class ProtocolFactory {
             }
             return false;
         }).findFirst().orElse(
-                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
-                        this.forScheme(enabled, identifier)
+                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
+                        enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+                                this.forScheme(enabled, identifier)
+                        )
                 )
         );
         if(null == match) {

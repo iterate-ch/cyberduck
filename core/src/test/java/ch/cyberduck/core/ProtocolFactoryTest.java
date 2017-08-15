@@ -79,4 +79,35 @@ public class ProtocolFactoryTest {
         assertEquals(dav, f.forName("dav"));
         assertEquals(dav, f.forName("dav-provider"));
     }
+
+    @Test
+    public void testFindProtocolProviderMismatch() throws Exception {
+        final TestProtocol dav_provider1 = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "dav";
+            }
+
+            @Override
+            public String getProvider() {
+                return "provider_1";
+            }
+        };
+        final TestProtocol dav_provider2 = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "dav";
+            }
+
+            @Override
+            public String getProvider() {
+                return "provider_2";
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav_provider1, dav_provider2)));
+        assertEquals(dav_provider1, f.forName("dav"));
+        assertEquals(dav_provider1, f.forName("dav", "provider_1"));
+        assertEquals(dav_provider1, f.forName("dav", "g"));
+        assertEquals(dav_provider2, f.forName("dav", "provider_2"));
+    }
 }
