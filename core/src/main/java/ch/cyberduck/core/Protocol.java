@@ -100,7 +100,15 @@ public interface Protocol extends Comparable<Protocol> {
         irods,
         b2,
         file,
-        sds;
+        sds,
+        manta {
+            @Override
+            public boolean validate(final Credentials credentials, final LoginOptions options) {
+                final boolean usingPublicKey = options.publickey && credentials.isPublicKeyAuthentication();
+                final boolean usingUsernameAndPassword = options.user && !StringUtils.isAnyEmpty(credentials.getUsername(), credentials.getPassword());
+                return usingPublicKey || usingUsernameAndPassword;
+            }
+        };
 
         /**
          * Check login credentials for validity for this protocol.

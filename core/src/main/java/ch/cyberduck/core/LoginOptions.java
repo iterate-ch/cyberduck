@@ -112,7 +112,7 @@ public final class LoginOptions {
     }
 
     public void configure(final Protocol protocol) {
-        publickey = protocol.getType() == Protocol.Type.sftp;
+        publickey = protocol.getType() == Protocol.Type.sftp || protocol.getType() == Protocol.Type.manta;
         anonymous = protocol.isAnonymousConfigurable();
         user = protocol.isUsernameConfigurable();
         password = protocol.isPasswordConfigurable();

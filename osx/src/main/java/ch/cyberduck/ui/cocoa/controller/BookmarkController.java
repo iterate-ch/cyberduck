@@ -454,7 +454,8 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                privateKeyPopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.sftp);
+
+                privateKeyPopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.sftp || bookmark.getProtocol().getType() == Protocol.Type.manta);
                 if(credentials.isPublicKeyAuthentication()) {
                     privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(credentials.getIdentity().getAbsolute()));
                 }
