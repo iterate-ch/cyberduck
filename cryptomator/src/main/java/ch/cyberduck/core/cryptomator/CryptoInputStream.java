@@ -76,7 +76,15 @@ public class CryptoInputStream extends ProxyInputStream {
 
     @Override
     public long skip(final long ln) throws IOException {
-        return this.read(new byte[Math.toIntExact(ln)]);
+        long remaining = ln;
+        while(remaining > 0) {
+            final int read = this.read(new byte[(int) Math.min(remaining, Integer.MAX_VALUE)]);
+            if(read == IOUtils.EOF) {
+                break;
+            }
+            remaining -= read;
+        }
+        return ln - remaining;
     }
 
     private int readNextChunk() throws IOException {
