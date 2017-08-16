@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -73,6 +74,7 @@ public class MantaSessionTest {
     }
 
     @Test
+    @Ignore
     public void testSessionRejectsBadUsernames() {
         assertUsernameFailsLogin("!");
         assertUsernameFailsLogin("/subuser");
