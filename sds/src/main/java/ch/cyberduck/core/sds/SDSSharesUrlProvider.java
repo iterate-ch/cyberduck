@@ -19,13 +19,17 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.PublicApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.SharesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateResponse;
 
@@ -38,6 +42,9 @@ import java.text.MessageFormat;
 public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest> {
     private static final Logger log = Logger.getLogger(SDSSharesUrlProvider.class);
 
+    private final PathContainerService containerService
+            = new PathContainerService();
+
     private final SDSSession session;
 
     public SDSSharesUrlProvider(final SDSSession session) {
@@ -47,9 +54,23 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     @Override
     public DescriptiveUrl toUrl(final Path file, final CreateDownloadShareRequest options) throws BackgroundException {
         try {
+            final Long fileid = Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
+            if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+                final FileKey key = new NodesApi(session.getClient()).getUserFileKey(StringUtils.EMPTY, fileid);
+                options.fileKey(key).keyPair(session.keyPair());
+            }
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(StringUtils.EMPTY,
-                    options.nodeId(Long.valueOf(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()))),
-                    null);
+                    options.nodeId(fileid), null);
+            final String help;
+            final Long expiry = share.getExpireAt().getTime();
+            if(null == share.getExpireAt()) {
+                help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
+            }
+            else {
+                help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                        UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
+                );
+            }
             final PublicDownloadTokenGenerateResponse token = new PublicApi(session.getClient())
                     .createPublicDownloadShareToken(share.getAccessKey(), new PublicDownloadTokenGenerateRequest().password(null));
             return new DescriptiveUrl(
@@ -59,9 +80,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                             URI.create(session.getClient().getBasePath()).getPath(),
                             share.getAccessKey(), token.getToken())
                     ),
-                    DescriptiveUrl.Type.signed,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-            );
+                    DescriptiveUrl.Type.signed, help);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
