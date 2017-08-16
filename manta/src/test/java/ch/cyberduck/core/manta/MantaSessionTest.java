@@ -51,16 +51,23 @@ public class MantaSessionTest {
 
     private void assertUsernameFailsLogin(final String username) {
         try {
-            SessionFactory.create(new Credentials(username)).login(
+            new MantaSession(
+                    new Host(
+                            new MantaProtocol(),
+                            null,
+                            443,
+                            new Credentials(username))).login(
                     new DisabledPasswordStore(),
                     new DisabledLoginCallback(),
                     new DisabledCancelCallback(),
                     PathCache.empty()
             );
-        } catch (LoginFailureException e) {
+        }
+        catch(LoginFailureException e) {
             assertTrue(e.getMessage().contains("Login failed"));
             assertTrue(e.getDetail().contains("Invalid username"));
-        } catch(BackgroundException e) {
+        }
+        catch(BackgroundException e) {
             fail("Unexpected exception thrown: " + e.getMessage());
         }
     }
@@ -75,12 +82,19 @@ public class MantaSessionTest {
 
     @Test
     public void testUserOwnerIdentification() throws BackgroundException {
-        final MantaSession ownerSession = SessionFactory.create(new Credentials("theOwner"));
-        ownerSession.initializeHomeInfo();
+        final MantaSession ownerSession = new MantaSession(
+                new Host(
+                        new MantaProtocol(),
+                        null,
+                        443,
+                        new Credentials("theOwner")));
         assertTrue(ownerSession.userIsOwner());
-        final MantaSession subuserSession = SessionFactory.create(new Credentials("theOwner/theSubUser"));
-        subuserSession.initializeHomeInfo();
+        final MantaSession subuserSession = new MantaSession(
+                new Host(
+                        new MantaProtocol(),
+                        null,
+                        443,
+                        new Credentials("theOwner/theSubUser")));
         assertFalse(subuserSession.userIsOwner());
     }
-
 }

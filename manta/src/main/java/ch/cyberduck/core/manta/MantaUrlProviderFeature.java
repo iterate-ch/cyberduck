@@ -15,16 +15,15 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-/**
- * Created by tomascelaya on 5/23/17.
- */
-
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.UserDateFormatterFactory;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.Duration;
 
 public class MantaUrlProviderFeature implements UrlProvider {
@@ -41,24 +40,38 @@ public class MantaUrlProviderFeature implements UrlProvider {
         if(file.attributes().getLink() != null) {
             list.add(file.attributes().getLink());
         }
-
         try {
-            list.add(new DescriptiveUrl(
-                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", Duration.ofMinutes(1)),
-                    DescriptiveUrl.Type.signed,
-                    "Expiring link (1 minute)"));
-            list.add(new DescriptiveUrl(
-                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", Duration.ofHours(1)),
-                    DescriptiveUrl.Type.signed,
-                    "Expiring link (1 hour)"));
-            list.add(new DescriptiveUrl(
-                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", Duration.ofDays(1)),
-                    DescriptiveUrl.Type.signed,
-                    "Expiring link (1 day)"));
+            {
+                final Duration expiresIn = Duration.ofMinutes(1);
+                list.add(new DescriptiveUrl(
+                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                        DescriptiveUrl.Type.signed,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                                UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis() + expiresIn.toMillis()))));
+            }
+            {
+                final Duration expiresIn = Duration.ofHours(1);
+                list.add(new DescriptiveUrl(
+                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                        DescriptiveUrl.Type.signed,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                                UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis() + expiresIn.toMillis()))));
+            }
+            {
+                final Duration expiresIn = Duration.ofDays(1);
+                list.add(new DescriptiveUrl(
+                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                        DescriptiveUrl.Type.signed,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                                UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis() + expiresIn.toMillis()))));
+            }
         }
         catch(IOException e) {
+            //
         }
-
         return list;
     }
 }

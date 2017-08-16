@@ -24,8 +24,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
+import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
-import com.joyent.manta.exception.MantaIOException;
 
 public class MantaTouchFeature implements Touch {
 
@@ -41,11 +41,13 @@ public class MantaTouchFeature implements Touch {
             if(!session.getClient().existsAndIsAccessible(file.getParent().getAbsolute())) {
                 session.getClient().putDirectory(file.getParent().getAbsolute());
             }
-
             session.getClient().put(file.getAbsolute(), new byte[0]);
         }
-        catch(MantaException | MantaIOException e) {
-            throw new MantaExceptionMappingService(session).map("Cannot create file {0}", e, file);
+        catch(MantaException e) {
+            throw new MantaExceptionMappingService().map("Cannot create file {0}", e, file);
+        }
+        catch(MantaClientHttpResponseException e) {
+            throw new MantaHttpExceptionMappingService().map("Cannot create file {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);

@@ -24,6 +24,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
+import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 
 public class MantaDirectoryFeature implements Directory {
@@ -40,7 +41,10 @@ public class MantaDirectoryFeature implements Directory {
             session.getClient().putDirectory(directory.getAbsolute());
         }
         catch(MantaException e) {
-            throw new MantaExceptionMappingService(session).map("Cannot create folder {0}", e, directory);
+            throw new MantaExceptionMappingService().map("Cannot create folder {0}", e, directory);
+        }
+        catch(MantaClientHttpResponseException e) {
+            throw new MantaHttpExceptionMappingService().map("Cannot create folder {0}", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, directory);

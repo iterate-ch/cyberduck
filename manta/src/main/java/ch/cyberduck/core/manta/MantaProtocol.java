@@ -36,6 +36,11 @@ public class MantaProtocol extends AbstractProtocol {
     }
 
     @Override
+    public Type getType() {
+        return Type.manta;
+    }
+
+    @Override
     public String getPrefix() {
         return String.format("%s.%s", MantaProtocol.class.getPackage().getName(), "Manta");
     }
@@ -47,13 +52,7 @@ public class MantaProtocol extends AbstractProtocol {
 
     @Override
     public boolean isAnonymousConfigurable() {
-        // TODO: if true, we could allow people to traverse other people's public manta folders?
         return false;
-    }
-
-    @Override
-    public String getDefaultHostname() {
-        return "us-east.manta.joyent.com";
     }
 
     @Override
@@ -68,12 +67,6 @@ public class MantaProtocol extends AbstractProtocol {
 
     @Override
     public boolean isPasswordConfigurable() {
-        // TODO: password can be provided, but we're only using the key right now?
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
+        return false;
     }
 }

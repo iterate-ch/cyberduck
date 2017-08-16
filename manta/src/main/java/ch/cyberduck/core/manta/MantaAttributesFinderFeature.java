@@ -24,8 +24,8 @@ import ch.cyberduck.core.features.AttributesFinder;
 
 import java.io.IOException;
 
+import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
-import com.joyent.manta.exception.MantaIOException;
 
 public class MantaAttributesFinderFeature implements AttributesFinder {
 
@@ -40,13 +40,15 @@ public class MantaAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-
         try {
             return new MantaObjectAttributeAdapter(session)
-                    .from(session.getClient().head(file.getAbsolute()));
+                    .convert(session.getClient().head(file.getAbsolute()));
         }
-        catch(MantaException | MantaIOException e) {
-            throw new MantaExceptionMappingService(session).map("Failure to read attributes of {0}", e, file);
+        catch(MantaException e) {
+            throw new MantaExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
+        catch(MantaClientHttpResponseException e) {
+            throw new MantaHttpExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);

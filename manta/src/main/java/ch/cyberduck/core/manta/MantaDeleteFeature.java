@@ -24,8 +24,8 @@ import ch.cyberduck.core.features.Delete;
 import java.io.IOException;
 import java.util.List;
 
+import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
-import com.joyent.manta.exception.MantaIOException;
 
 public class MantaDeleteFeature implements Delete {
 
@@ -42,8 +42,11 @@ public class MantaDeleteFeature implements Delete {
             try {
                 session.getClient().deleteRecursive(file.getAbsolute());
             }
-            catch(MantaException | MantaIOException e) {
-                throw new MantaExceptionMappingService(session).map("Cannot delete {0}", e, file);
+            catch(MantaException e) {
+                throw new MantaExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+            catch(MantaClientHttpResponseException e) {
+                throw new MantaHttpExceptionMappingService().map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);

@@ -14,7 +14,8 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>parent</artifactId>
@@ -22,14 +23,17 @@
         <version>6.3.0-SNAPSHOT</version>
     </parent>
     <artifactId>manta</artifactId>
-
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>ssh</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>test</artifactId>
@@ -37,28 +41,14 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>ch.iterate.ssh</groupId>
-            <artifactId>sshj</artifactId>
-            <version>0.20.3</version>
-        </dependency>
-
         <dependency>
             <groupId>com.joyent.manta</groupId>
             <artifactId>java-manta-client</artifactId>
-            <version>3.1.5</version>
+            <version>3.1.7-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.56</version>
         </dependency>
-
-
     </dependencies>
-
-    <repositories>
-    </repositories>
 </project>

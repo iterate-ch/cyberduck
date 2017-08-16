@@ -19,36 +19,27 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 
 import java.util.EnumSet;
 
 import com.joyent.manta.util.MantaUtils;
 
-import static ch.cyberduck.core.manta.MantaSession.HOME_PATH_PRIVATE;
-import static ch.cyberduck.core.manta.MantaSession.HOME_PATH_PUBLIC;
-
-/**
- * Created by tomascelaya on 8/15/17.
- */
 public class MantaAccountHomeInfo {
 
+    public static final String HOME_PATH_PRIVATE = "stor";
+    public static final String HOME_PATH_PUBLIC = "public";
     private final String accountOwner;
-
     private final Path accountRoot;
-
     private final Path normalizedHomePath;
     private final Path accountPublicRoot;
     private final Path accountPrivateRoot;
 
     public MantaAccountHomeInfo(final String username, final String defaultPath) {
-        Validate.notNull(username, "Username must not be null");
-
-        String[] accountPathParts = MantaUtils.parseAccount(username);
+        final String[] accountPathParts = MantaUtils.parseAccount(username);
 
         accountRoot = new Path(accountPathParts[0], EnumSet.of(AbstractPath.Type.placeholder));
         accountOwner = accountRoot.getName();
-        normalizedHomePath = buildNormalizedHomePath(defaultPath);
+        normalizedHomePath = this.buildNormalizedHomePath(defaultPath);
 
         accountPublicRoot = new Path(
                 accountRoot,

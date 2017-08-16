@@ -16,16 +16,17 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.io.IOUtils;
@@ -37,11 +38,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyException;
 import java.security.KeyPair;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
-import com.joyent.manta.http.signature.KeyFingerprinter;
+import com.joyent.manta.config.SettableConfigContext;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
@@ -53,49 +53,23 @@ import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class MantaPublicKeyAuthentication implements MantaAuthentication {
-
     private static final Logger log = Logger.getLogger(MantaPublicKeyAuthentication.class);
 
     private final MantaSession session;
 
-    private final HostPasswordStore keychain;
-
-    public MantaPublicKeyAuthentication(final MantaSession session, final HostPasswordStore keychain) {
+    public MantaPublicKeyAuthentication(final MantaSession session) {
         this.session = session;
-        this.keychain = keychain;
     }
 
-    public boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
-            throws BackgroundException {
-
+    public String authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
-
-        log.info(String.format("Login using public key authentication with credentials %s", credentials));
-
-        if(!credentials.isPublicKeyAuthentication()) {
-            throw new MantaExceptionMappingService(session).map(new KeyException("Private Key Authentication is required"));
-        }
-
         final Local identity = credentials.getIdentity();
-        final KeyFormat format = detectKeyFormat(identity);
-        final FileKeyProvider provider = buildProvider(identity, format);
+        final KeyFormat format = this.detectKeyFormat(identity);
+        final FileKeyProvider provider = this.buildProvider(identity, format);
         readKeyContentsIntoConfig(identity);
-
-        log.info(String.format("Reading private key %s with key format %s", identity, format));
-
-        initializePasswordProvider(bookmark, prompt, credentials, identity, provider);
-
-        final String fingerprint = computeFingerprint(provider);
-
-        session.setFingerprint(fingerprint);
-        return true;
-    }
-
-    private void initializePasswordProvider(final Host bookmark,
-                                            final LoginCallback prompt,
-                                            final Credentials credentials,
-                                            final Local identity,
-                                            final FileKeyProvider provider) throws AccessDeniedException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Reading private key %s with key format %s", identity, format));
+        }
         provider.init(
                 new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8),
                 new PasswordFinder() {
@@ -120,8 +94,8 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                             if(StringUtils.isEmpty(credentials.getPassword())) {
                                 return null; // user left field blank
                             }
-
-                            session.getConfig().setPassword(credentials.getPassword());
+                            final SettableConfigContext config = (SettableConfigContext) session.getClient().getContext();
+                            config.setPassword(credentials.getPassword());
                             return credentials.getPassword().toCharArray();
                         }
                         return password.toCharArray();
@@ -132,42 +106,34 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                         return false;
                     }
                 });
+        return this.computeFingerprint(provider);
     }
 
     private String computeFingerprint(final FileKeyProvider provider) throws BackgroundException {
-        final String fingerprint;
         try {
             final KeyPair keyPair = new KeyPair(provider.getPublic(), provider.getPrivate());
-            fingerprint = KeyFingerprinter.md5Fingerprint(keyPair);
+            return new SSHFingerprintGenerator().fingerprint(keyPair.getPublic());
         }
         catch(IOException e) {
-            throw new MantaExceptionMappingService(session).map(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
-        return fingerprint;
     }
 
     private FileKeyProvider buildProvider(final Local identity, final KeyFormat format) throws InteroperabilityException {
-        final FileKeyProvider provider;
         switch(format) {
             case PKCS5:
-                provider = new PKCS5KeyFile.Factory().create();
-                break;
+                return new PKCS5KeyFile.Factory().create();
             case PKCS8:
-                provider = new PKCS8KeyFile.Factory().create();
-                break;
+                return new PKCS8KeyFile.Factory().create();
             case OpenSSH:
-                provider = new OpenSSHKeyFile.Factory().create();
-                break;
+                return new OpenSSHKeyFile.Factory().create();
             case OpenSSHv1:
-                provider = new OpenSSHKeyV1KeyFile.Factory().create();
-                break;
+                return new OpenSSHKeyV1KeyFile.Factory().create();
             case PuTTY:
-                provider = new PuTTYKeyFile.Factory().create();
-                break;
+                return new PuTTYKeyFile.Factory().create();
             default:
                 throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
         }
-        return provider;
     }
 
     private KeyFormat detectKeyFormat(final Local identity) throws BackgroundException {
@@ -178,7 +144,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
                     true);
         }
         catch(IOException e) {
-            throw new MantaExceptionMappingService(session).mapLoginException(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
         return format;
     }
@@ -193,10 +159,11 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         try (InputStream is = identity.getInputStream();
              ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             IOUtils.copy(is, baos);
-            session.getConfig().setPrivateKeyContent(new String(baos.toByteArray(), StandardCharsets.UTF_8));
+            final SettableConfigContext config = (SettableConfigContext) session.getClient().getContext();
+            config.setPrivateKeyContent(new String(baos.toByteArray(), StandardCharsets.UTF_8));
         }
         catch(IOException e) {
-            throw new MantaExceptionMappingService(session).mapLoginException(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 }

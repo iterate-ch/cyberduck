@@ -16,19 +16,16 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.CancelCallback;
-
-/**
- * TODO: Mimics SFTPAuthentication interface, maybe they can be combined?
- */
 
 public interface MantaAuthentication {
 
     /**
      * @return True if authentication is complete
      */
-    boolean authenticate(Host bookmark, LoginCallback prompt, CancelCallback cancel)
+    String authenticate(Host bookmark, final HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel)
             throws BackgroundException;
 }

@@ -39,7 +39,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MantaWriteFeatureIT extends AbstractMantaTest {
+public class MantaWriteFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testWrite() throws Exception {

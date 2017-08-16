@@ -26,7 +26,7 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MantaHomeFeatureIT extends AbstractMantaTest {
+public class MantaHomeFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testHomeFeature() throws BackgroundException {

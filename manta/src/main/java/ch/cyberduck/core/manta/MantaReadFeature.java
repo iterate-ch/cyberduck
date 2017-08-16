@@ -16,6 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -29,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.joyent.manta.client.MantaObject;
+import com.joyent.manta.exception.MantaClientHttpResponseException;
+import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.http.MantaHttpHeaders;
 
 public class MantaReadFeature implements Read {
@@ -40,49 +43,40 @@ public class MantaReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file,
-                            final TransferStatus status,
-                            final ConnectionCallback connectionCallback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback connectionCallback) throws BackgroundException {
         final MantaHttpHeaders headers = new MantaHttpHeaders();
-
         try {
-            if(status.isAppend()) {
-                final HttpRange range = HttpRange.withStatus(status);
-                headers.setByteRange(range.getStart(), range.getEnd() < 0 ? null : range.getEnd());
+            try {
+                if(status.isAppend()) {
+                    final HttpRange range = HttpRange.withStatus(status);
+                    headers.setByteRange(range.getStart(), range.getEnd() < 0 ? null : range.getEnd());
+                }
+                // Requesting an empty file as an InputStream doesn't work, but we also don't want to
+                // perform a HEAD request for every read so we'll opt to handle the exception instead
+                // see https://github.com/joyent/java-manta/issues/248
+                return session.getClient().getAsInputStream(file.getAbsolute(), headers);
             }
-
-            // requesting an empty file as an InputStream doesn't work, but we also don't want to
-            // perform a HEAD request for every read so we'll opt to handle the exception instead
-            // see https://github.com/joyent/java-manta/issues/248
-            return session.getClient().getAsInputStream(file.getAbsolute(), headers);
+            catch(UnsupportedOperationException e) {
+                final MantaObject probablyEmptyFile = session.getClient().head(file.getAbsolute());
+                if(probablyEmptyFile.getContentLength() != 0) {
+                    throw new AccessDeniedException();
+                }
+                return new NullInputStream(0L);
+            }
         }
-        catch(UnsupportedOperationException e) {
-            return emptyFileFallback(file);
+        catch(MantaException e) {
+            throw new MantaExceptionMappingService().map("Download {0} failed", e, file);
+        }
+        catch(MantaClientHttpResponseException e) {
+            throw new MantaHttpExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
-            throw new MantaExceptionMappingService(session).map(e);
+            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        // The feature will only be called for paths of type file.
         return true;
-    }
-
-    private InputStream emptyFileFallback(final Path file) throws BackgroundException {
-        final MantaObject probablyEmptyFile;
-        try {
-            probablyEmptyFile = session.getClient().head(file.getAbsolute());
-        }
-        catch(IOException e) {
-            throw new MantaExceptionMappingService(session).map("Cannot read file {0}", e, file);
-        }
-
-        if(probablyEmptyFile.getContentLength() != 0) {
-            throw new AccessDeniedException("Unexpected file size.");
-        }
-
-        return new NullInputStream(0);
     }
 }

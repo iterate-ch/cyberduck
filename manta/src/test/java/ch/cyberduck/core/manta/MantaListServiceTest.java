@@ -23,12 +23,10 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MantaListServiceIT extends AbstractMantaTest {
+public class MantaListServiceTest extends AbstractMantaTest {
 
     @Test
     public void testListBuckets() throws Exception {

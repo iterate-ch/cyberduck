@@ -32,7 +32,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class MantaTouchFeatureIT extends AbstractMantaTest {
+public class MantaTouchFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testTouch() throws Exception {

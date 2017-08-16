@@ -30,11 +30,10 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MantaDirectoryFeatureIT extends AbstractMantaTest {
+public class MantaDirectoryFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testMkdir() throws Exception {
@@ -56,7 +55,7 @@ public class MantaDirectoryFeatureIT extends AbstractMantaTest {
                         ), null, null);
         final Attributes found = new MantaAttributesFinderFeature(session).find(target);
         assertNotNull(found.getOwner());
-        assertNotNull(found.getCreationDate());
+        assertNotEquals(-1L, found.getCreationDate());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

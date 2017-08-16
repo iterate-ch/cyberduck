@@ -31,7 +31,7 @@ import java.util.Collections;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MantaAttributesFinderFeatureIT extends AbstractMantaTest {
+public class MantaAttributesFinderFeatureTest extends AbstractMantaTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {

@@ -42,7 +42,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class MantaPublicKeyAuthenticationIT {
+public class MantaPublicKeyAuthenticationTest {
 
     @Test
     public void testAuthenticateOpenSSHKeyWithoutIdentity() throws Exception {
@@ -52,9 +52,9 @@ public class MantaPublicKeyAuthenticationIT {
             final Host host = new Host(new MantaProtocol(), "us-east.manta.joyent.com", credentials);
             final MantaSession session = new MantaSession(host);
             session.open(new DisabledHostKeyCallback());
-            new MantaPublicKeyAuthentication(session, new DisabledPasswordStore())
-                    .authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback());
-            assertEquals(session.getFingerprint(), System.getProperty("manta.key_id"));
+            final String fingerprint = new MantaPublicKeyAuthentication(session)
+                    .authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            assertEquals(fingerprint, System.getProperty("manta.key_id"));
             session.close();
         }
         catch(LoginFailureException e) {
@@ -90,7 +90,7 @@ public class MantaPublicKeyAuthenticationIT {
                     new DisabledCancelCallback(),
                     new PathCache(0)
             );
-            assertEquals(session.getFingerprint(), System.getProperty("manta.key_id"));
+            assertEquals(session.getClient().getContext().getMantaKeyId(), System.getProperty("manta.key_id"));
             session.close();
         }
         finally {
@@ -130,7 +130,7 @@ public class MantaPublicKeyAuthenticationIT {
                     new DisabledCancelCallback(),
                     new PathCache(0)
             );
-            assertEquals(System.getProperty("manta.passphrase.key_id"), session.getFingerprint());
+            assertEquals(System.getProperty("manta.passphrase.key_id"), session.getClient().getContext().getMantaKeyId());
             session.close();
         }
         finally {

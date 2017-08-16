@@ -30,7 +30,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 
 import com.joyent.manta.client.MantaObject;
-import com.joyent.manta.exception.MantaIOException;
+import com.joyent.manta.exception.MantaClientHttpResponseException;
 
 public class MantaListService implements ListService {
 
@@ -44,31 +44,27 @@ public class MantaListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-
         final AttributedList<Path> children = new AttributedList<>();
-
         final Iterator<MantaObject> objectsIter;
         try {
             objectsIter = session.getClient().listObjects(directory.getAbsolute()).iterator();
         }
         catch(UncheckedIOException uioe) {
-            if (directory.isRoot()) {
+            if(directory.isRoot()) {
                 // Most users should not be able to list all buckets, treat this as a regular exception
                 throw new AccessDeniedException("Cannot list buckets.");
             }
-
             throw uioe;
         }
-        catch(MantaIOException me) {
-            throw new MantaExceptionMappingService(session).map("Listing directory {0} failed", me, directory);
+        catch(MantaClientHttpResponseException e) {
+            throw new MantaHttpExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
-        catch(IOException ioe) {
-            throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", ioe);
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e);
         }
-
         while(objectsIter.hasNext()) {
             MantaObject o = objectsIter.next();
-            final PathAttributes attr = adapter.from(o);
+            final PathAttributes attr = adapter.convert(o);
             final Path path = new Path(
                     directory,
                     attr.getDisplayname(),
@@ -78,7 +74,6 @@ public class MantaListService implements ListService {
             children.add(path);
             listener.chunk(directory, children);
         }
-
         return children;
     }
 }

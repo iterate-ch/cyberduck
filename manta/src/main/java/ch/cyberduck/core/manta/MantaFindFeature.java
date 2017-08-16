@@ -19,6 +19,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
 public class MantaFindFeature implements Find {
@@ -32,13 +33,12 @@ public class MantaFindFeature implements Find {
     }
 
     @Override
-    @SuppressWarnings("")
     public boolean find(final Path file) throws BackgroundException {
         try {
             new MantaAttributesFinderFeature(session).withCache(cache).find(file);
             return true; // successfully found attributes for file
-        } catch (BackgroundException e) {
-            // TODO: find out which exception is thrown when the file isn't found an split the catch
+        }
+        catch(NotfoundException e) {
             return false;
         }
     }

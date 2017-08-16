@@ -18,8 +18,10 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.AbstractPath.Type;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -31,7 +33,6 @@ import java.util.UUID;
 import static org.junit.Assert.fail;
 
 public abstract class AbstractMantaTest {
-
     private static final Logger log = Logger.getLogger(AbstractMantaTest.class);
 
     protected MantaSession session;
@@ -47,14 +48,14 @@ public abstract class AbstractMantaTest {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Triton Manta.cyberduckprofile"));
 
-        final String keyPath = ObjectUtils.firstNonNull(System.getProperty("manta.key_path"), "");
+        final String key = System.getProperty("manta.key");
+        final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
+        LocalTouchFactory.get().touch(file);
+        IOUtils.write(key.getBytes(), file.getOutputStream(false));
         final String username = System.getProperty("manta.user");
-        final Host host = new Host(
-                profile,
-                profile.getDefaultHostname(),
-                new Credentials(username)
-                        .withIdentity(new Local(keyPath)));
-
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(username)
+                .withIdentity(file)
+        );
         session = new MantaSession(host);
         new LoginConnectionService(
                 new DisabledLoginCallback() {
@@ -68,7 +69,7 @@ public abstract class AbstractMantaTest {
                 new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
 
-        testPathPrefix = new Path(session.getAccountPrivateRoot(), UUID.randomUUID().toString(), EnumSet.of(Type.directory));
+        testPathPrefix = new Path(session.getAccountPrivateRoot(), new AlphanumericRandomStringService().random(), EnumSet.of(Type.directory));
         session.getClient().putDirectory(testPathPrefix.getAbsolute());
     }
 

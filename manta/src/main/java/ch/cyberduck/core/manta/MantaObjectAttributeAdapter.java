@@ -29,9 +29,8 @@ import java.net.URISyntaxException;
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
 
-public class MantaObjectAttributeAdapter {
-
-    private static final Logger log = Logger.getLogger(MantaAttributesFinderFeature.class);
+public final class MantaObjectAttributeAdapter {
+    private static final Logger log = Logger.getLogger(MantaObjectAttributeAdapter.class);
 
     private final MantaSession session;
 
@@ -41,29 +40,28 @@ public class MantaObjectAttributeAdapter {
         this.session = session;
     }
 
-    public PathAttributes from(final MantaObject mantaObject) {
+    public PathAttributes convert(final MantaObject object) {
         final PathAttributes attributes = new PathAttributes();
+        populateGenericAttributes(object, attributes);
 
-        populateGenericAttributes(mantaObject, attributes);
-
-        if(mantaObject.isDirectory()) {
+        if(object.isDirectory()) {
             return attributes;
         }
 
-        if(session.isWorldReadable(mantaObject)) {
-            populateLinkAttribute(attributes, mantaObject);
+        if(session.isWorldReadable(object)) {
+            populateLinkAttribute(attributes, object);
         }
 
-        attributes.setSize(mantaObject.getContentLength());
-        attributes.setETag(mantaObject.getEtag());
+        attributes.setSize(object.getContentLength());
+        attributes.setETag(object.getEtag());
 
-        final byte[] md5Bytes = mantaObject.getMd5Bytes();
+        final byte[] md5Bytes = object.getMd5Bytes();
 
         if(md5Bytes != null) {
             attributes.setChecksum(new Checksum(HashAlgorithm.md5, new String(md5Bytes)));
         }
 
-        attributes.setStorageClass(mantaObject.getHeaderAsString(HEADER_KEY_STORAGE_CLASS));
+        attributes.setStorageClass(object.getHeaderAsString(HEADER_KEY_STORAGE_CLASS));
 
         return attributes;
     }
@@ -76,7 +74,7 @@ public class MantaObjectAttributeAdapter {
 
         populatePermissionsAttribute(mantaObject, attributes);
 
-        if (mantaObject.getLastModifiedTime() != null) {
+        if(mantaObject.getLastModifiedTime() != null) {
             attributes.setModificationDate(mantaObject.getLastModifiedTime().getTime());
             attributes.setCreationDate(attributes.getModificationDate());
         }

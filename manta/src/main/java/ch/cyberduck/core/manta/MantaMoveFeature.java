@@ -25,8 +25,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
+import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
-import com.joyent.manta.exception.MantaIOException;
 
 public class MantaMoveFeature implements Move {
 
@@ -37,17 +37,16 @@ public class MantaMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file,
-                     final Path renamed,
-                     final TransferStatus transferStatus,
-                     final Delete.Callback deleteCallback,
-                     final ConnectionCallback connectionCallback)
-            throws BackgroundException {
+    public void move(final Path file, final Path renamed, final TransferStatus status,
+                     final Delete.Callback deleteCallback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             session.getClient().move(file.getAbsolute(), renamed.getAbsolute());
         }
-        catch(MantaException | MantaIOException e) {
-            throw new MantaExceptionMappingService(session).map("Cannot rename {0}", e, file);
+        catch(MantaException e) {
+            throw new MantaExceptionMappingService().map("Cannot rename {0}", e, file);
+        }
+        catch(MantaClientHttpResponseException e) {
+            throw new MantaHttpExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
