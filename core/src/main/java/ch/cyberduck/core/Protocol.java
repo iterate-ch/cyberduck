@@ -104,9 +104,13 @@ public interface Protocol extends Comparable<Protocol> {
         manta {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                final boolean usingPublicKey = options.publickey && credentials.isPublicKeyAuthentication();
-                final boolean usingUsernameAndPassword = options.user && !StringUtils.isAnyEmpty(credentials.getUsername(), credentials.getPassword());
-                return usingPublicKey || usingUsernameAndPassword;
+                if(StringUtils.isBlank(credentials.getUsername())) {
+                    return false;
+                }
+                if(!credentials.getUsername().matches("[A-z0-9._]+(/[A-z0-9._]+)?")) {
+                    return false;
+                }
+                return credentials.isPublicKeyAuthentication();
             }
         };
 
