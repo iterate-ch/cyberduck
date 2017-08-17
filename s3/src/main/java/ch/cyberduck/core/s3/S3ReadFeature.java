@@ -49,7 +49,8 @@ public class S3ReadFeature implements Read {
         try {
             final HttpRange range = HttpRange.withStatus(status);
             final RequestEntityRestStorageService client = session.getClient();
-            final S3Object object = client.getObject(
+            final S3Object object = client.getVersionedObject(
+                    file.attributes().getVersionId(),
                     containerService.getContainer(file).getName(),
                     containerService.getKey(file),
                     null, // ifModifiedSince
