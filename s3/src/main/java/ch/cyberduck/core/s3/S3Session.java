@@ -77,12 +77,14 @@ import java.util.EnumSet;
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
-    private DistributionConfiguration cdn;
-
-    private Versioning versioning;
-
     private final Preferences preferences
             = PreferencesFactory.get();
+
+    private DistributionConfiguration cdn
+            = new WebsiteCloudFrontDistributionConfiguration(this, trust, key);
+
+    private Versioning versioning
+            = new S3VersioningFeature(this, new S3AccessControlListFeature(this));
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
             = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
@@ -269,10 +271,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(null == versioning) {
                 return (T) new S3ReadFeature(this);
             }
-            return (T) new S3ReadFeature(this);
+            return (T) new S3VersionedReadFeature(this, versioning);
         }
         if(type == MultipartWrite.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
@@ -281,9 +283,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3MultipartWriteFeature(this);
         }
         if(type == Write.class) {
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3WriteFeature(this);
-            }
             return (T) new S3WriteFeature(this);
         }
         if(type == Upload.class) {
@@ -330,13 +329,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == Versioning.class) {
-            if(preferences.getBoolean("s3.revisions.enable")) {
-                if(null == versioning) {
-                    versioning = new S3VersioningFeature(this, new S3AccessControlListFeature(this));
-                }
-                return (T) versioning;
-            }
-            return null;
+            return (T) versioning;
         }
         if(type == Logging.class) {
             return (T) new S3LoggingFeature(this);
@@ -362,9 +355,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == DistributionConfiguration.class) {
-            if(null == cdn) {
-                cdn = new WebsiteCloudFrontDistributionConfiguration(this, trust, key);
-            }
             return (T) cdn;
         }
         if(type == UrlProvider.class) {
@@ -381,12 +371,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3TransferAccelerationService(this);
             }
+            return null;
         }
         if(type == Bulk.class) {
             // Only for AWS
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3BulkTransferAccelerationFeature(this, new S3TransferAccelerationService(this));
             }
+            return null;
         }
         if(type == Search.class) {
             return (T) new S3SearchFeature(this);
