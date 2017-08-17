@@ -92,7 +92,7 @@ public class DefaultPathPredicate implements CacheReference<Path> {
     }
 
     @Override
-    public boolean test(final Path file) {
-        return this.hashCode() == new DefaultPathPredicate(file).hashCode();
+    public boolean test(final Path test) {
+        return this.hashCode() == new DefaultPathPredicate(test).hashCode();
     }
 }
