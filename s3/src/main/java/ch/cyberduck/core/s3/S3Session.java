@@ -271,10 +271,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
-            if(null == versioning) {
-                return (T) new S3ReadFeature(this);
-            }
-            return (T) new S3VersionedReadFeature(this, versioning);
+            return (T) new S3ReadFeature(this);
         }
         if(type == MultipartWrite.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
