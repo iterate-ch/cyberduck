@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.io.IOUtils;
@@ -74,15 +73,8 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     protected StorageObject details(final Path file) throws BackgroundException {
         final String container = containerService.getContainer(file).getName();
         try {
-            final Versioning versioning = session.getFeature(Versioning.class);
-            if(versioning != null && versioning.getConfiguration(containerService.getContainer(file)).isEnabled()) {
-                final String version = file.attributes().getVersionId();
-                return session.getClient().getVersionedObjectDetails(version,
-                        container, containerService.getKey(file));
-            }
-            else {
-                return session.getClient().getObjectDetails(container, containerService.getKey(file));
-            }
+            return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
+                    container, containerService.getKey(file));
         }
         catch(ServiceException e) {
             switch(session.getSignatureVersion()) {
