@@ -33,13 +33,11 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3TouchFeature;
-import ch.cyberduck.core.s3.S3VersionedReadFeature;
-import ch.cyberduck.core.s3.S3VersioningFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -96,8 +94,7 @@ public class DefaultDownloadFeatureTest {
             test.attributes().setVersionId(((S3Object) out.getStatus()).getVersionId());
             final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
             final TransferStatus readStatus = new TransferStatus().length(content.length);
-            new DefaultDownloadFeature(new S3VersionedReadFeature(session, new S3VersioningFeature(session,
-                    new S3AccessControlListFeature(session)))).download(
+            new DefaultDownloadFeature(new S3ReadFeature(session)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     readStatus,
                     new DisabledConnectionCallback(), new DisabledPasswordCallback());
