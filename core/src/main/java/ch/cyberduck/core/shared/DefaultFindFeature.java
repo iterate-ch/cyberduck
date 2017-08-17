@@ -59,24 +59,9 @@ public class DefaultFindFeature implements Find {
             else {
                 list = cache.get(file.getParent());
             }
-            final Path existing = list.filter(new NullFilter<>()).find(new DuplicateFilterPathPredicate(file));
-            final boolean found = existing != null;
-            if(!found) {
-                switch(session.getCase()) {
-                    case insensitive:
-                        // Find for all matching filenames ignoring case
-                        for(Path f : list) {
-                            if(!f.getType().equals(file.getType())) {
-                                continue;
-                            }
-                            if(StringUtils.equalsIgnoreCase(f.getName(), file.getName())) {
-                                log.warn(String.format("Found matching file %s ignoring case", f));
-                                return true;
-                            }
-                        }
-                }
-            }
-            return found;
+            final Path found = list.filter(new NullFilter<>()).find(
+                    session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file));
+            return found != null;
         }
         catch(NotfoundException e) {
             return false;
@@ -89,18 +74,19 @@ public class DefaultFindFeature implements Find {
         return this;
     }
 
-    private final class DuplicateFilterPathPredicate extends SimplePathPredicate {
-
-        public DuplicateFilterPathPredicate(final Path file) {
+    private final class CaseInsensitivePathPredicate extends SimplePathPredicate {
+        public CaseInsensitivePathPredicate(final Path file) {
             super(file);
         }
 
         @Override
-        public boolean test(final Path file) {
-            if(file.attributes().isDuplicate()) {
-                return false;
-            }
-            return super.test(file);
+        public String toString() {
+            return this.type() + "-" + StringUtils.lowerCase(file.getAbsolute());
+        }
+
+        @Override
+        public boolean test(final Path test) {
+            return this.hashCode() == new CaseInsensitivePathPredicate(test).hashCode();
         }
     }
 }
