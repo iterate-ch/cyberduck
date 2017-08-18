@@ -58,7 +58,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         if(containerService.isContainer(file)) {
-            return PathAttributes.EMPTY;
+            final PathAttributes attributes = new PathAttributes();
+            attributes.setRegion(new S3LocationFeature(session).getLocation(file).getIdentifier());
+            return attributes;
         }
         return this.convert(this.details(file));
     }
