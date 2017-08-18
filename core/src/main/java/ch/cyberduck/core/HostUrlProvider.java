@@ -23,35 +23,43 @@ import org.apache.commons.lang3.StringUtils;
 
 public class HostUrlProvider {
 
-    private final boolean username;
-
-    private final boolean path;
+    private final boolean includeUsername;
+    private final boolean includePath;
 
     public HostUrlProvider() {
         this(true, false);
     }
 
-    public HostUrlProvider(final boolean username) {
-        this(username, false);
+    public HostUrlProvider(final boolean includeUsername) {
+        this(includeUsername, false);
     }
 
-    public HostUrlProvider(final boolean username, final boolean path) {
-        this.username = username;
-        this.path = path;
+    public HostUrlProvider(final boolean includeUsername, final boolean includePath) {
+        this.includeUsername = includeUsername;
+        this.includePath = includePath;
     }
 
     /**
      * @return URL
      */
-    public String get(final Host host) {
+    public String get(final Host bookmark) {
+        final Scheme scheme = bookmark.getProtocol().getScheme();
+        final int port = bookmark.getPort();
+        final String username = bookmark.getCredentials().getUsername();
+        final String hostname = bookmark.getHostname();
+        final String path = bookmark.getDefaultPath();
+        return this.get(scheme, port, username, hostname, path);
+    }
+
+    protected String get(final Scheme scheme, final int port, final String username, final String hostname, final String path) {
         final String base = String.format("%s://%s%s%s",
-                host.getProtocol().getScheme().toString(),
-                username && StringUtils.isNotEmpty(host.getCredentials().getUsername()) ? String.format("%s@", host.getCredentials().getUsername()) : "",
-                new PunycodeConverter().convert(host.getHostname()),
-                host.getPort() != host.getProtocol().getScheme().getPort() ? String.format(":%d", host.getPort()) : "");
-        if(path) {
-            if(StringUtils.isNotBlank(host.getDefaultPath())) {
-                return String.format("%s%s", base, PathNormalizer.normalize(host.getDefaultPath()));
+                scheme,
+                includeUsername && StringUtils.isNotEmpty(username) ? String.format("%s@", username) : "",
+                new PunycodeConverter().convert(hostname),
+                port != scheme.getPort() ? String.format(":%d", port) : "");
+        if(includePath) {
+            if(StringUtils.isNotBlank(path)) {
+                return String.format("%s%s", base, PathNormalizer.normalize(path));
             }
         }
         return base;
