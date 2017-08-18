@@ -60,9 +60,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         if(containerService.isContainer(file)) {
             return PathAttributes.EMPTY;
         }
-        else {
-            return this.convert(this.details(file));
-        }
+        return this.convert(this.details(file));
     }
 
     @Override
