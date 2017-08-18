@@ -42,6 +42,9 @@ public class S3FindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return true;
+        }
         final AttributedList<Path> list;
         if(cache.isCached(file.getParent())) {
             list = cache.get(file.getParent());
