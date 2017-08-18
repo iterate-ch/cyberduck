@@ -83,21 +83,21 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private final SDSErrorResponseInterceptor retryHandler = new SDSErrorResponseInterceptor(this);
 
-    private final OAuth2RequestInterceptor authorizationService
-            = new OAuth2RequestInterceptor(builder.build(this).addInterceptorLast(new HttpRequestInterceptor() {
-        @Override
-        public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-            request.addHeader(HttpHeaders.AUTHORIZATION,
-                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
-        }
-    }).build(),
-            host.getProtocol()).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+    private final OAuth2RequestInterceptor authorizationService;
 
     private final ExpiringObjectHolder<UserAccount> userAccount = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        this.authorizationService = new OAuth2RequestInterceptor(builder.build(this).addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                request.addHeader(HttpHeaders.AUTHORIZATION,
+                        String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
+            }
+        }).build(),
+                host.getProtocol(), host).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
     }
 
     @Override
