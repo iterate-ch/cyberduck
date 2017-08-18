@@ -23,6 +23,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.URIEncoder;
@@ -89,14 +90,15 @@ public class S3ObjectListService implements ListService {
                     final EnumSet<AbstractPath.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
                             ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     final Path file;
+                    final PathAttributes attributes = this.attributes.convert(object);
+                    // Copy bucket location
+                    attributes.setRegion(bucket.attributes().getRegion());
                     if(null == delimiter) {
-                        file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), types, attributes.convert(object));
+                        file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), types, attributes);
                     }
                     else {
-                        file = new Path(directory, PathNormalizer.name(key), types, attributes.convert(object));
+                        file = new Path(directory, PathNormalizer.name(key), types, attributes);
                     }
-                    // Copy bucket location
-                    file.attributes().setRegion(bucket.attributes().getRegion());
                     children.add(file);
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
@@ -110,13 +112,14 @@ public class S3ObjectListService implements ListService {
                         continue;
                     }
                     final Path file;
+                    final PathAttributes attributes = new PathAttributes();
                     if(null == delimiter) {
-                        file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                        file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                     }
                     else {
-                        file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                        file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                     }
-                    file.attributes().setRegion(bucket.attributes().getRegion());
+                    attributes.setRegion(bucket.attributes().getRegion());
                     children.add(file);
                 }
                 priorLastKey = chunk.getPriorLastKey();
