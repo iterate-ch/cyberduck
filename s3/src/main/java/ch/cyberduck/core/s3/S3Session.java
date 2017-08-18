@@ -245,12 +245,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return new S3BucketListService(this, new S3LocationFeature.S3Region(host.getRegion())).list(directory, listener);
         }
         else {
-            final AttributedList<Path> objects = new S3ObjectListService(this).list(directory, listener);
+            AttributedList<Path> objects;
             try {
-                objects.addAll(new S3VersionedObjectListService(this).list(directory, listener));
+                objects = new S3VersionedObjectListService(this).list(directory, listener);
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Ignore failure listing versioned objects. %s", e.getDetail()));
+                objects = new S3ObjectListService(this).list(directory, listener);
             }
             try {
                 for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
