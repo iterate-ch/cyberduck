@@ -38,23 +38,23 @@ public class SwiftDistributionConfigurationTest {
     @Test
     public void testGetName() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
-                new SwiftDistributionConfigurationLoader(session).repeat(new DisabledPasswordCallback()));
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session, Collections.emptyMap());
         assertEquals("Akamai", configuration.getName());
         assertEquals("Akamai", configuration.getName(Distribution.DOWNLOAD));
+        session.close();
     }
 
     @Test
     public void testFeatures() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
-                new SwiftDistributionConfigurationLoader(session).repeat(new DisabledPasswordCallback()));
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session, Collections.emptyMap());
         assertNotNull(configuration.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(Index.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(AnalyticsProvider.class, Distribution.DOWNLOAD));
         assertNull(configuration.getFeature(Cname.class, Distribution.DOWNLOAD));
+        session.close();
     }
 
     @Test
