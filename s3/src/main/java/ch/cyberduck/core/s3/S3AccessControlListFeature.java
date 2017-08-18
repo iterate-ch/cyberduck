@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.log4j.Logger;
@@ -64,18 +63,8 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 return this.convert(session.getClient().getBucketAcl(containerService.getContainer(file).getName()));
             }
             else if(file.isFile() || file.isPlaceholder()) {
-                final Versioning versioning = session.getFeature(Versioning.class);
-                if(versioning != null && versioning.getConfiguration(containerService.getContainer(file)).isEnabled()) {
-                    final String version = file.attributes().getVersionId();
-                    return this.convert(session.getClient().getVersionedObjectAcl(version,
-                            containerService.getContainer(file).getName(), containerService.getKey(file)));
-                }
-                else {
-                    // This method can be performed by anonymous services, but can only succeed if the
-                    // object's existing ACL already allows read access by the anonymous user.
-                    return this.convert(session.getClient().getObjectAcl(
-                            containerService.getContainer(file).getName(), containerService.getKey(file)));
-                }
+                return this.convert(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
+                        containerService.getContainer(file).getName(), containerService.getKey(file)));
             }
             return Acl.EMPTY;
         }

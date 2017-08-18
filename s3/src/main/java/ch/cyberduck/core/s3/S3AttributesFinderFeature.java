@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.io.IOUtils;
@@ -59,11 +58,11 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         if(containerService.isContainer(file)) {
-            return PathAttributes.EMPTY;
+            final PathAttributes attributes = new PathAttributes();
+            attributes.setRegion(new S3LocationFeature(session).getLocation(file).getIdentifier());
+            return attributes;
         }
-        else {
-            return this.convert(this.details(file));
-        }
+        return this.convert(this.details(file));
     }
 
     @Override
@@ -74,15 +73,8 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     protected StorageObject details(final Path file) throws BackgroundException {
         final String container = containerService.getContainer(file).getName();
         try {
-            final Versioning versioning = session.getFeature(Versioning.class);
-            if(versioning != null && versioning.getConfiguration(containerService.getContainer(file)).isEnabled()) {
-                final String version = file.attributes().getVersionId();
-                return session.getClient().getVersionedObjectDetails(version,
-                        container, containerService.getKey(file));
-            }
-            else {
-                return session.getClient().getObjectDetails(container, containerService.getKey(file));
-            }
+            return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
+                    container, containerService.getKey(file));
         }
         catch(ServiceException e) {
             switch(session.getSignatureVersion()) {
@@ -93,8 +85,8 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                                 "in the authentication header.");
                         // Fallback to GET if HEAD fails with 400 response
                         try {
-                            final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
-                                    containerService.getKey(file), null, null, null, null, null, null);
+                            final S3Object object = session.getClient().getVersionedObject(file.attributes().getVersionId(),
+                                    containerService.getContainer(file).getName(), containerService.getKey(file));
                             IOUtils.closeQuietly(object.getDataInputStream());
                             return object;
                         }

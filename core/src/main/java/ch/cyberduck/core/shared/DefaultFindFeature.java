@@ -18,31 +18,20 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-public class DefaultFindFeature implements Find {
+public class DefaultFindFeature extends ListFilteringFeature implements Find {
     private static final Logger log = Logger.getLogger(DefaultFindFeature.class);
 
-    private final Session<?> session;
-
-    private Cache<Path> cache
-            = PathCache.empty();
-
     public DefaultFindFeature(final Session<?> session) {
-        this.session = session;
+        super(session);
     }
 
     @Override
@@ -51,32 +40,8 @@ public class DefaultFindFeature implements Find {
             return true;
         }
         try {
-            final AttributedList<Path> list;
-            if(!cache.isCached(file.getParent())) {
-                list = session.list(file.getParent(), new DisabledListProgressListener());
-                cache.put(file.getParent(), list);
-            }
-            else {
-                list = cache.get(file.getParent());
-            }
-            final Path existing = list.filter(new NullFilter<>()).find(new DuplicateFilterPathPredicate(file));
-            final boolean found = existing != null;
-            if(!found) {
-                switch(session.getCase()) {
-                    case insensitive:
-                        // Find for all matching filenames ignoring case
-                        for(Path f : list) {
-                            if(!f.getType().equals(file.getType())) {
-                                continue;
-                            }
-                            if(StringUtils.equalsIgnoreCase(f.getName(), file.getName())) {
-                                log.warn(String.format("Found matching file %s ignoring case", f));
-                                return true;
-                            }
-                        }
-                }
-            }
-            return found;
+            final Path found = this.search(file);
+            return found != null;
         }
         catch(NotfoundException e) {
             return false;
@@ -85,22 +50,7 @@ public class DefaultFindFeature implements Find {
 
     @Override
     public DefaultFindFeature withCache(final Cache<Path> cache) {
-        this.cache = cache;
+        super.withCache(cache);
         return this;
-    }
-
-    private final class DuplicateFilterPathPredicate extends SimplePathPredicate {
-
-        public DuplicateFilterPathPredicate(final Path file) {
-            super(file);
-        }
-
-        @Override
-        public boolean test(final Path file) {
-            if(file.attributes().isDuplicate()) {
-                return false;
-            }
-            return super.test(file);
-        }
     }
 }

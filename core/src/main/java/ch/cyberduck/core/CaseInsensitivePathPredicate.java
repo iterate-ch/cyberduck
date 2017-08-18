@@ -6,7 +6,7 @@ package ch.cyberduck.core;
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,22 +15,20 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-public class SimplePathPredicate extends DefaultPathPredicate {
+import org.apache.commons.lang3.StringUtils;
 
-    protected final Path file;
-
-    public SimplePathPredicate(final Path file) {
+public final class CaseInsensitivePathPredicate extends SimplePathPredicate {
+    public CaseInsensitivePathPredicate(final Path file) {
         super(file);
-        this.file = file;
     }
 
     @Override
     public String toString() {
-        return this.type() + "-" + file.getAbsolute();
+        return this.type() + "-" + StringUtils.lowerCase(file.getAbsolute());
     }
 
     @Override
     public boolean test(final Path test) {
-        return this.hashCode() == new SimplePathPredicate(test).hashCode();
+        return this.hashCode() == new CaseInsensitivePathPredicate(test).hashCode();
     }
 }

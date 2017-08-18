@@ -71,7 +71,8 @@ public class S3DefaultDeleteFeature implements Delete {
                 else {
                     try {
                         // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                        session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
+                        session.getClient().deleteVersionedObject(file.attributes().getVersionId(),
+                                containerService.getContainer(file).getName(), containerService.getKey(file));
                     }
                     catch(ServiceException e) {
                         try {
