@@ -62,11 +62,11 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(StringUtils.EMPTY,
                     options.nodeId(fileid), null);
             final String help;
-            final Long expiry = share.getExpireAt().getTime();
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
             }
             else {
+                final Long expiry = share.getExpireAt().getTime();
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                         UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
                 );

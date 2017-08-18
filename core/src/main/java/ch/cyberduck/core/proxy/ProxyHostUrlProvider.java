@@ -19,7 +19,6 @@ package ch.cyberduck.core.proxy;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 
 public class ProxyHostUrlProvider extends HostUrlProvider {
@@ -29,11 +28,11 @@ public class ProxyHostUrlProvider extends HostUrlProvider {
     }
 
     @Override
-    public String get(final Host host) {
-        switch(host.getProtocol().getScheme()) {
+    public String get(final Host bookmark) {
+        switch(bookmark.getProtocol().getScheme()) {
             case sftp:
-                return super.get(new Host(ProtocolFactory.get().forScheme(Scheme.ftp), host.getHostname(), host.getPort()));
+                return super.get(Scheme.ftp, bookmark.getPort(), bookmark.getCredentials().getUsername(), bookmark.getHostname(), bookmark.getDefaultPath());
         }
-        return super.get(host);
+        return super.get(bookmark);
     }
 }
