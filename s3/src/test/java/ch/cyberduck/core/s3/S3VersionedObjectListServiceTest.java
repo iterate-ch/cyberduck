@@ -33,8 +33,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3VersionedObjectListServiceTest {
@@ -55,6 +54,31 @@ public class S3VersionedObjectListServiceTest {
         assertFalse(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
         att.setVersionId("VLphaWnNt9MNseMuYVsLSmCFe6EuJJAq");
         assertTrue(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
+        session.close();
+    }
+
+    @Test
+    public void testList() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final AttributedList<Path> list = new S3VersionedObjectListService(session).list(
+                new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        for(Path p : list) {
+            assertEquals(container, p.getParent());
+            if(p.isFile()) {
+                assertNotEquals(-1L, p.attributes().getModificationDate());
+                assertNotEquals(-1L, p.attributes().getSize());
+                assertNotNull(p.attributes().getETag());
+                assertNotNull(p.attributes().getStorageClass());
+                assertNotNull(p.attributes().getVersionId());
+            }
+        }
         session.close();
     }
 }
