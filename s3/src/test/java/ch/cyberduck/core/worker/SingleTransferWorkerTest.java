@@ -82,7 +82,7 @@ public class SingleTransferWorkerTest {
         out.close();
         final String versionId = ((S3Object) out.getStatus()).getVersionId();
         assertEquals(versionId, new S3AttributesFinderFeature(session).find(test).getVersionId());
-        assertEquals(null, new DefaultAttributesFinderFeature(session).find(test).getVersionId());
+        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test).getVersionId());
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
