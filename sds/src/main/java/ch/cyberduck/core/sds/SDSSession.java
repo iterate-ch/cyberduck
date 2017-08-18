@@ -97,7 +97,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
             }
         }).build(),
-                host.getProtocol(), host).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                host).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
     }
 
     @Override

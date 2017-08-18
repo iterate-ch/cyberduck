@@ -48,14 +48,14 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
         this(client, protocol.getOAuthTokenUrl(), protocol.getOAuthAuthorizationUrl(), protocol.getOAuthClientId(), protocol.getOAuthClientSecret(), protocol.getOAuthScopes());
     }
 
-    public OAuth2RequestInterceptor(final HttpClient client, final Protocol protocol, final Host host) {
+    public OAuth2RequestInterceptor(final HttpClient client, final Host host) {
         this(client,
-                protocol.getOAuthTokenUrl(),
-                Scheme.isURL(protocol.getOAuthAuthorizationUrl()) ? protocol.getOAuthAuthorizationUrl() : String.format("%s://%s:%d%s",
-                        host.getProtocol().getScheme(), host.getHostname(), host.getPort(), protocol.getOAuthAuthorizationUrl()),
-                protocol.getOAuthClientId(),
-                protocol.getOAuthClientSecret(),
-                protocol.getOAuthScopes());
+                host.getProtocol().getOAuthTokenUrl(),
+                Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : String.format("%s://%s:%d%s",
+                        host.getProtocol().getScheme(), host.getHostname(), host.getPort(), host.getProtocol().getOAuthAuthorizationUrl()),
+                host.getProtocol().getOAuthClientId(),
+                host.getProtocol().getOAuthClientSecret(),
+                host.getProtocol().getOAuthScopes());
     }
 
     public OAuth2RequestInterceptor(final HttpClient client, final String tokenServerUrl, final String authorizationServerUrl, final String clientid, final String clientsecret, final List<String> scopes) {
