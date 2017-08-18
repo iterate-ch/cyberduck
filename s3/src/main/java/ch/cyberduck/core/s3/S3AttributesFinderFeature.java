@@ -85,8 +85,8 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                                 "in the authentication header.");
                         // Fallback to GET if HEAD fails with 400 response
                         try {
-                            final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
-                                    containerService.getKey(file), null, null, null, null, null, null);
+                            final S3Object object = session.getClient().getVersionedObject(file.attributes().getVersionId(),
+                                    containerService.getContainer(file).getName(), containerService.getKey(file));
                             IOUtils.closeQuietly(object.getDataInputStream());
                             return object;
                         }
