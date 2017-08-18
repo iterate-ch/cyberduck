@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -76,16 +75,14 @@ public class S3StorageClassFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
+        final Path test = new S3TouchFeature(session).touch(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
         feature.setClass(test, "STANDARD_IA");
         assertEquals("STANDARD_IA", feature.getClass(test));
         feature.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
-        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, session.list(container,
-                new DisabledListProgressListener()).get(test).attributes().getStorageClass());
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3AttributesFinderFeature(session).find(test).getStorageClass());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

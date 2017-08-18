@@ -4,7 +4,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -159,8 +158,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals((long) content.length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(content.length, session.list(container,
-                new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
@@ -190,8 +188,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals((long) content.length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(content.length, session.list(container,
-                new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
         session.close();
@@ -329,8 +326,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals(32769L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(content.length, session.list(container,
-                new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
