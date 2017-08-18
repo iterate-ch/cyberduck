@@ -52,7 +52,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor(final HttpClient client, final Host host) {
         this(client,
                 host.getProtocol().getOAuthTokenUrl(),
-                Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? new HostUrlProvider().get(
+                Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : new HostUrlProvider().get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthAuthorizationUrl()),
                 host.getProtocol().getOAuthClientId(),
                 host.getProtocol().getOAuthClientSecret(),
