@@ -18,31 +18,20 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-public class DefaultFindFeature implements Find {
+public class DefaultFindFeature extends ListFilteringFeature implements Find {
     private static final Logger log = Logger.getLogger(DefaultFindFeature.class);
 
-    private final Session<?> session;
-
-    private Cache<Path> cache
-            = PathCache.empty();
-
     public DefaultFindFeature(final Session<?> session) {
-        this.session = session;
+        super(session);
     }
 
     @Override
@@ -51,16 +40,7 @@ public class DefaultFindFeature implements Find {
             return true;
         }
         try {
-            final AttributedList<Path> list;
-            if(!cache.isCached(file.getParent())) {
-                list = session.list(file.getParent(), new DisabledListProgressListener());
-                cache.put(file.getParent(), list);
-            }
-            else {
-                list = cache.get(file.getParent());
-            }
-            final Path found = list.filter(new NullFilter<>()).find(
-                    session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file));
+            final Path found = this.search(file);
             return found != null;
         }
         catch(NotfoundException e) {
@@ -70,23 +50,7 @@ public class DefaultFindFeature implements Find {
 
     @Override
     public DefaultFindFeature withCache(final Cache<Path> cache) {
-        this.cache = cache;
+        super.withCache(cache);
         return this;
-    }
-
-    private final class CaseInsensitivePathPredicate extends SimplePathPredicate {
-        public CaseInsensitivePathPredicate(final Path file) {
-            super(file);
-        }
-
-        @Override
-        public String toString() {
-            return this.type() + "-" + StringUtils.lowerCase(file.getAbsolute());
-        }
-
-        @Override
-        public boolean test(final Path test) {
-            return this.hashCode() == new CaseInsensitivePathPredicate(test).hashCode();
-        }
     }
 }
