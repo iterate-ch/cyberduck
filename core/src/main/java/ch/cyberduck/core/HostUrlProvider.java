@@ -51,7 +51,7 @@ public class HostUrlProvider {
         return this.get(scheme, port, username, hostname, path);
     }
 
-    protected String get(final Scheme scheme, final int port, final String username, final String hostname, final String path) {
+    public String get(final Scheme scheme, final int port, final String username, final String hostname, final String path) {
         final String base = String.format("%s://%s%s%s",
                 scheme,
                 includeUsername && StringUtils.isNotEmpty(username) ? String.format("%s@", username) : "",

@@ -16,6 +16,7 @@ package ch.cyberduck.core.oauth;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -51,8 +52,8 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor(final HttpClient client, final Host host) {
         this(client,
                 host.getProtocol().getOAuthTokenUrl(),
-                Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : String.format("%s://%s:%d%s",
-                        host.getProtocol().getScheme(), host.getHostname(), host.getPort(), host.getProtocol().getOAuthAuthorizationUrl()),
+                Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? new HostUrlProvider().get(
+                        host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthAuthorizationUrl()),
                 host.getProtocol().getOAuthClientId(),
                 host.getProtocol().getOAuthClientSecret(),
                 host.getProtocol().getOAuthScopes());
