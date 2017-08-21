@@ -559,16 +559,15 @@ public class BrowserController extends WindowController
         }
         browser.deselectAll(null);
         for(Path path : selected) {
-            this.select(path, true, true);
+            this.select(path);
         }
     }
 
     /**
      * @param file   Path to select
-     * @param expand Keep previous selection
-     * @param scroll Scroll to selection
+     *
      */
-    private void select(final Path file, final boolean expand, final boolean scroll) {
+    private void select(final Path file) {
         final NSTableView browser = this.getSelectedBrowserView();
         final BrowserTableDataSource model = this.getSelectedBrowserModel();
         if(log.isDebugEnabled()) {
@@ -580,10 +579,8 @@ public class BrowserController extends WindowController
             return;
         }
         final NSInteger index = new NSInteger(row);
-        browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), expand);
-        if(scroll) {
+        browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), true);
             browser.scrollRowToVisible(index);
-        }
     }
 
     private void updateQuickLookSelection(final List<Path> selected) {
