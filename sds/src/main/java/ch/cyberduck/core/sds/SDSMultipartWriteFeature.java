@@ -139,16 +139,13 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                 new DefaultRetryCallable<Void>(new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
+                        final SDSApiClient client = session.getClient();
                         try {
-                            final SDSApiClient client = session.getClient();
                             final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                             request.setEntity(entity);
                             request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                             request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
-                            if(0L == overall.getLength() || 0 == content.length) {
-                                // Write empty body
-                            }
-                            else {
+                            if(0L != overall.getLength() && 0 != content.length) {
                                 final HttpRange range = HttpRange.byLength(offset, content.length);
                                 final String header;
                                 if(overall.getLength() == -1L) {
@@ -179,13 +176,22 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                             }
                         }
                         catch(IOException e) {
+                            try {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Cancel failed upload %s for %s", uploadId, file));
+                                }
+                                new NodesApi(session.getClient()).cancelFileUpload(StringUtils.EMPTY, uploadId);
+                            }
+                            catch(ApiException f) {
+                                throw new SDSExceptionMappingService().map(f);
+                            }
                             throw new DefaultIOExceptionMappingService().map(e);
                         }
                         return null; //Void
                     }
                 }, overall).call();
             }
-            catch(Exception e) {
+            catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
             }
         }
