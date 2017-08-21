@@ -237,13 +237,13 @@ public class SwiftSession extends HttpSession<Client> {
                     new SwiftAccountLoader(this) {
                         @Override
                         public Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
-                            return accounts = super.repeat(callback);
+                            return accounts = super.operate(callback, container);
                         }
                     },
                     new SwiftDistributionConfigurationLoader(this) {
                         @Override
                         public Map<Path, Distribution> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
-                            return distributions = super.repeat(callback);
+                            return distributions = super.operate(callback, container);
                         }
                     });
         }
