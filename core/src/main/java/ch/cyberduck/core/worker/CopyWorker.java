@@ -24,6 +24,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -76,7 +77,7 @@ public class CopyWorker extends Worker<List<Path>> {
                     throw new ConnectionCanceledException();
                 }
                 if(!copy.isSupported(entry.getKey(), entry.getValue())) {
-                    continue;
+                    throw new UnsupportedException();
                 }
                 final ListService list = session.getFeature(ListService.class);
                 final Map<Path, Path> recursive = this.compile(copy, list, entry.getKey(), entry.getValue());

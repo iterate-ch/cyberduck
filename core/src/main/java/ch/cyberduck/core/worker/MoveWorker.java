@@ -26,6 +26,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
@@ -61,7 +62,7 @@ public class MoveWorker extends Worker<List<Path>> {
                 throw new ConnectionCanceledException();
             }
             if(!move.isSupported(entry.getKey(), entry.getValue())) {
-                continue;
+                throw new UnsupportedException();
             }
             final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), entry.getKey(), entry.getValue());
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
