@@ -55,7 +55,7 @@ public class DriveCopyFeature implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return true;
+        return !source.getType().contains(Path.Type.placeholder);
     }
 
     @Override
