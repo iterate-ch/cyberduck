@@ -24,26 +24,14 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
-public class DefaultTemporaryFileService implements TemporaryFileService {
+public class DefaultTemporaryFileService extends AbstractTemporaryFileService implements TemporaryFileService {
     private static final Logger log = Logger.getLogger(DefaultTemporaryFileService.class);
-
-    /**
-     * Set of filenames to be deleted on VM exit through a shutdown hook.
-     */
-    private static final Set<Local> files = new LinkedHashSet<>();
 
     private final String delimiter
             = PreferencesFactory.get().getProperty("local.delimiter");
@@ -89,37 +77,6 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
     private Local create(final String folder, final String name) {
         final Local file = LocalFactory.get(new File(PreferencesFactory.get().getProperty("tmp.dir"), folder).getAbsolutePath(), name);
         this.delete(file.getParent());
-        this.delete(file);
-        return file;
-    }
-
-    /**
-     * Delete on exit
-     *
-     * @param file File reference
-     */
-    protected void delete(final Local file) {
-        files.add(file);
-    }
-
-    protected String shorten(final String path, int limit) {
-        if(path.length() > limit) {
-            return DigestUtils.md5Hex(path);
-        }
-        return path;
-    }
-
-    @Override
-    public void shutdown() {
-        final List<Local> list = new ArrayList<>(files);
-        Collections.reverse(list);
-        for(Local f : list) {
-            try {
-                f.delete();
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure deleting file %s in shutdown hook. %s", f, e.getMessage()));
-            }
-        }
+        return this.delete(file);
     }
 }
