@@ -137,7 +137,9 @@
                             <configOptions>
                                 <sourceFolder>swagger</sourceFolder>
                                 <library>jersey2</library>
-                                <import-mappings>EncryptionInfo=ch.cyberduck.core.sds.model.EncryptionInfo,
+                                <import-mappings>
+                                    ObjectExpiration=ch.cyberduck.core.sds.model.ObjectExpiration,
+                                    EncryptionInfo=ch.cyberduck.core.sds.model.EncryptionInfo,
                                     CompleteUploadRequest=ch.cyberduck.core.sds.swagger.CompleteUploadRequest,
                                     CopyNodesRequest=ch.cyberduck.core.sds.swagger.CopyNodesRequest,
                                     MoveNodesRequest=ch.cyberduck.core.sds.swagger.MoveNodesRequest
