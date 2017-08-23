@@ -56,14 +56,11 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         attributes.setCreationDate(node.getCreatedAt().getTime());
         attributes.setModificationDate(node.getUpdatedAt().getTime());
         attributes.setSize(node.getSize());
-        final Permission permission = new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none);
-        if(node.getPermissions().getRead()) {
-            permission.setUser(permission.getUser().or(Permission.Action.read));
-            switch(node.getType()) {
-                case ROOM:
-                case FOLDER:
-                    permission.setUser(permission.getUser().or(Permission.Action.execute));
-            }
+        final Permission permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
+        switch(node.getType()) {
+            case ROOM:
+            case FOLDER:
+                permission.setUser(permission.getUser().or(Permission.Action.execute));
         }
         if(node.getPermissions().getChange()) {
             permission.setUser(permission.getUser().or(Permission.Action.write));
