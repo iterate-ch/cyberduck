@@ -71,6 +71,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -112,6 +113,8 @@ public class PreferencesController extends ToolbarWindowController {
     private NSView panelUpdate;
     @Outlet
     private NSView panelLanguage;
+    @Outlet
+    private NSView panelCryptomator;
 
     public void setPanelUpdate(NSView v) {
         this.panelUpdate = v;
@@ -157,6 +160,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.panelLanguage = v;
     }
 
+    public void setPanelCryptomator(final NSView v) {
+        this.panelCryptomator = v;
+    }
+
     @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String itemIdentifier, final boolean flag) {
         final NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, itemIdentifier, flag);
@@ -197,6 +204,9 @@ public class PreferencesController extends ToolbarWindowController {
         if(identifiers.contains(PreferencesToolbarItem.connection.name())) {
             views.add(panelAdvanced);
         }
+        if(identifiers.contains(PreferencesToolbarItem.cryptomator.name())) {
+            views.add(panelCryptomator);
+        }
         if(identifiers.contains(PreferencesToolbarItem.update.name())) {
             if(null != Updater.getFeed()) {
                 views.add(panelUpdate);
@@ -219,7 +229,8 @@ public class PreferencesController extends ToolbarWindowController {
                 PreferencesToolbarItem.sftp.name(),
                 PreferencesToolbarItem.s3.name(),
                 PreferencesToolbarItem.bandwidth.name(),
-                PreferencesToolbarItem.connection.name())
+                PreferencesToolbarItem.connection.name(),
+                PreferencesToolbarItem.cryptomator.name())
         );
         if(null != Updater.getFeed()) {
             views.add(PreferencesToolbarItem.update.name());
@@ -238,6 +249,7 @@ public class PreferencesController extends ToolbarWindowController {
         s3,
         bandwidth,
         connection,
+        cryptomator,
         update,
         language
     }
@@ -1777,7 +1789,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-                Arrays.asList(Scheme.sftp), new Application(bundle)
+                Collections.singletonList(Scheme.sftp), new Application(bundle)
         );
     }
 
@@ -2052,5 +2064,20 @@ public class PreferencesController extends ToolbarWindowController {
                 "end tell";
         NSAppleScript open = NSAppleScript.createWithSource(script);
         open.executeAndReturnError(null);
+    }
+
+    @Outlet
+    private NSButton cryptomatorCheckbox;
+
+    public void setCryptomatorCheckbox(final NSButton cryptomatorCheckbox) {
+        this.cryptomatorCheckbox = cryptomatorCheckbox;
+        this.cryptomatorCheckbox.setTarget(this.id());
+        this.cryptomatorCheckbox.setAction(Foundation.selector("cryptomatorCheckboxClicked:"));
+        this.cryptomatorCheckbox.setState(preferences.getBoolean("cryptomator.vault.autodetect") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void cryptomatorCheckboxClicked(NSButton sender) {
+        preferences.setProperty("cryptomator.vault.autodetect", sender.state() == NSCell.NSOnState);
     }
 }
