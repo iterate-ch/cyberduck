@@ -15,9 +15,23 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
@@ -34,11 +48,13 @@ import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -54,8 +70,15 @@ public class SDSReadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        final Path room = new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SDSReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        try {
+            new SDSReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        }
+        finally {
+            new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            session.close();
+        }
     }
 
     @Test
@@ -67,20 +90,30 @@ public class SDSReadFeatureTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path test = new Path(new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume)), "eetaik4R", EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final TransferStatus writeStatus = new TransferStatus();
+        writeStatus.setLength(content.length);
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SDSWriteFeature writer = new SDSWriteFeature(session);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         // Unknown length in status
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus readStatus = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SDSReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SDSReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
             assertNotNull(in);
             in.close();
         }
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -169,10 +202,20 @@ public class SDSReadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        final Path test = new Path(new Path("CD-TEST", EnumSet.of(Path.Type.directory, Path.Type.volume)), "eetaik4R", EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final TransferStatus writeStatus = new TransferStatus();
+        writeStatus.setLength(content.length);
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SDSWriteFeature writer = new SDSWriteFeature(session);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new SDSReadFeature(session).read(test, status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
