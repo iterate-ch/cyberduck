@@ -75,8 +75,10 @@ public class S3VersionedObjectListService implements ListService {
                         continue;
                     }
                     final Path p = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.file));
-                    // Versioning is enabled if non null.
-                    p.attributes().setVersionId(marker.getVersionId());
+                    if(!StringUtils.equals("null", marker.getVersionId())) {
+                        // If you have not enabled versioning, then S3 sets the version ID value to null.
+                        p.attributes().setVersionId(marker.getVersionId());
+                    }
                     p.attributes().setRevision(++i);
                     p.attributes().setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
                     p.attributes().setModificationDate(marker.getLastModified().getTime());

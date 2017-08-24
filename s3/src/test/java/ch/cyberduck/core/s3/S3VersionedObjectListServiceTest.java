@@ -76,7 +76,7 @@ public class S3VersionedObjectListServiceTest {
                 assertNotEquals(-1L, p.attributes().getSize());
                 assertNotNull(p.attributes().getETag());
                 assertNotNull(p.attributes().getStorageClass());
-                assertNotNull(p.attributes().getVersionId());
+                assertNull(p.attributes().getVersionId());
             }
         }
         session.close();
