@@ -8,6 +8,7 @@ https://cyberduck.io/
 - [Bugfix] Failure with input prompt for username and password (CLI, Windows) (#10043)
 - [Bugfix] Failure to detect vault when moving files into locked vault (Cryptomator)
 - [Bugfix] Failure to detect vault when copying files into locked vault (Cryptomator)
+- [Bugfix] Checksum mismatch when downloading versioned file (S3) (#10055)
 
 6.2.2
 - [Bugfix] Failure copying files in vault (Cryptomator)
