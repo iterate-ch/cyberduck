@@ -120,6 +120,26 @@ public class NSImageIconCacheTest {
     }
 
     @Test
+    public void testDocumentIconNoExtension() throws Exception {
+        final NSImage icon = new NSImageIconCache().documentIcon("", 64);
+        assertNotNull(icon);
+        assertTrue(icon.isValid());
+        assertFalse(icon.isTemplate());
+        assertEquals(64, icon.size().width.intValue());
+        assertEquals(64, icon.size().height.intValue());
+    }
+
+    @Test
+    public void testDocumentIconNullExtension() throws Exception {
+        final NSImage icon = new NSImageIconCache().documentIcon(null, 64);
+        assertNotNull(icon);
+        assertTrue(icon.isValid());
+        assertFalse(icon.isTemplate());
+        assertEquals(64, icon.size().width.intValue());
+        assertEquals(64, icon.size().height.intValue());
+    }
+
+    @Test
     public void testIconForApplication() throws Exception {
         final NSImageIconCache cache = new NSImageIconCache();
         assertNotNull(cache.applicationIcon(new Application("com.apple.TextEdit"), 32));
