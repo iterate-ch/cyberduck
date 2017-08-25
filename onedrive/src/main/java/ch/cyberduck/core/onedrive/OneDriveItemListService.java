@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDrivePackageItem;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.util.EnumSet;
@@ -71,7 +72,7 @@ public class OneDriveItemListService implements ListService {
                 }
                 final PathAttributes attributes = this.attributes.convert(metadata);
                 children.add(new Path(directory, metadata.getName(),
-                        metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
+                        metadata.isFolder() ? EnumSet.of(Path.Type.directory) : metadata instanceof OneDrivePackageItem.Metadata ? EnumSet.of(Path.Type.placeholder) : EnumSet.of(Path.Type.file), attributes));
                 listener.chunk(directory, children);
             }
         }
