@@ -588,8 +588,7 @@ public class BrowserController extends WindowController
             if(!file.isFile()) {
                 continue;
             }
-            downloads.add(new TransferItem(file, new FlatTemporaryFileService().create(
-                    String.format("%s%s", new AlphanumericRandomStringService().random(), StringUtils.isNotBlank(file.getExtension()) ? String.format(".%s", file.getExtension()) : StringUtils.EMPTY))));
+            downloads.add(new TransferItem(file, new FlatTemporaryFileService().create(file)));
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
