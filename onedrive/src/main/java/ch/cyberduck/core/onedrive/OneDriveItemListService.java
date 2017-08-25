@@ -72,7 +72,7 @@ public class OneDriveItemListService implements ListService {
                 }
                 final PathAttributes attributes = this.attributes.convert(metadata);
                 children.add(new Path(directory, metadata.getName(),
-                        metadata.isFolder() ? EnumSet.of(Path.Type.directory) : metadata instanceof OneDrivePackageItem.Metadata ? EnumSet.of(Path.Type.placeholder) : EnumSet.of(Path.Type.file), attributes));
+                        metadata.isFolder() ? EnumSet.of(Path.Type.directory) : metadata instanceof OneDrivePackageItem.Metadata ? EnumSet.of(Path.Type.placeholder, Path.Type.file) : EnumSet.of(Path.Type.file), attributes));
                 listener.chunk(directory, children);
             }
         }
