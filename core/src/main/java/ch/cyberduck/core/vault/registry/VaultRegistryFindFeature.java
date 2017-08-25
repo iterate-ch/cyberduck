@@ -27,7 +27,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.VaultFactory;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
-import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import org.apache.log4j.Logger;
 
@@ -66,18 +65,13 @@ public class VaultRegistryFindFeature implements Find {
                     }
                     final Vault cryptomator = VaultFactory.get(file.getParent(), keychain);
                     if(!cryptomator.equals(Vault.DISABLED)) {
-                        try {
-                            lookup.found(cryptomator);
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Found vault %s", cryptomator));
-                            }
-                            return cryptomator.getFeature(session, Find.class, proxy)
-                                    .withCache(cache)
-                                    .find(file);
+                        lookup.found(cryptomator);
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Found vault %s", cryptomator));
                         }
-                        catch(VaultUnlockCancelException e) {
-                            // Continue
-                        }
+                        return cryptomator.getFeature(session, Find.class, proxy)
+                                .withCache(cache)
+                                .find(file);
                     }
                 }
             }
