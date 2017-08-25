@@ -52,7 +52,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -61,6 +63,8 @@ import synapticloop.b2.response.B2FinishLargeFileResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2StartLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
+
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(B2LargeUploadWriteFeature.class);
@@ -159,8 +163,12 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                 }
                 else {
                     if(0 == partNumber) {
+                        final Map<String, String> fileinfo = new HashMap<>(overall.getMetadata());
+                        if(null != overall.getTimestamp()) {
+                            fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(overall.getTimestamp()));
+                        }
                         final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                                containerService.getKey(file), overall.getMime(), overall.getMetadata());
+                                containerService.getKey(file), overall.getMime(), fileinfo);
                         version = new VersionId(response.getFileId());
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Multipart upload started for %s with ID %s", file, version));
