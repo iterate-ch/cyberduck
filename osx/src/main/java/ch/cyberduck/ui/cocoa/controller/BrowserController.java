@@ -48,7 +48,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
-import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.local.FlatTemporaryFileService;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
@@ -564,8 +564,7 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * @param file   Path to select
-     *
+     * @param file Path to select
      */
     private void select(final Path file) {
         final NSTableView browser = this.getSelectedBrowserView();
@@ -580,17 +579,17 @@ public class BrowserController extends WindowController
         }
         final NSInteger index = new NSInteger(row);
         browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), true);
-            browser.scrollRowToVisible(index);
+        browser.scrollRowToVisible(index);
     }
 
     private void updateQuickLookSelection(final List<Path> selected) {
         final List<TransferItem> downloads = new ArrayList<TransferItem>();
-        for(Path path : selected) {
-            if(!path.isFile()) {
+        for(Path file : selected) {
+            if(!file.isFile()) {
                 continue;
             }
-            downloads.add(new TransferItem(
-                    path, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), path)));
+            downloads.add(new TransferItem(file, new FlatTemporaryFileService().create(
+                    String.format("%s%s", new AlphanumericRandomStringService().random(), StringUtils.isNotBlank(file.getExtension()) ? String.format(".%s", file.getExtension()) : StringUtils.EMPTY))));
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
