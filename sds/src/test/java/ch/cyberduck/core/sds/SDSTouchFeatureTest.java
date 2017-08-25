@@ -67,7 +67,7 @@ public class SDSTouchFeatureTest {
             new SDSTouchFeature(session).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("-80001. Parent ID must be positive. See API doc. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Parent ID must be positive. See API doc. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
         session.close();
@@ -87,7 +87,7 @@ public class SDSTouchFeatureTest {
             new SDSTouchFeature(session).touch(new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("-40755. Not allowed filename='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Not allowed filename='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
         finally {
@@ -110,7 +110,7 @@ public class SDSTouchFeatureTest {
             new SDSTouchFeature(session).touch(new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("-40755. Not allowed filename='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Not allowed filename='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
         finally {
