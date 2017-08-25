@@ -15,7 +15,7 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultPathPredicate;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
@@ -24,12 +24,12 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 public class FlatTemporaryFileService extends AbstractTemporaryFileService implements TemporaryFileService {
     @Override
     public Local create(final Path file) {
-        return this.create(new DefaultPathPredicate(file).toString());
+        return this.create(String.format("%s-%s", new AlphanumericRandomStringService().random(), file.getName()));
     }
 
     @Override
     public Local create(final String uid, final Path file) {
-        return this.create(uid + new DefaultPathPredicate(file).toString());
+        return this.create(String.format("%s-%s", file.getName(), uid));
     }
 
     @Override
