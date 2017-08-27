@@ -45,9 +45,7 @@ public class DropboxQuotaFeature implements Quota {
             else if(allocation.isTeam()) {
                 return new Space(usage.getUsed(), allocation.getTeamValue().getAllocated());
             }
-            else if(allocation.isOther()) {
-                return new Space(0L, Long.MAX_VALUE);
-            }
+            return new Space(0L, Long.MAX_VALUE);
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Failure to read attributes of {0}", e,
