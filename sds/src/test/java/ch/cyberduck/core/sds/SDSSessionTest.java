@@ -66,6 +66,9 @@ public class SDSSessionTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                assertEquals("Multi-Factor Authentication", reason);
+                assertFalse(options.user);
+                assertTrue(options.password);
                 return new Credentials(username, "889153");
             }
         }, new DisabledCancelCallback(), PathCache.empty());
