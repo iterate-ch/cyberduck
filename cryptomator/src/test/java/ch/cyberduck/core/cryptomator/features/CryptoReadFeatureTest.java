@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -76,8 +77,8 @@ public class CryptoReadFeatureTest {
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("vault");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("vault");
             }
         }).getHome());
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
