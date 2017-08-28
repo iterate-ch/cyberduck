@@ -76,16 +76,16 @@ public class CryptoReadFeature implements Read {
         }
     }
 
-    private long chunk(final long offset) {
+    protected long chunk(final long offset) {
         return offset / vault.getCryptor().fileContentCryptor().cleartextChunkSize();
     }
 
-    private long align(final long offset) {
+    protected long align(final long offset) {
         return vault.getCryptor().fileHeaderCryptor().headerSize() + this.chunk(offset) * vault.getCryptor().fileContentCryptor().ciphertextChunkSize();
     }
 
-    private long position(final long offset) {
-        return offset - this.chunk(offset) * vault.getCryptor().fileContentCryptor().cleartextChunkSize();
+    protected long position(final long offset) {
+        return offset % vault.getCryptor().fileContentCryptor().cleartextChunkSize();
     }
 
     @Override
