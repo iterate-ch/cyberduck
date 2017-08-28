@@ -41,6 +41,8 @@ import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
+
 public class B2ObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(B2ObjectListService.class);
 
@@ -148,7 +150,12 @@ public class B2ObjectListService implements ListService {
         );
         final long timestamp = response.getUploadTimestamp();
         attributes.setCreationDate(timestamp);
-        attributes.setModificationDate(timestamp);
+        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
+            attributes.setModificationDate(Long.valueOf(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+        }
+        else {
+            attributes.setModificationDate(timestamp);
+        }
         attributes.setVersionId(response.getFileId());
         switch(response.getAction()) {
             case hide:
