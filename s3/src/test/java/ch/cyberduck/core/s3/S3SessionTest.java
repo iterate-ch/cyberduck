@@ -144,12 +144,12 @@ public class S3SessionTest {
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 if(p.get()) {
                     throw new LoginCanceledException();
                 }
                 p.set(true);
-                credentials.setPassword(System.getProperties().getProperty("s3.secret"));
+                return new Credentials(username, System.getProperties().getProperty("s3.secret"));
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(p.get());

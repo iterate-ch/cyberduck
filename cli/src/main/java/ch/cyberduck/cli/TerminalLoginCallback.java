@@ -23,7 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -47,7 +46,7 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
     }
 
     @Override
-    public void warn(final Protocol protocol, final String title, final String reason,
+    public void warn(final Host bookmark, final String title, final String reason,
                      final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
         console.printf("%n%s", reason);
         if(!prompt.prompt(String.format("%s (y) or %s (n): ", defaultButton, cancelButton))) {
@@ -57,17 +56,17 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
     }
 
     @Override
-    public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason,
-                       final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
+            final Credentials credentials = new Credentials(username);
             if(options.user) {
                 if(StringUtils.isBlank(credentials.getUsername())) {
-                    final String user = console.readLine("%n%s: ", credentials.getUsernamePlaceholder());
+                    final String user = console.readLine("%n%s: ", options.getUsernamePlaceholder());
                     credentials.setUsername(user);
                 }
                 else {
-                    final String user = console.readLine("%n%s (%s): ", credentials.getUsernamePlaceholder(), credentials.getUsername());
+                    final String user = console.readLine("%n%s (%s): ", options.getUsernamePlaceholder(), credentials.getUsername());
                     if(StringUtils.isNotBlank(user)) {
                         credentials.setUsername(user);
                     }
@@ -75,13 +74,11 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
                 console.printf("Login as %s", credentials.getUsername());
             }
             if(options.password) {
-                final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
+                final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
                 credentials.setPassword(String.valueOf(input));
                 Arrays.fill(input, ' ');
-                if(!credentials.validate(bookmark.getProtocol(), options)) {
-                    this.prompt(bookmark, credentials, title, reason, options);
-                }
             }
+            return credentials;
         }
         catch(ConnectionCanceledException e) {
             throw new LoginCanceledException(e);

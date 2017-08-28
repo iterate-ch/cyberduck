@@ -17,6 +17,7 @@ package ch.cyberduck.cli;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
@@ -31,6 +32,6 @@ public class TerminalLoginCallbackTest  {
             public boolean prompt(final String message) {
                 return false;
             }
-        }).warn(new TestProtocol(), "", "", "", "", "");
+        }).warn(new Host(new TestProtocol()), "", "", "", "", "");
     }
 }

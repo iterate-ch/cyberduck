@@ -118,8 +118,8 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
     public void testConnectMissingKey() throws Exception {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials,
-                               final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username,
+                                      final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 Assert.assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
             }
@@ -160,10 +160,9 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         );
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 // OAuth2
-                credentials.setUsername("");
-                credentials.setPassword("");
+                return new Credentials("", "");
             }
         }, new DisabledCancelCallback(), PathCache.empty());
     }

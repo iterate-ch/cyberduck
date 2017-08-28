@@ -206,7 +206,7 @@ public class FTPSessionTest {
         final AtomicBoolean warned = new AtomicBoolean();
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String continueButton,
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton,
                              final String disconnectButton, final String preference) throws LoginCanceledException {
                 warned.set(true);
                 // Cancel to switch

@@ -229,7 +229,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     final URL url = new URL(location.getValue());
                     if(StringUtils.equals(Scheme.https.name(), url.getProtocol())) {
                         try {
-                            callback.warn(host.getProtocol(),
+                            callback.warn(host,
                                     MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                                     MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
                                             new DAVSSLProtocol().getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),

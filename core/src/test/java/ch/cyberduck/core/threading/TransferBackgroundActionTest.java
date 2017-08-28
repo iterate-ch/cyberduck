@@ -88,12 +88,7 @@ public class TransferBackgroundActionTest {
             public Credentials getCredentials() {
                 return new Credentials(
                         System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-                ) {
-                    @Override
-                    public void setPassword(final String pass) {
-                        //
-                    }
-                };
+                );
             }
         };
         final Path directory = new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory));

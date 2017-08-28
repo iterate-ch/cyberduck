@@ -57,10 +57,10 @@ public class AzureSessionTest {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
                         reason);
-                super.prompt(bookmark, credentials, title, reason, options);
+                return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
@@ -74,10 +74,10 @@ public class AzureSessionTest {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
                         reason);
-                super.prompt(bookmark, credentials, title, reason, options);
+                return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());

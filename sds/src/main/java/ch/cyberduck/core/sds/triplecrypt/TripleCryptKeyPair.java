@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds.triplecrypt;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
@@ -40,43 +41,42 @@ public class TripleCryptKeyPair {
 
     private final HostPasswordStore keychain = PasswordStoreFactory.get();
 
-    public VaultCredentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
-        final VaultCredentials passphrase = new VaultCredentials(
-                keychain.getPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
-                        new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl())
-        );
-        passphrase.setSaved(true);
-        this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"));
-        return passphrase;
+    public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
+        final String passphrase = keychain.getPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
+                new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl());
+        return this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"));
     }
 
-    private void unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair, final VaultCredentials passphrase, final String message) throws LoginCanceledException, CryptoException {
-        if(null == passphrase.getPassword()) {
-            callback.prompt(passphrase,
-                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                    message,
+    private Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair, String passphrase, final String message) throws LoginCanceledException, CryptoException {
+        final Credentials credentials;
+        if(null == passphrase) {
+            credentials = callback.prompt(LocaleFactory.localizedString("Private key password protected", "Credentials"), message,
                     new LoginOptions()
                             .user(false)
                             .anonymous(false)
                             .icon(bookmark.getProtocol().disk())
             );
-            if(passphrase.getPassword() == null) {
+            if(credentials.getPassword() == null) {
                 throw new LoginCanceledException();
             }
         }
-        if(!Crypto.checkUserKeyPair(keypair, passphrase.getPassword())) {
-            passphrase.setPassword(null);
-            this.unlock(callback, bookmark, keypair, passphrase, String.format("%s. %s", LocaleFactory.localizedString("Invalid passphrase", "Credentials"), LocaleFactory.localizedString("Enter your encryption password", "Credentials")));
+        else {
+            credentials = new VaultCredentials(passphrase);
+            credentials.setSaved(true);
+        }
+        if(!Crypto.checkUserKeyPair(keypair, credentials.getPassword())) {
+            return this.unlock(callback, bookmark, keypair, null, String.format("%s. %s", LocaleFactory.localizedString("Invalid passphrase", "Credentials"), LocaleFactory.localizedString("Enter your encryption password", "Credentials")));
         }
         else {
-            if(passphrase.isSaved()) {
+            if(credentials.isSaved()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save encryption password for %s", bookmark));
                 }
                 keychain.addPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
                         new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl(),
-                        passphrase.getPassword());
+                        passphrase);
             }
+            return credentials;
         }
     }
 }
