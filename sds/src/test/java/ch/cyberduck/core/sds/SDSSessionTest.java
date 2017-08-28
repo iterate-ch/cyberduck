@@ -52,9 +52,25 @@ public class SDSSessionTest {
     }
 
     @Test
-    public void testLogin() throws Exception {
+    public void testLoginUserPassword() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        session.close();
+    }
+
+    @Test
+    public void testLoginRadius() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/Secure Data Space (Radius).cyberduckprofile"));
+        final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
+                "rsa.user1", System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledHostKeyCallback()));
