@@ -31,7 +31,6 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -58,13 +57,12 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     @Override
-    public void warn(final Protocol protocol, final String title, final String message,
-                     final String continueButton, final String disconnectButton, final String preference)
+    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference)
             throws LoginCanceledException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Display insecure connection alert for %s", protocol));
+            log.debug(String.format("Display insecure connection alert for %s", bookmark));
         }
-        final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton, protocol);
+        final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton, bookmark.getProtocol());
         int option = alert.beginSheet(parent);
         if(alert.isSuppressed()) {
             // Never show again.
@@ -78,17 +76,18 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     @Override
-    public void prompt(final Host bookmark, final Credentials credentials,
-                       final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Prompt for credentials for %s", bookmark));
+            log.debug(String.format("Prompt for credentials for %s", username));
         }
+        final Credentials credentials = new Credentials(username);
         final LoginController controller = new LoginController(title, reason, bookmark, credentials, options);
         final SheetInvoker sheet = new SheetInvoker(controller, parent, controller);
         final int option = sheet.beginSheet();
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
         }
+        return credentials;
     }
 
     public Local select(final Local identity) throws LoginCanceledException {

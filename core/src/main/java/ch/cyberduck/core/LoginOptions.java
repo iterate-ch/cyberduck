@@ -17,6 +17,8 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import java.util.Objects;
 
 public final class LoginOptions {
@@ -45,6 +47,14 @@ public final class LoginOptions {
      * Set custom icon in login prompt
      */
     public String icon;
+
+    public String usernamePlaceholder;
+    public String passwordPlaceholder;
+
+    /**
+     * Save in keychain checked by default
+     */
+    public boolean save = PreferencesFactory.get().getBoolean("connection.login.keychain");
 
     public LoginOptions() {
         //
@@ -80,6 +90,11 @@ public final class LoginOptions {
         return this;
     }
 
+    public LoginOptions save(final boolean save) {
+        this.save = save;
+        return this;
+    }
+
     public boolean user() {
         return user;
     }
@@ -104,6 +119,28 @@ public final class LoginOptions {
         return icon;
     }
 
+    public boolean save() {
+        return save;
+    }
+
+    public LoginOptions usernamePlaceholder(final String usernamePlaceholder) {
+        this.usernamePlaceholder = usernamePlaceholder;
+        return this;
+    }
+
+    public LoginOptions passwordPlaceholder(final String passwordPlaceholder) {
+        this.passwordPlaceholder = passwordPlaceholder;
+        return this;
+    }
+
+    public String getUsernamePlaceholder() {
+        return usernamePlaceholder;
+    }
+
+    public String getPasswordPlaceholder() {
+        return passwordPlaceholder;
+    }
+
     /**
      * Defer login options from protocol
      */
@@ -116,6 +153,9 @@ public final class LoginOptions {
         anonymous = protocol.isAnonymousConfigurable();
         user = protocol.isUsernameConfigurable();
         password = protocol.isPasswordConfigurable();
+        icon = protocol.disk();
+        usernamePlaceholder = protocol.getUsernamePlaceholder();
+        passwordPlaceholder = protocol.getPasswordPlaceholder();
     }
 
     @Override

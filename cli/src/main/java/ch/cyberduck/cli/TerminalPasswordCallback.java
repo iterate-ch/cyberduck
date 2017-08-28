@@ -21,20 +21,18 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-
-import java.util.Arrays;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 public class TerminalPasswordCallback implements PasswordCallback {
 
     private final Console console = new Console();
 
     @Override
-    public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
-            final char[] input = console.readPassword("%n%s: ", credentials.getPasswordPlaceholder());
-            credentials.setPassword(String.valueOf(input));
-            Arrays.fill(input, ' ');
+            final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
+            return new VaultCredentials(String.valueOf(input));
         }
         catch(ConnectionCanceledException e) {
             throw new LoginCanceledException(e);

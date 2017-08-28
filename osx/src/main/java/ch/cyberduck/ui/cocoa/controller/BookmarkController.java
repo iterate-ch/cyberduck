@@ -354,8 +354,8 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isNotBlank(credentials.getUsernamePlaceholder()) ? String.format("%s:",
-                                credentials.getUsernamePlaceholder()) : StringUtils.EMPTY,
+                        StringUtils.isNotBlank(bookmark.getProtocol().getUsernamePlaceholder()) ? String.format("%s:",
+                                bookmark.getProtocol().getUsernamePlaceholder()) : StringUtils.EMPTY,
                         LABEL_ATTRIBUTES
                 ));
             }

@@ -65,7 +65,7 @@ public class SwiftAuthenticationService {
                     credentials.getUsername(), credentials.getPassword(), null)
             );
         }
-        final LoginOptions options = new LoginOptions().password(false).anonymous(false).publickey(false);
+        final LoginOptions options = new LoginOptions(host.getProtocol()).password(false).anonymous(false).publickey(false);
         if(context.contains("1.0")) {
             return Collections.singleton(new Authentication10UsernameKeyRequest(URI.create(url.toString()),
                     credentials.getUsername(), credentials.getPassword()));
@@ -85,11 +85,10 @@ public class SwiftAuthenticationService {
             }
             else {
                 user = credentials.getUsername();
-                final Credentials tenantCredentials = new PlaceholderCredentials(LocaleFactory.localizedString("Tenant Name", "Mosso"));
-                prompt.prompt(host, tenantCredentials,
+                tenant = prompt.prompt(host, credentials.getUsername(),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        LocaleFactory.localizedString("Tenant Name", "Mosso"), options);
-                tenant = tenantCredentials.getUsername();
+                        LocaleFactory.localizedString("Tenant Name", "Mosso"), options
+                                .usernamePlaceholder(LocaleFactory.localizedString("Tenant Name", "Mosso"))).getUsername();
                 // Save tenant in username
                 credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
             }
@@ -122,21 +121,20 @@ public class SwiftAuthenticationService {
                 else {
                     project = parts[0];
                     user = parts[1];
-                    final Credentials projectDomain = new PlaceholderCredentials(LocaleFactory.localizedString("Project Domain Name", "Mosso"));
-                    prompt.prompt(host, projectDomain,
+                    domain = prompt.prompt(host, credentials.getUsername(),
                             LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                            LocaleFactory.localizedString("Project Domain Name", "Mosso"), options);
-                    domain = projectDomain.getUsername();
+                            LocaleFactory.localizedString("Project Domain Name", "Mosso"), options
+                                    .usernamePlaceholder(LocaleFactory.localizedString("Project Domain Name", "Mosso"))).getUsername();
                     // Save project name and domain in username
                     credentials.setUsername(String.format("%s:%s:%s", project, domain, credentials.getUsername()));
                 }
             }
             else {
                 user = credentials.getUsername();
-                final Credentials projectName = new PlaceholderCredentials(LocaleFactory.localizedString("Project Name", "Mosso"));
-                prompt.prompt(host, projectName,
+                final Credentials projectName = prompt.prompt(host, credentials.getUsername(),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        LocaleFactory.localizedString("Project Name", "Mosso"), options);
+                        LocaleFactory.localizedString("Project Name", "Mosso"), options
+                                .usernamePlaceholder(LocaleFactory.localizedString("Project Name", "Mosso")));
                 if(StringUtils.contains(credentials.getUsername(), ':')) {
                     final String[] parts = StringUtils.splitPreserveAllTokens(projectName.getUsername(), ':');
                     project = parts[0];
@@ -144,11 +142,10 @@ public class SwiftAuthenticationService {
                 }
                 else {
                     project = projectName.getUsername();
-                    final Credentials projectDomain = new PlaceholderCredentials(LocaleFactory.localizedString("Project Domain Name", "Mosso"));
-                    prompt.prompt(host, projectDomain,
+                    domain = prompt.prompt(host, credentials.getUsername(),
                             LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                            LocaleFactory.localizedString("Project Domain Name", "Mosso"), options);
-                    domain = projectDomain.getUsername();
+                            LocaleFactory.localizedString("Project Domain Name", "Mosso"), options
+                                    .usernamePlaceholder(LocaleFactory.localizedString("Project Domain Name", "Mosso"))).getUsername();
                 }
                 // Save project name and domain in username
                 credentials.setUsername(String.format("%s:%s:%s", project, domain, credentials.getUsername()));

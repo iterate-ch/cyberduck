@@ -208,7 +208,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     private void alert(final ConnectionCallback prompt, final String algorithm) throws ConnectionCanceledException {
-        prompt.warn(host.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Insecure algorithm {0} negotiated with server", "Credentials"),
+        prompt.warn(host, MessageFormat.format(LocaleFactory.localizedString("Insecure algorithm {0} negotiated with server", "Credentials"),
                 algorithm),
                 MessageFormat.format("{0}. {1}.", LocaleFactory.localizedString("The algorithm is possibly too weak to meet current cryptography standards", "Credentials"),
                         LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
@@ -291,11 +291,11 @@ public class SFTPSession extends Session<SSHClient> {
         // Check if authentication is partial
         if(!client.isAuthenticated()) {
             if(client.getUserAuth().hadPartialSuccess()) {
-                final Credentials additional = new HostCredentials(host, credentials.getUsername());
-                prompt.prompt(host, additional,
+                final Credentials additional = prompt.prompt(host, credentials.getUsername(),
                         LocaleFactory.localizedString("Partial authentication success", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().user(false).keychain(false).publickey(false));
+                        new LoginOptions(host.getProtocol()).user(false).keychain(false).publickey(false)
+                                .usernamePlaceholder(credentials.getUsername()));
                 if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
                     throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
                             "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));

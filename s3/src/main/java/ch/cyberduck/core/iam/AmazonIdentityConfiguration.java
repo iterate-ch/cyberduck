@@ -49,7 +49,7 @@ import com.amazonaws.services.identitymanagement.model.*;
 public class AmazonIdentityConfiguration implements IdentityConfiguration {
     private static final Logger log = Logger.getLogger(AmazonIdentityConfiguration.class);
 
-    private final Host host;
+    private final Host bookmark;
 
     /**
      * Prefix in preferences
@@ -57,12 +57,12 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     private static final String prefix = "iam.";
     public final ClientConfiguration configuration;
 
-    public AmazonIdentityConfiguration(final Host host) {
-        this(host, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
+    public AmazonIdentityConfiguration(final Host bookmark) {
+        this(bookmark, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
     }
 
-    public AmazonIdentityConfiguration(final Host host, final int timeout) {
-        this.host = host;
+    public AmazonIdentityConfiguration(final Host bookmark, final int timeout) {
+        this.bookmark = bookmark;
         this.configuration = new ClientConfiguration();
         this.configuration.setConnectionTimeout(timeout);
         this.configuration.setSocketTimeout(timeout);
@@ -71,7 +71,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         this.configuration.setMaxErrorRetry(0);
         this.configuration.setMaxConnections(1);
         this.configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
-        final Proxy proxy = ProxyFactory.get().find(host);
+        final Proxy proxy = ProxyFactory.get().find(bookmark);
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:
@@ -85,15 +85,15 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     }
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
-        final LoginOptions options = new LoginOptions().anonymous(false).publickey(false);
+        final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false);
         try {
             final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
-            login.validate(host, LocaleFactory.localizedString("AWS Identity and Access Management", "S3"), options);
+            login.validate(bookmark, LocaleFactory.localizedString("AWS Identity and Access Management", "S3"), options);
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.prompt(host, host.getCredentials(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
+            bookmark.setCredentials(prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
             return this.authenticated(run, prompt);
         }
     }
@@ -153,8 +153,8 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
             log.warn(String.format("No access key found for user %s", username));
             return null;
         }
-        return new Credentials(key, PasswordStoreFactory.get().getPassword(host.getProtocol().getScheme(), host.getPort(),
-                host.getHostname(), key));
+        return new Credentials(key, PasswordStoreFactory.get().getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                bookmark.getHostname(), key));
     }
 
     @Override
@@ -190,7 +190,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                     PreferencesFactory.get().setProperty(String.format("%s%s", prefix, username), id);
                     // Save secret
                     PasswordStoreFactory.get().addPassword(
-                            host.getProtocol().getScheme(), host.getPort(), host.getHostname(),
+                            bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
                             id, key.getAccessKey().getSecretAccessKey());
                 }
                 catch(AmazonClientException e) {
@@ -209,12 +209,12 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                 .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
-                        return host.getCredentials().getUsername();
+                        return bookmark.getCredentials().getUsername();
                     }
 
                     @Override
                     public String getAWSSecretKey() {
-                        return host.getCredentials().getPassword();
+                        return bookmark.getCredentials().getPassword();
                     }
                 }))
                 .withClientConfiguration(configuration)

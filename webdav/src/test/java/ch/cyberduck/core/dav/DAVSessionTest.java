@@ -319,9 +319,8 @@ public class DAVSessionTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason,
-                               final LoginOptions options) throws LoginCanceledException {
-                assertEquals(host.getCredentials(), credentials);
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason,
+                                      final LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login failed", title);
                 assertEquals("Authorization Required.", reason);
                 assertFalse(options.publickey);
@@ -362,18 +361,15 @@ public class DAVSessionTest {
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService c = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials,
-                               String title, String reason, LoginOptions options) throws LoginCanceledException {
-                if(prompt.get()) {
-                    fail();
-                }
-                credentials.setUsername(System.getProperties().getProperty("webdav.user"));
-                credentials.setPassword(System.getProperties().getProperty("webdav.password"));
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 prompt.set(true);
+                return new Credentials(System.getProperties().getProperty("webdav.user"),
+                        System.getProperties().getProperty("webdav.password")
+                );
             }
 
             @Override
-            public void warn(Protocol protocol, String title, String message,
+            public void warn(Host bookmark, String title, String message,
                              String continueButton, String disconnectButton, String preference) throws LoginCanceledException {
                 //
             }
@@ -411,9 +407,10 @@ public class DAVSessionTest {
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginCallback() {
                     @Override
-                    public void prompt(Host bookmark, Credentials credentials,
-                                       String title, String reason, LoginOptions options) throws LoginCanceledException {
+                    public Credentials prompt(final Host bookmark, String username,
+                                              String title, String reason, LoginOptions options) throws LoginCanceledException {
                         //
+                        return new Credentials();
                     }
                 },
                 new DisabledHostKeyCallback(),
@@ -552,7 +549,7 @@ public class DAVSessionTest {
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginCallback() {
                     @Override
-                    public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                         assertEquals("Unsecured WebDAV (HTTP) connection", title);
                         assertEquals("connection.unsecure.svn.cyberduck.io", preference);
                         warning.set(true);
