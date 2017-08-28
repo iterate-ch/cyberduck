@@ -33,6 +33,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 
 public class DefaultCopyFeature implements Copy {
 
@@ -75,6 +76,12 @@ public class DefaultCopyFeature implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
+        switch(from.getHost().getProtocol().getType()) {
+            case ftp:
+            case irods:
+                // Stateful
+                return !Objects.equals(from, to);
+        }
         return true;
     }
 

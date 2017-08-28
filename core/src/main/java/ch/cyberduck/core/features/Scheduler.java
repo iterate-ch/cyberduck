@@ -18,8 +18,8 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public interface Scheduler {
-    void repeat(PasswordCallback callback) throws BackgroundException;
+public interface Scheduler<R> {
+    R repeat(PasswordCallback callback) throws BackgroundException;
     void shutdown();
 
 }

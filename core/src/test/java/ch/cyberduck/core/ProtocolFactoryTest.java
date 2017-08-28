@@ -51,11 +51,15 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testFindUnknownDefaultProtokol() throws Exception {
+    public void testFindUnknownDefaultProtocol() throws Exception {
         final TestProtocol dav = new TestProtocol(Scheme.dav);
         final TestProtocol davs = new TestProtocol(Scheme.davs);
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, davs)));
-        assertEquals(dav, f.forName("ftp"));
+        assertEquals(dav, f.forName("dav"));
+        assertEquals(dav, f.forScheme(Scheme.http));
+        assertEquals(davs, f.forName("davs"));
+        assertEquals(davs, f.forScheme(Scheme.https));
+        assertNull(f.forName("ftp"));
     }
 
     @Test
@@ -74,5 +78,36 @@ public class ProtocolFactoryTest {
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(dav)));
         assertEquals(dav, f.forName("dav"));
         assertEquals(dav, f.forName("dav-provider"));
+    }
+
+    @Test
+    public void testFindProtocolProviderMismatch() throws Exception {
+        final TestProtocol dav_provider1 = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "dav";
+            }
+
+            @Override
+            public String getProvider() {
+                return "provider_1";
+            }
+        };
+        final TestProtocol dav_provider2 = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "dav";
+            }
+
+            @Override
+            public String getProvider() {
+                return "provider_2";
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav_provider1, dav_provider2)));
+        assertEquals(dav_provider1, f.forName("dav"));
+        assertEquals(dav_provider1, f.forName("dav", "provider_1"));
+        assertEquals(dav_provider1, f.forName("dav", "g"));
+        assertEquals(dav_provider2, f.forName("dav", "provider_2"));
     }
 }

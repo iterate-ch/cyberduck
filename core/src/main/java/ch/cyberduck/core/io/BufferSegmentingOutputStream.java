@@ -43,7 +43,7 @@ public class BufferSegmentingOutputStream extends SegmentingOutputStream {
     @Override
     public void flush() throws IOException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Copy buffer%s to output", buffer));
+            log.debug(String.format("Copy buffer %s to output %s", buffer, proxy));
         }
         IOUtils.copy(new BufferInputStream(buffer), proxy);
         // Re-use buffer

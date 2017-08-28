@@ -29,6 +29,7 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -64,8 +65,8 @@ public class SDSSessionTest {
         session.close();
     }
 
-    @Test
-    public void testLoginOAuth() throws Exception {
+    @Test(expected = LoginCanceledException.class)
+    public void testLoginOAuthExpiredRefreshToken() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Secure Data Space (OAuth).cyberduckprofile"));
         final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(

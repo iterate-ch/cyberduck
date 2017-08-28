@@ -1,6 +1,15 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2.3
+- [Feature] Allow to resume downloads (Cryptomator)
+- [Feature] Allow to resume downloads (Dropbox)
+- [Bugfix] Failure duplicating files (FTP) (#10049)
+- [Bugfix] Failure with input prompt for username and password (CLI, Windows) (#10043)
+- [Bugfix] Failure to detect vault when moving files into locked vault (Cryptomator)
+- [Bugfix] Failure to detect vault when copying files into locked vault (Cryptomator)
+- [Bugfix] Checksum mismatch when downloading versioned file (S3) (#10055)
+
 6.2.2
 - [Bugfix] Failure copying files in vault (Cryptomator)
 - [Bugfix] Failure detecting vault when uploading, copying or moving files to locked vault (Cryptomator)

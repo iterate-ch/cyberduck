@@ -16,18 +16,18 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.DownloadBuilder;
 import com.dropbox.core.v2.files.FileMetadata;
 
 public class DropboxReadFeature implements Read {
@@ -41,24 +41,21 @@ public class DropboxReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final DbxDownloader<FileMetadata> downloader =
-                    new DbxUserFilesRequests(session.getClient()).download(file.getAbsolute());
-            final InputStream in = downloader.getInputStream();
+            final DownloadBuilder builder = new DbxUserFilesRequests(session.getClient()).downloadBuilder(file.getAbsolute());
             if(status.isAppend()) {
-                in.skip(status.getOffset());
+                final HttpRange range = HttpRange.withStatus(status);
+                builder.range(range.getStart());
             }
-            return in;
+            final DbxDownloader<FileMetadata> downloader = builder.start();
+            return downloader.getInputStream();
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Download {0} failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 
     @Override
     public boolean offset(Path file) throws BackgroundException {
-        return false;
+        return true;
     }
 }

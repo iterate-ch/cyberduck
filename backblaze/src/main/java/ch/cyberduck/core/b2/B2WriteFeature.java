@@ -43,7 +43,9 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
@@ -51,6 +53,8 @@ import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 import synapticloop.b2.response.BaseB2Response;
+
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> implements Write<BaseB2Response> {
     private static final Logger log = Logger.getLogger(B2WriteFeature.class);
@@ -110,11 +114,15 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                             }
                         }
                         try {
+                            final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
+                            if(null != status.getTimestamp()) {
+                                fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
+                            }
                             return session.getClient().uploadFile(uploadUrl,
                                     containerService.getKey(file),
                                     entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                                     status.getMime(),
-                                    status.getMetadata());
+                                    fileinfo);
                         }
                         catch(B2ApiException e) {
                             urls.remove();

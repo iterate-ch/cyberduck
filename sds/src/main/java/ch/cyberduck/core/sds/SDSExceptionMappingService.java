@@ -43,7 +43,6 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                 final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
                 if(json.get("errorCode").isJsonPrimitive()) {
                     final JsonPrimitive errorCode = json.getAsJsonPrimitive("errorCode");
-                    this.append(buffer, errorCode.getAsString());
                     switch(failure.getCode()) {
                         case HttpStatus.SC_NOT_FOUND:
                             switch(errorCode.getAsInt()) {

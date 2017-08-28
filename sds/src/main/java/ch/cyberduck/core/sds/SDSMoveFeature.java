@@ -99,6 +99,9 @@ public class SDSMoveFeature implements Move {
                 return false;
             }
         }
+        if(StringUtils.containsAny(target.getName(), '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
+            return false;
+        }
         return true;
     }
 

@@ -72,8 +72,8 @@ public class S3ObjectListServiceTest {
             assertEquals(container, p.getParent());
             assertEquals("us-east-1", p.attributes().getRegion());
             if(p.isFile()) {
-                assertNotNull(p.attributes().getModificationDate());
-                assertNotNull(p.attributes().getSize());
+                assertNotEquals(-1L, p.attributes().getModificationDate());
+                assertNotEquals(-1L, p.attributes().getSize());
                 assertNotNull(p.attributes().getETag());
                 assertNotNull(p.attributes().getStorageClass());
             }

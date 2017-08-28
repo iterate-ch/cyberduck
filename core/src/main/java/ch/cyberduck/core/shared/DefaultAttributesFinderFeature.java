@@ -20,13 +20,10 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -35,7 +32,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 
 import org.apache.log4j.Logger;
 
-public class DefaultAttributesFinderFeature implements AttributesFinder {
+public class DefaultAttributesFinderFeature extends ListFilteringFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(DefaultAttributesFinderFeature.class);
 
     private final Session<?> session;
@@ -44,6 +41,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
             = PathCache.empty();
 
     public DefaultAttributesFinderFeature(final Session<?> session) {
+        super(session);
         this.session = session;
     }
 
@@ -52,35 +50,29 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        final AttributedList<Path> list;
-        if(!cache.isCached(file.getParent())) {
-            try {
-                list = session.list(file.getParent(), new DisabledListProgressListener());
-                cache.put(file.getParent(), list);
+        try {
+            final Path found = this.search(file);
+            final AttributedList<Path> list;
+            if(null == found) {
+                throw new NotfoundException(file.getAbsolute());
             }
-            catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
-                log.warn(String.format("Failure listing directory %s. %s", file.getParent(), f.getMessage()));
-                // Try native implementation
-                final AttributesFinder feature = session._getFeature(AttributesFinder.class);
-                if(feature instanceof DefaultAttributesFinderFeature) {
-                    throw f;
-                }
-                return feature.withCache(cache).find(file);
+            return found.attributes();
+        }
+        catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
+            log.warn(String.format("Failure listing directory %s. %s", file.getParent(), f.getMessage()));
+            // Try native implementation
+            final AttributesFinder feature = session._getFeature(AttributesFinder.class);
+            if(feature instanceof DefaultAttributesFinderFeature) {
+                throw f;
             }
+            return feature.withCache(cache).find(file);
         }
-        else {
-            list = cache.get(file.getParent());
-        }
-        final Path result = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
-        if(null == result) {
-            throw new NotfoundException(file.getAbsolute());
-        }
-        return result.attributes();
     }
 
     @Override
     public DefaultAttributesFinderFeature withCache(final Cache<Path> cache) {
         this.cache = cache;
+        super.withCache(cache);
         return this;
     }
 }

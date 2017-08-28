@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
@@ -33,6 +34,7 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
 public class S3TouchFeature implements Touch<StorageObject> {
@@ -70,7 +72,8 @@ public class S3TouchFeature implements Touch<StorageObject> {
         status.setLength(0L);
         final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        return file;
+        return new Path(file.getParent(), file.getName(), file.getType(),
+                new PathAttributes(file.attributes()).withVersionId(((S3Object) out.getStatus()).getVersionId()));
     }
 
     @Override

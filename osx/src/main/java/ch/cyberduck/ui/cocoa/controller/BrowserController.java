@@ -48,11 +48,12 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
-import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.local.FlatTemporaryFileService;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -558,16 +559,14 @@ public class BrowserController extends WindowController
         }
         browser.deselectAll(null);
         for(Path path : selected) {
-            this.select(path, true, true);
+            this.select(path);
         }
     }
 
     /**
-     * @param file   Path to select
-     * @param expand Keep previous selection
-     * @param scroll Scroll to selection
+     * @param file Path to select
      */
-    private void select(final Path file, final boolean expand, final boolean scroll) {
+    private void select(final Path file) {
         final NSTableView browser = this.getSelectedBrowserView();
         final BrowserTableDataSource model = this.getSelectedBrowserModel();
         if(log.isDebugEnabled()) {
@@ -579,20 +578,17 @@ public class BrowserController extends WindowController
             return;
         }
         final NSInteger index = new NSInteger(row);
-        browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), expand);
-        if(scroll) {
-            browser.scrollRowToVisible(index);
-        }
+        browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), true);
+        browser.scrollRowToVisible(index);
     }
 
     private void updateQuickLookSelection(final List<Path> selected) {
         final List<TransferItem> downloads = new ArrayList<TransferItem>();
-        for(Path path : selected) {
-            if(!path.isFile()) {
+        for(Path file : selected) {
+            if(!file.isFile()) {
                 continue;
             }
-            downloads.add(new TransferItem(
-                    path, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), path)));
+            downloads.add(new TransferItem(file, new FlatTemporaryFileService().create(pool.getHost().getUuid(), file)));
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
@@ -2289,7 +2285,9 @@ public class BrowserController extends WindowController
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
-                                new CopyWorker(selected, pool, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
+                                new CopyWorker(selected,
+                                        pool instanceof StatefulSessionPool ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool,
+                                        cache, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
                                             @Override
                                             public void cleanup(final List<Path> copied) {
                                                 reload(workdir(), copied, new ArrayList<Path>(selected.values()));
@@ -3022,9 +3020,8 @@ public class BrowserController extends WindowController
                                     securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                                             : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
                                     securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
-                                    final Scheduler scheduler = pool.getFeature(Scheduler.class);
+                                    scheduler = pool.getFeature(Scheduler.class);
                                     if(scheduler != null) {
-                                        BrowserController.this.scheduler = scheduler;
                                         background(new SessionBackgroundAction<Object>(pool, new DisabledAlertCallback(),
                                                 new DisabledProgressListener(), new DisabledTranscriptListener()) {
                                             @Override

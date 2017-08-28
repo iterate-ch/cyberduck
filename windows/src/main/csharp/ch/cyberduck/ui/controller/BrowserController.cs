@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
-        private Scheduler _background;
+        private Scheduler _scheduler;
         private Comparator _comparator = new NullComparator();
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
@@ -2719,7 +2719,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             CallbackDelegate run = delegate
             {
-                _background?.shutdown();
+                _scheduler?.shutdown();
                 Session.shutdown();
                 Session = SessionPool.DISCONNECTED;
                 SetWorkdir(null);
@@ -2794,7 +2794,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (CheckCopy(selected))
             {
-                CopyAction copy = new CopyAction(this, Utils.ConvertToJavaMap(selected));
+                CopyAction copy = new CopyAction(this, Utils.ConvertToJavaMap(selected), _cache);
                 Background(copy);
             }
         }
@@ -3307,12 +3307,11 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.SecureConnection = _pool.getHost().getProtocol().isSecure();
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
-                        Scheduler background = (Scheduler) _pool.getFeature(typeof(Scheduler));
-                        if (background != null)
+                        _controller._scheduler = (Scheduler) _pool.getFeature(typeof(Scheduler));
+                        if (_controller._scheduler != null)
                         {
-                            _controller._background = background;
                             _controller.background(new BackgroundAction(_controller, _pool, new DisabledAlertCallback(),
-                                new DisabledProgressListener(), new DisabledTranscriptListener(), background));
+                                new DisabledProgressListener(), new DisabledTranscriptListener(), _controller._scheduler));
                         }
                     }
                 }
@@ -3369,8 +3368,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class CopyAction : WorkerBackgroundAction
         {
-            public CopyAction(BrowserController controller, Map selected)
-                : base(controller, controller.Session, new InnerCopyWorker(controller, selected))
+            public CopyAction(BrowserController controller, Map selected, PathCache cache)
+                : base(controller, controller.Session, new InnerCopyWorker(controller, selected, cache))
             {
             }
 
@@ -3379,8 +3378,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly BrowserController _controller;
                 private readonly Map _files;
 
-                public InnerCopyWorker(BrowserController controller, Map files)
-                    : base(files, controller.Session, controller, LoginCallbackFactory.get(controller))
+                public InnerCopyWorker(BrowserController controller, Map files, PathCache cache)
+                    : base(files, controller.Session is StatefulSessionPool ? SessionPoolFactory.create(controller, cache, controller.Session.getHost()) : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;
                     _files = files;

@@ -66,6 +66,9 @@ public class SDSCopyFeature implements Copy {
             // Rooms cannot be copied
             return false;
         }
+        if(StringUtils.containsAny(target.getName(), '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
+            return false;
+        }
         if(StringUtils.equals(containerService.getContainer(source).getName(), containerService.getContainer(target).getName())) {
             // Nodes must be in same source parent
             return true;

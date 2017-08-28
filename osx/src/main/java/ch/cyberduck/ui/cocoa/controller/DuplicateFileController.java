@@ -61,7 +61,7 @@ public class DuplicateFileController extends FileController {
         String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
                 UserDateFormatterFactory.get().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
-                StringUtils.isNotEmpty(selected.getExtension()) ? "." + selected.getExtension() : StringUtils.EMPTY);
+                StringUtils.isNotBlank(selected.getExtension()) ? String.format(".%s", selected.getExtension()) : StringUtils.EMPTY);
         this.updateField(inputField, proposal);
         return view;
     }

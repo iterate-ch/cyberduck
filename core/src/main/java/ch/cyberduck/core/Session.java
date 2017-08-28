@@ -65,6 +65,8 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     protected final Host host;
 
+    private Metrics metrics = new DisabledMetrics();
+
     /**
      * Connection
      */
@@ -127,6 +129,14 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     public C getClient() {
         return client;
+    }
+
+    public void enableMetrics() {
+        metrics = new CountingMetrics();
+    }
+
+    public Metrics getMetrics() {
+        return metrics;
     }
 
     /**
@@ -270,6 +280,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
+        metrics.increment(type);
         return this.getFeature(type, this._getFeature(type));
     }
 

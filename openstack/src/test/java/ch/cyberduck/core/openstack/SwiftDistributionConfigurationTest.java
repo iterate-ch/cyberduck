@@ -5,6 +5,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -37,21 +38,23 @@ public class SwiftDistributionConfigurationTest {
     @Test
     public void testGetName() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session, Collections.emptyMap());
         assertEquals("Akamai", configuration.getName());
         assertEquals("Akamai", configuration.getName(Distribution.DOWNLOAD));
+        session.close();
     }
 
     @Test
     public void testFeatures() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session, Collections.emptyMap());
         assertNotNull(configuration.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(Index.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(AnalyticsProvider.class, Distribution.DOWNLOAD));
         assertNull(configuration.getFeature(Cname.class, Distribution.DOWNLOAD));
+        session.close();
     }
 
     @Test
@@ -59,10 +62,11 @@ public class SwiftDistributionConfigurationTest {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
+                new SwiftDistributionConfigurationLoader(session).repeat(new DisabledPasswordCallback()));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
@@ -91,10 +95,11 @@ public class SwiftDistributionConfigurationTest {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
+                new SwiftDistributionConfigurationLoader(session).repeat(new DisabledPasswordCallback()));
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
         new SwiftDirectoryFeature(session).mkdir(container, "ORD", new TransferStatus());

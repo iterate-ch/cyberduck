@@ -15,10 +15,12 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
@@ -50,6 +52,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3MetadataFeature;
 import ch.cyberduck.core.s3.S3MoveFeature;
+import ch.cyberduck.core.s3.S3ObjectListService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -117,6 +120,14 @@ public class GoogleStorageSession extends S3Session {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt,
                       final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        if(directory.isRoot()) {
+            return super.list(directory, listener);
+        }
+        return new S3ObjectListService(this).list(directory, listener);
     }
 
     @Override

@@ -168,7 +168,7 @@ public class SwiftLargeObjectUploadFeatureTest {
                         System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 

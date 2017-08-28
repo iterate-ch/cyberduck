@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,22 +54,20 @@ import ch.iterate.openstack.swift.model.ContainerMetadata;
 public class SwiftDistributionConfiguration implements DistributionConfiguration, Index, DistributionLogging {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
-    private final SwiftSession session;
-
     private final PathContainerService containerService
             = new PathContainerService();
 
-    private final Map<Path, Distribution> cache
-            = new HashMap<Path, Distribution>();
-
+    private final SwiftSession session;
+    private final Map<Path, Distribution> distributions;
     private final SwiftRegionService regionService;
 
-    public SwiftDistributionConfiguration(final SwiftSession session) {
-        this(session, new SwiftRegionService(session));
+    public SwiftDistributionConfiguration(final SwiftSession session, final Map<Path, Distribution> distributions) {
+        this(session, distributions, new SwiftRegionService(session));
     }
 
-    public SwiftDistributionConfiguration(final SwiftSession session, final SwiftRegionService regionService) {
+    public SwiftDistributionConfiguration(final SwiftSession session, final Map<Path, Distribution> distributions, final SwiftRegionService regionService) {
         this.session = session;
+        this.distributions = distributions;
         this.regionService = regionService;
     }
 
@@ -142,7 +139,6 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                     distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
                 distribution.setContainers(Collections.singletonList(new Path(".CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory))));
-                cache.put(container, distribution);
                 return distribution;
             }
             catch(NotFoundException e) {
@@ -187,8 +183,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final Path container = containerService.getContainer(file);
-        if(cache.containsKey(container)) {
-            return new DistributionUrlProvider(cache.get(container)).toUrl(file);
+        if(distributions.containsKey(container)) {
+            return new DistributionUrlProvider(distributions.get(container)).toUrl(file);
         }
         return DescriptiveUrlBag.empty();
     }

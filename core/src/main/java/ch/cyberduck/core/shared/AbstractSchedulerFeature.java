@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractSchedulerFeature<R> implements Scheduler {
+public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
     private static final Logger log = Logger.getLogger(AbstractSchedulerFeature.class);
 
     private final long period;
@@ -42,7 +42,7 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler {
     protected abstract R operate(PasswordCallback callback, Path file) throws BackgroundException;
 
     @Override
-    public void repeat(final PasswordCallback callback) throws BackgroundException {
+    public R repeat(final PasswordCallback callback) throws BackgroundException {
         scheduler.repeat(() -> {
             try {
                 this.operate(callback, null);
@@ -61,6 +61,7 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler {
             log.error(String.format("Error waiting for exit signal %s", e.getMessage()));
             throw new DefaultExceptionMappingService().map(e);
         }
+        return null;
     }
 
     @Override

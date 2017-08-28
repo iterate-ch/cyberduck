@@ -23,6 +23,7 @@ import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -72,16 +73,13 @@ public class SwiftUrlProviderTest {
                 new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
         );
         final SwiftSession session = new SwiftSession(host);
-        final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).repeat(new DisabledPasswordCallback());
+        final UrlProvider provider = new SwiftUrlProvider(session, accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        while(session.accounts.isEmpty()) {
-            // Account information loaded in thread pool
-            Thread.sleep(1000L);
-        }
         container.attributes().setRegion("DFW");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
         final DescriptiveUrlBag list = provider.toUrl(file);

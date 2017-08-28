@@ -105,7 +105,9 @@ public class S3MultipleDeleteFeature implements Delete {
             callback.delete(file);
             // Finally delete bucket itself
             try {
-                session.getClient().deleteBucket(containerService.getContainer(file).getName());
+                final String bucket = containerService.getContainer(file).getName();
+                session.getClient().deleteBucket(bucket);
+                session.getClient().getRegionEndpointCache().removeRegionForBucketName(bucket);
             }
             catch(ServiceException e) {
                 throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);

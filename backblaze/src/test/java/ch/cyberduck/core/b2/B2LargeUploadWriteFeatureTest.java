@@ -63,6 +63,7 @@ public class B2LargeUploadWriteFeatureTest {
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
+        status.setTimestamp(1503654614004L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = feature.write(file, status, new DisabledConnectionCallback());
         final byte[] content = new RandomStringGenerator.Builder().build().generate(6 * 1024 * 1024).getBytes("UTF-8");
@@ -76,6 +77,7 @@ public class B2LargeUploadWriteFeatureTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
+        assertEquals(1503654614004L, new B2AttributesFinderFeature(session).find(file).getModificationDate());
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
