@@ -146,6 +146,19 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             case oauth:
                 authorizationService.setTokens(authorizationService.authorize(host, keychain, controller, cancel));
                 break;
+            case radius:
+                final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions().user(false).keychain(false)
+                );
+                // Save tokens for 401 error response when expired
+                retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
+                        .authType(host.getProtocol().getAuthorization())
+                        .language("en")
+                        .login(login)
+                        .password(password)
+                        .token(additional.getPassword())
+                ));
+                break;
             default:
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
@@ -183,6 +196,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return this.login(controller, new LoginRequest()
                     .authType(host.getProtocol().getAuthorization())
                     .language("en")
+                    .login(additional.getUsername())
                     .token(additional.getPassword())
             );
         }
