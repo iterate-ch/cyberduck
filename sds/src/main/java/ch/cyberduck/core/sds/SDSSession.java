@@ -50,7 +50,9 @@ import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.ConfigApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.KeyValueEntry;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
@@ -68,15 +70,19 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.migcomponents.migbase64.Base64;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
+    private static final Logger log = Logger.getLogger(SDSSession.class);
 
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
@@ -87,6 +93,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private final ExpiringObjectHolder<UserAccount> userAccount = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+
+    private final List<KeyValueEntry> configuration = new ArrayList<>();
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -148,6 +156,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 ));
                 break;
         }
+        try {
+            configuration.addAll(new ConfigApi(client).getSystemSettings(StringUtils.EMPTY).getItems());
+        }
+        catch(ApiException e) {
+            // Precondition: Right "Config Read" required.
+            log.warn(String.format("Ignore failure reading configuration.%s", new SDSExceptionMappingService().map(e).getDetail()));
+        }
     }
 
     private String login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
@@ -184,6 +199,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             this.keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
         }
         return this.keyPair.get();
+    }
+
+    public List<KeyValueEntry> configuration() {
+        return configuration;
     }
 
     @Override
