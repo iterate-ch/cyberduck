@@ -22,7 +22,7 @@
         <key>Vendor</key>
         <string>ssp-oauth</string>
         <key>Description</key>
-        <string>Secure Data Space</string>
+        <string>Secure Data Space (OAuth)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>

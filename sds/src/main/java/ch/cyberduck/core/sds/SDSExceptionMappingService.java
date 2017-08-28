@@ -24,6 +24,7 @@ import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 
 import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
 
 import java.io.StringReader;
 
@@ -33,6 +34,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 public class SDSExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
+    private static final Logger log = Logger.getLogger(SDSExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final ApiException failure) {
@@ -43,6 +45,9 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                 final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
                 if(json.get("errorCode").isJsonPrimitive()) {
                     final JsonPrimitive errorCode = json.getAsJsonPrimitive("errorCode");
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Failure with errorCode %s", errorCode));
+                    }
                     switch(failure.getCode()) {
                         case HttpStatus.SC_NOT_FOUND:
                             switch(errorCode.getAsInt()) {
@@ -54,6 +59,11 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                             switch(errorCode.getAsInt()) {
                                 case -10108:
                                     // [-10108] Radius Access-Challenge required.
+                                    final JsonPrimitive replyMessage = json.getAsJsonPrimitive("replyMessage");
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Failure with replyMessage %s", replyMessage));
+                                    }
+                                    buffer.append(replyMessage.getAsString());
                                     return new PartialLoginFailureException(buffer.toString(), failure);
                             }
                     }

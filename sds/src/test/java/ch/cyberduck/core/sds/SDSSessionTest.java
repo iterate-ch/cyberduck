@@ -15,20 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -52,7 +39,7 @@ public class SDSSessionTest {
     }
 
     @Test
-    public void testLogin() throws Exception {
+    public void testLoginUserPassword() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
@@ -61,6 +48,30 @@ public class SDSSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        session.close();
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testLoginRadius() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/Secure Data Space (Radius).cyberduckprofile"));
+        final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
+                "rsa.user1", "1234"
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                assertEquals("Multi-Factor Authentication", reason);
+                assertFalse(options.user);
+                assertTrue(options.password);
+                return new Credentials(username, "889153");
+            }
+        }, new DisabledCancelCallback(), PathCache.empty());
         assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
         session.close();
     }
