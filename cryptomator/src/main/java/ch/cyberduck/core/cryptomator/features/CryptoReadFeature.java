@@ -63,8 +63,8 @@ public class CryptoReadFeature implements Read {
                 IOUtils.closeQuietly(in);
                 final TransferStatus s = new TransferStatus(status).length(-1L);
                 s.setOffset(this.align(status.getOffset()));
-                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(encrypted, s, callback), cryptor, header, vault.numberOfChunks(status.getOffset()) - 1);
-                crypto.skip(this.position(status.getOffset()) - s.getOffset());
+                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(encrypted, s, callback), cryptor, header, this.chunk(status.getOffset()));
+                crypto.skip(this.position(status.getOffset()));
                 return crypto;
             }
             else {
@@ -76,14 +76,16 @@ public class CryptoReadFeature implements Read {
         }
     }
 
-    private long align(final long offset) {
-        final long chunk = offset / vault.getCryptor().fileContentCryptor().cleartextChunkSize();
-        return vault.getCryptor().fileHeaderCryptor().headerSize() + chunk * vault.getCryptor().fileContentCryptor().ciphertextChunkSize();
+    protected long chunk(final long offset) {
+        return offset / vault.getCryptor().fileContentCryptor().cleartextChunkSize();
     }
 
-    private long position(final long offset) {
-        return vault.toCiphertextSize(offset) -
-                (vault.getCryptor().fileContentCryptor().ciphertextChunkSize() - vault.getCryptor().fileContentCryptor().cleartextChunkSize());
+    protected long align(final long offset) {
+        return vault.getCryptor().fileHeaderCryptor().headerSize() + this.chunk(offset) * vault.getCryptor().fileContentCryptor().ciphertextChunkSize();
+    }
+
+    protected long position(final long offset) {
+        return offset % vault.getCryptor().fileContentCryptor().cleartextChunkSize();
     }
 
     @Override
