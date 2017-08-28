@@ -196,8 +196,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return this.login(controller, new LoginRequest()
                     .authType(host.getProtocol().getAuthorization())
                     .language("en")
-                    .login(additional.getUsername())
-                    .token(additional.getPassword())
+                    .password(additional.getPassword())
             );
         }
     }
