@@ -54,7 +54,7 @@ public class AzureCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final CloudBlob target = session.getClient().getContainerReference(containerService.getContainer(copy).getName())
                     .getAppendBlobReference(containerService.getKey(copy));
@@ -67,6 +67,7 @@ public class AzureCopyFeature implements Copy {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
             }
+            return copy;
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);

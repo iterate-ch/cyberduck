@@ -57,6 +57,7 @@ public class MoveWorker extends Worker<List<Path>> {
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
         final Move move = session.getFeature(Move.class);
+        final List<Path> targets = new ArrayList<Path>();
         for(Map.Entry<Path, Path> entry : files.entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
@@ -66,7 +67,7 @@ public class MoveWorker extends Worker<List<Path>> {
             }
             final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), entry.getKey(), entry.getValue());
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                move.move(r.getKey(), r.getValue(), new TransferStatus()
+                targets.add(move.move(r.getKey(), r.getValue(), new TransferStatus()
                                 .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue())),
                         new Delete.Callback() {
                             @Override
@@ -74,13 +75,11 @@ public class MoveWorker extends Worker<List<Path>> {
                                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                                         file.getName()));
                             }
-                        }, callback);
+                        }, callback)
+                );
             }
         }
-        final List<Path> changed = new ArrayList<Path>();
-        changed.addAll(files.keySet());
-        changed.addAll(files.values());
-        return changed;
+        return targets;
     }
 
     protected Map<Path, Path> compile(final Move move, final ListService list, final Path source, final Path target) throws BackgroundException {

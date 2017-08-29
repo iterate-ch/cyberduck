@@ -1,12 +1,12 @@
-package ch.cyberduck.core.dropbox;
+package ch.cyberduck.core.nio;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,26 +22,28 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import com.dropbox.core.DbxException;
-import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
-public class DropboxCopyFeature implements Copy {
+public class LocalCopyFeature implements Copy {
 
-    private final DropboxSession session;
+    private final LocalSession session;
 
-    public DropboxCopyFeature(DropboxSession session) {
+    public LocalCopyFeature(final LocalSession session) {
         this.session = session;
     }
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            // If the source path is a folder all its contents will be copied.
-            new DbxUserFilesRequests(session.getClient()).copy(source.getAbsolute(), target.getAbsolute());
-            return target;
+            Files.copy(session.toPath(source), session.toPath(target), StandardCopyOption.REPLACE_EXISTING);
+            // Copy attributes from original file
+            return new Path(target.getParent(), target.getName(), target.getType(),
+                    new LocalAttributesFinderFeature(session).find(target));
         }
-        catch(DbxException e) {
-            throw new DropboxExceptionMappingService().map("Cannot copy {0}", e, source);
+        catch(IOException e) {
+            throw new LocalExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
 

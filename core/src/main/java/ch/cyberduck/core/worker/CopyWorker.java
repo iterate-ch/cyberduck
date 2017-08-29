@@ -72,6 +72,7 @@ public class CopyWorker extends Worker<List<Path>> {
         });
         try {
             final Copy copy = session.getFeature(Copy.class).withTarget(destination);
+            final List<Path> targets = new ArrayList<Path>();
             for(Map.Entry<Path, Path> entry : files.entrySet()) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
@@ -84,19 +85,17 @@ public class CopyWorker extends Worker<List<Path>> {
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     if(r.getKey().isDirectory() && !copy.isRecursive(r.getKey(), r.getValue())) {
                         final Directory directory = session.getFeature(Directory.class);
-                        directory.mkdir(r.getValue(), null, new TransferStatus());
+                        targets.add(directory.mkdir(r.getValue(), null, new TransferStatus()));
                     }
                     else {
-                        copy.copy(r.getKey(), r.getValue(), new TransferStatus()
+                        targets.add(copy.copy(r.getKey(), r.getValue(), new TransferStatus()
                                 .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
-                                .length(r.getKey().attributes().getSize()), callback);
+                                .length(r.getKey().attributes().getSize()), callback)
+                        );
                     }
                 }
             }
-            final List<Path> changed = new ArrayList<Path>();
-            changed.addAll(files.keySet());
-            changed.addAll(files.values());
-            return changed;
+            return targets;
         }
         finally {
             target.release(destination, null);

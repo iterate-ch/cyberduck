@@ -54,7 +54,7 @@ public class MoveWorkerTest {
                         private final AtomicInteger count = new AtomicInteger();
 
                         @Override
-                        public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             if(count.get() == 0) {
                                 assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), file);
                                 assertEquals(new Path("/t2/a", EnumSet.of(Path.Type.file)), renamed);
@@ -72,6 +72,7 @@ public class MoveWorkerTest {
                                 assertEquals(new Path("/t2", EnumSet.of(Path.Type.directory)), renamed);
                             }
                             count.incrementAndGet();
+                            return renamed;
                         }
 
                         @Override

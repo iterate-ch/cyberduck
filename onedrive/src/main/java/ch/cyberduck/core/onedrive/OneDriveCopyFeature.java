@@ -43,7 +43,7 @@ public class OneDriveCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final OneDriveCopyOperation copyOperation = new OneDriveCopyOperation();
         if(!StringUtils.equals(source.getName(), target.getName())) {
             copyOperation.rename(target.getName());
@@ -55,6 +55,7 @@ public class OneDriveCopyFeature implements Copy {
                             statusObject.getOperation(),
                             statusObject.getPercentage(),
                             statusObject.getStatus())));
+            return target;
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot copy {0}", e, source);

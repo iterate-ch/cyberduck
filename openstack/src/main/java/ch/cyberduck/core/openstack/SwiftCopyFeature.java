@@ -50,13 +50,12 @@ public class SwiftCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            if(source.isFile()) {
-                session.getClient().copyObject(regionService.lookup(source),
-                        containerService.getContainer(source).getName(), containerService.getKey(source),
-                        containerService.getContainer(target).getName(), containerService.getKey(target));
-            }
+            session.getClient().copyObject(regionService.lookup(source),
+                    containerService.getContainer(source).getName(), containerService.getKey(source),
+                    containerService.getContainer(target).getName(), containerService.getKey(target));
+            return target;
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot copy {0}", e, source);

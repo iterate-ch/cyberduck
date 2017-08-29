@@ -28,6 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -128,6 +129,9 @@ public class LocalSession extends Session<FileSystem> {
         }
         if(type == Move.class) {
             return (T) new LocalMoveFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new LocalCopyFeature(this);
         }
         if(type == Directory.class) {
             return (T) new LocalDirectoryFeature(this);

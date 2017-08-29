@@ -45,12 +45,12 @@ public class S3ThresholdCopyFeature extends S3CopyFeature {
         this.accessControlListFeature = accessControlListFeature;
     }
 
-    public void copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(status.getLength() > multipartThreshold) {
-            new S3MultipartCopyFeature(session, accessControlListFeature).copy(source, copy, status, callback);
+            return new S3MultipartCopyFeature(session, accessControlListFeature).copy(source, copy, status, callback);
         }
         else {
-            new S3CopyFeature(session, accessControlListFeature).copy(source, copy, status, callback);
+            return new S3CopyFeature(session, accessControlListFeature).copy(source, copy, status, callback);
         }
     }
 }
