@@ -74,7 +74,7 @@ public class TripleCryptKeyPair {
                 }
                 keychain.addPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
                         new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl(),
-                        passphrase);
+                        credentials.getPassword());
             }
             return credentials;
         }
