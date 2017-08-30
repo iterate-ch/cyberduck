@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -42,11 +41,8 @@ public class SDSDirectoryFeature implements Directory {
     private final PathContainerService containerService
             = new PathContainerService();
 
-    private final SDSNodeIdProvider idProvider;
-
     public SDSDirectoryFeature(final SDSSession session) {
         this.session = session;
-        this.idProvider = new SDSNodeIdProvider(session);
     }
 
     @Override
@@ -64,7 +60,7 @@ public class SDSDirectoryFeature implements Directory {
             }
             else {
                 final CreateFolderRequest folderRequest = new CreateFolderRequest();
-                folderRequest.setParentId(Long.parseLong(idProvider.getFileid(folder.getParent(), new DisabledListProgressListener())));
+                folderRequest.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(folder.getParent(), new DisabledListProgressListener())));
                 folderRequest.setName(folder.getName());
                 final Node f = new NodesApi(session.getClient()).createFolder(StringUtils.EMPTY, folderRequest, null);
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
