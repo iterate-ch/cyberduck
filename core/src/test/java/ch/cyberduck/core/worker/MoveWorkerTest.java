@@ -36,10 +36,10 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class MoveWorkerTest {
 
@@ -123,6 +123,11 @@ public class MoveWorkerTest {
         final MoveWorker worker = new MoveWorker(
                 Collections.singletonMap(new Path("/t", EnumSet.of(Path.Type.directory)), new Path("/t2", EnumSet.of(Path.Type.directory))),
                 new DisabledProgressListener(), PathCache.empty(), new DisabledConnectionCallback());
-        assertEquals(2, worker.run(session).size());
+        final List<Path> targets = worker.run(session);
+        assertEquals(4, targets.size());
+        assertTrue(targets.contains(new Path("/t2", EnumSet.of(Path.Type.directory))));
+        assertTrue(targets.contains(new Path("/t2/a", EnumSet.of(Path.Type.file))));
+        assertTrue(targets.contains(new Path("/t2/d", EnumSet.of(Path.Type.directory))));
+        assertTrue(targets.contains(new Path("/t2/d/b", EnumSet.of(Path.Type.file))));
     }
 }
