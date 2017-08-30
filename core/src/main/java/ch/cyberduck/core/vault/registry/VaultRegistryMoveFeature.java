@@ -45,28 +45,29 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(registry.find(session, source).equals(registry.find(session, target))) {
             final Vault vault = registry.find(session, source);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Move %s to %s inside vault %s", source, target, vault));
             }
             // Move files inside vault
-            final Move move = vault.getFeature(session, Move.class, proxy);
-            move.move(source, target, status, callback, connectionCallback);
+            final Move feature = vault.getFeature(session, Move.class, proxy);
+            return feature.move(source, target, status, callback, connectionCallback);
         }
         else {
             // Move files from or into vault requires to pass through encryption features
-            final Copy copy = session.getFeature(Copy.class);
+            final Copy feature = session.getFeature(Copy.class);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
+                log.debug(String.format("Move %s to %s using copy feature %s", source, target, feature));
             }
-            copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()), connectionCallback);
+            final Path copy = feature.copy(source, target, new TransferStatus().length(source.attributes().getSize()), connectionCallback);
             // Delete source file after copy is complete
             final Delete delete = session.getFeature(Delete.class);
             if(delete.isSupported(source)) {
                 delete.delete(Collections.singletonList(source), connectionCallback, callback);
             }
+            return copy;
         }
     }
 

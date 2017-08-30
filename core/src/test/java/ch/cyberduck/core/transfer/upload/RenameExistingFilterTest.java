@@ -58,9 +58,10 @@ public class RenameExistingFilterTest {
                 if(type == Move.class) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             assertNotSame(file.getName(), renamed.getName());
                             c.set(true);
+                            return renamed;
                         }
 
                         @Override
@@ -77,7 +78,6 @@ public class RenameExistingFilterTest {
                         public Move withDelete(final Delete delete) {
                             return this;
                         }
-
                     };
                 }
                 return super._getFeature(type);
@@ -142,18 +142,19 @@ public class RenameExistingFilterTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path source, final Path target, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path source, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             if(moved.incrementAndGet() == 1) {
                                 // Rename existing target file
                                 assertEquals(file, source);
                             }
                             else if(moved.get() == 2) {
                                 // Move temporary renamed file in place
-                                assertEquals(file, target);
+                                assertEquals(file, renamed);
                             }
                             else {
                                 fail();
                             }
+                            return renamed;
                         }
 
                         @Override
@@ -262,10 +263,11 @@ public class RenameExistingFilterTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path f, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path f, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             assertFalse(moved.get());
                             assertEquals(file, f);
                             moved.set(true);
+                            return renamed;
                         }
 
                         @Override

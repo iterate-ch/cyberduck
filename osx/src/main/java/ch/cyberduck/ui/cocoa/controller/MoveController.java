@@ -71,8 +71,11 @@ public class MoveController extends ProxyController {
                 parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
                         new MoveWorker(selected, parent, cache, LoginCallbackFactory.get(parent)) {
                                     @Override
-                                    public void cleanup(final List<Path> moved) {
-                                        parent.reload(parent.workdir(), moved, new ArrayList<Path>(selected.values()));
+                                    public void cleanup(final List<Path> result) {
+                                        final List<Path> changed = new ArrayList<>();
+                                        changed.addAll(selected.keySet());
+                                        changed.addAll(selected.values());
+                                        parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
                                     }
                                 }
                         )

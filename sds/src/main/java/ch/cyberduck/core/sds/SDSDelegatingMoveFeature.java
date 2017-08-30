@@ -44,13 +44,13 @@ public class SDSDelegatingMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback,
+    public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback,
                      final ConnectionCallback connectionCallback) throws BackgroundException {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
             if(StringUtils.equals(srcContainer.getName(), targetContainer.getName())) {
-                proxy.move(source, target, status, callback, connectionCallback);
+                return proxy.move(source, target, status, callback, connectionCallback);
             }
             else {
                 // Moving into or from an encrypted room
@@ -58,16 +58,17 @@ public class SDSDelegatingMoveFeature implements Move {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
                 }
-                copy.copy(source, target, status, connectionCallback);
+                final Path c = copy.copy(source, target, status, connectionCallback);
                 // Delete source file after copy is complete
                 final Delete delete = session.getFeature(Delete.class);
                 if(delete.isSupported(source)) {
                     delete.delete(Collections.singletonList(source), connectionCallback, callback);
                 }
+                return c;
             }
         }
         else {
-            proxy.move(source, target, status, callback, connectionCallback);
+            return proxy.move(source, target, status, callback, connectionCallback);
         }
     }
 

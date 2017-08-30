@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -48,7 +49,7 @@ public class DriveMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
@@ -72,6 +73,8 @@ public class DriveMoveFeature implements Move {
                     .setRemoveParents(previousParents.toString())
                     .setFields("id, parents")
                     .execute();
+            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
+                    new PathAttributes(renamed.attributes()).withVersionId(fileid));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);

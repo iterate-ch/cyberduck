@@ -18,12 +18,14 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.swagger.CopyNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -41,14 +43,16 @@ public class SDSCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
+            final Node node = new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
                     // Target Parent Node ID
                     Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
                     new CopyNodesRequest()
                             .addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())))
                             .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
+            return new Path(target.getParent(), target.getName(), target.getType(),
+                    new PathAttributes(target.attributes()).withVersionId(String.valueOf(node.getId())));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);
