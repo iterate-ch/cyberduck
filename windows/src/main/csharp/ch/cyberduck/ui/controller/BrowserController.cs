@@ -3359,8 +3359,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    IList<Path> moved = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
-                    _controller.Reload(_controller.Workdir, moved,
+                    List changed = new ArrayList();
+                    changed.addAll(_files.keySet());
+                    changed.addAll(_files.values());
+                    _controller.Reload(_controller.Workdir, (IList<Path>)Utils.ConvertFromJavaList<Path>(changed),
                         (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
             }
@@ -3387,8 +3389,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    IList<Path> copied = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
-                    _controller.Reload(_controller.Workdir, copied,
+                    List changed = new ArrayList();
+                    changed.addAll(_files.keySet());
+                    changed.addAll(_files.values());
+                    _controller.Reload(_controller.Workdir, (IList<Path>)Utils.ConvertFromJavaList<Path>(changed),
                         (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
             }
