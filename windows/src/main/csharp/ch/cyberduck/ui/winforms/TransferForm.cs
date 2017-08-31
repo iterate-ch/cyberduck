@@ -300,19 +300,16 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void UpdateOverallProgressState(long progress, long maximum)
         {
-            if (Utils.IsWin7OrLater)
+            if (progress == 0 || maximum == 0)
             {
-                if (progress == 0 || maximum == 0)
-                {
-					TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
-                }
-                else
-                {
-					var progressPercentage = progress / (double)maximum;
-					var progressPercentageInt = (int)Math.Round(progressPercentage * 100);
-					TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
-					TaskbarManager.Instance.SetProgressValue(progressPercentageInt, 100);
-                }
+				TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
+            }
+            else
+            {
+				var progressPercentage = progress / (double)maximum;
+				var progressPercentageInt = (int)Math.Round(progressPercentage * 100);
+				TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
+				TaskbarManager.Instance.SetProgressValue(progressPercentageInt, 100);
             }
         }
 
