@@ -78,9 +78,10 @@ public abstract class ToolbarWindowController extends WindowController implement
     @Override
     public void awakeFromNib() {
         // Insert all panels into tab view
-        final Iterator<String> identifiers = this.getPanelIdentifiers().iterator();
+        final List<String> identifiers = this.getPanelIdentifiers();
+        final Iterator<String> iter = identifiers.iterator();
         for(NSView panel : this.getPanels()) {
-            int i = tabView.indexOfTabViewItemWithIdentifier(identifiers.next());
+            int i = tabView.indexOfTabViewItemWithIdentifier(iter.next());
             tabView.tabViewItemAtIndex(i).setView(panel);
         }
 
@@ -94,9 +95,11 @@ public abstract class ToolbarWindowController extends WindowController implement
         window.setToolbar(toolbar);
 
         // Change selection to last selected item in preferences
-        this.setSelectedPanel(preferences.getInteger(String.format("%s.selected", this.getToolbarName())));
+        final int index = preferences.getInteger(String.format("%s.selected", this.getToolbarName()));
+        if(index < identifiers.size()) {
+            this.setSelectedPanel(index);
+        }
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
-
         super.awakeFromNib();
     }
 
