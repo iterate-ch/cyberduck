@@ -96,9 +96,7 @@ public abstract class ToolbarWindowController extends WindowController implement
 
         // Change selection to last selected item in preferences
         final int index = preferences.getInteger(String.format("%s.selected", this.getToolbarName()));
-        if(index < identifiers.size()) {
-            this.setSelectedPanel(index);
-        }
+        this.setSelectedPanel(index < identifiers.size() ? index : 0);
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
         super.awakeFromNib();
     }
