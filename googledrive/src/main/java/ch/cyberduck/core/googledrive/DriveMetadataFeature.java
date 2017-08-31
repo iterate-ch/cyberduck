@@ -44,7 +44,11 @@ public class DriveMetadataFeature implements Headers {
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
             final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
-            return session.getClient().files().get(fileid).setFields("properties").execute().getProperties();
+            final Map<String, String> properties = session.getClient().files().get(fileid).setFields("properties").execute().getProperties();
+            if(null == properties) {
+                return Collections.emptyMap();
+            }
+            return properties;
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Failure to read attributes of {0}", e, file);
