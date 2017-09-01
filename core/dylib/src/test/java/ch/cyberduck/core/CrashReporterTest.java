@@ -10,6 +10,6 @@ public class CrashReporterTest {
     public void testCheckForCrash() throws Exception {
         final CrashReporter reporter = CrashReporter.create();
         assertNotNull(reporter);
-        reporter.checkForCrash();
+        reporter.checkForCrash("https://crash.cyberduck.io/report");
     }
 }

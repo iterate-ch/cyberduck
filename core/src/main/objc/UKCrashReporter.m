@@ -20,11 +20,6 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 
 -(id) init
 {
-	if( (self = [super init]) )
-	{
-		[self checkForCrash];
-	}
-
 	return self;
 }
 
@@ -53,7 +48,7 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 //		application.
 // -----------------------------------------------------------------------------
 
-- (void) checkForCrash
+- (void) checkForCrash:(NSString *)target
 {
 	NSAutoreleasePool*	pool = [[NSAutoreleasePool alloc] init];
 	
@@ -107,7 +102,7 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
                     NSString            *boundary = @"0xKhTmLbOuNdArY";
 
                     // Prepare a request:
-                    NSString            *url = [[[@"https://crash.cyberduck.io/report" stringByAppendingString:@"?revision="] stringByAppendingString:appRevision] stringByAppendingString:@"&os=mac"];
+                    NSString            *url = [[[target stringByAppendingString:@"?revision="] stringByAppendingString:appRevision] stringByAppendingString:@"&os=mac"];
                     NSMutableURLRequest *postRequest = [NSMutableURLRequestClass requestWithURL:[NSURL URLWithString: url]];
                     NSString            *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
                     NSString			*agent = [NSString stringWithFormat:@"Cyberduck (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];

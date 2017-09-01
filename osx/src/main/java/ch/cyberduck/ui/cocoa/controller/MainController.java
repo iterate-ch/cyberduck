@@ -1126,6 +1126,11 @@ public class MainController extends BundleController implements NSApplication.De
                         new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection());
             }
         });
+        final CrashReporter reporter = CrashReporter.create();
+        if(log.isInfoEnabled()) {
+            log.info("Check for crash report");
+        }
+        reporter.checkForCrash(preferences.getProperty("website.crash"));
         if(updater.hasUpdatePrivileges()) {
             if(PreferencesFactory.get().getBoolean("update.check")) {
                 final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
