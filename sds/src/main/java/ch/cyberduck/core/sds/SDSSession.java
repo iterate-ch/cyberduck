@@ -30,20 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Scheduler;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -273,6 +260,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == PromptUrlProvider.class) {
             return (T) new SDSSharesUrlProvider(this);
+        }
+        if(type == Quota.class) {
+            return (T) new SDSQuotaFeature(this);
         }
         return super._getFeature(type);
     }
