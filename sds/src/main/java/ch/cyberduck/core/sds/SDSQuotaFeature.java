@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -22,6 +23,8 @@ import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerData;
 
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.EnumSet;
 
 public class SDSQuotaFeature implements Quota {
 
@@ -38,7 +41,8 @@ public class SDSQuotaFeature implements Quota {
             return new Space(info.getSpaceUsed(), info.getSpaceLimit() - info.getSpaceUsed());
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Failure reading quota information", e);
+            throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e,
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         }
     }
 }
