@@ -16,8 +16,15 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.Pair;
 
 import org.apache.http.impl.client.CloseableHttpClient;
+
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.GenericType;
+import java.util.List;
+import java.util.Map;
 
 public class SDSApiClient extends ApiClient {
 
@@ -29,5 +36,15 @@ public class SDSApiClient extends ApiClient {
 
     public CloseableHttpClient getClient() {
         return client;
+    }
+
+    @Override
+    public <T> T invokeAPI(final String path, final String method, final List<Pair> queryParams, final Object body, final Map<String, String> headerParams, final Map<String, Object> formParams, final String accept, final String contentType, final String[] authNames, final GenericType<T> returnType) throws ApiException {
+        try {
+            return super.invokeAPI(path, method, queryParams, body, headerParams, formParams, accept, contentType, authNames, returnType);
+        }
+        catch(ProcessingException e) {
+            throw new ApiException(e);
+        }
     }
 }
