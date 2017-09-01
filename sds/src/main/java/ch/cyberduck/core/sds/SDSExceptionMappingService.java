@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -23,10 +24,12 @@ import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
 import java.io.StringReader;
+import java.net.SocketException;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -38,6 +41,12 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
 
     @Override
     public BackgroundException map(final ApiException failure) {
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof SocketException) {
+                // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
+                return new DefaultSocketExceptionMappingService().map((SocketException) cause);
+            }
+        }
         final StringBuilder buffer = new StringBuilder();
         if(null != failure.getResponseBody()) {
             final JsonParser parser = new JsonParser();
