@@ -3,6 +3,8 @@ https://cyberduck.io/
 
 6.2.4
 - [Feature] Provide URL references to Office 365 documents in browser (OneDrive)
+- [Feature] Disable Bonjour notifications
+- [Bugfix] Transfer progress stops updating (Windows) (#10042)
 
 6.2.3
 - [Feature] Allow to resume downloads (Cryptomator)
