@@ -60,12 +60,14 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
         }
         try {
             if(response instanceof CloseableHttpResponse) {
-                long read = this.getByteCount();
-                if(-1 == response.getEntity().getContentLength() && -1 == this.read()) {
+                if(null == response.getEntity()) {
+                    super.close();
+                }
+                else if(-1 == response.getEntity().getContentLength() && -1 == this.read()) {
                     // Fully consumed for unknown content length with decompressing HTTP entity
                     super.close();
                 }
-                else if(read == response.getEntity().getContentLength()) {
+                else if(this.getByteCount() == response.getEntity().getContentLength()) {
                     // Fully consumed
                     super.close();
                 }
