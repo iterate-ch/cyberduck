@@ -163,7 +163,7 @@ public class OAuth2AuthorizationService {
             final Credentials credentials = prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
                     LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-                    new LoginOptions().keychain(true).user(false).password(true)
+                    new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).password(true)
                             .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
             );
             authenticationCode.set(credentials.getPassword());
