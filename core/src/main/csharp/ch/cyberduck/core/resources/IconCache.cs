@@ -181,6 +181,11 @@ namespace Ch.Cyberduck.Core.Resources
         /// <returns></returns>
         public Bitmap IconForName(string name, int size)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = "notfound.tiff";
+            }
+
             Bitmap image = _bitmapCache.Get(name, size);
             if (null == image)
             {
