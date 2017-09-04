@@ -28,6 +28,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.*;
@@ -257,6 +258,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Scheduler.class) {
             return (T) new SDSMissingFileKeysSchedulerFeature(this);
+        }
+        if(type == UrlProvider.class) {
+            return (T) new SDSUrlProvider(host);
         }
         if(type == PromptUrlProvider.class) {
             return (T) new SDSSharesUrlProvider(this);
