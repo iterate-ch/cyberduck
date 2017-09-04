@@ -81,10 +81,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ActiveButtons">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>windows\target\ActiveButtons.dll</HintPath>
-    </Reference>
     <Reference Include="Cyberduck.Core">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>windows\target\Cyberduck.Core.dll</HintPath>
