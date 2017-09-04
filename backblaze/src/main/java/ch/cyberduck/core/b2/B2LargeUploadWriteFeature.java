@@ -33,6 +33,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -119,7 +120,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public ChecksumCompute checksum(final Path file) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha1);
+        return new DisabledChecksumCompute();
     }
 
     private final class LargeUploadOutputStream extends OutputStream {
@@ -183,7 +184,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                         public B2UploadPartResponse call() throws BackgroundException {
                             final TransferStatus status = new TransferStatus().length(len);
                             final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
-                            final Checksum checksum = B2LargeUploadWriteFeature.this.checksum(file)
+                            final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1)
                                     .compute(new ByteArrayInputStream(content, off, len), status);
                             try {
                                 return session.getClient().uploadLargeFilePart(version.id, segment, entity, checksum.hash);
