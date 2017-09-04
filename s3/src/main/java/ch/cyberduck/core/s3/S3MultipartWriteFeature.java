@@ -15,6 +15,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
@@ -159,7 +160,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                         final TransferStatus status = new TransferStatus().withParameters(parameters).length(len);
                         switch(session.getSignatureVersion()) {
                             case AWS4HMACSHA256:
-                                status.setChecksum(S3MultipartWriteFeature.this.checksum(file)
+                                status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256)
                                         .compute(new ByteArrayInputStream(content, off, len), status)
                                 );
                                 break;
@@ -266,6 +267,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
 
     @Override
     public ChecksumCompute checksum(final Path file) {
-        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
+        return new DisabledChecksumCompute();
     }
 }
