@@ -89,11 +89,6 @@
           <netfx:NativeImage Id="ngen_SimpleMapi" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ActiveButtons">
-        <File Source="$(var.cyberduck.TargetDir)/ActiveButtons.dll" KeyPath="yes" Checksum="yes">
-          <netfx:NativeImage Id="ngen_ActiveButtons" Platform="32bit" Priority="3" />
-        </File>
-      </Component>
       <Component Id="CustomOpenFileFolderDialog">
         <File Source="$(var.cyberduck.TargetDir)/CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_CustomOpenFileFolderDialog" Platform="32bit" Priority="3" />
