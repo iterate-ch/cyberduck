@@ -44,7 +44,7 @@ public class SDSUrlProvider implements UrlProvider {
                         new HostUrlProvider(false).get(host), URIEncoder.encode(
                                 file.isDirectory() ? file.attributes().getVersionId() : file.getParent().attributes().getVersionId()
                         ))),
-                        DescriptiveUrl.Type.provider,
+                        DescriptiveUrl.Type.http,
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT)))
         ));
     }
