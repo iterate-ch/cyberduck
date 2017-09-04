@@ -44,7 +44,6 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
 using org.apache.log4j;
-using TheCodeKing.ActiveButtons.Controls;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
