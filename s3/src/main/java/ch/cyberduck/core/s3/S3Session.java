@@ -19,20 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -381,6 +368,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Search.class) {
             return (T) new S3SearchFeature(this);
+        }
+        if(type == IdProvider.class) {
+            return (T) new S3VersionIdProvider(this);
         }
         return super._getFeature(type);
     }

@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -82,6 +83,23 @@ public class S3ObjectListServiceTest {
     }
 
     @Test
+    public void testDirectory() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path bucket = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
+        session.close();
+    }
+
+    @Test
     public void tetsEmptyPlaceholder() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
@@ -91,8 +109,7 @@ public class S3ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                new DisabledListProgressListener());
+        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         session.close();
     }

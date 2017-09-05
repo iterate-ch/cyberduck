@@ -18,9 +18,11 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.S3VersionIdProvider;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -86,7 +88,9 @@ public class S3MultipleDeleteFeature implements Delete {
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
+                keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
+                        file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : file.attributes().getVersionId()
+                ));
                 if(map.containsKey(container)) {
                     map.get(container).addAll(keys);
                 }
