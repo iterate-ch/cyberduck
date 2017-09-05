@@ -60,4 +60,15 @@ public class FileBufferTest {
         buffer.write(chunk, 0L);
         assertEquals(100L, buffer.length(), 0L);
     }
+
+    @Test
+    public void testSetSize() throws Exception {
+        final FileBuffer buffer = new FileBuffer();
+        assertEquals(0L, buffer.length(), 0L);
+        buffer.truncate(1L);
+        assertEquals(1L, buffer.length(), 0L);
+        final byte[] chunk = RandomUtils.nextBytes(100);
+        buffer.write(chunk, 0L);
+        assertEquals(100L, buffer.length(), 0L);
+    }
 }
