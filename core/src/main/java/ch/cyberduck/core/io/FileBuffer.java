@@ -118,4 +118,12 @@ public class FileBuffer implements Buffer {
         }
         return file;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("FileBuffer{");
+        sb.append("temporary=").append(temporary);
+        sb.append('}');
+        return sb.toString();
+    }
 }
