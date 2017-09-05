@@ -197,6 +197,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final AclPermission feature = session.getFeature(AclPermission.class);
             if(feature != null) {
                 if(status.isExists()) {
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Getting permission of {0}", "Status"),
+                        file.getName()));
                     try {
                         status.setAcl(feature.getPermission(file));
                     }
@@ -224,6 +226,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final Headers feature = session.getFeature(Headers.class);
             if(feature != null) {
                 if(status.isExists()) {
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
+                        file.getName()));
                     try {
                         status.setMetadata(feature.getMetadata(file));
                     }
