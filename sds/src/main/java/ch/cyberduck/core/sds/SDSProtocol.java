@@ -59,6 +59,11 @@ public class SDSProtocol extends AbstractProtocol {
         return String.format("%s.%s", SDSProtocol.class.getPackage().getName(), StringUtils.upperCase(this.getType().name()));
     }
 
+    @Override
+    public boolean isAnonymousConfigurable() {
+        return false;
+    }
+
     public enum Authorization {
         sql,
         radius,
