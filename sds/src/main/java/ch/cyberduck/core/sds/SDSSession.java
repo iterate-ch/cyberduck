@@ -136,7 +136,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 break;
             case radius:
                 final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions().user(false).keychain(false)
+                        LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(host.getProtocol()).user(false).keychain(false)
                 );
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
