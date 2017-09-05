@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,8 +27,10 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.SocketException;
 
@@ -45,6 +48,12 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
             if(cause instanceof SocketException) {
                 // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
+            }
+            if(cause instanceof HttpResponseException) {
+                return new HttpResponseExceptionMappingService().map((HttpResponseException) cause);
+            }
+            if(cause instanceof IOException) {
+                return new DefaultIOExceptionMappingService().map((IOException) cause);
             }
         }
         final StringBuilder buffer = new StringBuilder();
