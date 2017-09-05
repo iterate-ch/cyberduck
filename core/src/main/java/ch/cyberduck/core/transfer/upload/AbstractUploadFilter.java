@@ -254,6 +254,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(local.isFile()) {
                 final ChecksumCompute feature = session.getFeature(Write.class).checksum(file);
                 if(feature != null) {
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
+                        file.getName()));
                     status.setChecksum(feature.compute(local.getInputStream(), status));
                 }
             }
