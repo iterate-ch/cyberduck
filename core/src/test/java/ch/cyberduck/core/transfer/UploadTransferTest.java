@@ -455,7 +455,7 @@ public class UploadTransferTest {
         final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
                 .filter(session, null, TransferAction.overwrite, new DisabledProgressListener());
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus(), new DisabledProgressListener());
         assertNull(status.getRename().local);
         assertNull(status.getRename().remote);
     }
@@ -467,7 +467,7 @@ public class UploadTransferTest {
         final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
                 .filter(session, null, TransferAction.overwrite, new DisabledProgressListener());
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus(), new DisabledProgressListener());
         assertNull(status.getRename().local);
         assertNull(status.getRename().remote);
     }

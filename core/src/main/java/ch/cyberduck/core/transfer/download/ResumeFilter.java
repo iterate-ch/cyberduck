@@ -21,6 +21,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -95,8 +96,8 @@ public class ResumeFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(file, local, parent);
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
+        final TransferStatus status = super.prepare(file, local, parent, progress);
         if(status.isSegmented()) {
             for(TransferStatus segmentStatus : status.getSegments()) {
                 final Local segmentFile = segmentStatus.getRename().local;
