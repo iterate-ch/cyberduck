@@ -33,6 +33,7 @@ public class FileBuffer implements Buffer {
     private final Local temporary;
 
     private RandomAccessFile file;
+    private Long length = 0L;
 
     public FileBuffer() {
         this(TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random()));
@@ -47,6 +48,7 @@ public class FileBuffer implements Buffer {
         final RandomAccessFile file = random();
         file.seek(offset);
         file.write(chunk, 0, chunk.length);
+        length = Math.max(length, file.length());
         return chunk.length;
     }
 
@@ -59,32 +61,29 @@ public class FileBuffer implements Buffer {
 
     @Override
     public synchronized Long length() {
-        try {
-            if(temporary.exists()) {
-                final RandomAccessFile file = random();
-                return file.length();
-            }
-            return 0L;
-        }
-        catch(IOException e) {
-            log.error(String.format("Failure obtaining length for %s", this));
-            return 0L;
-        }
+        return length;
     }
 
     @Override
     public void truncate(final Long length) {
-        try {
-            final RandomAccessFile file = random();
-            file.setLength(length);
-        }
-        catch(IOException e) {
-            log.warn(String.format("Failure truncating file %s to %d", temporary, length));
+        this.length = length;
+        if(temporary.exists()) {
+            try {
+                final RandomAccessFile file = random();
+                if(length < file.length()) {
+                    // Truncate current
+                    file.setLength(length);
+                }
+            }
+            catch(IOException e) {
+                log.warn(String.format("Failure truncating file %s to %d", temporary, length));
+            }
         }
     }
 
     @Override
     public synchronized void close() {
+        this.length = 0L;
         if(temporary.exists()) {
             try {
                 final RandomAccessFile file = random();
