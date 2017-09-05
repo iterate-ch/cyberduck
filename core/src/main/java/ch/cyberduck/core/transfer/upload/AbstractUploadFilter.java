@@ -75,10 +75,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     protected AttributesFinder attribute;
 
     private final MimeTypeService mapping
-            = new MappingMimeTypeService();
+        = new MappingMimeTypeService();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                                 final UploadFilterOptions options) {
@@ -121,7 +121,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes first
         if(parent.isExists()) {
@@ -162,8 +162,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(options.temporary) {
                 final Move feature = session.getFeature(Move.class);
                 final Path renamed = new Path(file.getParent(),
-                        MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
-                                file.getName(), new AlphanumericRandomStringService().random()), file.getType());
+                    MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
+                        file.getName(), new AlphanumericRandomStringService().random()), file.getType());
                 if(feature.isSupported(file, renamed)) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Set temporary filename %s", renamed));
@@ -197,6 +197,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final AclPermission feature = session.getFeature(AclPermission.class);
             if(feature != null) {
                 if(status.isExists()) {
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Getting permission of {0}", "Status"),
+                        file.getName()));
                     try {
                         status.setAcl(feature.getPermission(file));
                     }
@@ -224,6 +226,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final Headers feature = session.getFeature(Headers.class);
             if(feature != null) {
                 if(status.isExists()) {
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
+                        file.getName()));
                     try {
                         status.setMetadata(feature.getMetadata(file));
                     }
@@ -254,6 +258,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(local.isFile()) {
                 final ChecksumCompute feature = session.getFeature(Write.class).checksum(file);
                 if(feature != null) {
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
+                        file.getName()));
                     status.setChecksum(feature.compute(local.getInputStream(), status));
                 }
             }
@@ -280,7 +286,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(feature != null) {
                     try {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                                file.getName(), status.getPermission()));
+                            file.getName(), status.getPermission()));
                         feature.setUnixPermission(file, status.getPermission());
                     }
                     catch(BackgroundException e) {
@@ -294,7 +300,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(feature != null) {
                     try {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                                file.getName(), status.getAcl()));
+                            file.getName(), status.getAcl()));
                         feature.setPermission(file, status.getAcl());
                     }
                     catch(BackgroundException e) {
@@ -308,7 +314,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(feature != null) {
                     try {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                                file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
+                            file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
                         feature.setTimestamp(file, status.getTimestamp());
                     }
                     catch(BackgroundException e) {

@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
@@ -104,7 +105,7 @@ public class ResumeFilterTest {
                 new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(7L);
-        final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertFalse(status.isAppend());
         assertNotNull(status.getRename().remote);
     }
@@ -144,7 +145,7 @@ public class ResumeFilterTest {
             public boolean isFile() {
                 return true;
             }
-        }, new TransferStatus().exists(true));
+        }, new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(status.isAppend());
         // Temporary target
         assertNull(status.getRename().remote);
@@ -157,7 +158,7 @@ public class ResumeFilterTest {
                 new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(0L);
-        final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertFalse(status.isAppend());
         assertNotNull(status.getRename().remote);
         assertEquals(0L, status.getOffset());
@@ -233,9 +234,9 @@ public class ResumeFilterTest {
         };
         assertTrue(f.accept(t, l, new TransferStatus().exists(true)));
         // Remaining length to transfer is 1
-        assertEquals(1L, f.prepare(t, l, new TransferStatus().exists(true)).getLength());
+        assertEquals(1L, f.prepare(t, l, new TransferStatus().exists(true), new DisabledProgressListener()).getLength());
         // Skip first 2 bytes
-        assertEquals(2L, f.prepare(t, l, new TransferStatus().exists(true)).getOffset());
+        assertEquals(2L, f.prepare(t, l, new TransferStatus().exists(true), new DisabledProgressListener()).getOffset());
     }
 
     @Test
@@ -272,6 +273,6 @@ public class ResumeFilterTest {
             }
         };
         assertTrue(f.accept(t, l, new TransferStatus().exists(true)));
-        assertFalse(f.prepare(t, l, new TransferStatus().exists(true)).isAppend());
+        assertFalse(f.prepare(t, l, new TransferStatus().exists(true), new DisabledProgressListener()).isAppend());
     }
 }

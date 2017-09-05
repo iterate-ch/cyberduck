@@ -96,7 +96,7 @@ public class RenameExistingFilterTest {
                 return new Path("p", EnumSet.of(Path.Type.directory));
             }
         };
-        f.prepare(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"), new TransferStatus().exists(true));
+        f.prepare(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertFalse(c.get());
         f.apply(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(c.get());
@@ -212,7 +212,7 @@ public class RenameExistingFilterTest {
                 options);
         f.withFinder(find).withAttributes(attributes);
         assertTrue(options.temporary);
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertNotNull(status.getRename());
         assertNotNull(status.getRename().remote);
         assertNotEquals(file, status.getDisplayname().local);
@@ -333,7 +333,7 @@ public class RenameExistingFilterTest {
             public boolean isFile() {
                 return false;
             }
-        }, new TransferStatus().exists(true));
+        }, new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(found.get());
         assertNull(status.getRename().remote);
         assertNull(status.getRename().local);
