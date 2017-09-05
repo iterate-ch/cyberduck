@@ -51,8 +51,8 @@ public class TripleCryptKeyPair {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = callback.prompt(LocaleFactory.localizedString("Private key password protected", "Credentials"), message,
-                    new LoginOptions()
-                            .user(false)
+                    new LoginOptions(bookmark.getProtocol())
+                            .user(false).passwordPlaceholder(LocaleFactory.localizedString("Private Key Passphrase", "Credentials"))
                             .anonymous(false)
                             .icon(bookmark.getProtocol().disk())
             );

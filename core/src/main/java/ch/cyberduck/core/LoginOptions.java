@@ -19,6 +19,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Objects;
 
 public final class LoginOptions {
@@ -48,8 +50,8 @@ public final class LoginOptions {
      */
     public String icon;
 
-    public String usernamePlaceholder;
-    public String passwordPlaceholder;
+    public String usernamePlaceholder = StringUtils.EMPTY;
+    public String passwordPlaceholder = StringUtils.EMPTY;
 
     /**
      * Save in keychain checked by default

@@ -105,7 +105,8 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                                         String.format("%s (%s)",
                                                 LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
                                                 identity.getAbbreviatedPath()), new LoginOptions(bookmark.getProtocol())
-                                                .usernamePlaceholder(LocaleFactory.localizedString("Private Key Passphrase", "Credentials"))
+                                                .user(false).password(true)
+                                                .passwordPlaceholder(LocaleFactory.localizedString("Private Key Passphrase", "Credentials"))
                                 ));
                             }
                             catch(LoginCanceledException e) {

@@ -231,4 +231,10 @@ public class NSImageIconCacheTest {
 //        assertEquals(4, icon.representations().count().intValue());
         f.delete();
     }
+
+    @Test
+    public void testIconNotfound() throws Exception {
+        final NSImageIconCache cache = new NSImageIconCache();
+        assertNull(cache.iconNamed(null, 64));
+    }
 }

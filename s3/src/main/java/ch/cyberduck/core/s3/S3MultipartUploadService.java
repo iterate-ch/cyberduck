@@ -194,6 +194,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                 }
                 else {
+                    completed.sort(new MultipartPart.PartNumberComparator());
                     final StringBuilder concat = new StringBuilder();
                     for(MultipartPart part : completed) {
                         concat.append(part.getEtag());

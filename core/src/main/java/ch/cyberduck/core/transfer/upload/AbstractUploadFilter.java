@@ -200,7 +200,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     try {
                         status.setAcl(feature.getPermission(file));
                     }
-                    catch(AccessDeniedException | InteroperabilityException e) {
+                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
                         status.setAcl(feature.getDefault(local));
                     }
                 }
@@ -227,7 +227,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     try {
                         status.setMetadata(feature.getMetadata(file));
                     }
-                    catch(AccessDeniedException | InteroperabilityException e) {
+                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
                         status.setMetadata(feature.getDefault(local));
                     }
                 }

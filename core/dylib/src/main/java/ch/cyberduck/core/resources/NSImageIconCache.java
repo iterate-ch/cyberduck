@@ -174,7 +174,10 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     public NSImage iconNamed(final String name, final Integer width, final Integer height) {
         NSImage image = this.load(name, width);
         if(null == image) {
-            if(name.startsWith("/")) {
+            if(null == name) {
+                return iconNamed("notfound.tiff", width, height);
+            }
+            else if(name.startsWith("/")) {
                 image = NSImage.imageWithContentsOfFile(name);
             }
             else {
