@@ -74,14 +74,12 @@ public class FileBuffer implements Buffer {
 
     @Override
     public void truncate(final Long length) {
-        if(temporary.exists()) {
-            try {
-                final RandomAccessFile file = random();
-                file.setLength(length);
-            }
-            catch(IOException e) {
-                log.warn(String.format("Failure truncating file %s to %d", temporary, length));
-            }
+        try {
+            final RandomAccessFile file = random();
+            file.setLength(length);
+        }
+        catch(IOException e) {
+            log.warn(String.format("Failure truncating file %s to %d", temporary, length));
         }
     }
 
