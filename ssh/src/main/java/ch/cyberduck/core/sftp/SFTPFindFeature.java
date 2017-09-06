@@ -23,8 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
-import java.io.IOException;
-
 public class SFTPFindFeature implements Find {
 
     private final SFTPSession session;
@@ -39,13 +37,8 @@ public class SFTPFindFeature implements Find {
             return true;
         }
         try {
-            try {
-                session.sftp().canonicalize(file.getAbsolute());
-                return true;
-            }
-            catch(IOException e) {
-                throw new SFTPExceptionMappingService().map(e);
-            }
+            new SFTPAttributesFinderFeature(session).find(file);
+            return true;
         }
         catch(NotfoundException e) {
             // We expect SSH_FXP_STATUS if the file is not found
