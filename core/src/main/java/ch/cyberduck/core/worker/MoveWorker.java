@@ -105,9 +105,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
     @Override
     public void cleanup(final Map<Path, Path> result) {
         for(Path f : result.keySet()) {
-            if(f.isDirectory()) {
-                cache.remove(f);
-            }
+            cache.invalidate(f.getParent());
         }
     }
 

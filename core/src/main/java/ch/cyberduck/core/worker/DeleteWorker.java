@@ -78,7 +78,7 @@ public class DeleteWorker extends Worker<List<Path>> {
             @Override
             public void delete(final Path file) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                        file.getName()));
+                    file.getName()));
             }
         });
         return recursive;
@@ -112,16 +112,14 @@ public class DeleteWorker extends Worker<List<Path>> {
     @Override
     public void cleanup(final List<Path> deleted) {
         for(Path f : deleted) {
-            if(f.isDirectory()) {
-                cache.remove(f);
-            }
+            cache.invalidate(f.getParent());
         }
     }
 
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                this.toString(files));
+            this.toString(files));
     }
 
     @Override
