@@ -63,9 +63,9 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -316,7 +316,7 @@ public class MoveWorkerTest {
         // move directory outside vault
         final Path directoryRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), new DisabledProgressListener(), PathCache.empty(), new DisabledConnectionCallback());
-        final List<Path> moved = worker.run(session);
+        final Collection<Path> moved = worker.run(session).values();
         assertFalse(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(encryptedFolder));
         assertFalse(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(encryptedFile));
         assertTrue(new S3FindFeature(session).find(directoryRenamed));
