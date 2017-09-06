@@ -41,6 +41,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
@@ -303,6 +304,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(type == Copy.class) {
             return (T) new DAVCopyFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new DAVFindFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new DAVAttributesFinderFeature(this);

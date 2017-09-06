@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -187,6 +188,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == Copy.class) {
             return (T) new OneDriveCopyFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new OneDriveFindFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new OneDriveAttributesFinderFeature(this);

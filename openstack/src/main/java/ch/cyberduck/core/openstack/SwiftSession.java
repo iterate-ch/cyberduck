@@ -36,20 +36,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Scheduler;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -223,6 +210,9 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == UrlProvider.class) {
             return (T) new SwiftUrlProvider(this, accounts, regionService);
+        }
+        if(type == Find.class) {
+            return (T) new SwiftFindFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new SwiftAttributesFinderFeature(this, regionService);
