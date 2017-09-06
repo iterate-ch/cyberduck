@@ -123,7 +123,7 @@ public class LoginConnectionServiceTest {
             }
 
             @Override
-            public void login(final HostPasswordStore p, final LoginCallback l, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+            public void login(final HostPasswordStore p, final LoginCallback l, final CancelCallback cancel) throws BackgroundException {
                 if(prompt.get()) {
                     assertEquals("b", host.getCredentials().getPassword());
                     throw new LoginCanceledException();

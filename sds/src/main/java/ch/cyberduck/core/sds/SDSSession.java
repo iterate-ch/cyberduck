@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
@@ -126,7 +125,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         final String login = host.getCredentials().getUsername();
         final String password = host.getCredentials().getPassword();
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
