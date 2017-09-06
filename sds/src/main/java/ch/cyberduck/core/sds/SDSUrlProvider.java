@@ -17,12 +17,13 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -31,21 +32,26 @@ import java.util.Locale;
 
 public class SDSUrlProvider implements UrlProvider {
 
-    private final Host host;
+    private final SDSSession session;
 
-    public SDSUrlProvider(final Host host) {
-        this.host = host;
+    public SDSUrlProvider(final SDSSession session) {
+        this.session = session;
     }
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        return new DescriptiveUrlBag(Collections.singletonList(
+        try {
+            return new DescriptiveUrlBag(Collections.singletonList(
                 new DescriptiveUrl(URI.create(String.format("%s/#/node/%s",
-                        new HostUrlProvider(false).get(host), URIEncoder.encode(
-                                file.isDirectory() ? file.attributes().getVersionId() : file.getParent().attributes().getVersionId()
-                        ))),
-                        DescriptiveUrl.Type.http,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT)))
-        ));
+                    new HostUrlProvider(false).get(session.getHost()), URIEncoder.encode(
+                        new SDSNodeIdProvider(session).getFileid(file.isDirectory() ? file : file.getParent(), new DisabledListProgressListener())
+                    ))),
+                    DescriptiveUrl.Type.http,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getScheme().toString().toUpperCase(Locale.ROOT)))
+            ));
+        }
+        catch(BackgroundException e) {
+            return DescriptiveUrlBag.empty();
+        }
     }
 }

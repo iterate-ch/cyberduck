@@ -259,7 +259,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSMissingFileKeysSchedulerFeature(this);
         }
         if(type == UrlProvider.class) {
-            return (T) new SDSUrlProvider(host);
+            return (T) new SDSUrlProvider(this);
         }
         if(type == PromptUrlProvider.class) {
             return (T) new SDSSharesUrlProvider(this);
