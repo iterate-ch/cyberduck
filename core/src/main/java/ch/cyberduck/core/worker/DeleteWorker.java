@@ -116,7 +116,6 @@ public class DeleteWorker extends Worker<List<Path>> {
                 cache.remove(f);
             }
         }
-        super.cleanup(deleted);
     }
 
     @Override
