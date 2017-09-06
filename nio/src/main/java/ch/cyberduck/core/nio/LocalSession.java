@@ -17,7 +17,6 @@ package ch.cyberduck.core.nio;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -86,7 +85,7 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Path home = new LocalHomeFinderFeature(this).find();
         try {
             lock = LocalFactory.get(this.toPath(home).toString()).lock(true);

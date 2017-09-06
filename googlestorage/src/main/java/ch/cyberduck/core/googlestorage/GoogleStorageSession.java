@@ -16,7 +16,6 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -118,7 +117,7 @@ public class GoogleStorageSession extends S3Session {
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt,
-                      final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+                      final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
     }
 

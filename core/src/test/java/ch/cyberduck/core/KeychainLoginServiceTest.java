@@ -21,7 +21,7 @@ public class KeychainLoginServiceTest {
         host.setDefaultPath("/dav/basic");
         final Session session = new NullSession(host) {
             @Override
-            public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+            public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
                 throw new LoginCanceledException();
             }
         };

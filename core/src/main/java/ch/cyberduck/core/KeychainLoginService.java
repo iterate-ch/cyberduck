@@ -64,7 +64,7 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
             }
-            session.login(keychain, callback, cancel, cache);
+            session.login(keychain, callback, cancel);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }

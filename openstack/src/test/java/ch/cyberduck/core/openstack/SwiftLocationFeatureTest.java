@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.test.IntegrationTest;
@@ -31,7 +30,7 @@ public class SwiftLocationFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Set<Location.Name> locations = new SwiftLocationFeature(session).getLocations();
         assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("DFW")));
         assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("ORD")));
@@ -47,7 +46,7 @@ public class SwiftLocationFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftLocationFeature feature = new SwiftLocationFeature(session);
         assertEquals(new SwiftLocationFeature.SwiftRegion("IAD"), feature.getLocation(
                 new Path("cdn.duck.sh", EnumSet.of(Path.Type.volume, Path.Type.directory))));
@@ -71,7 +70,7 @@ public class SwiftLocationFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SwiftLocationFeature(session).getLocation(container);
     }
@@ -83,7 +82,7 @@ public class SwiftLocationFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new SwiftLocationFeature.SwiftRegion("IAD"), new SwiftLocationFeature(session).getLocation(
                 new Path("cdn.duck.sh", EnumSet.of(Path.Type.volume, Path.Type.directory))));
         assertEquals(unknown, new SwiftLocationFeature(session).getLocation(

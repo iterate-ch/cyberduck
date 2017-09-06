@@ -287,7 +287,7 @@ public class SpectraBulkServiceTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("CYBERDUCK-SPECTRA-67", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final HashMap<Path, TransferStatus> files = new HashMap<>();
         for(int i = 1; i < 100; i++) {

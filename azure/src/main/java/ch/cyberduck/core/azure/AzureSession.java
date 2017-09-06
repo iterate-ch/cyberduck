@@ -19,21 +19,16 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -82,7 +77,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     private static final Logger log = Logger.getLogger(AzureSession.class);
 
     private final OperationContext context
-            = new OperationContext();
+        = new OperationContext();
 
     private StorageEvent<SendingRequestEvent> listener;
 
@@ -102,7 +97,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     public CloudBlobClient connect(final HostKeyCallback callback) throws BackgroundException {
         try {
             final StorageCredentialsAccountAndKey credentials
-                    = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
+                = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
             // Client configured with no credentials
             final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
@@ -112,7 +107,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             context.setLoggingEnabled(true);
             context.setLogger(LoggerFactory.getLogger(log.getName()));
             context.setUserHeaders(new HashMap<String, String>(Collections.singletonMap(
-                    HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
+                HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
             );
             context.getSendingRequestEventHandler().addListener(listener = new StorageEvent<SendingRequestEvent>() {
                 @Override
@@ -131,7 +126,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                         log.info(String.format("Configured to use SOCKS proxy %s", proxy));
                     }
                     final java.net.Proxy socksProxy = new java.net.Proxy(
-                            java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
+                        java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
                     context.setProxy(socksProxy);
                     break;
                 }
@@ -141,7 +136,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                         log.info(String.format("Configured to use HTTP proxy %s", proxy));
                     }
                     final java.net.Proxy httpProxy = new java.net.Proxy(
-                            java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
+                        java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
                     context.setProxy(httpProxy);
                     break;
                 }
@@ -154,25 +149,14 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         // Update credentials
         final StorageCredentials credentials = client.getCredentials();
         if(credentials instanceof StorageCredentialsAccountAndKey) {
             ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
         }
-        final Path home = new AzureHomeFinderService(this).find();
-        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener() {
-            @Override
-            public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
-                try {
-                    cancel.verify();
-                }
-                catch(ConnectionCanceledException e) {
-                    throw new ListCanceledException(list, e);
-                }
-            }
-        }));
+        // Fetch reference for directory to check login credentials
+        new AzureFindFeature(this, context).find(new AzureHomeFinderService(this).find());
     }
 
     @Override
