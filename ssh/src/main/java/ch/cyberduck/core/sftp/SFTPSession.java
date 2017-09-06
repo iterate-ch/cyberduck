@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
@@ -363,6 +364,9 @@ public class SFTPSession extends Session<SSHClient> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Find.class) {
+            return (T) new SFTPFindFeature(this);
+        }
         if(type == Attributes.class) {
             return (T) new SFTPAttributesFinderFeature(this);
         }

@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Logging;
@@ -191,6 +192,9 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         }
         if(type == Headers.class) {
             return (T) new AzureMetadataFeature(this, context);
+        }
+        if(type == Find.class) {
+            return (T) new AzureFindFeature(this, context);
         }
         if(type == AttributesFinder.class) {
             return (T) new AzureAttributesFinderFeature(this, context);
