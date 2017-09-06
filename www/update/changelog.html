@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -54,6 +54,7 @@
         ul li ul li {
             list-style-type: disc;
         }
+
     </style>
 </head>
 
@@ -66,9 +67,19 @@
 </p>
 <p class="cryptomator">
     <strong><a href="https://cyberduck.io/cryptomator/">Cryptomator</a></strong>. Cyberduck <a
-        href="https://trac.cyberduck.io/milestone/6.0">6.0</a>
+    href="https://trac.cyberduck.io/milestone/6.0">6.0</a>
     supports transparent <strong>client-side encryption</strong> using Cryptomator interoperable vaults.
 </p>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/6.2.5"><strong>Version 6.2.5</strong></a>
+</p>
+<ul>
+    <li><span class="label label-warning">Bugfix</span> Authentication using OAuth (Windows)</li>
+    <li><span class="label label-warning">Bugfix</span> Failure to read attributes (S3) (<a
+        href="https://trac.cyberduck.io/ticket/10068">#10068</a>)
+    </li>
+</ul>
 
 <p>
     <a href="https://trac.cyberduck.io/milestone/6.2.4"><strong>Version 6.2.4</strong></a>
@@ -79,7 +90,7 @@
     </li>
     <li><span class="label label-success">Feature</span> Disable Bonjour notifications</li>
     <li><span class="label label-warning">Bugfix</span> Transfer progress stops updating (Windows) (<a
-            href="https://trac.cyberduck.io/ticket/10042">#10042</a>)
+        href="https://trac.cyberduck.io/ticket/10042">#10042</a>)
     </li>
 </ul>
 
@@ -90,7 +101,7 @@
     <li><span class="label label-success">Feature</span> Allow to resume downloads (Cryptomator)</li>
     <li><span class="label label-success">Feature</span> Allow to resume downloads (Dropbox)</li>
     <li><span class="label label-warning">Bugfix</span> Failure duplicating files (FTP) (<a
-            href="https://trac.cyberduck.io/ticket/10049">#10049</a>)
+        href="https://trac.cyberduck.io/ticket/10049">#10049</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failure with input prompt for username and password (CLI,
         Windows) (<a
@@ -103,7 +114,7 @@
         (Cryptomator)
     </li>
     <li><span class="label label-warning">Bugfix</span> Checksum mismatch when downloading versioned file (S3) (<a
-            href="https://trac.cyberduck.io/ticket/10055">#10055</a>)
+        href="https://trac.cyberduck.io/ticket/10055">#10055</a>)
     </li>
 </ul>
 
@@ -137,7 +148,7 @@
             href="https://trac.cyberduck.io/ticket/10024">#10024</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Quick Look only works one time (<a
-            href="https://trac.cyberduck.io/ticket/9889">#9889</a>) (Mac)
+        href="https://trac.cyberduck.io/ticket/9889">#9889</a>) (Mac)
     </li>
 </ul>
 
@@ -158,14 +169,14 @@
         authentication (WebDAV)
     </li>
     <li><span class="label label-warning">Bugfix</span> Timeout uploading larger files (Google Drive) (<a
-            href="https://trac.cyberduck.io/ticket/10010">#10010</a>)
+        href="https://trac.cyberduck.io/ticket/10010">#10010</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Set checksum for large file uploads in fileInfo metadata
         (Backblaze B2)
     </li>
     <li><span class="label label-warning">Bugfix</span> Default ACL for new buckets has changed to private (S3)</li>
     <li><span class="label label-warning">Bugfix</span> Failure duplicating files in vault (Cryptomator) (<a
-            href="https://trac.cyberduck.io/ticket/10017">#10017</a>)
+        href="https://trac.cyberduck.io/ticket/10017">#10017</a>)
     </li>
 </ul>
 
@@ -193,14 +204,14 @@
         (Windows)
     </li>
     <li><span class="label label-warning">Bugfix</span> Unable to rename files larger than 5 GB (S3) (<a
-            href="https://trac.cyberduck.io/ticket/9983">#9983</a>)
+        href="https://trac.cyberduck.io/ticket/9983">#9983</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Handle expired authentication token (Backblaze B2)</li>
     <li><span class="label label-warning">Bugfix</span> "Open in Putty" toolbar button always disabled (Windows) (<a
-            href="https://trac.cyberduck.io/ticket/9965">#9965</a>)
+        href="https://trac.cyberduck.io/ticket/9965">#9965</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Updater ignores custom installation location (Windows) (<a
-            href="https://trac.cyberduck.io/ticket/9782">#9782</a>)
+        href="https://trac.cyberduck.io/ticket/9782">#9782</a>)
     </li>
 </ul>
 
@@ -218,16 +229,16 @@
 </p>
 <ul>
     <li><span class="label label-warning">Bugfix</span> New connections do not authenticate (Dropbox) (<a
-            href="https://trac.cyberduck.io/ticket/9932">#9932</a>)
+        href="https://trac.cyberduck.io/ticket/9932">#9932</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Large file uploads do not resume (Backblaze B2) (<a
-            href="https://trac.cyberduck.io/ticket/9935">#9935</a>)
+        href="https://trac.cyberduck.io/ticket/9935">#9935</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failure listing folders with whitespace (OneDrive) (<a
-            href="https://trac.cyberduck.io/ticket/9937">#9937</a>)
+        href="https://trac.cyberduck.io/ticket/9937">#9937</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failure duplicating files (FTP) (<a
-            href="https://trac.cyberduck.io/ticket/9933">#9933</a>)
+        href="https://trac.cyberduck.io/ticket/9933">#9933</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Failure uploading files with temporary filename option enabled
         (Backblaze B2)
@@ -240,7 +251,7 @@
     <li><span class="label label-warning">Bugfix</span> Synchronize files in vault (Cryptomator)</li>
     <li><span class="label label-warning">Bugfix</span> Repeated login prompt (2-Factor Authentication SFTP)</li>
     <li><span class="label label-warning">Bugfix</span> Enable copy of text from log drawer (Windows) (<a
-            href="https://trac.cyberduck.io/ticket/9952">#9952</a>)
+        href="https://trac.cyberduck.io/ticket/9952">#9952</a>)
     </li>
 </ul>
 
@@ -249,14 +260,14 @@
 </p>
 <ul>
     <li><span class="label label-success">Feature</span> Create encrypted vault interopable with Cryptomator (<a
-            href="https://trac.cyberduck.io/ticket/7937">#7937</a>) (Cyptomator)
+        href="https://trac.cyberduck.io/ticket/7937">#7937</a>) (Cyptomator)
         <ul>
             <li><span class="label label-success">Feature</span> Encrypt uploads into vault</li>
             <li><span class="label label-success">Feature</span> Decrypt downloads from vault</li>
         </ul>
     </li>
     <li><span class="label label-success">Feature</span> Support for Microsoft OneDrive (OneDrive) (<a
-            href="https://trac.cyberduck.io/ticket/9799">#9799</a>)
+        href="https://trac.cyberduck.io/ticket/9799">#9799</a>)
     </li>
     <li><span class="label label-success">Feature</span> Browse local filesystem in browser</li>
     <li><span class="label label-success">Feature</span> Support ssh-rsa-cert-v01@openssh.com format for private key
@@ -270,6 +281,6 @@
 </ul>
 
 <p>Release notes for previous versions can be found at <a
-        href="https://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
+    href="https://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
 </body>
 </html>

@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2.5
+- [Bugfix] Authentication using OAuth (Windows)
+- [Bugfix] Failure to read attributes (S3) (#10068)
+
 6.2.4
 - [Feature] Provide URL references to Office 365 documents in browser (OneDrive)
 - [Feature] Disable Bonjour notifications
