@@ -18,10 +18,8 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -37,11 +35,8 @@ public class DAVFindFeature implements Find {
 
     private final DAVSession session;
 
-    private Cache<Path> cache;
-
     public DAVFindFeature(final DAVSession session) {
         this.session = session;
-        this.cache = PathCache.empty();
     }
 
     @Override
@@ -49,32 +44,9 @@ public class DAVFindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
-        final AttributedList<Path> list;
-        if(cache.isCached(file.getParent())) {
-            list = cache.get(file.getParent());
-        }
-        else {
-            list = new AttributedList<Path>();
-            cache.put(file.getParent(), list);
-        }
-        if(list.contains(file)) {
-            // Previously found
-            return true;
-        }
-        if(cache.isHidden(file)) {
-            // Previously not found
-            return false;
-        }
         try {
             try {
-                final boolean found = session.getClient().exists(new DAVPathEncoder().encode(file));
-                if(found) {
-                    list.add(file);
-                }
-                else {
-                    list.attributes().addHidden(file);
-                }
-                return found;
+                return session.getClient().exists(new DAVPathEncoder().encode(file));
             }
             catch(SardineException e) {
                 throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -95,7 +67,6 @@ public class DAVFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
         return this;
     }
 }
