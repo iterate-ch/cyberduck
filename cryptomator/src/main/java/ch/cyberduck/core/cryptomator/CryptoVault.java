@@ -341,10 +341,8 @@ public class CryptoVault implements Vault {
             }
             encrypted = directoryProvider.toEncrypted(session, directoryId, file);
         }
-        if(!metadata) {
-            // Add reference to decrypted file
-            encrypted.attributes().setDecrypted(file);
-        }
+        // Add reference to decrypted file
+        encrypted.attributes().setDecrypted(file);
         // Add reference for vault
         file.attributes().setVault(home);
         encrypted.attributes().setVault(home);
