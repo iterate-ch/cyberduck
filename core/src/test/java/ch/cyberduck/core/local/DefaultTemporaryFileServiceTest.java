@@ -50,7 +50,7 @@ public class DefaultTemporaryFileServiceTest {
             final Path file = new Path("/p", EnumSet.of(Path.Type.directory));
             file.attributes().setRegion("region");
             file.attributes().setVersionId("2");
-            assertEquals(String.format("%s%su%sregion2%sp", temp, s, s, s),
+            assertEquals(String.format("%s%su%sregion%sp", temp, s, s, s),
                     new DefaultTemporaryFileService().create("u", file).getAbsolute());
         }
     }
@@ -62,9 +62,6 @@ public class DefaultTemporaryFileServiceTest {
         final Path file = new Path("/container", EnumSet.of(Path.Type.directory));
         file.attributes().setRegion("region");
         assertEquals(String.format("%s%su%sregion%scontainer", temp, s, s, s),
-                new DefaultTemporaryFileService().create("u", file).getAbsolute());
-        file.attributes().setVersionId("2");
-        assertEquals(String.format("%s%su%sregion2%scontainer", temp, s, s, s),
                 new DefaultTemporaryFileService().create("u", file).getAbsolute());
     }
 
