@@ -58,7 +58,7 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
                     try {
                         EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                         failure = new B2ApiException(EntityUtils.toString(response.getEntity()), new HttpResponseException(
-                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                            response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                     }
                     catch(IOException e) {
                         log.warn(String.format("Failure parsing response entity from %s", response));
@@ -88,6 +88,13 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+        if(StringUtils.contains(request.getRequestLine().getUri(), "b2_authorize_account")) {
+            // Skip setting token for
+            if(log.isDebugEnabled()) {
+                log.debug("Skip setting token in b2_authorize_account");
+            }
+            return;
+        }
         switch(request.getRequestLine().getMethod()) {
             case "POST":
                 // Do not override Authorization header for upload requests with upload URL token
