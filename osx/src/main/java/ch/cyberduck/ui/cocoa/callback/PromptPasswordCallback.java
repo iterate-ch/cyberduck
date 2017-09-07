@@ -40,6 +40,7 @@ public class PromptPasswordCallback implements PasswordCallback {
             throw new LoginCanceledException();
         }
         final Credentials credentials = new VaultCredentials();
+        credentials.setSaved(options.save);
         final PasswordController controller = new PasswordController(credentials, title, reason, options);
         final int option = controller.beginSheet(parent);
         if(option == SheetCallback.CANCEL_OPTION) {
