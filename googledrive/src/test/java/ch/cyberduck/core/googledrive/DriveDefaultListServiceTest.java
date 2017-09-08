@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -46,8 +47,19 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
             if(!f.isVolume()) {
                 assertNotNull(f.attributes().getVersionId());
             }
-            assertNotNull(f.attributes().getModificationDate());
         }
+    }
+
+    @Test
+    public void testListLexicographically() throws Exception {
+        final Path directory = new DriveDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path f2 = new DriveTouchFeature(session).touch(new Path(directory, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path f1 = new DriveTouchFeature(session).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new DriveDefaultListService(session).list(directory, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertEquals(f1, list.get(0));
+        assertEquals(f2, list.get(1));
+        new DriveDeleteFeature(session).delete(Arrays.asList(f1, f2, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
