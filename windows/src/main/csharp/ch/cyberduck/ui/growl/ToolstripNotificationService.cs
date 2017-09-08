@@ -102,10 +102,5 @@ namespace Ch.Cyberduck.Ui.Growl
         {
             _icon.Dispose();
         }
-
-        public void notifyWithImage(string title, string description, string image)
-        {
-            notify(title, description);
-        }
     }
 }
