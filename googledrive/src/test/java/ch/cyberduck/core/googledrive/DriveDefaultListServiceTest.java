@@ -46,7 +46,6 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
             if(!f.isVolume()) {
                 assertNotNull(f.attributes().getVersionId());
             }
-            assertNotNull(f.attributes().getModificationDate());
         }
     }
 
