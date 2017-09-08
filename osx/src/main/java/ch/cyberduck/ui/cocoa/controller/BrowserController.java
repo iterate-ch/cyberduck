@@ -1076,7 +1076,6 @@ public class BrowserController extends WindowController
      */
     @Override
     public void beginPreviewPanelControl(QLPreviewPanel panel) {
-        quicklook.willBeginQuickLook();
     }
 
     /**
@@ -1088,7 +1087,6 @@ public class BrowserController extends WindowController
      */
     @Override
     public void endPreviewPanelControl(QLPreviewPanel panel) {
-        quicklook.didEndQuickLook();
     }
 
     @Action
