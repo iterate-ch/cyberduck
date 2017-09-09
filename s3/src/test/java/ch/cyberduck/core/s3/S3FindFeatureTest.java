@@ -7,8 +7,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -67,27 +65,5 @@ public class S3FindFeatureTest {
     @Test
     public void testFindRoot() throws Exception {
         assertTrue(new S3FindFeature(new S3Session(new Host(new S3Protocol()))).find(new Path("/", EnumSet.of(Path.Type.directory))));
-    }
-
-    @Test
-    public void testVersioning() throws Exception {
-        final S3Session session = new S3Session(
-            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(
-                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final PathAttributes attributes = new PathAttributes();
-        final PathCache cache = new PathCache(1);
-        final Path f = new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), attributes);
-        assertTrue(new S3FindFeature(session).withCache(cache).find(f));
-        assertTrue(cache.get(f.getParent()).contains(f));
-        attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
-        assertTrue(new S3FindFeature(session).withCache(cache).find(f));
-        assertTrue(cache.get(f.getParent()).contains(f));
-        attributes.setVersionId(null);
-        assertTrue(cache.get(f.getParent()).contains(f));
-        session.close();
     }
 }
