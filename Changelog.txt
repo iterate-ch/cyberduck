@@ -3,6 +3,7 @@ https://cyberduck.io/
 
 6.2.6
 - [Bugfix] Quick Look only works one time (#9889) (Mac)
+- [Bugfix] Disable notification for opened connection
 
 6.2.5
 - [Bugfix] Authentication using OAuth (Windows)
