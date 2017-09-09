@@ -35,11 +35,4 @@ public interface NotificationService {
      * @param description Hostname
      */
     void notify(String title, String description);
-
-    /**
-     * @param title       Non localized title to be looked up in status table
-     * @param description Hostname
-     * @param image       Custom icon instead of application icon
-     */
-    void notifyWithImage(String title, String description, String image);
 }

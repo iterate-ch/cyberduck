@@ -21,8 +21,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveFailedException;
-import ch.cyberduck.core.notification.NotificationService;
-import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -42,7 +40,6 @@ public class LoginConnectionService implements ConnectionService {
     private final ProgressListener listener;
     private final ProxyFinder proxy;
     private final LoginService login;
-    private final NotificationService notification;
 
     public LoginConnectionService(final LoginCallback prompt,
                                   final HostKeyCallback key,
@@ -69,19 +66,10 @@ public class LoginConnectionService implements ConnectionService {
                                   final HostKeyCallback key,
                                   final ProgressListener listener,
                                   final ProxyFinder proxy) {
-        this(login, key, listener, proxy, NotificationServiceFactory.get());
-    }
-
-    public LoginConnectionService(final LoginService login,
-                                  final HostKeyCallback key,
-                                  final ProgressListener listener,
-                                  final ProxyFinder proxy,
-                                  final NotificationService notification) {
         this.login = login;
         this.proxy = proxy;
         this.key = key;
         this.listener = listener;
-        this.notification = notification;
     }
 
     @Override
@@ -100,9 +88,9 @@ public class LoginConnectionService implements ConnectionService {
         // Obtain password from keychain or prompt
         synchronized(login) {
             login.validate(bookmark,
-                    MessageFormat.format(LocaleFactory.localizedString(
-                            "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                    new LoginOptions(bookmark.getProtocol()));
+                MessageFormat.format(LocaleFactory.localizedString(
+                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
+                new LoginOptions(bookmark.getProtocol()));
         }
         this.connect(session, cache, callback);
         return true;
@@ -111,7 +99,7 @@ public class LoginConnectionService implements ConnectionService {
     @Override
     public void close(final Session<?> session) {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                session.getHost().getHostname()));
+            session.getHost().getHostname()));
         try {
             // Close the underlying socket first
             session.interrupt();
@@ -132,7 +120,7 @@ public class LoginConnectionService implements ConnectionService {
         final HostnameConfigurator configurator = HostnameConfiguratorFactory.get(bookmark.getProtocol());
         final String hostname = configurator.getHostname(bookmark.getHostname());
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"),
-                hostname));
+            hostname));
         if(proxy.find(bookmark) == Proxy.DIRECT) {
             // Only try to resolve target hostname if direct connection
             try {
@@ -144,16 +132,13 @@ public class LoginConnectionService implements ConnectionService {
             }
         }
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
-                bookmark.getProtocol().getName(), hostname));
+            bookmark.getProtocol().getName(), hostname));
 
         // The IP address could successfully be determined
         session.open(key);
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
-                bookmark.getProtocol().getName()));
-
-        // New connection opened
-        notification.notify("Connection opened", BookmarkNameProvider.toString(bookmark));
+            bookmark.getProtocol().getName()));
 
         // Update last accessed timestamp
         bookmark.setTimestamp(new Date());
