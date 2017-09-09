@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -10,17 +9,16 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class S3FindFeatureTest {
@@ -28,10 +26,10 @@ public class S3FindFeatureTest {
     @Test
     public void testFindNotFound() throws Exception {
         final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
+            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -43,7 +41,7 @@ public class S3FindFeatureTest {
     @Test
     public void testFindUnknownBucket() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
@@ -56,7 +54,7 @@ public class S3FindFeatureTest {
     @Test
     public void testFindBucket() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
@@ -72,43 +70,12 @@ public class S3FindFeatureTest {
     }
 
     @Test
-    public void testCacheNotFound() throws Exception {
-        final PathCache cache = new PathCache(1);
-        final AttributedList<Path> list = new AttributedList<Path>();
-        list.attributes().addHidden(new Path("/g/gd", EnumSet.of(Path.Type.file)));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
-        final Find finder = new S3FindFeature(new S3Session(new Host(new S3Protocol())) {
-            @Override
-            public RequestEntityRestStorageService getClient() {
-                fail();
-                return null;
-            }
-        }).withCache(cache);
-        assertFalse(finder.find(new Path("/g/gd", EnumSet.of(Path.Type.file))));
-    }
-
-    @Test
-    public void testCacheFound() throws Exception {
-        final PathCache cache = new PathCache(1);
-        final AttributedList<Path> list = new AttributedList<Path>(Collections.singletonList(new Path("/g/gd", EnumSet.of(Path.Type.file))));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
-        final Find finder = new S3FindFeature(new S3Session(new Host(new S3Protocol())) {
-            @Override
-            public RequestEntityRestStorageService getClient() {
-                fail();
-                return null;
-            }
-        }).withCache(cache);
-        assertTrue(finder.find(new Path("/g/gd", EnumSet.of(Path.Type.file))));
-    }
-
-    @Test
     public void testVersioning() throws Exception {
         final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
+            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathAttributes attributes = new PathAttributes();
