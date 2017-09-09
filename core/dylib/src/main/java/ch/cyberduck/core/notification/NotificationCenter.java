@@ -18,7 +18,6 @@ package ch.cyberduck.core.notification;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 import ch.cyberduck.core.LocaleFactory;
@@ -52,13 +51,6 @@ public class NotificationCenter implements NotificationService {
     @Override
     public void notify(final String title, final String description) {
         final NSUserNotification notification = this.create(title, description);
-        center.scheduleNotification(notification);
-    }
-
-    @Override
-    public void notifyWithImage(final String title, final String description, final String image) {
-        final NSUserNotification notification = this.create(title, description);
-        notification.setContentImage(NSImage.imageNamed(image));
         center.scheduleNotification(notification);
     }
 }
