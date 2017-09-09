@@ -75,25 +75,13 @@ public final class QuartzQuickLook implements QuickLook {
     }
 
     @Override
-    public void willBeginQuickLook() {
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set datasource for panel %s", panel));
-        }
-        panel.setDataSource(model.id());
-    }
-
-    @Override
     public void open() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Order front panel %s", panel));
         }
         panel.makeKeyAndOrderFront(null);
-        if(null == panel.dataSource()) {
-            log.warn("Do not reload data yet because datasource is not yet setup. Focus has probably changed to another application since");
-            return;
-        }
+        panel.setDataSource(model.id());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data for panel %s", panel));
         }
@@ -108,10 +96,6 @@ public final class QuartzQuickLook implements QuickLook {
         }
         panel.setDataSource(null);
         panel.orderOut(null);
-    }
-
-    @Override
-    public void didEndQuickLook() {
         if(log.isDebugEnabled()) {
             log.debug("Clear previews");
         }
