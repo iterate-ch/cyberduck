@@ -20,12 +20,15 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 
 import java.io.IOException;
 
@@ -34,6 +37,8 @@ import com.github.sardine.impl.SardineException;
 public class DAVFindFeature implements Find {
 
     private final DAVSession session;
+
+    private Cache<Path> cache = PathCache.empty();
 
     public DAVFindFeature(final DAVSession session) {
         this.session = session;
@@ -55,9 +60,13 @@ public class DAVFindFeature implements Find {
                 throw new HttpExceptionMappingService().map(e, file);
             }
         }
+        catch(InteroperabilityException e) {
+            // 400 Multiple choices
+            return new DefaultFindFeature(session).withCache(cache).find(file);
+        }
         catch(AccessDeniedException e) {
             // Parent directory may not be accessible. Issue #5662
-            return true;
+            return new DefaultFindFeature(session).withCache(cache).find(file);
         }
         catch(LoginFailureException | NotfoundException e) {
             // HEAD may return 401 in G2
@@ -67,6 +76,7 @@ public class DAVFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }
