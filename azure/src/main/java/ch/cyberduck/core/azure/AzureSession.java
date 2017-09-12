@@ -19,16 +19,19 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -157,7 +160,17 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
         }
         // Fetch reference for directory to check login credentials
-        new AzureFindFeature(this, context).find(new AzureHomeFinderService(this).find());
+        try {
+            this.getFeature(ListService.class).list(new AzureHomeFinderService(this).find(), new DisabledListProgressListener() {
+                @Override
+                public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+                    throw new ListCanceledException(list);
+                }
+            });
+        }
+        catch(ListCanceledException e) {
+            // Success
+        }
     }
 
     @Override
