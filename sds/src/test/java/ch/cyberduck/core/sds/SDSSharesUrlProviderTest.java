@@ -67,7 +67,7 @@ public class SDSSharesUrlProviderTest {
                         .maxDownloads(null));
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/api/v4/public/shares/downloads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/#/public/shares-downloads/"));
         new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -95,7 +95,7 @@ public class SDSSharesUrlProviderTest {
                         .maxDownloads(null));
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/api/v4/public/shares/downloads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/#/public/shares-downloads/"));
         new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -123,7 +123,7 @@ public class SDSSharesUrlProviderTest {
                         .maxDownloads(null));
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/api/v4/public/shares/downloads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/#/public/shares-downloads/"));
         new SDSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
