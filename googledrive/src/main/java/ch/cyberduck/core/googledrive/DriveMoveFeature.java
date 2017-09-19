@@ -27,6 +27,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.binary.StringUtils;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import com.google.api.services.drive.model.File;
 
@@ -51,6 +52,9 @@ public class DriveMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
+            if(status.isExists()) {
+                new DriveDeleteFeature(session).delete(Collections.singletonList(renamed), connectionCallback, callback);
+            }
             final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 // Rename title
