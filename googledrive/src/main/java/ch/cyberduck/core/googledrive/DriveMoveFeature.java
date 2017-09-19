@@ -34,9 +34,11 @@ import com.google.api.services.drive.model.File;
 public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
+    private Delete delete;
 
     public DriveMoveFeature(final DriveSession session) {
         this.session = session;
+        this.delete = new DriveDeleteFeature(session);
     }
 
     @Override
@@ -46,6 +48,7 @@ public class DriveMoveFeature implements Move {
 
     @Override
     public Move withDelete(final Delete delete) {
+        this.delete = delete;
         return this;
     }
 
@@ -53,7 +56,7 @@ public class DriveMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                new DriveDeleteFeature(session).delete(Collections.singletonList(renamed), connectionCallback, callback);
+                delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
             final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
