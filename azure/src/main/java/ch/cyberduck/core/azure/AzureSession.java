@@ -42,6 +42,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -204,6 +205,9 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             return (T) new AzureDeleteFeature(this, context);
         }
         if(type == Headers.class) {
+            return (T) new AzureMetadataFeature(this, context);
+        }
+        if(type == Metadata.class) {
             return (T) new AzureMetadataFeature(this, context);
         }
         if(type == Find.class) {

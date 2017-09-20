@@ -307,6 +307,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == Headers.class) {
             return (T) new S3MetadataFeature(this, new S3AccessControlListFeature(this));
         }
+        if(type == Metadata.class) {
+            return (T) new S3MetadataFeature(this, new S3AccessControlListFeature(this));
+        }
         if(type == Touch.class) {
             return (T) new S3TouchFeature(this);
         }
