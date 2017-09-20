@@ -15,16 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-
-import java.util.Map;
-
-public interface Headers {
-    Map<String, String> getDefault(Local local);
-
-    Map<String, String> getMetadata(Path file) throws BackgroundException;
-
-    void setMetadata(Path file, Map<String, String> metadata) throws BackgroundException;
+public interface Headers extends Metadata {
+    // Used in transfers to determine metadata to apply
 }
