@@ -244,7 +244,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarMetadataEnabled = session.getFeature(typeof(Headers)) != null;
+                View.ToolbarMetadataEnabled = session.getFeature(typeof(Metadata)) != null;
             }
         }
 
@@ -270,7 +270,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             SessionPool session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
-            bool enable = !credentials.isAnonymousLogin() && session.getFeature(typeof(Headers)) != null;
+            bool enable = !credentials.isAnonymousLogin() && session.getFeature(typeof(Metadata)) != null;
             View.MetadataTableEnabled = stop && enable;
             View.MetadataAddEnabled = stop && enable;
             bool selection = View.SelectedMetadataEntries.Count > 0;

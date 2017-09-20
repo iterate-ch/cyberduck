@@ -25,26 +25,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Lifecycle;
-import ch.cyberduck.core.features.Logging;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3CopyFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -76,14 +61,11 @@ import java.util.Collections;
 
 public class GoogleStorageSession extends S3Session {
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
     private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
     private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
-            authorizationService);
+        authorizationService);
 
     public GoogleStorageSession(final Host h) {
         super(h);
@@ -184,13 +166,13 @@ public class GoogleStorageSession extends S3Session {
         protected StorageBucket createBucketImpl(String bucketName, String location,
                                                  AccessControlList acl) throws ServiceException {
             return super.createBucketImpl(bucketName, location, acl,
-                    Collections.singletonMap("x-goog-project-id", host.getCredentials().getUsername()));
+                Collections.singletonMap("x-goog-project-id", host.getCredentials().getUsername()));
         }
 
         @Override
         protected StorageBucket[] listAllBucketsImpl() throws ServiceException {
             return super.listAllBucketsImpl(
-                    Collections.singletonMap("x-goog-project-id", host.getCredentials().getUsername()));
+                Collections.singletonMap("x-goog-project-id", host.getCredentials().getUsername()));
         }
 
     }
@@ -217,6 +199,9 @@ public class GoogleStorageSession extends S3Session {
             return (T) new S3MoveFeature(this, new GoogleStorageAccessControlListFeature(this));
         }
         if(type == Headers.class) {
+            return (T) new S3MetadataFeature(this, new GoogleStorageAccessControlListFeature(this));
+        }
+        if(type == Metadata.class) {
             return (T) new S3MetadataFeature(this, new GoogleStorageAccessControlListFeature(this));
         }
         if(type == Copy.class) {

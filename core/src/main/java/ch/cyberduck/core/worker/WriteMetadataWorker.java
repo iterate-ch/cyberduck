@@ -26,7 +26,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -69,7 +69,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
 
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
-        final Headers feature = session.getFeature(Headers.class);
+        final Metadata feature = session.getFeature(Metadata.class);
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
@@ -79,7 +79,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         return true;
     }
 
-    protected void write(final Session<?> session, final Headers feature, final Path file) throws BackgroundException {
+    protected void write(final Session<?> session, final Metadata feature, final Path file) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -98,7 +98,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         // If anything has changed save metadata, otherwise continue and do for everything underneath this directory
         if(!update.equals(file.attributes().getMetadata())) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                    file.getName()));
+                file.getName()));
             feature.setMetadata(file, update);
         }
         if(file.isDirectory()) {

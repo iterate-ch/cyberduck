@@ -23,7 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -46,7 +46,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
 
     @Override
     public Map<String, String> run(final Session<?> session) throws BackgroundException {
-        final Headers feature = session.getFeature(Headers.class);
+        final Metadata feature = session.getFeature(Metadata.class);
 
         // Map for File > Metadata Set
         Map<Path, Map<String, String>> fullMetadata = new HashMap<>();
@@ -94,7 +94,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                this.toString(files));
+            this.toString(files));
     }
 
     @Override

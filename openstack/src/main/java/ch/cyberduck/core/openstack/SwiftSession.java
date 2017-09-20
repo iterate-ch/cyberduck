@@ -38,8 +38,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -68,11 +66,8 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftSession extends HttpSession<Client> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
     private final SwiftRegionService regionService
-            = new SwiftRegionService(this);
+        = new SwiftRegionService(this);
 
     private Map<Region, AccountInfo> accounts = Collections.emptyMap();
     private Map<Path, Distribution> distributions = Collections.emptyMap();
@@ -128,8 +123,8 @@ public class SwiftSession extends HttpSession<Client> {
                 catch(GenericException failure) {
                     final BackgroundException reason = new SwiftExceptionMappingService().map(failure);
                     if(reason instanceof LoginFailureException
-                            || reason instanceof AccessDeniedException
-                            || reason instanceof InteroperabilityException) {
+                        || reason instanceof AccessDeniedException
+                        || reason instanceof InteroperabilityException) {
                         if(!iter.hasNext()) {
                             throw failure;
                         }
@@ -153,7 +148,7 @@ public class SwiftSession extends HttpSession<Client> {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             return new SwiftContainerListService(this,
-                    new SwiftLocationFeature.SwiftRegion(host.getRegion())).list(directory, listener);
+                new SwiftLocationFeature.SwiftRegion(host.getRegion())).list(directory, listener);
         }
         else {
             return new SwiftObjectListService(this, regionService).list(directory, listener);
@@ -182,6 +177,9 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftMultipleDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
         }
         if(type == Headers.class) {
+            return (T) new SwiftMetadataFeature(this, regionService);
+        }
+        if(type == Metadata.class) {
             return (T) new SwiftMetadataFeature(this, regionService);
         }
         if(type == Copy.class) {
@@ -222,18 +220,18 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Scheduler.class) {
             return (T) new DelegatingSchedulerFeature(
-                    new SwiftAccountLoader(this) {
-                        @Override
-                        public Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
-                            return accounts = super.operate(callback, container);
-                        }
-                    },
-                    new SwiftDistributionConfigurationLoader(this) {
-                        @Override
-                        public Map<Path, Distribution> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
-                            return distributions = super.operate(callback, container);
-                        }
-                    });
+                new SwiftAccountLoader(this) {
+                    @Override
+                    public Map<Region, AccountInfo> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
+                        return accounts = super.operate(callback, container);
+                    }
+                },
+                new SwiftDistributionConfigurationLoader(this) {
+                    @Override
+                    public Map<Path, Distribution> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
+                        return distributions = super.operate(callback, container);
+                    }
+                });
         }
         return super._getFeature(type);
     }
