@@ -51,25 +51,26 @@ public class DAVFindFeature implements Find {
         }
         try {
             try {
-                return session.getClient().exists(new DAVPathEncoder().encode(file));
+                try {
+                    return session.getClient().exists(new DAVPathEncoder().encode(file));
+                }
+                catch(SardineException e) {
+                    throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                }
+                catch(IOException e) {
+                    throw new HttpExceptionMappingService().map(e, file);
+                }
             }
-            catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            catch(AccessDeniedException | InteroperabilityException e) {
+                // 400 Multiple choices
+                return new DefaultFindFeature(session).withCache(cache).find(file);
             }
-            catch(IOException e) {
-                throw new HttpExceptionMappingService().map(e, file);
-            }
-        }
-        catch(InteroperabilityException e) {
-            // 400 Multiple choices
-            return new DefaultFindFeature(session).withCache(cache).find(file);
         }
         catch(AccessDeniedException e) {
             // Parent directory may not be accessible. Issue #5662
-            return new DefaultFindFeature(session).withCache(cache).find(file);
+            return true;
         }
         catch(LoginFailureException | NotfoundException e) {
-            // HEAD may return 401 in G2
             return false;
         }
     }
