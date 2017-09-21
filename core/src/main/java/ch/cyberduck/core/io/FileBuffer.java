@@ -21,6 +21,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -55,8 +57,25 @@ public class FileBuffer implements Buffer {
     @Override
     public synchronized int read(final byte[] chunk, final Long offset) throws IOException {
         final RandomAccessFile file = random();
-        file.seek(offset);
-        return file.read(chunk, 0, chunk.length);
+        if(offset < file.length()) {
+            file.seek(offset);
+            if(chunk.length + offset > file.length()) {
+                return file.read(chunk, 0, (int) (file.length() - offset));
+            }
+            else {
+                return file.read(chunk, 0, chunk.length);
+            }
+        }
+        else {
+            final NullInputStream nullStream = new NullInputStream(length);
+            if(nullStream.available() > 0) {
+                nullStream.skip(offset);
+                return nullStream.read(chunk, 0, chunk.length);
+            }
+            else {
+                return IOUtils.EOF;
+            }
+        }
     }
 
     @Override
