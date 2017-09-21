@@ -35,6 +35,7 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveUploadSession;
@@ -60,36 +61,38 @@ public class OneDriveBufferWriteFeature implements MultipartWrite<Void> {
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        return new HttpResponseOutputStream<Void>(new BufferSegmentingOutputStream(bytes, Long.MAX_VALUE, new FileBuffer()) {
-            @Override
-            public void close() throws IOException {
-                try {
-                    this.flush();
-                    final byte[] content = bytes.toByteArray();
-                    if(0L == content.length) {
-                        new OneDriveTouchFeature(session).touch(file, status);
-                    }
-                    else {
-                        final OneDriveUploadSession upload = session.toFile(file).createUploadSession();
-                        final HttpRange range = HttpRange.byLength(0L, content.length);
-                        final String header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), content.length);
-                        if(!(upload.uploadFragment(header, content) instanceof OneDriveFile.Metadata)) {
-                            log.info(String.format("Completed upload for %s", file));
+        if(status.getLength() != -1L) {
+            return new OneDriveWriteFeature(session).write(file, status, callback);
+        }
+        else {
+            final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            return new HttpResponseOutputStream<Void>(new BufferSegmentingOutputStream(bytes, Long.MAX_VALUE, new FileBuffer()) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        this.flush();
+                        final byte[] content = bytes.toByteArray();
+                        if(0L == content.length) {
+                            new OneDriveTouchFeature(session).touch(file, status);
                         }
+                        else {
+                            final TransferStatus backed = new TransferStatus(status);
+                            backed.setLength(content.length);
+                            new OneDriveWriteFeature(session).write(file, backed, callback).write(content);
+                        }
+                        super.close();
                     }
-                    super.close();
+                    catch(BackgroundException e) {
+                        throw new IOException(e);
+                    }
                 }
-                catch(BackgroundException e) {
-                    throw new IOException(e);
+            }) {
+                @Override
+                public Void getStatus() throws BackgroundException {
+                    return null;
                 }
-            }
-        }) {
-            @Override
-            public Void getStatus() throws BackgroundException {
-                return null;
-            }
-        };
+            };
+        }
     }
 
     @Override
