@@ -19,8 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class FileBufferTest {
 
@@ -77,16 +76,19 @@ public class FileBufferTest {
     @Test
     public void testSplit() throws Exception {
         final FileBuffer buffer = new FileBuffer();
-        assertEquals(0L, buffer.length(), 0L);
+        buffer.truncate(200L);
+        assertEquals(200L, buffer.length(), 0L);
         final byte[] chunk = RandomUtils.nextBytes(100);
         buffer.write(chunk, 0L);
-        buffer.truncate(200L);
         assertEquals(200L, buffer.length(), 0L);
         final byte[] compare = new byte[100];
         buffer.read(compare, 0L);
         final byte[] empty = new byte[100];
         buffer.read(empty, 100L);
         assertArrayEquals(new byte[100], empty);
+        final byte[] overFileEnd = new byte[150];
+        assertEquals(100L, buffer.read(overFileEnd, 0L));
+        assertNotEquals(IOUtils.EOF, buffer.read(empty, 100L));
         assertEquals(IOUtils.EOF, buffer.read(new byte[1], 200L));
     }
 
