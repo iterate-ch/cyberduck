@@ -26,7 +26,7 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BufferInputStream;
-import ch.cyberduck.core.io.BufferSegmentingOutputStream;
+import ch.cyberduck.core.io.BufferOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.FileBuffer;
@@ -35,7 +35,6 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.NullOutputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -60,7 +59,7 @@ public class OneDriveBufferWriteFeature implements MultipartWrite<Void> {
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final FileBuffer buffer = new FileBuffer();
-        return new HttpResponseOutputStream<Void>(new BufferSegmentingOutputStream(new NullOutputStream(), Long.MAX_VALUE, buffer) {
+        return new HttpResponseOutputStream<Void>(new BufferOutputStream(buffer) {
             @Override
             public void flush() throws IOException {
                 //
