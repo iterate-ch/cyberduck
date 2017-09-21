@@ -61,38 +61,33 @@ public class OneDriveBufferWriteFeature implements MultipartWrite<Void> {
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(status.getLength() != -1L) {
-            return new OneDriveWriteFeature(session).write(file, status, callback);
-        }
-        else {
-            final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            return new HttpResponseOutputStream<Void>(new BufferSegmentingOutputStream(bytes, Long.MAX_VALUE, new FileBuffer()) {
-                @Override
-                public void close() throws IOException {
-                    try {
-                        this.flush();
-                        final byte[] content = bytes.toByteArray();
-                        if(0L == content.length) {
-                            new OneDriveTouchFeature(session).touch(file, status);
-                        }
-                        else {
-                            final TransferStatus backed = new TransferStatus(status);
-                            backed.setLength(content.length);
-                            new OneDriveWriteFeature(session).write(file, backed, callback).write(content);
-                        }
-                        super.close();
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        return new HttpResponseOutputStream<Void>(new BufferSegmentingOutputStream(bytes, Long.MAX_VALUE, new FileBuffer()) {
+            @Override
+            public void close() throws IOException {
+                try {
+                    this.flush();
+                    final byte[] content = bytes.toByteArray();
+                    if(0L == content.length) {
+                        new OneDriveTouchFeature(session).touch(file, status);
                     }
-                    catch(BackgroundException e) {
-                        throw new IOException(e);
+                    else {
+                        final TransferStatus backed = new TransferStatus(status);
+                        backed.setLength(content.length);
+                        new OneDriveWriteFeature(session).write(file, backed, callback).write(content);
                     }
+                    super.close();
                 }
-            }) {
-                @Override
-                public Void getStatus() throws BackgroundException {
-                    return null;
+                catch(BackgroundException e) {
+                    throw new IOException(e);
                 }
-            };
-        }
+            }
+        }) {
+            @Override
+            public Void getStatus() throws BackgroundException {
+                return null;
+            }
+        };
     }
 
     @Override
