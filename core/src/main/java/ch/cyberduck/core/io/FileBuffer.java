@@ -66,7 +66,7 @@ public class FileBuffer implements Buffer {
             }
         }
         else {
-            final NullInputStream nullStream = new NullInputStream(length);
+            final NullInputStream nullStream = new NullInputStream(length, false, false);
             nullStream.skip(offset);
             return nullStream.read(chunk, 0, chunk.length);
         }

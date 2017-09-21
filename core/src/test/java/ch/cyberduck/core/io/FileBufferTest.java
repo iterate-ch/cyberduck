@@ -87,6 +87,6 @@ public class FileBufferTest {
         final byte[] empty = new byte[100];
         buffer.read(empty, 100L);
         assertArrayEquals(new byte[100], empty);
-        assertEquals(IOUtils.EOF, buffer.read(new byte[0], 200L));
+        assertEquals(IOUtils.EOF, buffer.read(new byte[1], 200L));
     }
 }
