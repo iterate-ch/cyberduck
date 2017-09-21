@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
 
@@ -66,9 +67,14 @@ public class FileBuffer implements Buffer {
             }
         }
         else {
-            final NullInputStream nullStream = new NullInputStream(length, false, false);
-            nullStream.skip(offset);
-            return nullStream.read(chunk, 0, chunk.length);
+            final NullInputStream nullStream = new NullInputStream(length);
+            if(nullStream.available() > 0) {
+                nullStream.skip(offset);
+                return nullStream.read(chunk, 0, chunk.length);
+            }
+            else {
+                return IOUtils.EOF;
+            }
         }
     }
 

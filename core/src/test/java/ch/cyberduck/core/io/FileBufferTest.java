@@ -89,4 +89,11 @@ public class FileBufferTest {
         assertArrayEquals(new byte[100], empty);
         assertEquals(IOUtils.EOF, buffer.read(new byte[1], 200L));
     }
+
+    @Test
+    public void testEmpty() throws Exception {
+        final FileBuffer buffer = new FileBuffer();
+        assertEquals(0L, buffer.length(), 0L);
+        assertEquals(IOUtils.EOF, buffer.read(new byte[10], 100L));
+    }
 }
