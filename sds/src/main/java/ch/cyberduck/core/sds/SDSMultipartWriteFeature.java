@@ -204,11 +204,9 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                     return;
                 }
                 final CompleteUploadRequest body = new CompleteUploadRequest();
-                body.setResolutionStrategy(overall.isExists() ?
-                    CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE :
-                    CompleteUploadRequest.ResolutionStrategyEnum.AUTORENAME);
-
-                body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                if(overall.isExists()) {
+                    body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                }
                 if(overall.getFilekey() != null) {
                     final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                     final FileKey fileKey = reader.readValue(overall.getFilekey().array());
