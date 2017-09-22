@@ -112,21 +112,23 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                                 default:
                                     EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                     throw new SDSExceptionMappingService().map(
-                                            new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                                    EntityUtils.toString(response.getEntity())));
+                                        new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                            EntityUtils.toString(response.getEntity())));
                             }
                         }
                         finally {
                             EntityUtils.consume(response.getEntity());
                         }
                         final CompleteUploadRequest body = new CompleteUploadRequest();
-                        body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                        if(status.isExists()) {
+                            body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                        }
                         if(status.getFilekey() != null) {
                             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                             final FileKey fileKey = reader.readValue(status.getFilekey().array());
                             final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                                    TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                                    TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
+                                TripleCryptConverter.toCryptoPlainFileKey(fileKey),
+                                TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                             );
                             body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                         }
