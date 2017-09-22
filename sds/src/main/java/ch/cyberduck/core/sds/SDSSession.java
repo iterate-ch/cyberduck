@@ -142,8 +142,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         .authType(host.getProtocol().getAuthorization())
                         .language("en")
                         .login(login)
-                        .password(password)
-                        .token(additional.getPassword())
+                        .password(additional.getPassword())
                 ));
                 break;
             default:
