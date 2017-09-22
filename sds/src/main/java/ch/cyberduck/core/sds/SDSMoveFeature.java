@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
@@ -64,7 +63,7 @@ public class SDSMoveFeature implements Move {
             }
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 if(containerService.isContainer(file)) {
-                    final Node node = new NodesApi(session.getClient()).updateRoom(StringUtils.EMPTY,
+                    new NodesApi(session.getClient()).updateRoom(StringUtils.EMPTY,
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())),
                         new UpdateRoomRequest().name(renamed.getName()), null);
                 }
