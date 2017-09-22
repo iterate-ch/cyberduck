@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
@@ -41,7 +42,7 @@ public class SDSMoveFeature implements Move {
     private final SDSSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     public SDSMoveFeature(final SDSSession session) {
         this.session = session;
@@ -56,33 +57,34 @@ public class SDSMoveFeature implements Move {
             if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
                 // Change parent node
                 new NodesApi(session.getClient()).moveNodes(StringUtils.EMPTY,
-                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(renamed.getParent(), new DisabledListProgressListener())),
-                        new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(
-                                Long.parseLong(new SDSNodeIdProvider(session).getFileid(file,
-                                        new DisabledListProgressListener()))), null);
+                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(renamed.getParent(), new DisabledListProgressListener())),
+                    new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(
+                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(file,
+                            new DisabledListProgressListener()))), null);
             }
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 if(containerService.isContainer(file)) {
-                    new NodesApi(session.getClient()).updateRoom(StringUtils.EMPTY,
-                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())),
-                            new UpdateRoomRequest().name(renamed.getName()), null);
+                    final Node node = new NodesApi(session.getClient()).updateRoom(StringUtils.EMPTY,
+                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())),
+                        new UpdateRoomRequest().name(renamed.getName()), null);
+                    System.out.printf("node " + node);
                 }
                 // Rename
                 else if(file.isDirectory()) {
                     new NodesApi(session.getClient()).updateFolder(StringUtils.EMPTY,
-                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(
-                                    new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
-                            new UpdateFolderRequest().name(renamed.getName()), null);
+                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(
+                            new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
+                        new UpdateFolderRequest().name(renamed.getName()), null);
                 }
                 else {
                     new NodesApi(session.getClient()).updateFile(StringUtils.EMPTY,
-                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(
-                                    new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
-                            new UpdateFileRequest().name(renamed.getName()), null);
+                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(
+                            new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
+                        new UpdateFileRequest().name(renamed.getName()), null);
                 }
             }
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-                    new PathAttributes(renamed.attributes()).withVersionId(file.attributes().getVersionId()));
+                new PathAttributes(renamed.attributes()).withVersionId(file.attributes().getVersionId()));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Cannot rename {0}", e, file);
