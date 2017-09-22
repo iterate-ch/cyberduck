@@ -67,7 +67,6 @@ public class SDSMoveFeature implements Move {
                     final Node node = new NodesApi(session.getClient()).updateRoom(StringUtils.EMPTY,
                         Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())),
                         new UpdateRoomRequest().name(renamed.getName()), null);
-                    System.out.printf("node " + node);
                 }
                 // Rename
                 else if(file.isDirectory()) {
