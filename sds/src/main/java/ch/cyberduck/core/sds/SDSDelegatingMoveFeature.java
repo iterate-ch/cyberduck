@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -36,7 +37,7 @@ public class SDSDelegatingMoveFeature implements Move {
     private final SDSMoveFeature proxy;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     public SDSDelegatingMoveFeature(final SDSSession session, final SDSMoveFeature proxy) {
         this.session = session;
@@ -46,6 +47,11 @@ public class SDSDelegatingMoveFeature implements Move {
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback,
                      final ConnectionCallback connectionCallback) throws BackgroundException {
+        if(containerService.isContainer(source)) {
+            if(new SimplePathPredicate(source.getParent()).test(target.getParent())) {
+                return proxy.move(source, target, status, callback, connectionCallback);
+            }
+        }
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
@@ -74,6 +80,11 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
+        if(containerService.isContainer(source)) {
+            if(new SimplePathPredicate(source.getParent()).test(target.getParent())) {
+                return proxy.isRecursive(source, target);
+            }
+        }
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
@@ -86,6 +97,11 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
+        if(containerService.isContainer(source)) {
+            if(new SimplePathPredicate(source.getParent()).test(target.getParent())) {
+                return proxy.isSupported(source, target);
+            }
+        }
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
