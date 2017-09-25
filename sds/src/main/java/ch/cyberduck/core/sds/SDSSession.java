@@ -89,10 +89,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 request.addHeader(HttpHeaders.AUTHORIZATION,
-                        String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
+                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
             }
         }).build(),
-                host).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+            host)
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+            .withParameter("response_type", "code")
+            .withParameter("client_id", host.getProtocol().getOAuthClientId());
     }
 
     @Override
@@ -118,8 +121,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
-                .register(new InputStreamProvider())
-                .connectorProvider(new HttpComponentsProvider(apache))));
+            .register(new InputStreamProvider())
+            .connectorProvider(new HttpComponentsProvider(apache))));
         client.setUserAgent(new PreferencesUseragentProvider().get());
         return client;
     }
@@ -135,23 +138,23 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 break;
             case radius:
                 final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(host.getProtocol()).user(false).keychain(false)
+                    LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(host.getProtocol()).user(false).keychain(false)
                 );
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
-                        .authType(host.getProtocol().getAuthorization())
-                        .language("en")
-                        .login(login)
-                        .password(additional.getPassword())
+                    .authType(host.getProtocol().getAuthorization())
+                    .language("en")
+                    .login(login)
+                    .password(additional.getPassword())
                 ));
                 break;
             default:
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
-                        .authType(host.getProtocol().getAuthorization())
-                        .language("en")
-                        .login(login)
-                        .password(password)
+                    .authType(host.getProtocol().getAuthorization())
+                    .language("en")
+                    .login(login)
+                    .password(password)
                 ));
                 break;
         }
@@ -176,13 +179,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         catch(PartialLoginFailureException e) {
             final String username = host.getCredentials().getUsername();
             final Credentials additional = controller.prompt(host, username, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    e.getDetail(), new LoginOptions(host.getProtocol()).user(false).keychain(false)
-                            .usernamePlaceholder(username)
+                e.getDetail(), new LoginOptions(host.getProtocol()).user(false).keychain(false)
+                    .usernamePlaceholder(username)
             );
             return this.login(controller, new LoginRequest()
-                    .authType(host.getProtocol().getAuthorization())
-                    .language("en")
-                    .password(additional.getPassword())
+                .authType(host.getProtocol().getAuthorization())
+                .language("en")
+                .password(additional.getPassword())
             );
         }
     }
