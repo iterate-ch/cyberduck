@@ -202,7 +202,7 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public boolean validate(Credentials credentials, LoginOptions options) {
+    public boolean validate(final Credentials credentials, final LoginOptions options) {
         return this.getType().validate(credentials, options);
     }
 
