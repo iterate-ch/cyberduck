@@ -26,7 +26,6 @@ import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.DefaultCharsetProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 
 import org.rococoa.Foundation;
@@ -99,8 +98,7 @@ public class DefaultBookmarkController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                certificatePopup.setEnabled(bookmark.getProtocol().getScheme() == Scheme.https ||
-                        bookmark.getProtocol().getScheme() == Scheme.ftps);
+                certificatePopup.setEnabled(bookmark.getProtocol().isCertificateConfigurable());
                 if(bookmark.getCredentials().isCertificateAuthentication()) {
                     certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getCertificate()));
                 }
