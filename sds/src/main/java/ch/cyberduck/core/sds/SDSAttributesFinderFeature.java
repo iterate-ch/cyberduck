@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
@@ -33,6 +34,11 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     private final SDSSession session;
 
+    public static final Acl.Role READ_ROLE = new Acl.Role(Acl.Role.READ);
+    public static final Acl.Role CREATE_ROLE = new Acl.Role("CREATE");
+    public static final Acl.Role CHANGE_ROLE = new Acl.Role("CHANGE");
+    public static final Acl.Role DELETE_ROLE = new Acl.Role("DELETE");
+
     public SDSAttributesFinderFeature(final SDSSession session) {
         this.session = session;
     }
@@ -41,7 +47,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
             final Node node = new NodesApi(session.getClient()).getFsNode(StringUtils.EMPTY,
-                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())), null);
+                Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())), null);
             return this.toAttributes(node);
         }
         catch(ApiException e) {
@@ -49,13 +55,19 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    public PathAttributes toAttributes(final Node node) {
+    public PathAttributes toAttributes(final Node node) throws ApiException {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setChecksum(Checksum.parse(node.getHash()));
         attributes.setCreationDate(node.getCreatedAt().getTime());
         attributes.setModificationDate(node.getUpdatedAt().getTime());
         attributes.setSize(node.getSize());
+        attributes.setPermission(this.toPermission(node));
+        attributes.setAcl(this.toAcl(node));
+        return attributes;
+    }
+
+    private Permission toPermission(final Node node) {
         final Permission permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
         switch(node.getType()) {
             case ROOM:
@@ -65,8 +77,25 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         if(node.getPermissions().getChange()) {
             permission.setUser(permission.getUser().or(Permission.Action.write));
         }
-        attributes.setPermission(permission);
-        return attributes;
+        return permission;
+    }
+
+    private Acl toAcl(final Node node) throws ApiException {
+        final Acl acl = new Acl();
+        final Acl.User user = new Acl.EmailUser(session.userAccount().getEmail());
+        if(node.getPermissions().getRead()) {
+            acl.addAll(user, READ_ROLE);
+        }
+        if(node.getPermissions().getCreate()) {
+            acl.addAll(user, CREATE_ROLE);
+        }
+        if(node.getPermissions().getChange()) {
+            acl.addAll(user, CHANGE_ROLE);
+        }
+        if(node.getPermissions().getDelete()) {
+            acl.addAll(user, DELETE_ROLE);
+        }
+        return acl;
     }
 
     @Override
