@@ -69,6 +69,11 @@ public class SDSProtocol extends AbstractProtocol {
         return StringUtils.isBlank(this.getOAuthClientId());
     }
 
+    @Override
+    public boolean isCertificateConfigurable() {
+        return false;
+    }
+
     public enum Authorization {
         sql,
         radius,
