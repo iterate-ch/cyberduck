@@ -40,7 +40,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     private static final Logger log = Logger.getLogger(SDSSharesUrlProvider.class);
 
     private final PathContainerService containerService
-        = new PathContainerService();
+        = new SDSPathContainerService();
 
     private final SDSSession session;
 

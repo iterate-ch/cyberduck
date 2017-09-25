@@ -43,7 +43,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
     private Write<VersionId> writer;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new SDSPathContainerService();
 
     public SDSTouchFeature(final SDSSession session) {
         this.session = session;

@@ -34,7 +34,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     private final Write<VersionId> proxy;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new SDSPathContainerService();
 
     public SDSDelegatingWriteFeature(final SDSSession session, final Write<VersionId> proxy) {
         this.session = session;

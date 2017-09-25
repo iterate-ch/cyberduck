@@ -41,7 +41,7 @@ public class SDSMoveFeature implements Move {
     private final SDSSession session;
 
     private final PathContainerService containerService
-        = new PathContainerService();
+        = new SDSPathContainerService();
 
     public SDSMoveFeature(final SDSSession session) {
         this.session = session;

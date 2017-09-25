@@ -42,7 +42,7 @@ public class SDSDelegatingCopyFeature implements Copy {
     private final SDSCopyFeature proxy;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new SDSPathContainerService();
 
     public SDSDelegatingCopyFeature(final SDSSession session, final SDSCopyFeature proxy) {
         this.session = session;

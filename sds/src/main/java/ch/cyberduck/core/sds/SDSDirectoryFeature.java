@@ -39,7 +39,7 @@ public class SDSDirectoryFeature implements Directory {
     private final SDSSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new SDSPathContainerService();
 
     public SDSDirectoryFeature(final SDSSession session) {
         this.session = session;

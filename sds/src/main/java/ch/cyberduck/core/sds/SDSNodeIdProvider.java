@@ -39,7 +39,7 @@ public class SDSNodeIdProvider implements IdProvider {
     private final SDSSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new SDSPathContainerService();
 
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
