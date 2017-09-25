@@ -31,7 +31,7 @@ public class SDSDelegatingReadFeature implements Read {
     private final SDSReadFeature proxy;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new SDSPathContainerService();
 
     public SDSDelegatingReadFeature(final SDSSession session, final SDSReadFeature proxy) {
         this.session = session;

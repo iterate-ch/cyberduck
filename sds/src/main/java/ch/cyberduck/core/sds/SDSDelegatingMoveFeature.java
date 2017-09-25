@@ -37,7 +37,7 @@ public class SDSDelegatingMoveFeature implements Move {
     private final SDSMoveFeature proxy;
 
     private final PathContainerService containerService
-        = new PathContainerService();
+        = new SDSPathContainerService();
 
     public SDSDelegatingMoveFeature(final SDSSession session, final SDSMoveFeature proxy) {
         this.session = session;

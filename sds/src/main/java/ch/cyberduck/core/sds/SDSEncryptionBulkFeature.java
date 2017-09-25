@@ -41,7 +41,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
     private final SDSSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new SDSPathContainerService();
 
     public SDSEncryptionBulkFeature(final SDSSession session) {
         this.session = session;

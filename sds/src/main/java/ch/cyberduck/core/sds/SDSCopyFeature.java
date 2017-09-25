@@ -36,7 +36,7 @@ public class SDSCopyFeature implements Copy {
     private final SDSSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+            = new SDSPathContainerService();
 
     public SDSCopyFeature(final SDSSession session) {
         this.session = session;
