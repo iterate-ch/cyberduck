@@ -19,6 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -35,6 +36,9 @@ public class SDSDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(SDSDeleteFeature.class);
 
     private final SDSSession session;
+
+    private final PathContainerService containerService
+        = new SDSPathContainerService();
 
     public SDSDeleteFeature(final SDSSession session) {
         this.session = session;
@@ -56,7 +60,7 @@ public class SDSDeleteFeature implements Delete {
     @Override
     public boolean isSupported(final Path file) {
         try {
-            final Set<Acl.Role> roles = file.attributes().getAcl().get(new Acl.EmailUser(session.userAccount().getEmail()));
+            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.EmailUser(session.userAccount().getEmail()));
             return roles.contains(SDSAttributesFinderFeature.DELETE_ROLE);
         }
         catch(ApiException e) {
