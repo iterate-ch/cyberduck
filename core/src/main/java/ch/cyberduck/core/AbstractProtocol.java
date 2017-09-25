@@ -116,6 +116,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isCertificateConfigurable() {
+        return this.getScheme() == Scheme.https || this.getScheme() == Scheme.ftps;
+    }
+
+    @Override
     public boolean isUTCTimezone() {
         return true;
     }

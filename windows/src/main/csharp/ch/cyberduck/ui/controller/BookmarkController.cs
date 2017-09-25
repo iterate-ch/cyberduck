@@ -601,8 +601,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.SelectedPrivateKey = LocaleFactory.localizedString("None");
             }
-            View.ClientCertificateFieldEnabled = _host.getProtocol().getScheme() == Scheme.https ||
-                                                 _host.getProtocol().getScheme() == Scheme.ftps;
+            View.ClientCertificateFieldEnabled = _host.getProtocol().isCertificateConfigurable();
             if (_credentials.isCertificateAuthentication())
             {
                 View.SelectedClientCertificate = _credentials.getCertificate();

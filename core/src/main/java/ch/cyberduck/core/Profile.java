@@ -332,6 +332,14 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean isCertificateConfigurable() {
+        if(StringUtils.isBlank(this.value("Certificate Configurable"))) {
+            return parent.isCertificateConfigurable();
+        }
+        return this.bool("Certificate Configurable");
+    }
+
+    @Override
     public boolean isHostnameConfigurable() {
         if(StringUtils.isBlank(this.value("Hostname Configurable"))) {
             return parent.isHostnameConfigurable();

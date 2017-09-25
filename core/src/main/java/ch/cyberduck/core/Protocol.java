@@ -139,6 +139,8 @@ public interface Protocol extends Comparable<Protocol> {
      */
     boolean isPasswordConfigurable();
 
+    boolean isCertificateConfigurable();
+
     /**
      * @return False if the hostname to connect is static.
      */
