@@ -15,6 +15,7 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
@@ -139,6 +140,7 @@ public class OAuth2AuthorizationService {
                 .build();
         final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
         authorizationCodeRequestUrl.setRedirectUri(redirectUri);
+        authorizationCodeRequestUrl.setState(new AlphanumericRandomStringService().random());
         for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
             authorizationCodeRequestUrl.set(values.getKey(), values.getValue());
         }
