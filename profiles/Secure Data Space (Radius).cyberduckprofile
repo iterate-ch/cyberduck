@@ -22,15 +22,15 @@
         <key>Vendor</key>
         <string>ssp-radius</string>
         <key>Description</key>
-        <string>Secure Data Space (Radius)</string>
+        <string>Secure Data Space (RADIUS)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
         <string>443</string>
         <key>Username Placeholder</key>
-        <string>Radius Username</string>
+        <string>Username</string>
         <key>Password Placeholder</key>
-        <string>PIN</string>
+        <string>Passcode</string>
         <key>Hostname Configurable</key>
         <true/>
         <key>Port Configurable</key>
