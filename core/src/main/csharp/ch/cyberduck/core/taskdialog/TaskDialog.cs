@@ -161,17 +161,17 @@ namespace Ch.Cyberduck.Core.TaskDialog
 		/// </returns>
 		public static TaskDialogResult Show(TaskDialogOptions options)
 		{
-			TaskDialogResult result;
+			TaskDialogResult result = TaskDialogResult.Empty;
 
 			// Make a copy since we'll let Showing event possibly modify them
 			TaskDialogOptions configOptions = options;
 
-			OnShowing(new TaskDialogShowingEventArgs(ref configOptions));
 
 			if (NativeTaskDialog.IsAvailableOnThisOS)
 			{
 				try
 				{
+					OnShowing(new TaskDialogShowingEventArgs(ref configOptions));
 					result = ShowTaskDialog(configOptions);
 				}
 				catch (EntryPointNotFoundException)
@@ -185,13 +185,16 @@ namespace Ch.Cyberduck.Core.TaskDialog
 					//ForceEmulationMode = true;
 					//result = ShowEmulatedTaskDialog(configOptions);
 				}
+				finally
+				{
+					OnClosed(new TaskDialogClosedEventArgs(result));
+				}
 			}
 			else
 			{
 				throw new Exception("Old System");
 			}
 
-			OnClosed(new TaskDialogClosedEventArgs(result));
 
 			return result;
 		}
