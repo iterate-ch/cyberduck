@@ -225,6 +225,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { numericUpDownPort.Enabled = value; }
         }
 
+        public bool PathFieldEnabled
+        {
+            set { textBoxPath.Enabled = value; }
+        }
+
         public bool ConnectModeFieldEnabled
         {
             set { comboBoxConnectMode.Enabled = value; }
