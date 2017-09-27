@@ -44,7 +44,7 @@ public class TripleCryptKeyPair {
     public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
         final String passphrase = keychain.getPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
                 new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl());
-        return this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter your encryption password", "Credentials"));
+        return this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"));
     }
 
     private Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair, String passphrase, final String message) throws LoginCanceledException, CryptoException {
