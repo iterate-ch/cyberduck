@@ -65,11 +65,6 @@ public class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isCertificateConfigurable() {
-        return false;
-    }
-
-    @Override
     public String getDefaultHostname() {
         return "s3.amazonaws.com";
     }

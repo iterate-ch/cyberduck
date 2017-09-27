@@ -122,7 +122,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isCertificateConfigurable() {
-        return this.getScheme() == Scheme.https || this.getScheme() == Scheme.ftps;
+        return false;
     }
 
     @Override
