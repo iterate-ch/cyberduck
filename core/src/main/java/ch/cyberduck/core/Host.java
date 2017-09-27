@@ -160,7 +160,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param port     The port number to connect to
      */
     public Host(final Protocol protocol, final String hostname, final int port) {
-        this(protocol, hostname, port, (String) null);
+        this(protocol, hostname, port, protocol.getDefaultPath());
     }
 
     /**

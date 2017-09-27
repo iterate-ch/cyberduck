@@ -304,6 +304,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 updateField(pathField, bookmark.getDefaultPath());
+                pathField.setEnabled(bookmark.getProtocol().isPathConfigurable());
             }
         });
     }

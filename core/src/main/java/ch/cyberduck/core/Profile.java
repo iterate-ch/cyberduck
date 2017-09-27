@@ -173,6 +173,15 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public String getDefaultPath() {
+        final String v = this.value("Default Path");
+        if(StringUtils.isBlank(v)) {
+            return parent.getDefaultPath();
+        }
+        return v;
+    }
+
+    @Override
     public String getRegion() {
         final String v = this.value("Region");
         if(StringUtils.isBlank(v)) {
@@ -353,6 +362,14 @@ public class Profile implements Protocol, Serializable {
             return parent.isPortConfigurable();
         }
         return this.bool("Port Configurable");
+    }
+
+    @Override
+    public boolean isPathConfigurable() {
+        if(StringUtils.isBlank(this.value("Path Configurable"))) {
+            return parent.isPathConfigurable();
+        }
+        return this.bool("Path Configurable");
     }
 
     @Override

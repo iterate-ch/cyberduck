@@ -96,6 +96,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isPathConfigurable() {
+        return true;
+    }
+
+    @Override
     public boolean isEncodingConfigurable() {
         return false;
     }
@@ -164,6 +169,11 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public int getDefaultPort() {
         return this.getScheme().getPort();
+    }
+
+    @Override
+    public String getDefaultPath() {
+        return null;
     }
 
     @Override

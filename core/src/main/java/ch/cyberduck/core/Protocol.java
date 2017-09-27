@@ -152,6 +152,11 @@ public interface Protocol extends Comparable<Protocol> {
     boolean isPortConfigurable();
 
     /**
+     * @return False if the path to connect is static.
+     */
+    boolean isPathConfigurable();
+
+    /**
      * @return True if the character set is not defined in the protocol.
      */
     boolean isEncodingConfigurable();
@@ -225,6 +230,11 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Default port for server
      */
     int getDefaultPort();
+
+    /**
+     * @return Default path
+     */
+    String getDefaultPath();
 
     /**
      * @return Authentication context path
