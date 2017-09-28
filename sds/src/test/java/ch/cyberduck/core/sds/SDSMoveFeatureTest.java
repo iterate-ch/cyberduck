@@ -192,6 +192,51 @@ public class SDSMoveFeatureTest {
     }
 
     @Test
+    public void testMoveBetweenEncryptedDataRooms() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSAttributesFinderFeature.DELETE_ROLE);
+        final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+
+        final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session);
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+        final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session));
+        final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SDSDelegatingMoveFeature(session, new SDSMoveFeature(session)).move(test, target, new TransferStatus().length(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new SDSFindFeature(session).find(test));
+        assertTrue(new SDSFindFeature(session).find(target));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
+            @Override
+            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+                //
+            }
+
+            @Override
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("ahbic3Ae");
+            }
+        });
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new SDSDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
     public void testMoveDirectory() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")

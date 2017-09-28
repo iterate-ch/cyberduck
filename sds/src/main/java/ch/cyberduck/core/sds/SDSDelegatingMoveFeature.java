@@ -54,7 +54,7 @@ public class SDSDelegatingMoveFeature implements Move {
         }
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
-        if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
+        if(srcContainer.getType().contains(Path.Type.vault) ^ targetContainer.getType().contains(Path.Type.vault)) {
             if(StringUtils.equals(srcContainer.getName(), targetContainer.getName())) {
                 return proxy.move(source, target, status, callback, connectionCallback);
             }
@@ -87,7 +87,7 @@ public class SDSDelegatingMoveFeature implements Move {
         }
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
-        if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
+        if(srcContainer.getType().contains(Path.Type.vault) ^ targetContainer.getType().contains(Path.Type.vault)) {
             if(!StringUtils.equals(srcContainer.getName(), targetContainer.getName())) {
                 return session.getFeature(Copy.class).isRecursive(source, target);
             }
@@ -104,7 +104,7 @@ public class SDSDelegatingMoveFeature implements Move {
         }
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
-        if(srcContainer.getType().contains(Path.Type.vault) || targetContainer.getType().contains(Path.Type.vault)) {
+        if(srcContainer.getType().contains(Path.Type.vault) ^ targetContainer.getType().contains(Path.Type.vault)) {
             if(!StringUtils.equals(srcContainer.getName(), targetContainer.getName())) {
                 return session.getFeature(Copy.class).isSupported(source, target);
             }
