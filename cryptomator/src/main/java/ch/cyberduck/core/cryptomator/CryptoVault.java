@@ -23,6 +23,7 @@ import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -80,6 +81,8 @@ public class CryptoVault implements Vault {
      * Root of vault directory
      */
     private final Path home;
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     private Cryptor cryptor;
 
@@ -168,7 +171,7 @@ public class CryptoVault implements Vault {
                     LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     message,
                     new LoginOptions()
-                            .save(PreferencesFactory.get().getBoolean("vault.keychain"))
+                        .save(preferences.getBoolean("vault.keychain"))
                             .user(false)
                             .anonymous(false)
                             .icon("cryptomator.tiff")
@@ -179,7 +182,7 @@ public class CryptoVault implements Vault {
         }
         else {
             credentials = new VaultCredentials(passphrase);
-            credentials.setSaved(PreferencesFactory.get().getBoolean("vault.keychain"));
+            credentials.setSaved(preferences.getBoolean("vault.keychain"));
         }
         try {
             this.open(this.upgrade(session, masterKeyFileContent, credentials.getPassword()), credentials.getPassword());
@@ -191,7 +194,7 @@ public class CryptoVault implements Vault {
                 keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
                         new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
                 // Save masterkey.cryptomator content in preferences
-                PreferencesFactory.get().setProperty(new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(),
+                preferences.setProperty(new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(),
                         new String(masterKeyFileContent.serialize()));
             }
         }
