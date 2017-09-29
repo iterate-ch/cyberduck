@@ -42,7 +42,7 @@ public class SDSDelegatingCopyFeature implements Copy {
     private final SDSCopyFeature proxy;
 
     private final PathContainerService containerService
-            = new SDSPathContainerService();
+        = new SDSPathContainerService();
 
     public SDSDelegatingCopyFeature(final SDSSession session, final SDSCopyFeature proxy) {
         this.session = session;
@@ -51,7 +51,8 @@ public class SDSDelegatingCopyFeature implements Copy {
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^ containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+            // copy between encrypted and unencrypted data room
             final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
             final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -63,39 +64,30 @@ public class SDSDelegatingCopyFeature implements Copy {
             }
             status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
         }
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) || containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-            return new DefaultCopyFeature(session).copy(source, target, status, callback);
+        return this.getFeature(source, target).copy(source, target, status, callback);
+    }
+
+    private Copy getFeature(final Path source, final Path target) {
+        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^ containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+            return new DefaultCopyFeature(session);
         }
-        else {
+        if(source.isFile() && target.isFile()) {
             if(StringUtils.equals(source.getName(), target.getName())) {
-                return proxy.copy(source, target, status, callback);
+                return proxy;
             }
-            else {
-                return new DefaultCopyFeature(session).copy(source, target, status, callback);
-            }
+            return new DefaultCopyFeature(session);
         }
+        return proxy;
     }
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) || containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-            return new DefaultCopyFeature(session).isRecursive(source, target);
-        }
-        if(StringUtils.equals(source.getName(), target.getName())) {
-            return proxy.isRecursive(source, target);
-        }
-        return new DefaultCopyFeature(session).isRecursive(source, target);
+        return this.getFeature(source, target).isRecursive(source, target);
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) || containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-            return new DefaultCopyFeature(session).isSupported(source, target);
-        }
-        if(StringUtils.equals(source.getName(), target.getName())) {
-            return proxy.isSupported(source, target);
-        }
-        return new DefaultCopyFeature(session).isSupported(source, target);
+        return this.getFeature(source, target).isSupported(source, target);
     }
 
     @Override

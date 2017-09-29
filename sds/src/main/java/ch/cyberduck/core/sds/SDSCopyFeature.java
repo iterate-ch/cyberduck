@@ -29,6 +29,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.swagger.CopyNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class SDSCopyFeature implements Copy {
@@ -36,7 +37,7 @@ public class SDSCopyFeature implements Copy {
     private final SDSSession session;
 
     private final PathContainerService containerService
-            = new SDSPathContainerService();
+        = new SDSPathContainerService();
 
     public SDSCopyFeature(final SDSSession session) {
         this.session = session;
@@ -46,13 +47,13 @@ public class SDSCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final Node node = new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
-                    // Target Parent Node ID
-                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
-                    new CopyNodesRequest()
-                            .addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())))
-                            .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
+                // Target Parent Node ID
+                Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.isFile() ? target.getParent() : target, new DisabledListProgressListener())),
+                new CopyNodesRequest()
+                    .addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())))
+                    .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
             return new Path(target.getParent(), target.getName(), target.getType(),
-                    new PathAttributes(target.attributes()).withVersionId(String.valueOf(node.getId())));
+                new PathAttributes(target.attributes()).withVersionId(String.valueOf(node.getId())));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -70,11 +71,19 @@ public class SDSCopyFeature implements Copy {
             // Rooms cannot be copied
             return false;
         }
+        if(target.isRoot()) {
+            // Server-side copy that leads to data room creation is not supported
+            return false;
+        }
         if(StringUtils.containsAny(target.getName(), '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
             return false;
         }
-        if(StringUtils.equals(containerService.getContainer(source).getName(), containerService.getContainer(target).getName())) {
-            // Nodes must be in same source parent
+        if(source.isDirectory() && target.isChild(source)) {
+            // Folders must not be copied to a child of its own
+            return false;
+        }
+        if(ObjectUtils.notEqual(source.getParent(), target.isFile() ? target.getParent() : target)) {
+            // Nodes must not have the same parent
             return true;
         }
         return false;
