@@ -51,9 +51,8 @@ public class SDSDelegatingMoveFeature implements Move {
                 return proxy.move(source, target, status, callback, connectionCallback);
             }
         }
-        final Path srcContainer = containerService.getContainer(source);
-        final Path targetContainer = containerService.getContainer(target);
-        if(srcContainer.getType().contains(Path.Type.vault) ^ targetContainer.getType().contains(Path.Type.vault)) {
+        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
+            containerService.getContainer(target).getType().contains(Path.Type.vault)) {
             // Moving into or from an encrypted room
             final Copy copy = session.getFeature(Copy.class);
             if(log.isDebugEnabled()) {
@@ -79,9 +78,8 @@ public class SDSDelegatingMoveFeature implements Move {
                 return proxy.isRecursive(source, target);
             }
         }
-        final Path srcContainer = containerService.getContainer(source);
-        final Path targetContainer = containerService.getContainer(target);
-        if(srcContainer.getType().contains(Path.Type.vault) ^ targetContainer.getType().contains(Path.Type.vault)) {
+        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
+            containerService.getContainer(target).getType().contains(Path.Type.vault)) {
             return session.getFeature(Copy.class).isRecursive(source, target);
         }
         return proxy.isRecursive(source, target);
@@ -94,9 +92,8 @@ public class SDSDelegatingMoveFeature implements Move {
                 return proxy.isSupported(source, target);
             }
         }
-        final Path srcContainer = containerService.getContainer(source);
-        final Path targetContainer = containerService.getContainer(target);
-        if(srcContainer.getType().contains(Path.Type.vault) ^ targetContainer.getType().contains(Path.Type.vault)) {
+        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
+            containerService.getContainer(target).getType().contains(Path.Type.vault)) {
             return session.getFeature(Copy.class).isSupported(source, target);
         }
         return proxy.isSupported(source, target);
