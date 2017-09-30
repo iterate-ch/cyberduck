@@ -60,6 +60,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -123,7 +125,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         client.setBasePath(String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
             .register(new InputStreamProvider())
+            .register(MultiPartFeature.class)
             .register(new JSON())
+            .register(JacksonFeature.class)
             .connectorProvider(new HttpComponentsProvider(apache))));
         client.setUserAgent(new PreferencesUseragentProvider().get());
         return client;
