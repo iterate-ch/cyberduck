@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -55,23 +54,18 @@ public class SDSDelegatingMoveFeature implements Move {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) ^ targetContainer.getType().contains(Path.Type.vault)) {
-            if(StringUtils.equals(srcContainer.getName(), targetContainer.getName())) {
-                return proxy.move(source, target, status, callback, connectionCallback);
+            // Moving into or from an encrypted room
+            final Copy copy = session.getFeature(Copy.class);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
             }
-            else {
-                // Moving into or from an encrypted room
-                final Copy copy = session.getFeature(Copy.class);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
-                }
-                final Path c = copy.copy(source, target, status, connectionCallback);
-                // Delete source file after copy is complete
-                final Delete delete = session.getFeature(Delete.class);
-                if(delete.isSupported(source)) {
-                    delete.delete(Collections.singletonList(source), connectionCallback, callback);
-                }
-                return c;
+            final Path c = copy.copy(source, target, status, connectionCallback);
+            // Delete source file after copy is complete
+            final Delete delete = session.getFeature(Delete.class);
+            if(delete.isSupported(source)) {
+                delete.delete(Collections.singletonList(source), connectionCallback, callback);
             }
+            return c;
         }
         else {
             return proxy.move(source, target, status, callback, connectionCallback);
@@ -88,9 +82,7 @@ public class SDSDelegatingMoveFeature implements Move {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) ^ targetContainer.getType().contains(Path.Type.vault)) {
-            if(!StringUtils.equals(srcContainer.getName(), targetContainer.getName())) {
-                return session.getFeature(Copy.class).isRecursive(source, target);
-            }
+            return session.getFeature(Copy.class).isRecursive(source, target);
         }
         return proxy.isRecursive(source, target);
     }
@@ -105,9 +97,7 @@ public class SDSDelegatingMoveFeature implements Move {
         final Path srcContainer = containerService.getContainer(source);
         final Path targetContainer = containerService.getContainer(target);
         if(srcContainer.getType().contains(Path.Type.vault) ^ targetContainer.getType().contains(Path.Type.vault)) {
-            if(!StringUtils.equals(srcContainer.getName(), targetContainer.getName())) {
-                return session.getFeature(Copy.class).isSupported(source, target);
-            }
+            return session.getFeature(Copy.class).isSupported(source, target);
         }
         return proxy.isSupported(source, target);
     }
