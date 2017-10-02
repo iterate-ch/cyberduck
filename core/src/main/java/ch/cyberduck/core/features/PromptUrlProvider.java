@@ -21,5 +21,5 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface PromptUrlProvider<Options> {
-    DescriptiveUrl toUrl(Path file, Options options, final PasswordCallback callback) throws BackgroundException;
+    DescriptiveUrl toUrl(Path file, Options options, PasswordCallback callback) throws BackgroundException;
 }

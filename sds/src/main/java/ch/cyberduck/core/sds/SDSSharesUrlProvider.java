@@ -108,7 +108,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             throw new SDSExceptionMappingService().map(e);
         }
         catch(CryptoException e) {
-            throw new CryptoExceptionMappingService().map("Key generation for {0} failed", e, file);
+            throw new CryptoExceptionMappingService().map(e);
         }
     }
 }
