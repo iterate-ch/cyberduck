@@ -15,9 +15,11 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -29,12 +31,23 @@ import ch.cyberduck.core.sds.io.swagger.client.api.SharesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
+import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
+
+import eu.ssp_europe.sds.crypto.Crypto;
+import eu.ssp_europe.sds.crypto.CryptoException;
+import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
+import eu.ssp_europe.sds.crypto.model.PlainFileKey;
+import eu.ssp_europe.sds.crypto.model.UserKeyPair;
+import eu.ssp_europe.sds.crypto.model.UserPrivateKey;
 
 public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest> {
     private static final Logger log = Logger.getLogger(SDSSharesUrlProvider.class);
@@ -49,12 +62,27 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
-    public DescriptiveUrl toUrl(final Path file, final CreateDownloadShareRequest options) throws BackgroundException {
+    public DescriptiveUrl toUrl(final Path file, final CreateDownloadShareRequest options,
+                                final PasswordCallback callback) throws BackgroundException {
         try {
             final Long fileid = Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
             if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+                // get existing file key associated with the sharing user
                 final FileKey key = new NodesApi(session.getClient()).getUserFileKey(StringUtils.EMPTY, fileid);
-                options.fileKey(key).keyPair(session.keyPair());
+                final UserPrivateKey privateKey = new UserPrivateKey();
+                final UserKeyPairContainer keyPairContainer = session.keyPair();
+                privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
+                privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
+                final UserKeyPair userKeyPair = new UserKeyPair();
+                userKeyPair.setUserPrivateKey(privateKey);
+                final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
+                final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
+                // encrypt file key with a new key pair
+                final UserKeyPair pair = Crypto.generateUserKeyPair(options.getPassword());
+                final EncryptedFileKey encryptedFileKey = Crypto.encryptFileKey(plainFileKey, pair.getUserPublicKey());
+                options.setPassword(null);
+                options.setKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(pair));
+                options.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptedFileKey));
             }
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(StringUtils.EMPTY,
                 options.nodeId(fileid), null);
@@ -78,6 +106,9 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
+        }
+        catch(CryptoException e) {
+            throw new CryptoExceptionMappingService().map(e);
         }
     }
 }

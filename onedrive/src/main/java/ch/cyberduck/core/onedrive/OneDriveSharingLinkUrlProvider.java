@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
@@ -40,7 +41,7 @@ public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toUrl(final Path file, final Object o) throws BackgroundException {
+    public DescriptiveUrl toUrl(final Path file, final Object o, final PasswordCallback callback) throws BackgroundException {
         try {
             return new DescriptiveUrl(URI.create(session.toFile(file).createSharedLink(OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
                     DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));
