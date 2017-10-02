@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Set;
 
 public class SDSDeleteFeature implements Delete {
-
     private static final Logger log = Logger.getLogger(SDSDeleteFeature.class);
 
     private final SDSSession session;
@@ -64,11 +63,12 @@ public class SDSDeleteFeature implements Delete {
             if(roles != null) {
                 return roles.contains(SDSAttributesFinderFeature.DELETE_ROLE);
             }
+            return true;
         }
-        catch(ApiException e) {
-            log.warn("Unable to retrieve user information", e);
+        catch(BackgroundException e) {
+            log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
+            return true;
         }
-        return true;
     }
 
     @Override

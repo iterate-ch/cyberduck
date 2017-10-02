@@ -55,7 +55,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    public PathAttributes toAttributes(final Node node) throws ApiException {
+    public PathAttributes toAttributes(final Node node) throws BackgroundException {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setChecksum(Checksum.parse(node.getHash()));
@@ -80,7 +80,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         return permission;
     }
 
-    private Acl toAcl(final Node node) throws ApiException {
+    private Acl toAcl(final Node node) throws BackgroundException {
         final Acl acl = new Acl();
         final Acl.User user = new Acl.EmailUser(session.userAccount().getEmail());
         if(node.getPermissions().getRead()) {

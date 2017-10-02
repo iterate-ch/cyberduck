@@ -77,12 +77,16 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
 
-    private final SDSErrorResponseInterceptor retryHandler = new SDSErrorResponseInterceptor(this);
+    private final SDSErrorResponseInterceptor retryHandler
+        = new SDSErrorResponseInterceptor(this);
 
     private final OAuth2RequestInterceptor authorizationService;
 
-    private final ExpiringObjectHolder<UserAccount> userAccount = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
-    private final ExpiringObjectHolder<UserKeyPairContainer> keyPair = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+    private final ExpiringObjectHolder<UserAccount> userAccount
+        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+
+    private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
+        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
 
     private final List<KeyValueEntry> configuration = new ArrayList<>();
 
@@ -95,10 +99,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
             }
         }).build(),
-            host)
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-            .withParameter("response_type", "code")
-            .withParameter("client_id", host.getProtocol().getOAuthClientId());
+            host).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
     }
 
     @Override
@@ -169,7 +170,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         catch(ApiException e) {
             // Precondition: Right "Config Read" required.
-            log.warn(String.format("Ignore failure reading configuration.%s", new SDSExceptionMappingService().map(e).getDetail()));
+            log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e).getDetail()));
         }
     }
 
@@ -196,16 +197,26 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
     }
 
-    public UserAccount userAccount() throws ApiException {
+    public UserAccount userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
-            this.userAccount.set(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false));
+            try {
+                userAccount.set(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false));
+            }
+            catch(ApiException e) {
+                throw new SDSExceptionMappingService().map(e);
+            }
         }
         return this.userAccount.get();
     }
 
-    public UserKeyPairContainer keyPair() throws ApiException {
+    public UserKeyPairContainer keyPair() throws BackgroundException {
         if(this.keyPair.get() == null) {
-            this.keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+            try {
+                keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+            }
+            catch(ApiException e) {
+                throw new SDSExceptionMappingService().map(e);
+            }
         }
         return this.keyPair.get();
     }
