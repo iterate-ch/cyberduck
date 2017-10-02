@@ -25,7 +25,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -43,7 +42,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
     private Write<VersionId> writer;
 
     private final PathContainerService containerService
-            = new SDSPathContainerService();
+        = new SDSPathContainerService();
 
     public SDSTouchFeature(final SDSSession session) {
         this.session = session;
@@ -54,7 +53,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(session.userAccount().getIsEncryptionEnabled() &&
-                    containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+                containerService.getContainer(file).getType().contains(Path.Type.vault)) {
                 final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                 final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -64,10 +63,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
             final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
             out.close();
             return new Path(file.getParent(), file.getName(), file.getType(),
-                    new PathAttributes(file.attributes()).withVersionId(out.getStatus().toString()));
-        }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Cannot create file {0}", e, file);
+                new PathAttributes(file.attributes()).withVersionId(out.getStatus().toString()));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
