@@ -40,7 +40,7 @@ import java.util.TimeZone;
 public class DefaultBookmarkController extends BookmarkController {
 
     private static final String TIMEZONE_CONTINENT_PREFIXES =
-            "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+        "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
@@ -66,9 +66,9 @@ public class DefaultBookmarkController extends BookmarkController {
     public void setNicknameField(final NSTextField field) {
         this.nicknameField = field;
         notificationCenter.addObserver(this.id(),
-                Foundation.selector("nicknameFieldDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
-                this.nicknameField);
+            Foundation.selector("nicknameFieldDidChange:"),
+            NSControl.NSControlTextDidChangeNotification,
+            this.nicknameField);
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -88,17 +88,19 @@ public class DefaultBookmarkController extends BookmarkController {
         this.certificatePopup.setTarget(this.id());
         final Selector action = Foundation.selector("certificateSelectionChanged:");
         this.certificatePopup.setAction(action);
-        this.certificatePopup.removeAllItems();
-        this.certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
-        this.certificatePopup.menu().addItem(NSMenuItem.separatorItem());
-        for(String certificate : new KeychainX509KeyManager(bookmark).list()) {
-            this.certificatePopup.addItemWithTitle(certificate);
-            this.certificatePopup.lastItem().setRepresentedObject(certificate);
-        }
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
                 certificatePopup.setEnabled(bookmark.getProtocol().isCertificateConfigurable());
+                certificatePopup.removeAllItems();
+                certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+                if(bookmark.getProtocol().isCertificateConfigurable()) {
+                    certificatePopup.menu().addItem(NSMenuItem.separatorItem());
+                    for(String certificate : new KeychainX509KeyManager(bookmark).list()) {
+                        certificatePopup.addItemWithTitle(certificate);
+                        certificatePopup.lastItem().setRepresentedObject(certificate);
+                    }
+                }
                 if(bookmark.getCredentials().isCertificateAuthentication()) {
                     certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getCertificate()));
                 }
