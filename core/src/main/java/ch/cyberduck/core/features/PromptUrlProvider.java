@@ -16,9 +16,10 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface PromptUrlProvider<Options> {
-    DescriptiveUrl toUrl(Path file, Options options) throws BackgroundException;
+    DescriptiveUrl toUrl(Path file, Options options, final PasswordCallback callback) throws BackgroundException;
 }

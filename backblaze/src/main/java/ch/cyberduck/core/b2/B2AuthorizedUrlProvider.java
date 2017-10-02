@@ -19,6 +19,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
@@ -50,7 +51,7 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void> {
     }
 
     @Override
-    public DescriptiveUrl toUrl(final Path file, final Void none) throws BackgroundException {
+    public DescriptiveUrl toUrl(final Path file, final Void none, final PasswordCallback callback) throws BackgroundException {
         if(file.isVolume()) {
             return DescriptiveUrl.EMPTY;
         }
