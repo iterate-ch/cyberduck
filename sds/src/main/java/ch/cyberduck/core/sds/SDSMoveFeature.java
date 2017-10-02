@@ -105,6 +105,10 @@ public class SDSMoveFeature implements Move {
         if(StringUtils.containsAny(target.getName(), '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
             return false;
         }
+        if(source.isDirectory() && target.isChild(source)) {
+            // Folders must not be moved to a child of its own
+            return false;
+        }
         return true;
     }
 
