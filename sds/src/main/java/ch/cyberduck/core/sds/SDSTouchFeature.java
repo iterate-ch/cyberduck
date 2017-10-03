@@ -52,7 +52,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            if(session.userAccount().getIsEncryptionEnabled() &&
+            if(session.userAccount().isEncryptionEnabled() &&
                 containerService.getContainer(file).getType().contains(Path.Type.vault)) {
                 final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                 final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
