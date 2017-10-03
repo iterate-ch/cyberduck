@@ -425,13 +425,13 @@ CA
                 <menuItem isSeparatorItem="YES" id="91">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="URL kopieren" id="92">
+                <menuItem title="Internetadresse kopieren" id="92">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="URL kopieren" id="93"/>
+                    <menu key="submenu" title="Internetadresse kopieren" id="93"/>
                 </menuItem>
-                <menuItem title="URL öffnen" id="94">
+                <menuItem title="Internetadresse öffnen" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="URL öffnen" id="95"/>
+                    <menu key="submenu" title="Internetadresse öffnen" id="95"/>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="96">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
