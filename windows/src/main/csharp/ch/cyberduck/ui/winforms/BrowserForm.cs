@@ -80,12 +80,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             BookmarkCollection.defaultCollection().addListener(bookmarkMenuCollectionListener);
             MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem,
                 HistoryCollection.defaultCollection(),
-                LocaleFactory.localizedString("No recently connected servers available"),
+                LocaleFactory.localizedString("None"),
                 ProtocolIconsImageList().Images);
             HistoryCollection.defaultCollection().addListener(historyMenuCollectionListener);
             MenuCollectionListener bonjourMenuCollectionListener = new MenuCollectionListener(this, bonjourMainMenuItem,
                 RendezvousCollection.defaultCollection(),
-                LocaleFactory.localizedString("No Bonjour services available"),
+                LocaleFactory.localizedString("None"),
                 ProtocolIconsImageList().Images);
             RendezvousCollection.defaultCollection().addListener(bonjourMenuCollectionListener);
 
@@ -2324,7 +2324,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             else
             {
                 ToolStripItem noitem =
-                    new ToolStripMenuItem(LocaleFactory.localizedString("No recently connected servers available"));
+                    new ToolStripMenuItem(LocaleFactory.localizedString("None"));
                 noitem.Enabled = false;
                 historyMenuStrip.Items.Add(noitem);
             }
