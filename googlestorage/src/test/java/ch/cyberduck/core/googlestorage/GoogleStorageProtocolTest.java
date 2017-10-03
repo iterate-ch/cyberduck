@@ -15,10 +15,13 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Scheme;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import java.util.Arrays;
+
+import static org.junit.Assert.*;
 
 public class GoogleStorageProtocolTest {
 
@@ -36,5 +39,10 @@ public class GoogleStorageProtocolTest {
     public void testConfigurable() {
         assertFalse(new GoogleStorageProtocol().isHostnameConfigurable());
         assertFalse(new GoogleStorageProtocol().isPortConfigurable());
+    }
+
+    @Test
+    public void testSchemes() {
+        assertTrue(Arrays.asList(new GoogleStorageProtocol().getSchemes()).contains(Scheme.https));
     }
 }

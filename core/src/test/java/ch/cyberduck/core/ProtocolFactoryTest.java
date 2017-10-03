@@ -110,4 +110,22 @@ public class ProtocolFactoryTest {
         assertEquals(dav_provider1, f.forName("dav", "g"));
         assertEquals(dav_provider2, f.forName("dav", "provider_2"));
     }
+
+    @Test
+    public void testSchemeFallbackType() throws Exception {
+        final TestProtocol dav = new TestProtocol(Scheme.dav);
+        final TestProtocol swift = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "swift-p";
+            }
+
+            @Override
+            public Type getType() {
+                return Type.swift;
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, swift)));
+        assertEquals(swift, f.forName("swift"));
+    }
 }

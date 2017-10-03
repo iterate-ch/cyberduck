@@ -1,6 +1,6 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Scheme;
 
 import org.junit.Test;
 
@@ -23,13 +23,16 @@ public class SwiftProtocolTest {
 
     @Test
     public void testIcons() {
-        for(Protocol p : Arrays.asList(new SwiftProtocol())) {
-            assertNotNull(p.disk());
-            assertNotNull(p.icon());
-            assertNotNull(p.getDefaultPort());
-            assertNotNull(p.getDefaultHostname());
-            assertNotNull(p.getDescription());
-            assertNotNull(p.getIdentifier());
-        }
+        assertNotNull(new SwiftProtocol().disk());
+        assertNotNull(new SwiftProtocol().icon());
+        assertNotEquals(-1L, new SwiftProtocol().getDefaultPort());
+        assertNotNull(new SwiftProtocol().getDefaultHostname());
+        assertNotNull(new SwiftProtocol().getDescription());
+        assertNotNull(new SwiftProtocol().getIdentifier());
+    }
+
+    @Test
+    public void testSchemes() {
+        assertTrue(Arrays.asList(new SwiftProtocol().getSchemes()).contains(Scheme.https));
     }
 }

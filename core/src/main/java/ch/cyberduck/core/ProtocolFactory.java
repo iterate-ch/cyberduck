@@ -80,7 +80,7 @@ public final class ProtocolFactory {
         }
         // Load thirdparty protocols
         final Local library = LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
-                PreferencesFactory.get().getProperty("profiles.folder.name"));
+            PreferencesFactory.get().getProperty("profiles.folder.name"));
         if(library.exists()) {
             try {
                 for(Local profile : library.list().filter(new ProfileFilter())) {
@@ -131,7 +131,7 @@ public final class ProtocolFactory {
     public Protocol forName(final String identifier) {
         final List<Protocol> enabled = this.find();
         return enabled.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
-                this.forName(enabled, identifier, null)
+            this.forName(enabled, identifier, null)
         );
     }
 
@@ -157,11 +157,13 @@ public final class ProtocolFactory {
             }
             return false;
         }).findFirst().orElse(
-                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
-                        enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
-                                this.forScheme(enabled, identifier)
-                        )
+            enabled.stream().filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
+                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+                    enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(
+                        this.forScheme(enabled, identifier)
+                    )
                 )
+            )
         );
         if(null == match) {
             if(enabled.isEmpty()) {
@@ -214,7 +216,7 @@ public final class ProtocolFactory {
                 break;
         }
         return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
-                enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null)
+            enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null)
         );
     }
 
