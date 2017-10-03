@@ -82,7 +82,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     private Acl toAcl(final Node node) throws BackgroundException {
         final Acl acl = new Acl();
-        final Acl.User user = new Acl.EmailUser(session.userAccount().getEmail());
+        final Acl.User user = new Acl.CanonicalUser(String.valueOf(session.userAccount().getId()));
         if(node.getPermissions().getRead()) {
             acl.addAll(user, READ_ROLE);
         }

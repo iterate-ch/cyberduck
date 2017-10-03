@@ -53,7 +53,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 case download:
                     break;
                 default:
-                    if(session.userAccount().getIsEncryptionEnabled()) {
+                    if(session.userAccount().isEncryptionEnabled()) {
                         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
                             if(containerService.getContainer(entry.getKey()).getType().contains(Path.Type.vault)) {
                                 final TransferStatus status = entry.getValue();
@@ -79,7 +79,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             case download:
                 break;
             default:
-                if(session.userAccount().getIsEncryptionEnabled()) {
+                if(session.userAccount().isEncryptionEnabled()) {
                     final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
                     for(Path file : files.keySet()) {
                         if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {

@@ -59,7 +59,7 @@ public class SDSDeleteFeature implements Delete {
     @Override
     public boolean isSupported(final Path file) {
         try {
-            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.EmailUser(session.userAccount().getEmail()));
+            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
             if(roles != null) {
                 return roles.contains(SDSAttributesFinderFeature.DELETE_ROLE);
             }

@@ -42,7 +42,6 @@ import ch.cyberduck.core.sds.io.swagger.client.api.ConfigApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.KeyValueEntry;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -82,7 +81,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private final OAuth2RequestInterceptor authorizationService;
 
-    private final ExpiringObjectHolder<UserAccount> userAccount
+    private final ExpiringObjectHolder<UserAccountWrapper> userAccount
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
@@ -197,10 +196,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
     }
 
-    public UserAccount userAccount() throws BackgroundException {
+    public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
-                userAccount.set(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false));
+                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false)));
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService().map(e);
