@@ -107,10 +107,17 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                         }
                     }
                 }
-                else if(json.has("debugInfo")) {
-                    log.warn(String.format("Missing error code for failure %s", json));
-                    if(json.get("debugInfo").isJsonPrimitive()) {
-                        this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+                else {
+                    switch(failure.getCode()) {
+                        case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+                            break;
+                        default:
+                            if(json.has("debugInfo")) {
+                                log.warn(String.format("Missing error code for failure %s", json));
+                                if(json.get("debugInfo").isJsonPrimitive()) {
+                                    this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+                                }
+                            }
                     }
                 }
             }
