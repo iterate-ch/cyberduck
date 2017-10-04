@@ -69,9 +69,10 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Failure with errorCode %s", errorCode));
                         }
-                        final String localized = LocaleFactory.get().localize(String.valueOf(errorCode), "SDS");
+                        final String key = String.format("Error %d", errorCode);
+                        final String localized = LocaleFactory.get().localize(key, "SDS");
                         this.append(buffer, localized);
-                        if(StringUtils.equals(localized, String.valueOf(errorCode))) {
+                        if(StringUtils.equals(localized, key)) {
                             log.warn(String.format("Missing user message for error code %d", errorCode));
                             if(json.has("debugInfo")) {
                                 if(json.get("debugInfo").isJsonPrimitive()) {

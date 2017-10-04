@@ -32,11 +32,11 @@ public class SDSExceptionMappingServiceTest {
     public void testMap() throws Exception {
         final BackgroundException e = new SDSExceptionMappingService().map(new ApiException("m", 403, Collections.emptyMap(),
             "{\"errorCode\" = -40761}"));
-        assertEquals("-40761. Please contact your web hosting service provider for assistance.", e.getDetail());
+        assertEquals("Error -40761. Please contact your web hosting service provider for assistance.", e.getDetail());
     }
 
     @Test
     public void testCode() throws Exception {
-        assertEquals("For now, the file can't be decrypted. Please ask another authorized user to grant you access to this file.", new RegexLocale(LocalFactory.get("../i18n/src/main/resources")).localize("-40761", "SDS"));
+        assertEquals("For now, the file can't be decrypted. Please ask another authorized user to grant you access to this file.", new RegexLocale(LocalFactory.get("../i18n/src/main/resources")).localize("Error -40761", "SDS"));
     }
 }
