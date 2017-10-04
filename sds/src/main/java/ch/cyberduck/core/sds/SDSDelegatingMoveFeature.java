@@ -48,6 +48,7 @@ public class SDSDelegatingMoveFeature implements Move {
                      final ConnectionCallback connectionCallback) throws BackgroundException {
         if(containerService.isContainer(source)) {
             if(new SimplePathPredicate(source.getParent()).test(target.getParent())) {
+                // Rename only
                 return proxy.move(source, target, status, callback, connectionCallback);
             }
         }
@@ -73,11 +74,6 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        if(containerService.isContainer(source)) {
-            if(new SimplePathPredicate(source.getParent()).test(target.getParent())) {
-                return proxy.isRecursive(source, target);
-            }
-        }
         if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
             containerService.getContainer(target).getType().contains(Path.Type.vault)) {
             return session.getFeature(Copy.class).isRecursive(source, target);
@@ -87,11 +83,6 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(containerService.isContainer(source)) {
-            if(new SimplePathPredicate(source.getParent()).test(target.getParent())) {
-                return proxy.isSupported(source, target);
-            }
-        }
         if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
             containerService.getContainer(target).getType().contains(Path.Type.vault)) {
             return session.getFeature(Copy.class).isSupported(source, target);

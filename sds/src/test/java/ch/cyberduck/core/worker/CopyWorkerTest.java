@@ -115,10 +115,10 @@ public class CopyWorkerTest {
         assertTrue(new SDSFindFeature(session).find(folder));
         assertTrue(new SDSFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new SDSFindFeature(session).find(targetFolder));
+        final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new SDSFindFeature(session).find(targetFile));
         assertTrue(new SDSFindFeature(session).find(folder));
         assertTrue(new SDSFindFeature(session).find(sourceFile));

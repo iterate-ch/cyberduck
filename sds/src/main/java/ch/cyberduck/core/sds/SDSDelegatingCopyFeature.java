@@ -27,8 +27,6 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -45,7 +43,6 @@ public class SDSDelegatingCopyFeature implements Copy {
     private final PathContainerService containerService
         = new SDSPathContainerService();
 
-
     public SDSDelegatingCopyFeature(final SDSSession session, final SDSCopyFeature proxy) {
         this.session = session;
         this.proxy = proxy;
@@ -54,24 +51,12 @@ public class SDSDelegatingCopyFeature implements Copy {
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final Copy feature = this.getFeature(source, target);
-        if(feature.equals(copy)) {
-            this.setFileKey(status);
+        if(proxy.isSupported(source, target)) {
+            return proxy.copy(source, target, status, callback);
         }
-        return feature.copy(source, target, status, callback);
-    }
-
-    protected Copy getFeature(final Path source, final Path target) {
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^ containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-            return copy;
-        }
-        if(source.isFile() && target.isFile()) {
-            if(StringUtils.equals(source.getName(), target.getName())) {
-                return proxy;
-            }
-            return copy;
-        }
-        return proxy;
+        // File key must be set for new upload
+        this.setFileKey(status);
+        return copy.copy(source, target, status, callback);
     }
 
     private void setFileKey(final TransferStatus status) throws BackgroundException {
@@ -90,12 +75,18 @@ public class SDSDelegatingCopyFeature implements Copy {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        return this.getFeature(source, target).isRecursive(source, target);
+        if(proxy.isSupported(source, target)) {
+            return proxy.isRecursive(source, target);
+        }
+        return copy.isRecursive(source, target);
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return this.getFeature(source, target).isSupported(source, target);
+        if(proxy.isSupported(source, target)) {
+            return true;
+        }
+        return copy.isSupported(source, target);
     }
 
     @Override

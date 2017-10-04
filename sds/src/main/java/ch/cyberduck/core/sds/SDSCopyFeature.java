@@ -29,8 +29,9 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.swagger.CopyNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
 
 public class SDSCopyFeature implements Copy {
 
@@ -48,7 +49,7 @@ public class SDSCopyFeature implements Copy {
         try {
             final Node node = new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
                 // Target Parent Node ID
-                Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.isFile() ? target.getParent() : target, new DisabledListProgressListener())),
+                Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
                 new CopyNodesRequest()
                     .addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())))
                     .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
@@ -71,22 +72,19 @@ public class SDSCopyFeature implements Copy {
             // Rooms cannot be copied
             return false;
         }
-        if(target.isRoot()) {
-            // Server-side copy that leads to data room creation is not supported
+        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^ containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+            // If source xor target is encrypted data room we cannot use server side copy
             return false;
         }
-        if(StringUtils.containsAny(target.getName(), '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
+        if(!StringUtils.equals(source.getName(), target.getName())) {
+            // Cannot rename node to be copied at the same time
             return false;
         }
-        if(source.isDirectory() && target.isChild(source)) {
-            // Folders must not be copied to a child of its own
-            return false;
-        }
-        if(ObjectUtils.notEqual(source.getParent(), target.isFile() ? target.getParent() : target)) {
+        if(Objects.equals(source.getParent(), target.getParent())) {
             // Nodes must not have the same parent
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override
