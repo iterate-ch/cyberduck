@@ -65,10 +65,10 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                 if(json.has("errorCode")) {
                     if(json.get("errorCode").isJsonPrimitive()) {
                         final int errorCode = json.getAsJsonPrimitive("errorCode").getAsInt();
-                        this.append(buffer, LocaleFactory.get().localize(String.valueOf(errorCode), "SDS"));
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Failure with errorCode %s", errorCode));
                         }
+                        this.append(buffer, LocaleFactory.get().localize(String.valueOf(errorCode), "SDS"));
                         switch(failure.getCode()) {
                             case HttpStatus.SC_NOT_FOUND:
                                 switch(errorCode) {
