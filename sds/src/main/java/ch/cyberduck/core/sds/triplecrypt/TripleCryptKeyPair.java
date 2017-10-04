@@ -65,7 +65,7 @@ public class TripleCryptKeyPair {
             credentials.setSaved(true);
         }
         if(!Crypto.checkUserKeyPair(keypair, credentials.getPassword())) {
-            return this.unlock(callback, bookmark, keypair, null, String.format("%s. %s", LocaleFactory.localizedString("Invalid passphrase", "Credentials"), LocaleFactory.localizedString("Enter your encryption password", "Credentials")));
+            return this.unlock(callback, bookmark, keypair, null, String.format("%s. %s", LocaleFactory.localizedString("Invalid passphrase", "Credentials"), LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials")));
         }
         else {
             if(credentials.isSaved()) {
