@@ -97,11 +97,6 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                         }
                     }
                 }
-                if(json.has("debugInfo")) {
-                    if(json.get("debugInfo").isJsonPrimitive()) {
-                        this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
-                    }
-                }
             }
             catch(JsonParseException e) {
                 // Ignore
