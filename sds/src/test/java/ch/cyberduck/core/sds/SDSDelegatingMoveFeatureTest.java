@@ -50,7 +50,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SDSMoveFeatureTest {
+public class SDSDelegatingMoveFeatureTest {
 
     @Test
     public void testMove() throws Exception {
