@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -68,7 +69,16 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Failure with errorCode %s", errorCode));
                         }
-                        this.append(buffer, LocaleFactory.get().localize(String.valueOf(errorCode), "SDS"));
+                        final String localized = LocaleFactory.get().localize(String.valueOf(errorCode), "SDS");
+                        this.append(buffer, localized);
+                        if(StringUtils.equals(localized, String.valueOf(errorCode))) {
+                            log.warn(String.format("Missing user message for error code %d", errorCode));
+                            if(json.has("debugInfo")) {
+                                if(json.get("debugInfo").isJsonPrimitive()) {
+                                    this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+                                }
+                            }
+                        }
                         switch(failure.getCode()) {
                             case HttpStatus.SC_NOT_FOUND:
                                 switch(errorCode) {
@@ -95,6 +105,12 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                                         return new PartialLoginFailureException(buffer.toString(), failure);
                                 }
                         }
+                    }
+                }
+                else if(json.has("debugInfo")) {
+                    log.warn(String.format("Missing error code for failure %s", json));
+                    if(json.get("debugInfo").isJsonPrimitive()) {
+                        this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
                     }
                 }
             }
