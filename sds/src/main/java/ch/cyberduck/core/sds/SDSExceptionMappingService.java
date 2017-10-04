@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultSocketExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -60,34 +61,46 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
         if(null != failure.getResponseBody()) {
             final JsonParser parser = new JsonParser();
             try {
-                final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
-                if(json.get("errorCode").isJsonPrimitive()) {
-                    final JsonPrimitive errorCode = json.getAsJsonPrimitive("errorCode");
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Failure with errorCode %s", errorCode));
-                    }
-                    switch(failure.getCode()) {
-                        case HttpStatus.SC_NOT_FOUND:
-                            switch(errorCode.getAsInt()) {
-                                case -40761:
-                                    // [-40761] Filekey not found for encrypted file
-                                    return new AccessDeniedException(buffer.toString(), failure);
-                            }
-                        case HttpStatus.SC_PRECONDITION_FAILED:
-                            switch(errorCode.getAsInt()) {
-                                case -10108:
-                                    // [-10108] Radius Access-Challenge required.
-                                    final JsonPrimitive replyMessage = json.getAsJsonPrimitive("replyMessage");
-                                    if(log.isDebugEnabled()) {
-                                        log.debug(String.format("Failure with replyMessage %s", replyMessage));
-                                    }
-                                    buffer.append(replyMessage.getAsString());
-                                    return new PartialLoginFailureException(buffer.toString(), failure);
-                            }
+                final JsonObject json = parser.parse(new StringReader(failure.getResponseBody())).getAsJsonObject();
+                if(json.has("errorCode")) {
+                    if(json.get("errorCode").isJsonPrimitive()) {
+                        final int errorCode = json.getAsJsonPrimitive("errorCode").getAsInt();
+                        this.append(buffer, LocaleFactory.get().localize(String.valueOf(errorCode), "SDS"));
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Failure with errorCode %s", errorCode));
+                        }
+                        switch(failure.getCode()) {
+                            case HttpStatus.SC_NOT_FOUND:
+                                switch(errorCode) {
+                                    case -70501:
+                                        // [-70501] User not found
+                                        return new AccessDeniedException(buffer.toString(), failure);
+                                    case -40761:
+                                        // [-40761] Filekey not found for encrypted file
+                                        return new AccessDeniedException(buffer.toString(), failure);
+                                }
+                            case HttpStatus.SC_PRECONDITION_FAILED:
+                                switch(errorCode) {
+                                    case -10108:
+                                        // [-10108] Radius Access-Challenge required.
+                                        if(json.has("replyMessage")) {
+                                            if(json.get("replyMessage").isJsonPrimitive()) {
+                                                final JsonPrimitive replyMessage = json.getAsJsonPrimitive("replyMessage");
+                                                if(log.isDebugEnabled()) {
+                                                    log.debug(String.format("Failure with replyMessage %s", replyMessage));
+                                                }
+                                                buffer.append(replyMessage.getAsString());
+                                            }
+                                        }
+                                        return new PartialLoginFailureException(buffer.toString(), failure);
+                                }
+                        }
                     }
                 }
-                if(json.get("debugInfo").isJsonPrimitive()) {
-                    this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+                if(json.has("debugInfo")) {
+                    if(json.get("debugInfo").isJsonPrimitive()) {
+                        this.append(buffer, json.getAsJsonPrimitive("debugInfo").getAsString());
+                    }
                 }
             }
             catch(JsonParseException e) {
