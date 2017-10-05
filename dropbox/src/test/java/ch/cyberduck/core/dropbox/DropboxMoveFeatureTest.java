@@ -16,10 +16,15 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -27,12 +32,12 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DropboxMoveFeatureTest extends AbstractDropboxTest {
@@ -47,5 +52,22 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertFalse(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveToExistingFile() throws Exception {
+        final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new DropboxDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DropboxTouchFeature(session).touch(test, new TransferStatus());
+        final Path temp = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DropboxTouchFeature(session).touch(temp, new TransferStatus());
+        new DropboxMoveFeature(session).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Find find = new DefaultFindFeature(session);
+        final AttributedList<Path> files = new DropboxListService(session).list(folder, new DisabledListProgressListener());
+        assertEquals(1, files.size());
+        assertFalse(find.find(temp));
+        assertTrue(find.find(test));
+        new DropboxDeleteFeature(session).delete(Arrays.asList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

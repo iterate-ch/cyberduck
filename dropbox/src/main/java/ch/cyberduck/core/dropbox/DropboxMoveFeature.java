@@ -22,20 +22,27 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.Collections;
+
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
 public class DropboxMoveFeature implements Move {
 
     private final DropboxSession session;
+    private Delete delete;
 
     public DropboxMoveFeature(final DropboxSession session) {
         this.session = session;
+        this.delete = new DropboxDeleteFeature(session);
     }
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
+            if(status.isExists()) {
+                delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+            }
             new DbxUserFilesRequests(session.getClient()).move(file.getAbsolute(), renamed.getAbsolute());
             return renamed;
         }
@@ -56,7 +63,7 @@ public class DropboxMoveFeature implements Move {
 
     @Override
     public Move withDelete(final Delete delete) {
+        this.delete = delete;
         return this;
     }
-
 }
