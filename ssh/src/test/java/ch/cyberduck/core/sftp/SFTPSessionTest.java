@@ -47,6 +47,8 @@ import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.transport.cipher.AES256CTR;
 import net.schmizz.sshj.transport.kex.ECDHNistP;
+import net.schmizz.sshj.transport.mac.HMACSHA2256;
+import net.schmizz.sshj.transport.mac.HMACSHA2512;
 import net.schmizz.sshj.transport.mac.MAC;
 
 import static org.junit.Assert.*;
@@ -74,7 +76,12 @@ public class SFTPSessionTest {
     public void testAllHMAC() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final SFTPSession session = new SFTPSession(host);
-        for(net.schmizz.sshj.common.Factory.Named<MAC> mac : new DefaultConfig().getMACFactories()) {
+        final DefaultConfig defaultConfig = new DefaultConfig();
+        defaultConfig.setMACFactories(
+            new HMACSHA2256.Factory(),
+            new HMACSHA2512.Factory()
+        );
+        for(net.schmizz.sshj.common.Factory.Named<MAC> mac : defaultConfig.getMACFactories()) {
             final DefaultConfig configuration = new DefaultConfig();
             configuration.setMACFactories(Collections.singletonList(mac));
             final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
