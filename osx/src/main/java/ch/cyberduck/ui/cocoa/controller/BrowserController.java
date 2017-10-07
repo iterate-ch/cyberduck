@@ -48,7 +48,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
-import ch.cyberduck.core.local.FlatTemporaryFileService;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
@@ -588,7 +588,7 @@ public class BrowserController extends WindowController
             if(!file.isFile()) {
                 continue;
             }
-            downloads.add(new TransferItem(file, new FlatTemporaryFileService().create(pool.getHost().getUuid(), file)));
+            downloads.add(new TransferItem(file, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), file)));
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
