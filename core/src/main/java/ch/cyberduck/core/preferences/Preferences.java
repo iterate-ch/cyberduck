@@ -978,6 +978,7 @@ public abstract class Preferences {
           Location of the openssh known_hosts file
          */
         defaults.put("ssh.knownhosts", "~/.ssh/known_hosts");
+        defaults.put("ssh.knownhosts.hostname.hash", String.valueOf(false));
         defaults.put("ssh.knownhosts.bookmark", StringUtils.EMPTY);
 
         defaults.put("ssh.authentication.publickey.default.enable", String.valueOf(false));
