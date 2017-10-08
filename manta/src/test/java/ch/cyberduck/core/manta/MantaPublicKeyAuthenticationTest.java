@@ -24,7 +24,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -32,6 +31,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -40,32 +40,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class MantaPublicKeyAuthenticationTest {
 
     @Test
-    public void testAuthenticateOpenSSHKeyWithoutIdentity() throws Exception {
-        try {
-            final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
-            // not setting identity file, should fail since Manta REQUIRES keys
-            final Host host = new Host(new MantaProtocol(), "us-east.manta.joyent.com", credentials);
-            final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(new DisabledHostKeyCallback());
-            final String fingerprint = new MantaPublicKeyAuthentication(session)
-                .authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            assertEquals(fingerprint, System.getProperty("manta.key_id"));
-            session.close();
-        }
-        catch(LoginFailureException e) {
-            assertTrue(e.getMessage().contains("Login failed"));
-            assertTrue(e.getCause().getMessage().contains("Private Key Authentication is required"));
-        }
-
-    }
-
-    @Test
+    @Ignore
     public void testAuthenticateOpenSSHKeyWithoutPassphrase() throws Exception {
         final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -100,6 +80,7 @@ public class MantaPublicKeyAuthenticationTest {
     }
 
     @Test
+    @Ignore
     public void testAuthenticateOpenSSHKeyWithPassphrase() throws Exception {
         final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
