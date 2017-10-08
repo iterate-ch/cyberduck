@@ -30,12 +30,13 @@ public class MantaListServiceTest extends AbstractMantaTest {
 
     @Test
     public void testListBuckets() throws Exception {
+        final MantaAccountHomeInfo root = new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath());
         final AttributedList<Path> list = new MantaListService(session)
-                .list(session.getAccountRoot(), new DisabledListProgressListener());
+            .list(root.getAccountRoot(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            assertSame(session.getAccountRoot(), f.getParent());
-            assertEquals(session.getAccountRoot().getName(), f.getParent().getName());
+            assertSame(root.getAccountRoot(), f.getParent());
+            assertEquals(root.getAccountRoot().getName(), f.getParent().getName());
         }
     }
 }
