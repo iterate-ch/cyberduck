@@ -20,9 +20,10 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -64,14 +65,10 @@ public class MantaListService implements ListService {
         }
         while(objectsIter.hasNext()) {
             MantaObject o = objectsIter.next();
-            final PathAttributes attr = adapter.convert(o);
-            final Path path = new Path(
-                    directory,
-                    attr.getDisplayname(),
-                    EnumSet.of(o.isDirectory() ? Path.Type.directory : Path.Type.file),
-                    attr);
-
-            children.add(path);
+            final Path file = new Path(directory, FilenameUtils.getName(o.getPath()),
+                EnumSet.of(o.isDirectory() ? Path.Type.directory : Path.Type.file), adapter.convert(o)
+            );
+            children.add(file);
             listener.chunk(directory, children);
         }
         return children;
