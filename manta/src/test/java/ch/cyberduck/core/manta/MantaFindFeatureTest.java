@@ -52,7 +52,7 @@ public class MantaFindFeatureTest extends AbstractMantaTest {
     public void testFindPublic() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertTrue(f.find(new Path(
-            new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountPublicRoot(),
+            new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountRoot(),
             MantaAccountHomeInfo.HOME_PATH_PUBLIC,
             EnumSet.of(Path.Type.directory))));
     }
