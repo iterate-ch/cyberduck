@@ -33,7 +33,6 @@ import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -96,10 +95,7 @@ public class S3SessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        final PathCache cache = new PathCache(1);
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
-        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -118,10 +114,7 @@ public class S3SessionTest {
         host.setDefaultPath("/test-us-east-1-cyberduck");
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
-        final PathCache cache = new PathCache(1);
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
-        assertFalse(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(cache.containsKey(new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
 
@@ -132,7 +125,7 @@ public class S3SessionTest {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test
@@ -144,12 +137,12 @@ public class S3SessionTest {
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 if(p.get()) {
                     throw new LoginCanceledException();
                 }
                 p.set(true);
-                credentials.setPassword(System.getProperties().getProperty("s3.secret"));
+                return new Credentials(username, System.getProperties().getProperty("s3.secret"));
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(p.get());
@@ -164,7 +157,7 @@ public class S3SessionTest {
         final S3Session session = new S3Session(host);
         try {
             session.open(new DisabledHostKeyCallback());
-            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
             assertTrue(e.getCause() instanceof UnknownHostException);
@@ -200,7 +193,7 @@ public class S3SessionTest {
             }
         });
         try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
             assertTrue(set.get());
@@ -278,7 +271,7 @@ public class S3SessionTest {
         final S3Session s = new S3Session(host);
         s.open(new DisabledHostKeyCallback());
         try {
-            s.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+            s.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(LoginFailureException e) {
             assertEquals(ConnectionTimeoutException.class, e.getCause().getClass());
@@ -319,7 +312,7 @@ public class S3SessionTest {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
 }

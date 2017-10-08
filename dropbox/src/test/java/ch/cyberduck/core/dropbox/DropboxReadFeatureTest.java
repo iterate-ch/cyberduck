@@ -35,6 +35,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -48,21 +49,28 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testReadInterrupt() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), "eetaik4R", EnumSet.of(Path.Type.file));
+        final DropboxWriteFeature write = new DropboxWriteFeature(session);
+        final TransferStatus writeStatus = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(66800);
+        writeStatus.setLength(content.length);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final OutputStream out = write.write(test, writeStatus, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         // Unknown length in status
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus readStatus = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new DropboxReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new DropboxReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new DropboxReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
             assertNotNull(in);
             in.close();
         }
-        session.close();
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

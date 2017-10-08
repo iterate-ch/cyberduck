@@ -65,6 +65,8 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     protected final Host host;
 
+    private Metrics metrics = new DisabledMetrics();
+
     /**
      * Connection
      */
@@ -129,6 +131,14 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         return client;
     }
 
+    public void enableMetrics() {
+        metrics = new CountingMetrics();
+    }
+
+    public Metrics getMetrics() {
+        return metrics;
+    }
+
     /**
      * Connect to host
      *
@@ -158,9 +168,8 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      * @param keychain Password store
      * @param prompt   Prompt
      * @param cancel   Cancel callback
-     * @param cache    Directory listing cache
      */
-    public abstract void login(HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache<Path> cache) throws BackgroundException;
+    public abstract void login(HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
 
     /**
      * Logout and close client connection
@@ -270,6 +279,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
+        metrics.increment(type);
         return this.getFeature(type, this._getFeature(type));
     }
 

@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -63,7 +62,7 @@ public class DriveReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            if(file.getType().contains(AbstractPath.Type.placeholder)) {
+            if(file.getType().contains(Path.Type.placeholder)) {
                 final DescriptiveUrl link = new DriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
                 if(DescriptiveUrl.EMPTY.equals(link)) {
                     log.warn(String.format("Missing web link for file %s", file));

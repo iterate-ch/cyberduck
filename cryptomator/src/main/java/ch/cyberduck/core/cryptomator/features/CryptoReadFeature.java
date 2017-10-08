@@ -51,21 +51,46 @@ public class CryptoReadFeature implements Read {
             final Path encrypted = vault.encrypt(session, file);
             // Header
             final Cryptor cryptor = vault.getCryptor();
-            final InputStream in = proxy.read(encrypted, new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
+            final TransferStatus headerStatus = new TransferStatus(status);
+            headerStatus.setOffset(0);
+            final InputStream in = proxy.read(encrypted, headerStatus.length(status.isAppend() ?
+                    cryptor.fileHeaderCryptor().headerSize() :
+                    vault.toCiphertextSize(status.getLength())), callback);
             final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
             final int read = IOUtils.read(in, headerBuffer.array());
             final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
-            // Content
-            return new CryptoInputStream(in, cryptor, header, vault.numberOfChunks(status.getOffset()));
+            if(status.isAppend()) {
+                IOUtils.closeQuietly(in);
+                final TransferStatus s = new TransferStatus(status).length(-1L);
+                s.setOffset(this.align(status.getOffset()));
+                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(encrypted, s, callback), cryptor, header, this.chunk(status.getOffset()));
+                crypto.skip(this.position(status.getOffset()));
+                return crypto;
+            }
+            else {
+                return new CryptoInputStream(in, cryptor, header, vault.numberOfChunks(status.getOffset()));
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
+    protected long chunk(final long offset) {
+        return offset / vault.getCryptor().fileContentCryptor().cleartextChunkSize();
+    }
+
+    protected long align(final long offset) {
+        return vault.getCryptor().fileHeaderCryptor().headerSize() + this.chunk(offset) * vault.getCryptor().fileContentCryptor().ciphertextChunkSize();
+    }
+
+    protected long position(final long offset) {
+        return offset % vault.getCryptor().fileContentCryptor().cleartextChunkSize();
+    }
+
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        return false;
+        return proxy.offset(file);
     }
 
     @Override

@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
@@ -28,30 +27,21 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Scheduler;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.JSON;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.ConfigApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.KeyValueEntry;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -67,36 +57,48 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.migcomponents.migbase64.Base64;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
+    private static final Logger log = Logger.getLogger(SDSSession.class);
 
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
 
-    private final SDSErrorResponseInterceptor retryHandler = new SDSErrorResponseInterceptor(this);
+    private final SDSErrorResponseInterceptor retryHandler
+        = new SDSErrorResponseInterceptor(this);
 
-    private final OAuth2RequestInterceptor authorizationService
-            = new OAuth2RequestInterceptor(builder.build(this).addInterceptorLast(new HttpRequestInterceptor() {
-        @Override
-        public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-            request.addHeader(HttpHeaders.AUTHORIZATION,
-                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
-        }
-    }).build(),
-            host.getProtocol()).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+    private final OAuth2RequestInterceptor authorizationService;
 
-    private final ExpiringObjectHolder<UserAccount> userAccount = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
-    private final ExpiringObjectHolder<UserKeyPairContainer> keyPair = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+    private final ExpiringObjectHolder<UserAccountWrapper> userAccount
+        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+
+    private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
+        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+
+    private final List<KeyValueEntry> configuration = new ArrayList<>();
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        this.authorizationService = new OAuth2RequestInterceptor(builder.build(this).addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                request.addHeader(HttpHeaders.AUTHORIZATION,
+                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
+            }
+        }).build(),
+            host).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
     }
 
     @Override
@@ -122,14 +124,17 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
-                .register(new InputStreamProvider())
-                .connectorProvider(new HttpComponentsProvider(apache))));
+            .register(new InputStreamProvider())
+            .register(MultiPartFeature.class)
+            .register(new JSON())
+            .register(JacksonFeature.class)
+            .connectorProvider(new HttpComponentsProvider(apache))));
         client.setUserAgent(new PreferencesUseragentProvider().get());
         return client;
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         final String login = host.getCredentials().getUsername();
         final String password = host.getCredentials().getPassword();
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
@@ -137,15 +142,34 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             case oauth:
                 authorizationService.setTokens(authorizationService.authorize(host, keychain, controller, cancel));
                 break;
+            case radius:
+                final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(host.getProtocol()).user(false).keychain(false)
+                );
+                // Save tokens for 401 error response when expired
+                retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
+                    .authType(host.getProtocol().getAuthorization())
+                    .language("en")
+                    .login(login)
+                    .password(additional.getPassword())
+                ));
+                break;
             default:
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
-                        .authType(host.getProtocol().getAuthorization())
-                        .language("en")
-                        .login(login)
-                        .password(password)
+                    .authType(host.getProtocol().getAuthorization())
+                    .language("en")
+                    .login(login)
+                    .password(password)
                 ));
                 break;
+        }
+        try {
+            configuration.addAll(new ConfigApi(client).getSystemSettings(StringUtils.EMPTY).getItems());
+        }
+        catch(ApiException e) {
+            // Precondition: Right "Config Read" required.
+            log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e).getDetail()));
         }
     }
 
@@ -159,30 +183,45 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         catch(PartialLoginFailureException e) {
-            final Credentials additional = new Credentials(host.getCredentials().getUsername());
-            controller.prompt(host, additional, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    e.getDetail(), new LoginOptions().user(false).keychain(false)
+            final String username = host.getCredentials().getUsername();
+            final Credentials additional = controller.prompt(host, username, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                e.getDetail(), new LoginOptions(host.getProtocol()).user(false).keychain(false)
+                    .usernamePlaceholder(username)
             );
             return this.login(controller, new LoginRequest()
-                    .authType(host.getProtocol().getAuthorization())
-                    .language("en")
-                    .token(additional.getPassword())
+                .authType(host.getProtocol().getAuthorization())
+                .language("en")
+                .password(additional.getPassword())
             );
         }
     }
 
-    public UserAccount userAccount() throws ApiException {
+    public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
-            this.userAccount.set(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false));
+            try {
+                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false)));
+            }
+            catch(ApiException e) {
+                throw new SDSExceptionMappingService().map(e);
+            }
         }
         return this.userAccount.get();
     }
 
-    public UserKeyPairContainer keyPair() throws ApiException {
+    public UserKeyPairContainer keyPair() throws BackgroundException {
         if(this.keyPair.get() == null) {
-            this.keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+            try {
+                keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+            }
+            catch(ApiException e) {
+                throw new SDSExceptionMappingService().map(e);
+            }
         }
         return this.keyPair.get();
+    }
+
+    public List<KeyValueEntry> configuration() {
+        return configuration;
     }
 
     @Override
@@ -236,6 +275,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Scheduler.class) {
             return (T) new SDSMissingFileKeysSchedulerFeature(this);
+        }
+        if(type == UrlProvider.class) {
+            return (T) new SDSUrlProvider(this);
+        }
+        if(type == PromptUrlProvider.class) {
+            return (T) new SDSSharesUrlProvider(this);
+        }
+        if(type == Quota.class) {
+            return (T) new SDSQuotaFeature(this);
         }
         return super._getFeature(type);
     }

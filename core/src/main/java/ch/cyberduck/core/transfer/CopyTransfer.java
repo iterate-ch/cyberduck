@@ -228,11 +228,10 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
-        final Path copy = mapping.get(source);
         progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
-                source.getName(), copy.getName()));
+                source.getName(), mapping.get(source).getName()));
         final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
-        feature.copy(source, copy, status, connectionCallback);
+        final Path copy = feature.copy(source, mapping.get(source), status, connectionCallback);
         this.addTransferred(status.getLength());
         return copy;
     }

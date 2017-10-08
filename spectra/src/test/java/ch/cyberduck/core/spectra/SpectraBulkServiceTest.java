@@ -26,7 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -69,7 +68,7 @@ public class SpectraBulkServiceTest {
                 new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 //
             }
         }, new DisabledHostKeyCallback(),
@@ -104,7 +103,7 @@ public class SpectraBulkServiceTest {
                 new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 //
             }
         }, new DisabledHostKeyCallback(),
@@ -139,7 +138,7 @@ public class SpectraBulkServiceTest {
                 new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 //
             }
         }, new DisabledHostKeyCallback(),
@@ -165,7 +164,7 @@ public class SpectraBulkServiceTest {
                 new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 //
             }
         }, new DisabledHostKeyCallback(),
@@ -192,7 +191,7 @@ public class SpectraBulkServiceTest {
                 new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 //
             }
         }, new DisabledHostKeyCallback(),
@@ -242,7 +241,7 @@ public class SpectraBulkServiceTest {
                 new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 //
             }
         }, new DisabledHostKeyCallback(),
@@ -288,7 +287,7 @@ public class SpectraBulkServiceTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("CYBERDUCK-SPECTRA-67", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final HashMap<Path, TransferStatus> files = new HashMap<>();
         for(int i = 1; i < 100; i++) {

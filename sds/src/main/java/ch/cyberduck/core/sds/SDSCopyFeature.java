@@ -18,37 +18,43 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.swagger.CopyNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
 
 public class SDSCopyFeature implements Copy {
 
     private final SDSSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new SDSPathContainerService();
 
     public SDSCopyFeature(final SDSSession session) {
         this.session = session;
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
-                    // Target Parent Node ID
-                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
-                    new CopyNodesRequest()
-                            .addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())))
-                            .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
+            final Node node = new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
+                // Target Parent Node ID
+                Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
+                new CopyNodesRequest()
+                    .addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())))
+                    .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
+            return new Path(target.getParent(), target.getName(), target.getType(),
+                new PathAttributes(target.attributes()).withVersionId(String.valueOf(node.getId())));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -66,14 +72,19 @@ public class SDSCopyFeature implements Copy {
             // Rooms cannot be copied
             return false;
         }
-        if(StringUtils.containsAny(target.getName(), '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
+        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^ containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+            // If source xor target is encrypted data room we cannot use server side copy
             return false;
         }
-        if(StringUtils.equals(containerService.getContainer(source).getName(), containerService.getContainer(target).getName())) {
-            // Nodes must be in same source parent
-            return true;
+        if(!StringUtils.equals(source.getName(), target.getName())) {
+            // Cannot rename node to be copied at the same time
+            return false;
         }
-        return false;
+        if(Objects.equals(source.getParent(), target.getParent())) {
+            // Nodes must not have the same parent
+            return false;
+        }
+        return true;
     }
 
     @Override

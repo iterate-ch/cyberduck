@@ -59,7 +59,7 @@ public class CopyWorkerTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path source = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -81,7 +81,7 @@ public class CopyWorkerTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path sourceFile = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -107,7 +107,7 @@ public class CopyWorkerTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
@@ -115,10 +115,10 @@ public class CopyWorkerTest {
         assertTrue(new SDSFindFeature(session).find(folder));
         assertTrue(new SDSFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new SDSFindFeature(session).find(targetFolder));
+        final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new SDSFindFeature(session).find(targetFile));
         assertTrue(new SDSFindFeature(session).find(folder));
         assertTrue(new SDSFindFeature(session).find(sourceFile));

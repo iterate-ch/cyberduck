@@ -26,6 +26,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
@@ -33,13 +34,12 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-public class MoveWorker extends Worker<List<Path>> {
+public class MoveWorker extends Worker<Map<Path, Path>> {
 
     private final Map<Path, Path> files;
     private final ProgressListener listener;
@@ -54,32 +54,31 @@ public class MoveWorker extends Worker<List<Path>> {
     }
 
     @Override
-    public List<Path> run(final Session<?> session) throws BackgroundException {
+    public Map<Path, Path> run(final Session<?> session) throws BackgroundException {
         final Move move = session.getFeature(Move.class);
+        final Map<Path, Path> result = new HashMap<>();
         for(Map.Entry<Path, Path> entry : files.entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             if(!move.isSupported(entry.getKey(), entry.getValue())) {
-                continue;
+                throw new UnsupportedException();
             }
             final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), entry.getKey(), entry.getValue());
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                move.move(r.getKey(), r.getValue(), new TransferStatus()
-                                .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue())),
-                        new Delete.Callback() {
-                            @Override
-                            public void delete(final Path file) {
-                                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                                        file.getName()));
-                            }
-                        }, callback);
+                result.put(r.getKey(), move.move(r.getKey(), r.getValue(), new TransferStatus()
+                        .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue())),
+                    new Delete.Callback() {
+                        @Override
+                        public void delete(final Path file) {
+                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                                file.getName()));
+                        }
+                    }, callback)
+                );
             }
         }
-        final List<Path> changed = new ArrayList<Path>();
-        changed.addAll(files.keySet());
-        changed.addAll(files.values());
-        return changed;
+        return result;
     }
 
     protected Map<Path, Path> compile(final Move move, final ListService list, final Path source, final Path target) throws BackgroundException {
@@ -104,14 +103,21 @@ public class MoveWorker extends Worker<List<Path>> {
     }
 
     @Override
-    public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Renaming {0} to {1}", "Status"),
-                files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
+    public void cleanup(final Map<Path, Path> result) {
+        for(Path f : result.keySet()) {
+            cache.invalidate(f.getParent());
+        }
     }
 
     @Override
-    public List<Path> initialize() {
-        return Collections.emptyList();
+    public String getActivity() {
+        return MessageFormat.format(LocaleFactory.localizedString("Renaming {0} to {1}", "Status"),
+            files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
+    }
+
+    @Override
+    public Map<Path, Path> initialize() {
+        return Collections.emptyMap();
     }
 
     @Override

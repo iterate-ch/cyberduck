@@ -55,9 +55,6 @@
     <LayoutFile Include="$(OutputPath)\ExceptionReporter.WinForms.dll">
       <PackagePath>$(PackageLayout)\ExceptionReporter.WinForms.dll</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\ActiveButtons.dll">
-      <PackagePath>$(PackageLayout)\ActiveButtons.dll</PackagePath>
-    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\CustomOpenFileFolderDialog.dll">
       <PackagePath>$(PackageLayout)\CustomOpenFileFolderDialog.dll</PackagePath>
     </LayoutFile>

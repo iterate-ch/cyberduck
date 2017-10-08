@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,49 +41,51 @@ public class SDSMoveFeature implements Move {
     private final SDSSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new SDSPathContainerService();
 
     public SDSMoveFeature(final SDSSession session) {
         this.session = session;
     }
 
     @Override
-    public void move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                new SDSDeleteFeature(session).delete(Collections.singletonList(target), connectionCallback, callback);
+                new SDSDeleteFeature(session).delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
-            if(!new SimplePathPredicate(source.getParent()).test(target.getParent())) {
+            if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
                 // Change parent node
                 new NodesApi(session.getClient()).moveNodes(StringUtils.EMPTY,
-                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
-                        new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(
-                                Long.parseLong(new SDSNodeIdProvider(session).getFileid(source,
-                                        new DisabledListProgressListener()))), null);
+                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(renamed.getParent(), new DisabledListProgressListener())),
+                    new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(
+                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(file,
+                            new DisabledListProgressListener()))), null);
             }
-            if(!StringUtils.equals(source.getName(), target.getName())) {
-                if(containerService.isContainer(source)) {
+            if(!StringUtils.equals(file.getName(), renamed.getName())) {
+                if(containerService.isContainer(file)) {
                     new NodesApi(session.getClient()).updateRoom(StringUtils.EMPTY,
-                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())),
-                            new UpdateRoomRequest().name(target.getName()), null);
+                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())),
+                        new UpdateRoomRequest().name(renamed.getName()), null);
                 }
                 // Rename
-                else if(source.isDirectory()) {
+                else if(file.isDirectory()) {
                     new NodesApi(session.getClient()).updateFolder(StringUtils.EMPTY,
-                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(
-                                    new Path(target.getParent(), source.getName(), source.getType()), new DisabledListProgressListener())),
-                            new UpdateFolderRequest().name(target.getName()), null);
+                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(
+                            new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
+                        new UpdateFolderRequest().name(renamed.getName()), null);
                 }
                 else {
                     new NodesApi(session.getClient()).updateFile(StringUtils.EMPTY,
-                            Long.parseLong(new SDSNodeIdProvider(session).getFileid(
-                                    new Path(target.getParent(), source.getName(), source.getType()), new DisabledListProgressListener())),
-                            new UpdateFileRequest().name(target.getName()), null);
+                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(
+                            new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
+                        new UpdateFileRequest().name(renamed.getName()), null);
                 }
             }
+            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
+                new PathAttributes(renamed.attributes()).withVersionId(file.attributes().getVersionId()));
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Cannot rename {0}", e, source);
+            throw new SDSExceptionMappingService().map("Cannot rename {0}", e, file);
         }
     }
 
@@ -98,9 +101,6 @@ public class SDSMoveFeature implements Move {
                 // Cannot move data room but only rename
                 return false;
             }
-        }
-        if(StringUtils.containsAny(target.getName(), '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
-            return false;
         }
         return true;
     }

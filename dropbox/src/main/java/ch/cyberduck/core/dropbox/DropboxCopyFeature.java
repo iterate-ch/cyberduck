@@ -34,10 +34,11 @@ public class DropboxCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             // If the source path is a folder all its contents will be copied.
             new DbxUserFilesRequests(session.getClient()).copy(source.getAbsolute(), target.getAbsolute());
+            return target;
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot copy {0}", e, source);

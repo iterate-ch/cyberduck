@@ -22,15 +22,15 @@
         <key>Vendor</key>
         <string>ssp</string>
         <key>Description</key>
-        <string>Secure Data Space</string>
+        <string>Secure Data Space (Email Address)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
         <string>443</string>
         <key>Username Placeholder</key>
-        <string>SDS Username</string>
+        <string>Username</string>
         <key>Password Placeholder</key>
-        <string>SDS Password</string>
+        <string>Password</string>
         <key>Hostname Configurable</key>
         <true/>
         <key>Port Configurable</key>

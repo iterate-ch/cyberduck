@@ -25,7 +25,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
@@ -38,6 +37,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
@@ -63,7 +63,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -82,8 +82,8 @@ public class SDSMissingFileKeysSchedulerFeatureTest {
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
         final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("ahbic3Ae");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("ahbic3Ae");
             }
         }, test);
         assertFalse(processed.isEmpty());
@@ -106,17 +106,17 @@ public class SDSMissingFileKeysSchedulerFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
         final AtomicBoolean prompt = new AtomicBoolean();
         final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 if(prompt.get()) {
                     throw new LoginCanceledException();
                 }
-                credentials.setPassword("n");
                 prompt.set(true);
+                return new VaultCredentials("n");
             }
         }, null);
         assertTrue(prompt.get());

@@ -18,10 +18,8 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
@@ -31,15 +29,12 @@ public class SwiftFindFeature implements Find {
 
     private final Headers feature;
 
-    private Cache<Path> cache;
-
     public SwiftFindFeature(final SwiftSession session) {
         this(new SwiftMetadataFeature(session));
     }
 
     public SwiftFindFeature(final Headers feature) {
         this.feature = feature;
-        this.cache = PathCache.empty();
     }
 
     @Override
@@ -47,36 +42,17 @@ public class SwiftFindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
-        final AttributedList<Path> list;
-        if(cache.isCached(file.getParent())) {
-            list = cache.get(file.getParent());
-        }
-        else {
-            list = new AttributedList<Path>();
-            cache.put(file.getParent(), list);
-        }
-        if(list.contains(file)) {
-            // Previously found
-            return true;
-        }
-        if(cache.isHidden(file)) {
-            // Previously not found
-            return false;
-        }
         try {
             feature.getMetadata(file);
-            list.add(file);
             return true;
         }
         catch(NotfoundException e) {
-            list.attributes().addHidden(file);
             return false;
         }
     }
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
         return this;
     }
 }

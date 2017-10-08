@@ -22,7 +22,7 @@
                     SourceFile="$(var.cyberduck-installer-msi.TargetPath)"
                     Vital="yes">
                 <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]"/>
-                <MsiProperty Name="AUTOSTART" Value="[Autostart]"/>
+                <MsiProperty Name="AUTOSTART" Value="0"/>
             </MsiPackage>
             <MsiPackage SourceFile="setup\wix\Bonjour.msi" Compressed="yes" Vital="no" InstallCondition="NOT VersionNT64"/>
             <MsiPackage SourceFile="setup\wix\Bonjour64.msi" Compressed="yes" Vital="no" InstallCondition="VersionNT64"/>

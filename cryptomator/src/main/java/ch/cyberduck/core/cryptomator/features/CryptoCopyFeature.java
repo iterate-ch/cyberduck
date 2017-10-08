@@ -44,7 +44,7 @@ public class CryptoCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(vault.contains(copy)) {
             // Write header to be reused in writer
             final Cryptor cryptor = vault.getCryptor();
@@ -53,13 +53,13 @@ public class CryptoCopyFeature implements Copy {
             status.setNonces(new RandomNonceGenerator());
         }
         if(vault.contains(source) && vault.contains(copy)) {
-            proxy.withTarget(target).copy(
+            return proxy.withTarget(target).copy(
                     vault.contains(source) ? vault.encrypt(session, source) : source,
                     vault.contains(copy) ? vault.encrypt(session, copy) : copy, status, callback);
         }
         else {
             // Copy files from or into vault requires to pass through encryption features
-            new DefaultCopyFeature(session).withTarget(target).copy(
+            return new DefaultCopyFeature(session).withTarget(target).copy(
                     vault.contains(source) ? vault.encrypt(session, source) : source,
                     vault.contains(copy) ? vault.encrypt(session, copy) : copy,
                     status,

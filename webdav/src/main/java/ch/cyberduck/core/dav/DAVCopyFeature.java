@@ -40,10 +40,11 @@ public class DAVCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
             session.getClient().copy(new DAVPathEncoder().encode(source), target);
+            return copy;
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot copy {0}", e, source);

@@ -258,7 +258,7 @@ public abstract class Preferences {
 
         defaults.put("rendezvous.enable", String.valueOf(true));
         defaults.put("rendezvous.loopback.suppress", String.valueOf(true));
-        defaults.put("rendezvous.notification.limit", String.valueOf(30));
+        defaults.put("rendezvous.notification.limit", String.valueOf(0));
 
         defaults.put("growl.enable", String.valueOf(true));
 
@@ -690,11 +690,6 @@ public abstract class Preferences {
 
         defaults.put("s3.listing.chunksize", String.valueOf(1000));
 
-        /*
-          Show revisions as hidden files in browser
-         */
-        defaults.put("s3.revisions.enable", String.valueOf(true));
-
         defaults.put("s3.upload.md5", String.valueOf(true));
 
         defaults.put("s3.upload.multipart", String.valueOf(true));
@@ -793,6 +788,8 @@ public abstract class Preferences {
 
         defaults.put("sds.listing.chunksize", String.valueOf(500));
         defaults.put("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
+        defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(300000)); // 5 minutes
+        defaults.put("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
 
         /*
           NTLM Windows Domain
@@ -981,6 +978,7 @@ public abstract class Preferences {
           Location of the openssh known_hosts file
          */
         defaults.put("ssh.knownhosts", "~/.ssh/known_hosts");
+        defaults.put("ssh.knownhosts.hostname.hash", String.valueOf(false));
         defaults.put("ssh.knownhosts.bookmark", StringUtils.EMPTY);
 
         defaults.put("ssh.authentication.publickey.default.enable", String.valueOf(false));
@@ -1046,9 +1044,6 @@ public abstract class Preferences {
 
         defaults.put("cryptomator.enable", String.valueOf(true));
         defaults.put("cryptomator.vault.autodetect", String.valueOf(true));
-
-        defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(300000)); // 5 minutes
-        defaults.put("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
     }
 
     protected void setLogging() {

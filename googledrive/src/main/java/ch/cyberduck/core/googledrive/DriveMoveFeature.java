@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -26,15 +27,18 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.binary.StringUtils;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import com.google.api.services.drive.model.File;
 
 public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
+    private Delete delete;
 
     public DriveMoveFeature(final DriveSession session) {
         this.session = session;
+        this.delete = new DriveDeleteFeature(session);
     }
 
     @Override
@@ -44,12 +48,16 @@ public class DriveMoveFeature implements Move {
 
     @Override
     public Move withDelete(final Delete delete) {
+        this.delete = delete;
         return this;
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
+            if(status.isExists()) {
+                delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+            }
             final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 // Rename title
@@ -72,6 +80,8 @@ public class DriveMoveFeature implements Move {
                     .setRemoveParents(previousParents.toString())
                     .setFields("id, parents")
                     .execute();
+            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
+                    new PathAttributes(renamed.attributes()).withVersionId(fileid));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);

@@ -67,7 +67,7 @@ public class SynchronizationPathFilterTest {
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
                 TransferAction.mirror);
         assertTrue(mirror.accept(test, local, new TransferStatus().exists(true)));
-        final TransferStatus status = mirror.prepare(test, local, new TransferStatus().exists(true));
+        final TransferStatus status = mirror.prepare(test, local, new TransferStatus().exists(true), new DisabledProgressListener());
         assertNotNull(status);
         assertEquals(1L, status.getLength());
         final SynchronizationPathFilter download = new SynchronizationPathFilter(

@@ -29,11 +29,7 @@ public class DefaultPathPredicateTest {
     public void testUnique() throws Exception {
         final Path t = new Path("/", EnumSet.of(Path.Type.directory));
         assertEquals("[directory]-/", new DefaultPathPredicate(t).toString());
-        t.attributes().setVersionId("1");
-        assertEquals("[directory]-1/", new DefaultPathPredicate(t).toString());
         t.attributes().setRegion("r");
-        assertEquals("[directory]-1/", new DefaultPathPredicate(t).toString());
-        t.attributes().setVersionId(null);
         assertEquals("[directory]-/", new DefaultPathPredicate(t).toString());
     }
 
@@ -47,11 +43,7 @@ public class DefaultPathPredicateTest {
     public void testtoStringContainer() throws Exception {
         final Path t = new Path("/container", EnumSet.of(Path.Type.directory));
         assertEquals("[directory]-/container", new DefaultPathPredicate(t).toString());
-        t.attributes().setVersionId("1");
-        assertEquals("[directory]-1/container", new DefaultPathPredicate(t).toString());
         t.attributes().setRegion("r");
-        assertEquals("[directory]-r1/container", new DefaultPathPredicate(t).toString());
-        t.attributes().setVersionId(null);
         assertEquals("[directory]-r/container", new DefaultPathPredicate(t).toString());
     }
 
@@ -86,5 +78,21 @@ public class DefaultPathPredicateTest {
         assertTrue(new DefaultPathPredicate(t).test(t));
         assertFalse(new DefaultPathPredicate(t).test(new Path("/f/a", EnumSet.of(Path.Type.file))));
         assertFalse(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testPredicateVersionIdFile() throws Exception {
+        final Path t = new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().withVersionId("1"));
+        assertTrue(new DefaultPathPredicate(t).test(t));
+        assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().withVersionId("1"))));
+        assertFalse(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().withVersionId("2"))));
+    }
+
+    @Test
+    public void testPredicateVersionIdDirectory() throws Exception {
+        final Path t = new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("1"));
+        assertTrue(new DefaultPathPredicate(t).test(t));
+        assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("1"))));
+        assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("2"))));
     }
 }

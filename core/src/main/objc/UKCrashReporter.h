@@ -35,6 +35,6 @@
 	URLs for different locales that way, in case a crash is caused by an error
 	in a localized file.
 */
-- (void) checkForCrash;
+- (void) checkForCrash:(NSString *)url;
 
 @end

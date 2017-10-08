@@ -49,7 +49,7 @@ public class SwiftWriteFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");

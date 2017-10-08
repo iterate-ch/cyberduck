@@ -41,7 +41,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly HostPasswordStore keychain = PasswordStoreFactory.get();
 
         private Host _bookmark;
-        private Credentials _credentials;
+        private Credentials _credentials = new Credentials();
         private LoginOptions _options;
 
         public PromptLoginController(WindowController c) : base(c)
@@ -51,14 +51,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public ILoginView View { get; set; }
 
-        public void warn(Protocol protocol, String title, String message, String continueButton, String disconnectButton,
+        public void warn(Host bookmark, String title, String message, String continueButton, String disconnectButton,
             String preference)
         {
             AsyncController.AsyncDelegate d = delegate
             {
                 _browser.CommandBox(title, title, message, String.Format("{0}|{1}", continueButton, disconnectButton),
                     false, LocaleFactory.localizedString("Don't show again", "Credentials"), TaskDialogIcon.Question,
-                    ProviderHelpServiceFactory.get().help(protocol.getScheme()),
+                    ProviderHelpServiceFactory.get().help(bookmark.getProtocol().getScheme()),
                     delegate(int option, Boolean verificationChecked)
                     {
                         if (verificationChecked)
@@ -77,26 +77,20 @@ namespace Ch.Cyberduck.Ui.Controller
             //Proceed nevertheless.
         }
 
-        public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options)
+        public Credentials prompt(Host bookmark, String username, String title, String reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
             InitEventHandlers();
 
             _bookmark = bookmark;
-            _credentials = credentials;
             _options = options;
 
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
-            View.Username = credentials.getUsername();
-            View.SavePasswordState = credentials.isSaved();
+            View.Username = _credentials.getUsername();
+            View.SavePasswordState = _options.save();
+            View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
 
-            if(_options.icon() != null) {
-                View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
-            }
-            else {
-                View.DiskIcon = IconCache.Instance.IconForName(_bookmark.getProtocol().disk(), 64);
-            }
             InitPrivateKeys();
 
             Update();
@@ -109,6 +103,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             };
             _browser.Invoke(d);
+            return _credentials;
         }
 
         public Local select(Local identity)
@@ -213,8 +208,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
             View.PasswordEnabled = _options.password() && !_credentials.isAnonymousLogin();
-            View.UsernameLabel = _credentials.getUsernamePlaceholder() + ":";
-            View.PasswordLabel = _credentials.getPasswordPlaceholder() + ":";
+            View.UsernameLabel = _options.getUsernamePlaceholder() + ":";
+            View.PasswordLabel = _options.getPasswordPlaceholder() + ":";
             {
                 View.SavePasswordEnabled = _options.keychain() && !_credentials.isAnonymousLogin();;
                 View.SavePasswordState = _credentials.isSaved();

@@ -19,24 +19,25 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
@@ -77,10 +78,10 @@ public class DAVSession extends HttpSession<DAVClient> {
     private static final Logger log = Logger.getLogger(DAVSession.class);
 
     private RedirectCallback redirect
-            = new PreferencesRedirectCallback();
+        = new PreferencesRedirectCallback();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     public DAVSession(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -132,18 +133,17 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                // Windows credentials. Provide empty string for NTLM domain by default.
-                preferences.getProperty("webdav.ntlm.workstation"),
-                preferences.getProperty("webdav.ntlm.domain"));
+            // Windows credentials. Provide empty string for NTLM domain by default.
+            preferences.getProperty("webdav.ntlm.workstation"),
+            preferences.getProperty("webdav.ntlm.domain"));
         if(preferences.getBoolean("webdav.basic.preemptive")) {
             // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
             client.enablePreemptiveAuthentication(host.getHostname(),
-                    host.getPort(),
-                    host.getPort(),
-                    Charset.forName(preferences.getProperty("http.credentials.charset"))
+                host.getPort(),
+                host.getPort(),
+                Charset.forName(preferences.getProperty("http.credentials.charset"))
             );
         }
         else {
@@ -165,10 +165,10 @@ public class DAVSession extends HttpSession<DAVClient> {
                     case HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE:
                     case HttpStatus.SC_METHOD_NOT_ALLOWED:
                         log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
-                                host, e.getResponsePhrase()));
+                            host, e.getResponsePhrase()));
                         cancel.verify();
                         // Possibly only HEAD requests are not allowed
-                        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener() {
+                        this.getFeature(ListService.class).list(home, new DisabledListProgressListener() {
                             @Override
                             public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
                                 try {
@@ -178,12 +178,12 @@ public class DAVSession extends HttpSession<DAVClient> {
                                     throw new ListCanceledException(list, e);
                                 }
                             }
-                        }));
+                        });
                         break;
                     case HttpStatus.SC_BAD_REQUEST:
                         if(preferences.getBoolean("webdav.basic.preemptive")) {
                             log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
-                                    host, e.getResponsePhrase()));
+                                host, e.getResponsePhrase()));
                             cancel.verify();
                             client.disablePreemptiveAuthentication();
                             client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
@@ -229,13 +229,13 @@ public class DAVSession extends HttpSession<DAVClient> {
                     final URL url = new URL(location.getValue());
                     if(StringUtils.equals(Scheme.https.name(), url.getProtocol())) {
                         try {
-                            callback.warn(host.getProtocol(),
-                                    MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
-                                    MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
-                                            new DAVSSLProtocol().getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
-                                    LocaleFactory.localizedString("Continue", "Credentials"),
-                                    LocaleFactory.localizedString("Change", "Credentials"),
-                                    String.format("connection.unsecure.%s", host.getHostname()));
+                            callback.warn(host,
+                                MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                                MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
+                                    new DAVSSLProtocol().getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                                LocaleFactory.localizedString("Continue", "Credentials"),
+                                LocaleFactory.localizedString("Change", "Credentials"),
+                                String.format("connection.unsecure.%s", host.getHostname()));
                             // Continue chosen. Login using plain FTP.
                         }
                         catch(LoginCanceledException e) {
@@ -289,8 +289,14 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(type == Headers.class) {
             return (T) new DAVMetadataFeature(this);
         }
+        if(type == Metadata.class) {
+            return (T) new DAVMetadataFeature(this);
+        }
         if(type == Copy.class) {
             return (T) new DAVCopyFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new DAVFindFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new DAVAttributesFinderFeature(this);

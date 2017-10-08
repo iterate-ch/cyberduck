@@ -28,7 +28,7 @@ public interface Copy {
      * @param status   Write status
      * @param callback Prompt
      */
-    void copy(Path source, Path target, TransferStatus status, ConnectionCallback callback) throws BackgroundException;
+    Path copy(Path source, Path target, TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
     boolean isRecursive(Path source, Path target);
 

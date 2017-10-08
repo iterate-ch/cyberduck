@@ -98,7 +98,7 @@ public class SpectraSession extends S3Session {
         if(type == Download.class) {
             return (T) new DefaultDownloadFeature(new SpectraReadFeature(this, new SpectraBulkService(this)));
         }
-        if(type == Headers.class) {
+        if(type == Headers.class || type == Metadata.class) {
             return null;
         }
         if(type == DistributionConfiguration.class) {

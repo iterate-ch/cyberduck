@@ -63,7 +63,7 @@ public class OverwriteFilterTest {
             }
         }, files);
         assertTrue(f.accept(source, null, new TransferStatus().exists(true)));
-        final TransferStatus status = f.prepare(source, null, new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(source, null, new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(status.isExists());
     }
 
@@ -74,7 +74,7 @@ public class OverwriteFilterTest {
         source.attributes().setSize(1L);
         files.put(source, new Path("a", EnumSet.of(Path.Type.file)));
         OverwriteFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())), files);
-        final TransferStatus status = f.prepare(source, null, new TransferStatus());
+        final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
         assertEquals(1L, status.getLength());
     }
 
@@ -86,7 +86,7 @@ public class OverwriteFilterTest {
         final Path target = new Path("a", EnumSet.of(Path.Type.directory));
         files.put(source, target);
         OverwriteFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())), files);
-        final TransferStatus status = f.prepare(source, null, new TransferStatus());
+        final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
         assertEquals(0L, status.getLength());
     }
 
@@ -143,7 +143,7 @@ public class OverwriteFilterTest {
                 return super._getFeature(type);
             }
         }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true));
-        final TransferStatus status = f.prepare(source, null, new TransferStatus());
+        final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
         f.complete(source, null, new TransferOptions(), status, new DisabledProgressListener());
         assertFalse(permissionWrite[0]);
         assertFalse(timestampWrite[0]);

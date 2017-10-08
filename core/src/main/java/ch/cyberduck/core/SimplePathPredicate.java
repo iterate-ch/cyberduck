@@ -30,7 +30,7 @@ public class SimplePathPredicate extends DefaultPathPredicate {
     }
 
     @Override
-    public boolean test(final Path file) {
-        return this.hashCode() == new SimplePathPredicate(file).hashCode();
+    public boolean test(final Path test) {
+        return this.hashCode() == new SimplePathPredicate(test).hashCode();
     }
 }

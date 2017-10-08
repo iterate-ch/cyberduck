@@ -21,6 +21,7 @@ import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAppleEventDescriptor;
 import ch.cyberduck.binding.foundation.NSAppleEventManager;
@@ -131,26 +132,28 @@ public class MainController extends BundleController implements NSApplication.De
     private final Preferences preferences = PreferencesFactory.get();
 
     private final PeriodicUpdateChecker updater
-            = PeriodicUpdateCheckerFactory.get(this);
+        = PeriodicUpdateCheckerFactory.get(this);
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
     /**
      *
      */
     private static final List<BrowserController> browsers
-            = new ArrayList<BrowserController>();
+        = new ArrayList<BrowserController>();
 
     /**
      * Saved browsers
      */
     private final AbstractHostCollection sessions = new FolderBookmarkCollection(
-            LocalFactory.get(preferences.getProperty("application.support.path"), "Sessions"), "session");
+        LocalFactory.get(preferences.getProperty("application.support.path"), "Sessions"), "session");
 
     /**
      * Display donation reminder dialog
      */
     private boolean displayDonationPrompt = true;
 
+    @Outlet
+    private SheetController donationController;
     @Outlet
     private NSMenu applicationMenu;
     @Outlet
@@ -264,11 +267,11 @@ public class MainController extends BundleController implements NSApplication.De
         }
         else {
             NSDictionary KEY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-                    NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor()),
-                    NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName)
+                NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor()),
+                NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName)
             );
             this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
-                    NSAttributedString.attributedStringWithAttributes(key.toString(), KEY_FONT_ATTRIBUTES)
+                NSAttributedString.attributedStringWithAttributes(key.toString(), KEY_FONT_ATTRIBUTES)
             );
         }
     }
@@ -303,7 +306,7 @@ public class MainController extends BundleController implements NSApplication.De
         columns.put(String.format("browser.column.%s", Column.version.name()), LocaleFactory.localizedString("Version"));
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
-                    Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);
+                Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);
             final String identifier = entry.getKey();
             item.setState(preferences.getBoolean(identifier) ? NSCell.NSOnState : NSCell.NSOffState);
             item.setRepresentedObject(identifier);
@@ -435,8 +438,8 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void bugreportMenuClicked(final ID sender) {
         BrowserLauncherFactory.get().open(
-                MessageFormat.format(preferences.getProperty("website.bug"),
-                        preferences.getProperty("application.version")));
+            MessageFormat.format(preferences.getProperty("website.bug"),
+                preferences.getProperty("application.version")));
     }
 
     @Action
@@ -467,14 +470,14 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void aboutMenuClicked(final ID sender) {
         final NSDictionary dict = NSDictionary.dictionaryWithObjectsForKeys(
-                NSArray.arrayWithObjects(
-                        preferences.getProperty("application.name"),
-                        preferences.getProperty("application.version"),
-                        preferences.getProperty("application.revision")),
-                NSArray.arrayWithObjects(
-                        "ApplicationName",
-                        "ApplicationVersion",
-                        "Version")
+            NSArray.arrayWithObjects(
+                preferences.getProperty("application.name"),
+                preferences.getProperty("application.version"),
+                preferences.getProperty("application.revision")),
+            NSArray.arrayWithObjects(
+                "ApplicationName",
+                "ApplicationVersion",
+                "Version")
         );
         NSApplication.sharedApplication().orderFrontStandardAboutPanelWithOptions(dict);
     }
@@ -482,7 +485,7 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void feedbackMenuClicked(final ID sender) {
         BrowserLauncherFactory.get().open(preferences.getProperty("mail.feedback")
-                + "?subject=" + preferences.getProperty("application.name") + "-" + preferences.getProperty("application.version"));
+            + "?subject=" + preferences.getProperty("application.name") + "-" + preferences.getProperty("application.version"));
     }
 
     @Action
@@ -579,13 +582,13 @@ public class MainController extends BundleController implements NSApplication.De
                     try {
                         f.copy(LocalFactory.get(preferences.getProperty("application.support.path"), f.getName()));
                         final NSAlert alert = NSAlert.alert(
-                                l.toString(),
-                                LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
-                                        + "\n\n"
-                                        + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
-                                LocaleFactory.localizedString("Continue", "License"), //default
-                                null, //other
-                                null
+                            l.toString(),
+                            LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
+                                + "\n\n"
+                                + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
+                            LocaleFactory.localizedString("Continue", "License"), //default
+                            null, //other
+                            null
                         );
                         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                         if(new AlertSheetReturnCodeMapper().getOption(alert.runModal()) == SheetCallback.DEFAULT_OPTION) {
@@ -602,11 +605,11 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 else {
                     final NSAlert alert = NSAlert.alert(
-                            LocaleFactory.localizedString("Not a valid registration key", "License"),
-                            LocaleFactory.localizedString("This donation key does not appear to be valid.", "License"),
-                            LocaleFactory.localizedString("Continue", "License"), //default
-                            null, //other
-                            null);
+                        LocaleFactory.localizedString("Not a valid registration key", "License"),
+                        LocaleFactory.localizedString("This donation key does not appear to be valid.", "License"),
+                        LocaleFactory.localizedString("Continue", "License"), //default
+                        null, //other
+                        null);
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     alert.setShowsHelp(true);
                     alert.setDelegate(new ProxyController() {
@@ -636,7 +639,7 @@ public class MainController extends BundleController implements NSApplication.De
                         newDocument().addBookmark(host);
                         // Register in application support
                         final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
-                                PreferencesFactory.get().getProperty("profiles.folder.name"));
+                            PreferencesFactory.get().getProperty("profiles.folder.name"));
                         profiles.mkdir();
                         f.copy(LocalFactory.get(profiles, f.getName()));
                     }
@@ -742,13 +745,13 @@ public class MainController extends BundleController implements NSApplication.De
         final Host mount = open;
         final Path destination = workdir;
         final NSAlert alert = NSAlert.alert("Select Bookmark",
-                MessageFormat.format("Upload {0} to the selected bookmark.",
-                        files.size() == 1 ? files.iterator().next().getName()
-                                : MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(files.size()))
-                ),
-                LocaleFactory.localizedString("Upload", "Transfer"),
-                LocaleFactory.localizedString("Cancel"),
-                null
+            MessageFormat.format("Upload {0} to the selected bookmark.",
+                files.size() == 1 ? files.iterator().next().getName()
+                    : MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(files.size()))
+            ),
+            LocaleFactory.localizedString("Upload", "Transfer"),
+            LocaleFactory.localizedString("Cancel"),
+            null
         );
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         final AlertController controller = new AlertController() {
@@ -801,7 +804,7 @@ public class MainController extends BundleController implements NSApplication.De
         final List<TransferItem> roots = new ArrayList<TransferItem>();
         for(Local file : files) {
             roots.add(new TransferItem(new Path(destination, file.getName(),
-                    file.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), file));
+                file.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), file));
         }
         final TransferController t = TransferControllerFactory.get();
         t.start(new UploadTransfer(bookmark, roots), new TransferOptions());
@@ -994,17 +997,17 @@ public class MainController extends BundleController implements NSApplication.De
 
         bonjour.addListener(new NotificationRendezvousListener(bonjour));
         if(preferences.getBoolean("defaulthandler.reminder")
-                && preferences.getInteger("uses") > 0) {
+            && preferences.getInteger("uses") > 0) {
             if(!SchemeHandlerFactory.get().isDefaultHandler(
-                    Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                    new Application(preferences.getProperty("application.identifier")))) {
+                Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
+                new Application(preferences.getProperty("application.identifier")))) {
                 final NSAlert alert = NSAlert.alert(
-                        LocaleFactory.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
-                        LocaleFactory.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links " +
-                                "in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
-                        LocaleFactory.localizedString("Change", "Configuration"), //default
-                        null, //other
-                        LocaleFactory.localizedString("Cancel", "Configuration")
+                    LocaleFactory.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
+                    LocaleFactory.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links " +
+                        "in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
+                    LocaleFactory.localizedString("Change", "Configuration"), //default
+                    null, //other
+                    LocaleFactory.localizedString("Cancel", "Configuration")
                 );
                 alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                 alert.setShowsSuppressionButton(true);
@@ -1016,8 +1019,8 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
                     SchemeHandlerFactory.get().setDefaultHandler(
-                            Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                            new Application(preferences.getProperty("application.identifier"))
+                        Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
+                        new Application(preferences.getProperty("application.identifier"))
                     );
                 }
             }
@@ -1027,21 +1030,21 @@ public class MainController extends BundleController implements NSApplication.De
         // notification center as most notifications do. To receive NSWorkspace notifications,
         // your application must register an observer with the NSWorkspace notification center.
         NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.id(),
-                Foundation.selector("workspaceWillPowerOff:"),
-                NSWorkspace.WorkspaceWillPowerOffNotification,
-                null);
+            Foundation.selector("workspaceWillPowerOff:"),
+            NSWorkspace.WorkspaceWillPowerOffNotification,
+            null);
         NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.id(),
-                Foundation.selector("workspaceWillLogout:"),
-                NSWorkspace.WorkspaceSessionDidResignActiveNotification,
-                null);
+            Foundation.selector("workspaceWillLogout:"),
+            NSWorkspace.WorkspaceSessionDidResignActiveNotification,
+            null);
         NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.id(),
-                Foundation.selector("workspaceWillSleep:"),
-                NSWorkspace.WorkspaceWillSleepNotification,
-                null);
+            Foundation.selector("workspaceWillSleep:"),
+            NSWorkspace.WorkspaceWillSleepNotification,
+            null);
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("applicationWillRestartAfterUpdate:"),
-                "SUUpdaterWillRestartNotificationName",
-                null);
+            Foundation.selector("applicationWillRestartAfterUpdate:"),
+            "SUUpdaterWillRestartNotificationName",
+            null);
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
             public Void run() throws BackgroundException {
@@ -1093,11 +1096,11 @@ public class MainController extends BundleController implements NSApplication.De
                         continue;
                     }
                     final NSAlert alert = NSAlert.alert(
-                            MessageFormat.format(LocaleFactory.localizedString("Import {0} Bookmarks", "Configuration"), t.getName()),
-                            MessageFormat.format(LocaleFactory.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), t.size()),
-                            LocaleFactory.localizedString("Import", "Configuration"), //default
-                            null, //other
-                            LocaleFactory.localizedString("Cancel", "Configuration"));
+                        MessageFormat.format(LocaleFactory.localizedString("Import {0} Bookmarks", "Configuration"), t.getName()),
+                        MessageFormat.format(LocaleFactory.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), t.size()),
+                        LocaleFactory.localizedString("Import", "Configuration"), //default
+                        null, //other
+                        LocaleFactory.localizedString("Cancel", "Configuration"));
                     alert.setShowsSuppressionButton(true);
                     alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
                     alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
@@ -1122,10 +1125,15 @@ public class MainController extends BundleController implements NSApplication.De
 
             private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
                 return Arrays.asList(new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
-                        new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
-                        new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection());
+                    new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
+                    new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection());
             }
         });
+        final CrashReporter reporter = CrashReporter.create();
+        if(log.isInfoEnabled()) {
+            log.info("Check for crash report");
+        }
+        reporter.checkForCrash(preferences.getProperty("website.crash"));
         if(updater.hasUpdatePrivileges()) {
             if(PreferencesFactory.get().getBoolean("update.check")) {
                 final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
@@ -1136,7 +1144,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
         }
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
-                this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
+            this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
     }
 
     /**
@@ -1187,7 +1195,7 @@ public class MainController extends BundleController implements NSApplication.De
                 if(browser.isMounted()) {
                     // The workspace should be saved. Serialize all open browser sessions
                     final Host serialized
-                            = new HostDictionary().deserialize(browser.getSession().getHost().serialize(SerializerFactory.get()));
+                        = new HostDictionary().deserialize(browser.getSession().getHost().serialize(SerializerFactory.get()));
                     serialized.setWorkdir(browser.workdir());
                     sessions.add(serialized);
                     browser.window().saveFrameUsingName(serialized.getUuid());
@@ -1196,10 +1204,10 @@ public class MainController extends BundleController implements NSApplication.De
             if(browser.isConnected()) {
                 if(preferences.getBoolean("browser.disconnect.confirm")) {
                     final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Quit"),
-                            LocaleFactory.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
-                            LocaleFactory.localizedString("Quit Anyway"), //default
-                            LocaleFactory.localizedString("Cancel"), //other
-                            LocaleFactory.localizedString("Review…"));
+                        LocaleFactory.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
+                        LocaleFactory.localizedString("Quit Anyway"), //default
+                        LocaleFactory.localizedString("Cancel"), //other
+                        LocaleFactory.localizedString("Review…"));
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     alert.setShowsSuppressionButton(true);
                     alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
@@ -1263,11 +1271,11 @@ public class MainController extends BundleController implements NSApplication.De
             }
             // Make sure prompt is not loaded twice upon next quit event
             displayDonationPrompt = false;
-            final AlertController controller = new DonateAlertController(app);
-            controller.setCallback(controller);
-            controller.loadBundle();
-            controller.window().center();
-            controller.window().makeKeyAndOrderFront(null);
+            donationController = new DonateAlertController(app);
+            donationController.setCallback(donationController);
+            donationController.loadBundle();
+            donationController.window().center();
+            donationController.window().makeKeyAndOrderFront(null);
             // Delay application termination. Dismissing the donation dialog will reply to quit.
             return NSApplication.NSTerminateLater;
         }
@@ -1354,13 +1362,13 @@ public class MainController extends BundleController implements NSApplication.De
             if(Path.Type.file == detector.detect(h.getDefaultPath())) {
                 final Path file = new Path(h.getDefaultPath(), EnumSet.of(Path.Type.file));
                 TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
+                    LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
             }
             else {
                 for(BrowserController browser : MainController.getBrowsers()) {
                     if(browser.isMounted()) {
                         if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
-                                new HostUrlProvider().get(h))) {
+                            new HostUrlProvider().get(h))) {
                             // Handle browser window already connected to the same host. #4215
                             browser.window().makeKeyAndOrderFront(null);
                             return;

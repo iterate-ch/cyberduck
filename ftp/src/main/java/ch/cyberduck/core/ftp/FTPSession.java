@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -50,9 +49,9 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
-import ch.cyberduck.core.shared.StatefulDefaultCopyFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -236,7 +235,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                         && client.hasFeature("PROT")) {
                     // Propose protocol change if AUTH TLS is available.
                     try {
-                        callback.warn(host.getProtocol(),
+                        callback.warn(host,
                                 MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                                 MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
                                         ProtocolFactory.get().forScheme(Scheme.ftps).getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
@@ -267,8 +266,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             if(client.login(host.getCredentials().getUsername(), host.getCredentials().getPassword())) {
                 if(host.getProtocol().isSecure()) {
@@ -363,7 +361,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) new DefaultTouchFeature(new DefaultUploadFeature(new FTPWriteFeature(this)));
         }
         if(type == Copy.class) {
-            return (T) new StatefulDefaultCopyFeature(this);
+            return (T) new DefaultCopyFeature(this);
         }
         return super._getFeature(type);
     }

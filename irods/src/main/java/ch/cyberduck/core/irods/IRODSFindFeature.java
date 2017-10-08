@@ -17,10 +17,8 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 
@@ -32,11 +30,8 @@ public class IRODSFindFeature implements Find {
 
     private final IRODSSession session;
 
-    private Cache<Path> cache;
-
     public IRODSFindFeature(IRODSSession session) {
         this.session = session;
-        this.cache = PathCache.empty();
     }
 
     @Override
@@ -44,33 +39,10 @@ public class IRODSFindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
-        final AttributedList<Path> list;
-        if(cache.isCached(file.getParent())) {
-            list = cache.get(file.getParent());
-        }
-        else {
-            list = new AttributedList<Path>();
-            cache.put(file.getParent(), list);
-        }
-        if(list.contains(file)) {
-            // Previously found
-            return true;
-        }
-        if(cache.isHidden(file)) {
-            // Previously not found
-            return false;
-        }
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            final boolean found = fs.isFileExists(f);
-            if(found) {
-                list.add(file);
-            }
-            else {
-                list.attributes().addHidden(file);
-            }
-            return found;
+            return fs.isFileExists(f);
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -79,7 +51,6 @@ public class IRODSFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
         return this;
     }
 }

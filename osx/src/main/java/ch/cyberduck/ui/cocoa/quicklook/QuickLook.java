@@ -46,7 +46,4 @@ public interface QuickLook {
      * Close QuickLook panel if any
      */
     void close();
-
-    void willBeginQuickLook();
-    void didEndQuickLook();
 }

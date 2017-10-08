@@ -47,9 +47,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testReadWrite() throws Exception {
-
         final DropboxWriteFeature write = new DropboxWriteFeature(session);
-
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(66800);
         status.setLength(content.length);
@@ -76,18 +74,12 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testWriteAppendChunks() throws Exception {
-
         final DropboxWriteFeature write = new DropboxWriteFeature(session, 44000L);
-
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(290000);
         status.setLength(content.length);
@@ -114,10 +106,6 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -16,7 +16,6 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -32,9 +31,11 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
@@ -142,7 +143,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
     }
 
@@ -188,11 +189,17 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         if(type == Copy.class) {
             return (T) new OneDriveCopyFeature(this);
         }
+        if(type == Find.class) {
+            return (T) new OneDriveFindFeature(this);
+        }
         if(type == AttributesFinder.class) {
             return (T) new OneDriveAttributesFinderFeature(this);
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
+        }
+        if(type == PromptUrlProvider.class) {
+            return (T) new OneDriveSharingLinkUrlProvider(this);
         }
         if(type == Home.class) {
             return (T) new OneDriveHomeFinderFeature(this);

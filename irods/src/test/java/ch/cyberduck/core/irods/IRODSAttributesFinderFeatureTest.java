@@ -24,7 +24,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
@@ -61,7 +60,7 @@ public class IRODSAttributesFinderFeatureTest {
         ));
         final IRODSSession session = new IRODSSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         new IRODSAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -74,7 +73,7 @@ public class IRODSAttributesFinderFeatureTest {
         ));
         final IRODSSession session = new IRODSSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(test, new TransferStatus());

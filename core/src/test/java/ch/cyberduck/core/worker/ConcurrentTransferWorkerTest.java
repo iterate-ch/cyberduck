@@ -168,7 +168,7 @@ public class ConcurrentTransferWorkerTest {
                     }
 
                     @Override
-                    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+                    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
                         assertFalse(transferred.contains(file));
                         return new TransferStatus();
                     }

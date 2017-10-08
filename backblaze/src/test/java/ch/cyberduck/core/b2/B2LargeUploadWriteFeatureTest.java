@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -58,11 +57,12 @@ public class B2LargeUploadWriteFeatureTest {
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
+        status.setTimestamp(1503654614004L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = feature.write(file, status, new DisabledConnectionCallback());
         final byte[] content = new RandomStringGenerator.Builder().build().generate(6 * 1024 * 1024).getBytes("UTF-8");
@@ -76,6 +76,7 @@ public class B2LargeUploadWriteFeatureTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
+        assertEquals(1503654614004L, new B2AttributesFinderFeature(session).find(file).getModificationDate());
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -88,7 +89,7 @@ public class B2LargeUploadWriteFeatureTest {
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
@@ -118,7 +119,7 @@ public class B2LargeUploadWriteFeatureTest {
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);

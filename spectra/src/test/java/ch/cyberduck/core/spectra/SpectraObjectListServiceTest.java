@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -60,7 +59,7 @@ public class SpectraObjectListServiceTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
 //        assertFalse(list.isEmpty());
@@ -87,7 +86,7 @@ public class SpectraObjectListServiceTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final AttributedList<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
                 new DisabledListProgressListener());
@@ -108,7 +107,7 @@ public class SpectraObjectListServiceTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume));
         new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();
@@ -127,7 +126,7 @@ public class SpectraObjectListServiceTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path placeholder = new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
@@ -149,7 +148,7 @@ public class SpectraObjectListServiceTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("CYBERDUCK-SPECTRA-70", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener() {
             int paginate = 0;

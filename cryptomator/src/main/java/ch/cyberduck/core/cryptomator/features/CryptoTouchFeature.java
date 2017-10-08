@@ -47,9 +47,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
         final Path target = proxy.touch(vault.encrypt(session, file), status);
-        final Path decrypt = vault.decrypt(session, target);
-        decrypt.attributes().withVersionId(target.attributes().getVersionId());
-        return decrypt;
+        return vault.decrypt(session, target);
     }
 
     @Override

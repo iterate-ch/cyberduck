@@ -109,6 +109,7 @@ public class SDSNodeIdProviderTest {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
+        status.setExists(true);
         final SDSWriteFeature writer = new SDSWriteFeature(session);
         final HttpResponseOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);

@@ -82,7 +82,7 @@ public class SwiftSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -100,6 +100,6 @@ public class SwiftSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 }

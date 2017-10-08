@@ -270,7 +270,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"),
                                     file.getName(), action.getTitle()));
                             // Determine transfer status
-                            final TransferStatus status = filter.prepare(file, local, parent);
+                            final TransferStatus status = filter.prepare(file, local, parent, progress);
                             table.put(file, status);
                             // Apply filter
                             filter.apply(

@@ -27,8 +27,6 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -40,62 +38,55 @@ public class SDSDelegatingCopyFeature implements Copy {
 
     private final SDSSession session;
     private final SDSCopyFeature proxy;
+    private final DefaultCopyFeature copy;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new SDSPathContainerService();
 
     public SDSDelegatingCopyFeature(final SDSSession session, final SDSCopyFeature proxy) {
         this.session = session;
         this.proxy = proxy;
+        this.copy = new DefaultCopyFeature(session);
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-            final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
-            final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            try {
-                writer.writeValue(out, fileKey);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
-            status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        if(proxy.isSupported(source, target)) {
+            return proxy.copy(source, target, status, callback);
         }
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) || containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-            new DefaultCopyFeature(session).copy(source, target, status, callback);
+        // File key must be set for new upload
+        this.setFileKey(status);
+        return copy.copy(source, target, status, callback);
+    }
+
+    private void setFileKey(final TransferStatus status) throws BackgroundException {
+        // copy between encrypted and unencrypted data room
+        final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+        final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            writer.writeValue(out, fileKey);
         }
-        else {
-            if(StringUtils.equals(source.getName(), target.getName())) {
-                proxy.copy(source, target, status, callback);
-            }
-            else {
-                new DefaultCopyFeature(session).copy(source, target, status, callback);
-            }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
+        status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
     }
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) || containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-            return new DefaultCopyFeature(session).isRecursive(source, target);
-        }
-        if(StringUtils.equals(source.getName(), target.getName())) {
+        if(proxy.isSupported(source, target)) {
             return proxy.isRecursive(source, target);
         }
-        return new DefaultCopyFeature(session).isRecursive(source, target);
+        return copy.isRecursive(source, target);
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) || containerService.getContainer(target).getType().contains(Path.Type.vault)) {
-            return new DefaultCopyFeature(session).isSupported(source, target);
+        if(proxy.isSupported(source, target)) {
+            return true;
         }
-        if(StringUtils.equals(source.getName(), target.getName())) {
-            return proxy.isSupported(source, target);
-        }
-        return new DefaultCopyFeature(session).isSupported(source, target);
+        return copy.isSupported(source, target);
     }
 
     @Override

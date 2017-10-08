@@ -37,7 +37,7 @@ public class RenameExistingFilterTest {
             }
         };
         final Path p = new Path("t-1", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(p, local, new TransferStatus());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus(), new DisabledProgressListener());
         assertNull(status.getRename().local);
         f.apply(p, local, new TransferStatus(), new DisabledProgressListener());
     }
@@ -69,7 +69,7 @@ public class RenameExistingFilterTest {
             }
         };
         final Path p = new Path("t-2", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true), new DisabledProgressListener());
         assertNull(status.getRename().local);
         assertFalse(r.get());
         f.apply(p, local, status, new DisabledProgressListener());

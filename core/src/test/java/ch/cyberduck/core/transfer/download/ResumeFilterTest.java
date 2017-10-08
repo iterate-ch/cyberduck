@@ -1,5 +1,6 @@
 package ch.cyberduck.core.transfer.download;
 
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
@@ -84,7 +85,7 @@ public class ResumeFilterTest {
             }
         };
         p.attributes().setSize(2L);
-        final TransferStatus status = f.prepare(p, local, new TransferStatus());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus(), new DisabledProgressListener());
         assertTrue(status.isAppend());
         assertEquals(1L, status.getOffset(), 0L);
     }
@@ -116,7 +117,7 @@ public class ResumeFilterTest {
                 return true;
             }
         };
-        final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(status.isExists());
     }
 
@@ -137,7 +138,7 @@ public class ResumeFilterTest {
                 return false;
             }
         };
-        final TransferStatus status = f.prepare(p, local, new TransferStatus());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus(), new DisabledProgressListener());
         assertFalse(status.isAppend());
     }
 }

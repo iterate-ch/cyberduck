@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
@@ -25,14 +26,12 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.io.ThrottledInputStream;
-import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.Objects;
 
 public class DefaultCopyFeature implements Copy {
 
@@ -45,26 +44,33 @@ public class DefaultCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(source.isDirectory()) {
             if(!to.getFeature(Find.class).find(target)) {
                 to.getFeature(Directory.class).mkdir(target, null, new TransferStatus().length(0L));
             }
+            return target;
         }
         else {
             if(!to.getFeature(Find.class).find(target.getParent())) {
                 this.copy(source.getParent(), target.getParent(), new TransferStatus().length(source.getParent().attributes().getSize()), callback);
             }
             InputStream in;
-            OutputStream out;
-            in = new ThrottledInputStream(from.getFeature(Read.class).read(source, new TransferStatus(status), callback), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+            StatusOutputStream out;
+            in = from.getFeature(Read.class).read(source, new TransferStatus(status), callback);
             Write write = to.getFeature(MultipartWrite.class);
             if(null == write) {
                 // Fallback if multipart write is not available
                 write = to.getFeature(Write.class);
             }
-            out = new ThrottledOutputStream(write.write(target, status, callback), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+            out = write.write(target, status, callback);
             new StreamCopier(status, status).transfer(in, out);
+            final Object reply = out.getStatus();
+            if(reply instanceof VersionId) {
+                return new Path(target.getParent(), target.getName(), target.getType(),
+                        target.attributes().withVersionId(((VersionId) reply).id));
+            }
+            return target;
         }
     }
 
@@ -75,6 +81,12 @@ public class DefaultCopyFeature implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
+        switch(from.getHost().getProtocol().getType()) {
+            case ftp:
+            case irods:
+                // Stateful
+                return !Objects.equals(from, to);
+        }
         return true;
     }
 

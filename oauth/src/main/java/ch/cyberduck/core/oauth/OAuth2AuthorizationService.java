@@ -15,6 +15,7 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
@@ -41,6 +42,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
@@ -126,8 +128,6 @@ public class OAuth2AuthorizationService {
                 return saved;
             }
         }
-        // Obtain new tokens
-        final Credentials input = new TokenCredentials(bookmark);
         // Start OAuth2 flow within browser
         final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
                 method,
@@ -140,6 +140,7 @@ public class OAuth2AuthorizationService {
                 .build();
         final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
         authorizationCodeRequestUrl.setRedirectUri(redirectUri);
+        authorizationCodeRequestUrl.setState(new AlphanumericRandomStringService().random());
         for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
             authorizationCodeRequestUrl.set(values.getKey(), values.getValue());
         }
@@ -149,35 +150,40 @@ public class OAuth2AuthorizationService {
         if(!browser.open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
+        final AtomicReference<String> authenticationCode = new AtomicReference<>();
+        boolean savePassword = false;
         if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
             final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
             registry.register(new OAuth2TokenListener() {
                 @Override
                 public void callback(final String param) {
-                    input.setPassword(param);
+                    authenticationCode.set(param);
                 }
             }, cancel);
         }
         else {
-            prompt.prompt(bookmark, input,
+            final Credentials credentials = prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
                     LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-                    new LoginOptions().keychain(true).user(false).password(true)
+                    new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).password(true)
+                            .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
             );
+            authenticationCode.set(credentials.getPassword());
+            savePassword = credentials.isSaved();
         }
         try {
-            if(StringUtils.isBlank(input.getPassword())) {
+            if(StringUtils.isBlank(authenticationCode.get())) {
                 throw new LoginCanceledException();
             }
             // Swap the given authorization token for access/refresh tokens
-            final TokenResponse response = flow.newTokenRequest(input.getPassword())
+            final TokenResponse response = flow.newTokenRequest(authenticationCode.get())
                     .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
             // Save access key and refresh key
             final Tokens tokens = new Tokens(
                     response.getAccessToken(), response.getRefreshToken(),
                     null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
                             System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
-            if(input.isSaved()) {
+            if(savePassword) {
                 this.save(keychain, bookmark, tokens);
             }
             return tokens;
@@ -274,25 +280,6 @@ public class OAuth2AuthorizationService {
     public OAuth2AuthorizationService withParameter(final String key, final String value) {
         additionalParameters.put(key, value);
         return this;
-    }
-
-    private static final class TokenCredentials extends Credentials {
-        private final Host bookmark;
-
-        public TokenCredentials(final Host bookmark) {
-            super(bookmark.getCredentials().getUsername());
-            this.bookmark = bookmark;
-        }
-
-        @Override
-        public String getUsernamePlaceholder() {
-            return bookmark.getCredentials().getUsernamePlaceholder();
-        }
-
-        @Override
-        public String getPasswordPlaceholder() {
-            return bookmark.getCredentials().getPasswordPlaceholder();
-        }
     }
 
     public static final class Tokens {

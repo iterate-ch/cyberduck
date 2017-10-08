@@ -27,7 +27,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
@@ -76,7 +75,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         home.attributes().setRegion("DFW");
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

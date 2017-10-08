@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -26,7 +27,7 @@ public class RenameFilterTest {
     public void testPrepare() throws Exception {
         RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
-        f.prepare(t, new NullLocal("t"), new TransferStatus());
+        f.prepare(t, new NullLocal("t"), new TransferStatus(), new DisabledProgressListener());
         assertNotSame("t", t.getName());
     }
 
@@ -65,7 +66,7 @@ public class RenameFilterTest {
         };
         final RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), session);
         f.withFinder(find).withAttributes(attributes);
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(found.get());
         assertNotNull(status.getRename());
         assertNull(status.getRename().local);

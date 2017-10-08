@@ -15,21 +15,29 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.Set;
 
 public class SDSDeleteFeature implements Delete {
+    private static final Logger log = Logger.getLogger(SDSDeleteFeature.class);
 
     private final SDSSession session;
+
+    private final PathContainerService containerService
+        = new SDSPathContainerService();
 
     public SDSDeleteFeature(final SDSSession session) {
         this.session = session;
@@ -40,7 +48,7 @@ public class SDSDeleteFeature implements Delete {
         for(Path file : files) {
             try {
                 new NodesApi(session.getClient()).deleteNode(StringUtils.EMPTY,
-                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
+                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -50,7 +58,17 @@ public class SDSDeleteFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path file) {
-        return true;
+        try {
+            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            if(roles != null) {
+                return roles.contains(SDSAttributesFinderFeature.DELETE_ROLE);
+            }
+            return true;
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
+            return true;
+        }
     }
 
     @Override

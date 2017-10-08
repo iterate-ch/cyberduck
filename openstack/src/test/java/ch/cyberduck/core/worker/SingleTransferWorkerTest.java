@@ -26,7 +26,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.features.Delete;
@@ -113,7 +112,7 @@ public class SingleTransferWorkerTest {
             }
         };
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

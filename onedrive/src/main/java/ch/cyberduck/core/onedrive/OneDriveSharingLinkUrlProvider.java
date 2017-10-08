@@ -15,20 +15,23 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveSharingLink;
 
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 
-public class OneDriveSharingLinkUrlProvider implements UrlProvider {
+public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
     private static final Logger log = Logger.getLogger(OneDriveSharingLinkUrlProvider.class);
 
     private final OneDriveSession session;
@@ -38,17 +41,17 @@ public class OneDriveSharingLinkUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
+    public DescriptiveUrl toUrl(final Path file, final Object o, final PasswordCallback callback) throws BackgroundException {
         try {
-            final DescriptiveUrlBag list = new DescriptiveUrlBag();
-            list.add(new DescriptiveUrl(URI.create(session.toFile(file).createSharedLink(OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
-                    DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))));
-            return list;
+            return new DescriptiveUrl(URI.create(session.toFile(file).createSharedLink(OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
+                    DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));
 
         }
+        catch(OneDriveAPIException e) {
+            throw new OneDriveExceptionMappingService().map(e);
+        }
         catch(IOException e) {
-            log.warn(String.format("Failure creating shared link. %s", e.getMessage()));
-            return DescriptiveUrlBag.empty();
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 }

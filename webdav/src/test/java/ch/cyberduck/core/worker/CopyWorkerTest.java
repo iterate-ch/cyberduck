@@ -62,7 +62,7 @@ public class CopyWorkerTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -84,7 +84,7 @@ public class CopyWorkerTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(sourceFile, new TransferStatus());
@@ -110,7 +110,7 @@ public class CopyWorkerTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path sourceFile = new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());

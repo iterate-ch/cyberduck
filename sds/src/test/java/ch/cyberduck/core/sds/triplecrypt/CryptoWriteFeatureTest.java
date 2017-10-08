@@ -25,8 +25,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -46,6 +44,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -72,7 +71,7 @@ public class CryptoWriteFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -91,13 +90,13 @@ public class CryptoWriteFeatureTest {
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus(), new ConnectionCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
                 //
             }
 
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("ahbic3Ae");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("ahbic3Ae");
             }
         });
         IOUtils.readFully(stream, compare);
@@ -115,7 +114,7 @@ public class CryptoWriteFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -134,13 +133,13 @@ public class CryptoWriteFeatureTest {
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus(), new ConnectionCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
                 //
             }
 
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("ahbic3Ae");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("ahbic3Ae");
             }
         });
         IOUtils.readFully(stream, compare);

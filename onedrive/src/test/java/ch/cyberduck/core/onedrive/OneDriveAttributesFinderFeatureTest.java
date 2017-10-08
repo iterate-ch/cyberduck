@@ -72,4 +72,19 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributes.getLink());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testFindDirectory() throws Exception {
+        final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new OneDriveDirectoryFeature(session).mkdir(file, null, new TransferStatus());
+        final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(file);
+        assertNotNull(attributes);
+        assertNotEquals(-1L, attributes.getSize());
+        assertNotEquals(-1L, attributes.getCreationDate());
+        assertNotEquals(-1L, attributes.getModificationDate());
+        assertNotNull(attributes.getETag());
+        assertNull(attributes.getVersionId());
+        assertNotNull(attributes.getLink());
+        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }

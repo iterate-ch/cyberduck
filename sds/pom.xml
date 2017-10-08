@@ -129,7 +129,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>https://duck.ssp-europe.eu/swagger-proxy/api_v4/</inputSpec>
+                            <inputSpec>https://dataspace.ssp-europe.eu/swagger-proxy/api_v4/</inputSpec>
                             <language>java</language>
                             <output>${project.build.directory}/generated-sources</output>
                             <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
@@ -137,7 +137,8 @@
                             <configOptions>
                                 <sourceFolder>swagger</sourceFolder>
                                 <library>jersey2</library>
-                                <import-mappings>EncryptionInfo=ch.cyberduck.core.sds.model.EncryptionInfo,
+                                <import-mappings>
+                                    EncryptionInfo=ch.cyberduck.core.sds.model.EncryptionInfo,
                                     CompleteUploadRequest=ch.cyberduck.core.sds.swagger.CompleteUploadRequest,
                                     CopyNodesRequest=ch.cyberduck.core.sds.swagger.CopyNodesRequest,
                                     MoveNodesRequest=ch.cyberduck.core.sds.swagger.MoveNodesRequest

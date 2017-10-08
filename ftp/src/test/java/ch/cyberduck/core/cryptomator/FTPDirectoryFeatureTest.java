@@ -62,7 +62,7 @@ public class FTPDirectoryFeatureTest {
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback());
         final PathCache cache = new PathCache(100);
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path testdirectory = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -87,7 +87,7 @@ public class FTPDirectoryFeatureTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory));

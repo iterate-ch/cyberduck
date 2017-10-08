@@ -8,7 +8,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 
 import org.junit.Test;
 
@@ -38,8 +38,8 @@ public class WriteMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
                             return Collections.emptyMap();
@@ -83,8 +83,8 @@ public class WriteMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
                             return Collections.emptyMap();
@@ -130,8 +130,8 @@ public class WriteMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
                             return Collections.emptyMap();
@@ -181,8 +181,8 @@ public class WriteMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
                             return Collections.emptyMap();
@@ -227,10 +227,10 @@ public class WriteMetadataWorkerTest {
             attributesB.setMetadata(map);
         }
         final List<Path> files = Arrays.asList(
-                new Path("a", EnumSet.of(Path.Type.file),
-                        attributesA),
-                new Path("b", EnumSet.of(Path.Type.file),
-                        attributesB));
+            new Path("a", EnumSet.of(Path.Type.file),
+                attributesA),
+            new Path("b", EnumSet.of(Path.Type.file),
+                attributesB));
 
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("equal", "equal-changed");
@@ -248,8 +248,8 @@ public class WriteMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
                             return Collections.emptyMap();

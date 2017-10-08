@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import jersey.repackaged.com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.MoreExecutors;
 
 public class HttpComponentsConnector implements Connector {
     private static final Logger log = Logger.getLogger(HttpComponentsConnector.class);

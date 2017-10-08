@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -40,7 +39,7 @@ public class SwiftQuotaFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Quota.Space quota = new SwiftQuotaFeature(session).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);

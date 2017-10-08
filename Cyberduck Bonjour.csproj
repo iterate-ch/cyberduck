@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="bonjour\src\main\csharp\ch\cyberduck\core\bonjour\Rendezvous.cs" />
+    <Compile Include="bonjour\target\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

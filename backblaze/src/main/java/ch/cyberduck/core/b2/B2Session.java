@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -89,8 +88,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final String accountId = host.getCredentials().getUsername();
             final String applicationKey = host.getCredentials().getPassword();
@@ -132,6 +130,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == UrlProvider.class) {
             return (T) new B2UrlProvider(this);
         }
+        if(type == PromptUrlProvider.class) {
+            return (T) new B2AuthorizedUrlProvider(this);
+        }
         if(type == Find.class) {
             return (T) new B2FindFeature(this);
         }
@@ -158,6 +159,15 @@ public class B2Session extends HttpSession<B2ApiClient> {
         }
         if(type == Search.class) {
             return (T) new B2SearchFeature(this);
+        }
+        if(type == Headers.class) {
+            return (T) new B2MetadataFeature(this);
+        }
+        if(type == Metadata.class) {
+            return (T) new B2MetadataFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new B2TimestampFeature(this);
         }
         return super._getFeature(type);
     }

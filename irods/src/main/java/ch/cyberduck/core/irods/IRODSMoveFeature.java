@@ -19,6 +19,7 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -42,7 +43,7 @@ public class IRODSMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile s = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
@@ -54,6 +55,7 @@ public class IRODSMoveFeature implements Move {
             }
             final IRODSFile d = fs.getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
             s.renameTo(d);
+            return renamed;
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot rename {0}", e, file);

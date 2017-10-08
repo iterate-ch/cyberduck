@@ -1016,6 +1016,9 @@
 		4778BE381E72B183001D2E7C /* onedrive.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = onedrive.tiff; sourceTree = "<group>"; };
 		477BE2330FD9B38C00F5CB50 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Main.xib; sourceTree = "<group>"; };
 		477CFC7E1AF0FAFB001E81AF /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		477DDC761F84DA210012F799 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = i18n/src/main/resources/de.lproj/SDS.strings; sourceTree = "<group>"; };
+		477DDC771F84DA2C0012F799 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = i18n/src/main/resources/fr.lproj/SDS.strings; sourceTree = "<group>"; };
+		477DDC781F84DA330012F799 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = i18n/src/main/resources/es.lproj/SDS.strings; sourceTree = "<group>"; };
 		4781AF400828423100B3E0FA /* download0.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download0.icns; sourceTree = "<group>"; };
 		478426F30F9F75900068BA2E /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = i18n/src/main/resources/en.lproj/License.strings; sourceTree = "<group>"; };
 		478427070F9F75D70068BA2E /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = i18n/src/main/resources/sv.lproj/License.strings; sourceTree = "<group>"; };
@@ -1760,6 +1763,7 @@
 				470168320EED9EB7005E2CCF /* Mosso.strings */,
 				47B6072E0DA420880068282C /* Keychain.strings */,
 				47E9875E0D689A280077733F /* S3.strings */,
+				477DDC751F84DA210012F799 /* SDS.strings */,
 				47AF48FB199B913300A580EC /* Sftp.strings */,
 				47FC190A099FB8AF0082431D /* Crash.strings */,
 				479C4229097AB2BB00DDE88A /* Credits.rtf */,
@@ -3220,6 +3224,16 @@
 				47A8474718A1753800519D14 /* zh_TW */,
 			);
 			name = Azure.strings;
+			sourceTree = "<group>";
+		};
+		477DDC751F84DA210012F799 /* SDS.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				477DDC761F84DA210012F799 /* de */,
+				477DDC771F84DA2C0012F799 /* fr */,
+				477DDC781F84DA330012F799 /* es */,
+			);
+			name = SDS.strings;
 			sourceTree = "<group>";
 		};
 		478426F20F9F75900068BA2E /* License.strings */ = {

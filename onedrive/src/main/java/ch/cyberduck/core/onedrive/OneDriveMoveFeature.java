@@ -29,20 +29,26 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDrivePatchOperation;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class OneDriveMoveFeature implements Move {
 
     private final OneDriveSession session;
+    private Delete delete;
 
     private final PathContainerService containerService
             = new PathContainerService();
 
     public OneDriveMoveFeature(OneDriveSession session) {
         this.session = session;
+        this.delete = new OneDriveDeleteFeature(session);
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+        if(status.isExists()) {
+            delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+        }
         final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
         if(!StringUtils.equals(file.getName(), renamed.getName())) {
             patchOperation.rename(renamed.getName());
@@ -59,6 +65,7 @@ public class OneDriveMoveFeature implements Move {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
+        return renamed;
     }
 
     @Override
@@ -79,6 +86,7 @@ public class OneDriveMoveFeature implements Move {
 
     @Override
     public Move withDelete(final Delete delete) {
+        this.delete = delete;
         return this;
     }
 }

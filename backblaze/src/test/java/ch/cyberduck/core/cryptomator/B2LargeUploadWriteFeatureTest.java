@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2FindFeature;
@@ -71,7 +70,7 @@ public class B2LargeUploadWriteFeatureTest {
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());

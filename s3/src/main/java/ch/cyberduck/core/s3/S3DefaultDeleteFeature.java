@@ -17,9 +17,11 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.S3VersionIdProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -71,7 +73,9 @@ public class S3DefaultDeleteFeature implements Delete {
                 else {
                     try {
                         // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                        session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
+                        session.getClient().deleteVersionedObject(
+                                file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : file.attributes().getVersionId(),
+                                containerService.getContainer(file).getName(), containerService.getKey(file));
                     }
                     catch(ServiceException e) {
                         try {
@@ -87,7 +91,9 @@ public class S3DefaultDeleteFeature implements Delete {
         for(Path file : containers) {
             callback.delete(file);
             try {
-                session.getClient().deleteBucket(containerService.getContainer(file).getName());
+                final String bucket = containerService.getContainer(file).getName();
+                session.getClient().deleteBucket(bucket);
+                session.getClient().getRegionEndpointCache().removeRegionForBucketName(bucket);
             }
             catch(ServiceException e) {
                 throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);

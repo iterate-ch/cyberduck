@@ -71,7 +71,7 @@ public class SingleTransferWorkerTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -92,8 +92,8 @@ public class SingleTransferWorkerTest {
         cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new PasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("test");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("test");
             }
         }));
         PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());

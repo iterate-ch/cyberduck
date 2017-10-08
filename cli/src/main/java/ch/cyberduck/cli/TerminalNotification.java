@@ -23,7 +23,7 @@ import ch.cyberduck.core.notification.NotificationService;
 public class TerminalNotification implements NotificationService {
 
     private final TerminalProgressListener console
-            = new TerminalProgressListener();
+        = new TerminalProgressListener();
 
     @Override
     public void setup() {
@@ -38,10 +38,5 @@ public class TerminalNotification implements NotificationService {
     @Override
     public void notify(final String title, final String description) {
         console.message(title);
-    }
-
-    @Override
-    public void notifyWithImage(final String title, final String description, final String image) {
-        this.notify(title, description);
     }
 }

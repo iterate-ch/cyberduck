@@ -24,9 +24,9 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.BufferSegmentingOutputStream;
+import ch.cyberduck.core.io.BufferInputStream;
+import ch.cyberduck.core.io.BufferOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.FileBuffer;
@@ -34,10 +34,8 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveUploadSession;
 
 import java.io.IOException;
 
@@ -60,23 +58,24 @@ public class OneDriveBufferWriteFeature implements MultipartWrite<Void> {
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        return new HttpResponseOutputStream<Void>(new BufferSegmentingOutputStream(bytes, Long.MAX_VALUE, new FileBuffer()) {
+        final FileBuffer buffer = new FileBuffer();
+        return new HttpResponseOutputStream<Void>(new BufferOutputStream(buffer) {
+            @Override
+            public void flush() throws IOException {
+                //
+            }
+
             @Override
             public void close() throws IOException {
                 try {
-                    this.flush();
-                    final byte[] content = bytes.toByteArray();
-                    if(0L == content.length) {
+                    if(0L == buffer.length()) {
                         new OneDriveTouchFeature(session).touch(file, status);
                     }
                     else {
-                        final OneDriveUploadSession upload = session.toFile(file).createUploadSession();
-                        final HttpRange range = HttpRange.byLength(0L, content.length);
-                        final String header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), content.length);
-                        if(!(upload.uploadFragment(header, content) instanceof OneDriveFile.Metadata)) {
-                            log.info(String.format("Completed upload for %s", file));
-                        }
+                        final HttpResponseOutputStream<Void> out = new OneDriveWriteFeature(session).write(file,
+                            new TransferStatus(status).length(buffer.length()), callback);
+                        IOUtils.copy(new BufferInputStream(buffer), out);
+                        out.close();
                     }
                     super.close();
                 }

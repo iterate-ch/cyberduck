@@ -76,7 +76,7 @@ public class AzureWriteFeatureTest {
         ));
         final AzureSession session = new AzureSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1048576);
         status.setLength(content.length);

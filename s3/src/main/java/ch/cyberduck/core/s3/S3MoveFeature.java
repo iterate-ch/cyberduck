@@ -52,9 +52,10 @@ public class S3MoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
+    public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+        final Path copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
         delete.delete(Collections.singletonList(source), connectionCallback, callback);
+        return copy;
     }
 
     @Override

@@ -27,7 +27,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -59,7 +58,7 @@ public class SwiftUrlProviderTest {
         );
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         assertEquals("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f",
@@ -73,13 +72,13 @@ public class SwiftUrlProviderTest {
                 new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
         );
         final SwiftSession session = new SwiftSession(host);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).repeat(new DisabledPasswordCallback());
         final UrlProvider provider = new SwiftUrlProvider(session, accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         container.attributes().setRegion("DFW");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
         final DescriptiveUrlBag list = provider.toUrl(file);

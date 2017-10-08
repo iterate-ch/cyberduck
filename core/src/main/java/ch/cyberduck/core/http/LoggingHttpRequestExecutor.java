@@ -57,18 +57,20 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
 
     @Override
     protected HttpResponse doSendRequest(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws IOException, HttpException {
-        listener.log(TranscriptListener.Type.request, request.getRequestLine().toString());
-        for(Header header : request.getAllHeaders()) {
-            switch(header.getName()) {
-                case HttpHeaders.AUTHORIZATION:
-                case "X-Auth-Key":
-                case "X-Auth-Token":
-                    listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(),
-                            StringUtils.repeat("*", Integer.min(8, StringUtils.length(header.getValue())))));
-                    break;
-                default:
-                    listener.log(TranscriptListener.Type.request, header.toString());
-                    break;
+        synchronized(listener) {
+            listener.log(TranscriptListener.Type.request, request.getRequestLine().toString());
+            for(Header header : request.getAllHeaders()) {
+                switch(header.getName()) {
+                    case HttpHeaders.AUTHORIZATION:
+                    case "X-Auth-Key":
+                    case "X-Auth-Token":
+                        listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(),
+                                StringUtils.repeat("*", Integer.min(8, StringUtils.length(header.getValue())))));
+                        break;
+                    default:
+                        listener.log(TranscriptListener.Type.request, header.toString());
+                        break;
+                }
             }
         }
         return super.doSendRequest(request, conn, context);
@@ -77,9 +79,11 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
     @Override
     protected HttpResponse doReceiveResponse(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws HttpException, IOException {
         final HttpResponse response = super.doReceiveResponse(request, conn, context);
-        listener.log(TranscriptListener.Type.response, response.getStatusLine().toString());
-        for(Header header : response.getAllHeaders()) {
-            listener.log(TranscriptListener.Type.response, header.toString());
+        synchronized(listener) {
+            listener.log(TranscriptListener.Type.response, response.getStatusLine().toString());
+            for(Header header : response.getAllHeaders()) {
+                listener.log(TranscriptListener.Type.response, header.toString());
+            }
         }
         return response;
     }

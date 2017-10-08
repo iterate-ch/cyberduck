@@ -95,7 +95,7 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
             final String id = response.getUploadId();
             final MultipartOutputStream proxy = new MultipartOutputStream(id, file, status);
             return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
-                    PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
+                PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
                 @Override
                 public VersionId getStatus() throws BackgroundException {
                     return proxy.getVersionId();
@@ -133,22 +133,19 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
             try {
                 final byte[] content = Arrays.copyOfRange(b, off, len);
                 final HttpEntity entity = MultipartEntityBuilder.create()
-                        .setBoundary(DelayedHttpMultipartEntity.DEFAULT_BOUNDARY)
-                        .addPart("file", new ByteArrayBody(content, file.getName()))
-                        .build();
+                    .setBoundary(DelayedHttpMultipartEntity.DEFAULT_BOUNDARY)
+                    .addPart("file", new ByteArrayBody(content, file.getName()))
+                    .build();
                 new DefaultRetryCallable<Void>(new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
+                        final SDSApiClient client = session.getClient();
                         try {
-                            final SDSApiClient client = session.getClient();
                             final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                             request.setEntity(entity);
                             request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                             request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
-                            if(0L == overall.getLength() || 0 == content.length) {
-                                // Write empty body
-                            }
-                            else {
+                            if(0L != overall.getLength() && 0 != content.length) {
                                 final HttpRange range = HttpRange.byLength(offset, content.length);
                                 final String header;
                                 if(overall.getLength() == -1L) {
@@ -170,8 +167,8 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                                     default:
                                         EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                         throw new SDSExceptionMappingService().map(
-                                                new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                                        EntityUtils.toString(response.getEntity())));
+                                            new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                                EntityUtils.toString(response.getEntity())));
                                 }
                             }
                             finally {
@@ -179,13 +176,22 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                             }
                         }
                         catch(IOException e) {
+                            try {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Cancel failed upload %s for %s", uploadId, file));
+                                }
+                                new NodesApi(session.getClient()).cancelFileUpload(StringUtils.EMPTY, uploadId);
+                            }
+                            catch(ApiException f) {
+                                throw new SDSExceptionMappingService().map(f);
+                            }
                             throw new DefaultIOExceptionMappingService().map(e);
                         }
                         return null; //Void
                     }
                 }, overall).call();
             }
-            catch(Exception e) {
+            catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
             }
         }
@@ -198,13 +204,15 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
                     return;
                 }
                 final CompleteUploadRequest body = new CompleteUploadRequest();
-                body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                if(overall.isExists()) {
+                    body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                }
                 if(overall.getFilekey() != null) {
                     final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                     final FileKey fileKey = reader.readValue(overall.getFilekey().array());
                     final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                            TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                            TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
+                        TripleCryptConverter.toCryptoPlainFileKey(fileKey),
+                        TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                     );
                     body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                 }
@@ -216,6 +224,9 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
             }
             catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException e) {
                 throw new IOException(new CryptoExceptionMappingService().map("Upload {0} failed", e, file));
+            }
+            catch(BackgroundException e) {
+                throw new IOException(e);
             }
             finally {
                 close.set(true);

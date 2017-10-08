@@ -17,25 +17,18 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-
-import java.io.IOException;
 
 public class SFTPFindFeature implements Find {
 
     private final SFTPSession session;
 
-    private Cache<Path> cache;
-
     public SFTPFindFeature(final SFTPSession session) {
         this.session = session;
-        this.cache = PathCache.empty();
     }
 
     @Override
@@ -43,42 +36,18 @@ public class SFTPFindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
-        final AttributedList<Path> list;
-        if(cache.isCached(file.getParent())) {
-            list = cache.get(file.getParent());
-        }
-        else {
-            list = new AttributedList<Path>();
-            cache.put(file.getParent(), list);
-        }
-        if(list.contains(file)) {
-            // Previously found
-            return true;
-        }
-        if(cache.isHidden(file)) {
-            // Previously not found
-            return false;
-        }
         try {
-            try {
-                session.sftp().canonicalize(file.getAbsolute());
-                list.add(file);
-                return true;
-            }
-            catch(IOException e) {
-                throw new SFTPExceptionMappingService().map(e);
-            }
+            new SFTPAttributesFinderFeature(session).find(file);
+            return true;
         }
         catch(NotfoundException e) {
             // We expect SSH_FXP_STATUS if the file is not found
-            list.attributes().addHidden(file);
             return false;
         }
     }
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
         return this;
     }
 }

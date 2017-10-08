@@ -76,7 +76,7 @@ public class CloudFrontDistributionConfigurationTest {
         host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -96,7 +96,7 @@ public class CloudFrontDistributionConfigurationTest {
         host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -125,8 +125,8 @@ public class CloudFrontDistributionConfigurationTest {
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword(System.getProperties().getProperty("s3.secret"));
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new Credentials(username, System.getProperties().getProperty("s3.secret"));
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
@@ -138,9 +138,9 @@ public class CloudFrontDistributionConfigurationTest {
         final AtomicBoolean set = new AtomicBoolean();
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword(System.getProperties().getProperty("s3.secret"));
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 set.set(true);
+                return new Credentials(username, System.getProperties().getProperty("s3.secret"));
             }
         });
         assertTrue(set.get());
@@ -154,7 +154,7 @@ public class CloudFrontDistributionConfigurationTest {
         host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
             @Override
             protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
@@ -181,7 +181,7 @@ public class CloudFrontDistributionConfigurationTest {
         host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
             @Override
             protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
@@ -232,7 +232,7 @@ public class CloudFrontDistributionConfigurationTest {
         host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CloudFrontDistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
         final Path container = new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));

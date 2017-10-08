@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -61,13 +60,13 @@ public class SDSTouchFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         try {
             new SDSTouchFeature(session).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("-80001. Parent ID must be positive. See API doc. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Error -80001. Parent ID must be positive. See API doc. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
         session.close();
@@ -80,14 +79,14 @@ public class SDSTouchFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         try {
             new SDSTouchFeature(session).touch(new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("-40755. Not allowed filename='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Error -40755. Not allowed filename='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
         finally {
@@ -103,14 +102,14 @@ public class SDSTouchFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         try {
             new SDSTouchFeature(session).touch(new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("-40755. Not allowed filename='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Error -40755. Not allowed filename='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
         finally {

@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
@@ -71,14 +70,16 @@ public class DefaultCopyFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path source = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session).touch(source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
-        final OutputStream out = new SDSWriteFeature(session).write(source, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final TransferStatus status = new TransferStatus().length(content.length);
+        status.setExists(true);
+        final OutputStream out = new SDSWriteFeature(session).write(source, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
