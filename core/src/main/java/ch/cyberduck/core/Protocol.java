@@ -111,7 +111,7 @@ public interface Protocol extends Comparable<Protocol> {
                         }
                     }
                 }
-                return false;
+                return credentials.isPublicKeyAuthentication();
             }
         };
 
