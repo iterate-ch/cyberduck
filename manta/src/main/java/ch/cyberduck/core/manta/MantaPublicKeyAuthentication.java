@@ -66,46 +66,46 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         final Local identity = credentials.getIdentity();
         final KeyFormat format = this.detectKeyFormat(identity);
         final FileKeyProvider provider = this.buildProvider(identity, format);
-        readKeyContentsIntoConfig(identity);
+        this.readKeyContentsIntoConfig(identity);
         if(log.isInfoEnabled()) {
             log.info(String.format("Reading private key %s with key format %s", identity, format));
         }
         provider.init(
-                new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8),
-                new PasswordFinder() {
-                    @Override
-                    public char[] reqPassword(Resource<?> resource) {
-                        final String password = keychain.find(bookmark);
-                        if(StringUtils.isEmpty(password)) {
-                            try {
-                                prompt.prompt(
-                                        bookmark,
-                                        credentials,
-                                        LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                        String.format("%s (%s)",
-                                                LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                                identity.getAbbreviatedPath()),
-                                        new LoginOptions(bookmark.getProtocol()));
-                            }
-                            catch(LoginCanceledException e) {
-                                return null; // user cancelled
-                            }
-
-                            if(StringUtils.isEmpty(credentials.getPassword())) {
-                                return null; // user left field blank
-                            }
-                            final SettableConfigContext config = (SettableConfigContext) session.getClient().getContext();
-                            config.setPassword(credentials.getPassword());
-                            return credentials.getPassword().toCharArray();
+            new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8),
+            new PasswordFinder() {
+                @Override
+                public char[] reqPassword(Resource<?> resource) {
+                    final String password = keychain.find(bookmark);
+                    if(StringUtils.isEmpty(password)) {
+                        try {
+                            prompt.prompt(
+                                bookmark,
+                                credentials.getUsername(),
+                                LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                String.format("%s (%s)",
+                                    LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                    identity.getAbbreviatedPath()),
+                                new LoginOptions(bookmark.getProtocol()));
                         }
-                        return password.toCharArray();
-                    }
+                        catch(LoginCanceledException e) {
+                            return null; // user cancelled
+                        }
 
-                    @Override
-                    public boolean shouldRetry(Resource<?> resource) {
-                        return false;
+                        if(StringUtils.isEmpty(credentials.getPassword())) {
+                            return null; // user left field blank
+                        }
+                        final SettableConfigContext config = (SettableConfigContext) session.getClient().getContext();
+                        config.setPassword(credentials.getPassword());
+                        return credentials.getPassword().toCharArray();
                     }
-                });
+                    return password.toCharArray();
+                }
+
+                @Override
+                public boolean shouldRetry(Resource<?> resource) {
+                    return false;
+                }
+            });
         return this.computeFingerprint(provider);
     }
 
@@ -140,8 +140,8 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
         final KeyFormat format;
         try (InputStream is = identity.getInputStream()) {
             format = KeyProviderUtil.detectKeyFileFormat(
-                    new InputStreamReader(is, StandardCharsets.UTF_8),
-                    true);
+                new InputStreamReader(is, StandardCharsets.UTF_8),
+                true);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
