@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
 
 public final class MantaObjectAttributeAdapter {
@@ -66,36 +65,26 @@ public final class MantaObjectAttributeAdapter {
         return attributes;
     }
 
-    private void populateGenericAttributes(final MantaObject mantaObject, final PathAttributes attributes) {
-        final String[] pathSegments = mantaObject.getPath().split(MantaClient.SEPARATOR);
-
-        attributes.setDisplayname(pathSegments[pathSegments.length - 1]);
-        attributes.setOwner(session.getAccountOwner());
-
-        populatePermissionsAttribute(mantaObject, attributes);
-
-        if(mantaObject.getLastModifiedTime() != null) {
-            attributes.setModificationDate(mantaObject.getLastModifiedTime().getTime());
+    private void populateGenericAttributes(final MantaObject object, final PathAttributes attributes) {
+        final Permission.Action userPermissions =
+            session.isUserWritable(object)
+                ? Permission.Action.all
+                : Permission.Action.read;
+        final Permission.Action otherPermissions =
+            session.isWorldReadable(object)
+                ? Permission.Action.read
+                : Permission.Action.none;
+        attributes.setPermission(new Permission(userPermissions, Permission.Action.none, otherPermissions));
+        if(object.getLastModifiedTime() != null) {
+            attributes.setModificationDate(object.getLastModifiedTime().getTime());
             attributes.setCreationDate(attributes.getModificationDate());
         }
     }
 
-    private void populatePermissionsAttribute(final MantaObject mantaObject, final PathAttributes attributes) {
-        final Permission.Action userPermissions =
-                session.isUserWritable(mantaObject)
-                        ? Permission.Action.all
-                        : Permission.Action.read;
-        final Permission.Action otherPermissions =
-                session.isWorldReadable(mantaObject)
-                        ? Permission.Action.read
-                        : Permission.Action.none;
 
-        attributes.setPermission(new Permission(userPermissions, Permission.Action.none, otherPermissions));
-    }
-
-    private void populateLinkAttribute(final PathAttributes attributes, final MantaObject mantaObject) {
+    private void populateLinkAttribute(final PathAttributes attributes, final MantaObject object) {
         // mantaObject.getPath() starts with /
-        final String joinedPath = session.getHost().getDefaultWebURL() + mantaObject.getPath();
+        final String joinedPath = session.getHost().getDefaultWebURL() + object.getPath();
 
         try {
             final URI link = new URI(joinedPath);
