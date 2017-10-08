@@ -33,9 +33,9 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -58,7 +58,7 @@ import com.joyent.manta.config.StandardConfigContext;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 
-public class MantaSession extends SSLSession<MantaClient> {
+public class MantaSession extends HttpSession<MantaClient> {
     private static final Logger log = Logger.getLogger(MantaSession.class);
 
     static {
@@ -84,6 +84,7 @@ public class MantaSession extends SSLSession<MantaClient> {
                 .setNoAuth(true)
                 .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname()))
         );
+        config.setMantaKeyPath(null);
         return new MantaClient(config);
     }
 
