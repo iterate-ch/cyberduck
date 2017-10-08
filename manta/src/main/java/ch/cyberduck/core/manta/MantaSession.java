@@ -132,26 +132,6 @@ public class MantaSession extends HttpSession<MantaClient> {
             account.getAccountOwner());
     }
 
-    protected Path getNormalizedHomePath() {
-        return new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getNormalizedHomePath();
-    }
-
-    protected Path getAccountRoot() {
-        return new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountRoot();
-    }
-
-    protected String getAccountOwner() {
-        return new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountOwner();
-    }
-
-    protected Path getAccountPublicRoot() {
-        return new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountPublicRoot();
-    }
-
-    protected Path getAccountPrivateRoot() {
-        return new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountPrivateRoot();
-    }
-
     protected boolean isUserWritable(final MantaObject mantaObject) {
         final MantaAccountHomeInfo account = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
         return StringUtils.startsWithAny(
