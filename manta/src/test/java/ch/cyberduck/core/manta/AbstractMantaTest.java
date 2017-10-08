@@ -16,10 +16,22 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AbstractPath.Type;
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -27,10 +39,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.UUID;
-
-import static org.junit.Assert.fail;
 
 public abstract class AbstractMantaTest {
     private static final Logger log = Logger.getLogger(AbstractMantaTest.class);
@@ -46,30 +57,20 @@ public abstract class AbstractMantaTest {
     @Before
     public void setup() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/Triton Manta.cyberduckprofile"));
+            new Local("../profiles/Triton Manta.cyberduckprofile"));
 
         final String key = System.getProperty("manta.key");
         final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
         LocalTouchFactory.get().touch(file);
-        IOUtils.write(key.getBytes(), file.getOutputStream(false));
-        final String username = System.getProperty("manta.user");
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(username)
-                .withIdentity(file)
+        IOUtils.write(key, file.getOutputStream(false), Charset.defaultCharset());
+        final String user = System.getProperty("manta.user");
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+            user).withIdentity(file)
         );
-        session = new MantaSession(host);
-        new LoginConnectionService(
-                new DisabledLoginCallback() {
-                    @Override
-                    public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                        fail(reason);
-                    }
-                },
-                new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
-                new DisabledProgressListener()
-        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-
-        testPathPrefix = new Path(session.getAccountPrivateRoot(), new AlphanumericRandomStringService().random(), EnumSet.of(Type.directory));
+        session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        testPathPrefix = new Path(new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountPrivateRoot(), new AlphanumericRandomStringService().random(), EnumSet.of(Type.directory));
         session.getClient().putDirectory(testPathPrefix.getAbsolute());
     }
 
@@ -82,15 +83,15 @@ public abstract class AbstractMantaTest {
 
     protected Path randomFile() {
         return new Path(
-                testPathPrefix,
-                UUID.randomUUID().toString(),
-                EnumSet.of(Type.file));
+            testPathPrefix,
+            UUID.randomUUID().toString(),
+            EnumSet.of(Type.file));
     }
 
     protected Path randomDirectory() {
         return new Path(
-                testPathPrefix,
-                UUID.randomUUID().toString(),
-                EnumSet.of(Type.directory));
+            testPathPrefix,
+            UUID.randomUUID().toString(),
+            EnumSet.of(Type.directory));
     }
 }
