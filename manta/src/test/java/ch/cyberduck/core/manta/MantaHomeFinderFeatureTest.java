@@ -26,7 +26,7 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MantaHomeFeatureTest extends AbstractMantaTest {
+public class MantaHomeFinderFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testHomeFeature() throws BackgroundException {
@@ -40,7 +40,7 @@ public class MantaHomeFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testPrivateRoot() throws BackgroundException {
-        final Path drive = session.getAccountPrivateRoot();
+        final Path drive = new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountPrivateRoot();
         assertNotNull(drive);
         assertTrue(drive.isVolume());
         assertTrue(drive.isDirectory());
@@ -50,7 +50,7 @@ public class MantaHomeFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testPublicRoot() throws BackgroundException {
-        final Path drive = session.getAccountPublicRoot();
+        final Path drive = new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountPublicRoot();
         assertNotNull(drive);
         assertTrue(drive.isVolume());
         assertTrue(drive.isDirectory());
