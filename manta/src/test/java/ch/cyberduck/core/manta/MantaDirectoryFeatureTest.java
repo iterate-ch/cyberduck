@@ -20,6 +20,7 @@ import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
@@ -30,7 +31,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 
 @Category(IntegrationTest.class)
 public class MantaDirectoryFeatureTest extends AbstractMantaTest {
@@ -39,7 +41,7 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
     public void testMkdir() throws Exception {
         final Path target = new MantaDirectoryFeature(session).mkdir(randomDirectory(), null, null);
         final PathAttributes found = new MantaAttributesFinderFeature(session).find(target);
-        assertEquals(found.getDisplayname(), target.getName());
+        assertNotEquals(Permission.EMPTY, found.getPermission());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -54,7 +56,8 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
                                 EnumSet.of(Path.Type.directory)
                         ), null, null);
         final Attributes found = new MantaAttributesFinderFeature(session).find(target);
-        assertNotNull(found.getOwner());
+        assertNull(found.getOwner());
+        assertNotEquals(Permission.EMPTY, found.getPermission());
         assertNotEquals(-1L, found.getCreationDate());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
