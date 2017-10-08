@@ -34,26 +34,26 @@ public class MantaFindFeatureTest extends AbstractMantaTest {
     public void testFindFileNotFound() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertFalse(f.find(new Path(
-                session.getAccountPrivateRoot(),
-                UUID.randomUUID().toString(),
-                EnumSet.of(Path.Type.file))));
+            new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountPrivateRoot(),
+            UUID.randomUUID().toString(),
+            EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testFindPrivate() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertTrue(f.find(new Path(
-                session.getAccountRoot(),
-                MantaAccountHomeInfo.HOME_PATH_PRIVATE,
-                EnumSet.of(Path.Type.directory))));
+            new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountRoot(),
+            MantaAccountHomeInfo.HOME_PATH_PRIVATE,
+            EnumSet.of(Path.Type.directory))));
     }
 
     @Test
     public void testFindPublic() throws Exception {
         final MantaFindFeature f = new MantaFindFeature(session);
         assertTrue(f.find(new Path(
-                session.getAccountRoot(),
-                MantaAccountHomeInfo.HOME_PATH_PUBLIC,
-                EnumSet.of(Path.Type.directory))));
+            new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountPublicRoot(),
+            MantaAccountHomeInfo.HOME_PATH_PUBLIC,
+            EnumSet.of(Path.Type.directory))));
     }
 }
