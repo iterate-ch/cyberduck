@@ -42,7 +42,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.joyent.manta</groupId>
+            <groupId>ch.iterate.manta</groupId>
             <artifactId>java-manta-client-unshaded</artifactId>
             <version>3.1.7-SNAPSHOT</version>
         </dependency>

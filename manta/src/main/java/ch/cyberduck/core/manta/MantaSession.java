@@ -48,6 +48,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import java.io.IOException;
 import java.security.Security;
 
+import com.joyent.manta.client.LazyMantaClient;
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
 import com.joyent.manta.config.BaseChainedConfigContext;
@@ -57,6 +58,7 @@ import com.joyent.manta.config.SettableConfigContext;
 import com.joyent.manta.config.StandardConfigContext;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
+import com.joyent.manta.http.MantaConnectionFactoryConfigurator;
 
 public class MantaSession extends HttpSession<MantaClient> {
     private static final Logger log = Logger.getLogger(MantaSession.class);
@@ -85,7 +87,7 @@ public class MantaSession extends HttpSession<MantaClient> {
                 .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname()))
         );
         config.setMantaKeyPath(null);
-        return new MantaClient(config);
+        return new LazyMantaClient(config, new MantaConnectionFactoryConfigurator(builder.build(this)));
     }
 
     @Override
