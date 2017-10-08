@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>manta</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>iterate GmbH</string>
         <key>Description</key>
         <string>Joyent Manta Triton Object Storage</string>
         <key>Scheme</key>
