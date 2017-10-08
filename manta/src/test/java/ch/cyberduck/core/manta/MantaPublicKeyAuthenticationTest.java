@@ -23,10 +23,11 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -50,10 +51,10 @@ public class MantaPublicKeyAuthenticationTest {
             final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
             // not setting identity file, should fail since Manta REQUIRES keys
             final Host host = new Host(new MantaProtocol(), "us-east.manta.joyent.com", credentials);
-            final MantaSession session = new MantaSession(host);
+            final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(new DisabledHostKeyCallback());
             final String fingerprint = new MantaPublicKeyAuthentication(session)
-                    .authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                .authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
             assertEquals(fingerprint, System.getProperty("manta.key_id"));
             session.close();
         }
@@ -73,22 +74,22 @@ public class MantaPublicKeyAuthenticationTest {
         try {
             new DefaultLocalTouchFeature().touch(key);
             IOUtils.copy(
-                    new FileReader(System.getProperty("manta.key_path")),
-                    key.getOutputStream(false),
-                    StandardCharsets.UTF_8
+                new FileReader(System.getProperty("manta.key_path")),
+                key.getOutputStream(false),
+                StandardCharsets.UTF_8
             );
             final Host host = new Host(new MantaProtocol(), "us-east.manta.joyent.com", credentials);
-            final MantaSession session = new MantaSession(host);
+            final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(new DisabledHostKeyCallback());
             session.login(new DisabledPasswordStore(),
-                    new DisabledLoginCallback() {
-                        @Override
-                        public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                            // no passphrase to set
-                        }
-                    },
-                    new DisabledCancelCallback(),
-                    new PathCache(0)
+                new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                        // no passphrase to set
+                        return null;
+                    }
+                },
+                new DisabledCancelCallback()
             );
             assertEquals(session.getClient().getContext().getMantaKeyId(), System.getProperty("manta.key_id"));
             session.close();
@@ -113,22 +114,21 @@ public class MantaPublicKeyAuthenticationTest {
 
             new DefaultLocalTouchFeature().touch(key);
             IOUtils.copy(
-                    new FileReader(passphraseKeyPath),
-                    key.getOutputStream(false),
-                    StandardCharsets.UTF_8
+                new FileReader(passphraseKeyPath),
+                key.getOutputStream(false),
+                StandardCharsets.UTF_8
             );
             final Host host = new Host(new MantaProtocol(), "us-east.manta.joyent.com", credentials);
-            final MantaSession session = new MantaSession(host);
+            final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(new DisabledHostKeyCallback());
             session.login(new DisabledPasswordStore(),
-                    new DisabledLoginCallback() {
-                        @Override
-                        public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                            credentials.setPassword(passphraseKeyPassword);
-                        }
-                    },
-                    new DisabledCancelCallback(),
-                    new PathCache(0)
+                new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                        return new Credentials(username, passphraseKeyPassword);
+                    }
+                },
+                new DisabledCancelCallback()
             );
             assertEquals(System.getProperty("manta.passphrase.key_id"), session.getClient().getContext().getMantaKeyId());
             session.close();
