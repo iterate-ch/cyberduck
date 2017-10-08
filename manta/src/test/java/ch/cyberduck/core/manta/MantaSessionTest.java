@@ -17,10 +17,10 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -30,6 +30,8 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,7 +42,8 @@ public class MantaSessionTest {
 
     @Test
     public void testFeatures() throws Exception {
-        final MantaSession session = new MantaSession(new Host(new MantaProtocol(), "username"));
+        final MantaSession session = new MantaSession(new Host(new MantaProtocol(), "username"),
+            new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertTrue(session.getFeature(Read.class) instanceof MantaReadFeature);
         assertTrue(session.getFeature(Write.class) instanceof MantaWriteFeature);
         assertTrue(session.getFeature(Directory.class) instanceof MantaDirectoryFeature);
@@ -52,21 +55,21 @@ public class MantaSessionTest {
 
     private void assertUsernameFailsLogin(final String username) {
         try {
-            new MantaSession(
-                    new Host(
-                            new MantaProtocol(),
-                            null,
-                            443,
-                            new Credentials(username))).login(
-                    new DisabledPasswordStore(),
-                    new DisabledLoginCallback(),
-                    new DisabledCancelCallback(),
-                    PathCache.empty()
+            final MantaSession session = new MantaSession(
+                new Host(
+                    new MantaProtocol(),
+                    null,
+                    443,
+                    new Credentials(username)), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+            session.open(new DisabledHostKeyCallback());
+            session.login(
+                new DisabledPasswordStore(),
+                new DisabledLoginCallback(),
+                new DisabledCancelCallback()
             );
         }
         catch(LoginFailureException e) {
             assertTrue(e.getMessage().contains("Login failed"));
-            assertTrue(e.getDetail().contains("Invalid username"));
         }
         catch(BackgroundException e) {
             fail("Unexpected exception thrown: " + e.getMessage());
@@ -85,18 +88,18 @@ public class MantaSessionTest {
     @Test
     public void testUserOwnerIdentification() throws BackgroundException {
         final MantaSession ownerSession = new MantaSession(
-                new Host(
-                        new MantaProtocol(),
-                        null,
-                        443,
-                        new Credentials("theOwner")));
+            new Host(
+                new MantaProtocol(),
+                null,
+                443,
+                new Credentials("theOwner")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertTrue(ownerSession.userIsOwner());
         final MantaSession subuserSession = new MantaSession(
-                new Host(
-                        new MantaProtocol(),
-                        null,
-                        443,
-                        new Credentials("theOwner/theSubUser")));
+            new Host(
+                new MantaProtocol(),
+                null,
+                443,
+                new Credentials("theOwner/theSubUser")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertFalse(subuserSession.userIsOwner());
     }
 }
