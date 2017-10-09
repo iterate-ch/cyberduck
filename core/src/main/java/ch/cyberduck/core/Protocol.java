@@ -100,7 +100,7 @@ public interface Protocol extends Comparable<Protocol> {
         irods,
         b2,
         file,
-        sds;
+        dracoon;
 
         /**
          * Check login credentials for validity for this protocol.

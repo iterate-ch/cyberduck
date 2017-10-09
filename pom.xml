@@ -44,7 +44,7 @@
         <module>nio</module>
         <module>hubic</module>
         <module>onedrive</module>
-        <module>sds</module>
+        <module>dracoon</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
