@@ -119,6 +119,32 @@ public class SDSDelegatingCopyFeatureTest {
     }
 
     @Test
+    public void testCopyWithRenameToExistingFile() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path folder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new SDSDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session).touch(test, new TransferStatus());
+        final Path copy = new Path(folder, test.getName(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session).touch(copy, new TransferStatus());
+        final SDSCopyFeature feature = new SDSCopyFeature(session);
+        assertFalse(feature.isSupported(test, copy));
+        new SDSDelegatingCopyFeature(session, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        final Find find = new DefaultFindFeature(session);
+        final AttributedList<Path> files = new SDSListService(session).list(folder, new DisabledListProgressListener());
+        assertTrue(find.find(copy));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
     public void testCopyDirectoryServerSide() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
