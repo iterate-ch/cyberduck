@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
@@ -52,7 +51,7 @@ public class OneDriveCopyFeature implements Copy {
             copyOperation.rename(target.getName());
         }
         if(status.isExists()) {
-            new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+            new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
         }
         copyOperation.copy(session.toFolder(target.getParent()));
         try {
