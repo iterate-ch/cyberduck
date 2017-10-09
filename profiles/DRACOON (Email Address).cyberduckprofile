@@ -20,9 +20,9 @@
         <key>Protocol</key>
         <string>sds</string>
         <key>Vendor</key>
-        <string>ssp-radius</string>
+        <string>dracoon</string>
         <key>Description</key>
-        <string>Secure Data Space (RADIUS)</string>
+        <string>DRACOON (Email Address)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
@@ -30,12 +30,10 @@
         <key>Username Placeholder</key>
         <string>Username</string>
         <key>Password Placeholder</key>
-        <string>Passcode</string>
+        <string>Password</string>
         <key>Hostname Configurable</key>
         <true/>
         <key>Port Configurable</key>
         <true/>
-        <key>Authorization</key>
-        <string>radius</string>
     </dict>
 </plist>

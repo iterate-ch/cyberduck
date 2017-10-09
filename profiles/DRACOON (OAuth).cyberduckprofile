@@ -20,9 +20,9 @@
         <key>Protocol</key>
         <string>sds</string>
         <key>Vendor</key>
-        <string>ssp-oauth</string>
+        <string>dracoon-oauth</string>
         <key>Description</key>
-        <string>Secure Data Space (OAuth)</string>
+        <string>DRACOON (OAuth)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
@@ -38,9 +38,9 @@
         <key>Authorization</key>
         <string>oauth</string>
         <key>OAuth Authorization Url</key>
-        <string>https://duck.ssp-europe.eu/oauth/authorize</string>
+        <string>https://dracoon.team/oauth/authorize</string>
         <key>OAuth Token Url</key>
-        <string>https://duck.ssp-europe.eu/oauth/token</string>
+        <string>https://dracoon.team/oauth/token</string>
         <key>OAuth Client ID</key>
         <string>chuu9ooceeph3eekie7Uan4dapae4Wae</string>
         <key>OAuth Client Secret</key>
