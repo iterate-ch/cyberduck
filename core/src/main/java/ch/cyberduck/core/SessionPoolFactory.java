@@ -72,7 +72,7 @@ public class SessionPoolFactory {
             case dav:
             case azure:
             case b2:
-            case sds:
+            case dracoon:
                 // Stateless protocol
                 return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
             case ftp:
