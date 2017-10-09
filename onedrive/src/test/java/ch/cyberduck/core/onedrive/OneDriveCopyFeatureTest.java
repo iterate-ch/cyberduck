@@ -16,14 +16,18 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -38,6 +42,7 @@ import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class OneDriveCopyFeatureTest extends AbstractOneDriveTest {
+
     @Test
     public void testCopy() throws Exception {
         final Directory directory = new OneDriveDirectoryFeature(session);
@@ -61,5 +66,21 @@ public class OneDriveCopyFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributesFinder.find(rename));
 
         delete.delete(Arrays.asList(touchedFile, targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyToExistingFile() throws Exception {
+        final Path folder = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new OneDriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new OneDriveTouchFeature(session).touch(test, new TransferStatus());
+        final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new OneDriveTouchFeature(session).touch(copy, new TransferStatus());
+        new OneDriveCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        final Find find = new DefaultFindFeature(session);
+        final AttributedList<Path> files = new OneDriveListService(session).list(folder, new DisabledListProgressListener());
+        assertTrue(find.find(test));
+        assertTrue(find.find(copy));
+        new OneDriveDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
