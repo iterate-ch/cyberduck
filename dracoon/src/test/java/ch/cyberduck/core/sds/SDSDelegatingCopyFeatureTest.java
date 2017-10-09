@@ -15,26 +15,16 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.triplecrypt.CryptoReadFeature;
 import ch.cyberduck.core.sds.triplecrypt.CryptoWriteFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
@@ -75,6 +65,81 @@ public class SDSDelegatingCopyFeatureTest {
         new SDSDelegatingCopyFeature(session, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new SDSFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session).find(copy));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testCopyFileWithRename() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path copy = new Path(new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus()), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final SDSCopyFeature feature = new SDSCopyFeature(session);
+        assertFalse(feature.isSupported(test, copy));
+        new SDSDelegatingCopyFeature(session, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
+        assertTrue(new SDSFindFeature(session).find(test));
+        assertTrue(new SDSFindFeature(session).find(copy));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testCopyServerSideToExistingFile() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path sourceFolder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path targetFolder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new SDSDirectoryFeature(session).mkdir(sourceFolder, null, new TransferStatus());
+        new SDSDirectoryFeature(session).mkdir(targetFolder, null, new TransferStatus());
+        final Path test = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session).touch(test, new TransferStatus());
+        final Path copy = new Path(targetFolder, test.getName(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session).touch(copy, new TransferStatus());
+        final SDSCopyFeature feature = new SDSCopyFeature(session);
+        assertTrue(feature.isSupported(test, copy));
+        new SDSDelegatingCopyFeature(session, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        final Find find = new DefaultFindFeature(session);
+        final AttributedList<Path> files = new SDSListService(session).list(targetFolder, new DisabledListProgressListener());
+        assertTrue(find.find(copy));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testCopyWithRenameToExistingFile() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path folder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new SDSDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session).touch(test, new TransferStatus());
+        final Path copy = new Path(folder, test.getName(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session).touch(copy, new TransferStatus());
+        final SDSCopyFeature feature = new SDSCopyFeature(session);
+        assertFalse(feature.isSupported(test, copy));
+        new SDSDelegatingCopyFeature(session, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        final Find find = new DefaultFindFeature(session);
+        final AttributedList<Path> files = new SDSListService(session).list(folder, new DisabledListProgressListener());
+        assertTrue(find.find(copy));
         new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

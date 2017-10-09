@@ -174,6 +174,12 @@ public abstract class NSWorkspace extends NSObject {
      */
     public abstract boolean selectFile_inFileViewerRootedAtPath(String fullpath, String rootpath);
 
+    /**
+     * @param fullpath The full path of the file to select.
+     * @param rootpath If a path is specified, a new file viewer is opened. If you specify an
+     *                 empty string (@"") for this parameter, the file is selected in the main viewer.
+     * @return YES if the file was successfully selected; otherwise, NO.
+     */
     public boolean selectFile(String fullpath, String rootpath) {
         return selectFile_inFileViewerRootedAtPath(fullpath, rootpath);
     }

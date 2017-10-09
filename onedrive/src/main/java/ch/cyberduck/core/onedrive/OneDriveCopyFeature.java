@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
@@ -30,13 +31,14 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveCopyOperation;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class OneDriveCopyFeature implements Copy {
     private static final Logger logger = Logger.getLogger(OneDriveCopyFeature.class);
     private final OneDriveSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     public OneDriveCopyFeature(OneDriveSession session) {
         this.session = session;
@@ -48,13 +50,16 @@ public class OneDriveCopyFeature implements Copy {
         if(!StringUtils.equals(source.getName(), target.getName())) {
             copyOperation.rename(target.getName());
         }
+        if(status.isExists()) {
+            new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
+        }
         copyOperation.copy(session.toFolder(target.getParent()));
         try {
             session.toFile(source).copy(copyOperation).await(statusObject -> logger.info(
-                    String.format("Copy Progress Operation %s progress %f status %s",
-                            statusObject.getOperation(),
-                            statusObject.getPercentage(),
-                            statusObject.getStatus())));
+                String.format("Copy Progress Operation %s progress %f status %s",
+                    statusObject.getOperation(),
+                    statusObject.getPercentage(),
+                    statusObject.getStatus())));
             return target;
         }
         catch(OneDriveAPIException e) {

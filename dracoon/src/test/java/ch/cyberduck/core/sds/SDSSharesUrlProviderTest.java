@@ -52,7 +52,7 @@ import static org.junit.Assert.*;
 public class SDSSharesUrlProviderTest {
 
     @Test
-    public void testToUrl() throws Exception {
+    public void testShareFile() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
@@ -61,6 +61,61 @@ public class SDSSharesUrlProviderTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+            new CreateDownloadShareRequest()
+                .expiration(new ObjectExpiration().enableExpiration(false))
+                .notifyCreator(false)
+                .sendMail(false)
+                .sendSms(false)
+                .password(null)
+                .mailRecipients(null)
+                .mailSubject(null)
+                .mailBody(null)
+                .maxDownloads(null), new DisabledPasswordCallback());
+        assertNotEquals(DescriptiveUrl.EMPTY, url);
+        assertEquals(DescriptiveUrl.Type.signed, url.getType());
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/#/public/shares-downloads/"));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testShareTopLevelRoom() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(room,
+            new CreateDownloadShareRequest()
+                .expiration(new ObjectExpiration().enableExpiration(false))
+                .notifyCreator(false)
+                .sendMail(false)
+                .sendSms(false)
+                .password(null)
+                .mailRecipients(null)
+                .mailSubject(null)
+                .mailBody(null)
+                .maxDownloads(null), new DisabledPasswordCallback());
+        assertNotEquals(DescriptiveUrl.EMPTY, url);
+        assertEquals(DescriptiveUrl.Type.signed, url.getType());
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/#/public/shares-downloads/"));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testShareSubRoom() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(false))

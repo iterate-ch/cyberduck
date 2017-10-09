@@ -100,7 +100,7 @@ public interface Protocol extends Comparable<Protocol> {
         irods,
         b2,
         file,
-        sds,
+        dracoon,
         manta {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {

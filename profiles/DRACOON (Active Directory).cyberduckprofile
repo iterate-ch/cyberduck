@@ -20,9 +20,9 @@
         <key>Protocol</key>
         <string>sds</string>
         <key>Vendor</key>
-        <string>ssp</string>
+        <string>dracoon-ad</string>
         <key>Description</key>
-        <string>Secure Data Space (Email Address)</string>
+        <string>DRACOON (Active Directory)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
@@ -35,5 +35,7 @@
         <true/>
         <key>Port Configurable</key>
         <true/>
+        <key>Authorization</key>
+        <string>ad</string>
     </dict>
 </plist>

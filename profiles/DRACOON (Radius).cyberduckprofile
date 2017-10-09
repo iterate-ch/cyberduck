@@ -20,9 +20,9 @@
         <key>Protocol</key>
         <string>sds</string>
         <key>Vendor</key>
-        <string>ssp-ad</string>
+        <string>dracoon-radius</string>
         <key>Description</key>
-        <string>Secure Data Space (Active Directory)</string>
+        <string>DRACOON (RADIUS)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
@@ -30,12 +30,12 @@
         <key>Username Placeholder</key>
         <string>Username</string>
         <key>Password Placeholder</key>
-        <string>Password</string>
+        <string>Passcode</string>
         <key>Hostname Configurable</key>
         <true/>
         <key>Port Configurable</key>
         <true/>
         <key>Authorization</key>
-        <string>ad</string>
+        <string>radius</string>
     </dict>
 </plist>
