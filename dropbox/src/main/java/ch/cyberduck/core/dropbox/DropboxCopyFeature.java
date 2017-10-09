@@ -20,7 +20,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.util.Collections;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
@@ -36,6 +39,9 @@ public class DropboxCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            if(status.isExists()) {
+                new DropboxDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
+            }
             // If the source path is a folder all its contents will be copied.
             new DbxUserFilesRequests(session.getClient()).copy(source.getAbsolute(), target.getAbsolute());
             return target;
