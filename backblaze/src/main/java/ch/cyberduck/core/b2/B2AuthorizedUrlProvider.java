@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +43,7 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void> {
     private static final Logger log = Logger.getLogger(B2AuthorizedUrlProvider.class);
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
 
@@ -51,25 +52,25 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void> {
     }
 
     @Override
-    public DescriptiveUrl toUrl(final Path file, final Void none, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Void none, final PasswordCallback callback) throws BackgroundException {
         if(file.isVolume()) {
             return DescriptiveUrl.EMPTY;
         }
         if(file.isFile()) {
             final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
-                    URIEncoder.encode(containerService.getContainer(file).getName()),
-                    URIEncoder.encode(containerService.getKey(file)));
+                URIEncoder.encode(containerService.getContainer(file).getName()),
+                URIEncoder.encode(containerService.getKey(file)));
             try {
                 final int seconds = 604800;
                 // Determine expiry time for URL
                 final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 expiry.add(Calendar.SECOND, seconds);
                 final String token = session.getClient().getDownloadAuthorization(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                        StringUtils.EMPTY, seconds);
+                    StringUtils.EMPTY, seconds);
                 return new DescriptiveUrl(URI.create(String.format("%s?Authorization=%s", download, token)), DescriptiveUrl.Type.signed,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                                UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                        UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
                 );
             }
             catch(B2ApiException e) {
@@ -80,5 +81,10 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void> {
             }
         }
         return DescriptiveUrl.EMPTY;
+    }
+
+    @Override
+    public DescriptiveUrl toUploadUrl(final Path file, final Void aVoid, final PasswordCallback callback) throws BackgroundException {
+        throw new UnsupportedException();
     }
 }

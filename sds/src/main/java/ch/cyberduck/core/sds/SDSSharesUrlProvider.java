@@ -62,8 +62,8 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
-    public DescriptiveUrl toUrl(final Path file, final CreateDownloadShareRequest options,
-                                final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final CreateDownloadShareRequest options,
+                                        final PasswordCallback callback) throws BackgroundException {
         try {
             final Long fileid = Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
             if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
@@ -110,5 +110,10 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         catch(CryptoException e) {
             throw new CryptoExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public DescriptiveUrl toUploadUrl(final Path file, final CreateDownloadShareRequest createDownloadShareRequest, final PasswordCallback callback) throws BackgroundException {
+        return null;
     }
 }

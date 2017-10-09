@@ -61,7 +61,7 @@ public class SDSSharesUrlProviderTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(false))
                 .notifyCreator(false)
@@ -88,7 +88,7 @@ public class SDSSharesUrlProviderTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(room,
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(room,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(false))
                 .notifyCreator(false)
@@ -116,7 +116,7 @@ public class SDSSharesUrlProviderTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(false))
                 .notifyCreator(false)
@@ -145,7 +145,7 @@ public class SDSSharesUrlProviderTest {
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
-            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
                 new CreateDownloadShareRequest()
                     .expiration(new ObjectExpiration().enableExpiration(false))
                     .notifyCreator(false)
@@ -174,7 +174,7 @@ public class SDSSharesUrlProviderTest {
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
-            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
                 new CreateDownloadShareRequest()
                     .expiration(new ObjectExpiration().enableExpiration(false))
                     .notifyCreator(false)
@@ -204,7 +204,7 @@ public class SDSSharesUrlProviderTest {
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
-            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
                 new CreateDownloadShareRequest()
                     .expiration(new ObjectExpiration().enableExpiration(false))
                     .notifyCreator(false)
@@ -233,7 +233,7 @@ public class SDSSharesUrlProviderTest {
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
-            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
                 new CreateDownloadShareRequest()
                     .expiration(new ObjectExpiration().enableExpiration(false))
                     .notifyCreator(false)
@@ -260,7 +260,7 @@ public class SDSSharesUrlProviderTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new Date(1744300800000L)))
                 .notifyCreator(false)
@@ -288,7 +288,7 @@ public class SDSSharesUrlProviderTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new Date(17443L)))
                 .notifyCreator(false)
@@ -317,7 +317,7 @@ public class SDSSharesUrlProviderTest {
         final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String password = new AlphanumericRandomStringService().random();
-        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(false))
                 .notifyCreator(false)
@@ -351,7 +351,7 @@ public class SDSSharesUrlProviderTest {
         final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
-            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUrl(test,
+            final DescriptiveUrl url = new SDSSharesUrlProvider(session).toDownloadUrl(test,
                 new CreateDownloadShareRequest()
                     .expiration(new ObjectExpiration().enableExpiration(false))
                     .notifyCreator(false)
