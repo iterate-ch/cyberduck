@@ -21,17 +21,17 @@ import org.apache.commons.lang3.StringUtils;
 public class SDSProtocol extends AbstractProtocol {
     @Override
     public String getIdentifier() {
-        return "sds";
+        return "dracoon";
     }
 
     @Override
     public String getName() {
-        return "SDS";
+        return "DRACOON";
     }
 
     @Override
     public String getDescription() {
-        return "SSP Secure Data Space";
+        return "DRACOON";
     }
 
     @Override
