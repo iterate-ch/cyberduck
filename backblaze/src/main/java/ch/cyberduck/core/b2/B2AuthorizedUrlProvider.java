@@ -39,7 +39,7 @@ import java.util.TimeZone;
 
 import synapticloop.b2.exception.B2ApiException;
 
-public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void> {
+public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
     private static final Logger log = Logger.getLogger(B2AuthorizedUrlProvider.class);
 
     private final PathContainerService containerService
@@ -84,7 +84,7 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void> {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Void aVoid, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Void none, final PasswordCallback callback) throws BackgroundException {
         throw new UnsupportedException();
     }
 }

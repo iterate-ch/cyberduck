@@ -29,8 +29,10 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.SharesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.UploadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -49,7 +51,7 @@ import eu.ssp_europe.sds.crypto.model.PlainFileKey;
 import eu.ssp_europe.sds.crypto.model.UserKeyPair;
 import eu.ssp_europe.sds.crypto.model.UserPrivateKey;
 
-public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest> {
+public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest, CreateUploadShareRequest> {
     private static final Logger log = Logger.getLogger(SDSSharesUrlProvider.class);
 
     private final PathContainerService containerService
@@ -113,7 +115,30 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final CreateDownloadShareRequest createDownloadShareRequest, final PasswordCallback callback) throws BackgroundException {
-        return null;
+    public DescriptiveUrl toUploadUrl(final Path file, final CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
+        try {
+            final UploadShare share = new SharesApi(session.getClient()).createUploadShare(StringUtils.EMPTY,
+                options.targetId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()))), null);
+            final String help;
+            if(null == share.getExpireAt()) {
+                help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
+            }
+            else {
+                final Long expiry = share.getExpireAt().getTime();
+                help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                    UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
+                );
+            }
+            return new DescriptiveUrl(
+                URI.create(String.format("%s://%s/#/public/shares-uploads/%s",
+                    session.getHost().getProtocol().getScheme(),
+                    session.getHost().getHostname(),
+                    share.getAccessKey())
+                ),
+                DescriptiveUrl.Type.signed, help);
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map(e);
+        }
     }
 }
