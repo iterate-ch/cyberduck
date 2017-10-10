@@ -39,6 +39,9 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     public static final Acl.Role CHANGE_ROLE = new Acl.Role("CHANGE");
     public static final Acl.Role DELETE_ROLE = new Acl.Role("DELETE");
 
+    public static final Acl.Role DOWNLOAD_SHARE_ROLE = new Acl.Role("DOWNLOAD_SHARE");
+    public static final Acl.Role UPLOAD_SHARE_ROLE = new Acl.Role("UPLOAD_SHARE");
+
     public SDSAttributesFinderFeature(final SDSSession session) {
         this.session = session;
     }
@@ -94,6 +97,12 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
         if(node.getPermissions().getDelete()) {
             acl.addAll(user, DELETE_ROLE);
+        }
+        if(node.getPermissions().getManageDownloadShare()) {
+            acl.addAll(user, DOWNLOAD_SHARE_ROLE);
+        }
+        if(node.getPermissions().getManageUploadShare()) {
+            acl.addAll(user, UPLOAD_SHARE_ROLE);
         }
         return acl;
     }
