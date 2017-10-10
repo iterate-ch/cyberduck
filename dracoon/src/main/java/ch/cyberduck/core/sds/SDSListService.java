@@ -82,8 +82,12 @@ public class SDSListService implements ListService {
                             }
                     }
                     final Map<String, String> custom = new HashMap<>();
-                    custom.put(SDSAttributesFinderFeature.KEY_CNT_DOWNLOADSHARES, String.valueOf(node.getCntDownloadShares()));
-                    custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
+                    if(null != node.getCntDownloadShares()) {
+                        custom.put(SDSAttributesFinderFeature.KEY_CNT_DOWNLOADSHARES, String.valueOf(node.getCntDownloadShares()));
+                    }
+                    if(null != node.getCntUploadShares()) {
+                        custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
+                    }
                     attributes.setCustom(custom);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);
