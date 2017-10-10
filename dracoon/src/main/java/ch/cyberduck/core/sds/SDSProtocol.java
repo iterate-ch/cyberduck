@@ -35,6 +35,11 @@ public class SDSProtocol extends AbstractProtocol {
     }
 
     @Override
+    public Type getType() {
+        return Type.dracoon;
+    }
+
+    @Override
     public Scheme getScheme() {
         return Scheme.https;
     }
@@ -56,7 +61,7 @@ public class SDSProtocol extends AbstractProtocol {
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", SDSProtocol.class.getPackage().getName(), StringUtils.upperCase(this.getType().name()));
+        return String.format("%s.%s", SDSProtocol.class.getPackage().getName(), StringUtils.upperCase("sds"));
     }
 
     @Override

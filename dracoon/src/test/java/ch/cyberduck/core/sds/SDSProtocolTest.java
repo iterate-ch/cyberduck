@@ -43,7 +43,7 @@ public class SDSProtocolTest {
                 new Local(this.getClass().getResource("/test.cyberduckprofile").getPath()));
         factory.register(profile);
         {
-            final Host host = new HostParser(factory).get("sds://duck");
+            final Host host = new HostParser(factory).get("dracoon://duck");
             assertNotNull(host);
             assertEquals(profile, host.getProtocol());
         }
