@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -43,6 +44,7 @@ import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Set;
 
 import eu.ssp_europe.sds.crypto.Crypto;
 import eu.ssp_europe.sds.crypto.CryptoException;
@@ -67,6 +69,10 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     public DescriptiveUrl toDownloadUrl(final Path file, final CreateDownloadShareRequest options,
                                         final PasswordCallback callback) throws BackgroundException {
         try {
+            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            if(roles != null && !roles.contains(SDSAttributesFinderFeature.DOWNLOAD_SHARE_ROLE)) {
+                return DescriptiveUrl.EMPTY;
+            }
             final Long fileid = Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
             if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
                 // get existing file key associated with the sharing user
@@ -117,6 +123,10 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
+            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            if(roles != null && !roles.contains(SDSAttributesFinderFeature.UPLOAD_SHARE_ROLE)) {
+                return DescriptiveUrl.EMPTY;
+            }
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(StringUtils.EMPTY,
                 options.targetId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()))), null);
             final String help;
