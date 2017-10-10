@@ -36,6 +36,6 @@
         <key>Port Configurable</key>
         <true/>
         <key>Authorization</key>
-        <string>ad</string>
+        <string>active_directory</string>
     </dict>
 </plist>
