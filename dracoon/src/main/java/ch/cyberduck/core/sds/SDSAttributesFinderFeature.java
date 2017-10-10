@@ -32,6 +32,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class SDSAttributesFinderFeature implements AttributesFinder {
 
+    public static final String KEY_CNT_DOWNLOADSHARES = "count_downloadshares";
+    public static final String KEY_CNT_UPLOADSHARES = "count_uploadshares";
+
     private final SDSSession session;
 
     public static final Acl.Role READ_ROLE = new Acl.Role(Acl.Role.READ);
