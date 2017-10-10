@@ -27,6 +27,7 @@ import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,6 +48,9 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
     @Override
     protected Map<Path, Distribution> operate(final PasswordCallback callback, final Path file) throws BackgroundException {
         final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
+        if(null == feature) {
+            return Collections.emptyMap();
+        }
         final AttributedList<Path> containers = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()
         );
