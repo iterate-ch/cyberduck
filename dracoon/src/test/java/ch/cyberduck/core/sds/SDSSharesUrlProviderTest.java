@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ObjectExpiration;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -373,4 +374,100 @@ public class SDSSharesUrlProviderTest {
             session.close();
         }
     }
+
+    @Test
+    public void testUploadAccountTopLevelRoom() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUploadUrl(room,
+            new CreateUploadShareRequest()
+                .name(new AlphanumericRandomStringService().random())
+                .expiration(new ObjectExpiration().enableExpiration(false))
+                .notifyCreator(false)
+                .sendMail(false)
+                .sendSms(false)
+                .password(null)
+                .mailRecipients(null)
+                .mailSubject(null)
+                .mailBody(null)
+                .maxSize(null)
+                .maxSlots(null)
+                .notes(null)
+                .filesExpiryPeriod(null), new DisabledPasswordCallback());
+        assertNotEquals(DescriptiveUrl.EMPTY, url);
+        assertEquals(DescriptiveUrl.Type.signed, url.getType());
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/#/public/shares-uploads/"));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testUploadAccountEncrypted() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path folder = new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.decrypted)), null, new TransferStatus());
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUploadUrl(folder,
+            new CreateUploadShareRequest()
+                .name(new AlphanumericRandomStringService().random())
+                .expiration(new ObjectExpiration().enableExpiration(false))
+                .notifyCreator(false)
+                .sendMail(false)
+                .sendSms(false)
+                .password(null)
+                .mailRecipients(null)
+                .mailSubject(null)
+                .mailBody(null)
+                .maxSize(null)
+                .maxSlots(null)
+                .notes(null)
+                .filesExpiryPeriod(null), new DisabledPasswordCallback());
+        assertNotEquals(DescriptiveUrl.EMPTY, url);
+        assertEquals(DescriptiveUrl.Type.signed, url.getType());
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/#/public/shares-uploads/"));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testUploadAccountSubRoom() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final DescriptiveUrl url = new SDSSharesUrlProvider(session).toUploadUrl(test,
+            new CreateUploadShareRequest()
+                .name(new AlphanumericRandomStringService().random())
+                .expiration(new ObjectExpiration().enableExpiration(false))
+                .notifyCreator(false)
+                .sendMail(false)
+                .sendSms(false)
+                .password(null)
+                .mailRecipients(null)
+                .mailSubject(null)
+                .mailBody(null)
+                .maxSize(null)
+                .maxSlots(null)
+                .notes(null)
+                .filesExpiryPeriod(null), new DisabledPasswordCallback());
+        assertNotEquals(DescriptiveUrl.EMPTY, url);
+        assertEquals(DescriptiveUrl.Type.signed, url.getType());
+        assertTrue(url.getUrl().startsWith("https://duck.ssp-europe.eu/#/public/shares-uploads/"));
+        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
 }
