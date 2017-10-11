@@ -18,11 +18,14 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertNotNull;
 
+@Category(IntegrationTest.class)
 public class SessionFactoryTest {
 
     @Test
