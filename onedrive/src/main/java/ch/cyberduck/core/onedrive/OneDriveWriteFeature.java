@@ -160,7 +160,7 @@ public class OneDriveWriteFeature implements Write<Void> {
                     log.warn(String.format("Abort upload session %s with no completed parts", upload));
                     // Use touch feature for empty file upload
                     upload.cancelUpload();
-                    new OneDriveTouchFeature(session).touch(file, status);
+                    new OneDriveTouchFeature(session).touch(file, new TransferStatus());
                 }
             }
             catch(BackgroundException e) {

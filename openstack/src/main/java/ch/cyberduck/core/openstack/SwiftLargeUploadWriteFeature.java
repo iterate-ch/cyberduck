@@ -194,7 +194,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                     return;
                 }
                 if(completed.isEmpty()) {
-                    new SwiftTouchFeature(session, regionService).touch(file, overall.length(0L));
+                    new SwiftTouchFeature(session, regionService).touch(file, new TransferStatus());
                 }
                 else {
                     // Static Large Object

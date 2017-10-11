@@ -197,7 +197,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                 if(completed.isEmpty()) {
                     log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
-                    new S3TouchFeature(session).touch(file, overall.length(0L));
+                    new S3TouchFeature(session).touch(file, new TransferStatus());
                 }
                 else {
                     final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);

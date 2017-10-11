@@ -213,7 +213,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                 if(completed.isEmpty()) {
                     if(null == version) {
                         // No single file upload and zero parts
-                        version = new VersionId(new B2TouchFeature(session).touch(file, overall.length(0L)).attributes().getVersionId());
+                        version = new VersionId(new B2TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId());
                     }
                 }
                 else {
