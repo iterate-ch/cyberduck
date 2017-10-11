@@ -144,10 +144,6 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
 
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
-            if(0 == len) {
-                // Skip empty segment
-                return;
-            }
             try {
                 completed.add(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
                     @Override
