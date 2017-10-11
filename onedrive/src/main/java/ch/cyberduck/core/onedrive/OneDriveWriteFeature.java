@@ -43,12 +43,13 @@ import org.nuxeo.onedrive.client.OneDriveUploadSession;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OneDriveWriteFeature implements Write<Void> {
     private static final Logger log = Logger.getLogger(OneDriveWriteFeature.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final OneDriveSession session;
     private final Find finder;
@@ -70,7 +71,7 @@ public class OneDriveWriteFeature implements Write<Void> {
             final OneDriveUploadSession upload = session.toFile(file).createUploadSession();
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, new TransferStatus(status));
             return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy,
-                    preferences.getInteger("onedrive.upload.multipart.partsize.minimum"))) {
+                preferences.getInteger("onedrive.upload.multipart.partsize.minimum"))) {
                 @Override
                 public Void getStatus() throws BackgroundException {
                     return null;
@@ -113,6 +114,7 @@ public class OneDriveWriteFeature implements Write<Void> {
         private final OneDriveUploadSession upload;
         private final Path file;
         private final TransferStatus status;
+        private final AtomicBoolean close = new AtomicBoolean();
 
         private Long offset = 0L;
 
@@ -130,35 +132,42 @@ public class OneDriveWriteFeature implements Write<Void> {
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             final byte[] content = Arrays.copyOfRange(b, off, len);
-            if(content.length == 0) {
-                if(0L == offset) {
-                    // Use touch feature for empty file upload
-                    upload.cancelUpload();
-                    try {
-                        new OneDriveTouchFeature(session).touch(file, status);
-                    }
-                    catch(BackgroundException e) {
-                        throw new IOException(e);
-                    }
-                }
-                // Ignore empty content
+            final HttpRange range = HttpRange.byLength(offset, content.length);
+            final String header;
+            if(status.getLength() == -1L) {
+                header = String.format("%d-%d/*", range.getStart(), range.getEnd());
             }
             else {
-                final HttpRange range = HttpRange.byLength(offset, content.length);
-                final String header;
-                if(status.getLength() == -1L) {
-                    header = String.format("%d-%d/*", range.getStart(), range.getEnd());
+                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), status.getOffset() + status.getLength());
+            }
+            if(upload.uploadFragment(header, content) instanceof OneDriveFile.Metadata) {
+                log.info(String.format("Completed upload for %s", file));
+            }
+            else {
+                log.debug(String.format("Uploaded fragment %s for file %s", header, file));
+            }
+            offset += content.length;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                if(close.get()) {
+                    log.warn(String.format("Skip double close of stream %s", this));
+                    return;
                 }
-                else {
-                    header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), status.getOffset() + status.getLength());
+                if(0L == offset) {
+                    log.warn(String.format("Abort upload session %s with no completed parts", upload));
+                    // Use touch feature for empty file upload
+                    upload.cancelUpload();
+                    new OneDriveTouchFeature(session).touch(file, new TransferStatus());
                 }
-                if(upload.uploadFragment(header, content) instanceof OneDriveFile.Metadata) {
-                    log.info(String.format("Completed upload for %s", file));
-                }
-                else {
-                    log.debug(String.format("Uploaded fragment %s for file %s", header, file));
-                }
-                offset += content.length;
+            }
+            catch(BackgroundException e) {
+                throw new IOException(e);
+            }
+            finally {
+                close.set(true);
             }
         }
     }

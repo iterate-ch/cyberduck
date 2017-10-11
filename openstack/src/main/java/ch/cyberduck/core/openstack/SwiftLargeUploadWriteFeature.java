@@ -144,10 +144,6 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
 
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
-            if(0 == len) {
-                // Skip empty segment
-                return;
-            }
             try {
                 completed.add(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
                     @Override
@@ -198,7 +194,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                     return;
                 }
                 if(completed.isEmpty()) {
-                    new SwiftTouchFeature(session, regionService).touch(file, overall.length(0L));
+                    new SwiftTouchFeature(session, regionService).touch(file, new TransferStatus());
                 }
                 else {
                     // Static Large Object
