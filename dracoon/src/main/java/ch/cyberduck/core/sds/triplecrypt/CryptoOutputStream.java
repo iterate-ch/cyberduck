@@ -42,13 +42,11 @@ import eu.ssp_europe.sds.crypto.model.PlainDataContainer;
 
 public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<VersionId> {
 
-    private final SDSSession session;
     private final StatusOutputStream<VersionId> proxy;
 
     public CryptoOutputStream(final SDSSession session, final StatusOutputStream<VersionId> proxy, final FileEncryptionCipher cipher, final TransferStatus key) {
         super(new MemorySegementingOutputStream(new EncryptingOutputStream(session, proxy, cipher, key),
                 SDSSession.DEFAULT_CHUNKSIZE));
-        this.session = session;
         this.proxy = proxy;
     }
 
