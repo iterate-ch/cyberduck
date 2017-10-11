@@ -156,7 +156,7 @@ public class OneDriveWriteFeature implements Write<Void> {
                     log.info(String.format("Completed upload for %s", file));
                 }
                 else {
-                    log.debug(String.format("Uploaded fragement %s for file %s", header, file));
+                    log.debug(String.format("Uploaded fragment %s for file %s", header, file));
                 }
                 offset += content.length;
             }
