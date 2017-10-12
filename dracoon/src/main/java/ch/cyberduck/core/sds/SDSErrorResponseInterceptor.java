@@ -55,7 +55,6 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
                     try {
                         token = new AuthApi(session.getClient()).login(new LoginRequest()
                                 .authType(session.getHost().getProtocol().getAuthorization())
-                                .language("en")
                                 .login(user)
                                 .password(password)
                         ).getToken();
