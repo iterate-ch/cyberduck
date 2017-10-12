@@ -149,7 +149,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
                     .authType(host.getProtocol().getAuthorization())
-                    .language("en")
                     .login(login)
                     .password(additional.getPassword())
                 ));
@@ -158,7 +157,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
                     .authType(host.getProtocol().getAuthorization())
-                    .language("en")
                     .login(login)
                     .password(password)
                 ));
@@ -190,7 +188,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             );
             return this.login(controller, new LoginRequest()
                 .authType(host.getProtocol().getAuthorization())
-                .language("en")
                 .password(additional.getPassword())
             );
         }
