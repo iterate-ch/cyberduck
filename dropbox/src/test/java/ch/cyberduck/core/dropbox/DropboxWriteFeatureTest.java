@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -116,14 +117,9 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(0);
         status.setLength(content.length);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), ".~lock." + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), ".~lock." + new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertTrue(new DropboxFindFeature(session).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -132,14 +128,9 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(0);
         status.setLength(content.length);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), ".~lock." + UUID.randomUUID().toString() + "#", EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), ".~lock." + new AsciiRandomStringService().random() + "#", EnumSet.of(Path.Type.file));
         final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertTrue(new DropboxFindFeature(session).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -148,14 +139,9 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(0);
         status.setLength(content.length);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), "~$" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), "~$" + new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertTrue(new DropboxFindFeature(session).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -166,11 +152,17 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), ".DS_Store", EnumSet.of(Path.Type.file));
         final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertTrue(new DropboxFindFeature(session).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testWriteDesktopIni() throws Exception {
+        final DropboxWriteFeature write = new DropboxWriteFeature(session);
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(0);
+        status.setLength(content.length);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), "desktop.ini", EnumSet.of(Path.Type.file));
+        final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
     }
 }
