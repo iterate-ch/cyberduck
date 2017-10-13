@@ -99,7 +99,9 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         else {
             this.lock();
             try {
-                folder.mkdir();
+                if(!folder.exists()) {
+                    folder.mkdir();
+                }
                 final Local f = this.getFile(bookmark);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save bookmark %s", f));
@@ -122,7 +124,9 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         }
         this.lock();
         try {
-            folder.mkdir();
+            if(!folder.exists()) {
+                folder.mkdir();
+            }
             final AttributedList<Local> bookmarks = folder.list().filter(
                     new Filter<Local>() {
                         @Override
