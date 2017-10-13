@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -36,6 +37,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
@@ -78,8 +80,38 @@ public class S3MultipleDeleteFeatureTest {
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
+        session.close();
+    }
+
+    @Test
+    public void testDeleteVersionedPlaceholder() throws Exception {
+        final S3Session session = new S3Session(
+            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                )));
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final String name = new AlphanumericRandomStringService().random();
+        {
+            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+                new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            assertTrue(new S3FindFeature(session).find(test));
+            assertTrue(new DefaultFindFeature(session).find(test));
+            new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            assertFalse(new S3FindFeature(session).find(test));
+        }
+        {
+            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
+                new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            assertTrue(new S3FindFeature(session).find(test));
+            assertTrue(new DefaultFindFeature(session).find(test));
+            new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            assertFalse(new S3FindFeature(session).find(test));
+        }
         session.close();
     }
 
@@ -129,6 +161,6 @@ public class S3MultipleDeleteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume));
-        new S3MultipleDeleteFeature(session).delete(Arrays.asList(container, container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3MultipleDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
