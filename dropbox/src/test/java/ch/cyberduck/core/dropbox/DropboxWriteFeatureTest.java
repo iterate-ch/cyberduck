@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -109,7 +110,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     public void testWriteLibreOfficeLock() throws Exception {
         final DropboxWriteFeature write = new DropboxWriteFeature(session);
         final TransferStatus status = new TransferStatus();
@@ -125,7 +126,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     public void testWriteLibreOfficeLockHash() throws Exception {
         final DropboxWriteFeature write = new DropboxWriteFeature(session);
         final TransferStatus status = new TransferStatus();
@@ -141,7 +142,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     public void testWriteMSOfficeLock() throws Exception {
         final DropboxWriteFeature write = new DropboxWriteFeature(session);
         final TransferStatus status = new TransferStatus();
