@@ -15,6 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -51,11 +53,15 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testFindUnknownDefaultProtokol() throws Exception {
+    public void testFindUnknownDefaultProtocol() throws Exception {
         final TestProtocol dav = new TestProtocol(Scheme.dav);
         final TestProtocol davs = new TestProtocol(Scheme.davs);
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, davs)));
-        assertEquals(dav, f.forName("ftp"));
+        assertEquals(dav, f.forName("dav"));
+        assertEquals(dav, f.forScheme(Scheme.http));
+        assertEquals(davs, f.forName("davs"));
+        assertEquals(davs, f.forScheme(Scheme.https));
+        assertNull(f.forName("ftp"));
     }
 
     @Test
@@ -74,5 +80,70 @@ public class ProtocolFactoryTest {
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(dav)));
         assertEquals(dav, f.forName("dav"));
         assertEquals(dav, f.forName("dav-provider"));
+    }
+
+    @Test
+    public void testFindProtocolProviderMismatch() throws Exception {
+        final TestProtocol dav_provider1 = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "dav";
+            }
+
+            @Override
+            public String getProvider() {
+                return "provider_1";
+            }
+        };
+        final TestProtocol dav_provider2 = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "dav";
+            }
+
+            @Override
+            public String getProvider() {
+                return "provider_2";
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav_provider1, dav_provider2)));
+        assertEquals(dav_provider1, f.forName("dav"));
+        assertEquals(dav_provider1, f.forName("dav", "provider_1"));
+        assertEquals(dav_provider1, f.forName("dav", "g"));
+        assertEquals(dav_provider2, f.forName("dav", "provider_2"));
+    }
+
+    @Test
+    public void testSchemeFallbackType() throws Exception {
+        final TestProtocol dav = new TestProtocol(Scheme.dav);
+        final TestProtocol swift = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "swift-p";
+            }
+
+            @Override
+            public Type getType() {
+                return Type.swift;
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, swift)));
+        assertEquals(swift, f.forName("swift"));
+    }
+
+    @Test
+    public void testRegisterUnknownProtocol() throws Exception {
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.dav;
+            }
+        }))).read(
+            new Local("src/test/resources/Unknown.cyberduckprofile")
+        );
+        assertNull(profile);
+        final ProtocolFactory f = new ProtocolFactory();
+        f.register(profile);
+        assertTrue(f.find().isEmpty());
     }
 }

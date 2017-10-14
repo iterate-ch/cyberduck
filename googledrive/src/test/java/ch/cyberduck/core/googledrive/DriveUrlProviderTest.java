@@ -41,7 +41,7 @@ public class DriveUrlProviderTest extends AbstractDriveTest {
         assertNotNull(provider.toUrl(test));
         assertTrue(provider.toUrl(test).isEmpty());
         new DriveTouchFeature(session).touch(test, new TransferStatus());
-//        assertFalse(provider.toUrl(test).isEmpty());
+//        assertFalse(provider.toDownloadUrl(test).isEmpty());
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

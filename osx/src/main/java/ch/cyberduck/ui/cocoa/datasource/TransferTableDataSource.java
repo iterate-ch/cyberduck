@@ -71,7 +71,7 @@ public class TransferTableDataSource extends ListDataSource {
     public TransferTableDataSource() {
         collection.addListener(new AbstractCollectionListener<Transfer>() {
             @Override
-            public void collectionItemRemoved(Transfer item) {
+            public void collectionItemRemoved(final Transfer item) {
                 final ProgressController controller = controllers.remove(item);
                 if(controller != null) {
                     controller.invalidate();

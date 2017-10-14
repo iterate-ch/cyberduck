@@ -67,7 +67,9 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
         }
         this.lock();
         try {
-            folder.mkdir();
+            if(!folder.exists()) {
+                folder.mkdir();
+            }
             final AttributedList<Local> groups = folder.list().filter(
                     new NullFilter<Local>() {
                         @Override

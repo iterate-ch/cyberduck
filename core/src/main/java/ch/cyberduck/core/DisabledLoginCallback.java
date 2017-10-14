@@ -26,14 +26,14 @@ public class DisabledLoginCallback implements LoginCallback {
     }
 
     @Override
-    public void warn(final Protocol protocol, final String title, final String message,
+    public void warn(final Host bookmark, final String title, final String message,
                      final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
         throw new LoginCanceledException();
     }
 
     @Override
-    public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason,
-                       final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason,
+                              final LoginOptions options) throws LoginCanceledException {
         throw new LoginCanceledException();
     }
 
@@ -43,7 +43,7 @@ public class DisabledLoginCallback implements LoginCallback {
     }
 
     @Override
-    public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         throw new LoginCanceledException();
     }
 }

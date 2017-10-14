@@ -35,11 +35,11 @@ public class SwiftFindFeatureTest {
     @Test
     public void testFindContainer() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         assertTrue(new SwiftFindFeature(session).find(container));
@@ -49,11 +49,11 @@ public class SwiftFindFeatureTest {
     @Test
     public void testFindKey() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -97,50 +97,5 @@ public class SwiftFindFeatureTest {
         }).withCache(cache);
         assertTrue(finder.find(new Path("/g/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         assertTrue(b.get());
-    }
-
-    @Test
-    public void testCacheNotFound() throws Exception {
-        final PathCache cache = new PathCache(1);
-        final AttributedList<Path> list = new AttributedList<Path>();
-        final String name = UUID.randomUUID().toString();
-        list.attributes().addHidden(new Path("/g/" + name, EnumSet.of(Path.Type.file)));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
-        final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host(new SwiftProtocol())) {
-            @Override
-            public Client getClient() {
-                fail();
-                return null;
-            }
-        }) {
-            @Override
-            public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-                fail();
-                return null;
-            }
-        }).withCache(cache);
-        assertFalse(finder.find(new Path("/g/" + name, EnumSet.of(Path.Type.file))));
-    }
-
-    @Test
-    public void testCacheFound() throws Exception {
-        final PathCache cache = new PathCache(1);
-        final String name = UUID.randomUUID().toString();
-        final AttributedList<Path> list = new AttributedList<Path>(Collections.singletonList(new Path("/g/" + name, EnumSet.of(Path.Type.file))));
-        cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
-        final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host(new SwiftProtocol())) {
-            @Override
-            public Client getClient() {
-                fail();
-                return null;
-            }
-        }) {
-            @Override
-            public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-                fail();
-                return null;
-            }
-        }).withCache(cache);
-        assertTrue(finder.find(new Path("/g/" + name, EnumSet.of(Path.Type.file))));
     }
 }

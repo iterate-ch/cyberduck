@@ -23,7 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 
 import org.junit.Test;
 
@@ -118,8 +118,8 @@ public class ReadWriteMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
 
                         @Override
                         public Map<String, String> getDefault(Local local) {
@@ -170,9 +170,9 @@ public class ReadWriteMetadataWorkerTest {
         final Path fileB = new Path("b", EnumSet.of(Path.Type.file));
         final Path fileC = new Path("c", EnumSet.of(Path.Type.file));
         final List<Path> files = Arrays.asList(
-                fileA,
-                fileB,
-                fileC
+            fileA,
+            fileB,
+            fileC
         );
 
         // setup reader

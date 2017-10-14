@@ -80,7 +80,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     public boolean prompt(final Host bookmark, final Path file, final ConnectionCallback prompt) throws BackgroundException {
         try {
             // Read transfer acceleration state. Enabled | Suspended
-            prompt.warn(bookmark.getProtocol(), LocaleFactory.localizedString("Enable Amazon S3 Transfer Acceleration", "S3"),
+            prompt.warn(bookmark, LocaleFactory.localizedString("Enable Amazon S3 Transfer Acceleration", "S3"),
                     LocaleFactory.localizedString("Amazon S3 Transfer Acceleration makes data transfers into and out of Amazon S3 buckets faster, and only charges if there is a performance improvement.", "S3"),
                     LocaleFactory.localizedString("Continue", "Credentials"),
                     LocaleFactory.localizedString("Change", "Credentials"),

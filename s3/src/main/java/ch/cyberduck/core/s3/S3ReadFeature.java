@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -40,46 +39,26 @@ public class S3ReadFeature implements Read {
             = new S3PathContainerService();
 
     private final S3Session session;
-    private final Versioning versioning;
-
 
     public S3ReadFeature(final S3Session session) {
-        this(session, session.getFeature(Versioning.class));
-    }
-
-    public S3ReadFeature(final S3Session session, final Versioning versioning) {
         this.session = session;
-        this.versioning = versioning;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final S3Object object;
             final HttpRange range = HttpRange.withStatus(status);
             final RequestEntityRestStorageService client = session.getClient();
-            if(versioning != null && versioning.getConfiguration(containerService.getContainer(file)).isEnabled()) {
-                object = client.getVersionedObject(
-                        file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file),
-                        null, // ifModifiedSince
-                        null, // ifUnmodifiedSince
-                        null, // ifMatch
-                        null, // ifNoneMatch
-                        status.isAppend() ? range.getStart() : null,
-                        status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
-            }
-            else {
-                object = client.getObject(
-                        containerService.getContainer(file).getName(),
-                        containerService.getKey(file),
-                        null, // ifModifiedSince
-                        null, // ifUnmodifiedSince
-                        null, // ifMatch
-                        null, // ifNoneMatch
-                        status.isAppend() ? range.getStart() : null,
-                        status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
-            }
+            final S3Object object = client.getVersionedObject(
+                    file.attributes().getVersionId(),
+                    containerService.getContainer(file).getName(),
+                    containerService.getKey(file),
+                    null, // ifModifiedSince
+                    null, // ifUnmodifiedSince
+                    null, // ifMatch
+                    null, // ifNoneMatch
+                    status.isAppend() ? range.getStart() : null,
+                    status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Reading stream with content length %d", object.getContentLength()));
             }

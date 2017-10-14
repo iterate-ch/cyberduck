@@ -216,14 +216,6 @@ public class Credentials implements Comparable<Credentials> {
         return protocol.validate(this, options);
     }
 
-    public String getUsernamePlaceholder() {
-        return StringUtils.EMPTY;
-    }
-
-    public String getPasswordPlaceholder() {
-        return StringUtils.EMPTY;
-    }
-
     @Override
     public int compareTo(final Credentials o) {
         if(null == user && null == o.user) {

@@ -18,16 +18,17 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 
 import java.io.IOException;
 
@@ -37,11 +38,10 @@ public class DAVFindFeature implements Find {
 
     private final DAVSession session;
 
-    private Cache<Path> cache;
+    private Cache<Path> cache = PathCache.empty();
 
     public DAVFindFeature(final DAVSession session) {
         this.session = session;
-        this.cache = PathCache.empty();
     }
 
     @Override
@@ -49,38 +49,21 @@ public class DAVFindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
-        final AttributedList<Path> list;
-        if(cache.isCached(file.getParent())) {
-            list = cache.get(file.getParent());
-        }
-        else {
-            list = new AttributedList<Path>();
-            cache.put(file.getParent(), list);
-        }
-        if(list.contains(file)) {
-            // Previously found
-            return true;
-        }
-        if(cache.isHidden(file)) {
-            // Previously not found
-            return false;
-        }
         try {
             try {
-                final boolean found = session.getClient().exists(new DAVPathEncoder().encode(file));
-                if(found) {
-                    list.add(file);
+                try {
+                    return session.getClient().exists(new DAVPathEncoder().encode(file));
                 }
-                else {
-                    list.attributes().addHidden(file);
+                catch(SardineException e) {
+                    throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
                 }
-                return found;
+                catch(IOException e) {
+                    throw new HttpExceptionMappingService().map(e, file);
+                }
             }
-            catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            }
-            catch(IOException e) {
-                throw new HttpExceptionMappingService().map(e, file);
+            catch(AccessDeniedException | InteroperabilityException e) {
+                // 400 Multiple choices
+                return new DefaultFindFeature(session).withCache(cache).find(file);
             }
         }
         catch(AccessDeniedException e) {
@@ -88,7 +71,6 @@ public class DAVFindFeature implements Find {
             return true;
         }
         catch(LoginFailureException | NotfoundException e) {
-            // HEAD may return 401 in G2
             return false;
         }
     }

@@ -6,7 +6,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 
 import org.junit.Test;
 
@@ -34,8 +34,8 @@ public class ReadMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
                             return Collections.emptyMap();
@@ -73,8 +73,8 @@ public class ReadMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
                             return Collections.emptyMap();
@@ -128,8 +128,8 @@ public class ReadMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Headers.class) {
-                    return (T) new Headers() {
+                if(type == Metadata.class) {
+                    return (T) new Metadata() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
                             return Collections.emptyMap();

@@ -53,7 +53,7 @@ public class S3CopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(source.isFile() || source.isPlaceholder()) {
             if(null == status.getStorageClass()) {
                 // Keep same storage class
@@ -81,6 +81,7 @@ public class S3CopyFeature implements Copy {
             destination.setBucketName(containerService.getContainer(target).getName());
             this.copy(source, destination, status);
         }
+        return target;
     }
 
     protected void copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {

@@ -70,7 +70,9 @@ public class MemorySegementingOutputStream extends SegmentingOutputStream {
             return;
         }
         try {
-            proxy.write(buffer.toByteArray());
+            if(buffer.size() > 0) {
+                proxy.write(buffer.toByteArray());
+            }
             // Re-use buffer
             buffer.reset();
             super.close();

@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
@@ -96,15 +97,15 @@ public class OverwriteFilterTest {
                                        public boolean isFile() {
                                            return true;
                                        }
-                                   }, new TransferStatus()
-        ).getLength(), 0L);
+                                   }, new TransferStatus(),
+            new DisabledProgressListener()).getLength(), 0L);
     }
 
     @Test
     public void testPermissionsNoChange() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        assertFalse(f.prepare(file, new NullLocal("t"), new TransferStatus()).isComplete());
+        assertFalse(f.prepare(file, new NullLocal("t"), new TransferStatus(), new DisabledProgressListener()).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
@@ -113,7 +114,7 @@ public class OverwriteFilterTest {
     public void testPermissionsExistsNoChange() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        assertFalse(f.prepare(file, new NullLocal("/t"), new TransferStatus()).isComplete());
+        assertFalse(f.prepare(file, new NullLocal("/t"), new TransferStatus(), new DisabledProgressListener()).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
@@ -123,7 +124,7 @@ public class OverwriteFilterTest {
         final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())),
                 new UploadFilterOptions().withTemporary(true));
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus(), new DisabledProgressListener());
         assertNotNull(status.getRename());
         assertNotEquals(file, status.getRename().remote);
         assertNull(status.getRename().local);
@@ -148,7 +149,7 @@ public class OverwriteFilterTest {
                     }
                 }
         );
-        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "f"), new TransferStatus().exists(true));
+        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "f"), new TransferStatus().exists(true), new DisabledProgressListener());
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -169,6 +170,6 @@ public class OverwriteFilterTest {
                     }
                 }
         );
-        f.prepare(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true));
+        f.prepare(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true), new DisabledProgressListener());
     }
 }

@@ -4,5 +4,7 @@
     <dict>
         <key>Protocol</key>
         <string>dropbox</string>
+        <key>Vendor</key>
+        <string>iterate GmbH</string>
     </dict>
 </plist>

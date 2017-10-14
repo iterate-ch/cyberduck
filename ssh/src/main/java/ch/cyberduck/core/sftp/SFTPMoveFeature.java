@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -50,12 +49,13 @@ public class SFTPMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Path move(final Path file, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
+                delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
             session.sftp().rename(file.getAbsolute(), renamed.getAbsolute());
+            return renamed;
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot rename {0}", e, file);

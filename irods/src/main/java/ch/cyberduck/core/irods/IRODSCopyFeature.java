@@ -41,7 +41,7 @@ public class IRODSCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
@@ -63,6 +63,7 @@ public class IRODSCopyFeature implements Copy {
                             return CallbackResponse.YES_THIS_FILE;
                         }
                     }, DefaultTransferControlBlock.instance(StringUtils.EMPTY, PreferencesFactory.get().getInteger("connection.retry")));
+            return target;
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot copy {0}", e, source);

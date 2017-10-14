@@ -17,7 +17,6 @@ package ch.cyberduck.core.nio;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -28,6 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -85,7 +85,7 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Path home = new LocalHomeFinderFeature(this).find();
         try {
             lock = LocalFactory.get(this.toPath(home).toString()).lock(true);
@@ -128,6 +128,9 @@ public class LocalSession extends Session<FileSystem> {
         }
         if(type == Move.class) {
             return (T) new LocalMoveFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new LocalCopyFeature(this);
         }
         if(type == Directory.class) {
             return (T) new LocalDirectoryFeature(this);

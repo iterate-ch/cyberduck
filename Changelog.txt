@@ -1,6 +1,40 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2.9
+- [Bugfix] Disable selection of client certificate in bookmark window when not applicable
+- [Bugfix] Rename and override exiting file (One Drive, Dropbox)
+- [Bugfix] Disable use of hashed hostname when writing to ~/.ssh/known_hosts (SFTP)
+
+6.2.8
+- [Bugfix] Delete session when canceling upload (One Drive)
+
+6.2.7
+- [Bugfix] Rename and override exiting file (Google Drive)
+- [Bugfix] Reduce number of requests for uploads (Google Drive)
+
+6.2.6
+- [Bugfix] Quick Look only works one time (#9889) (Mac)
+- [Bugfix] Disable notification for opened connection
+
+6.2.5
+- [Bugfix] Authentication using OAuth (Windows)
+- [Bugfix] Failure to read attributes (S3) (#10068)
+
+6.2.4
+- [Feature] Provide URL references to Office 365 documents in browser (OneDrive)
+- [Feature] Disable Bonjour notifications
+- [Bugfix] Transfer progress stops updating (Windows) (#10042)
+
+6.2.3
+- [Feature] Allow to resume downloads (Cryptomator)
+- [Feature] Allow to resume downloads (Dropbox)
+- [Bugfix] Failure duplicating files (FTP) (#10049)
+- [Bugfix] Failure with input prompt for username and password (CLI, Windows) (#10043)
+- [Bugfix] Failure to detect vault when moving files into locked vault (Cryptomator)
+- [Bugfix] Failure to detect vault when copying files into locked vault (Cryptomator)
+- [Bugfix] Checksum mismatch when downloading versioned file (S3) (#10055)
+
 6.2.2
 - [Bugfix] Failure copying files in vault (Cryptomator)
 - [Bugfix] Failure detecting vault when uploading, copying or moving files to locked vault (Cryptomator)
@@ -8,7 +42,6 @@ https://cyberduck.io/
 6.2.1
 - [Bugfix] Default to WebDAV for http:// scheme in quick connect and CLI
 - [Bugfix] Selecting multiple files to copy URL will only copy first item in list (#10024)
-- [Bugfix] Quick Look only works one time (#9889) (Mac)
 
 6.2
 - [Feature] Server side copy of files (OneDrive)

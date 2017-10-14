@@ -42,8 +42,8 @@ public class StatefulDefaultCopyFeatureTest {
         final FTPSession session = new FTPSession(host);
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertFalse(new StatefulDefaultCopyFeature(session).isSupported(source, target));
-        assertFalse(new StatefulDefaultCopyFeature(session).withTarget(session).isSupported(source, target));
-        assertTrue(new StatefulDefaultCopyFeature(session).withTarget(new FTPSession(host)).isSupported(source, target));
+        assertFalse(new DefaultCopyFeature(session).isSupported(source, target));
+        assertFalse(new DefaultCopyFeature(session).withTarget(session).isSupported(source, target));
+        assertTrue(new DefaultCopyFeature(session).withTarget(new FTPSession(host)).isSupported(source, target));
     }
 }

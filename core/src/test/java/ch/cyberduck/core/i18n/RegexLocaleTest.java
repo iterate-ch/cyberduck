@@ -33,4 +33,12 @@ public class RegexLocaleTest {
         locale.setDefault("fr");
         assertEquals("Échec du téléchargement", locale.localize("Download failed", "Status"));
     }
+
+    @Test
+    public void testLocalizeFallback() throws Exception {
+        final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
+        assertEquals("Edit Bookmark", locale.localize("Edit Bookmark", "Bookmark"));
+        locale.setDefault("fr");
+        assertEquals("Éditer un signet", locale.localize("Edit Bookmark", "Bookmark"));
+    }
 }

@@ -88,8 +88,8 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("vault");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("vault");
             }
         });
         assertEquals(Vault.State.open, vault.getState());
@@ -151,8 +151,8 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("vault");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("vault");
             }
         }).getHome());
         assertEquals(Vault.State.open, vault.getState());
@@ -202,8 +202,8 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("vault");
+            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new VaultCredentials("vault");
             }
         }).getHome());
         assertEquals(Vault.State.open, vault.getState());
@@ -248,16 +248,16 @@ public class CryptoVaultTest {
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
-                public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     if(!prompt.get()) {
                         assertEquals("Provide your passphrase to unlock the Cryptomator Vault “/“", reason);
-                        credentials.setPassword("null");
+                        prompt.set(true);
+                        return new VaultCredentials("null");
                     }
-                    if(prompt.get()) {
+                    else {
                         assertEquals("Failure to decrypt master key file. Provide your passphrase to unlock the Cryptomator Vault “/“.", reason);
                         throw new LoginCanceledException();
                     }
-                    prompt.set(true);
                 }
             });
             fail();
@@ -304,7 +304,7 @@ public class CryptoVaultTest {
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
-                public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     throw new LoginCanceledException();
                 }
             });
@@ -351,8 +351,8 @@ public class CryptoVaultTest {
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
-                public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                    credentials.setPassword(null);
+                public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                    return new VaultCredentials(null);
                 }
             });
             fail();

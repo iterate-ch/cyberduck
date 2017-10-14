@@ -18,20 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.KeychainLoginService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -86,6 +73,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     private static final Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
     protected final S3Session session;
+    private final Host bookmark;
 
     private final ClientConfiguration configuration;
 
@@ -101,6 +89,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     public CloudFrontDistributionConfiguration(final S3Session session) {
         this.session = session;
+        this.bookmark = session.getHost();
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
@@ -110,7 +99,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         configuration.setMaxErrorRetry(0);
         configuration.setMaxConnections(1);
         configuration.setUseGzip(preferences.getBoolean("http.compression.enable"));
-        final Proxy proxy = ProxyFactory.get().find(session.getHost());
+        final Proxy proxy = ProxyFactory.get().find(bookmark);
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:
@@ -125,15 +114,17 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
-        final LoginOptions options = new LoginOptions().anonymous(false).publickey(false);
+        final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false)
+                .usernamePlaceholder(LocaleFactory.localizedString("Access Key ID", "S3"))
+                .passwordPlaceholder(LocaleFactory.localizedString("Secret Access Key", "S3"));
         try {
             final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
-            login.validate(session.getHost(), LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
+            login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.prompt(session.getHost(), session.getHost().getCredentials(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
+            bookmark.setCredentials(prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
             return this.authenticated(run, prompt);
         }
     }
@@ -159,7 +150,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
      */
     protected URI getOrigin(final Path container, final Distribution.Method method) {
-        return URI.create(String.format("http://%s.%s", container.getName(), session.getHost().getProtocol().getDefaultHostname()));
+        return URI.create(String.format("http://%s.%s", container.getName(), bookmark.getProtocol().getDefaultHostname()));
     }
 
     @Override
@@ -324,7 +315,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             return (T) this;
         }
         if(type == IdentityConfiguration.class) {
-            return (T) new AmazonIdentityConfiguration(session.getHost());
+            return (T) new AmazonIdentityConfiguration(bookmark);
         }
         return null;
     }
@@ -743,12 +734,12 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 new com.amazonaws.auth.AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
-                        return session.getHost().getCredentials().getUsername();
+                        return bookmark.getCredentials().getUsername();
                     }
 
                     @Override
                     public String getAWSSecretKey() {
-                        return session.getHost().getCredentials().getPassword();
+                        return bookmark.getCredentials().getPassword();
                     }
                 })
         ).withClientConfiguration(configuration).withRegion(locationFeature.getLocation(container).getIdentifier()).build();

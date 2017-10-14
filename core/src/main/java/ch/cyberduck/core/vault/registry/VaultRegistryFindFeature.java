@@ -27,7 +27,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.VaultFactory;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
-import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import org.apache.log4j.Logger;
 
@@ -58,25 +57,21 @@ public class VaultRegistryFindFeature implements Find {
     public boolean find(final Path file) throws BackgroundException {
         final Vault vault = registry.find(session, file);
         if(vault.equals(Vault.DISABLED)) {
-            if(PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect")) {
-                if(proxy.find(new Path(file.getParent(), MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
+            if(PreferencesFactory.get().getBoolean("cryptomator.enable")
+                    && PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect")) {
+                if(proxy.withCache(cache).find(new Path(file.getParent(), MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Found master key %s", file));
                     }
                     final Vault cryptomator = VaultFactory.get(file.getParent(), keychain);
                     if(!cryptomator.equals(Vault.DISABLED)) {
-                        try {
-                            lookup.found(cryptomator);
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Found vault %s", cryptomator));
-                            }
-                            return cryptomator.getFeature(session, Find.class, proxy)
-                                    .withCache(cache)
-                                    .find(file);
+                        lookup.found(cryptomator);
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Found vault %s", cryptomator));
                         }
-                        catch(VaultUnlockCancelException e) {
-                            // Continue
-                        }
+                        return cryptomator.getFeature(session, Find.class, proxy)
+                                .withCache(cache)
+                                .find(file);
                     }
                 }
             }

@@ -540,7 +540,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final PathPasteboard pasteboard = controller.getPasteboard();
                 for(final Path f : selected) {
                     if(f.isFile()) {
-                        if(StringUtils.isNotEmpty(f.getExtension())) {
+                        if(StringUtils.isNotBlank(f.getExtension())) {
                             fileTypes.addObject(NSString.stringWithString(f.getExtension()));
                         }
                         else {

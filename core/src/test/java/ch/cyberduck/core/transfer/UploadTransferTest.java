@@ -339,9 +339,10 @@ public class UploadTransferTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             assertEquals(test, renamed);
                             moved.set(true);
+                            return renamed;
                         }
 
                         @Override
@@ -454,7 +455,7 @@ public class UploadTransferTest {
         final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
                 .filter(session, null, TransferAction.overwrite, new DisabledProgressListener());
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus(), new DisabledProgressListener());
         assertNull(status.getRename().local);
         assertNull(status.getRename().remote);
     }
@@ -466,7 +467,7 @@ public class UploadTransferTest {
         final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
                 .filter(session, null, TransferAction.overwrite, new DisabledProgressListener());
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus(), new DisabledProgressListener());
         assertNull(status.getRename().local);
         assertNull(status.getRename().remote);
     }

@@ -137,7 +137,9 @@ public class FolderTransferCollection extends Collection<Transfer> {
         else {
             this.lock();
             try {
-                folder.mkdir();
+                if(!folder.exists()) {
+                    folder.mkdir();
+                }
                 final Local f = this.getFile(transfer);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save transfer %s", f));
@@ -160,7 +162,9 @@ public class FolderTransferCollection extends Collection<Transfer> {
         }
         this.lock();
         try {
-            folder.mkdir();
+            if(!folder.exists()) {
+                folder.mkdir();
+            }
             final AttributedList<Local> transfers = folder.list().filter(
                     new Filter<Local>() {
                         @Override

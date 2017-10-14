@@ -21,7 +21,7 @@ public class KeychainLoginServiceTest {
         host.setDefaultPath("/dav/basic");
         final Session session = new NullSession(host) {
             @Override
-            public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+            public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
                 throw new LoginCanceledException();
             }
         };
@@ -63,7 +63,7 @@ public class KeychainLoginServiceTest {
         session.open(new DisabledHostKeyCallback());
         LoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Protocol protocol, final String title, final String message,
+            public void warn(final Host bookmark, final String title, final String message,
                              final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 warned.set(true);
                 throw new LoginCanceledException();
@@ -90,9 +90,10 @@ public class KeychainLoginServiceTest {
         final AtomicBoolean select = new AtomicBoolean(false);
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options)
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 fail();
+                return null;
             }
 
             @Override
@@ -128,9 +129,10 @@ public class KeychainLoginServiceTest {
         final AtomicBoolean keychain = new AtomicBoolean(false);
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials, String title, String reason, LoginOptions options)
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 fail();
+                return null;
             }
         }, new DisabledPasswordStore() {
             @Override

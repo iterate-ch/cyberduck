@@ -17,29 +17,20 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
-import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.S3Object;
 
 public class S3FindFeature implements Find {
     private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-            = new S3PathContainerService();
 
     private Cache<Path> cache;
 
@@ -53,61 +44,16 @@ public class S3FindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
-        final AttributedList<Path> list;
-        if(cache.isCached(file.getParent())) {
-            list = cache.get(file.getParent());
-        }
-        else {
-            list = new AttributedList<Path>();
-            cache.put(file.getParent(), list);
-        }
-        if(list.contains(file)) {
-            // Previously found
+        try {
+            new S3AttributesFinderFeature(session).withCache(cache).find(file);
             return true;
         }
-        if(cache.isHidden(file)) {
-            // Previously not found
+        catch(NotfoundException e) {
             return false;
         }
-        try {
-            if(session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
-                    containerService.getKey(file))) {
-                list.add(file);
-                return true;
-            }
-            else {
-                list.attributes().addHidden(file);
-                return false;
-            }
-        }
-        catch(ServiceException e) {
-            switch(session.getSignatureVersion()) {
-                case AWS4HMACSHA256:
-                    if(new S3ExceptionMappingService().map(e) instanceof InteroperabilityException) {
-                        log.warn("Workaround HEAD failure using GET because the expected AWS region cannot be determined " +
-                                "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
-                                "in the authentication header.");
-                        // Fallback to GET if HEAD fails with 400 response
-                        try {
-                            final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
-                                    containerService.getKey(file), null, null, null, null, null, null);
-                            IOUtils.closeQuietly(object.getDataInputStream());
-                            list.add(file);
-                            return true;
-                        }
-                        catch(ServiceException f) {
-                            if(new S3ExceptionMappingService().map(f) instanceof NotfoundException) {
-                                list.attributes().addHidden(file);
-                                return false;
-                            }
-                            if(f.getResponseCode() == HttpStatus.SC_REQUESTED_RANGE_NOT_SATISFIABLE) {
-                                // A 0 byte content length file does exist but will return 416
-                                return true;
-                            }
-                        }
-                    }
-            }
-            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        catch(AccessDeniedException e) {
+            // Object is inaccessible to current user, but does exist.
+            return true;
         }
     }
 

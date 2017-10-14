@@ -19,7 +19,6 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -32,7 +31,6 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
@@ -40,9 +38,11 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -82,7 +82,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     private static final Logger log = Logger.getLogger(AzureSession.class);
 
     private final OperationContext context
-            = new OperationContext();
+        = new OperationContext();
 
     private StorageEvent<SendingRequestEvent> listener;
 
@@ -102,7 +102,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     public CloudBlobClient connect(final HostKeyCallback callback) throws BackgroundException {
         try {
             final StorageCredentialsAccountAndKey credentials
-                    = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
+                = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
             // Client configured with no credentials
             final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
@@ -112,7 +112,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             context.setLoggingEnabled(true);
             context.setLogger(LoggerFactory.getLogger(log.getName()));
             context.setUserHeaders(new HashMap<String, String>(Collections.singletonMap(
-                    HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
+                HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
             );
             context.getSendingRequestEventHandler().addListener(listener = new StorageEvent<SendingRequestEvent>() {
                 @Override
@@ -131,7 +131,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                         log.info(String.format("Configured to use SOCKS proxy %s", proxy));
                     }
                     final java.net.Proxy socksProxy = new java.net.Proxy(
-                            java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
+                        java.net.Proxy.Type.SOCKS, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
                     context.setProxy(socksProxy);
                     break;
                 }
@@ -141,7 +141,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                         log.info(String.format("Configured to use HTTP proxy %s", proxy));
                     }
                     final java.net.Proxy httpProxy = new java.net.Proxy(
-                            java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
+                        java.net.Proxy.Type.HTTP, new InetSocketAddress(proxy.getHostname(), proxy.getPort()));
                     context.setProxy(httpProxy);
                     break;
                 }
@@ -154,25 +154,24 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         // Update credentials
         final StorageCredentials credentials = client.getCredentials();
         if(credentials instanceof StorageCredentialsAccountAndKey) {
             ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
         }
-        final Path home = new AzureHomeFinderService(this).find();
-        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener() {
-            @Override
-            public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
-                try {
-                    cancel.verify();
+        // Fetch reference for directory to check login credentials
+        try {
+            this.getFeature(ListService.class).list(new AzureHomeFinderService(this).find(), new DisabledListProgressListener() {
+                @Override
+                public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+                    throw new ListCanceledException(list);
                 }
-                catch(ConnectionCanceledException e) {
-                    throw new ListCanceledException(list, e);
-                }
-            }
-        }));
+            });
+        }
+        catch(ListCanceledException e) {
+            // Success
+        }
     }
 
     @Override
@@ -207,6 +206,12 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         }
         if(type == Headers.class) {
             return (T) new AzureMetadataFeature(this, context);
+        }
+        if(type == Metadata.class) {
+            return (T) new AzureMetadataFeature(this, context);
+        }
+        if(type == Find.class) {
+            return (T) new AzureFindFeature(this, context);
         }
         if(type == AttributesFinder.class) {
             return (T) new AzureAttributesFinderFeature(this, context);

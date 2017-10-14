@@ -95,7 +95,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
 
     @Override
     public boolean verify(final String hostname, final int port, final PublicKey key)
-            throws ConnectionCanceledException, ChecksumException {
+        throws ConnectionCanceledException, ChecksumException {
         if(null == database) {
             return super.verify(hostname, port, key);
         }
@@ -111,7 +111,9 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
             try {
                 // Add the host key to the in-memory database
                 final OpenSSHKnownHosts.HostEntry entry
-                        = new OpenSSHKnownHosts.HostEntry(null, hash(hostname), KeyType.fromKey(key), key);
+                    = new OpenSSHKnownHosts.HostEntry(null, PreferencesFactory.get().getBoolean(
+                    "ssh.knownhosts.hostname.hash") ? hash(hostname) : hostname,
+                    KeyType.fromKey(key), key);
                 database.entries().add(entry);
                 if(persist) {
                     if(file.attributes().getPermission().isWritable()) {

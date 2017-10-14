@@ -81,7 +81,7 @@ public class TransferPromptFilterWorker extends TransferWorker<Map<TransferItem,
                     throw new ConnectionCanceledException();
                 }
                 final boolean accept = filter.accept(file.remote, file.local, status.get(file.getParent()));
-                status.put(file, filter.prepare(file.remote, file.local, status.get(file.getParent()))
+                status.put(file, filter.prepare(file.remote, file.local, status.get(file.getParent()), listener)
                         .reject(!accept));
             }
         }

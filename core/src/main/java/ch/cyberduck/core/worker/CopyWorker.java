@@ -19,13 +19,17 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -41,19 +45,20 @@ public class CopyWorker extends Worker<List<Path>> {
     private final Map<Path, Path> files;
     private final SessionPool target;
     private final ProgressListener listener;
+    private final PathCache cache;
     private final ConnectionCallback callback;
 
-    public CopyWorker(final Map<Path, Path> files, final SessionPool target, final ProgressListener listener,
+    public CopyWorker(final Map<Path, Path> files, final SessionPool target, final PathCache cache, final ProgressListener listener,
                       final ConnectionCallback callback) {
         this.files = files;
         this.target = target;
         this.listener = listener;
+        this.cache = cache;
         this.callback = callback;
     }
 
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
-        final Directory directory = session.getFeature(Directory.class);
         final Session<?> destination = target.borrow(new BackgroundActionState() {
             @Override
             public boolean isCanceled() {
@@ -67,26 +72,30 @@ public class CopyWorker extends Worker<List<Path>> {
         });
         try {
             final Copy copy = session.getFeature(Copy.class).withTarget(destination);
+            final List<Path> targets = new ArrayList<Path>();
             for(Map.Entry<Path, Path> entry : files.entrySet()) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                final Map<Path, Path> recursive = this.compile(copy, session.getFeature(ListService.class), entry.getKey(), entry.getValue());
+                if(!copy.isSupported(entry.getKey(), entry.getValue())) {
+                    throw new UnsupportedException();
+                }
+                final ListService list = session.getFeature(ListService.class);
+                final Map<Path, Path> recursive = this.compile(copy, list, entry.getKey(), entry.getValue());
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                    final Path source = r.getKey();
-                    final Path target = r.getValue();
-                    if(source.isDirectory()) {
-                        directory.mkdir(target, null, new TransferStatus().length(0L));
+                    if(r.getKey().isDirectory() && !copy.isRecursive(r.getKey(), r.getValue())) {
+                        final Directory directory = session.getFeature(Directory.class);
+                        targets.add(directory.mkdir(r.getValue(), null, new TransferStatus()));
                     }
                     else {
-                        copy.copy(source, target, new TransferStatus().length(source.attributes().getSize()), callback);
+                        targets.add(copy.copy(r.getKey(), r.getValue(), new TransferStatus()
+                                .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
+                                .length(r.getKey().attributes().getSize()), callback)
+                        );
                     }
                 }
             }
-            final List<Path> changed = new ArrayList<Path>();
-            changed.addAll(files.keySet());
-            changed.addAll(files.values());
-            return changed;
+            return targets;
         }
         finally {
             target.release(destination, null);

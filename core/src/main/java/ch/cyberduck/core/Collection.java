@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 
 public class Collection<E> extends ArrayList<E> implements CollectionListener<E> {
     private static final Logger log = Logger.getLogger(Collection.class);
@@ -154,6 +155,25 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     @Override
+    public boolean removeIf(final Predicate<? super E> filter) {
+        final Set<E> removed = new HashSet<>();
+        final boolean r = super.removeIf(new Predicate<E>() {
+            @Override
+            public boolean test(final E e) {
+                if(filter.test(e)) {
+                    removed.add(e);
+                    return true;
+                }
+                return false;
+            }
+        });
+        for(E e : removed) {
+            this.collectionItemRemoved(e);
+        }
+        return r;
+    }
+
+    @Override
     public void collectionLoaded() {
         loaded.set(true);
         if(this.isLocked()) {
@@ -166,7 +186,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     @Override
-    public void collectionItemAdded(E item) {
+    public void collectionItemAdded(final E item) {
         if(this.isLocked()) {
             log.debug("Do not notify changes of locked collection");
             return;
@@ -177,7 +197,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     @Override
-    public void collectionItemRemoved(E item) {
+    public void collectionItemRemoved(final E item) {
         if(this.isLocked()) {
             log.debug("Do not notify changes of locked collection");
             return;
@@ -188,7 +208,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     @Override
-    public void collectionItemChanged(E item) {
+    public void collectionItemChanged(final E item) {
         if(this.isLocked()) {
             log.debug("Do not notify changes of locked collection");
             return;

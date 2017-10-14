@@ -24,6 +24,7 @@ public interface ConnectionCallback extends PasswordCallback {
     /**
      * Display warning sheet. Block connection until decision is made.
      *
+     * @param bookmark      Host
      * @param title         Title in alert window
      * @param message       Message in alert window
      * @param defaultButton Button title for default button
@@ -31,7 +32,7 @@ public interface ConnectionCallback extends PasswordCallback {
      * @param preference    Where to save preference if dismissed
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException If the other option has been selected.
      */
-    void warn(Protocol protocol, String title, String message, String defaultButton, String cancelButton,
+    void warn(Host bookmark, String title, String message, String defaultButton, String cancelButton,
               String preference) throws ConnectionCanceledException;
 
 }

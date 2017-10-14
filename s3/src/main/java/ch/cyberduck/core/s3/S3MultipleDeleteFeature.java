@@ -18,9 +18,11 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.S3VersionIdProvider;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -63,7 +65,7 @@ public class S3MultipleDeleteFeature implements Delete {
         this.versioningService = session.getFeature(Versioning.class);
     }
 
-    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
         final List<Path> containers = new ArrayList<Path>();
         for(Path file : files) {
@@ -86,7 +88,9 @@ public class S3MultipleDeleteFeature implements Delete {
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
+                keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
+                        file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : file.attributes().getVersionId()
+                ));
                 if(map.containsKey(container)) {
                     map.get(container).addAll(keys);
                 }
@@ -105,7 +109,9 @@ public class S3MultipleDeleteFeature implements Delete {
             callback.delete(file);
             // Finally delete bucket itself
             try {
-                session.getClient().deleteBucket(containerService.getContainer(file).getName());
+                final String bucket = containerService.getContainer(file).getName();
+                session.getClient().deleteBucket(bucket);
+                session.getClient().getRegionEndpointCache().removeRegionForBucketName(bucket);
             }
             catch(ServiceException e) {
                 throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -116,9 +122,10 @@ public class S3MultipleDeleteFeature implements Delete {
     /**
      * @param container Bucket
      * @param keys      Key and version ID for versioned object or null
+     * @param prompt    Password input
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Authentication canceled for MFA delete
      */
-    public void delete(final Path container, final List<ObjectKeyAndVersion> keys, final LoginCallback prompt)
+    public void delete(final Path container, final List<ObjectKeyAndVersion> keys, final PasswordCallback prompt)
             throws BackgroundException {
         try {
             if(versioningService != null

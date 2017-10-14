@@ -75,10 +75,11 @@ public abstract class AbstractDriveListService implements ListService {
             String page = null;
             do {
                 final FileList list = session.getClient().files().list()
-                        .setQ(this.query(directory, listener))
-                        .setPageToken(page)
-                        .setFields(fields)
-                        .setPageSize(pagesize).execute();
+                    .setQ(this.query(directory, listener))
+                    .setOrderBy("name")
+                    .setPageToken(page)
+                    .setFields(fields)
+                    .setPageSize(pagesize).execute();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Chunk of %d retrieved", list.getFiles().size()));
                 }
@@ -99,8 +100,8 @@ public abstract class AbstractDriveListService implements ListService {
                     }
                     // Use placeholder type to mark Google Apps document to download as web link file
                     final EnumSet<AbstractPath.Type> type = DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
-                            StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)
-                                    ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+                        StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)
+                            ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
 
                     final Path child = new Path(directory, filename, type, properties);
                     children.add(child);
@@ -129,7 +130,7 @@ public abstract class AbstractDriveListService implements ListService {
         }
         if(null != f.getSize()) {
             if(!DRIVE_FOLDER.equals(f.getMimeType())
-                    && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+                && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(f.getSize());
             }
         }
@@ -143,11 +144,11 @@ public abstract class AbstractDriveListService implements ListService {
         attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
         if(StringUtils.isNotBlank(f.getWebViewLink())) {
             attributes.setLink(new DescriptiveUrl(URI.create(f.getWebViewLink()),
-                    DescriptiveUrl.Type.http,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
+                DescriptiveUrl.Type.http,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
             if(!DRIVE_FOLDER.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(UrlFileWriterFactory.get().write(new DescriptiveUrl(URI.create(f.getWebViewLink())))
-                        .getBytes(Charset.defaultCharset()).length);
+                    .getBytes(Charset.defaultCharset()).length);
             }
         }
         return attributes;

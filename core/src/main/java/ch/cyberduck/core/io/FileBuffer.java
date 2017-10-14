@@ -21,6 +21,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ public class FileBuffer implements Buffer {
     private final Local temporary;
 
     private RandomAccessFile file;
+    private Long length = 0L;
 
     public FileBuffer() {
         this(TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random()));
@@ -47,37 +50,49 @@ public class FileBuffer implements Buffer {
         final RandomAccessFile file = random();
         file.seek(offset);
         file.write(chunk, 0, chunk.length);
+        length = Math.max(length, file.length());
         return chunk.length;
     }
 
     @Override
     public synchronized int read(final byte[] chunk, final Long offset) throws IOException {
         final RandomAccessFile file = random();
-        file.seek(offset);
-        return file.read(chunk, 0, chunk.length);
+        if(offset < file.length()) {
+            file.seek(offset);
+            if(chunk.length + offset > file.length()) {
+                return file.read(chunk, 0, (int) (file.length() - offset));
+            }
+            else {
+                return file.read(chunk, 0, chunk.length);
+            }
+        }
+        else {
+            final NullInputStream nullStream = new NullInputStream(length);
+            if(nullStream.available() > 0) {
+                nullStream.skip(offset);
+                return nullStream.read(chunk, 0, chunk.length);
+            }
+            else {
+                return IOUtils.EOF;
+            }
+        }
     }
 
     @Override
     public synchronized Long length() {
-        try {
-            if(temporary.exists()) {
-                final RandomAccessFile file = random();
-                return file.length();
-            }
-            return 0L;
-        }
-        catch(IOException e) {
-            log.error(String.format("Failure obtaining length for %s", this));
-            return 0L;
-        }
+        return length;
     }
 
     @Override
     public void truncate(final Long length) {
+        this.length = length;
         if(temporary.exists()) {
             try {
                 final RandomAccessFile file = random();
-                file.setLength(length);
+                if(length < file.length()) {
+                    // Truncate current
+                    file.setLength(length);
+                }
             }
             catch(IOException e) {
                 log.warn(String.format("Failure truncating file %s to %d", temporary, length));
@@ -87,6 +102,7 @@ public class FileBuffer implements Buffer {
 
     @Override
     public synchronized void close() {
+        this.length = 0L;
         if(temporary.exists()) {
             try {
                 final RandomAccessFile file = random();
@@ -98,6 +114,7 @@ public class FileBuffer implements Buffer {
             finally {
                 try {
                     temporary.delete();
+                    file = null;
                 }
                 catch(AccessDeniedException e) {
                     log.warn(String.format("Failure removing temporary file %s for buffer %s. Schedule for delete on exit.", temporary, this));
@@ -119,5 +136,13 @@ public class FileBuffer implements Buffer {
             this.file.seek(0L);
         }
         return file;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("FileBuffer{");
+        sb.append("temporary=").append(temporary);
+        sb.append('}');
+        return sb.toString();
     }
 }

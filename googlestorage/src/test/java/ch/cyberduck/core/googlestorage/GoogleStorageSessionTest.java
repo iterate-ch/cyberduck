@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -58,7 +57,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -74,7 +73,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test
@@ -92,7 +91,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -111,19 +110,19 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectMissingKey() throws Exception {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials,
-                               final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username,
+                                      final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 Assert.assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
             }
-        }, null, PathCache.empty());
+        }, null);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -131,7 +130,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test
@@ -150,7 +149,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         session.getHost().setCredentials(
                 "duck-1432", ""
         );
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -160,11 +159,10 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         );
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 // OAuth2
-                credentials.setUsername("");
-                credentials.setPassword("");
+                return new Credentials("", "");
             }
-        }, new DisabledCancelCallback(), PathCache.empty());
+        }, new DisabledCancelCallback());
     }
 }

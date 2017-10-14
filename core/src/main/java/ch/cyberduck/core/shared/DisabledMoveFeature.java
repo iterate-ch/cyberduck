@@ -28,7 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class DisabledMoveFeature implements Move {
 
     @Override
-    public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback,
+    public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback,
                      final ConnectionCallback connectionCallback) throws BackgroundException {
         throw new InteroperabilityException("Not supported");
     }

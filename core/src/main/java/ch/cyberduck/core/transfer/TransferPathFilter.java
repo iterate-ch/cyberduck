@@ -39,14 +39,15 @@ public interface TransferPathFilter {
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer such as calculating its size.
      *
-     * @param file   File
-     * @param parent Parent transfer status
+     * @param file     File
+     * @param parent   Parent transfer status
+     * @param progress Callback
      * @return Transfer status
      */
-    TransferStatus prepare(Path file, Local local, TransferStatus parent)
+    TransferStatus prepare(Path file, Local local, TransferStatus parent, ProgressListener progress)
             throws BackgroundException;
 
-    void apply(Path file, Local local, TransferStatus status, final ProgressListener listener)
+    void apply(Path file, Local local, TransferStatus status, ProgressListener listener)
             throws BackgroundException;
 
     /**

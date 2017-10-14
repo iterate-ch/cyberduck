@@ -100,7 +100,7 @@ public interface Protocol extends Comparable<Protocol> {
         irods,
         b2,
         file,
-        sds;
+        dracoon;
 
         /**
          * Check login credentials for validity for this protocol.
@@ -139,6 +139,8 @@ public interface Protocol extends Comparable<Protocol> {
      */
     boolean isPasswordConfigurable();
 
+    boolean isCertificateConfigurable();
+
     /**
      * @return False if the hostname to connect is static.
      */
@@ -148,6 +150,11 @@ public interface Protocol extends Comparable<Protocol> {
      * @return False if the port to connect is static.
      */
     boolean isPortConfigurable();
+
+    /**
+     * @return False if the path to connect is static.
+     */
+    boolean isPathConfigurable();
 
     /**
      * @return True if the character set is not defined in the protocol.
@@ -223,6 +230,11 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Default port for server
      */
     int getDefaultPort();
+
+    /**
+     * @return Default path
+     */
+    String getDefaultPath();
 
     /**
      * @return Authentication context path
