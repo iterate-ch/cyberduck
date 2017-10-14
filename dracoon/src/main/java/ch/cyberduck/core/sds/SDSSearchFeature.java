@@ -6,7 +6,7 @@ package ch.cyberduck.core.sds;
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,6 +29,8 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 
 public class SDSSearchFeature implements Search {
@@ -43,9 +45,9 @@ public class SDSSearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> result = new AttributedList<>();
-            final NodeList list = new NodesApi(session.getClient()).getFsNodes(session.getToken(), null, -1,
-                    Long.valueOf(new SDSNodeIdProvider(session).getFileid(workdir, listener)), null,
-                    String.format("name:cn:%s", regex.toPattern().pattern()), null, null, null);
+            final NodeList list = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, -1,
+                Long.valueOf(new SDSNodeIdProvider(session).getFileid(workdir, listener)), null,
+                String.format("name:cn:%s", regex.toPattern().pattern()), null, null, null);
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session);
             for(Node node : list.getItems()) {
                 final PathAttributes attributes = feature.toAttributes(node);
