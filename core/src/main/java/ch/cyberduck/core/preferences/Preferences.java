@@ -638,7 +638,7 @@ public abstract class Preferences {
         /*
           Fallback to active or passive mode respectively
          */
-        defaults.put("ftp.connectmode.fallback", String.valueOf(true));
+        defaults.put("ftp.connectmode.fallback", String.valueOf(false));
         /*
           Protect the data channel by default. For TLS, the data connection
           can have one of two security levels.
