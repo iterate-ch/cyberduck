@@ -44,11 +44,13 @@ public class SkipFilter extends AbstractUploadFilter {
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(parent.isExists()) {
-            if(local.isFile() && find.find(file)) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Skip file %s", file));
+            if(local.isFile()) {
+                if(find.find(file)) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s", file));
+                    }
+                    return false;
                 }
-                return false;
             }
         }
         return super.accept(file, local, parent);
