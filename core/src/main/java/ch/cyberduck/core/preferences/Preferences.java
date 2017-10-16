@@ -788,7 +788,7 @@ public abstract class Preferences {
 
         defaults.put("sds.listing.chunksize", String.valueOf(500));
         defaults.put("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
-        defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(300000)); // 5 minutes
+        defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
         defaults.put("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
 
         /*
