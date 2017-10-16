@@ -16,9 +16,12 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public interface PromptUrlProvider<Options> {
-    DescriptiveUrl toUrl(Path file, Options options) throws BackgroundException;
+public interface PromptUrlProvider<Download, Upload> {
+    DescriptiveUrl toDownloadUrl(Path file, Download options, PasswordCallback callback) throws BackgroundException;
+
+    DescriptiveUrl toUploadUrl(Path file, Upload options, PasswordCallback callback) throws BackgroundException;
 }

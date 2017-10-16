@@ -70,17 +70,17 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent)
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress)
             throws BackgroundException {
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            return downloadFilter.prepare(file, local, parent);
+            return downloadFilter.prepare(file, local, parent, progress);
         }
         if(compare.equals(Comparison.local)) {
-            return uploadFilter.prepare(file, local, parent);
+            return uploadFilter.prepare(file, local, parent, progress);
         }
         // Equal comparison. Read attributes from server
-        return uploadFilter.prepare(file, local, parent).exists(true);
+        return uploadFilter.prepare(file, local, parent, progress).exists(true);
     }
 
     @Override

@@ -44,7 +44,6 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
 using org.apache.log4j;
-using TheCodeKing.ActiveButtons.Controls;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
@@ -81,12 +80,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             BookmarkCollection.defaultCollection().addListener(bookmarkMenuCollectionListener);
             MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem,
                 HistoryCollection.defaultCollection(),
-                LocaleFactory.localizedString("No recently connected servers available"),
+                LocaleFactory.localizedString("None"),
                 ProtocolIconsImageList().Images);
             HistoryCollection.defaultCollection().addListener(historyMenuCollectionListener);
             MenuCollectionListener bonjourMenuCollectionListener = new MenuCollectionListener(this, bonjourMainMenuItem,
                 RendezvousCollection.defaultCollection(),
-                LocaleFactory.localizedString("No Bonjour services available"),
+                LocaleFactory.localizedString("None"),
                 ProtocolIconsImageList().Images);
             RendezvousCollection.defaultCollection().addListener(bonjourMenuCollectionListener);
 
@@ -237,10 +236,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                 RendezvousCollection.defaultCollection().removeListener(bonjourMenuCollectionListener);
             };
 
-            if (LicenseFactory.find().Equals(LicenseFactory.EMPTY_LICENSE))
+            if (!LicenseFactory.find().Equals(LicenseFactory.EMPTY_LICENSE))
             {
-                AddDonateButton();
+                RemoveDonateButton();
             }
+            
             AddContextMenu(transcriptBox);
         }
 
@@ -743,8 +743,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void RemoveDonateButton()
         {
-            IActiveMenu menu = ActiveMenu.GetInstance(this);
-            menu.Items.Clear();
+            donateToolStripButton.Visible = false;
         }
 
         public bool IsExpanded(Path path)
@@ -1046,23 +1045,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             NativeMethods.SendMessage(richTextBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
         }
-
-        private void AddDonateButton()
-        {
-            IActiveMenu menu = ActiveMenu.GetInstance(this);
-            ActiveButton button = new ActiveButton();
-            button.Font = new Font(Font.FontFamily, 7.5F, FontStyle.Bold);
-            button.ForeColor = Color.White;
-            button.BackColor = Color.Firebrick;
-            button.FlatAppearance.BorderSize = 0;
-            button.FlatStyle = FlatStyle.Flat;
-
-            button.Text = " " + LocaleFactory.localizedString("Get a registration key!", "License") + " ";
-            button.Click +=
-                delegate { BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")); };
-            menu.Items.Add(button);
-        }
-
+        
         private void SetupComparators()
         {
             treeColumnName.ComparatorGetter = (SortOrder order) => new FilenameComparator(order == SortOrder.Ascending);
@@ -2341,7 +2324,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             else
             {
                 ToolStripItem noitem =
-                    new ToolStripMenuItem(LocaleFactory.localizedString("No recently connected servers available"));
+                    new ToolStripMenuItem(LocaleFactory.localizedString("None"));
                 noitem.Enabled = false;
                 historyMenuStrip.Items.Add(noitem);
             }
@@ -2427,6 +2410,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             //we want to use the ObjectListView's cell editor
             e.CancelEdit = true;
             browser.StartCellEdit(browser.GetItem(e.Item), 0);
+        }
+
+        private void donateToolStripButton_Click(object sender, EventArgs e)
+        {
+            BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate"));
         }
 
         private class BookmarkMenuCollectionListener : CollectionListener
@@ -3059,5 +3047,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 e.Graphics.DrawImage(img, rect);
             }
         }
+
     }
 }

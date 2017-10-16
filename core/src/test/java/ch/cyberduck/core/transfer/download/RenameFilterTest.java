@@ -1,5 +1,6 @@
 package ch.cyberduck.core.transfer.download;
 
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -26,7 +27,7 @@ public class RenameFilterTest {
             }
         };
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
-        f.prepare(t, local, new TransferStatus());
+        f.prepare(t, local, new TransferStatus(), new DisabledProgressListener());
         assertNotSame("/t", t.getName());
     }
 }

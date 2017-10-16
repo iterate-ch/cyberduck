@@ -19,7 +19,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 
 public class DisabledPasswordCallback implements PasswordCallback {
     @Override
-    public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options)
+    public Credentials prompt(final String title, final String reason, final LoginOptions options)
             throws LoginCanceledException {
         throw new LoginCanceledException();
     }

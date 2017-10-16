@@ -18,6 +18,7 @@
 
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.vault;
 using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
@@ -34,8 +35,10 @@ namespace Ch.Cyberduck.Ui.Controller
             _browser = c;
         }
 
-        public void prompt(Credentials credentials, string title, string reason, LoginOptions options)
+        public Credentials prompt(string title, string reason, LoginOptions options)
         {
+            Credentials credentials = new VaultCredentials();
+            credentials.setSaved(options.save());
             AsyncDelegate d = delegate
             {
                 View = ObjectFactory.GetInstance<IPasswordPromptView>();
@@ -43,7 +46,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Reason = reason;
                 View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
                 View.IconView = IconCache.Instance.IconForName(options.icon(), 64);
-                View.SavePassword = credentials.isSaved();
+                View.SavePassword = options.save();
                 View.ValidateInput += ValidateInputEventHandler;
                 if (DialogResult.Cancel == View.ShowDialog(_browser.View))
                 {
@@ -53,6 +56,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 credentials.setSaved(View.SavePassword);
             };
             _browser.Invoke(d);
+            return credentials;
         }
 
         private bool ValidateInputEventHandler()

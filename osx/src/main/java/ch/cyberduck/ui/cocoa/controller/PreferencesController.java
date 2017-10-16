@@ -28,19 +28,7 @@ import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSRange;
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.DefaultCharsetProvider;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -72,6 +60,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -1697,19 +1686,40 @@ public class PreferencesController extends ToolbarWindowController {
         this.protocolCombobox.setTarget(this.id());
         this.protocolCombobox.setAction(Foundation.selector("protocolComboboxClicked:"));
         this.protocolCombobox.removeAllItems();
-        final List<Protocol> protocols = ProtocolFactory.get().find();
-        for(Protocol protocol : protocols) {
-            this.protocolCombobox.addItemWithTitle(protocol.getDescription());
+        final ProtocolFactory protocols = ProtocolFactory.get();
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
+            EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
+            this.addProtocol(protocol);
         }
-        for(Protocol protocol : protocols) {
-            final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocol.getDescription());
-            item.setRepresentedObject(protocol.getIdentifier());
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
+        this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
+            EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.googlestorage)))) {
+            this.addProtocol(protocol);
         }
-
+        this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
+            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))) {
+            this.addProtocol(protocol);
+        }
+        this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
+            EnumSet.of(Protocol.Type.file)))) {
+            this.addProtocol(protocol);
+        }
+        this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
+        for(Protocol protocol : protocols.find(new ProfileProtocolPredicate())) {
+            this.addProtocol(protocol);
+        }
         final Protocol defaultProtocol
                 = ProtocolFactory.get().forName(preferences.getProperty("connection.protocol.default"));
-        this.protocolCombobox.selectItemWithTitle(defaultProtocol.getDescription());
+        this.protocolCombobox.selectItemAtIndex(this.protocolCombobox.indexOfItemWithRepresentedObject(String.valueOf(defaultProtocol.hashCode())));
+    }
+
+    private void addProtocol(final Protocol protocol) {
+        final String title = protocol.getDescription();
+        protocolCombobox.addItemWithTitle(title);
+        protocolCombobox.lastItem().setRepresentedObject(String.valueOf(protocol.hashCode()));
+        protocolCombobox.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
     }
 
     @Action

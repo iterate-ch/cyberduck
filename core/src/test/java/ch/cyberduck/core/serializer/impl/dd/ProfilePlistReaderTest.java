@@ -37,8 +37,26 @@ public class ProfilePlistReaderTest {
 
     @Test
     public void testDeserializeDropbox() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory()).read(
-                new Local("src/test/resources/Dropbox.cyberduckprofile")
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.dropbox;
+            }
+        }))).read(
+            new Local("src/test/resources/Dropbox.cyberduckprofile")
+        );
+        assertNotNull(profile);
+    }
+
+    @Test
+    public void testDeserializeUnknownProtocol() throws Exception {
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.dav;
+            }
+        }))).read(
+            new Local("src/test/resources/Unknown.cyberduckprofile")
         );
         assertNull(profile);
     }
@@ -46,7 +64,7 @@ public class ProfilePlistReaderTest {
     @Test
     public void testRegions() throws Exception {
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol()))).read(
-                new Local("src/test/resources/Custom Regions S3.cyberduckprofile")
+            new Local("src/test/resources/Custom Regions S3.cyberduckprofile")
         );
         assertNotNull(profile);
         final Set<Location.Name> regions = profile.getRegions();
@@ -63,7 +81,7 @@ public class ProfilePlistReaderTest {
                 return Type.s3;
             }
         }))).read(
-                new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
+            new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         );
         assertEquals(profile, new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
@@ -71,7 +89,7 @@ public class ProfilePlistReaderTest {
                 return Type.s3;
             }
         }))).read(
-                new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
+            new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());
@@ -88,7 +106,7 @@ public class ProfilePlistReaderTest {
                 return Scheme.https;
             }
         }))).read(
-                new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
+            new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
         );
         final Profile http = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
@@ -96,7 +114,7 @@ public class ProfilePlistReaderTest {
                 return Scheme.http;
             }
         }))).read(
-                new Local("src/test/resources/Openstack Swift (Swauth HTTP).cyberduckprofile")
+            new Local("src/test/resources/Openstack Swift (Swauth HTTP).cyberduckprofile")
         );
         assertNotEquals(https, http);
     }
@@ -104,10 +122,10 @@ public class ProfilePlistReaderTest {
     @Test
     public void testEqualsContexts() throws Exception {
         final Profile keystone = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol()))).read(
-                new Local("src/test/resources/Openstack Swift (Keystone).cyberduckprofile")
+            new Local("src/test/resources/Openstack Swift (Keystone).cyberduckprofile")
         );
         final Profile swauth = new ProfilePlistReader().read(
-                new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
+            new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
         );
         assertNotEquals(keystone, swauth);
     }
@@ -120,7 +138,7 @@ public class ProfilePlistReaderTest {
                 return Type.s3;
             }
         }))).read(
-                new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
+            new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
         );
         assertEquals(profile, new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
@@ -128,7 +146,7 @@ public class ProfilePlistReaderTest {
                 return Type.s3;
             }
         }))).read(
-                new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
+            new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());
@@ -152,7 +170,7 @@ public class ProfilePlistReaderTest {
                 return Type.s3;
             }
         }))).read(
-                new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
+            new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
         );
         assertEquals(profile, new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
@@ -160,7 +178,7 @@ public class ProfilePlistReaderTest {
                 return Type.s3;
             }
         }))).read(
-                new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
+            new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());

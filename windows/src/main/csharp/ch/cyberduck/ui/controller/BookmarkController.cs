@@ -376,7 +376,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             InitProtocols();
             InitPrivateKeys();
-            InitClientCertificates();
             InitConnectModes();
             InitEncodings();
             InitTimezones();
@@ -423,16 +422,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 _keys.Add(key.getAbsolute());
             }
             View.PopulatePrivateKeys(_keys);
-        }
-
-        private void InitClientCertificates()
-        {
-            List<string> keys = new List<string> {LocaleFactory.localizedString("None")};
-            foreach (String certificate in Utils.ConvertFromJavaList<String>(new KeychainX509KeyManager(_host).list()))
-            {
-                keys.Add(certificate);
-            }
-            View.PopulateClientCertificates(keys);
         }
 
         private void View_ChangedPrivateKeyEvent(object sender, PrivateKeyArgs e)
@@ -570,6 +559,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.URL = new HostUrlProvider(true, true).get(_host);
             View.Port = _host.getPort().ToString();
             View.PortFieldEnabled = _host.getProtocol().isPortConfigurable();
+            View.PathFieldEnabled = _host.getProtocol().isPathConfigurable();
             View.Path = _host.getDefaultPath();
             View.Username = _credentials.getUsername();
             View.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
@@ -601,8 +591,16 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.SelectedPrivateKey = LocaleFactory.localizedString("None");
             }
-            View.ClientCertificateFieldEnabled = _host.getProtocol().getScheme() == Scheme.https ||
-                                                 _host.getProtocol().getScheme() == Scheme.ftps;
+            View.ClientCertificateFieldEnabled = _host.getProtocol().isCertificateConfigurable();
+            List<string> keys = new List<string> {LocaleFactory.localizedString("None")};
+            if(_host.getProtocol().isCertificateConfigurable())
+            {
+                foreach (String certificate in Utils.ConvertFromJavaList<String>(new KeychainX509KeyManager(_host).list()))
+                {
+                    keys.Add(certificate);
+                }
+            }
+            View.PopulateClientCertificates(keys);
             if (_credentials.isCertificateAuthentication())
             {
                 View.SelectedClientCertificate = _credentials.getCertificate();

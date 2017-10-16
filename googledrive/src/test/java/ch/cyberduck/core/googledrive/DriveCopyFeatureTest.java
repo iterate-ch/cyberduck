@@ -15,7 +15,10 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -44,6 +47,22 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
+        assertTrue(find.find(test));
+        assertTrue(find.find(copy));
+        new DriveDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyToExistingFile() throws Exception {
+        final Path folder = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DriveTouchFeature(session).touch(test, new TransferStatus());
+        final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DriveTouchFeature(session).touch(copy, new TransferStatus());
+        new DriveCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        final Find find = new DefaultFindFeature(session);
+        final AttributedList<Path> files = new DriveListService(session, new DriveFileidProvider(session)).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
         new DriveDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());

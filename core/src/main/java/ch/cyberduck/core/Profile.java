@@ -101,7 +101,7 @@ public class Profile implements Protocol, Serializable {
         if(StringUtils.isBlank(v)) {
             return parent.getUsernamePlaceholder();
         }
-        return v;
+        return LocaleFactory.localizedString(v, "Credentials");
     }
 
     @Override
@@ -110,7 +110,7 @@ public class Profile implements Protocol, Serializable {
         if(StringUtils.isBlank(v)) {
             return parent.getPasswordPlaceholder();
         }
-        return v;
+        return LocaleFactory.localizedString(v, "Credentials");
     }
 
     @Override
@@ -170,6 +170,15 @@ public class Profile implements Protocol, Serializable {
             log.warn(String.format("Port %s is not a number", e.getMessage()));
         }
         return parent.getDefaultPort();
+    }
+
+    @Override
+    public String getDefaultPath() {
+        final String v = this.value("Default Path");
+        if(StringUtils.isBlank(v)) {
+            return parent.getDefaultPath();
+        }
+        return v;
     }
 
     @Override
@@ -332,6 +341,14 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean isCertificateConfigurable() {
+        if(StringUtils.isBlank(this.value("Certificate Configurable"))) {
+            return parent.isCertificateConfigurable();
+        }
+        return this.bool("Certificate Configurable");
+    }
+
+    @Override
     public boolean isHostnameConfigurable() {
         if(StringUtils.isBlank(this.value("Hostname Configurable"))) {
             return parent.isHostnameConfigurable();
@@ -345,6 +362,14 @@ public class Profile implements Protocol, Serializable {
             return parent.isPortConfigurable();
         }
         return this.bool("Port Configurable");
+    }
+
+    @Override
+    public boolean isPathConfigurable() {
+        if(StringUtils.isBlank(this.value("Path Configurable"))) {
+            return parent.isPathConfigurable();
+        }
+        return this.bool("Path Configurable");
     }
 
     @Override

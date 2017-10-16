@@ -247,6 +247,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { numericUpDownPort.Enabled = value; }
         }
 
+        public bool PathFieldEnabled
+        {
+            set { textBoxPath.Enabled = value; }
+        }
+
         public bool PrivateKeyFieldEnabled
         {
             set

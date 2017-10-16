@@ -52,7 +52,7 @@ public class LocalUnixPermissionFeature extends DefaultUnixPermissionFeature {
         try {
             final GroupPrincipal principal = session.getClient().getUserPrincipalLookupService().lookupPrincipalByGroupName(group);
             Files.getFileAttributeView(session.toPath(file),
-                    PosixFileAttributeView.class, LinkOption.NOFOLLOW_LINKS).setGroup(principal);
+                PosixFileAttributeView.class, LinkOption.NOFOLLOW_LINKS).setGroup(principal);
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to write attributes of {0}", e, file);
@@ -68,6 +68,9 @@ public class LocalUnixPermissionFeature extends DefaultUnixPermissionFeature {
     public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
         try {
             Files.setPosixFilePermissions(session.toPath(file), PosixFilePermissions.fromString(permission.getSymbol()));
+        }
+        catch(IllegalArgumentException e) {
+            throw new LocalExceptionMappingService().map("Failure to write attributes of {0}", new IOException(e), file);
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to write attributes of {0}", e, file);

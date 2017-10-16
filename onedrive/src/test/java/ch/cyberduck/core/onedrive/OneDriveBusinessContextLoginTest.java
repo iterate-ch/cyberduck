@@ -21,40 +21,31 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class OneDriveBusinessContextLoginTest {
-
-    protected OneDriveSession session;
 
     @BeforeClass
     public static void protocol() {
         ProtocolFactory.get().register(new OneDriveProtocol());
     }
 
-    @After
-    public void disconnect() throws Exception {
-        session.close();
-    }
-
-    @Before
-    public void setup() throws Exception {
+    @Test(expected = LoginCanceledException.class)
+    public void testLogin() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/Microsoft OneDrive Business.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
-        session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        final OneDriveSession session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                assertEquals("OAuth2 Authentication", title);
+                throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore() {
@@ -74,10 +65,6 @@ public class OneDriveBusinessContextLoginTest {
                         return super.getPassword(hostname, user);
                     }
                 }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-    }
-
-    @Test
-    public void testLogin() throws Exception {
         assertEquals("/b!9prv2DvXt0Cua27a0kKBHlYP69u02QdCtkueQRimv8UsYPDHr-_uQoMvBiuYAjdH", (new OneDriveHomeFinderFeature(session).find().getAbsolute()));
     }
 }

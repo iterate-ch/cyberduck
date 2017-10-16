@@ -58,7 +58,13 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public Scheme[] getSchemes() {
-        return new Scheme[]{this.getScheme()};
+        try {
+            final Scheme identifier = Scheme.valueOf(this.getIdentifier());
+            return new Scheme[]{this.getScheme(), identifier};
+        }
+        catch(IllegalArgumentException e) {
+            return new Scheme[]{this.getScheme()};
+        }
     }
 
     @Override
@@ -96,6 +102,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isPathConfigurable() {
+        return true;
+    }
+
+    @Override
     public boolean isEncodingConfigurable() {
         return false;
     }
@@ -113,6 +124,11 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public boolean isPasswordConfigurable() {
         return true;
+    }
+
+    @Override
+    public boolean isCertificateConfigurable() {
+        return false;
     }
 
     @Override
@@ -162,6 +178,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getDefaultPath() {
+        return null;
+    }
+
+    @Override
     public String getContext() {
         return null;
     }
@@ -202,7 +223,7 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public boolean validate(Credentials credentials, LoginOptions options) {
+    public boolean validate(final Credentials credentials, final LoginOptions options) {
         return this.getType().validate(credentials, options);
     }
 

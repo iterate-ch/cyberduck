@@ -17,17 +17,22 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 public class OneDriveReadFeature implements Read {
     private static final Logger log = Logger.getLogger(OneDriveReadFeature.class);
@@ -41,21 +46,32 @@ public class OneDriveReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            if(status.isAppend()) {
-                final HttpRange range = HttpRange.withStatus(status);
-                final String header;
-                if(-1 == range.getEnd()) {
-                    header = String.format("%d-", range.getStart());
+            if(file.getType().contains(Path.Type.placeholder)) {
+                final DescriptiveUrl link = new OneDriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
+                if(DescriptiveUrl.EMPTY.equals(link)) {
+                    log.warn(String.format("Missing web link for file %s", file));
+                    return new NullInputStream(file.attributes().getSize());
                 }
-                else {
-                    header = String.format("%d-%d", range.getStart(), range.getEnd());
-                }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Add range header %s for file %s", header, file));
-                }
-                return session.toFile(file).download(header);
+                // Write web link file
+                return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
-            return session.toFile(file).download();
+            else {
+                if(status.isAppend()) {
+                    final HttpRange range = HttpRange.withStatus(status);
+                    final String header;
+                    if(-1 == range.getEnd()) {
+                        header = String.format("%d-", range.getStart());
+                    }
+                    else {
+                        header = String.format("%d-%d", range.getStart(), range.getEnd());
+                    }
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Add range header %s for file %s", header, file));
+                    }
+                    return session.toFile(file).download(header);
+                }
+                return session.toFile(file).download();
+            }
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Download {0} failed", e, file);

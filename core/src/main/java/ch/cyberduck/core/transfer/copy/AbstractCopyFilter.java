@@ -85,7 +85,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path source, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes from source
         final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).withCache(sourceCache).find(source);

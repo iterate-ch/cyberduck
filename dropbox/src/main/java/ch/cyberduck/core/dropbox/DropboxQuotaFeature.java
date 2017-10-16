@@ -23,6 +23,7 @@ import java.util.EnumSet;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
+import com.dropbox.core.v2.users.SpaceAllocation;
 import com.dropbox.core.v2.users.SpaceUsage;
 
 public class DropboxQuotaFeature implements Quota {
@@ -37,7 +38,14 @@ public class DropboxQuotaFeature implements Quota {
     public Space get() throws BackgroundException {
         try {
             final SpaceUsage usage = new DbxUserUsersRequests(session.getClient()).getSpaceUsage();
-            return new Space(usage.getUsed(), usage.getAllocation().getIndividualValue().getAllocated());
+            final SpaceAllocation allocation = usage.getAllocation();
+            if(allocation.isIndividual()) {
+                return new Space(usage.getUsed(), allocation.getIndividualValue().getAllocated());
+            }
+            else if(allocation.isTeam()) {
+                return new Space(usage.getUsed(), allocation.getTeamValue().getAllocated());
+            }
+            return new Space(0L, Long.MAX_VALUE);
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Failure to read attributes of {0}", e,

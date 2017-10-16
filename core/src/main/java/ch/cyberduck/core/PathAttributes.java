@@ -130,6 +130,8 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private String directoryId;
 
+    private Map<String, String> custom = Collections.emptyMap();
+
     public PathAttributes() {
     }
 
@@ -437,6 +439,14 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setLink(final DescriptiveUrl link) {
         this.link = link;
+    }
+
+    public Map<String, String> getCustom() {
+        return custom;
+    }
+
+    public void setCustom(final Map<String, String> custom) {
+        this.custom = custom;
     }
 
     @Override

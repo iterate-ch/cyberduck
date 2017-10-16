@@ -18,10 +18,8 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -41,36 +39,17 @@ public class AzureFindFeature implements Find {
     private final OperationContext context;
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
-
-    private Cache<Path> cache;
+        = new AzurePathContainerService();
 
     public AzureFindFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
         this.context = context;
-        this.cache = PathCache.empty();
     }
 
     @Override
     public boolean find(Path file) throws BackgroundException {
         if(file.isRoot()) {
             return true;
-        }
-        final AttributedList<Path> list;
-        if(cache.isCached(file.getParent())) {
-            list = cache.get(file.getParent());
-        }
-        else {
-            list = new AttributedList<Path>();
-            cache.put(file.getParent(), list);
-        }
-        if(list.contains(file)) {
-            // Previously found
-            return true;
-        }
-        if(cache.isHidden(file)) {
-            // Previously not found
-            return false;
         }
         try {
             try {
@@ -81,14 +60,8 @@ public class AzureFindFeature implements Find {
                 }
                 else {
                     final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                            .getBlobReferenceFromServer(containerService.getKey(file));
+                        .getBlobReferenceFromServer(containerService.getKey(file));
                     found = blob.exists(null, null, context);
-                }
-                if(found) {
-                    list.add(file);
-                }
-                else {
-                    list.attributes().addHidden(file);
                 }
                 return found;
             }
@@ -106,7 +79,6 @@ public class AzureFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
         return this;
     }
 }

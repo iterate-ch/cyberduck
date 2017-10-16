@@ -82,7 +82,7 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
                 if(receipts.isEmpty()) {
                     // No installed voucher found. Continue with direct transfer
                     try {
-                        prompt.warn(bookmark.getProtocol(), "Qloudsonic",
+                        prompt.warn(bookmark, "Qloudsonic",
                                 LocaleFactory.localizedString("Exploit bandwidth capacity with Qloudsonic when transferring large file over a high-speed, high-latency wide area network (WAN) link to S3. Qloudsonic uses UDP-based Data Transfer Protocol to route downloads and uploads faster from and to Amazon S3. You will need to purchase a voucher for a transfer quota from https://qloudsonic.io."),
                                 LocaleFactory.localizedString("Continue", "Credentials"),
                                 LocaleFactory.localizedString("Buy", "Qloudsonic"),
@@ -101,7 +101,7 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
                 else {
                     // Already purchased voucher. Confirm to use
                     try {
-                        prompt.warn(bookmark.getProtocol(), "Qloudsonic",
+                        prompt.warn(bookmark, "Qloudsonic",
                                 String.format(LocaleFactory.localizedString("Do you want to transfer %s with Qloudsonic?", "Qloudsonic"), file.getName()),
                                 LocaleFactory.localizedString("Continue", "Credentials"),
                                 LocaleFactory.localizedString("Cancel"),

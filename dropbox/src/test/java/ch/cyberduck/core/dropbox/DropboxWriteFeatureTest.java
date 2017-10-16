@@ -16,11 +16,13 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -107,5 +109,60 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
             assertArrayEquals(reference, buffer);
         }
         new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testWriteLibreOfficeLock() throws Exception {
+        final DropboxWriteFeature write = new DropboxWriteFeature(session);
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(0);
+        status.setLength(content.length);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), ".~lock." + new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testWriteLibreOfficeLockHash() throws Exception {
+        final DropboxWriteFeature write = new DropboxWriteFeature(session);
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(0);
+        status.setLength(content.length);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), ".~lock." + new AsciiRandomStringService().random() + "#", EnumSet.of(Path.Type.file));
+        final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testWriteMSOfficeLock() throws Exception {
+        final DropboxWriteFeature write = new DropboxWriteFeature(session);
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(0);
+        status.setLength(content.length);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), "~$" + new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testWriteDS_Store() throws Exception {
+        final DropboxWriteFeature write = new DropboxWriteFeature(session);
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(0);
+        status.setLength(content.length);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), ".DS_Store", EnumSet.of(Path.Type.file));
+        final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testWriteDesktopIni() throws Exception {
+        final DropboxWriteFeature write = new DropboxWriteFeature(session);
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(0);
+        status.setLength(content.length);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), "desktop.ini", EnumSet.of(Path.Type.file));
+        final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
     }
 }

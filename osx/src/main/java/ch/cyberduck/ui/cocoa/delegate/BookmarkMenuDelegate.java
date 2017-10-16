@@ -130,7 +130,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger row, boolean cancel) {
         if(row.intValue() == index) {
             item.setEnabled(true);
-            item.setTitle(LocaleFactory.get().localize("History", "Main"));
+            item.setTitle(LocaleFactory.get().localize("History", "Localizable"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("history.tiff", 16));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("historyMenuClicked:"));

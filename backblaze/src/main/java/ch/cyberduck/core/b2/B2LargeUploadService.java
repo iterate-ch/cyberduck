@@ -57,6 +57,8 @@ import synapticloop.b2.response.B2FinishLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 import synapticloop.b2.response.BaseB2Response;
 
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
+
 public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
     private static final Logger log = Logger.getLogger(B2LargeUploadService.class);
 
@@ -99,23 +101,25 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             // this is important for building the manifest, and is not a problem in terms of performance
             // because we should only continue when all segments have uploaded successfully
             final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
-            final Map<String, String> metadata = new HashMap<>(status.getMetadata());
+            final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
             final Checksum checksum = status.getChecksum();
             if(Checksum.NONE != checksum) {
                 switch(checksum.algorithm) {
                     case sha1:
-                        metadata.put(X_BZ_INFO_LARGE_FILE_SHA1, status.getChecksum().hash);
+                        fileinfo.put(X_BZ_INFO_LARGE_FILE_SHA1, status.getChecksum().hash);
                         break;
                 }
             }
-            metadata.put(B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()));
+            if(null != status.getTimestamp()) {
+                fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
+            }
             if(status.isAppend() || status.isRetry()) {
                 // Add already completed parts
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session);
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
                     fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                            containerService.getKey(file), status.getMime(), metadata).getFileId();
+                            containerService.getKey(file), status.getMime(), fileinfo).getFileId();
                 }
                 else {
                     fileid = uploads.iterator().next().getFileId();
@@ -124,7 +128,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             else {
                 fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                        containerService.getKey(file), status.getMime(), metadata).getFileId();
+                        containerService.getKey(file), status.getMime(), fileinfo).getFileId();
             }
             // Submit file segments for concurrent upload
             final List<Future<B2UploadPartResponse>> parts = new ArrayList<Future<B2UploadPartResponse>>();

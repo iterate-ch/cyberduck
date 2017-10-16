@@ -99,8 +99,8 @@ public class UDTProxyConfiguratorTest {
         proxy.configure(tunneled);
         try {
             assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
-            tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
-                    PathCache.empty());
+            tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+            );
         }
         catch(BackgroundException e) {
             final Throwable cause = ExceptionUtils.getRootCause(e);
@@ -153,8 +153,8 @@ public class UDTProxyConfiguratorTest {
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
-        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
-                PathCache.empty());
+        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+        );
     }
 
     @Test(expected = QuotaException.class)
@@ -213,8 +213,8 @@ public class UDTProxyConfiguratorTest {
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
-        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
-                PathCache.empty());
+        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+        );
         tunneled.close();
     }
 
@@ -231,8 +231,8 @@ public class UDTProxyConfiguratorTest {
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         assertTrue(tunneled.isConnected());
-        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
-                PathCache.empty());
+        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+        );
 
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -287,8 +287,8 @@ public class UDTProxyConfiguratorTest {
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         assertTrue(tunneled.isConnected());
-        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
-                PathCache.empty());
+        tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+        );
 
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

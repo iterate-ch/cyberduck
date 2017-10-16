@@ -27,5 +27,5 @@ public abstract class CrashReporter extends NSObject {
     /**
      * Send crash report
      */
-    public abstract void checkForCrash();
+    public abstract void checkForCrash(String url);
 }

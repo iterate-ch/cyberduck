@@ -47,6 +47,8 @@ import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.transport.cipher.AES256CTR;
 import net.schmizz.sshj.transport.kex.ECDHNistP;
+import net.schmizz.sshj.transport.mac.HMACSHA2256;
+import net.schmizz.sshj.transport.mac.HMACSHA2512;
 import net.schmizz.sshj.transport.mac.MAC;
 
 import static org.junit.Assert.*;
@@ -64,7 +66,7 @@ public class SFTPSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -74,7 +76,12 @@ public class SFTPSessionTest {
     public void testAllHMAC() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final SFTPSession session = new SFTPSession(host);
-        for(net.schmizz.sshj.common.Factory.Named<MAC> mac : new DefaultConfig().getMACFactories()) {
+        final DefaultConfig defaultConfig = new DefaultConfig();
+        defaultConfig.setMACFactories(
+            new HMACSHA2256.Factory(),
+            new HMACSHA2512.Factory()
+        );
+        for(net.schmizz.sshj.common.Factory.Named<MAC> mac : defaultConfig.getMACFactories()) {
             final DefaultConfig configuration = new DefaultConfig();
             configuration.setMACFactories(Collections.singletonList(mac));
             final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
@@ -114,8 +121,8 @@ public class SFTPSessionTest {
         final AtomicBoolean fail = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials,
-                               String title, String reason, LoginOptions options)
+            public Credentials prompt(final Host bookmark, String username,
+                                      String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login failed", title);
 //                assertEquals("Too many authentication failures for jenkins. Please contact your web hosting service provider for assistance.", reason);
@@ -183,12 +190,9 @@ public class SFTPSessionTest {
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials,
-                               String title, String reason, LoginOptions options)
-                    throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals("Login failed", title);
                 assertEquals("Login test.cyberduck.ch – SFTP with username and password. Please contact your web hosting service provider for assistance.", reason);
-                credentials.setUsername("u");
                 change.set(true);
                 throw new LoginCanceledException();
             }
@@ -210,12 +214,11 @@ public class SFTPSessionTest {
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void prompt(Host bookmark, Credentials credentials,
-                               String title, String reason, LoginOptions options)
+            public Credentials prompt(final Host bookmark, String username,
+                                      String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
                 assertEquals("Login test.cyberduck.ch – SFTP with username and password. No login credentials could be found in the Keychain.", reason);
-                credentials.setUsername("u");
                 change.set(true);
                 throw new LoginCanceledException();
             }
@@ -249,19 +252,18 @@ public class SFTPSessionTest {
             }
 
             @Override
-            public void prompt(Host bookmark, Credentials credentials,
-                               String title, String reason, LoginOptions options)
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 if(change.get()) {
                     assertEquals("Change of username or service not allowed: (u1,ssh-connection) -> (jenkins,ssh-connection). Please contact your web hosting service provider for assistance.", reason);
+                    return null;
                 }
                 else {
                     assertEquals("Login failed", title);
 //                    assertEquals("Too many authentication failures for u1. Please contact your web hosting service provider for assistance.", reason);
 //                    assertEquals("Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
-                    credentials.setUsername(System.getProperties().getProperty("sftp.user"));
-                    credentials.setPassword(System.getProperties().getProperty("sftp.password"));
                     change.set(true);
+                    return new Credentials(System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password"));
                 }
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),

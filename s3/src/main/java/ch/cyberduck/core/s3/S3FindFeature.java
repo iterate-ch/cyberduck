@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -45,33 +44,14 @@ public class S3FindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
-        final AttributedList<Path> list;
-        if(cache.isCached(file.getParent())) {
-            list = cache.get(file.getParent());
-        }
-        else {
-            list = new AttributedList<Path>();
-            cache.put(file.getParent(), list);
-        }
-        if(list.contains(file)) {
-            // Previously found
-            return true;
-        }
-        if(cache.isHidden(file)) {
-            // Previously not found
-            return false;
-        }
         try {
             new S3AttributesFinderFeature(session).withCache(cache).find(file);
-            list.add(file);
             return true;
         }
         catch(NotfoundException e) {
-            list.attributes().addHidden(file);
             return false;
         }
         catch(AccessDeniedException e) {
-            list.add(file);
             // Object is inaccessible to current user, but does exist.
             return true;
         }

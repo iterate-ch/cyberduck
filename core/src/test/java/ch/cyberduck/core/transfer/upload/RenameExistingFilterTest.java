@@ -58,9 +58,10 @@ public class RenameExistingFilterTest {
                 if(type == Move.class) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             assertNotSame(file.getName(), renamed.getName());
                             c.set(true);
+                            return renamed;
                         }
 
                         @Override
@@ -77,7 +78,6 @@ public class RenameExistingFilterTest {
                         public Move withDelete(final Delete delete) {
                             return this;
                         }
-
                     };
                 }
                 return super._getFeature(type);
@@ -96,7 +96,7 @@ public class RenameExistingFilterTest {
                 return new Path("p", EnumSet.of(Path.Type.directory));
             }
         };
-        f.prepare(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"), new TransferStatus().exists(true));
+        f.prepare(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertFalse(c.get());
         f.apply(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(c.get());
@@ -142,18 +142,19 @@ public class RenameExistingFilterTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path source, final Path target, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path source, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             if(moved.incrementAndGet() == 1) {
                                 // Rename existing target file
                                 assertEquals(file, source);
                             }
                             else if(moved.get() == 2) {
                                 // Move temporary renamed file in place
-                                assertEquals(file, target);
+                                assertEquals(file, renamed);
                             }
                             else {
                                 fail();
                             }
+                            return renamed;
                         }
 
                         @Override
@@ -211,7 +212,7 @@ public class RenameExistingFilterTest {
                 options);
         f.withFinder(find).withAttributes(attributes);
         assertTrue(options.temporary);
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertNotNull(status.getRename());
         assertNotNull(status.getRename().remote);
         assertNotEquals(file, status.getDisplayname().local);
@@ -262,10 +263,11 @@ public class RenameExistingFilterTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path f, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path f, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             assertFalse(moved.get());
                             assertEquals(file, f);
                             moved.set(true);
+                            return renamed;
                         }
 
                         @Override
@@ -331,7 +333,7 @@ public class RenameExistingFilterTest {
             public boolean isFile() {
                 return false;
             }
-        }, new TransferStatus().exists(true));
+        }, new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(found.get());
         assertNull(status.getRename().remote);
         assertNull(status.getRename().local);

@@ -30,6 +30,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 
 import java.text.MessageFormat;
@@ -72,13 +73,16 @@ public class DeleteWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
+            if(!delete.isSupported(file)) {
+                throw new UnsupportedException();
+            }
             recursive.addAll(this.compile(delete, list, new WorkerListProgressListener(this, listener), file));
         }
         delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                        file.getName()));
+                    file.getName()));
             }
         });
         return recursive;
@@ -88,9 +92,7 @@ public class DeleteWorker extends Worker<List<Path>> {
         // Compile recursive list
         final Set<Path> recursive = new LinkedHashSet<>();
         if(file.isFile() || file.isSymbolicLink()) {
-            if(delete.isSupported(file)) {
-                recursive.add(file);
-            }
+            recursive.add(file);
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {
@@ -98,13 +100,14 @@ public class DeleteWorker extends Worker<List<Path>> {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
+                    if(!delete.isSupported(child)) {
+                        throw new UnsupportedException();
+                    }
                     recursive.addAll(this.compile(delete, list, listener, child));
                 }
             }
-            if(delete.isSupported(file)) {
-                // Add parent after children
-                recursive.add(file);
-            }
+            // Add parent after children
+            recursive.add(file);
         }
         return recursive;
     }
@@ -112,17 +115,14 @@ public class DeleteWorker extends Worker<List<Path>> {
     @Override
     public void cleanup(final List<Path> deleted) {
         for(Path f : deleted) {
-            if(f.isDirectory()) {
-                cache.remove(f);
-            }
+            cache.invalidate(f.getParent());
         }
-        super.cleanup(deleted);
     }
 
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                this.toString(files));
+            this.toString(files));
     }
 
     @Override

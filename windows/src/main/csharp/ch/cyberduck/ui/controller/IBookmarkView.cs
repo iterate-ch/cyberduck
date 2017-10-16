@@ -57,6 +57,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string UsernameLabel { set; }
         bool HostFieldEnabled { get; set; }
         bool PortFieldEnabled { set; }
+        bool PathFieldEnabled { set; }
         Protocol SelectedProtocol { get; set; }
         string Hostname { get; set; }
         string Port { get; set; }

@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -31,8 +30,6 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -56,17 +53,14 @@ public class DriveSession extends HttpSession<Drive> {
 
     private final JsonFactory json = new GsonFactory();
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
     private final UseragentProvider useragent
-            = new PreferencesUseragentProvider();
+        = new PreferencesUseragentProvider();
 
     private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
 
     private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
-            authorizationService);
+        authorizationService);
 
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -85,12 +79,12 @@ public class DriveSession extends HttpSession<Drive> {
                 // OAuth Bearer added in interceptor
             }
         })
-                .setApplicationName(useragent.get())
-                .build();
+            .setApplicationName(useragent.get())
+            .build();
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
     }
 
@@ -150,7 +144,7 @@ public class DriveSession extends HttpSession<Drive> {
         if(type == Timestamp.class) {
             return (T) new DriveTimestampFeature(this);
         }
-        if(type == Headers.class) {
+        if(type == Metadata.class) {
             return (T) new DriveMetadataFeature(this);
         }
         if(type == Search.class) {

@@ -18,7 +18,6 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -49,7 +48,7 @@ public class B2MetadataFeature implements Headers {
 
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
-        throw new InteroperabilityException(file.getAbsolute());
+        // Only in file upload
     }
 }
 

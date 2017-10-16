@@ -17,9 +17,11 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.S3VersionIdProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -71,7 +73,8 @@ public class S3DefaultDeleteFeature implements Delete {
                 else {
                     try {
                         // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                        session.getClient().deleteVersionedObject(file.attributes().getVersionId(),
+                        session.getClient().deleteVersionedObject(
+                                file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : file.attributes().getVersionId(),
                                 containerService.getContainer(file).getName(), containerService.getKey(file));
                     }
                     catch(ServiceException e) {

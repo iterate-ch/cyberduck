@@ -32,7 +32,7 @@ public class Host implements Serializable, Comparable<Host> {
     /**
      * The credentials to authenticate with for the CDN
      */
-    private final Credentials cloudfront = new DistributionCredentials();
+    private final Credentials cloudfront = new Credentials();
     /**
      * The protocol identifier.
      */
@@ -51,7 +51,7 @@ public class Host implements Serializable, Comparable<Host> {
     /**
      * The credentials to authenticate with
      */
-    private Credentials credentials = new HostCredentials(this);
+    private Credentials credentials = new Credentials();
     /**
      * Unique identifier
      */
@@ -160,7 +160,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param port     The port number to connect to
      */
     public Host(final Protocol protocol, final String hostname, final int port) {
-        this(protocol, hostname, port, (String) null);
+        this(protocol, hostname, port, protocol.getDefaultPath());
     }
 
     /**
@@ -332,6 +332,10 @@ public class Host implements Serializable, Comparable<Host> {
 
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    public void setCredentials(final Credentials credentials) {
+        this.credentials = credentials;
     }
 
     /**

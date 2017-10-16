@@ -168,9 +168,8 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      * @param keychain Password store
      * @param prompt   Prompt
      * @param cancel   Cancel callback
-     * @param cache    Directory listing cache
      */
-    public abstract void login(HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache<Path> cache) throws BackgroundException;
+    public abstract void login(HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
 
     /**
      * Logout and close client connection

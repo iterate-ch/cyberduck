@@ -100,12 +100,14 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                         final String password = keychain.find(bookmark);
                         if(StringUtils.isEmpty(password)) {
                             try {
-                                prompt.prompt(bookmark, credentials,
+                                bookmark.setCredentials(prompt.prompt(bookmark, credentials.getUsername(),
                                         LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                         String.format("%s (%s)",
                                                 LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
                                                 identity.getAbbreviatedPath()), new LoginOptions(bookmark.getProtocol())
-                                );
+                                                .user(false).password(true)
+                                                .passwordPlaceholder(LocaleFactory.localizedString("Private Key Passphrase", "Credentials"))
+                                ));
                             }
                             catch(LoginCanceledException e) {
                                 // Return null if user cancels

@@ -19,7 +19,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Metadata;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 import com.google.api.services.drive.model.File;
 
-public class DriveMetadataFeature implements Headers {
+public class DriveMetadataFeature implements Metadata {
 
     private final DriveSession session;
 
@@ -44,7 +44,11 @@ public class DriveMetadataFeature implements Headers {
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
             final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
-            return session.getClient().files().get(fileid).setFields("properties").execute().getProperties();
+            final Map<String, String> properties = session.getClient().files().get(fileid).setFields("properties").execute().getProperties();
+            if(null == properties) {
+                return Collections.emptyMap();
+            }
+            return properties;
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Failure to read attributes of {0}", e, file);

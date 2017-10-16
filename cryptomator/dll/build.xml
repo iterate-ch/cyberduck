@@ -26,7 +26,7 @@
         <mkdir dir="${build}"/>
         <!-- Create DLL Cyberduck.Importer -->
         <ikvmc target="library" out="${build}/Cyberduck.Cryptomator.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}" debug="${ikvm.debug}"
+               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}.${revision}" debug="${ikvm.debug}"
                verbose="false">
             <reference path="${build}/Cyberduck.Core.dll"/>
             <arg value="-skipDuplicates"/>

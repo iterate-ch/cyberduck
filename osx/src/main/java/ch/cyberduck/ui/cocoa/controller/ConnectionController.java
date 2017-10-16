@@ -109,7 +109,7 @@ public class ConnectionController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                passwordField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
+                passwordField.cell().setPlaceholderString(bookmark.getProtocol().getPasswordPlaceholder());
                 passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
                 if(preferences.getBoolean("connection.login.keychain")) {
                     if(StringUtils.isBlank(bookmark.getHostname())) {
@@ -142,8 +142,8 @@ public class ConnectionController extends BookmarkController {
             @Override
             public void change(final Host bookmark) {
                 passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isNotBlank(credentials.getPasswordPlaceholder()) ? String.format("%s:",
-                                credentials.getPasswordPlaceholder()) : StringUtils.EMPTY, LABEL_ATTRIBUTES
+                        StringUtils.isNotBlank(bookmark.getProtocol().getPasswordPlaceholder()) ? String.format("%s:",
+                                bookmark.getProtocol().getPasswordPlaceholder()) : StringUtils.EMPTY, LABEL_ATTRIBUTES
                 ));
             }
         });
@@ -151,6 +151,7 @@ public class ConnectionController extends BookmarkController {
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
+        this.keychainCheckbox.setState(options.save ? NSCell.NSOnState : NSCell.NSOffState);
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
         this.addObserver(new BookmarkObserver() {

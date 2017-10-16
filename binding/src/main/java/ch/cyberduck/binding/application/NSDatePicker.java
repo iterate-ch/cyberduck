@@ -28,4 +28,6 @@ public abstract class NSDatePicker extends NSControl {
     }
 
     public abstract NSDate dateValue();
+
+    public abstract void setDateValue(NSDate value);
 }

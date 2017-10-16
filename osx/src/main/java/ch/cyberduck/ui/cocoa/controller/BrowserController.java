@@ -564,8 +564,7 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * @param file   Path to select
-     *
+     * @param file Path to select
      */
     private void select(final Path file) {
         final NSTableView browser = this.getSelectedBrowserView();
@@ -580,17 +579,16 @@ public class BrowserController extends WindowController
         }
         final NSInteger index = new NSInteger(row);
         browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), true);
-            browser.scrollRowToVisible(index);
+        browser.scrollRowToVisible(index);
     }
 
     private void updateQuickLookSelection(final List<Path> selected) {
         final List<TransferItem> downloads = new ArrayList<TransferItem>();
-        for(Path path : selected) {
-            if(!path.isFile()) {
+        for(Path file : selected) {
+            if(!file.isFile()) {
                 continue;
             }
-            downloads.add(new TransferItem(
-                    path, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), path)));
+            downloads.add(new TransferItem(file, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), file)));
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
@@ -1078,7 +1076,6 @@ public class BrowserController extends WindowController
      */
     @Override
     public void beginPreviewPanelControl(QLPreviewPanel panel) {
-        quicklook.willBeginQuickLook();
     }
 
     /**
@@ -1090,7 +1087,6 @@ public class BrowserController extends WindowController
      */
     @Override
     public void endPreviewPanelControl(QLPreviewPanel panel) {
-        quicklook.didEndQuickLook();
     }
 
     @Action

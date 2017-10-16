@@ -74,7 +74,7 @@ public class DAVReadFeatureTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final int length = 140000;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -98,16 +98,42 @@ public class DAVReadFeatureTest {
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
         Assert.assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         Assert.assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(30000);
-        final TransferStatus read = new TransferStatus();
-        read.setOffset(40000);
-        read.setAppend(true);
-        read.length(30000); // ensure to read at least two chunks
-        final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
-        new StreamCopier(read, read).withLimit(30000L).transfer(in, buffer);
-        final byte[] reference = new byte[30000];
-        System.arraycopy(content, 40000, reference, 0, reference.length);
-        assertArrayEquals(reference, buffer.toByteArray());
+        {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(40000);
+            final TransferStatus read = new TransferStatus();
+            read.setOffset(23); // offset within chunk
+            read.setAppend(true);
+            read.length(40000); // ensure to read at least two chunks
+            final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
+            new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
+            final byte[] reference = new byte[40000];
+            System.arraycopy(content, 23, reference, 0, reference.length);
+            assertArrayEquals(reference, buffer.toByteArray());
+        }
+        {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(40000);
+            final TransferStatus read = new TransferStatus();
+            read.setOffset(65536); // offset at the beginning of a new chunk
+            read.setAppend(true);
+            read.length(40000); // ensure to read at least two chunks
+            final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
+            new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
+            final byte[] reference = new byte[40000];
+            System.arraycopy(content, 65536, reference, 0, reference.length);
+            assertArrayEquals(reference, buffer.toByteArray());
+        }
+        {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(40000);
+            final TransferStatus read = new TransferStatus();
+            read.setOffset(65537); // offset at the beginning+1 of a new chunk
+            read.setAppend(true);
+            read.length(40000); // ensure to read at least two chunks
+            final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
+            new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
+            final byte[] reference = new byte[40000];
+            System.arraycopy(content, 65537, reference, 0, reference.length);
+            assertArrayEquals(reference, buffer.toByteArray());
+        }
         new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

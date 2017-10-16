@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -48,7 +47,7 @@ public class S3LocationFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3LocationFeature feature = new S3LocationFeature(session);
         assertEquals(new S3LocationFeature.S3Region("eu-west-1"), feature.getLocation(
                 new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
@@ -90,7 +89,7 @@ public class S3LocationFeatureTest {
             }
         };
         assertNotNull(session.open(new DisabledHostKeyCallback()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
                 new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
         ));
@@ -117,7 +116,7 @@ public class S3LocationFeatureTest {
             }
         };
         assertNotNull(session.open(new DisabledHostKeyCallback()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
                 new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
         ));
