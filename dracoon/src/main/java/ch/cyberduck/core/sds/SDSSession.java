@@ -21,6 +21,7 @@ import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -122,7 +123,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         final CloseableHttpClient apache = configuration.build();
         final SDSApiClient client = new SDSApiClient(apache);
-        client.setBasePath(String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext()));
+        client.setBasePath(new HostUrlProvider(false, true).get(host.getProtocol().getScheme(), host.getPort(),
+            null, host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
             .register(new InputStreamProvider())
             .register(MultiPartFeature.class)
