@@ -249,6 +249,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>net.i2p.crypto</groupId>
+                <artifactId>eddsa</artifactId>
+                <version>0.2.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
