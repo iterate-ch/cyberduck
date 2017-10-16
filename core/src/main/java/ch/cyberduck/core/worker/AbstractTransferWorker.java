@@ -240,8 +240,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        final TransferItem item = new TransferItem(file, local);
-        if(prompt.isSelected(item)) {
+        if(prompt.isSelected(new TransferItem(file, local))) {
             return this.submit(new RetryTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
@@ -272,11 +271,12 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent, progress);
                             table.put(file, status);
+                            final TransferItem item = new TransferItem(
+                                status.getRename().remote != null ? status.getRename().remote : file,
+                                status.getRename().local != null ? status.getRename().local : local
+                            );
                             // Apply filter
-                            filter.apply(
-                                    status.getRename().remote != null ? status.getRename().remote : item.remote,
-                                    status.getRename().local != null ? status.getRename().local : item.local,
-                                    status, progress);
+                            filter.apply(item.remote, item.local, status, progress);
                             // Add transfer length to total bytes
                             transfer.addSize(status.getLength() + status.getOffset());
                             // Add skipped bytes
