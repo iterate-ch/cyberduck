@@ -40,11 +40,13 @@ public class SkipFilter extends AbstractDownloadFilter {
 
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
-        if(local.isFile() && local.exists()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skip file %s", file));
+        if(local.isFile()) {
+            if(local.exists()) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skip file %s", file));
+                }
+                return false;
             }
-            return false;
         }
         return super.accept(file, local, parent);
     }

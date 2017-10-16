@@ -52,17 +52,29 @@ public class RenameFilter extends AbstractUploadFilter {
                 if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                     proposal += String.format(".%s", FilenameUtils.getExtension(filename));
                 }
-                final Path renamed = new Path(file.getParent(), proposal, file.getType());
-                status.rename(renamed);
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Change filename from %s to %s", file, renamed));
+                if(parent.getRename().remote != null) {
+                    status.rename(new Path(parent.getRename().remote, proposal, file.getType()));
+                }
+                else {
+                    status.rename(new Path(file.getParent(), proposal, file.getType()));
                 }
             }
             while(find.find(status.getRename().remote));
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Changed upload target from %s to %s", file, status.getRename().remote));
+            }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Clear exist flag for file %s", file));
             }
             status.setExists(false);
+        }
+        else {
+            if(parent.getRename().remote != null) {
+                status.rename(new Path(parent.getRename().remote, file.getName(), file.getType()));
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Changed upload target from %s to %s", file, status.getRename().remote));
+            }
         }
         return status;
     }

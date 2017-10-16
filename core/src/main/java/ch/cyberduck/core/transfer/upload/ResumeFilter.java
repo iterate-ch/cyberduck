@@ -96,7 +96,7 @@ public class ResumeFilter extends AbstractUploadFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent, progress);
-        if(local.isFile()) {
+        if(file.isFile()) {
             if(parent.isExists()) {
                 final Write.Append append = upload.append(file, status.getLength(), cache);
                 if(append.append && append.size < local.attributes().getSize()) {

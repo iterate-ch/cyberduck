@@ -81,7 +81,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     private final Session<?> session;
 
-    private AttributesFinder attribute;
+    protected AttributesFinder attribute;
 
     private DownloadFilterOptions options;
 
