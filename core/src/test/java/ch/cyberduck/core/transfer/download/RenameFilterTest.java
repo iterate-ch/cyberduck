@@ -60,6 +60,7 @@ public class RenameFilterTest {
         final TransferStatus directoryStatus = f.prepare(directory, local, new TransferStatus().exists(true), new DisabledProgressListener());
         final TransferStatus fileStatus = f.prepare(file, new NullLocal(local, "f"), directoryStatus, new DisabledProgressListener());
         assertNotNull(fileStatus.getRename().local);
-        assertEquals(String.format("/tmp/t-1/%s", name), fileStatus.getRename().local.getAbsolute());
+        final String s = System.getProperty("file.separator");
+        assertEquals(String.format("%stmp%st-1%s%s", s, s, s, name), fileStatus.getRename().local.getAbsolute());
     }
 }
