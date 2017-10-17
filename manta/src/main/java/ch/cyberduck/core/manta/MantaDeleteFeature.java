@@ -40,7 +40,12 @@ public class MantaDeleteFeature implements Delete {
         for(Path file : files) {
             callback.delete(file);
             try {
-                session.getClient().deleteRecursive(file.getAbsolute());
+                if(file.isDirectory()) {
+                    session.getClient().deleteRecursive(file.getAbsolute());
+                }
+                else {
+                    session.getClient().delete(file.getAbsolute());
+                }
             }
             catch(MantaException e) {
                 throw new MantaExceptionMappingService().map("Cannot delete {0}", e, file);
