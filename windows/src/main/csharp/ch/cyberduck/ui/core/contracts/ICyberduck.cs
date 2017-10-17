@@ -12,6 +12,9 @@ namespace Ch.Cyberduck.Ui.Core.Contracts
     public interface ICyberduck
     {
         [OperationContract]
+        void Connect();
+
+        [OperationContract]
         void NewInstance();
 
         [OperationContract]
