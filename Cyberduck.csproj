@@ -182,6 +182,7 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Windows">
@@ -194,6 +195,7 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IPasswordPromptView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\PromptPasswordController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\VaultController.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\contracts\ICyberduck.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\ApplicationPreferences.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\uwp\IInitializeWithWindow.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\controls\PasswordStrengthIndicator.cs">
