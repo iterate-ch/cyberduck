@@ -43,7 +43,7 @@
     </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Ch.Cyberduck.Ui.Controller.MainController</StartupObject>
+    <StartupObject>Ch.Cyberduck.Ui.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -198,6 +198,7 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\contracts\ICyberduck.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\ApplicationPreferences.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\uwp\IInitializeWithWindow.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\Program.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\controls\PasswordStrengthIndicator.cs">
       <SubType>Component</SubType>
     </Compile>
