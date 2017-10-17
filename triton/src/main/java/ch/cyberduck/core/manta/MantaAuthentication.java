@@ -26,6 +26,6 @@ public interface MantaAuthentication {
     /**
      * @return True if authentication is complete
      */
-    String authenticate(Host bookmark, final HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel)
+    String authenticate(Host bookmark, HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel)
             throws BackgroundException;
 }
