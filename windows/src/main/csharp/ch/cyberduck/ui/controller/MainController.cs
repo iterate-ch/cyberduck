@@ -62,7 +62,6 @@ using Ch.Cyberduck.Ui.Core.Contracts;
 using Ch.Cyberduck.Ui.Core.Preferences;
 using Ch.Cyberduck.Ui.Core.UWP;
 using java.util;
-using Microsoft.VisualBasic.ApplicationServices;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using org.apache.log4j;
