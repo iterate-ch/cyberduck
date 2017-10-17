@@ -62,6 +62,9 @@ import com.joyent.manta.http.MantaConnectionFactoryConfigurator;
 public class MantaSession extends HttpSession<MantaClient> {
     private static final Logger log = Logger.getLogger(MantaSession.class);
 
+    private final SettableConfigContext config;
+    private final AuthenticationConfigurator authentication;
+
     static {
         final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
@@ -73,11 +76,7 @@ public class MantaSession extends HttpSession<MantaClient> {
 
     public MantaSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), key);
-    }
-
-    @Override
-    protected MantaClient connect(final HostKeyCallback key) throws BackgroundException {
-        final SettableConfigContext config = new ChainedConfigContext(
+        config = new ChainedConfigContext(
             new StandardConfigContext()
                 .setNoAuth(true)
                 .setMantaKeyPath(null)
@@ -87,7 +86,12 @@ public class MantaSession extends HttpSession<MantaClient> {
                 .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname())),
             new DefaultsConfigContext()
         );
-        return new MantaClient(new AuthenticationConfigurator(config), new MantaConnectionFactoryConfigurator(builder.build(this)));
+        authentication = new AuthenticationConfigurator(config);
+    }
+
+    @Override
+    protected MantaClient connect(final HostKeyCallback key) throws BackgroundException {
+        return new MantaClient(authentication, new MantaConnectionFactoryConfigurator(builder.build(this)));
     }
 
     @Override
@@ -102,6 +106,7 @@ public class MantaSession extends HttpSession<MantaClient> {
                 config.setPassword(host.getCredentials().getPassword());
             }
             config.setNoAuth(false);
+            authentication.reload();
             // Instantiation of client does not validate credentials. List the home path to test the connection
             client.isDirectoryEmpty(new MantaHomeFinderFeature(this).find().getAbsolute());
         }
