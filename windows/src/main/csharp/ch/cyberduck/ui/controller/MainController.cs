@@ -828,7 +828,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             InitializeTransfers();
             InitializeSessions();
-            NotificationServiceFactory.get().setup();
 
             // User bookmarks and thirdparty applications
             CountdownEvent bookmarksSemaphore = new CountdownEvent(1);
