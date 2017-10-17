@@ -2939,7 +2939,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorAutoDetectCheckBox.Name = "cryptomatorAutoDetectCheckBox";
             this.cryptomatorAutoDetectCheckBox.Size = new System.Drawing.Size(228, 19);
             this.cryptomatorAutoDetectCheckBox.TabIndex = 0;
-            this.cryptomatorAutoDetectCheckBox.Text = "Auto detect and open vault in Browser";
+            this.cryptomatorAutoDetectCheckBox.Text = "Auto detect and open vault in browser";
             this.cryptomatorAutoDetectCheckBox.UseVisualStyleBackColor = true;
             this.cryptomatorAutoDetectCheckBox.CheckedChanged += new System.EventHandler(this.cryptomatorAutoDetectCheckBox_CheckedChanged);
             // 
