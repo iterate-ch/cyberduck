@@ -33,6 +33,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SDSListService implements ListService {
 
@@ -55,8 +57,8 @@ public class SDSListService implements ListService {
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, 0,
-                        Long.parseLong(new SDSNodeIdProvider(session).getFileid(directory, new DisabledListProgressListener())),
-                        null, null, null, offset, chunksize);
+                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(directory, new DisabledListProgressListener())),
+                    null, null, null, offset, chunksize);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
                     final EnumSet<AbstractPath.Type> type;
@@ -79,6 +81,14 @@ public class SDSListService implements ListService {
                                 type.add(Path.Type.decrypted);
                             }
                     }
+                    final Map<String, String> custom = new HashMap<>();
+                    if(null != node.getCntDownloadShares()) {
+                        custom.put(SDSAttributesFinderFeature.KEY_CNT_DOWNLOADSHARES, String.valueOf(node.getCntDownloadShares()));
+                    }
+                    if(null != node.getCntUploadShares()) {
+                        custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
+                    }
+                    attributes.setCustom(custom);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);
                     listener.chunk(directory, children);

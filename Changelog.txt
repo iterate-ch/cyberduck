@@ -3,8 +3,8 @@ https://cyberduck.io/
 
 6.2.9
 - [Bugfix] Disable selection of client certificate in bookmark window when not applicable
-- [Bugfix] Rename and override exiting file (One Drive)
-- [Bugfix] Rename and override exiting file (Dropbox)
+- [Bugfix] Rename and override exiting file (One Drive, Dropbox)
+- [Bugfix] Disable use of hashed hostname when writing to ~/.ssh/known_hosts (SFTP)
 
 6.2.8
 - [Bugfix] Delete session when canceling upload (One Drive)

@@ -68,14 +68,18 @@ public class OneDriveBufferWriteFeature implements MultipartWrite<Void> {
             @Override
             public void close() throws IOException {
                 try {
+                    // Reset offset in transfer status because data was already streamed
+                    // through StreamCopier when writing to buffer
+                    final TransferStatus range = new TransferStatus(status).length(buffer.length()).append(false);
                     if(0L == buffer.length()) {
-                        new OneDriveTouchFeature(session).touch(file, status);
+                        new OneDriveTouchFeature(session).touch(file, new TransferStatus());
                     }
                     else {
                         final HttpResponseOutputStream<Void> out = new OneDriveWriteFeature(session).write(file,
-                            new TransferStatus(status).length(buffer.length()), callback);
+                            range, callback);
                         IOUtils.copy(new BufferInputStream(buffer), out);
                         out.close();
+                        log.info(String.format("Completed upload for %s with status %s", file, range));
                     }
                     super.close();
                 }

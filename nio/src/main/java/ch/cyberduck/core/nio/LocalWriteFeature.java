@@ -61,12 +61,7 @@ public class LocalWriteFeature extends AppendWriteFeature<Void> {
                         options.add(StandardOpenOption.CREATE);
                     }
                     else {
-                        if(status.getRename().remote != null) {
-                            options.add(StandardOpenOption.CREATE);
-                        }
-                        else {
-                            options.add(StandardOpenOption.TRUNCATE_EXISTING);
-                        }
+                        options.add(StandardOpenOption.TRUNCATE_EXISTING);
                     }
                 }
                 else {

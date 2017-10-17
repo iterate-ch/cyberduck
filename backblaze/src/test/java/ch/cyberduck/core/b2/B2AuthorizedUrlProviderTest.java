@@ -53,8 +53,8 @@ public class B2AuthorizedUrlProviderTest {
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(test, new TransferStatus());
         final B2AuthorizedUrlProvider provider = new B2AuthorizedUrlProvider(session);
-        assertEquals(DescriptiveUrl.EMPTY, provider.toUrl(bucket, null, new DisabledPasswordCallback()));
-        final DescriptiveUrl url = provider.toUrl(test, null, new DisabledPasswordCallback());
+        assertEquals(DescriptiveUrl.EMPTY, provider.toDownloadUrl(bucket, null, new DisabledPasswordCallback()));
+        final DescriptiveUrl url = provider.toDownloadUrl(test, null, new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertNotNull(url.getUrl());
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

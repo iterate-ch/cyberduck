@@ -64,7 +64,7 @@ public final class ProtocolFactory {
             try {
                 for(Local f : bundle.list().filter(new ProfileFilter())) {
                     final Profile profile = ProfileReaderFactory.get().read(f);
-                    if(null == profile.getProtocol()) {
+                    if(null == profile) {
                         continue;
                     }
                     if(log.isInfoEnabled()) {

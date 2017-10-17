@@ -39,7 +39,7 @@ public class OneDriveSharingLinkUrlProviderTest extends AbstractOneDriveTest {
     public void toUrl() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotEquals(DescriptiveUrl.EMPTY, new OneDriveSharingLinkUrlProvider(session).toUrl(file, null, new DisabledPasswordCallback()));
+        assertNotEquals(DescriptiveUrl.EMPTY, new OneDriveSharingLinkUrlProvider(session).toDownloadUrl(file, null, new DisabledPasswordCallback()));
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

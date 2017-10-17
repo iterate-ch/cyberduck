@@ -61,7 +61,7 @@ public class OneDriveCopyFeatureTest extends AbstractOneDriveTest {
 
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(copy.isSupported(touchedFile, rename));
-        copy.copy(touchedFile, rename, null, new DisabledConnectionCallback());
+        copy.copy(touchedFile, rename, new TransferStatus(), new DisabledConnectionCallback());
 
         assertNotNull(attributesFinder.find(rename));
 

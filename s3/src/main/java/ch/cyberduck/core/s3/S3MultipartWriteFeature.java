@@ -51,10 +51,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3Session session;
     private final Find finder;
@@ -73,15 +73,15 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
     @Override
     public HttpResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService())
-                .getDetails(containerService.getKey(file), status);
+            .getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
             multipart = session.getClient().multipartStartUpload(
-                    containerService.getContainer(file).getName(), object);
+                containerService.getContainer(file).getName(), object);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Multipart upload started for %s with ID %s",
-                        multipart.getObjectKey(), multipart.getUploadId()));
+                    multipart.getObjectKey(), multipart.getUploadId()));
             }
         }
         catch(ServiceException e) {
@@ -89,7 +89,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
         }
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
         return new HttpResponseOutputStream<List<MultipartPart>>(new MemorySegementingOutputStream(proxy,
-                preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
+            preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
             public List<MultipartPart> getStatus() throws BackgroundException {
                 return proxy.getCompleted();
@@ -121,7 +121,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
          * Completed parts
          */
         private final List<MultipartPart> completed
-                = new ArrayList<MultipartPart>();
+            = new ArrayList<MultipartPart>();
 
         private final MultipartUpload multipart;
         private final Path file;
@@ -146,10 +146,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
 
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
-            if(0 == len) {
-                // Skip empty segment
-                return;
-            }
             try {
                 completed.add(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
                     @Override
@@ -161,17 +157,17 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                         switch(session.getSignatureVersion()) {
                             case AWS4HMACSHA256:
                                 status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256)
-                                        .compute(new ByteArrayInputStream(content, off, len), status)
+                                    .compute(new ByteArrayInputStream(content, off, len), status)
                                 );
                                 break;
                         }
                         status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session, new S3DisabledMultipartService())
-                                .getDetails(containerService.getKey(file), status);
+                            .getDetails(containerService.getKey(file), status);
                         try {
                             session.getClient().putObjectWithRequestEntityImpl(
-                                    containerService.getContainer(file).getName(), part,
-                                    new ByteArrayEntity(content, off, len), parameters);
+                                containerService.getContainer(file).getName(), part,
+                                new ByteArrayEntity(content, off, len), parameters);
                         }
                         catch(ServiceException e) {
                             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
@@ -180,9 +176,9 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                             log.debug(String.format("Saved object %s with checksum %s", file, part.getETag()));
                         }
                         return new MultipartPart(partNumber,
-                                null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
-                                null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
-                                part.getContentLength());
+                            null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                            null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                            part.getContentLength());
                     }
                 }, overall).call());
             }
@@ -201,18 +197,13 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                 if(completed.isEmpty()) {
                     log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
-                    try {
-                        new S3TouchFeature(session).touch(file, overall.length(0L));
-                    }
-                    catch(BackgroundException e) {
-                        throw new IOException(e);
-                    }
+                    new S3TouchFeature(session).touch(file, new TransferStatus());
                 }
                 else {
                     final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Completed multipart upload for %s with checksum %s",
-                                complete.getObjectKey(), complete.getEtag()));
+                            complete.getObjectKey(), complete.getEtag()));
                     }
                     if(file.getType().contains(Path.Type.encrypted)) {
                         log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
@@ -223,7 +214,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                             concat.append(part.getEtag());
                         }
                         final String expected = String.format("%s-%d",
-                                new MD5ChecksumCompute().compute(concat.toString(), overall), completed.size());
+                            new MD5ChecksumCompute().compute(concat.toString(), overall), completed.size());
                         final String reference;
                         if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
                             reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
@@ -234,8 +225,8 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                         if(!expected.equals(reference)) {
                             if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                                expected, reference));
+                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                        expected, reference));
                             }
                             else {
                                 log.warn(String.format("Mismatch between MD5 hash %s of uploaded data and ETag %s returned by the server", expected, reference));
@@ -244,8 +235,8 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                     }
                 }
             }
-            catch(ChecksumException e) {
-                throw new IOException(e.getMessage(), e);
+            catch(BackgroundException e) {
+                throw new IOException(e);
             }
             catch(ServiceException e) {
                 throw new IOException(e.getErrorMessage(), new S3ExceptionMappingService().map(e));

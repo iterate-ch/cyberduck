@@ -68,7 +68,7 @@ public class SDSSessionTest {
     @Test(expected = LoginFailureException.class)
     public void testLoginRadius() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/Secure Data Space (Radius).cyberduckprofile"));
+            new Local("../profiles/DRACOON (Radius).cyberduckprofile"));
         final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
                 "rsa.user1", "1234"
         ));
@@ -92,7 +92,7 @@ public class SDSSessionTest {
     @Test(expected = LoginCanceledException.class)
     public void testLoginOAuthExpiredRefreshToken() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/Secure Data Space (OAuth).cyberduckprofile"));
+            new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
         final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));

@@ -15,18 +15,23 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DelayedHttpMultipartEntity;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -70,18 +75,23 @@ import eu.ssp_europe.sds.crypto.InvalidFileKeyException;
 import eu.ssp_europe.sds.crypto.InvalidKeyPairException;
 import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
 
-public class SDSMultipartWriteFeature extends SDSWriteFeature implements MultipartWrite<VersionId> {
+import static ch.cyberduck.core.sds.SDSWriteFeature.DEFAULT_CLASSIFICATION;
+
+public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
 
     private final SDSSession session;
+    private final Find finder;
+    private final AttributesFinder attributes;
 
     public SDSMultipartWriteFeature(final SDSSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public SDSMultipartWriteFeature(final SDSSession session, final Find finder, final AttributesFinder attributes) {
-        super(session, finder, attributes);
         this.session = session;
+        this.finder = finder;
+        this.attributes = attributes;
     }
 
     @Override
@@ -245,5 +255,29 @@ public class SDSMultipartWriteFeature extends SDSWriteFeature implements Multipa
         public VersionId getVersionId() {
             return versionId;
         }
+    }
+
+    @Override
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+        if(finder.withCache(cache).find(file)) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        }
+        return Write.notfound;
+    }
+
+    @Override
+    public boolean temporary() {
+        return false;
+    }
+
+    @Override
+    public boolean random() {
+        return false;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file) {
+        return new DisabledChecksumCompute();
     }
 }

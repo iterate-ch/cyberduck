@@ -18,7 +18,7 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>sds</string>
+        <string>dracoon</string>
         <key>Vendor</key>
         <string>dracoon-radius</string>
         <key>Description</key>

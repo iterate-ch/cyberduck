@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -29,8 +30,10 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.SharesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.UploadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -41,6 +44,7 @@ import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Set;
 
 import eu.ssp_europe.sds.crypto.Crypto;
 import eu.ssp_europe.sds.crypto.CryptoException;
@@ -49,7 +53,7 @@ import eu.ssp_europe.sds.crypto.model.PlainFileKey;
 import eu.ssp_europe.sds.crypto.model.UserKeyPair;
 import eu.ssp_europe.sds.crypto.model.UserPrivateKey;
 
-public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest> {
+public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest, CreateUploadShareRequest> {
     private static final Logger log = Logger.getLogger(SDSSharesUrlProvider.class);
 
     private final PathContainerService containerService
@@ -62,9 +66,13 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
-    public DescriptiveUrl toUrl(final Path file, final CreateDownloadShareRequest options,
-                                final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final CreateDownloadShareRequest options,
+                                        final PasswordCallback callback) throws BackgroundException {
         try {
+            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            if(roles != null && !roles.contains(SDSAttributesFinderFeature.DOWNLOAD_SHARE_ROLE)) {
+                return DescriptiveUrl.EMPTY;
+            }
             final Long fileid = Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
             if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
                 // get existing file key associated with the sharing user
@@ -109,6 +117,38 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         }
         catch(CryptoException e) {
             throw new CryptoExceptionMappingService().map(e);
+        }
+    }
+
+    @Override
+    public DescriptiveUrl toUploadUrl(final Path file, final CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
+        try {
+            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            if(roles != null && !roles.contains(SDSAttributesFinderFeature.UPLOAD_SHARE_ROLE)) {
+                return DescriptiveUrl.EMPTY;
+            }
+            final UploadShare share = new SharesApi(session.getClient()).createUploadShare(StringUtils.EMPTY,
+                options.targetId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()))), null);
+            final String help;
+            if(null == share.getExpireAt()) {
+                help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
+            }
+            else {
+                final Long expiry = share.getExpireAt().getTime();
+                help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                    UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
+                );
+            }
+            return new DescriptiveUrl(
+                URI.create(String.format("%s://%s/#/public/shares-uploads/%s",
+                    session.getHost().getProtocol().getScheme(),
+                    session.getHost().getHostname(),
+                    share.getAccessKey())
+                ),
+                DescriptiveUrl.Type.signed, help);
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map(e);
         }
     }
 }

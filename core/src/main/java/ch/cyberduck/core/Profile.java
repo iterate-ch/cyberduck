@@ -101,7 +101,7 @@ public class Profile implements Protocol, Serializable {
         if(StringUtils.isBlank(v)) {
             return parent.getUsernamePlaceholder();
         }
-        return v;
+        return LocaleFactory.localizedString(v, "Credentials");
     }
 
     @Override
@@ -110,7 +110,7 @@ public class Profile implements Protocol, Serializable {
         if(StringUtils.isBlank(v)) {
             return parent.getPasswordPlaceholder();
         }
-        return v;
+        return LocaleFactory.localizedString(v, "Credentials");
     }
 
     @Override

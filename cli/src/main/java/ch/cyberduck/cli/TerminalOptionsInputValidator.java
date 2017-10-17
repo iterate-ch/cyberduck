@@ -72,7 +72,7 @@ public class TerminalOptionsInputValidator {
                 final Set<TransferAction> actions = new HashSet<TransferAction>(TransferAction.forTransfer(Transfer.Type.download));
                 actions.add(TransferAction.cancel);
                 console.printf("Invalid argument '%s' for option %s. Must be one of %s%n",
-                        arg, TerminalOptionsBuilder.Params.existing.name(), Arrays.toString(actions.toArray()));
+                    arg, TerminalOptionsBuilder.Params.existing.name(), Arrays.toString(actions.toArray()));
                 return false;
             }
             switch(action) {
@@ -121,7 +121,7 @@ public class TerminalOptionsInputValidator {
         final List<TransferAction> actions = TransferAction.forTransfer(type);
         if(!actions.contains(TransferAction.forName(arg))) {
             console.printf("Invalid argument '%s' for option %s. Must be one of %s%n",
-                    arg, TerminalOptionsBuilder.Params.existing.name(), Arrays.toString(actions.toArray()));
+                arg, TerminalOptionsBuilder.Params.existing.name(), Arrays.toString(actions.toArray()));
             return false;
         }
         return true;
@@ -143,6 +143,7 @@ public class TerminalOptionsInputValidator {
             case s3:
             case googlestorage:
             case swift:
+            case file:
                 break;
             default:
                 if(StringUtils.isBlank(host.getHostname())) {

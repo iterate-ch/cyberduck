@@ -33,7 +33,8 @@ public class RenameFilterTest {
 
     @Test
     public void testDirectoryUpload() throws Exception {
-        final Path file = new Path("/t", EnumSet.of(Path.Type.directory));
+        final Path directory = new Path("/t", EnumSet.of(Path.Type.directory));
+        final Path file = new Path(directory, "f", EnumSet.of(Path.Type.file));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean moved = new AtomicBoolean();
         final AttributesFinder attributes = new AttributesFinder() {
@@ -50,7 +51,7 @@ public class RenameFilterTest {
         final Find find = new Find() {
             @Override
             public boolean find(final Path f) throws BackgroundException {
-                if(f.equals(file)) {
+                if(f.equals(directory)) {
                     found.set(true);
                     return true;
                 }
@@ -62,14 +63,18 @@ public class RenameFilterTest {
                 return this;
             }
         };
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
-        };
+        final NullSession session = new NullSession(new Host(new TestProtocol()));
         final RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), session);
         f.withFinder(find).withAttributes(attributes);
-        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
+        final TransferStatus directoryStatus = f.prepare(directory, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(found.get());
-        assertNotNull(status.getRename());
-        assertNull(status.getRename().local);
-        assertNotNull(status.getRename().remote);
+        assertNotNull(directoryStatus.getRename());
+        assertNull(directoryStatus.getRename().local);
+        assertNotNull(directoryStatus.getRename().remote);
+        final TransferStatus fileStatus = f.prepare(file, new NullLocal("t/f"), directoryStatus, new DisabledProgressListener());
+        assertNotNull(fileStatus.getRename());
+        assertNull(fileStatus.getRename().local);
+        assertNotNull(fileStatus.getRename().remote);
+        assertEquals(new Path("/t-1/f", EnumSet.of(Path.Type.file)), fileStatus.getRename().remote);
     }
 }

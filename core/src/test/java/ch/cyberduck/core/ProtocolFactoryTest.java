@@ -15,6 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -127,5 +129,21 @@ public class ProtocolFactoryTest {
         };
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, swift)));
         assertEquals(swift, f.forName("swift"));
+    }
+
+    @Test
+    public void testRegisterUnknownProtocol() throws Exception {
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.dav;
+            }
+        }))).read(
+            new Local("src/test/resources/Unknown.cyberduckprofile")
+        );
+        assertNull(profile);
+        final ProtocolFactory f = new ProtocolFactory();
+        f.register(profile);
+        assertTrue(f.find().isEmpty());
     }
 }

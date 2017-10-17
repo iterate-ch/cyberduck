@@ -640,7 +640,9 @@ public class MainController extends BundleController implements NSApplication.De
                         // Register in application support
                         final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
                             PreferencesFactory.get().getProperty("profiles.folder.name"));
-                        profiles.mkdir();
+                        if(!profiles.exists()) {
+                            profiles.mkdir();
+                        }
                         f.copy(LocalFactory.get(profiles, f.getName()));
                     }
                 }
