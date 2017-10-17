@@ -160,6 +160,7 @@ public class MantaPublicKeyAuthentication implements MantaAuthentication {
              ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             IOUtils.copy(is, baos);
             final SettableConfigContext config = (SettableConfigContext) session.getClient().getContext();
+            config.setMantaKeyPath(null);
             config.setPrivateKeyContent(new String(baos.toByteArray(), StandardCharsets.UTF_8));
         }
         catch(IOException e) {

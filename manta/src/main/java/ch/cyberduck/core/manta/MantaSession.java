@@ -48,9 +48,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import java.io.IOException;
 import java.security.Security;
 
+import com.joyent.manta.client.AuthenticationConfigurator;
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
-import com.joyent.manta.config.BaseChainedConfigContext;
 import com.joyent.manta.config.ChainedConfigContext;
 import com.joyent.manta.config.DefaultsConfigContext;
 import com.joyent.manta.config.SettableConfigContext;
@@ -77,16 +77,17 @@ public class MantaSession extends HttpSession<MantaClient> {
 
     @Override
     protected MantaClient connect(final HostKeyCallback key) throws BackgroundException {
-        final SettableConfigContext<BaseChainedConfigContext> config = new ChainedConfigContext(
-            new DefaultsConfigContext(),
+        final SettableConfigContext config = new ChainedConfigContext(
             new StandardConfigContext()
+                .setNoAuth(true)
+                .setMantaKeyPath(null)
                 .setHttpsProtocols(PreferencesFactory.get().getProperty("connection.ssl.protocols"))
                 .setDisableNativeSignatures(true)
-                .setNoAuth(true)
-                .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname()))
+                .setMantaUser(host.getCredentials().getUsername())
+                .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname())),
+            new DefaultsConfigContext()
         );
-        config.setMantaKeyPath(null);
-        return new MantaClient(config, new MantaConnectionFactoryConfigurator(builder.build(this)));
+        return new MantaClient(new AuthenticationConfigurator(config), new MantaConnectionFactoryConfigurator(builder.build(this)));
     }
 
     @Override
