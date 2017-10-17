@@ -18,11 +18,11 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>manta</string>
+        <string>triton</string>
         <key>Vendor</key>
         <string>iterate GmbH</string>
         <key>Description</key>
-        <string>Joyent Manta Triton Object Storage</string>
+        <string>Joyent Triton Object Storage</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>

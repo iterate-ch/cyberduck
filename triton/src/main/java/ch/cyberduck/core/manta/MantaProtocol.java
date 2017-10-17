@@ -22,17 +22,17 @@ public class MantaProtocol extends AbstractProtocol {
 
     @Override
     public String getIdentifier() {
-        return "manta";
+        return "triton";
     }
 
     @Override
     public String getDescription() {
-        return "Triton Manta Object Storage";
+        return "Triton Object Storage";
     }
 
     @Override
     public String getName() {
-        return "Manta";
+        return "Triton";
     }
 
     @Override
