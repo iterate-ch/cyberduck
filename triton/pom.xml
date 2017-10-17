@@ -22,7 +22,7 @@
         <groupId>ch.cyberduck</groupId>
         <version>6.3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>manta</artifactId>
+    <artifactId>triton</artifactId>
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>

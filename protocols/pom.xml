@@ -119,7 +119,7 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
-            <artifactId>manta</artifactId>
+            <artifactId>triton</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
