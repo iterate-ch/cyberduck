@@ -318,10 +318,6 @@
       <DependentUpon>CreateFilePromptForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\DonationForm.resx">
-      <DependentUpon>DonationForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\ErrorForm.resx">
       <DependentUpon>ErrorForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -496,12 +492,6 @@
     </Compile>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\CreateFilePromptForm.Designer.cs">
       <DependentUpon>CreateFilePromptForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\DonationForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\DonationForm.Designer.cs">
-      <DependentUpon>DonationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\DuplicateFilePromptForm.cs">
       <SubType>Form</SubType>
