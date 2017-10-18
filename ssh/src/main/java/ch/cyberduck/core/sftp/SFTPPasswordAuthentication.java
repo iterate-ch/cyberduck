@@ -15,6 +15,7 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.PasswordUpdateProvider;
@@ -50,7 +52,8 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
         if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
             final Credentials additional = prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
                 LocaleFactory.localizedString("Partial authentication success", "Credentials"),
-                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                MessageFormat.format(LocaleFactory.localizedString(
+                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
                 new LoginOptions(bookmark.getProtocol()).user(false).keychain(false).publickey(false)
                     .usernamePlaceholder(bookmark.getCredentials().getUsername()));
             return this.authenticate(bookmark, additional, prompt);
