@@ -82,34 +82,38 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             userKeyPair.setUserPrivateKey(privateKey);
             final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
             final Long fileId = file != null ? Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())) : null;
-            final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(StringUtils.EMPTY,
-                null, null, null, fileId, null);
-            final Map<Long, UserUserPublicKey> publicKeys =
-                missingKeys.getUsers().stream().collect(Collectors.toMap(UserUserPublicKey::getId, Function.identity()));
-            final Map<Long, FileFileKeys> files =
-                missingKeys.getFiles().stream().collect(Collectors.toMap(FileFileKeys::getId, Function.identity()));
-            final UserFileKeySetBatchRequest request = new UserFileKeySetBatchRequest();
-            for(UserIdFileIdItem item : missingKeys.getItems()) {
-                final UserUserPublicKey publicKey = publicKeys.get(item.getUserId());
-                final FileFileKeys fileKeys = files.get(item.getFileId());
-                final UserFileKeySetRequest keySetRequest = new UserFileKeySetRequest()
-                    .fileId(item.getFileId())
-                    .userId(item.getUserId());
-                processed.add(keySetRequest);
-                final PlainFileKey plainFileKey = Crypto.decryptFileKey(
-                    TripleCryptConverter.toCryptoEncryptedFileKey(fileKeys.getFileKeyContainer()), privateKey, passphrase.getPassword());
-                final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                    plainFileKey, TripleCryptConverter.toCryptoUserPublicKey(publicKey.getPublicKeyContainer())
-                );
-                keySetRequest.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Missing file key for file with id %d processed", item.getFileId()));
+            UserFileKeySetBatchRequest request;
+            do {
+                final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(StringUtils.EMPTY,
+                    null, null, null, fileId, null);
+                final Map<Long, UserUserPublicKey> publicKeys =
+                    missingKeys.getUsers().stream().collect(Collectors.toMap(UserUserPublicKey::getId, Function.identity()));
+                final Map<Long, FileFileKeys> files =
+                    missingKeys.getFiles().stream().collect(Collectors.toMap(FileFileKeys::getId, Function.identity()));
+                request = new UserFileKeySetBatchRequest();
+                for(UserIdFileIdItem item : missingKeys.getItems()) {
+                    final UserUserPublicKey publicKey = publicKeys.get(item.getUserId());
+                    final FileFileKeys fileKeys = files.get(item.getFileId());
+                    final UserFileKeySetRequest keySetRequest = new UserFileKeySetRequest()
+                        .fileId(item.getFileId())
+                        .userId(item.getUserId());
+                    processed.add(keySetRequest);
+                    final PlainFileKey plainFileKey = Crypto.decryptFileKey(
+                        TripleCryptConverter.toCryptoEncryptedFileKey(fileKeys.getFileKeyContainer()), privateKey, passphrase.getPassword());
+                    final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
+                        plainFileKey, TripleCryptConverter.toCryptoUserPublicKey(publicKey.getPublicKeyContainer())
+                    );
+                    keySetRequest.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Missing file key for file with id %d processed", item.getFileId()));
+                    }
+                    request.addItemsItem(keySetRequest);
                 }
-                request.addItemsItem(keySetRequest);
+                if(!request.getItems().isEmpty()) {
+                    new NodesApi(session.getClient()).setUserFileKeys(StringUtils.EMPTY, request);
+                }
             }
-            if(!request.getItems().isEmpty()) {
-                new NodesApi(session.getClient()).setUserFileKeys(StringUtils.EMPTY, request);
-            }
+            while(!request.getItems().isEmpty());
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
