@@ -59,7 +59,7 @@ public class SFTPSessionTest {
     @Test
     public void testLoginPassword() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         assertFalse(session.isConnected());
@@ -67,6 +67,31 @@ public class SFTPSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+    }
+
+    @Test
+    public void testWinvise() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "ws2016-winvise.westeurope.cloudapp.azure.com",
+            new Credentials("alivedevil"));
+        host.getCredentials().setIdentity(new Local("src/test/resources", "winvise.ppk"));
+        final SFTPSession session = new SFTPSession(host);
+        assertFalse(session.isConnected());
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                if(options.publickey) {
+                    // Private key password
+                    return new Credentials(null, "winvise");
+                }
+                return new Credentials("alivedevil", "df4RYFwwJQsTBM3P");
+            }
+        }, new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -115,7 +140,7 @@ public class SFTPSessionTest {
     @Test(expected = LoginCanceledException.class)
     public void testLoginFailureToomanyauthenticationfailures() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                "jenkins", "p"
+            "jenkins", "p"
         ));
         final SFTPSession session = new SFTPSession(host);
         final AtomicBoolean fail = new AtomicBoolean();
@@ -123,14 +148,14 @@ public class SFTPSessionTest {
             @Override
             public Credentials prompt(final Host bookmark, String username,
                                       String title, String reason, LoginOptions options)
-                    throws LoginCanceledException {
+                throws LoginCanceledException {
                 assertEquals("Login failed", title);
 //                assertEquals("Too many authentication failures for jenkins. Please contact your web hosting service provider for assistance.", reason);
                 fail.set(true);
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+            new DisabledProgressListener());
         try {
             login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
@@ -143,7 +168,7 @@ public class SFTPSessionTest {
     @Test(expected = LoginCanceledException.class)
     public void testWorkdir() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback()));
@@ -185,24 +210,19 @@ public class SFTPSessionTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectNoValidCredentials() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("user"));
         final Session session = new SFTPSession(host);
-        final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals("Login failed", title);
-                assertEquals("Login test.cyberduck.ch – SFTP with username and password. Please contact your web hosting service provider for assistance.", reason);
-                change.set(true);
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+            new DisabledProgressListener());
         try {
             login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(LoginCanceledException e) {
-            assertTrue(change.get());
             throw e;
         }
     }
@@ -216,14 +236,14 @@ public class SFTPSessionTest {
             @Override
             public Credentials prompt(final Host bookmark, String username,
                                       String title, String reason, LoginOptions options)
-                    throws LoginCanceledException {
+                throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
                 assertEquals("Login test.cyberduck.ch – SFTP with username and password. No login credentials could be found in the Keychain.", reason);
                 change.set(true);
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+            new DisabledProgressListener());
         try {
             login.check(session, PathCache.empty(), new DisabledCancelCallback());
         }
@@ -253,7 +273,7 @@ public class SFTPSessionTest {
 
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options)
-                    throws LoginCanceledException {
+                throws LoginCanceledException {
                 if(change.get()) {
                     assertEquals("Change of username or service not allowed: (u1,ssh-connection) -> (jenkins,ssh-connection). Please contact your web hosting service provider for assistance.", reason);
                     return null;
@@ -267,7 +287,7 @@ public class SFTPSessionTest {
                 }
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+            new DisabledProgressListener());
         login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(change.get());
         session.close();
@@ -277,22 +297,22 @@ public class SFTPSessionTest {
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectHttpProxy() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host,
-                new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
-                        new DefaultSocketConfigurator(), new ProxyFinder() {
-                    @Override
-                    public Proxy find(final Host target) {
-                        return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
-                    }
-                })
+            new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
+                new DefaultSocketConfigurator(), new ProxyFinder() {
+                @Override
+                public Proxy find(final Host target) {
+                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                }
+            })
         );
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
-                new DisabledProgressListener());
+            new DisabledLoginCallback(),
+            new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(),
+            new DisabledProgressListener());
         try {
             c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
