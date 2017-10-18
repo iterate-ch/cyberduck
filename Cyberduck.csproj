@@ -43,7 +43,7 @@
     </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Ch.Cyberduck.Ui.Controller.MainController</StartupObject>
+    <StartupObject>Ch.Cyberduck.Ui.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -158,7 +158,6 @@
     <Reference Include="IKVM.Runtime.JNI">
       <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -182,6 +181,7 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Windows">
@@ -194,8 +194,10 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IPasswordPromptView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\PromptPasswordController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\VaultController.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\contracts\ICyberduck.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\ApplicationPreferences.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\uwp\IInitializeWithWindow.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\Program.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\controls\PasswordStrengthIndicator.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -313,10 +315,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\CreateFilePromptForm.resx">
       <DependentUpon>CreateFilePromptForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\DonationForm.resx">
-      <DependentUpon>DonationForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\ErrorForm.resx">
@@ -493,12 +491,6 @@
     </Compile>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\CreateFilePromptForm.Designer.cs">
       <DependentUpon>CreateFilePromptForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\DonationForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\DonationForm.Designer.cs">
-      <DependentUpon>DonationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\DuplicateFilePromptForm.cs">
       <SubType>Form</SubType>
