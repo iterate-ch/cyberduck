@@ -58,7 +58,7 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
 
     public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback controller)
             throws BackgroundException {
-        if(StringUtils.isBlank(host.getCredentials().getPassword())) {
+        if(StringUtils.isBlank(credentials.getPassword())) {
             return false;
         }
         if(log.isDebugEnabled()) {
