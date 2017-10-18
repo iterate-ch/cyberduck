@@ -49,18 +49,23 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
     @Override
     public boolean authenticate(final Host bookmark, final LoginCallback callback, final CancelCallback cancel)
             throws BackgroundException {
-        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
+        return this.authenticate(bookmark, bookmark.getCredentials(), callback);
+    }
+
+    public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback callback)
+        throws BackgroundException {
+        if(StringUtils.isBlank(credentials.getPassword())) {
             return false;
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using password authentication with credentials %s", bookmark.getCredentials()));
+            log.debug(String.format("Login using password authentication with credentials %s", credentials));
         }
         try {
             // Use both password and keyboard-interactive
-            session.getClient().authPassword(bookmark.getCredentials().getUsername(), new PasswordFinder() {
+            session.getClient().authPassword(credentials.getUsername(), new PasswordFinder() {
                 @Override
                 public char[] reqPassword(final Resource<?> resource) {
-                    return bookmark.getCredentials().getPassword().toCharArray();
+                    return credentials.getPassword().toCharArray();
                 }
 
                 @Override
@@ -72,10 +77,8 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
                 public char[] provideNewPassword(final Resource<?> resource, final String prompt) {
                     try {
                         final StringAppender message = new StringAppender().append(prompt);
-                        final Credentials credentials = bookmark.getCredentials();
-                        final Credentials changed;
-                        changed = callback.prompt(bookmark, credentials.getUsername(), LocaleFactory.localizedString("Change Password", "Credentials"), message.toString(),
-                                new LoginOptions(bookmark.getProtocol()).anonymous(false).user(false).publickey(false)
+                        final Credentials changed = callback.prompt(host, credentials.getUsername(), LocaleFactory.localizedString("Change Password", "Credentials"), message.toString(),
+                            new LoginOptions(host.getProtocol()).anonymous(false).user(false).publickey(false)
                                         .usernamePlaceholder(credentials.getUsername()));
                         return changed.getPassword().toCharArray();
                     }
