@@ -73,31 +73,6 @@ public class SFTPSessionTest {
     }
 
     @Test
-    public void testWinvise() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "ws2016-winvise.westeurope.cloudapp.azure.com",
-            new Credentials("alivedevil"));
-        host.getCredentials().setIdentity(new Local("src/test/resources", "winvise.ppk"));
-        final SFTPSession session = new SFTPSession(host);
-        assertFalse(session.isConnected());
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                if(options.publickey) {
-                    // Private key password
-                    return new Credentials(null, "winvise");
-                }
-                return new Credentials("alivedevil", "df4RYFwwJQsTBM3P");
-            }
-        }, new DisabledCancelCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-    }
-
-    @Test
     public void testAllHMAC() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final SFTPSession session = new SFTPSession(host);
