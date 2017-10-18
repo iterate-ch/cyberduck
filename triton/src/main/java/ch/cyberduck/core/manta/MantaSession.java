@@ -48,12 +48,11 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import java.io.IOException;
 import java.security.Security;
 
-import com.joyent.manta.client.AuthenticationConfigurator;
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
+import com.joyent.manta.config.AuthAwareConfigContext;
 import com.joyent.manta.config.ChainedConfigContext;
 import com.joyent.manta.config.DefaultsConfigContext;
-import com.joyent.manta.config.SettableConfigContext;
 import com.joyent.manta.config.StandardConfigContext;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
@@ -62,8 +61,7 @@ import com.joyent.manta.http.MantaConnectionFactoryConfigurator;
 public class MantaSession extends HttpSession<MantaClient> {
     private static final Logger log = Logger.getLogger(MantaSession.class);
 
-    private final SettableConfigContext config;
-    private final AuthenticationConfigurator authentication;
+    private final AuthAwareConfigContext config;
 
     static {
         final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
@@ -76,7 +74,7 @@ public class MantaSession extends HttpSession<MantaClient> {
 
     public MantaSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), key);
-        config = new ChainedConfigContext(
+        config = new AuthAwareConfigContext(new ChainedConfigContext(
             new StandardConfigContext()
                 .setNoAuth(true)
                 .setMantaKeyPath(null)
@@ -85,19 +83,17 @@ public class MantaSession extends HttpSession<MantaClient> {
                 .setMantaUser(host.getCredentials().getUsername())
                 .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname())),
             new DefaultsConfigContext()
-        );
-        authentication = new AuthenticationConfigurator(config);
+        ));
     }
 
     @Override
     protected MantaClient connect(final HostKeyCallback key) throws BackgroundException {
-        return new MantaClient(authentication, new MantaConnectionFactoryConfigurator(builder.build(this)));
+        return new MantaClient(config, new MantaConnectionFactoryConfigurator(builder.build(this)));
     }
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            final SettableConfigContext config = (SettableConfigContext) client.getContext();
             config.setMantaUser(host.getCredentials().getUsername());
             if(host.getCredentials().isPublicKeyAuthentication()) {
                 config.setMantaKeyId(new MantaPublicKeyAuthentication(this).authenticate(host, keychain, prompt, cancel));
@@ -106,7 +102,7 @@ public class MantaSession extends HttpSession<MantaClient> {
                 config.setPassword(host.getCredentials().getPassword());
             }
             config.setNoAuth(false);
-            authentication.reload();
+            config.reload();
             // Instantiation of client does not validate credentials. List the home path to test the connection
             client.isDirectoryEmpty(new MantaHomeFinderFeature(this).find().getAbsolute());
         }
