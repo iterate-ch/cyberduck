@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12118"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -24,6 +24,7 @@
                 <outlet property="chmodUploadTypePopup" destination="216" id="437"/>
                 <outlet property="configureProxiesButton" destination="289" id="438"/>
                 <outlet property="confirmDisconnectCheckbox" destination="55" id="439"/>
+                <outlet property="cryptomatorCheckbox" destination="Tzo-pv-NCb" id="taecaeH4"/>
                 <outlet property="defaultBookmarkCombobox" destination="32" id="441"/>
                 <outlet property="defaultBucketLocation" destination="357" id="442"/>
                 <outlet property="defaultDownloadThrottleCombobox" destination="335" id="443"/>
@@ -62,6 +63,7 @@
                 <outlet property="panelAdvanced" destination="280" id="478"/>
                 <outlet property="panelBandwidth" destination="327" id="479"/>
                 <outlet property="panelBrowser" destination="61" id="480"/>
+                <outlet property="panelCryptomator" destination="UTQ-mX-sfj" id="Xah7air7"/>
                 <outlet property="panelEditor" destination="368" id="481"/>
                 <outlet property="panelFTP" destination="264" id="482"/>
                 <outlet property="panelGeneral" destination="30" id="483"/>
@@ -125,67 +127,73 @@
                             <tabViewItem label="Navigateur" identifier="browser" id="8">
                                 <view key="view" id="9">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Transferts" identifier="queue" id="10">
                                 <view key="view" id="11">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Éditeur" identifier="pencil" id="12">
                                 <view key="view" id="13">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="FTP" identifier="ftp" id="14">
                                 <view key="view" id="15">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="SFTP" identifier="sftp" id="16">
                                 <view key="view" id="17">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="S3" identifier="s3" id="18">
                                 <view key="view" id="19">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Google Docs" identifier="google" id="20">
                                 <view key="view" id="21">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Débit" identifier="bandwidth" id="22">
                                 <view key="view" id="23">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Connexion" identifier="connection" id="24">
                                 <view key="view" id="25">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Cryptomator" identifier="cryptomator" id="prD-Uh-R1Z" userLabel="Cryptomator">
+                                <view key="view" id="58Y-QD-ThV">
+                                    <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Mise à jour" identifier="update" id="26">
                                 <view key="view" id="27">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Langue" identifier="language" id="28">
                                 <view key="view" id="29">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
@@ -1299,7 +1307,7 @@
                         <rect key="frame" x="2" y="2" width="469" height="77"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button verticalHuggingPriority="750" misplaced="YES" id="289">
+                            <button verticalHuggingPriority="750" id="289">
                                 <rect key="frame" x="139" y="5" width="177" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Modifier les réglages…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="290">
@@ -1747,45 +1755,30 @@
                 </box>
             </subviews>
         </customView>
-        <view id="415">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
+        <customView misplaced="YES" id="UTQ-mX-sfj" userLabel="Panel Cryptomator">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="103"/>
             <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="416">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="417">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="418">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="419">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="420">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="421">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="422">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="423">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="424">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
+            <subviews>
+                <box misplaced="YES" title="Cryptomator" id="Xoe-j6-yKO">
+                    <rect key="frame" x="17" y="16" width="473" height="67"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="RhT-uu-LrO">
+                        <rect key="frame" x="2" y="2" width="469" height="50"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button misplaced="YES" id="Tzo-pv-NCb">
+                                <rect key="frame" x="10" y="22" width="253" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Auto detect and open vault in browser" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                    </view>
+                </box>
+            </subviews>
+            <point key="canvasLocation" x="131.5" y="551.5"/>
+        </customView>
     </objects>
 </document>

@@ -124,6 +124,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label14 = new System.Windows.Forms.Label();
             this.editorComboBox = new Ch.Cyberduck.Ui.Winforms.Controls.ImageComboBox();
             this.alwaysUseDefaultEditorCheckBox = new System.Windows.Forms.CheckBox();
+            this.managedBrowserPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.tableLayoutPanel21 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox13 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel22 = new System.Windows.Forms.TableLayoutPanel();
+            this.label15 = new System.Windows.Forms.Label();
+            this.bookmarkSizeComboBox = new System.Windows.Forms.ComboBox();
+            this.groupBox14 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel23 = new System.Windows.Forms.TableLayoutPanel();
+            this.infoWindowCheckbox = new System.Windows.Forms.CheckBox();
+            this.showHiddenFilesCheckbox = new System.Windows.Forms.CheckBox();
+            this.returnKeyCheckbox = new System.Windows.Forms.CheckBox();
+            this.doubleClickEditorCheckbox = new System.Windows.Forms.CheckBox();
             this.managedTransfersPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.transfersTabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -210,18 +222,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.uploadSkipCheckbox = new System.Windows.Forms.CheckBox();
             this.uploadSkipRegexRichTextbox = new System.Windows.Forms.RichTextBox();
             this.uploadSkipRegexDefaultButton = new System.Windows.Forms.Button();
-            this.managedBrowserPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
-            this.tableLayoutPanel21 = new System.Windows.Forms.TableLayoutPanel();
-            this.groupBox13 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel22 = new System.Windows.Forms.TableLayoutPanel();
-            this.label15 = new System.Windows.Forms.Label();
-            this.bookmarkSizeComboBox = new System.Windows.Forms.ComboBox();
-            this.groupBox14 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel23 = new System.Windows.Forms.TableLayoutPanel();
-            this.infoWindowCheckbox = new System.Windows.Forms.CheckBox();
-            this.showHiddenFilesCheckbox = new System.Windows.Forms.CheckBox();
-            this.returnKeyCheckbox = new System.Windows.Forms.CheckBox();
-            this.doubleClickEditorCheckbox = new System.Windows.Forms.CheckBox();
+            this.managedCryptomatorPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.tableLayoutPanel24 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox15 = new System.Windows.Forms.GroupBox();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.cryptomatorAutoDetectCheckBox = new System.Windows.Forms.CheckBox();
             this.toolStrip = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
             this.generalButton = new System.Windows.Forms.ToolStripButton();
             this.browserButton = new System.Windows.Forms.ToolStripButton();
@@ -231,6 +236,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3Button = new System.Windows.Forms.ToolStripButton();
             this.bandwidthButton = new System.Windows.Forms.ToolStripButton();
             this.connectionButton = new System.Windows.Forms.ToolStripButton();
+            this.cryptomatorButton = new System.Windows.Forms.ToolStripButton();
             this.updateButton = new System.Windows.Forms.ToolStripButton();
             this.languageButton = new System.Windows.Forms.ToolStripButton();
             this.panelManager.SuspendLayout();
@@ -281,6 +287,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.managedBrowserPanel.SuspendLayout();
+            this.tableLayoutPanel21.SuspendLayout();
+            this.groupBox13.SuspendLayout();
+            this.tableLayoutPanel22.SuspendLayout();
+            this.groupBox14.SuspendLayout();
+            this.tableLayoutPanel23.SuspendLayout();
             this.managedTransfersPanel.SuspendLayout();
             this.transfersTabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -311,12 +323,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel18.SuspendLayout();
             this.groupBox12.SuspendLayout();
             this.tableLayoutPanel19.SuspendLayout();
-            this.managedBrowserPanel.SuspendLayout();
-            this.tableLayoutPanel21.SuspendLayout();
-            this.groupBox13.SuspendLayout();
-            this.tableLayoutPanel22.SuspendLayout();
-            this.groupBox14.SuspendLayout();
-            this.tableLayoutPanel23.SuspendLayout();
+            this.managedCryptomatorPanel.SuspendLayout();
+            this.tableLayoutPanel24.SuspendLayout();
+            this.groupBox15.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -343,8 +353,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.Controls.Add(this.managedUpdatePanel);
             this.panelManager.Controls.Add(this.managedLanguagePanel);
             this.panelManager.Controls.Add(this.managedEditorPanel);
-            this.panelManager.Controls.Add(this.managedTransfersPanel);
             this.panelManager.Controls.Add(this.managedBrowserPanel);
+            this.panelManager.Controls.Add(this.managedTransfersPanel);
+            this.panelManager.Controls.Add(this.managedCryptomatorPanel);
             this.panelManager.Location = new System.Drawing.Point(12, 76);
             this.panelManager.Name = "panelManager";
             this.panelManager.SelectedIndex = 8;
@@ -1549,6 +1560,172 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.alwaysUseDefaultEditorCheckBox.UseVisualStyleBackColor = true;
             this.alwaysUseDefaultEditorCheckBox.CheckedChanged += new System.EventHandler(this.alwaysUseDefaultEditorCheckBox_CheckedChanged);
             // 
+            // managedBrowserPanel
+            // 
+            this.managedBrowserPanel.Controls.Add(this.tableLayoutPanel21);
+            this.managedBrowserPanel.Location = new System.Drawing.Point(0, 0);
+            this.managedBrowserPanel.Name = "managedBrowserPanel";
+            this.managedBrowserPanel.Size = new System.Drawing.Size(0, 0);
+            this.managedBrowserPanel.Text = "managedBrowserPanel";
+            // 
+            // tableLayoutPanel21
+            // 
+            this.tableLayoutPanel21.AutoSize = true;
+            this.tableLayoutPanel21.ColumnCount = 1;
+            this.tableLayoutPanel21.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel21.Controls.Add(this.groupBox13, 0, 1);
+            this.tableLayoutPanel21.Controls.Add(this.groupBox14, 0, 0);
+            this.tableLayoutPanel21.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel21.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel21.Name = "tableLayoutPanel21";
+            this.tableLayoutPanel21.RowCount = 3;
+            this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel21.Size = new System.Drawing.Size(0, 0);
+            this.tableLayoutPanel21.TabIndex = 8;
+            // 
+            // groupBox13
+            // 
+            this.groupBox13.AutoSize = true;
+            this.groupBox13.Controls.Add(this.tableLayoutPanel22);
+            this.groupBox13.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox13.Location = new System.Drawing.Point(3, 151);
+            this.groupBox13.Name = "groupBox13";
+            this.groupBox13.Size = new System.Drawing.Size(1, 76);
+            this.groupBox13.TabIndex = 1;
+            this.groupBox13.TabStop = false;
+            this.groupBox13.Text = "Bookmarks";
+            // 
+            // tableLayoutPanel22
+            // 
+            this.tableLayoutPanel22.AutoSize = true;
+            this.tableLayoutPanel22.ColumnCount = 2;
+            this.tableLayoutPanel22.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
+            this.tableLayoutPanel22.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel22.Controls.Add(this.label15, 0, 1);
+            this.tableLayoutPanel22.Controls.Add(this.bookmarkSizeComboBox, 0, 4);
+            this.tableLayoutPanel22.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel22.Location = new System.Drawing.Point(3, 19);
+            this.tableLayoutPanel22.Name = "tableLayoutPanel22";
+            this.tableLayoutPanel22.Padding = new System.Windows.Forms.Padding(5);
+            this.tableLayoutPanel22.RowCount = 6;
+            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel22.Size = new System.Drawing.Size(0, 54);
+            this.tableLayoutPanel22.TabIndex = 10;
+            // 
+            // label15
+            // 
+            this.label15.AutoEllipsis = true;
+            this.label15.AutoSize = true;
+            this.tableLayoutPanel22.SetColumnSpan(this.label15, 2);
+            this.label15.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.label15.Location = new System.Drawing.Point(8, 5);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(394, 15);
+            this.label15.TabIndex = 6;
+            this.label15.Text = "When using small icons, only the nickname of the bookmark is displayed.";
+            // 
+            // bookmarkSizeComboBox
+            // 
+            this.bookmarkSizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.bookmarkSizeComboBox.FormattingEnabled = true;
+            this.bookmarkSizeComboBox.ItemHeight = 15;
+            this.bookmarkSizeComboBox.Location = new System.Drawing.Point(8, 23);
+            this.bookmarkSizeComboBox.Name = "bookmarkSizeComboBox";
+            this.bookmarkSizeComboBox.Size = new System.Drawing.Size(193, 23);
+            this.bookmarkSizeComboBox.TabIndex = 6;
+            this.bookmarkSizeComboBox.SelectionChangeCommitted += new System.EventHandler(this.bookmarkSizeComboBox_SelectionChangeCommitted);
+            // 
+            // groupBox14
+            // 
+            this.groupBox14.AutoSize = true;
+            this.groupBox14.Controls.Add(this.tableLayoutPanel23);
+            this.groupBox14.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox14.Location = new System.Drawing.Point(3, 3);
+            this.groupBox14.Name = "groupBox14";
+            this.groupBox14.Size = new System.Drawing.Size(1, 142);
+            this.groupBox14.TabIndex = 0;
+            this.groupBox14.TabStop = false;
+            this.groupBox14.Text = "General";
+            // 
+            // tableLayoutPanel23
+            // 
+            this.tableLayoutPanel23.AutoSize = true;
+            this.tableLayoutPanel23.ColumnCount = 2;
+            this.tableLayoutPanel23.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
+            this.tableLayoutPanel23.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 433F));
+            this.tableLayoutPanel23.Controls.Add(this.infoWindowCheckbox, 0, 3);
+            this.tableLayoutPanel23.Controls.Add(this.showHiddenFilesCheckbox, 0, 0);
+            this.tableLayoutPanel23.Controls.Add(this.returnKeyCheckbox, 0, 2);
+            this.tableLayoutPanel23.Controls.Add(this.doubleClickEditorCheckbox, 0, 1);
+            this.tableLayoutPanel23.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel23.Location = new System.Drawing.Point(3, 19);
+            this.tableLayoutPanel23.Name = "tableLayoutPanel23";
+            this.tableLayoutPanel23.Padding = new System.Windows.Forms.Padding(5);
+            this.tableLayoutPanel23.RowCount = 4;
+            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel23.Size = new System.Drawing.Size(0, 120);
+            this.tableLayoutPanel23.TabIndex = 6;
+            // 
+            // infoWindowCheckbox
+            // 
+            this.infoWindowCheckbox.AutoSize = true;
+            this.tableLayoutPanel23.SetColumnSpan(this.infoWindowCheckbox, 2);
+            this.infoWindowCheckbox.Location = new System.Drawing.Point(8, 93);
+            this.infoWindowCheckbox.Name = "infoWindowCheckbox";
+            this.infoWindowCheckbox.Size = new System.Drawing.Size(257, 19);
+            this.infoWindowCheckbox.TabIndex = 3;
+            this.infoWindowCheckbox.Text = "Info window always shows current selection";
+            this.infoWindowCheckbox.UseVisualStyleBackColor = true;
+            this.infoWindowCheckbox.CheckedChanged += new System.EventHandler(this.infoWindowCheckbox_CheckedChanged);
+            // 
+            // showHiddenFilesCheckbox
+            // 
+            this.showHiddenFilesCheckbox.AutoSize = true;
+            this.tableLayoutPanel23.SetColumnSpan(this.showHiddenFilesCheckbox, 2);
+            this.showHiddenFilesCheckbox.Location = new System.Drawing.Point(8, 8);
+            this.showHiddenFilesCheckbox.Name = "showHiddenFilesCheckbox";
+            this.showHiddenFilesCheckbox.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
+            this.showHiddenFilesCheckbox.Size = new System.Drawing.Size(119, 29);
+            this.showHiddenFilesCheckbox.TabIndex = 0;
+            this.showHiddenFilesCheckbox.Text = "Show hidden files";
+            this.showHiddenFilesCheckbox.UseVisualStyleBackColor = true;
+            this.showHiddenFilesCheckbox.CheckedChanged += new System.EventHandler(this.showHiddenFilesCheckbox_CheckedChanged);
+            // 
+            // returnKeyCheckbox
+            // 
+            this.returnKeyCheckbox.AutoSize = true;
+            this.tableLayoutPanel23.SetColumnSpan(this.returnKeyCheckbox, 2);
+            this.returnKeyCheckbox.Location = new System.Drawing.Point(8, 68);
+            this.returnKeyCheckbox.Name = "returnKeyCheckbox";
+            this.returnKeyCheckbox.Size = new System.Drawing.Size(244, 19);
+            this.returnKeyCheckbox.TabIndex = 2;
+            this.returnKeyCheckbox.Text = "Return key selects folder or file to rename";
+            this.returnKeyCheckbox.UseVisualStyleBackColor = true;
+            this.returnKeyCheckbox.CheckedChanged += new System.EventHandler(this.returnKeyCheckbox_CheckedChanged);
+            // 
+            // doubleClickEditorCheckbox
+            // 
+            this.doubleClickEditorCheckbox.AutoSize = true;
+            this.tableLayoutPanel23.SetColumnSpan(this.doubleClickEditorCheckbox, 2);
+            this.doubleClickEditorCheckbox.Location = new System.Drawing.Point(8, 43);
+            this.doubleClickEditorCheckbox.Name = "doubleClickEditorCheckbox";
+            this.doubleClickEditorCheckbox.Size = new System.Drawing.Size(236, 19);
+            this.doubleClickEditorCheckbox.TabIndex = 1;
+            this.doubleClickEditorCheckbox.Text = "Double click opens file in external editor";
+            this.doubleClickEditorCheckbox.UseVisualStyleBackColor = true;
+            this.doubleClickEditorCheckbox.CheckedChanged += new System.EventHandler(this.doubleClickEditorCheckbox_CheckedChanged);
+            // 
             // managedTransfersPanel
             // 
             this.managedTransfersPanel.Controls.Add(this.transfersTabControl);
@@ -2708,171 +2885,63 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.uploadSkipRegexDefaultButton.UseVisualStyleBackColor = true;
             this.uploadSkipRegexDefaultButton.Click += new System.EventHandler(this.uploadSkipRegexDefaultButton_Click);
             // 
-            // managedBrowserPanel
+            // managedCryptomatorPanel
             // 
-            this.managedBrowserPanel.Controls.Add(this.tableLayoutPanel21);
-            this.managedBrowserPanel.Location = new System.Drawing.Point(0, 0);
-            this.managedBrowserPanel.Name = "managedBrowserPanel";
-            this.managedBrowserPanel.Size = new System.Drawing.Size(654, 479);
-            this.managedBrowserPanel.Text = "managedBrowserPanel";
+            this.managedCryptomatorPanel.Controls.Add(this.tableLayoutPanel24);
+            this.managedCryptomatorPanel.Location = new System.Drawing.Point(0, 0);
+            this.managedCryptomatorPanel.Name = "managedCryptomatorPanel";
+            this.managedCryptomatorPanel.Size = new System.Drawing.Size(0, 0);
+            this.managedCryptomatorPanel.Text = "managedPanel1";
             // 
-            // tableLayoutPanel21
+            // tableLayoutPanel24
             // 
-            this.tableLayoutPanel21.AutoSize = true;
-            this.tableLayoutPanel21.ColumnCount = 1;
-            this.tableLayoutPanel21.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel21.Controls.Add(this.groupBox13, 0, 1);
-            this.tableLayoutPanel21.Controls.Add(this.groupBox14, 0, 0);
-            this.tableLayoutPanel21.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel21.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel21.Name = "tableLayoutPanel21";
-            this.tableLayoutPanel21.RowCount = 3;
-            this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel21.Size = new System.Drawing.Size(654, 479);
-            this.tableLayoutPanel21.TabIndex = 8;
+            this.tableLayoutPanel24.ColumnCount = 1;
+            this.tableLayoutPanel24.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel24.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel24.Controls.Add(this.groupBox15, 0, 0);
+            this.tableLayoutPanel24.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel24.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel24.Name = "tableLayoutPanel24";
+            this.tableLayoutPanel24.RowCount = 2;
+            this.tableLayoutPanel24.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel24.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel24.Size = new System.Drawing.Size(0, 0);
+            this.tableLayoutPanel24.TabIndex = 0;
             // 
-            // groupBox13
+            // groupBox15
             // 
-            this.groupBox13.AutoSize = true;
-            this.groupBox13.Controls.Add(this.tableLayoutPanel22);
-            this.groupBox13.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox13.Location = new System.Drawing.Point(3, 151);
-            this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(648, 76);
-            this.groupBox13.TabIndex = 1;
-            this.groupBox13.TabStop = false;
-            this.groupBox13.Text = "Bookmarks";
+            this.groupBox15.AutoSize = true;
+            this.groupBox15.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.groupBox15.Controls.Add(this.flowLayoutPanel1);
+            this.groupBox15.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox15.Location = new System.Drawing.Point(3, 3);
+            this.groupBox15.Name = "groupBox15";
+            this.groupBox15.Size = new System.Drawing.Size(1, 57);
+            this.groupBox15.TabIndex = 0;
+            this.groupBox15.TabStop = false;
+            this.groupBox15.Text = "Cryptomator";
             // 
-            // tableLayoutPanel22
+            // flowLayoutPanel1
             // 
-            this.tableLayoutPanel22.AutoSize = true;
-            this.tableLayoutPanel22.ColumnCount = 2;
-            this.tableLayoutPanel22.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
-            this.tableLayoutPanel22.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel22.Controls.Add(this.label15, 0, 1);
-            this.tableLayoutPanel22.Controls.Add(this.bookmarkSizeComboBox, 0, 4);
-            this.tableLayoutPanel22.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel22.Location = new System.Drawing.Point(3, 19);
-            this.tableLayoutPanel22.Name = "tableLayoutPanel22";
-            this.tableLayoutPanel22.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel22.RowCount = 6;
-            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel22.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel22.Size = new System.Drawing.Size(642, 54);
-            this.tableLayoutPanel22.TabIndex = 10;
+            this.flowLayoutPanel1.AutoSize = true;
+            this.flowLayoutPanel1.Controls.Add(this.cryptomatorAutoDetectCheckBox);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 19);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 5, 0, 5);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(0, 35);
+            this.flowLayoutPanel1.TabIndex = 0;
             // 
-            // label15
+            // cryptomatorAutoDetectCheckBox
             // 
-            this.label15.AutoEllipsis = true;
-            this.label15.AutoSize = true;
-            this.tableLayoutPanel22.SetColumnSpan(this.label15, 2);
-            this.label15.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.label15.Location = new System.Drawing.Point(8, 5);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(394, 15);
-            this.label15.TabIndex = 6;
-            this.label15.Text = "When using small icons, only the nickname of the bookmark is displayed.";
-            // 
-            // bookmarkSizeComboBox
-            // 
-            this.bookmarkSizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.bookmarkSizeComboBox.FormattingEnabled = true;
-            this.bookmarkSizeComboBox.ItemHeight = 15;
-            this.bookmarkSizeComboBox.Location = new System.Drawing.Point(8, 23);
-            this.bookmarkSizeComboBox.Name = "bookmarkSizeComboBox";
-            this.bookmarkSizeComboBox.Size = new System.Drawing.Size(193, 23);
-            this.bookmarkSizeComboBox.TabIndex = 6;
-            this.bookmarkSizeComboBox.SelectionChangeCommitted += new System.EventHandler(this.bookmarkSizeComboBox_SelectionChangeCommitted);
-            // 
-            // groupBox14
-            // 
-            this.groupBox14.AutoSize = true;
-            this.groupBox14.Controls.Add(this.tableLayoutPanel23);
-            this.groupBox14.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox14.Location = new System.Drawing.Point(3, 3);
-            this.groupBox14.Name = "groupBox14";
-            this.groupBox14.Size = new System.Drawing.Size(648, 142);
-            this.groupBox14.TabIndex = 0;
-            this.groupBox14.TabStop = false;
-            this.groupBox14.Text = "General";
-            // 
-            // tableLayoutPanel23
-            // 
-            this.tableLayoutPanel23.AutoSize = true;
-            this.tableLayoutPanel23.ColumnCount = 2;
-            this.tableLayoutPanel23.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
-            this.tableLayoutPanel23.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 433F));
-            this.tableLayoutPanel23.Controls.Add(this.infoWindowCheckbox, 0, 3);
-            this.tableLayoutPanel23.Controls.Add(this.showHiddenFilesCheckbox, 0, 0);
-            this.tableLayoutPanel23.Controls.Add(this.returnKeyCheckbox, 0, 2);
-            this.tableLayoutPanel23.Controls.Add(this.doubleClickEditorCheckbox, 0, 1);
-            this.tableLayoutPanel23.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel23.Location = new System.Drawing.Point(3, 19);
-            this.tableLayoutPanel23.Name = "tableLayoutPanel23";
-            this.tableLayoutPanel23.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel23.RowCount = 4;
-            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel23.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel23.Size = new System.Drawing.Size(642, 120);
-            this.tableLayoutPanel23.TabIndex = 6;
-            // 
-            // infoWindowCheckbox
-            // 
-            this.infoWindowCheckbox.AutoSize = true;
-            this.tableLayoutPanel23.SetColumnSpan(this.infoWindowCheckbox, 2);
-            this.infoWindowCheckbox.Location = new System.Drawing.Point(8, 93);
-            this.infoWindowCheckbox.Name = "infoWindowCheckbox";
-            this.infoWindowCheckbox.Size = new System.Drawing.Size(257, 19);
-            this.infoWindowCheckbox.TabIndex = 3;
-            this.infoWindowCheckbox.Text = "Info window always shows current selection";
-            this.infoWindowCheckbox.UseVisualStyleBackColor = true;
-            this.infoWindowCheckbox.CheckedChanged += new System.EventHandler(this.infoWindowCheckbox_CheckedChanged);
-            // 
-            // showHiddenFilesCheckbox
-            // 
-            this.showHiddenFilesCheckbox.AutoSize = true;
-            this.tableLayoutPanel23.SetColumnSpan(this.showHiddenFilesCheckbox, 2);
-            this.showHiddenFilesCheckbox.Location = new System.Drawing.Point(8, 8);
-            this.showHiddenFilesCheckbox.Name = "showHiddenFilesCheckbox";
-            this.showHiddenFilesCheckbox.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
-            this.showHiddenFilesCheckbox.Size = new System.Drawing.Size(119, 29);
-            this.showHiddenFilesCheckbox.TabIndex = 0;
-            this.showHiddenFilesCheckbox.Text = "Show hidden files";
-            this.showHiddenFilesCheckbox.UseVisualStyleBackColor = true;
-            this.showHiddenFilesCheckbox.CheckedChanged += new System.EventHandler(this.showHiddenFilesCheckbox_CheckedChanged);
-            // 
-            // returnKeyCheckbox
-            // 
-            this.returnKeyCheckbox.AutoSize = true;
-            this.tableLayoutPanel23.SetColumnSpan(this.returnKeyCheckbox, 2);
-            this.returnKeyCheckbox.Location = new System.Drawing.Point(8, 68);
-            this.returnKeyCheckbox.Name = "returnKeyCheckbox";
-            this.returnKeyCheckbox.Size = new System.Drawing.Size(244, 19);
-            this.returnKeyCheckbox.TabIndex = 2;
-            this.returnKeyCheckbox.Text = "Return key selects folder or file to rename";
-            this.returnKeyCheckbox.UseVisualStyleBackColor = true;
-            this.returnKeyCheckbox.CheckedChanged += new System.EventHandler(this.returnKeyCheckbox_CheckedChanged);
-            // 
-            // doubleClickEditorCheckbox
-            // 
-            this.doubleClickEditorCheckbox.AutoSize = true;
-            this.tableLayoutPanel23.SetColumnSpan(this.doubleClickEditorCheckbox, 2);
-            this.doubleClickEditorCheckbox.Location = new System.Drawing.Point(8, 43);
-            this.doubleClickEditorCheckbox.Name = "doubleClickEditorCheckbox";
-            this.doubleClickEditorCheckbox.Size = new System.Drawing.Size(236, 19);
-            this.doubleClickEditorCheckbox.TabIndex = 1;
-            this.doubleClickEditorCheckbox.Text = "Double click opens file in external editor";
-            this.doubleClickEditorCheckbox.UseVisualStyleBackColor = true;
-            this.doubleClickEditorCheckbox.CheckedChanged += new System.EventHandler(this.doubleClickEditorCheckbox_CheckedChanged);
+            this.cryptomatorAutoDetectCheckBox.AutoSize = true;
+            this.cryptomatorAutoDetectCheckBox.Location = new System.Drawing.Point(8, 8);
+            this.cryptomatorAutoDetectCheckBox.Name = "cryptomatorAutoDetectCheckBox";
+            this.cryptomatorAutoDetectCheckBox.Size = new System.Drawing.Size(228, 19);
+            this.cryptomatorAutoDetectCheckBox.TabIndex = 0;
+            this.cryptomatorAutoDetectCheckBox.Text = "Auto detect and open vault in browser";
+            this.cryptomatorAutoDetectCheckBox.UseVisualStyleBackColor = true;
+            this.cryptomatorAutoDetectCheckBox.CheckedChanged += new System.EventHandler(this.cryptomatorAutoDetectCheckBox_CheckedChanged);
             // 
             // toolStrip
             // 
@@ -2888,6 +2957,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3Button,
             this.bandwidthButton,
             this.connectionButton,
+            this.cryptomatorButton,
             this.updateButton,
             this.languageButton});
             this.toolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
@@ -2992,6 +3062,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.connectionButton.Text = "Connection";
             this.connectionButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.connectionButton.Click += new System.EventHandler(this.connectionButton_Click);
+            // 
+            // cryptomatorButton
+            // 
+            this.cryptomatorButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.cryptomatorButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cryptomatorButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.cryptomatorButton.Name = "cryptomatorButton";
+            this.cryptomatorButton.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.cryptomatorButton.Size = new System.Drawing.Size(79, 69);
+            this.cryptomatorButton.Text = "Cryptomator";
+            this.cryptomatorButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.cryptomatorButton.Click += new System.EventHandler(this.cryptomatorButton_Click);
             // 
             // updateButton
             // 
@@ -3117,6 +3199,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox2.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
+            this.managedBrowserPanel.ResumeLayout(false);
+            this.managedBrowserPanel.PerformLayout();
+            this.tableLayoutPanel21.ResumeLayout(false);
+            this.tableLayoutPanel21.PerformLayout();
+            this.groupBox13.ResumeLayout(false);
+            this.groupBox13.PerformLayout();
+            this.tableLayoutPanel22.ResumeLayout(false);
+            this.tableLayoutPanel22.PerformLayout();
+            this.groupBox14.ResumeLayout(false);
+            this.groupBox14.PerformLayout();
+            this.tableLayoutPanel23.ResumeLayout(false);
+            this.tableLayoutPanel23.PerformLayout();
             this.managedTransfersPanel.ResumeLayout(false);
             this.transfersTabControl.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -3175,18 +3269,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox12.PerformLayout();
             this.tableLayoutPanel19.ResumeLayout(false);
             this.tableLayoutPanel19.PerformLayout();
-            this.managedBrowserPanel.ResumeLayout(false);
-            this.managedBrowserPanel.PerformLayout();
-            this.tableLayoutPanel21.ResumeLayout(false);
-            this.tableLayoutPanel21.PerformLayout();
-            this.groupBox13.ResumeLayout(false);
-            this.groupBox13.PerformLayout();
-            this.tableLayoutPanel22.ResumeLayout(false);
-            this.tableLayoutPanel22.PerformLayout();
-            this.groupBox14.ResumeLayout(false);
-            this.groupBox14.PerformLayout();
-            this.tableLayoutPanel23.ResumeLayout(false);
-            this.tableLayoutPanel23.PerformLayout();
+            this.managedCryptomatorPanel.ResumeLayout(false);
+            this.tableLayoutPanel24.ResumeLayout(false);
+            this.tableLayoutPanel24.PerformLayout();
+            this.groupBox15.ResumeLayout(false);
+            this.groupBox15.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.PerformLayout();
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -3398,5 +3487,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.CheckBox showHiddenFilesCheckbox;
         private System.Windows.Forms.CheckBox returnKeyCheckbox;
         private System.Windows.Forms.CheckBox doubleClickEditorCheckbox;
+        private ManagedPanel managedCryptomatorPanel;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel24;
+        private System.Windows.Forms.GroupBox groupBox15;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.CheckBox cryptomatorAutoDetectCheckBox;
+        private System.Windows.Forms.ToolStripButton cryptomatorButton;
     }
 }
