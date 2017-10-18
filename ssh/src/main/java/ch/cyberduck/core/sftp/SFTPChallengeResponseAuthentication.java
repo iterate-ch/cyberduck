@@ -1,20 +1,18 @@
 package ch.cyberduck.core.sftp;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.Credentials;
@@ -51,16 +49,21 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host bookmark, final LoginCallback prompt, CancelCallback cancel)
-            throws BackgroundException {
-        return this.authenticate(bookmark, bookmark.getCredentials(), prompt);
+    public boolean authenticate(final Host bookmark, final LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
+        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
+            final Credentials additional = prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                LocaleFactory.localizedString("Partial authentication success", "Credentials"),
+                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                new LoginOptions(bookmark.getProtocol()).user(false).keychain(false).publickey(false)
+                    .usernamePlaceholder(bookmark.getCredentials().getUsername()));
+            return this.authenticate(bookmark, additional, prompt);
+        }
+        else {
+            return this.authenticate(bookmark, bookmark.getCredentials(), prompt);
+        }
     }
 
-    public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback controller)
-            throws BackgroundException {
-        if(StringUtils.isBlank(credentials.getPassword())) {
-            return false;
-        }
+    private boolean authenticate(final Host host, final Credentials credentials, final LoginCallback controller) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using challenge response authentication with credentials %s", credentials));
         }
@@ -99,8 +102,8 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
                     // For each prompt, the corresponding echo field indicates whether the user input should
                     // be echoed as characters are typed
                     if(!password.get()
-                            // Some servers ask for one-time passcode first
-                            && !StringUtils.contains(prompt, "Verification code")) {
+                        // Some servers ask for one-time passcode first
+                        && !StringUtils.contains(prompt, "Verification code")) {
                         // In its first callback the server prompts for the password
                         if(log.isDebugEnabled()) {
                             log.debug("First callback returning provided credentials");
@@ -115,11 +118,11 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
                         final Credentials additional;
                         try {
                             final StringAppender title = new StringAppender().append(name).append(
-                                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
+                                LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             );
                             additional = controller.prompt(host, credentials.getUsername(), title.toString(),
-                                    message.toString(), new LoginOptions(host.getProtocol()).user(false).publickey(false).keychain(false)
-                                            .usernamePlaceholder(credentials.getUsername())
+                                message.toString(), new LoginOptions(host.getProtocol()).user(false).publickey(false).keychain(false)
+                                    .usernamePlaceholder(credentials.getUsername())
                             );
                         }
                         catch(LoginCanceledException e) {

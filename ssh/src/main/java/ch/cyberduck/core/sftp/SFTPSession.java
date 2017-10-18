@@ -87,7 +87,7 @@ public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private SFTPEngine sftp;
 
@@ -124,9 +124,9 @@ public class SFTPSession extends Session<SSHClient> {
             final DefaultConfig configuration = new DefaultConfig();
             if("zlib".equals(preferences.getProperty("ssh.compression"))) {
                 configuration.setCompressionFactories(Arrays.asList(
-                        new DelayedZlibCompression.Factory(),
-                        new ZlibCompression.Factory(),
-                        new NoneCompression.Factory()));
+                    new DelayedZlibCompression.Factory(),
+                    new ZlibCompression.Factory(),
+                    new NoneCompression.Factory()));
             }
             else {
                 configuration.setCompressionFactories(Collections.singletonList(new NoneCompression.Factory()));
@@ -210,12 +210,12 @@ public class SFTPSession extends Session<SSHClient> {
 
     private void alert(final ConnectionCallback prompt, final String algorithm) throws ConnectionCanceledException {
         prompt.warn(host, MessageFormat.format(LocaleFactory.localizedString("Insecure algorithm {0} negotiated with server", "Credentials"),
-                algorithm),
-                MessageFormat.format("{0}. {1}.", LocaleFactory.localizedString("The algorithm is possibly too weak to meet current cryptography standards", "Credentials"),
-                        LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
-                LocaleFactory.localizedString("Continue", "Credentials"),
-                LocaleFactory.localizedString("Disconnect", "Credentials"),
-                String.format("ssh.algorithm.whitelist.%s", host.getHostname()));
+            algorithm),
+            MessageFormat.format("{0}. {1}.", LocaleFactory.localizedString("The algorithm is possibly too weak to meet current cryptography standards", "Credentials"),
+                LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+            LocaleFactory.localizedString("Continue", "Credentials"),
+            LocaleFactory.localizedString("Disconnect", "Credentials"),
+            String.format("ssh.algorithm.whitelist.%s", host.getHostname()));
     }
 
     @Override
@@ -233,10 +233,8 @@ public class SFTPSession extends Session<SSHClient> {
             if(credentials.isPublicKeyAuthentication()) {
                 methods.add(new SFTPPublicKeyAuthentication(this, keychain));
             }
-            else {
-                methods.add(new SFTPChallengeResponseAuthentication(this));
-                methods.add(new SFTPPasswordAuthentication(this));
-            }
+            methods.add(new SFTPChallengeResponseAuthentication(this));
+            methods.add(new SFTPPasswordAuthentication(this));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods", methods.size()));
@@ -257,10 +255,10 @@ public class SFTPSession extends Session<SSHClient> {
             }
             catch(IllegalStateException ignored) {
                 log.warn(String.format("Server disconnected with %s while trying authentication method %s",
-                        disconnectListener.getFailure(), auth));
+                    disconnectListener.getFailure(), auth));
                 try {
                     throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
-                            disconnectListener.getFailure());
+                        disconnectListener.getFailure());
                 }
                 catch(InteroperabilityException e) {
                     throw new LoginFailureException(e.getDetail(false), e);
@@ -282,6 +280,9 @@ public class SFTPSession extends Session<SSHClient> {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Login successful with authentication method %s", auth));
             }
+            if(client.getUserAuth().hadPartialSuccess()) {
+                continue;
+            }
             break;
         }
         final String banner = client.getUserAuth().getBanner();
@@ -290,24 +291,11 @@ public class SFTPSession extends Session<SSHClient> {
         }
         // Check if authentication is partial
         if(!client.isAuthenticated()) {
-            if(client.getUserAuth().hadPartialSuccess()) {
-                final Credentials additional = prompt.prompt(host, credentials.getUsername(),
-                        LocaleFactory.localizedString("Partial authentication success", "Credentials"),
-                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions(host.getProtocol()).user(false).keychain(false).publickey(false)
-                                .usernamePlaceholder(credentials.getUsername()));
-                if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
-                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                            "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
-                }
+            if(null == lastFailure) {
+                throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
+                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
             }
-            else {
-                if(null == lastFailure) {
-                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                            "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
-                }
-                throw lastFailure;
-            }
+            throw lastFailure;
         }
         try {
             sftp = new SFTPEngine(client, String.valueOf(Path.DELIMITER)) {
