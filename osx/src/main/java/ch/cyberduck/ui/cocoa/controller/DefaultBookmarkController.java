@@ -56,7 +56,7 @@ public class DefaultBookmarkController extends BookmarkController {
     private NSPopUpButton encodingPopup;
 
     public DefaultBookmarkController(final Host bookmark) {
-        super(bookmark);
+        this(bookmark, new LoginOptions(bookmark.getProtocol()).password(false));
     }
 
     public DefaultBookmarkController(final Host bookmark, final LoginOptions options) {
