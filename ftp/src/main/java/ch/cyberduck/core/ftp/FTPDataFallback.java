@@ -31,7 +31,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -42,21 +41,24 @@ public class FTPDataFallback {
     private static final Logger log = Logger.getLogger(FTPDataFallback.class);
 
     private final FTPSession session;
-
     private final HostPasswordStore keychain;
-
     private final LoginCallback prompt;
 
-    private final Preferences preferences = PreferencesFactory.get();
+    private final boolean enabled;
 
     public FTPDataFallback(final FTPSession session) {
         this(session, new DisabledPasswordStore(), new DisabledLoginCallback());
     }
 
     public FTPDataFallback(final FTPSession session, final HostPasswordStore keychain, final LoginCallback prompt) {
+        this(session, keychain, prompt, PreferencesFactory.get().getBoolean("ftp.connectmode.fallback"));
+    }
+
+    public FTPDataFallback(final FTPSession session, final HostPasswordStore keychain, final LoginCallback prompt, final boolean enabled) {
         this.session = session;
         this.keychain = keychain;
         this.prompt = prompt;
+        this.enabled = enabled;
     }
 
     /**
@@ -65,7 +67,7 @@ public class FTPDataFallback {
      * @return True if action was successful
      */
     protected <T> T data(final DataConnectionAction<T> action, final ProgressListener listener)
-            throws IOException, BackgroundException {
+        throws IOException, BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
             final FTPConnectMode mode = session.getConnectMode();
@@ -82,22 +84,22 @@ public class FTPDataFallback {
         catch(ConnectionTimeoutException failure) {
             log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
             // Fallback handling
-            if(preferences.getBoolean("ftp.connectmode.fallback")) {
+            if(enabled) {
                 try {
                     try {
                         session.getClient().completePendingCommand();
                         // Expect 421 response
                         log.warn(String.format("Aborted connection %d %s",
-                                session.getClient().getReplyCode(), session.getClient().getReplyString()));
+                            session.getClient().getReplyCode(), session.getClient().getReplyString()));
                     }
                     catch(IOException e) {
                         log.warn(String.format("Ignore failure completing pending command %s", e.getMessage()));
                         // Reconnect
                         new LoginConnectionService(
-                                prompt,
-                                new DisabledHostKeyCallback(),
-                                keychain,
-                                listener
+                            prompt,
+                            new DisabledHostKeyCallback(),
+                            keychain,
+                            listener
                         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
                     }
                     return this.fallback(action);
@@ -112,7 +114,7 @@ public class FTPDataFallback {
         catch(InteroperabilityException | NotfoundException | AccessDeniedException failure) {
             log.warn(String.format("Server denied data socket operation with %s", failure.getMessage()));
             // Fallback handling
-            if(preferences.getBoolean("ftp.connectmode.fallback")) {
+            if(enabled) {
                 try {
                     return this.fallback(action);
                 }
