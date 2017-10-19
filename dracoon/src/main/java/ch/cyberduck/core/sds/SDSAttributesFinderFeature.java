@@ -37,6 +37,8 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     private final SDSSession session;
 
+    public static final Acl.Role MANAGE_ROLE = new Acl.Role("MANAGE_ROLE");
+
     public static final Acl.Role READ_ROLE = new Acl.Role(Acl.Role.READ);
     public static final Acl.Role CREATE_ROLE = new Acl.Role("CREATE");
     public static final Acl.Role CHANGE_ROLE = new Acl.Role("CHANGE");
@@ -89,6 +91,9 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     private Acl toAcl(final Node node) throws BackgroundException {
         final Acl acl = new Acl();
         final Acl.User user = new Acl.CanonicalUser(String.valueOf(session.userAccount().getId()));
+        if(node.getPermissions().getManage()) {
+            acl.addAll(user, MANAGE_ROLE);
+        }
         if(node.getPermissions().getRead()) {
             acl.addAll(user, READ_ROLE);
         }
