@@ -28,7 +28,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -80,7 +80,7 @@ public class SDSDeleteFeature implements Delete {
 
     private Set<Acl.Role> getRoles(final Path node) throws BackgroundException {
         final Set<Acl.Role> roles = containerService.getContainer(node).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-        return roles != null ? roles : new HashSet<Acl.Role>();
+        return roles != null ? roles : Collections.emptySet();
     }
 
     @Override
