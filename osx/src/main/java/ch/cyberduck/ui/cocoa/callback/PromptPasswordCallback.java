@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.callback;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -35,13 +36,13 @@ public class PromptPasswordCallback implements PasswordCallback {
     }
 
     @Override
-    public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         if(suppressed) {
             throw new LoginCanceledException();
         }
         final Credentials credentials = new VaultCredentials();
         credentials.setSaved(options.save);
-        final PasswordController controller = new PasswordController(credentials, title, reason, options);
+        final PasswordController controller = new PasswordController(bookmark, credentials, title, reason, options);
         final int option = controller.beginSheet(parent);
         if(option == SheetCallback.CANCEL_OPTION) {
             if(controller.isSuppressed()) {

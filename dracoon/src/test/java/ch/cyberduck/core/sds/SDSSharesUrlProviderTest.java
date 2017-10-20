@@ -330,7 +330,7 @@ public class SDSSharesUrlProviderTest {
                 .mailBody(null)
                 .maxDownloads(null), new PasswordCallback() {
                 @Override
-                public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     return new VaultCredentials("ahbic3Ae");
                 }
             });
@@ -364,7 +364,7 @@ public class SDSSharesUrlProviderTest {
                     .mailBody(null)
                     .maxDownloads(null), new PasswordCallback() {
                     @Override
-                    public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                         return new VaultCredentials("ahbic3Ae");
                     }
                 });
