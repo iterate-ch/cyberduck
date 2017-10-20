@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -45,7 +46,8 @@ public class DriveDirectoryFeature implements Directory<Void> {
                     .setName(folder.getName())
                     .setMimeType("application/vnd.google-apps.folder")
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(folder.getParent(), new DisabledListProgressListener()))));
-            final File execute = insert.execute();
+            final File execute = insert
+                .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             return new Path(folder.getParent(), folder.getName(), folder.getType(), new PathAttributes(folder.attributes()));
         }
         catch(IOException e) {

@@ -37,14 +37,14 @@ public class DriveQuotaFeature implements Quota {
         try {
             final About about = session.getClient().about().get().setFields("user, storageQuota").execute();
             final Long used = null == about.getStorageQuota().getUsage() ? 0L
-                    : about.getStorageQuota().getUsage();
+                : about.getStorageQuota().getUsage();
             final Long available = null == about.getStorageQuota().getLimit() ? Long.MAX_VALUE
-                    : about.getStorageQuota().getLimit() - used;
+                : about.getStorageQuota().getLimit() - used;
             return new Space(used, available);
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Failure to read attributes of {0}", e,
-                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         }
     }
 }
