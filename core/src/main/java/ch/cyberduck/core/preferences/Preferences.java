@@ -770,6 +770,7 @@ public abstract class Preferences {
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
 
         defaults.put("googledrive.list.limit", String.valueOf(1000));
+        defaults.put("googledrive.teamdrive.enable", String.valueOf(true));
 
         defaults.put("b2.bucket.acl.default", "allPrivate");
         defaults.put("b2.listing.chunksize", String.valueOf(100));
