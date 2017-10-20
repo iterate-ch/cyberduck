@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
@@ -26,10 +27,13 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements HttpRequestInterceptor {
     private static final Logger log = Logger.getLogger(SDSErrorResponseInterceptor.class);
@@ -51,17 +55,29 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
         switch(response.getStatusLine().getStatusCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
                 if(executionCount <= MAX_RETRIES) {
-                    // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
+                    final ApiException failure;
                     try {
-                        token = new AuthApi(session.getClient()).login(new LoginRequest()
-                                .authType(session.getHost().getProtocol().getAuthorization())
-                                .login(user)
-                                .password(password)
-                        ).getToken();
-                        return true;
+                        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+                        failure = new ApiException(response.getStatusLine().getStatusCode(), Collections.emptyMap(),
+                            EntityUtils.toString(response.getEntity()));
+                        if(new SDSExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
+                            // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
+                            try {
+                                token = new AuthApi(session.getClient()).login(new LoginRequest()
+                                    .authType(session.getHost().getProtocol().getAuthorization())
+                                    .login(user)
+                                    .password(password)).getToken();
+                                return true;
+                            }
+                            catch(ApiException e) {
+                                // {"code":401,"message":"Unauthorized","debugInfo":"Wrong username or password","errorCode":-10011}
+                                log.warn(String.format("Attempt to renew expired auth token failed. %s", e.getMessage()));
+                                return false;
+                            }
+                        }
                     }
-                    catch(ApiException e) {
-                        log.warn(String.format("Attempt to renew expired auth token failed. %s", e.getMessage()));
+                    catch(IOException e) {
+                        log.warn(String.format("Failure parsing response entity from %s", response));
                         return false;
                     }
                 }
