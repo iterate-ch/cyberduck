@@ -15,8 +15,10 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -29,11 +31,10 @@ import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 
-public class SFTPAgentAuthentication implements SFTPAuthentication {
+public class SFTPAgentAuthentication implements AuthenticationProvider {
     private static final Logger log = Logger.getLogger(SFTPAgentAuthentication.class);
 
     private final SFTPSession session;
-
     private final AgentAuthenticator agent;
 
     public SFTPAgentAuthentication(final SFTPSession session, final AgentAuthenticator agent) {
@@ -42,10 +43,10 @@ public class SFTPAgentAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
-            throws BackgroundException {
+    public boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
+        throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using agent %s with credentials %s", agent, bookmark.getCredentials()));
+            log.debug(String.format("Login using agent %s for %s", agent, bookmark));
         }
         for(Identity identity : agent.getIdentities()) {
             try {
@@ -55,7 +56,7 @@ public class SFTPAgentAuthentication implements SFTPAuthentication {
             }
             catch(UserAuthException e) {
                 cancel.verify();
-                // continue;
+                // Continue;
             }
             catch(Buffer.BufferException e) {
                 throw new DefaultIOExceptionMappingService().map(e);

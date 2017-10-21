@@ -15,7 +15,9 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -26,7 +28,7 @@ import java.io.IOException;
 
 import net.schmizz.sshj.userauth.method.AuthNone;
 
-public class SFTPNoneAuthentication implements SFTPAuthentication {
+public class SFTPNoneAuthentication implements AuthenticationProvider {
     private static final Logger log = Logger.getLogger(SFTPNoneAuthentication.class);
 
     private final SFTPSession session;
@@ -36,7 +38,7 @@ public class SFTPNoneAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
+    public boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using none authentication with credentials %s", bookmark.getCredentials()));
