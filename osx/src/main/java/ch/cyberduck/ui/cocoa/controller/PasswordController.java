@@ -25,9 +25,12 @@ import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
@@ -50,12 +53,14 @@ public class PasswordController extends AlertController {
     private final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
+    private final Host bookmark;
     private final Credentials credentials;
     private final String title;
     private final String reason;
     private final LoginOptions options;
 
-    public PasswordController(final Credentials credentials, final String title, final String reason, final LoginOptions options) {
+    public PasswordController(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) {
+        this.bookmark = bookmark;
         this.credentials = credentials;
         this.title = title;
         this.reason = reason;
@@ -72,6 +77,12 @@ public class PasswordController extends AlertController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
         this.loadBundle(alert);
+    }
+
+    @Override
+    public void setWindow(final NSWindow window) {
+        window.setTitle(BookmarkNameProvider.toString(bookmark));
+        super.setWindow(window);
     }
 
     @Action

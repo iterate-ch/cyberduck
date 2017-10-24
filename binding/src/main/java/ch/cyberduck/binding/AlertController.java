@@ -47,7 +47,7 @@ public abstract class AlertController extends SheetController implements SheetCa
     }
 
     public AlertController() {
-        this.setValidator(this);
+        // No bundle
     }
 
     /**

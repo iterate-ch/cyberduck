@@ -35,7 +35,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _browser = c;
         }
 
-        public Credentials prompt(string title, string reason, LoginOptions options)
+        public Credentials prompt(Host bookmark, string title, string reason, LoginOptions options)
         {
             Credentials credentials = new VaultCredentials();
             credentials.setSaved(options.save());

@@ -95,7 +95,7 @@ public class SingleTransferWorkerTest {
         cryptomator.create(session, null, new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new PasswordCallback() {
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("test");
             }
         }));

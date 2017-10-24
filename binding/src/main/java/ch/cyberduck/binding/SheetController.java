@@ -33,7 +33,12 @@ public abstract class SheetController extends WindowController implements SheetC
     private InputValidator validator;
 
     public SheetController() {
-        this.validator = this;
+        this(new InputValidator() {
+            @Override
+            public boolean validate() {
+                return true;
+            }
+        });
     }
 
     public SheetController(final InputValidator callback) {
@@ -50,7 +55,7 @@ public abstract class SheetController extends WindowController implements SheetC
 
     @Override
     public boolean validate() {
-        return true;
+        return validator.validate();
     }
 
     /**
@@ -67,7 +72,7 @@ public abstract class SheetController extends WindowController implements SheetC
         final int option = new AlertSheetReturnCodeMapper().getOption(sender);
         if(option == SheetCallback.DEFAULT_OPTION || option == SheetCallback.ALTERNATE_OPTION) {
             window.endEditingFor(null);
-            if(!validator.validate()) {
+            if(!this.validate()) {
                 AppKitFunctionsLibrary.beep();
                 return;
             }

@@ -45,7 +45,7 @@ public class SFTPPublicKeyAuthenticationTest {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     fail();
-                    return null;
+                    throw new LoginCanceledException();
                 }
             }, new DisabledCancelCallback()));
             session.close();
@@ -73,7 +73,7 @@ public class SFTPPublicKeyAuthenticationTest {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     p.set(true);
-                    return null;
+                    throw new LoginCanceledException();
                 }
             }, new DisabledCancelCallback()));
             assertTrue(p.get());
@@ -97,15 +97,15 @@ public class SFTPPublicKeyAuthenticationTest {
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(new DisabledHostKeyCallback());
-            final AtomicBoolean p = new AtomicBoolean();
+            final AtomicBoolean b = new AtomicBoolean();
             assertTrue(new SFTPPublicKeyAuthentication(session, new DisabledPasswordStore()).authenticate(host, new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                    p.set(true);
-                    return null;
+                    b.set(true);
+                    throw new LoginCanceledException();
                 }
             }, new DisabledCancelCallback()));
-            assertTrue(p.get());
+            assertTrue(b.get());
             session.close();
         }
         finally {
@@ -130,7 +130,7 @@ public class SFTPPublicKeyAuthenticationTest {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     fail();
-                    return null;
+                    throw new LoginCanceledException();
                 }
             }, new DisabledCancelCallback()));
             session.close();

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sftp;
+package ch.cyberduck.core.exception;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -15,16 +15,16 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.CancelCallback;
+public class ExpiredTokenException extends LoginFailureException {
+    public ExpiredTokenException(final String detail) {
+        super(detail);
+    }
 
-public interface SFTPAuthentication {
+    public ExpiredTokenException(final String detail, final Throwable cause) {
+        super(detail, cause);
+    }
 
-    /**
-     * @return True if authentication is complete
-     */
-    boolean authenticate(Host bookmark, LoginCallback prompt, CancelCallback cancel)
-            throws BackgroundException;
+    public ExpiredTokenException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
+    }
 }

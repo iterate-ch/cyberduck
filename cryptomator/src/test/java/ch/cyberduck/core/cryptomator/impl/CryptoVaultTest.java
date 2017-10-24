@@ -88,7 +88,7 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("vault");
             }
         });
@@ -151,7 +151,7 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("vault");
             }
         }).getHome());
@@ -202,7 +202,7 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("vault");
             }
         }).getHome());
@@ -248,7 +248,7 @@ public class CryptoVaultTest {
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
-                public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     if(!prompt.get()) {
                         assertEquals("Provide your passphrase to unlock the Cryptomator Vault “/“", reason);
                         prompt.set(true);
@@ -304,7 +304,7 @@ public class CryptoVaultTest {
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
-                public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     throw new LoginCanceledException();
                 }
             });
@@ -351,7 +351,7 @@ public class CryptoVaultTest {
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
-                public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     return new VaultCredentials(null);
                 }
             });
