@@ -65,12 +65,39 @@ public class SDSSessionTest {
         session.close();
     }
 
+    @Test
+    public void testLoginRefreshToken() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        session.retryHandler.setTokens(System.getProperties().getProperty("sds.user"),
+            System.getProperties().getProperty("sds.key"),
+            "invalid");
+        session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testLoginFailureInvalidUser() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        session.retryHandler.setTokens(
+            "invalid",
+            System.getProperties().getProperty("sds.key"),
+            "invalid");
+        session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+    }
+
     @Test(expected = LoginFailureException.class)
     public void testLoginRadius() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
             new Local("../profiles/DRACOON (Radius).cyberduckprofile"));
         final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
-                "rsa.user1", "1234"
+            "rsa.user1", "1234"
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledHostKeyCallback()));
@@ -94,7 +121,7 @@ public class SDSSessionTest {
         final Profile profile = ProfileReaderFactory.get().read(
             new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
         final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledHostKeyCallback()));
@@ -119,7 +146,7 @@ public class SDSSessionTest {
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                "a", "s"
+            "a", "s"
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledHostKeyCallback()));
