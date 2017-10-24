@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,21 +60,21 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
                         EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                         failure = new B2ApiException(EntityUtils.toString(response.getEntity()), new HttpResponseException(
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        if(new B2ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
+                            //  The authorization token is valid for at most 24 hours.
+                            try {
+                                authorizationToken = session.getClient().authenticate(accountId, applicationKey).getAuthorizationToken();
+                                return true;
+                            }
+                            catch(B2ApiException | IOException e) {
+                                log.warn(String.format("Attempt to renew expired auth token failed. %s", e.getMessage()));
+                                return false;
+                            }
+                        }
                     }
                     catch(IOException e) {
                         log.warn(String.format("Failure parsing response entity from %s", response));
                         return false;
-                    }
-                    if("expired_auth_token".equalsIgnoreCase(failure.getCode())) {
-                        //  The authorization token is valid for at most 24 hours.
-                        try {
-                            authorizationToken = session.getClient().authenticate(accountId, applicationKey).getAuthorizationToken();
-                            return true;
-                        }
-                        catch(B2ApiException | IOException e) {
-                            log.warn(String.format("Attempt to renew expired auth token failed. %s", e.getMessage()));
-                            return false;
-                        }
                     }
                 }
         }

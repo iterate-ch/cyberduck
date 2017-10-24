@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
@@ -90,6 +91,7 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                                         // [-40761] Filekey not found for encrypted file
                                         return new AccessDeniedException(buffer.toString(), failure);
                                 }
+                                break;
                             case HttpStatus.SC_PRECONDITION_FAILED:
                                 switch(errorCode) {
                                     case -10108:
@@ -105,6 +107,14 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                                         }
                                         return new PartialLoginFailureException(buffer.toString(), failure);
                                 }
+                                break;
+                            case HttpStatus.SC_UNAUTHORIZED:
+                                switch(errorCode) {
+                                    case -10012:
+                                        // [-10012] Wrong token.
+                                        return new ExpiredTokenException(buffer.toString(), failure);
+                                }
+                                break;
                         }
                     }
                 }

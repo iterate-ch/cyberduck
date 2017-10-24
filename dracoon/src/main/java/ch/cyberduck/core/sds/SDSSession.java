@@ -77,7 +77,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
 
-    private final SDSErrorResponseInterceptor retryHandler
+    protected final SDSErrorResponseInterceptor retryHandler
         = new SDSErrorResponseInterceptor(this);
 
     private final OAuth2RequestInterceptor authorizationService;

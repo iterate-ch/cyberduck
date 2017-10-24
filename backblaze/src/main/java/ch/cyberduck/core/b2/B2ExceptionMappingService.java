@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
@@ -45,6 +46,7 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                         || "transaction_cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
                     return new QuotaException(buffer.toString(), e);
                 }
+                break;
             case HttpStatus.SC_BAD_REQUEST:
                 if("file_not_present".equalsIgnoreCase(e.getCode())) {
                     return new NotfoundException(buffer.toString(), e);
@@ -63,11 +65,18 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                         return new ChecksumException(buffer.toString(), e);
                     }
                 }
+                break;
+            case HttpStatus.SC_UNAUTHORIZED:
+                if("expired_auth_token".equalsIgnoreCase(e.getCode())) {
+                    return new ExpiredTokenException(buffer.toString(), e);
+                }
+                break;
             default:
                 if(e.getRetry() != null) {
                     // Too Many Requests (429)
                     return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(e.getRetry()), e);
                 }
+                break;
         }
         return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getStatus(), buffer.toString()));
     }
