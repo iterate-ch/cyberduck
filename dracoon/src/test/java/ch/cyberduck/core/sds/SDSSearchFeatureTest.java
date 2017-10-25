@@ -61,7 +61,7 @@ public class SDSSearchFeatureTest {
         final Path file = new SDSTouchFeature(session).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final SDSSearchFeature feature = new SDSSearchFeature(session);
         assertTrue(feature.search(room, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        assertFalse(feature.search(room, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
+        assertTrue(feature.search(room, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
         assertTrue(feature.search(room, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
         assertTrue(feature.search(directory, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
         try {
