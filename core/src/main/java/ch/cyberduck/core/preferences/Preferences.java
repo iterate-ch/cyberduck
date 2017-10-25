@@ -638,7 +638,7 @@ public abstract class Preferences {
         /*
           Fallback to active or passive mode respectively
          */
-        defaults.put("ftp.connectmode.fallback", String.valueOf(true));
+        defaults.put("ftp.connectmode.fallback", String.valueOf(false));
         /*
           Protect the data channel by default. For TLS, the data connection
           can have one of two security levels.
@@ -770,6 +770,7 @@ public abstract class Preferences {
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
 
         defaults.put("googledrive.list.limit", String.valueOf(1000));
+        defaults.put("googledrive.teamdrive.enable", String.valueOf(true));
 
         defaults.put("b2.bucket.acl.default", "allPrivate");
         defaults.put("b2.listing.chunksize", String.valueOf(100));
@@ -788,7 +789,7 @@ public abstract class Preferences {
 
         defaults.put("sds.listing.chunksize", String.valueOf(500));
         defaults.put("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
-        defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(300000)); // 5 minutes
+        defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
         defaults.put("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
 
         /*

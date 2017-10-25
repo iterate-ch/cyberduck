@@ -46,7 +46,6 @@ namespace Ch.Cyberduck.Ui
                 x.For<ICreateSymlinkPromptView>().Use<CreateSymlinkPromptForm>();
                 x.For<IGotoPromptView>().Use<GotoPromptForm>();
                 x.For<IDuplicateFilePromptView>().Use<DuplicateFilePromptForm>();
-                x.For<IDonationView>().Use<DonationForm>();
                 x.For<ITransferView>().Use<TransferForm>();
                 x.For<IProgressView>().Use<TransferControl>();
                 x.For<ICommandView>().Use<CommandForm>();

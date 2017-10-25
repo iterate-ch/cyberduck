@@ -21,41 +21,53 @@ using System.Reflection;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.notification;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core.TaskDialog;
+using Ch.Cyberduck.Ui.Growl;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class DonationController : WindowController<IDonationView>, IDonationController
+    public class DonationController : IDonationController
     {
-        public DonationController() : this(ObjectFactory.GetInstance<IDonationView>())
-        {
-        }
+        private static string Localize(string text) => LocaleFactory.localizedString(text, "Donate");
 
-        public DonationController(IDonationView view)
+        public DonationController()
         {
-            View = view;
         }
 
         public void Show()
         {
             int uses = PreferencesFactory.get().getInteger("uses");
-            View.Title = LocaleFactory.localizedString("Please Donate", "Donate") + " (" + uses + ")";
-            View.NeverShowDonation =
-                Assembly.GetExecutingAssembly()
-                    .GetName()
-                    .Version.ToString()
-                    .Equals(PreferencesFactory.get().getProperty("donate.reminder"));
-            if (DialogResult.OK == View.ShowDialog())
+
+            var notify = (ToolstripNotificationService)NotificationServiceFactory.get();
+
+            var result = TaskDialog.Show(
+                owner: IntPtr.Zero,
+                allowDialogCancellation: true,
+                title: Localize("Please Donate") + " (" + uses + ")",
+                verificationText: Localize("Don't show again for this version."),
+                mainInstruction: Localize("Thank you for using Cyberduck!"),
+                content: $@"{Localize("It has taken many nights to develop this application. If you enjoy using it, please consider a donation to the author of this software. It will help to make Cyberduck even better!")}
+
+{Localize("The payment can be made simply and safely using Paypal. You don't need to open an account.")}",
+                expandedInfo: $@"{Localize("Donation Key")}
+
+{Localize("As a contributor to Cyberduck, you receive a donation key that disables this prompt.")}",
+                commandLinks: new[] { Localize("Donate!"), Localize("Later") },
+                expandedByDefault: true,
+                verificationByDefault: Assembly.GetExecutingAssembly().GetName().Version.ToString().Equals(PreferencesFactory.get().getProperty("donate.reminder")));
+            if (result.VerificationChecked == true)
+            {
+                PreferencesFactory.get().setProperty("donate.reminder", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            }
+
+            if (result.CommandButtonResult == 0)
             {
                 BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate"));
             }
-            if (View.NeverShowDonation)
-            {
-                PreferencesFactory.get()
-                    .setProperty("donate.reminder", Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            }
-            // Remeber this reminder date
+
             PreferencesFactory.get().setProperty("donate.reminder.date", DateTime.Now.Ticks);
         }
     }

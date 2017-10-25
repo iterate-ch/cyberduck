@@ -26,7 +26,9 @@ import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.DefaultCharsetProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.ui.LoginInputValidator;
 
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
@@ -54,7 +56,15 @@ public class DefaultBookmarkController extends BookmarkController {
     private NSPopUpButton encodingPopup;
 
     public DefaultBookmarkController(final Host bookmark) {
-        super(bookmark);
+        this(bookmark, new LoginOptions(bookmark.getProtocol()).password(false));
+    }
+
+    public DefaultBookmarkController(final Host bookmark, final LoginOptions options) {
+        super(bookmark, bookmark.getCredentials(), options.password(false));
+    }
+
+    public DefaultBookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
+        super(bookmark, bookmark.getCredentials(), validator, options.password(false));
     }
 
     @Override

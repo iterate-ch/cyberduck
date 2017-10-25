@@ -20,16 +20,13 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -39,8 +36,6 @@ public class ResumeFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
     private final Download download;
-
-    private final AttributesFinder attribute;
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new DownloadFilterOptions());
@@ -55,12 +50,6 @@ public class ResumeFilter extends AbstractDownloadFilter {
                         final DownloadFilterOptions options, final Download download) {
         super(symlinkResolver, session, options);
         this.download = download;
-        this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
-    }
-
-    public AbstractDownloadFilter withCache(final PathCache cache) {
-        attribute.withCache(cache);
-        return super.withCache(cache);
     }
 
     @Override

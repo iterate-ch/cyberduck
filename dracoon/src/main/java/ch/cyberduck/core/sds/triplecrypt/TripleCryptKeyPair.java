@@ -50,7 +50,7 @@ public class TripleCryptKeyPair {
     private Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair, String passphrase, final String message) throws LoginCanceledException, CryptoException {
         final Credentials credentials;
         if(null == passphrase) {
-            credentials = callback.prompt(LocaleFactory.localizedString("Private key password protected", "Credentials"), message,
+            credentials = callback.prompt(bookmark, LocaleFactory.localizedString("Private key password protected", "Credentials"), message,
                     new LoginOptions(bookmark.getProtocol())
                             .user(false).passwordPlaceholder(LocaleFactory.localizedString("Private Key Passphrase", "Credentials"))
                             .anonymous(false)

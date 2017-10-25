@@ -168,7 +168,7 @@ public class CryptoVault implements Vault {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = prompt.prompt(
-                    LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
+                bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     message,
                     new LoginOptions()
                         .save(preferences.getBoolean("vault.keychain"))

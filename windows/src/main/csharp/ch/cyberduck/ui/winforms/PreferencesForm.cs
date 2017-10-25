@@ -62,6 +62,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             s3Button.Image = IconCache.Instance.IconForName("s3", 32);
             bandwidthButton.Image = IconCache.Instance.IconForName("bandwidth", 32);
             connectionButton.Image = IconCache.Instance.IconForName("connection", 32);
+            cryptomatorButton.Image = IconCache.Instance.IconForName("cryptomator", 32);
             updateButton.Image = IconCache.Instance.IconForName("update", 32);
             languageButton.Image = IconCache.Instance.IconForName("language", 32);
 
@@ -747,6 +748,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler UploadWithTemporaryFilenameChangedEvent = delegate { };
         public event VoidHandler UpdateFeedChangedEvent = delegate { };
         public event VoidHandler BookmarkSizeChangedEvent = delegate { };
+        public event VoidHandler CryptomatorAutoDetectVaultChangedEvent = delegate { };
 
         public bool AutomaticUpdateCheck
         {
@@ -897,6 +899,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return (string) languageComboBox.SelectedValue; }
             set { languageComboBox.SelectedValue = value; }
+        }
+
+        public bool AutoDetectVault
+        {
+            get { return cryptomatorAutoDetectCheckBox.Checked; }
+            set { cryptomatorAutoDetectCheckBox.Checked = value; }
         }
 
         public void PopulateLocales(IList<KeyValuePair<string, string>> locales)
@@ -1446,6 +1454,21 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void bookmarkSizeComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             BookmarkSizeChangedEvent();
+        }
+
+        private void cryptomatorAutoDetectCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            CryptomatorAutoDetectVaultChangedEvent();
+        }
+
+        private void cryptomatorButton_Click(object sender, EventArgs e)
+        {
+            if (!cryptomatorButton.Checked)
+            {
+                DisableAll();
+                cryptomatorButton.Checked = true;
+                panelManager.SelectedPanel = managedCryptomatorPanel;
+            }
         }
     }
 }
