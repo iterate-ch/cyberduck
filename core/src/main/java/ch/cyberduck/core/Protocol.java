@@ -51,15 +51,7 @@ public interface Protocol extends Comparable<Protocol> {
                 return true;
             }
         },
-        sftp {
-            @Override
-            public boolean validate(final Credentials credentials, final LoginOptions options) {
-                if(options.user) {
-                    return StringUtils.isNotBlank(credentials.getUsername());
-                }
-                return true;
-            }
-        },
+        sftp,
         s3,
         googlestorage {
             @Override
@@ -115,7 +107,10 @@ public interface Protocol extends Comparable<Protocol> {
                     return false;
                 }
             }
-            if(options.password) {
+            if(options.publickey) {
+                // No password may be required to decrypt private key
+            }
+            else if(options.password) {
                 if(StringUtils.isEmpty(credentials.getPassword())) {
                     return false;
                 }

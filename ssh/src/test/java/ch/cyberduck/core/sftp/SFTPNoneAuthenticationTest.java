@@ -21,6 +21,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.test.IntegrationTest;
@@ -40,7 +41,7 @@ public class SFTPNoneAuthenticationTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback());
-        assertFalse(new SFTPNoneAuthentication(session).authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertFalse(new SFTPNoneAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
 }

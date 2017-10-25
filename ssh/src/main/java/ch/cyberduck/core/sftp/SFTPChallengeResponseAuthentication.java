@@ -15,8 +15,10 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -31,13 +33,12 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
 import net.schmizz.sshj.userauth.password.Resource;
 
-public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
+public class SFTPChallengeResponseAuthentication implements AuthenticationProvider {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
 
     private final SFTPSession session;
@@ -49,33 +50,13 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host bookmark, final LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
-        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
-            final Credentials additional = prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                LocaleFactory.localizedString("Partial authentication success", "Credentials"),
-                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                new LoginOptions(bookmark.getProtocol()).user(false).keychain(false).publickey(false)
-                    .usernamePlaceholder(bookmark.getCredentials().getUsername()));
-            return this.authenticate(bookmark, additional, prompt);
-        }
-        else {
-            return this.authenticate(bookmark, bookmark.getCredentials(), prompt);
-        }
-    }
-
-    private boolean authenticate(final Host host, final Credentials credentials, final LoginCallback controller) throws BackgroundException {
+    public boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using challenge response authentication with credentials %s", credentials));
+            log.debug(String.format("Login using challenge response authentication for %s", bookmark));
         }
         try {
-            session.getClient().auth(credentials.getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
-                /**
-                 * Password sent flag
-                 */
-                private final AtomicBoolean password = new AtomicBoolean();
-
+            session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
                 private String name = StringUtils.EMPTY;
-
                 private String instruction = StringUtils.EMPTY;
 
                 @Override
@@ -95,43 +76,28 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
 
                 @Override
                 public char[] getResponse(final String prompt, final boolean echo) {
+                    // For each prompt, the corresponding echo field indicates whether the user input should be echoed as characters are typed
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
                     }
-                    final String response;
-                    // For each prompt, the corresponding echo field indicates whether the user input should
-                    // be echoed as characters are typed
-                    if(!password.get()
-                        // Some servers ask for one-time passcode first
-                        && !StringUtils.contains(prompt, "Verification code")) {
-                        // In its first callback the server prompts for the password
-                        if(log.isDebugEnabled()) {
-                            log.debug("First callback returning provided credentials");
-                        }
-                        response = credentials.getPassword();
-                        password.set(true);
+                    final StringAppender message = new StringAppender().append(instruction).append(prompt);
+                    // Properly handle an instruction field with embedded newlines.  They should also
+                    // be able to display at least 30 characters for the name and prompts.
+                    final Credentials additional;
+                    try {
+                        final StringAppender title = new StringAppender().append(name).append(
+                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
+                        );
+                        additional = callback.prompt(bookmark, bookmark.getCredentials().getUsername(), title.toString(),
+                            message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
+                                .usernamePlaceholder(bookmark.getCredentials().getUsername())
+                        );
                     }
-                    else {
-                        final StringAppender message = new StringAppender().append(instruction).append(prompt);
-                        // Properly handle an instruction field with embedded newlines.  They should also
-                        // be able to display at least 30 characters for the name and prompts.
-                        final Credentials additional;
-                        try {
-                            final StringAppender title = new StringAppender().append(name).append(
-                                LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
-                            );
-                            additional = controller.prompt(host, credentials.getUsername(), title.toString(),
-                                message.toString(), new LoginOptions(host.getProtocol()).user(false).publickey(false).keychain(false)
-                                    .usernamePlaceholder(credentials.getUsername())
-                            );
-                        }
-                        catch(LoginCanceledException e) {
-                            return EMPTY_RESPONSE;
-                        }
-                        response = additional.getPassword();
+                    catch(LoginCanceledException e) {
+                        return EMPTY_RESPONSE;
                     }
                     // Responses are encoded in ISO-10646 UTF-8.
-                    return response.toCharArray();
+                    return additional.getPassword().toCharArray();
                 }
 
                 @Override
