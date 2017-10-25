@@ -284,6 +284,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == Quota.class) {
             return (T) new SDSQuotaFeature(this);
         }
+        if(type == Search.class) {
+            return (T) new SDSSearchFeature(this);
+        }
         return super._getFeature(type);
     }
 }
