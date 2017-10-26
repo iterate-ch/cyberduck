@@ -109,7 +109,7 @@ public class ConnectionController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                passwordField.cell().setPlaceholderString(bookmark.getProtocol().getPasswordPlaceholder());
+                passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
                 passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
                 if(preferences.getBoolean("connection.login.keychain")) {
                     if(StringUtils.isBlank(bookmark.getHostname())) {
@@ -142,8 +142,8 @@ public class ConnectionController extends BookmarkController {
             @Override
             public void change(final Host bookmark) {
                 passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isNotBlank(bookmark.getProtocol().getPasswordPlaceholder()) ? String.format("%s:",
-                                bookmark.getProtocol().getPasswordPlaceholder()) : StringUtils.EMPTY, LABEL_ATTRIBUTES
+                        StringUtils.isNotBlank(options.getPasswordPlaceholder()) ? String.format("%s:",
+                                options.getPasswordPlaceholder()) : StringUtils.EMPTY, LABEL_ATTRIBUTES
                 ));
             }
         });
