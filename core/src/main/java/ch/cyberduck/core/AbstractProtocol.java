@@ -95,7 +95,6 @@ public abstract class AbstractProtocol implements Protocol {
         return StringUtils.isBlank(this.getDefaultHostname());
     }
 
-
     @Override
     public boolean isPortConfigurable() {
         return StringUtils.isBlank(this.getDefaultHostname());
