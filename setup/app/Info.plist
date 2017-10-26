@@ -283,7 +283,7 @@
                 <key>NSMenuItem</key>
                 <dict>
                     <key>default</key>
-                    <string>Cyberduck/Upload</string>
+                    <string>Cyberduck/Upload with Cyberduck</string>
                 </dict>
                 <key>NSMessage</key>
                 <string>serviceUploadFileUrl</string>
