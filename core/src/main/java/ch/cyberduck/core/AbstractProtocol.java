@@ -123,7 +123,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isPasswordConfigurable() {
-        return true;
+        return StringUtils.isBlank(this.getOAuthClientId());
     }
 
     @Override
