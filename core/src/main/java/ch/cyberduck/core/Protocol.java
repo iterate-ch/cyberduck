@@ -64,7 +64,7 @@ public interface Protocol extends Comparable<Protocol> {
         googledrive {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only requires the project token
+                // OAuth only
                 return true;
             }
         },
@@ -85,7 +85,7 @@ public interface Protocol extends Comparable<Protocol> {
         onedrive {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only requires the project token
+                // OAuth only
                 return true;
             }
         },
