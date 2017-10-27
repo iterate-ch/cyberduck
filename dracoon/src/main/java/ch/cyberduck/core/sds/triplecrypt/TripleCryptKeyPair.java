@@ -44,15 +44,15 @@ public class TripleCryptKeyPair {
     public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
         final String passphrase = keychain.getPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
                 new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl());
-        return this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"));
+        return this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter your decryption password to access encrypted data rooms.", "SDS"));
     }
 
     private Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair, String passphrase, final String message) throws LoginCanceledException, CryptoException {
         final Credentials credentials;
         if(null == passphrase) {
-            credentials = callback.prompt(bookmark, LocaleFactory.localizedString("Private key password protected", "Credentials"), message,
+            credentials = callback.prompt(bookmark, LocaleFactory.localizedString("Decryption password required", "SDS"), message,
                     new LoginOptions(bookmark.getProtocol())
-                            .user(false).passwordPlaceholder(LocaleFactory.localizedString("Private Key Passphrase", "Credentials"))
+                        .user(false).passwordPlaceholder(LocaleFactory.localizedString("Private Key Passphrase", "SDS"))
                             .anonymous(false)
                             .icon(bookmark.getProtocol().disk())
             );
@@ -65,7 +65,7 @@ public class TripleCryptKeyPair {
             credentials.setSaved(true);
         }
         if(!Crypto.checkUserKeyPair(keypair, credentials.getPassword())) {
-            return this.unlock(callback, bookmark, keypair, null, String.format("%s. %s", LocaleFactory.localizedString("Invalid passphrase", "Credentials"), LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials")));
+            return this.unlock(callback, bookmark, keypair, null, String.format("%s. %s", LocaleFactory.localizedString("Invalid passphrase", "Credentials"), LocaleFactory.localizedString("Enter your decryption password to access encrypted data rooms.", "SDS")));
         }
         else {
             if(credentials.isSaved()) {
