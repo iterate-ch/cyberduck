@@ -109,8 +109,11 @@ public interface Protocol extends Comparable<Protocol> {
             }
             if(options.publickey) {
                 // No password may be required to decrypt private key
+                if(credentials.isPublicKeyAuthentication()) {
+                    return true;
+                }
             }
-            else if(options.password) {
+            if(options.password) {
                 if(StringUtils.isEmpty(credentials.getPassword())) {
                     return false;
                 }
