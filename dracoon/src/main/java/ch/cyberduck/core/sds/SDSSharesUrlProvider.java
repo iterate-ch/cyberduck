@@ -69,8 +69,8 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     public DescriptiveUrl toDownloadUrl(final Path file, final CreateDownloadShareRequest options,
                                         final PasswordCallback callback) throws BackgroundException {
         try {
-            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-            if(roles != null && !roles.contains(SDSAttributesFinderFeature.DOWNLOAD_SHARE_ROLE)) {
+            final Set<Acl.Role> roles = new SDSPermissionsFeature(session).getPermission(containerService.getContainer(file)).get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            if(roles != null && !roles.contains(SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE)) {
                 return DescriptiveUrl.EMPTY;
             }
             final Long fileid = Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
@@ -123,8 +123,8 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
-            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-            if(roles != null && !roles.contains(SDSAttributesFinderFeature.UPLOAD_SHARE_ROLE)) {
+            final Set<Acl.Role> roles = new SDSPermissionsFeature(session).getPermission(containerService.getContainer(file)).get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            if(roles != null && !roles.contains(SDSPermissionsFeature.UPLOAD_SHARE_ROLE)) {
                 return DescriptiveUrl.EMPTY;
             }
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(StringUtils.EMPTY,
