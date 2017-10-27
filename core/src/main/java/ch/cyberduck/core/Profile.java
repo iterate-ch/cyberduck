@@ -43,12 +43,10 @@ public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
     private final Deserializer<String> dict;
-
     /**
      * The actual protocol implementation registered
      */
     private final Protocol parent;
-
     private final Local image;
 
     public Profile(final Protocol parent, final Deserializer<String> dict) {
@@ -335,7 +333,7 @@ public class Profile implements Protocol, Serializable {
     @Override
     public boolean isPasswordConfigurable() {
         if(StringUtils.isBlank(this.value("Password Configurable"))) {
-            return parent.isPasswordConfigurable();
+            return StringUtils.isBlank(this.getOAuthClientId());
         }
         return this.bool("Password Configurable");
     }
@@ -351,7 +349,7 @@ public class Profile implements Protocol, Serializable {
     @Override
     public boolean isHostnameConfigurable() {
         if(StringUtils.isBlank(this.value("Hostname Configurable"))) {
-            return parent.isHostnameConfigurable();
+            return StringUtils.isBlank(this.getDefaultHostname());
         }
         return this.bool("Hostname Configurable");
     }
@@ -359,7 +357,7 @@ public class Profile implements Protocol, Serializable {
     @Override
     public boolean isPortConfigurable() {
         if(StringUtils.isBlank(this.value("Port Configurable"))) {
-            return parent.isPortConfigurable();
+            return StringUtils.isBlank(this.getDefaultHostname());
         }
         return this.bool("Port Configurable");
     }

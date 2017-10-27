@@ -95,7 +95,6 @@ public abstract class AbstractProtocol implements Protocol {
         return StringUtils.isBlank(this.getDefaultHostname());
     }
 
-
     @Override
     public boolean isPortConfigurable() {
         return StringUtils.isBlank(this.getDefaultHostname());
@@ -123,7 +122,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isPasswordConfigurable() {
-        return true;
+        return StringUtils.isBlank(this.getOAuthClientId());
     }
 
     @Override
