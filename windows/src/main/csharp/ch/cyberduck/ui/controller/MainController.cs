@@ -818,7 +818,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void OnStartup(object state)
         {
-            MainForm = NewBrowser(true, true).View as Form;
+            _bc = NewBrowser(true, true);
+            MainForm = _bc.View as Form;
 
             /* UWP Registration, initialize as soon as possible */
             if (Utils.IsRunningAsUWP)
