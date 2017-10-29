@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2.11
+- [Bugfix] Application crash restoring workspace (Windows)
+
 6.2.10
 - [Feature] Option to disable auto-detect of vaults (Cryptomator)
 - [Bugfix] Login where authentication is required with both password and public key method (SFTP)
