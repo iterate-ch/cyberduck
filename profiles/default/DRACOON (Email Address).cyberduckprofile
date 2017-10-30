@@ -3,7 +3,9 @@
         <key>Protocol</key>
         <string>dracoon</string>
         <key>Vendor</key>
-        <string>dracoon-sql</string>
+        <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
         <key>Description</key>
         <string>DRACOON (Email Address)</string>
         <key>Scheme</key>
