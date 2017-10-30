@@ -43,7 +43,7 @@ public class TripleCryptKeyPair {
 
     public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, LoginCanceledException {
         final String passphrase = keychain.getPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
-                new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl());
+            new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl());
         return this.unlock(callback, bookmark, keypair, passphrase, LocaleFactory.localizedString("Enter your decryption password to access encrypted data rooms.", "SDS"));
     }
 
@@ -51,10 +51,10 @@ public class TripleCryptKeyPair {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = callback.prompt(bookmark, LocaleFactory.localizedString("Decryption password required", "SDS"), message,
-                    new LoginOptions(bookmark.getProtocol())
-                        .user(false).passwordPlaceholder(LocaleFactory.localizedString("Private Key Passphrase", "SDS"))
-                            .anonymous(false)
-                            .icon(bookmark.getProtocol().disk())
+                new LoginOptions(bookmark.getProtocol())
+                    .user(false).password(true)
+                    .anonymous(false)
+                    .icon(bookmark.getProtocol().disk())
             );
             if(credentials.getPassword() == null) {
                 throw new LoginCanceledException();
@@ -73,8 +73,8 @@ public class TripleCryptKeyPair {
                     log.info(String.format("Save encryption password for %s", bookmark));
                 }
                 keychain.addPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
-                        new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl(),
-                        credentials.getPassword());
+                    new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl(),
+                    credentials.getPassword());
             }
             return credentials;
         }
