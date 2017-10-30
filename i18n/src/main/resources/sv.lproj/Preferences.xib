@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
         <capability name="box content view" minToolsVersion="7.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDPreferencesController">
@@ -24,6 +24,7 @@
                 <outlet property="chmodUploadTypePopup" destination="216" id="437"/>
                 <outlet property="configureProxiesButton" destination="289" id="438"/>
                 <outlet property="confirmDisconnectCheckbox" destination="55" id="439"/>
+                <outlet property="cryptomatorCheckbox" destination="Tzo-pv-NCb" id="taecaeH4"/>
                 <outlet property="defaultBookmarkCombobox" destination="32" id="441"/>
                 <outlet property="defaultBucketLocation" destination="357" id="442"/>
                 <outlet property="defaultDownloadThrottleCombobox" destination="335" id="443"/>
@@ -62,6 +63,7 @@
                 <outlet property="panelAdvanced" destination="280" id="478"/>
                 <outlet property="panelBandwidth" destination="327" id="479"/>
                 <outlet property="panelBrowser" destination="61" id="480"/>
+                <outlet property="panelCryptomator" destination="UTQ-mX-sfj" id="Xah7air7"/>
                 <outlet property="panelEditor" destination="368" id="481"/>
                 <outlet property="panelFTP" destination="264" id="482"/>
                 <outlet property="panelGeneral" destination="30" id="483"/>
@@ -125,67 +127,73 @@
                             <tabViewItem label="Fillista" identifier="browser" id="8">
                                 <view key="view" id="9">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Överföringar" identifier="queue" id="10">
                                 <view key="view" id="11">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Extern editor" identifier="pencil" id="12">
                                 <view key="view" id="13">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="FTP" identifier="ftp" id="14">
                                 <view key="view" id="15">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="SFTP" identifier="sftp" id="16">
                                 <view key="view" id="17">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="S3" identifier="s3" id="18">
                                 <view key="view" id="19">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Google Drive" identifier="google" id="20">
                                 <view key="view" id="21">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Bandbredd" identifier="bandwidth" id="22">
                                 <view key="view" id="23">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Anslutning" identifier="connection" id="24">
                                 <view key="view" id="25">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Cryptomator" identifier="cryptomator" id="prD-Uh-R1Z" userLabel="Cryptomator">
+                                <view key="view" id="58Y-QD-ThV">
+                                    <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Uppdatering" identifier="update" id="26">
                                 <view key="view" id="27">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Språk" identifier="language" id="28">
                                 <view key="view" id="29">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
@@ -225,7 +233,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField verticalHuggingPriority="750" id="38">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="38">
                                 <rect key="frame" x="9" y="48" width="252" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Anslut till bokmärke:" id="39">
@@ -242,7 +250,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField verticalHuggingPriority="750" id="42">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="42">
                                 <rect key="frame" x="9" y="96" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Sparar alla öppna fönster när programmet avslutas och öppnar automatiskt anslutningarna igen nästa gång programmet startas." id="43">
@@ -251,7 +259,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="44">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="44">
                                 <rect key="frame" x="9" y="12" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Öppna ett tomt fönster när programmet startar. Om du anger ett bokmärke öppnas en anslutning automatiskt." id="45">
@@ -270,7 +278,7 @@
                         <rect key="frame" x="2" y="2" width="469" height="185"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField verticalHuggingPriority="750" id="47">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="47">
                                 <rect key="frame" x="17" y="39" width="244" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Förvalt protokoll:" id="48">
@@ -308,7 +316,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField verticalHuggingPriority="750" id="57">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="57">
                                 <rect key="frame" x="9" y="123" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Leta efter lösenord i nyckelring. Spara automatiskt lösenord i nyckelring vid lyckad inloggning." id="58">
@@ -317,7 +325,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="59">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="59">
                                 <rect key="frame" x="9" y="65" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Fråga innan ett anslutet fönster stängs." id="60">
@@ -357,7 +365,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="69">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="69">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="När små ikoner används visas bara bokmärkenas kortnamn i utdragslådan." id="70">
@@ -456,7 +464,7 @@
                                     <binding destination="314" name="enabled" keyPath="values.browser.view.autoexpand.useDelay" id="529"/>
                                 </connections>
                             </slider>
-                            <textField verticalHuggingPriority="750" id="89">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="89">
                                 <rect key="frame" x="120" y="12" width="101" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Kort" id="90">
@@ -465,7 +473,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="91">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="91">
                                 <rect key="frame" x="222" y="12" width="100" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Medium" id="92">
@@ -474,7 +482,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="93">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="93">
                                 <rect key="frame" x="324" y="12" width="100" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Lång" id="94">
@@ -538,7 +546,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="107">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="107">
                                         <rect key="frame" x="9" y="120" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dublettfiler:" id="108">
@@ -547,7 +555,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" id="109">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="109">
                                         <rect key="frame" x="9" y="146" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Spara hämtade filer i:" id="110">
@@ -589,7 +597,7 @@
                                         <rect key="frame" x="12" y="73" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="120">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="120">
                                         <rect key="frame" x="9" y="76" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Skicka filer" id="121">
@@ -602,7 +610,7 @@
                                         <rect key="frame" x="12" y="191" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="123">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="123">
                                         <rect key="frame" x="9" y="194" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Hämta filer" id="124">
@@ -611,7 +619,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" id="125">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="125">
                                         <rect key="frame" x="9" y="28" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dublettfiler:" id="126">
@@ -662,7 +670,7 @@
                                             </menu>
                                         </popUpButtonCell>
                                     </popUpButton>
-                                    <textField verticalHuggingPriority="750" id="139">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="139">
                                         <rect key="frame" x="9" y="278" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Filöverföring:" id="140">
@@ -733,7 +741,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="158">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="158">
                                         <rect key="frame" x="9" y="19" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Övriga" id="159">
@@ -750,7 +758,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="162">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="162">
                                         <rect key="frame" x="9" y="37" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Grupp" id="163">
@@ -799,7 +807,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="174">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="174">
                                         <rect key="frame" x="9" y="54" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Ägare" id="175">
@@ -832,7 +840,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="182">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="182">
                                         <rect key="frame" x="9" y="179" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Grupp" id="183">
@@ -897,7 +905,7 @@
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <textField verticalHuggingPriority="750" id="198">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="198">
                                         <rect key="frame" x="9" y="161" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Övriga" id="199">
@@ -906,7 +914,7 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" id="200">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="200">
                                         <rect key="frame" x="9" y="196" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Ägare" id="201">
@@ -951,7 +959,7 @@
                                         <rect key="frame" x="12" y="279" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="211">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="211">
                                         <rect key="frame" x="9" y="282" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Hämta filer" id="212">
@@ -964,7 +972,7 @@
                                         <rect key="frame" x="12" y="137" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="214">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="214">
                                         <rect key="frame" x="9" y="140" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Skicka filer" id="215">
@@ -1029,7 +1037,7 @@
                                         <rect key="frame" x="12" y="279" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="233">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="233">
                                         <rect key="frame" x="9" y="282" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Hämta filer" id="234">
@@ -1042,7 +1050,7 @@
                                         <rect key="frame" x="12" y="222" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="236">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="236">
                                         <rect key="frame" x="9" y="225" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Skicka filer" id="237">
@@ -1063,7 +1071,7 @@
                                         <rect key="frame" x="12" y="279" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="241">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="241">
                                         <rect key="frame" x="9" y="282" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Hämta filer" id="242">
@@ -1076,7 +1084,7 @@
                                         <rect key="frame" x="12" y="152" width="437" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                     </box>
-                                    <textField verticalHuggingPriority="750" id="244">
+                                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="244">
                                         <rect key="frame" x="9" y="155" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Skicka filer" id="245">
@@ -1202,7 +1210,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="270">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="270">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ange förvalt program som öppnas för filer eller länkar som hänvisar till en FTP-adress." id="271">
@@ -1240,7 +1248,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="278">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="278">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ange förvalt program som öppnas för filer eller länkar som hänvisar till en SFTP-adress." id="279">
@@ -1278,7 +1286,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="286">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="286">
                                 <rect key="frame" x="9" y="40" width="453" height="42"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
@@ -1324,7 +1332,7 @@
                         <rect key="frame" x="2" y="2" width="469" height="117"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField verticalHuggingPriority="750" id="294">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="294">
                                 <rect key="frame" x="9" y="88" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Tidsgräns för upprättande av anslutning (sekunder):" id="295">
@@ -1341,7 +1349,7 @@
                                     <binding destination="314" name="value" keyPath="values.connection.retry.delay" id="525"/>
                                 </connections>
                             </stepper>
-                            <textField verticalHuggingPriority="750" id="298">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="298">
                                 <rect key="frame" x="298" y="37" width="45" height="19"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="299">
@@ -1353,7 +1361,7 @@
                                     <binding destination="314" name="value" keyPath="values.connection.retry.delay" id="524"/>
                                 </connections>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="300">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="300">
                                 <rect key="frame" x="9" y="13" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Antal försök:" id="301">
@@ -1362,7 +1370,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="302">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="302">
                                 <rect key="frame" x="9" y="39" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="med fördröjning (sekunder):" id="303">
@@ -1390,7 +1398,7 @@
                                     <binding destination="314" name="value" keyPath="values.connection.retry" id="522"/>
                                 </connections>
                             </stepper>
-                            <textField verticalHuggingPriority="750" id="308">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="308">
                                 <rect key="frame" x="298" y="11" width="45" height="19"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="309">
@@ -1410,7 +1418,7 @@
                                     <binding destination="314" name="value" keyPath="values.connection.timeout.seconds" id="520"/>
                                 </connections>
                             </stepper>
-                            <textField verticalHuggingPriority="750" id="312">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="312">
                                 <rect key="frame" x="298" y="86" width="45" height="19"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="313">
@@ -1455,7 +1463,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField verticalHuggingPriority="750" id="321">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="321">
                                 <rect key="frame" x="9" y="12" width="447" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="center" id="322">
@@ -1497,7 +1505,7 @@
                                 <rect key="frame" x="12" y="101" width="445" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                             </box>
-                            <textField verticalHuggingPriority="750" id="330">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="330">
                                 <rect key="frame" x="9" y="104" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Hämta filer" id="331">
@@ -1510,7 +1518,7 @@
                                 <rect key="frame" x="12" y="38" width="445" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                             </box>
-                            <textField verticalHuggingPriority="750" id="333">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="333">
                                 <rect key="frame" x="9" y="41" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Skicka filer" id="334">
@@ -1535,7 +1543,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="340">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="340">
                                 <rect key="frame" x="9" y="77" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maximal hastighet:" id="341">
@@ -1560,7 +1568,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="347">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="347">
                                 <rect key="frame" x="9" y="14" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maximal hastighet:" id="348">
@@ -1594,7 +1602,7 @@
                                     <menu key="menu" title="OtherViews" id="353"/>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="354">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="354">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the algirithm to encrypt files with on upload." id="355">
@@ -1622,7 +1630,7 @@
                                     <menu key="menu" title="OtherViews" id="359"/>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="360">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="360">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Förvald geografisk plats för nya buckets." id="361">
@@ -1650,7 +1658,7 @@
                                     <menu key="menu" title="OtherViews" id="365"/>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="366">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="366">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
@@ -1689,7 +1697,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" id="374">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="374">
                                 <rect key="frame" x="9" y="75" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ange en textredigerare som förval. Textredigeraren måste vara installerad och ha stöd för ODB-gränssnittet." id="375">
@@ -1722,7 +1730,7 @@
                         <rect key="frame" x="2" y="2" width="469" height="81"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField verticalHuggingPriority="750" id="410">
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="410">
                                 <rect key="frame" x="9" y="41" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ändringarna tar effekt nästa gång du startar programmet." id="411">
@@ -1745,45 +1753,30 @@
                 </box>
             </subviews>
         </customView>
-        <view id="415">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
+        <customView misplaced="YES" id="UTQ-mX-sfj" userLabel="Panel Cryptomator">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="103"/>
             <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="416">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="417">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="418">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="419">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="420">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="421">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="422">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="423">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
-        <view id="424">
-            <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
+            <subviews>
+                <box misplaced="YES" title="Cryptomator" id="Xoe-j6-yKO">
+                    <rect key="frame" x="17" y="16" width="473" height="67"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="RhT-uu-LrO">
+                        <rect key="frame" x="2" y="2" width="469" height="50"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button misplaced="YES" id="Tzo-pv-NCb">
+                                <rect key="frame" x="10" y="22" width="253" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Auto detect and open vault in browser" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                    </view>
+                </box>
+            </subviews>
+            <point key="canvasLocation" x="131.5" y="551.5"/>
+        </customView>
     </objects>
 </document>

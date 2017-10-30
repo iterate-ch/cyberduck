@@ -134,6 +134,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UseSystemProxyChangedEvent += View_UseSystemProxyChangedEvent;
             View.ChangeSystemProxyEvent += View_ChangeSystemProxyEvent;
 
+            View.CryptomatorAutoDetectVaultChangedEvent += View_CryptomatorAutoDetectVaultChangedEvent;
+
             #region S3
 
             View.DefaultBucketLocationChangedEvent += View_DefaultBucketLocationChangedEvent;
@@ -155,6 +157,11 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UpdateFeedChangedEvent += View_UpdateFeedChangedEvent;
 
             #endregion
+        }
+
+        private void View_CryptomatorAutoDetectVaultChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("cryptomator.vault.autodetect", View.AutoDetectVault);
         }
 
         public static PreferencesController Instance
@@ -990,6 +997,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.CurrentLocale = "default";
             }
 
+            #endregion
+
+            #region Cryptomator
+            View.AutoDetectVault = PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect");
             #endregion
         }
 

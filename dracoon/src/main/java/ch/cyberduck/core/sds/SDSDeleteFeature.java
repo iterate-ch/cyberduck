@@ -28,6 +28,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -57,18 +58,30 @@ public class SDSDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
+    public boolean isSupported(final Path node) {
         try {
-            final Set<Acl.Role> roles = containerService.getContainer(file).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-            if(roles != null) {
-                return roles.contains(SDSAttributesFinderFeature.DELETE_ROLE);
+            if(containerService.isContainer(node)) {
+                // you need the manage permission on the parent data room to delete it
+                final Path parent = containerService.getContainer(node.getParent());
+                if(parent.equals(node)) {
+                    // top-level data room
+                    return this.getRoles(node).contains(SDSPermissionsFeature.MANAGE_ROLE);
+                }
+                // sub data room
+                return this.getRoles(parent).contains(SDSPermissionsFeature.MANAGE_ROLE);
             }
-            return true;
+            return this.getRoles(node).contains(SDSPermissionsFeature.DELETE_ROLE);
         }
         catch(BackgroundException e) {
             log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
             return true;
         }
+    }
+
+    private Set<Acl.Role> getRoles(final Path file) throws BackgroundException {
+        final Acl acl = new SDSPermissionsFeature(session).getPermission(containerService.getContainer(file));
+        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+        return roles != null ? roles : Collections.emptySet();
     }
 
     @Override

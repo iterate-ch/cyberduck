@@ -37,6 +37,7 @@ import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -136,6 +137,7 @@ public class ConcurrentTransferWorkerTest {
     }
 
     @Test
+    @Ignore
     public void testConcurrentSessions() throws Exception {
         final int files = 20;
         final int connections = 3;

@@ -41,10 +41,10 @@ public class S3VersionedObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(S3VersionedObjectListService.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3Session session;
 
@@ -62,15 +62,19 @@ public class S3VersionedObjectListService implements ListService {
             String priorLastVersionId = null;
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                        bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
-                        preferences.getInteger("s3.listing.chunksize"),
-                        priorLastKey, priorLastVersionId, true);
+                    bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
+                    preferences.getInteger("s3.listing.chunksize"),
+                    priorLastKey, priorLastVersionId, true);
                 // Amazon S3 returns object versions in the order in which they were
                 // stored, with the most recently stored returned first.
                 final List<BaseVersionOrDeleteMarker> items = Arrays.asList(chunk.getItems());
                 int i = 0;
                 for(BaseVersionOrDeleteMarker marker : items) {
                     final String key = PathNormalizer.normalize(marker.getKey());
+                    if(String.valueOf(Path.DELIMITER).equals(key)) {
+                        log.warn(String.format("Skipping prefix %s", key));
+                        continue;
+                    }
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
@@ -92,7 +96,7 @@ public class S3VersionedObjectListService implements ListService {
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
-                    if(common.equals(String.valueOf(Path.DELIMITER))) {
+                    if(String.valueOf(Path.DELIMITER).equals(common)) {
                         log.warn(String.format("Skipping prefix %s", common));
                         continue;
                     }

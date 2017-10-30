@@ -49,7 +49,7 @@ import static org.junit.Assert.*;
 public class SDSDelegatingCopyFeatureTest {
 
     @Test
-    public void testCopyFile() throws Exception {
+    public void testCopyFileServerSide() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
@@ -60,6 +60,7 @@ public class SDSDelegatingCopyFeatureTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus()), test.getName(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session).touch(copy, new TransferStatus());
         final SDSCopyFeature feature = new SDSCopyFeature(session);
         assertTrue(feature.isSupported(test, copy));
         new SDSDelegatingCopyFeature(session, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
@@ -225,7 +226,7 @@ public class SDSDelegatingCopyFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSAttributesFinderFeature.DELETE_ROLE);
+        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new SDSDirectoryFeature(session).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -247,7 +248,7 @@ public class SDSDelegatingCopyFeatureTest {
             }
 
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
@@ -262,7 +263,7 @@ public class SDSDelegatingCopyFeatureTest {
             }
 
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
@@ -283,7 +284,7 @@ public class SDSDelegatingCopyFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSAttributesFinderFeature.DELETE_ROLE);
+        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new SDSDirectoryFeature(session).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -308,7 +309,7 @@ public class SDSDelegatingCopyFeatureTest {
             }
 
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
@@ -329,7 +330,7 @@ public class SDSDelegatingCopyFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSAttributesFinderFeature.DELETE_ROLE);
+        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -350,7 +351,7 @@ public class SDSDelegatingCopyFeatureTest {
             }
 
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
@@ -365,7 +366,7 @@ public class SDSDelegatingCopyFeatureTest {
             }
 
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
@@ -386,7 +387,7 @@ public class SDSDelegatingCopyFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSAttributesFinderFeature.DELETE_ROLE);
+        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -412,7 +413,7 @@ public class SDSDelegatingCopyFeatureTest {
             }
 
             @Override
-            public Credentials prompt(final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("ahbic3Ae");
             }
         });

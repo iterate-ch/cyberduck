@@ -5,30 +5,36 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/608be33d6e1941858b17984518a4a44b)](https://www.codacy.com/app/dkocher/cyberduck?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iterate-ch/cyberduck&amp;utm_campaign=Badge_Grade)
 [![Twitter](https://img.shields.io/badge/twitter-@cyberduckapp-blue.svg?style=flat)](http://twitter.com/cyberduckapp)
 
-Libre FTP, SFTP, WebDAV, S3, Azure and OpenStack Swift browser for Mac and Windows. Command line interface (CLI) for Linux, OS X and Windows.
+Libre file transfer client for macOS and Windows. Command line interface (CLI) for Linux, macOS and Windows.
 
 ## Prerequisites
 
 - Oracle Java 1.8.0 SDK or later
 - Apache Ant 1.10.1 or later
 - Apache Maven 3.5 or later
-- [Xcode 8](https://developer.apple.com/xcode/download/) or later
-- Microsoft Visual Studio 2012 or later
-- [Microsoft Windows SDK for Windows 7 and .NET Framework 4](http://www.microsoft.com/downloads/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&displaylang=en)
-- [MSBuild Community Tasks](https://github.com/loresoft/msbuildtasks)
+
+### macOS
+- [Xcode 9](https://developer.apple.com/xcode/download/) or later
+
+### Windows
+
+- Visual Studio 2017 or later
+  - `.NET Desktop development`-Workload
+  - Windows SDK (10.0.14393.0)
+  - [MSBuild Community Tasks](https://github.com/loresoft/msbuildtasks)
 - [Bonjour SDK for Windows](https://developer.apple.com/downloads/index.action?q=Bonjour%20SDK%20for%20Windows)
 
 ## Building
 
 Run `mvn verify -DskipTests` to build without running any tests.
 
+### Windows
+
+You will run into errors by MSBuild/Wix that are unrelated to how Cyberduck is built. You may safely ignore them.
+
 ## Running Tests
 
 After packaging, run `mvn test -DskipITs` to run unit tests but skip integration tests.
-
-## Releases
-
-Releases are tagged in GIT/SVN such as `release-2-6`. Checkout using `svn co https://svn.cyberduck.io/tags/release-2-6`.
 
 ### Maven Artifacts
 
