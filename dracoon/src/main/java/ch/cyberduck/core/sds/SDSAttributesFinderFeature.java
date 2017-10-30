@@ -37,16 +37,6 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     private final SDSSession session;
 
-    public static final Acl.Role MANAGE_ROLE = new Acl.Role("MANAGE_ROLE");
-
-    public static final Acl.Role READ_ROLE = new Acl.Role(Acl.Role.READ);
-    public static final Acl.Role CREATE_ROLE = new Acl.Role("CREATE");
-    public static final Acl.Role CHANGE_ROLE = new Acl.Role("CHANGE");
-    public static final Acl.Role DELETE_ROLE = new Acl.Role("DELETE");
-
-    public static final Acl.Role DOWNLOAD_SHARE_ROLE = new Acl.Role("DOWNLOAD_SHARE");
-    public static final Acl.Role UPLOAD_SHARE_ROLE = new Acl.Role("UPLOAD_SHARE");
-
     public SDSAttributesFinderFeature(final SDSSession session) {
         this.session = session;
     }
@@ -92,25 +82,25 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         final Acl acl = new Acl();
         final Acl.User user = new Acl.CanonicalUser(String.valueOf(session.userAccount().getId()));
         if(node.getPermissions().getManage()) {
-            acl.addAll(user, MANAGE_ROLE);
+            acl.addAll(user, SDSPermissionsFeature.MANAGE_ROLE);
         }
         if(node.getPermissions().getRead()) {
-            acl.addAll(user, READ_ROLE);
+            acl.addAll(user, SDSPermissionsFeature.READ_ROLE);
         }
         if(node.getPermissions().getCreate()) {
-            acl.addAll(user, CREATE_ROLE);
+            acl.addAll(user, SDSPermissionsFeature.CREATE_ROLE);
         }
         if(node.getPermissions().getChange()) {
-            acl.addAll(user, CHANGE_ROLE);
+            acl.addAll(user, SDSPermissionsFeature.CHANGE_ROLE);
         }
         if(node.getPermissions().getDelete()) {
-            acl.addAll(user, DELETE_ROLE);
+            acl.addAll(user, SDSPermissionsFeature.DELETE_ROLE);
         }
         if(node.getPermissions().getManageDownloadShare()) {
-            acl.addAll(user, DOWNLOAD_SHARE_ROLE);
+            acl.addAll(user, SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE);
         }
         if(node.getPermissions().getManageUploadShare()) {
-            acl.addAll(user, UPLOAD_SHARE_ROLE);
+            acl.addAll(user, SDSPermissionsFeature.UPLOAD_SHARE_ROLE);
         }
         return acl;
     }

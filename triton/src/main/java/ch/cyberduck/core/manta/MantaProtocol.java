@@ -51,6 +51,11 @@ public class MantaProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String disk() {
+        return String.format("%s.tiff", "ftp");
+    }
+
+    @Override
     public boolean isAnonymousConfigurable() {
         return false;
     }

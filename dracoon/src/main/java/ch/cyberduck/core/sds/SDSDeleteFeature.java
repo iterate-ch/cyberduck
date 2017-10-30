@@ -65,12 +65,12 @@ public class SDSDeleteFeature implements Delete {
                 final Path parent = containerService.getContainer(node.getParent());
                 if(parent.equals(node)) {
                     // top-level data room
-                    return this.getRoles(node).contains(SDSAttributesFinderFeature.MANAGE_ROLE);
+                    return this.getRoles(node).contains(SDSPermissionsFeature.MANAGE_ROLE);
                 }
                 // sub data room
-                return this.getRoles(parent).contains(SDSAttributesFinderFeature.MANAGE_ROLE);
+                return this.getRoles(parent).contains(SDSPermissionsFeature.MANAGE_ROLE);
             }
-            return this.getRoles(node).contains(SDSAttributesFinderFeature.DELETE_ROLE);
+            return this.getRoles(node).contains(SDSPermissionsFeature.DELETE_ROLE);
         }
         catch(BackgroundException e) {
             log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
@@ -78,8 +78,9 @@ public class SDSDeleteFeature implements Delete {
         }
     }
 
-    private Set<Acl.Role> getRoles(final Path node) throws BackgroundException {
-        final Set<Acl.Role> roles = containerService.getContainer(node).attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+    private Set<Acl.Role> getRoles(final Path file) throws BackgroundException {
+        final Acl acl = new SDSPermissionsFeature(session).getPermission(containerService.getContainer(file));
+        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
         return roles != null ? roles : Collections.emptySet();
     }
 

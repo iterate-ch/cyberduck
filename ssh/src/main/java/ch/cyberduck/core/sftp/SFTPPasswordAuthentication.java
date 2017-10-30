@@ -15,9 +15,11 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -37,7 +39,7 @@ import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.PasswordUpdateProvider;
 import net.schmizz.sshj.userauth.password.Resource;
 
-public class SFTPPasswordAuthentication implements SFTPAuthentication {
+public class SFTPPasswordAuthentication implements AuthenticationProvider {
     private static final Logger log = Logger.getLogger(SFTPPasswordAuthentication.class);
 
     private final SFTPSession session;
@@ -47,23 +49,31 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
+    public boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel)
         throws BackgroundException {
         if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
-            final Credentials additional = prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                LocaleFactory.localizedString("Partial authentication success", "Credentials"),
-                MessageFormat.format(LocaleFactory.localizedString(
-                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
+            final String message;
+            if(session.getClient().getUserAuth().hadPartialSuccess()) {
+                message = LocaleFactory.localizedString("Partial authentication success", "Credentials");
+            }
+            else {
+                message = MessageFormat.format(LocaleFactory.localizedString(
+                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark));
+            }
+            final Credentials additional = callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+                message,
                 new LoginOptions(bookmark.getProtocol()).user(false).keychain(false).publickey(false)
                     .usernamePlaceholder(bookmark.getCredentials().getUsername()));
-            return this.authenticate(bookmark, additional, prompt);
+            return this.authenticate(bookmark, additional, callback, cancel);
         }
         else {
-            return this.authenticate(bookmark, bookmark.getCredentials(), prompt);
+            return this.authenticate(bookmark, bookmark.getCredentials(), callback, cancel);
         }
     }
 
-    public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback callback) throws BackgroundException {
+    public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback callback, final CancelCallback cancel)
+        throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using password authentication with credentials %s", credentials));
         }

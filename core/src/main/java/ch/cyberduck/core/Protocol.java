@@ -51,15 +51,7 @@ public interface Protocol extends Comparable<Protocol> {
                 return true;
             }
         },
-        sftp {
-            @Override
-            public boolean validate(final Credentials credentials, final LoginOptions options) {
-                if(options.user) {
-                    return StringUtils.isNotBlank(credentials.getUsername());
-                }
-                return true;
-            }
-        },
+        sftp,
         s3,
         googlestorage {
             @Override
@@ -72,7 +64,7 @@ public interface Protocol extends Comparable<Protocol> {
         googledrive {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only requires the project token
+                // OAuth only
                 return true;
             }
         },
@@ -93,7 +85,7 @@ public interface Protocol extends Comparable<Protocol> {
         onedrive {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only requires the project token
+                // OAuth only
                 return true;
             }
         },
@@ -126,6 +118,12 @@ public interface Protocol extends Comparable<Protocol> {
             if(options.user) {
                 if(StringUtils.isBlank(credentials.getUsername())) {
                     return false;
+                }
+            }
+            if(options.publickey) {
+                // No password may be required to decrypt private key
+                if(credentials.isPublicKeyAuthentication()) {
+                    return true;
                 }
             }
             if(options.password) {
