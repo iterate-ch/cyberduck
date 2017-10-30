@@ -161,7 +161,7 @@
           <netfx:NativeImage Id="ngen_ikvm.native" Platform="32bit" Priority="3" />
         </File>
       </Component>
-      <Component Id="ikvm.native" Guid="1F57FEE7-5278-44C8-9C30-CBDAC2019304">
+      <Component Id="ikvm.misc" Guid="1F57FEE7-5278-44C8-9C30-CBDAC2019304">
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.misc" Platform="32bit" Priority="3" />
         </File>
