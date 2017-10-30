@@ -38,6 +38,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.manta.MantaProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
@@ -108,25 +109,26 @@ public class Terminal {
     public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults.withDefaults(input);
         ProtocolFactory.get().register(
-                new FTPProtocol(),
-                new FTPTLSProtocol(),
-                new SFTPProtocol(),
-                new DAVProtocol(),
-                new DAVSSLProtocol(),
-                new SwiftProtocol(),
-                new S3Protocol(),
-                new GoogleStorageProtocol(),
-                new AzureProtocol(),
-                new IRODSProtocol(),
-                new SpectraProtocol(),
-                new B2Protocol(),
-                new DriveProtocol(),
-                new HubicProtocol(),
-                new DropboxProtocol(),
-                new DropboxProtocol(),
-                new OneDriveProtocol(),
-                new LocalProtocol(),
-                new SDSProtocol()
+            new FTPProtocol(),
+            new FTPTLSProtocol(),
+            new SFTPProtocol(),
+            new DAVProtocol(),
+            new DAVSSLProtocol(),
+            new SwiftProtocol(),
+            new S3Protocol(),
+            new GoogleStorageProtocol(),
+            new AzureProtocol(),
+            new IRODSProtocol(),
+            new SpectraProtocol(),
+            new B2Protocol(),
+            new DriveProtocol(),
+            new HubicProtocol(),
+            new DropboxProtocol(),
+            new DropboxProtocol(),
+            new OneDriveProtocol(),
+            new LocalProtocol(),
+            new SDSProtocol(),
+            new MantaProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {
@@ -135,11 +137,11 @@ public class Terminal {
         this.input = input;
         this.cache = new PathCache(preferences.getInteger("browser.cache.size"));
         this.progress = input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                ? new DisabledListProgressListener() : new TerminalProgressListener();
+            ? new DisabledListProgressListener() : new TerminalProgressListener();
         this.transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
-                ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
+            ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
         this.reader = input.hasOption(TerminalOptionsBuilder.Params.assumeyes.name())
-                ? new DisabledTerminalPromptReader() : new InteractiveTerminalPromptReader();
+            ? new DisabledTerminalPromptReader() : new InteractiveTerminalPromptReader();
         this.controller = new TerminalController(progress, transcript);
     }
 
@@ -217,11 +219,11 @@ public class Terminal {
             final String uri = input.getOptionValue(action.name());
             final Host host = new CommandLineUriParser(input).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
-                    new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress);
+                new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress);
             source = SessionPoolFactory.create(connect, transcript, cache, host,
-                    new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
-                    VaultRegistryFactory.create(new TerminalPasswordCallback()));
+                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
+                new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
+                VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = source.getFeature(Home.class);
@@ -246,20 +248,20 @@ public class Terminal {
                 case upload:
                 case synchronize:
                     return this.transfer(new TerminalTransferFactory().create(input, host, remote,
-                            new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote))),
-                            source, SessionPool.DISCONNECTED);
+                        new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote))),
+                        source, SessionPool.DISCONNECTED);
                 case copy:
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     destination = SessionPoolFactory.create(connect, transcript, cache, target,
-                            new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
-                            new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
-                            VaultRegistryFactory.create(new TerminalPasswordCallback()));
+                        new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
+                        new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
+                        VaultRegistryFactory.create(new TerminalPasswordCallback()));
                     return this.transfer(new CopyTransfer(
-                                    host, target, Collections.singletonMap(remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1]))),
-                            source, destination);
+                            host, target, Collections.singletonMap(remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1]))),
+                        source, destination);
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
-                            String.format("Unknown transfer type %s", action.name()));
+                        String.format("Unknown transfer type %s", action.name()));
             }
         }
         catch(ConnectionCanceledException e) {
@@ -290,7 +292,7 @@ public class Terminal {
         if(retry) {
             if(StringUtils.isNotBlank(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()))) {
                 preferences.setProperty("connection.retry",
-                        NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()), 1));
+                    NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.retry.name()), 1));
             }
             else {
                 preferences.setProperty("connection.retry", 1);
@@ -306,7 +308,7 @@ public class Terminal {
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
             preferences.setProperty("queue.connections.limit",
-                    NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2));
+                NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2));
         }
     }
 
@@ -341,10 +343,10 @@ public class Terminal {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
         final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, reader,
-                source, destination,
-                transfer, new TransferOptions().reload(true), prompt, meter,
-                input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                        ? new DisabledStreamListener() : new TerminalStreamListener(meter)
+            source, destination,
+            transfer, new TransferOptions().reload(true), prompt, meter,
+            input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
+                ? new DisabledStreamListener() : new TerminalStreamListener(meter)
         );
         if(!this.execute(action)) {
             return Exit.failure;
@@ -354,7 +356,7 @@ public class Terminal {
 
     protected Exit mount(final SessionPool session) {
         final SessionBackgroundAction<Path> action = new WorkerBackgroundAction<Path>(
-                controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
+            controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
         if(!this.execute(action)) {
             return Exit.failure;
         }
@@ -363,10 +365,10 @@ public class Terminal {
 
     protected Exit list(final SessionPool session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(cache, remote,
-                new TerminalListProgressListener(reader, verbose));
+            new TerminalListProgressListener(reader, verbose));
         final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<AttributedList<Path>>(
-                controller,
-                session, worker);
+            controller,
+            session, worker);
         if(!this.execute(action)) {
             return Exit.failure;
         }
@@ -400,7 +402,7 @@ public class Terminal {
             application = finder.getDescription(input.getOptionValue(TerminalOptionsBuilder.Params.application.name()));
             if(!finder.isInstalled(application)) {
                 throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
-                        String.format("Application %s not found", input.getOptionValue(TerminalOptionsBuilder.Params.application.name())));
+                    String.format("Application %s not found", input.getOptionValue(TerminalOptionsBuilder.Params.application.name())));
             }
         }
         else {
@@ -408,7 +410,7 @@ public class Terminal {
         }
         if(!finder.isInstalled(application)) {
             throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
-                    String.format("No application found to edit %s", remote.getName()));
+                String.format("No application found to edit %s", remote.getName()));
         }
         final Editor editor = factory.create(controller, session, application, remote);
         final CountDownLatch lock = new CountDownLatch(1);
