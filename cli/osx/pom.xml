@@ -95,7 +95,7 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u131</version>
+                                            <version>8u152</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
