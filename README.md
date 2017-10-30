@@ -5,7 +5,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/608be33d6e1941858b17984518a4a44b)](https://www.codacy.com/app/dkocher/cyberduck?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iterate-ch/cyberduck&amp;utm_campaign=Badge_Grade)
 [![Twitter](https://img.shields.io/badge/twitter-@cyberduckapp-blue.svg?style=flat)](http://twitter.com/cyberduckapp)
 
-Libre FTP, SFTP, WebDAV, S3, Azure and OpenStack Swift browser for Mac and Windows. Command line interface (CLI) for Linux, OS X and Windows.
+Libre file transfer client for macOS and Windows. Command line interface (CLI) for Linux, macOS and Windows.
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ Libre FTP, SFTP, WebDAV, S3, Azure and OpenStack Swift browser for Mac and Windo
 - Apache Maven 3.5 or later
 
 ### macOS
-- [Xcode 8](https://developer.apple.com/xcode/download/) or later
+- [Xcode 9](https://developer.apple.com/xcode/download/) or later
 
 ### Windows
 
@@ -35,10 +35,6 @@ You will run into errors by MSBuild/Wix that are unrelated to how Cyberduck is b
 ## Running Tests
 
 After packaging, run `mvn test -DskipITs` to run unit tests but skip integration tests.
-
-## Releases
-
-Releases are tagged in GIT/SVN such as `release-2-6`. Checkout using `svn co https://svn.cyberduck.io/tags/release-2-6`.
 
 ### Maven Artifacts
 
