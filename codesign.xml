@@ -22,10 +22,16 @@
 <project name="Codesign" basedir=".">
 
     <property name="installer.certificate" value=""/>
-    <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
+    <condition property="installer.keychain" value="${KEYCHAIN_PATH}"
+               else="${user.home}/Library/Keychains/codesign.keychain">
+        <isset property="KEYCHAIN_PATH"/>
+    </condition>
 
     <property name="codesign.certificate" value=""/>
-    <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
+    <condition property="codesign.keychain" value="${KEYCHAIN_PATH}"
+               else="${user.home}/Library/Keychains/codesign.keychain">
+        <isset property="KEYCHAIN_PATH"/>
+    </condition>
 
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
@@ -34,7 +40,8 @@
     <property name="codesign.arg" value=""/>
 
     <target name="codesign" depends="dotclean,compile-codesign-requirement">
-        <echo message="Code signing ${bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
+        <echo
+            message="Code signing ${bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg} from ${codesign.keychain}"/>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
