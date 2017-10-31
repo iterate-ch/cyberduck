@@ -22,15 +22,15 @@
 <project name="Codesign" basedir=".">
 
     <property name="installer.certificate" value=""/>
-    <condition property="installer.keychain" value="${KEYCHAIN_PATH}"
+    <condition property="installer.keychain" value="${env.KEYCHAIN_PATH}"
                else="${user.home}/Library/Keychains/codesign.keychain">
-        <isset property="KEYCHAIN_PATH"/>
+        <isset property="env.KEYCHAIN_PATH"/>
     </condition>
 
     <property name="codesign.certificate" value=""/>
-    <condition property="codesign.keychain" value="${KEYCHAIN_PATH}"
+    <condition property="codesign.keychain" value="${env.KEYCHAIN_PATH}"
                else="${user.home}/Library/Keychains/codesign.keychain">
-        <isset property="KEYCHAIN_PATH"/>
+        <isset property="env.KEYCHAIN_PATH"/>
     </condition>
 
     <!-- Designated requirement -->
