@@ -20,87 +20,82 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Search;
 
-import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.joyent.manta.client.MantaObject;
 
 public class MantaSearchFeature implements Search {
 
-    private static final Logger LOG = Logger.getLogger(MantaSearchFeature.class);
-
     private final MantaSession session;
     private final MantaObjectAttributeAdapter adapter;
-    private Cache<Path> cache;
 
     public MantaSearchFeature(final MantaSession session) {
         this.session = session;
         this.adapter = new MantaObjectAttributeAdapter(session);
-        this.cache = PathCache.empty();
     }
 
-    /**
-     * @param workdir  Current working directory in browser
-     * @param regex    Search string
-     * @param listener Notification listener
-     * @return List of files found or empty list
-     */
     @Override
-    public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> search(final Path workdir,
+                                       final Filter<Path> regex,
+                                       final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
 
         final Predicate<MantaObject> regexPredicate = o -> regex.accept(adapter.toPath(o));
-        final Predicate<MantaObject> fastSearchPredicate = o -> session.isWorldReadable(o) || session.isUserWritable(o);;
+        final Predicate<MantaObject> fastSearchPredicate = o -> session.isWorldReadable(o) || session.isUserWritable(o);
+        ;
 
-        // this secondary search allows us to find objects in system folders which may take a very long time to inspect
-        // final Predicate<MantaObject> slowSearchPredicate = fastSearchPredicate.negate();
-
+        // avoid searching the "special" folders if users search from the account root
         if(workdir.getParent().isRoot()) {
-            final List<Path> homeFolderObjects = searchAndConvertObjects(workdir, fastSearchPredicate.and(regexPredicate));
-            addFoundObjects(list, workdir, listener, discardEmptyDirectories(homeFolderObjects, regex));
+            final List<Path> homeFolderPaths = findObjectsAsPaths(workdir, fastSearchPredicate.and(regexPredicate));
+            cleanResults(homeFolderPaths, regex);
+            addPaths(list, workdir, listener, homeFolderPaths);
 
+            /*
             // disable search of system directories until we can provide incremental results
-            // final List<Path> systemFolderObjects = searchAndConvertObjects(workdir, slowSearchPredicate.and(regexPredicate));
-            // addFoundObjects(list, workdir, listener, systemFolderObjects);
+            // slowSearchPredicate will prevent us from looking at ~~/public and ~~/stor twice
+            final Predicate<MantaObject> slowSearchPredicate = fastSearchPredicate.negate();
+            final List<Path> systemFolderObjects = findObjectsAsPaths(workdir, slowSearchPredicate.and(regexPredicate));
+            cleanResults(systemFolderObjects, regex);
+            addPaths(list, workdir, listener, systemFolderObjects);
+            */
+        }
+        else {
+            final List<Path> foundPaths = findObjectsAsPaths(workdir, regexPredicate);
+            cleanResults(foundPaths, regex);
+            addPaths(list, workdir, listener, foundPaths);
         }
 
         return list;
     }
 
-    private List<Path> discardEmptyDirectories(final List<Path> foundPaths, final Filter<Path> regex) {
-        final ArrayList<Path> pathsRetained = new ArrayList<>(Math.floorDiv(foundPaths.size(), 2));
-        final Pattern pattern = regex.toPattern();
-
-        for (final Path candidatePath : foundPaths) {
-            final String candidateName = candidatePath.getName();
-            if (pattern.matcher(candidateName).matches()) {
-                pathsRetained.add(candidatePath);
+    private void cleanResults(final List<Path> foundPaths, final Filter<Path> regex) {
+        final Set<Path> removal = new HashSet<>();
+        for(final Path f : foundPaths) {
+            if(!f.getName().contains(regex.toPattern().pattern())) {
+                removal.add(f);
             }
         }
-
-        return pathsRetained;
+        foundPaths.removeAll(removal);
     }
 
-    private List<Path> searchAndConvertObjects(final Path workdir, final Predicate<MantaObject> searchPredicate) {
+    private List<Path> findObjectsAsPaths(final Path workdir, final Predicate<MantaObject> searchPredicate) {
         return session.getClient().find(workdir.getAbsolute(), searchPredicate)
             .map(adapter::toPath)
             .collect(Collectors.toList());
     }
 
-    private void addFoundObjects(final AttributedList<Path> list,
-                                 final Path workdir,
-                                 final ListProgressListener listener,
-                                 final List<Path> foundObjects) throws ConnectionCanceledException {
+    private void addPaths(final AttributedList<Path> list,
+                          final Path workdir,
+                          final ListProgressListener listener,
+                          final List<Path> foundObjects) throws ConnectionCanceledException {
         if(!foundObjects.isEmpty()) {
             list.addAll(foundObjects);
             listener.chunk(workdir, list);
@@ -114,7 +109,6 @@ public class MantaSearchFeature implements Search {
 
     @Override
     public Search withCache(final Cache<Path> cache) {
-        this.cache = cache;
         return this;
     }
 }

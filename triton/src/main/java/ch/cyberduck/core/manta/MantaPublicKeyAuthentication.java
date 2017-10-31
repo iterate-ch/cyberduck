@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
 import com.joyent.manta.config.SettableConfigContext;
@@ -74,12 +73,12 @@ public class MantaPublicKeyAuthentication {
         provider.init(
             new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8),
             new PasswordFinder() {
-                private volatile boolean shouldRetry = true;
-
                 @Override
                 public char[] reqPassword(Resource<?> resource) {
-                    final String password = keychain.find(bookmark);
-                    if(StringUtils.isEmpty(password)) {
+                    final String password;
+                    final String savedPassword = keychain.find(bookmark);
+
+                    if(StringUtils.isEmpty(savedPassword)) {
                         final Credentials provided;
                         try {
                              provided = prompt.prompt(
@@ -95,35 +94,31 @@ public class MantaPublicKeyAuthentication {
                                 return null;
                             }
                         }
-                        catch(LoginCanceledException e) {
+                        catch(LoginCanceledException ignored) {
                             return null; // user cancelled
                         }
 
-                        config.setPassword(provided.getPassword());
-                        shouldRetry = false;
-                        return provided.getPassword().toCharArray();
+                        password = provided.getPassword();
                     } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Password found in keychain");
-                        }
-
+                        password = savedPassword;
                     }
+
+                    config.setPassword(password);
                     return password.toCharArray();
                 }
 
                 @Override
                 public boolean shouldRetry(Resource<?> resource) {
-                    return shouldRetry;
+                    return false;
                 }
             });
 
-        return this.computeFingerprint(provider);
+        return this.computeFingerprint(provider, identity);
     }
 
-    private String computeFingerprint(final FileKeyProvider provider) throws BackgroundException {
+    private String computeFingerprint(final FileKeyProvider provider, final Local identity) throws BackgroundException {
         try {
-            final KeyPair keyPair = new KeyPair(provider.getPublic(), provider.getPrivate());
-            return new SSHFingerprintGenerator().fingerprint(keyPair.getPublic());
+            return new SSHFingerprintGenerator().fingerprint(provider.getPublic());
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
