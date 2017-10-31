@@ -28,7 +28,7 @@ import java.io.IOException;
 
 import net.schmizz.sshj.userauth.method.AuthNone;
 
-public class SFTPNoneAuthentication implements AuthenticationProvider {
+public class SFTPNoneAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPNoneAuthentication.class);
 
     private final SFTPSession session;
@@ -38,7 +38,7 @@ public class SFTPNoneAuthentication implements AuthenticationProvider {
     }
 
     @Override
-    public boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
+    public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using none authentication with credentials %s", bookmark.getCredentials()));

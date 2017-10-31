@@ -38,7 +38,7 @@ import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
 import net.schmizz.sshj.userauth.password.Resource;
 
-public class SFTPChallengeResponseAuthentication implements AuthenticationProvider {
+public class SFTPChallengeResponseAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
 
     private final SFTPSession session;
@@ -50,7 +50,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
     }
 
     @Override
-    public boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
+    public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using challenge response authentication for %s", bookmark));
         }
