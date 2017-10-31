@@ -82,8 +82,8 @@ public class MantaSearchFeature implements Search {
         final Pattern pattern = regex.toPattern();
 
         for (final Path candidatePath : foundPaths) {
-            final String candidateRawPath = candidatePath.getAbsolute();
-            if (pattern.matcher(candidateRawPath).matches()) {
+            final String candidateName = candidatePath.getName();
+            if (pattern.matcher(candidateName).matches()) {
                 pathsRetained.add(candidatePath);
             }
         }
