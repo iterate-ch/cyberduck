@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
@@ -85,6 +86,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static MainController _application;
         private static JumpList _jumpListManager;
         private static JumpListCustomCategory bookmarkCategory;
+        private static AutoResetEvent applicationShutdown = new AutoResetEvent(true);
         private readonly BaseController _controller = new BaseController();
         private readonly PathKindDetector _detector = new DefaultPathKindDetector();
 
@@ -235,14 +237,20 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Exit(bool updateInProgress)
         {
+            // Already shutting down. Do nothing.
+            if (!applicationShutdown.WaitOne(0))
+            {
+                return;
+            }
+
             NotificationServiceFactory.get().unregister();
             if (!updateInProgress && PrepareExit())
             {
                 ApplicationShouldTerminateAfterDonationPrompt();
             }
             DefaultBackgroundExecutor.get().shutdown();
+            _application.Shutdown(updateInProgress);
             _application.ExitThreadCore();
-            System.Windows.Forms.Application.Exit();
         }
 
         public static BrowserController NewBrowser()
@@ -883,7 +891,7 @@ namespace Ch.Cyberduck.Ui.Controller
             serviceHost.Open();
         }
 
-        private void Shutdown()
+        private void Shutdown(bool updating)
         {
             // Clear temporary files
             TemporaryFileServiceFactory.get().shutdown();
@@ -904,7 +912,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Logger.fatal("Could not save preferences", unauthorizedAccessException);
             }
-            if (_updater != null)
+            if (_updater != null && !updating)
             {
                 _updater.unregister();
             }
