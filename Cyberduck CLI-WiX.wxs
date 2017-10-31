@@ -191,7 +191,7 @@
         <File Source="$(var.CLI.TargetDir)/profiles/DAVS.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="dracoon.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/DRACOON (Email Address).cyberduckprofile" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLI.TargetDir)/profiles/DRACOON (Email Address).cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="dropbox.cyberduckprofile">
         <File Source="$(var.CLI.TargetDir)/profiles/Dropbox.cyberduckprofile" KeyPath="yes" Checksum="yes" />
