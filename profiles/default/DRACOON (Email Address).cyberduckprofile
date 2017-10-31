@@ -3,9 +3,11 @@
         <key>Protocol</key>
         <string>dracoon</string>
         <key>Vendor</key>
-        <string>dracoon-active_directory</string>
+        <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
         <key>Description</key>
-        <string>DRACOON (Active Directory)</string>
+        <string>DRACOON (Email Address)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
@@ -27,7 +29,7 @@
         <key>Certificate Configurable</key>
         <false/>
         <key>Authorization</key>
-        <string>active_directory</string>
+        <string>sql</string>
         <key>Disk</key>
         <string>
 TU0AKgAAORqAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTS
