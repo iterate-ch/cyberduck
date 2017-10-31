@@ -234,7 +234,7 @@
                 <sparkle.feed>/dev/null</sparkle.feed>
                 <sparkle.key.prefix>SU</sparkle.key.prefix>
                 <installer.certificate>3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)</installer.certificate>
-                <codesign.certificate>Developer ID Application: David Kocher</codesign.certificate>
+                <codesign.certificate>Developer ID Application: David Kocher (G69SCX94XU)</codesign.certificate>
                 <codesign.arg>--entitlements ../setup/app/sandbox.entitlements</codesign.arg>
             </properties>
         </profile>
