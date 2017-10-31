@@ -26,12 +26,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.EnumSet;
 import java.util.Iterator;
 
 import com.joyent.manta.client.MantaObject;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
+import com.joyent.manta.exception.MantaObjectException;
 
 public class MantaListService implements ListService {
 
@@ -50,12 +50,12 @@ public class MantaListService implements ListService {
         try {
             objectsIter = session.getClient().listObjects(directory.getAbsolute()).iterator();
         }
-        catch(UncheckedIOException uioe) {
+        catch(MantaObjectException e) {
             if(directory.isRoot()) {
                 // Most users should not be able to list all buckets, treat this as a regular exception
                 throw new AccessDeniedException("Cannot list buckets.");
             }
-            throw uioe;
+            throw new MantaExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(MantaClientHttpResponseException e) {
             throw new MantaHttpExceptionMappingService().map("Listing directory {0} failed", e, directory);
