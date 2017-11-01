@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+6.2.12
+- [Feature] Support for China (Beijing) region (S3)
+- [Bugfix] Allow custom endpoint with default connection profile (S3)
+- [Bugfix] Unnecessary password prompt for connection (Local Disk)
+
 6.2.11
 - [Bugfix] Application crash restoring workspace (Windows)
 
@@ -402,7 +407,6 @@ https://cyberduck.io/
 - [Bugfix] Support retrieving files from buckets from Requester Pays Buckets (S3) (#8893)
 
 4.6.5 [https://trac.cyberduck.io/milestone/4.6.5]
-- [Feature] Support for China (Beijing) region (S3)
 - [Feature] Drag bookmarks from history and Bonjour tab to default bookmarks (Mac) (#2182)
 - [Bugfix] Some interface items not localized (Mac) (#8538)
 - [Bugfix] Uploading file removes shared access policy (Azure) (#8544)
