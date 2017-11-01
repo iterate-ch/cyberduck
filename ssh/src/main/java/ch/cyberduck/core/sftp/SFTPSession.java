@@ -220,7 +220,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final List<AuthenticationProvider> methods = new ArrayList<AuthenticationProvider>();
+        final List<AuthenticationProvider<Boolean>> methods = new ArrayList<AuthenticationProvider<Boolean>>();
         final Credentials credentials = host.getCredentials();
         if(credentials.isAnonymousLogin()) {
             methods.add(new SFTPNoneAuthentication(this));
@@ -238,7 +238,7 @@ public class SFTPSession extends Session<SSHClient> {
             log.debug(String.format("Attempt login with %d authentication methods", methods.size()));
         }
         BackgroundException lastFailure = null;
-        for(AuthenticationProvider auth : methods) {
+        for(AuthenticationProvider<Boolean> auth : methods) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication with credentials %s and authentication method %s", credentials, auth));
             }
