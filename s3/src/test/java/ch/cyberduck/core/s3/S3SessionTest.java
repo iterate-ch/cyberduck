@@ -306,11 +306,19 @@ public class S3SessionTest {
     }
 
     @Test
-    @Ignore
-    public void testAuthenticationV4Thirdparty() throws Exception {
+    public void testInteroperabilityMinio() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         ));
+        final S3Session session = new S3Session(host);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testConnectCn_North_1() throws Exception {
+        final Host host = new Host(new S3Protocol(), "s3.cn-north-1.amazonaws.com.cn");
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
