@@ -53,38 +53,6 @@ public class MantaSessionTest {
         assertTrue(session.getFeature(AttributesFinder.class) instanceof MantaAttributesFinderFeature);
     }
 
-    private void assertUsernameFailsLogin(final String username) {
-        try {
-            final MantaSession session = new MantaSession(
-                new Host(
-                    new MantaProtocol(),
-                    null,
-                    443,
-                    new Credentials(username)), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(new DisabledHostKeyCallback());
-            session.login(
-                new DisabledPasswordStore(),
-                new DisabledLoginCallback(),
-                new DisabledCancelCallback()
-            );
-        }
-        catch(LoginFailureException e) {
-            assertTrue(e.getMessage().contains("Login failed"));
-        }
-        catch(BackgroundException e) {
-            fail("Unexpected exception thrown: " + e.getMessage());
-        }
-    }
-
-    @Test
-    @Ignore
-    public void testSessionRejectsBadUsernames() {
-        assertUsernameFailsLogin("!");
-        assertUsernameFailsLogin("/subuser");
-        assertUsernameFailsLogin("login/");
-    }
-
-
     @Test
     public void testUserOwnerIdentification() throws BackgroundException {
         final MantaSession ownerSession = new MantaSession(
