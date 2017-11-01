@@ -31,11 +31,12 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.FileReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -45,8 +46,9 @@ import static org.junit.Assert.assertEquals;
 public class MantaPublicKeyAuthenticationTest {
 
     @Test
-    @Ignore
     public void testAuthenticateOpenSSHKeyWithoutPassphrase() throws Exception {
+        Assume.assumeNotNull(System.getProperty("manta.url"), System.getProperty("manta.key_id"), System.getProperty("manta.key_path"));
+
         final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         credentials.setIdentity(key);
@@ -58,7 +60,8 @@ public class MantaPublicKeyAuthenticationTest {
                 key.getOutputStream(false),
                 StandardCharsets.UTF_8
             );
-            final Host host = new Host(new MantaProtocol(), "us-east.manta.joyent.com", credentials);
+            final String hostname = new URL(System.getProperty("manta.url")).getHost();
+            final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(new DisabledHostKeyCallback());
             session.login(new DisabledPasswordStore(),
@@ -80,8 +83,9 @@ public class MantaPublicKeyAuthenticationTest {
     }
 
     @Test
-    @Ignore
     public void testAuthenticateOpenSSHKeyWithPassphrase() throws Exception {
+        Assume.assumeNotNull(System.getProperty("manta.url"), System.getProperty("manta.passphrase.key_id"), System.getProperty("manta.passphrase.key_path"), System.getProperty("manta.passphrase.password"));
+
         final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         credentials.setIdentity(key);
@@ -99,7 +103,8 @@ public class MantaPublicKeyAuthenticationTest {
                 key.getOutputStream(false),
                 StandardCharsets.UTF_8
             );
-            final Host host = new Host(new MantaProtocol(), "us-east.manta.joyent.com", credentials);
+            final String hostname = new URL(System.getProperty("manta.url")).getHost();
+            final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(new DisabledHostKeyCallback());
             session.login(new DisabledPasswordStore(),

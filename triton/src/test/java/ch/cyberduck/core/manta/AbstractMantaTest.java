@@ -34,11 +34,14 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -57,20 +60,32 @@ public abstract class AbstractMantaTest {
     @Before
     public void setup() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-            new Local("../profiles/Triton Manta.cyberduckprofile"));
+            new Local("../profiles/Joyent Triton Object Storage.cyberduckprofile"));
 
-        final String key = "-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEAvlJTtsPpgDlSvoYwmWh9h6RMJBiVPQXUwqPgmdQIGjnYCQGD\nxJ7q778mikHA4igWXYOY6jOZ34jxfi+45Hcrloh538/Qa12t+XNHBnuAO6BpcBnh\niIRamr8bJISQZX9KfQmsbZ+8360/N02eOIYX03cMxd4soqQ7q56Jzdt9hyQDVZRT\npUN8CSc3YCkvNINnDBU/jGbDMLX4UB8hGL95sBLqJGkm0i+zihXpXma0/PVaAKnn\npPkNfPwEBDrhsFTd4obOfs5XtcrTOL9lO2GexsjrI4Vhu2CX63SAZ/DFdtvyeydW\nXRtIFVne+4A6xh9/13Z4iE5Onsl0liMQk1Q9KwIDAQABAoIBAEfC9Qu5zSZq9tcd\n8980NfjaK1eE6Wir9TA66Go4N6Hj46BpsMyHe2BQu/BvoJHluaEjCJpuQHu3wA7r\nYZTLlmTZKtMIIbcKCJpBLCu2j4BsGLWLHK4D8cHdgxd+4I9Usrp41koza90PDwIE\nQz9e2EcE4Y0OG9hrgpBQY/d55lf4xaVmQQiHEcEDVkIyMXq4W14rPTulrbd+F0pw\nMRIheWAa9rg9nm/qG9Am1S4ESIsUN39yQfkc+ArKRQwWP4VLF8lwcaQDt2Oa+836\n0aTUjIlZBmuKUU4u/wmJ04M9ZSw5S/Met5x+kVuEUxROt/8eXF4Wr81gwXQ7aoEz\nlVxtLikCgYEA+HKTPL4hNNjVMf6fDSFiu31EVgcitBC40ONV08WZInpzcNc+sl0+\nty0Ch8Wn3fsZ2MRtp2qGROA8Z7pdY7aL4dLWKMLaGmJMZu8qtPaIu6GUl279zW3N\n4lXOlLoXa7oyUB8yYS10zVDN3XHCvRa8n0GvZFTBKGGrDrcuZdUONPUCgYEAxBtq\nB4Kx6cjItcAZSaERgKcVKyFOMpBc+UGiCIW1yXi63enNSFbkdAwTkHSVyeik7xqh\nfhJ9y2F/bvikQixwHiZVhap+gc+pe/j0aAC9e19o+kjFJiHUwCAQ96zNu6QAZTjR\n7IChdOSVIxuDs3mDBMG2e9RRlR6PDXxEi5S8VZ8CgYAHGL677XJlYAw28V75sQpw\n8JMTIgELw66DyPqaofpN0dGaV4ui7Kbt9Ist9adl39ZNKs83CQPs07rl+5zPTFeS\ni8MyRt6UAlrMVeiSYrhlI6hq6vC0/X30CR9tgCNLIHZvc3Ss8e90LeqzeJxnak7Y\n/bdU1lbuIFwSf4kDv6I4QQKBgF6OmWFls0N2fNCl/4txDm9qINrbBEl9Mlc9PlO9\npRmwDOpTgZgPzbfm2sgcbt0cP+rKfHO9lsoqCLgJS6pcovLmqPX6b2VILACK2c4M\nDVEfgA6uZ+ErDtpUm9nQiKKhQU+NRiszGqayUPbMnYQ8YuA4RzUN+whb474s3SAw\nZ18hAoGAXsOEFOFjaaGtbXGOZyyqdYoD5G22Qfi89tbEled5OeSsuFayix6vMt4T\nItr+gF82ED4fX42FIrg6igJ34z2pzsP4hIqH3yNRfc9rwv7GWBKYWzUDrBxEg5cx\nbt2CJUfZImSP9K1uahfc8MP7FFMdnnWPlkOpNc76G8FIpchIsNU=\n-----END RSA PRIVATE KEY----- ";
-        final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
-        LocalTouchFactory.get().touch(file);
-        IOUtils.write(key, file.getOutputStream(false), Charset.defaultCharset());
+        final boolean liveIntegrationTests = BooleanUtils.toBoolean(System.getProperty("manta.it.live"));
+
+        final String hostname;
+        final Local file;
+        if(ObjectUtils.allNotNull(System.getProperty("manta.key_path"), System.getProperty("manta.url"))) {
+            file = new Local(System.getProperty("manta.key_path"));
+            hostname = new URL(System.getProperty("manta.url")).getHost();
+        }
+        else {
+            final String key = "-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEAvlJTtsPpgDlSvoYwmWh9h6RMJBiVPQXUwqPgmdQIGjnYCQGD\nxJ7q778mikHA4igWXYOY6jOZ34jxfi+45Hcrloh538/Qa12t+XNHBnuAO6BpcBnh\niIRamr8bJISQZX9KfQmsbZ+8360/N02eOIYX03cMxd4soqQ7q56Jzdt9hyQDVZRT\npUN8CSc3YCkvNINnDBU/jGbDMLX4UB8hGL95sBLqJGkm0i+zihXpXma0/PVaAKnn\npPkNfPwEBDrhsFTd4obOfs5XtcrTOL9lO2GexsjrI4Vhu2CX63SAZ/DFdtvyeydW\nXRtIFVne+4A6xh9/13Z4iE5Onsl0liMQk1Q9KwIDAQABAoIBAEfC9Qu5zSZq9tcd\n8980NfjaK1eE6Wir9TA66Go4N6Hj46BpsMyHe2BQu/BvoJHluaEjCJpuQHu3wA7r\nYZTLlmTZKtMIIbcKCJpBLCu2j4BsGLWLHK4D8cHdgxd+4I9Usrp41koza90PDwIE\nQz9e2EcE4Y0OG9hrgpBQY/d55lf4xaVmQQiHEcEDVkIyMXq4W14rPTulrbd+F0pw\nMRIheWAa9rg9nm/qG9Am1S4ESIsUN39yQfkc+ArKRQwWP4VLF8lwcaQDt2Oa+836\n0aTUjIlZBmuKUU4u/wmJ04M9ZSw5S/Met5x+kVuEUxROt/8eXF4Wr81gwXQ7aoEz\nlVxtLikCgYEA+HKTPL4hNNjVMf6fDSFiu31EVgcitBC40ONV08WZInpzcNc+sl0+\nty0Ch8Wn3fsZ2MRtp2qGROA8Z7pdY7aL4dLWKMLaGmJMZu8qtPaIu6GUl279zW3N\n4lXOlLoXa7oyUB8yYS10zVDN3XHCvRa8n0GvZFTBKGGrDrcuZdUONPUCgYEAxBtq\nB4Kx6cjItcAZSaERgKcVKyFOMpBc+UGiCIW1yXi63enNSFbkdAwTkHSVyeik7xqh\nfhJ9y2F/bvikQixwHiZVhap+gc+pe/j0aAC9e19o+kjFJiHUwCAQ96zNu6QAZTjR\n7IChdOSVIxuDs3mDBMG2e9RRlR6PDXxEi5S8VZ8CgYAHGL677XJlYAw28V75sQpw\n8JMTIgELw66DyPqaofpN0dGaV4ui7Kbt9Ist9adl39ZNKs83CQPs07rl+5zPTFeS\ni8MyRt6UAlrMVeiSYrhlI6hq6vC0/X30CR9tgCNLIHZvc3Ss8e90LeqzeJxnak7Y\n/bdU1lbuIFwSf4kDv6I4QQKBgF6OmWFls0N2fNCl/4txDm9qINrbBEl9Mlc9PlO9\npRmwDOpTgZgPzbfm2sgcbt0cP+rKfHO9lsoqCLgJS6pcovLmqPX6b2VILACK2c4M\nDVEfgA6uZ+ErDtpUm9nQiKKhQU+NRiszGqayUPbMnYQ8YuA4RzUN+whb474s3SAw\nZ18hAoGAXsOEFOFjaaGtbXGOZyyqdYoD5G22Qfi89tbEled5OeSsuFayix6vMt4T\nItr+gF82ED4fX42FIrg6igJ34z2pzsP4hIqH3yNRfc9rwv7GWBKYWzUDrBxEg5cx\nbt2CJUfZImSP9K1uahfc8MP7FFMdnnWPlkOpNc76G8FIpchIsNU=\n-----END RSA PRIVATE KEY----- ";
+            file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
+            LocalTouchFactory.get().touch(file);
+            IOUtils.write(key, file.getOutputStream(false), Charset.defaultCharset());
+
+            hostname = profile.getDefaultHostname();
+        }
+
         final String user = System.getProperty("manta.user");
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-            user).withIdentity(file)
-        );
+        final Host host = new Host(profile, hostname, new Credentials(user).withIdentity(file));
         session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        testPathPrefix = new Path(new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountPrivateRoot(), new AlphanumericRandomStringService().random(), EnumSet.of(Type.directory));
+        final String testRoot = "cyberduck-test-" + new AlphanumericRandomStringService().random();
+        testPathPrefix = new Path(new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountPrivateRoot(), testRoot, EnumSet.of(Type.directory));
         session.getClient().putDirectory(testPathPrefix.getAbsolute());
     }
 
