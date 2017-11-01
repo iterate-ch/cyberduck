@@ -36,7 +36,8 @@ public class LocalTest {
     @Test
     public void testGetParent() throws Exception {
         assertNotNull(new TestLocal(System.getProperty("java.io.tmpdir")).getParent());
-        assertNull(new TestLocal("/").getParent());
+        final TestLocal root = new TestLocal("/");
+        assertSame(root, root.getParent());
     }
 
     @Test

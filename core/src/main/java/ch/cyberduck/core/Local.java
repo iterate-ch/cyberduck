@@ -285,7 +285,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public Local getParent() {
         if(this.isVolume()) {
-            return null;
+            return this;
         }
         return LocalFactory.get(Paths.get(path).getParent().toString());
     }
