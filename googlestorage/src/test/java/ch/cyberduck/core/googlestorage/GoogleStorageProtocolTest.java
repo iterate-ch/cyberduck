@@ -15,11 +15,17 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
@@ -44,5 +50,16 @@ public class GoogleStorageProtocolTest {
     @Test
     public void testSchemes() {
         assertTrue(Arrays.asList(new GoogleStorageProtocol().getSchemes()).contains(Scheme.https));
+    }
+
+    @Test
+    public void testDefaultProfile() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new GoogleStorageProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            new Local("../profiles/default/Google Cloud Storage.cyberduckprofile"));
+        assertFalse(profile.isHostnameConfigurable());
+        assertFalse(profile.isPortConfigurable());
+        assertTrue(profile.isUsernameConfigurable());
+        assertFalse(profile.isPasswordConfigurable());
     }
 }
