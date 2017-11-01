@@ -16,6 +16,8 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
@@ -28,7 +30,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
@@ -43,7 +45,11 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWhitespaceMkdir() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
-        final Path target = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
+        final String name = String.format("%s %s", randomStringService.random(), randomStringService.random());
+        final Path target = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), name, EnumSet.of(Path.Type.directory)), null, null);
+        assertEquals(name, target.getName());
+        final AttributedList<Path> list = new OneDriveListService(session).list(new OneDriveHomeFinderFeature(session).find(), new DisabledListProgressListener());
+        assertTrue(list.contains(target));
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(target).getETag());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
