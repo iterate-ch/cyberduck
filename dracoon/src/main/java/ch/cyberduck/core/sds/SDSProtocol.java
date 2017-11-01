@@ -71,7 +71,20 @@ public class SDSProtocol extends AbstractProtocol {
 
     @Override
     public boolean isUsernameConfigurable() {
-        return StringUtils.isBlank(this.getOAuthClientId());
+        switch(Authorization.valueOf(this.getAuthorization())) {
+            case oauth:
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isPasswordConfigurable() {
+        switch(Authorization.valueOf(this.getAuthorization())) {
+            case oauth:
+                return false;
+        }
+        return true;
     }
 
     public enum Authorization {

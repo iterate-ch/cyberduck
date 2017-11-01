@@ -1,4 +1,4 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.nio;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -6,7 +6,7 @@ package ch.cyberduck.core.onedrive;
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,23 +25,16 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
-public class OneDriveProtocolTest {
-
-    @Test
-    public void testPrefix() {
-        assertEquals("ch.cyberduck.core.onedrive.OneDrive", new OneDriveProtocol().getPrefix());
-    }
+public class LocalProtocolTest {
 
     @Test
     public void testDefaultProfile() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile"));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new LocalProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/default/File.cyberduckprofile"));
         assertFalse(profile.isHostnameConfigurable());
-        assertFalse(profile.isPortConfigurable());
-        assertTrue(profile.isUsernameConfigurable());
+        assertFalse(profile.isUsernameConfigurable());
         assertFalse(profile.isPasswordConfigurable());
     }
 }

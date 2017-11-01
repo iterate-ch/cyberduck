@@ -333,7 +333,7 @@ public class Profile implements Protocol, Serializable {
     @Override
     public boolean isPasswordConfigurable() {
         if(StringUtils.isBlank(this.value("Password Configurable"))) {
-            return StringUtils.isBlank(this.getOAuthClientId());
+            return parent.isPasswordConfigurable();
         }
         return this.bool("Password Configurable");
     }
@@ -349,7 +349,7 @@ public class Profile implements Protocol, Serializable {
     @Override
     public boolean isHostnameConfigurable() {
         if(StringUtils.isBlank(this.value("Hostname Configurable"))) {
-            return StringUtils.isBlank(this.getDefaultHostname());
+            return parent.isHostnameConfigurable();
         }
         return this.bool("Hostname Configurable");
     }
@@ -357,7 +357,7 @@ public class Profile implements Protocol, Serializable {
     @Override
     public boolean isPortConfigurable() {
         if(StringUtils.isBlank(this.value("Port Configurable"))) {
-            return StringUtils.isBlank(this.getDefaultHostname());
+            return parent.isPortConfigurable();
         }
         return this.bool("Port Configurable");
     }

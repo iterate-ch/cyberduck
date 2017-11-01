@@ -15,10 +15,17 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import java.util.Collections;
+import java.util.HashSet;
+
+import static org.junit.Assert.*;
 
 public class DriveProtocolTest {
 
@@ -30,5 +37,16 @@ public class DriveProtocolTest {
     @Test
     public void testPassword() {
         assertFalse(new DriveProtocol().isPasswordConfigurable());
+    }
+
+    @Test
+    public void testDefaultProfile() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DriveProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            new Local("../profiles/default/Google Drive.cyberduckprofile"));
+        assertFalse(profile.isHostnameConfigurable());
+        assertFalse(profile.isPortConfigurable());
+        assertTrue(profile.isUsernameConfigurable());
+        assertFalse(profile.isPasswordConfigurable());
     }
 }

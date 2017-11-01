@@ -26,35 +26,31 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SDSSessionTest {
 
-    @BeforeClass
-    public static void protocol() {
-        ProtocolFactory.get().register(new SDSProtocol());
-    }
-
     @Test
     public void testLoginUserPassword() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledHostKeyCallback()));
@@ -94,7 +90,8 @@ public class SDSSessionTest {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginRadius() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/DRACOON (Radius).cyberduckprofile"));
         final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
             "rsa.user1", "1234"
@@ -118,7 +115,8 @@ public class SDSSessionTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testLoginOAuthExpiredRefreshToken() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
         final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")

@@ -16,8 +16,6 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -41,21 +39,6 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         new OneDriveAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
-    }
-
-    @Test
-    public void testFindDrive() throws Exception {
-        final AttributedList<Path> drives = new OneDriveContainerListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
-        assertFalse(drives.isEmpty());
-        for(Path drive : drives) {
-            final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(drive);
-            assertNotNull(attributes);
-            assertNotEquals(-1L, attributes.getSize());
-            assertNotEquals(-1L, attributes.getCreationDate());
-            assertNotEquals(-1L, attributes.getModificationDate());
-            assertNull(attributes.getVersionId());
-            assertNotNull(attributes.getLink());
-        }
     }
 
     @Test
