@@ -28,29 +28,27 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class IRODSSessionTest {
 
-    @BeforeClass
-    public static void protocol() {
-        ProtocolFactory.get().register(new IRODSProtocol());
-    }
-
     @Test
     public void testConnect() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
@@ -68,7 +66,8 @@ public class IRODSSessionTest {
 
     @Test
     public void testLoginDefault() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
@@ -92,7 +91,8 @@ public class IRODSSessionTest {
 
     @Test
     public void testLoginWhitespaceHomeDirectory() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
@@ -114,7 +114,8 @@ public class IRODSSessionTest {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("a", "a"));
 
@@ -128,7 +129,8 @@ public class IRODSSessionTest {
     @Test
     @Ignore
     public void testLoginPamAuthentication() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/iRODS (TACC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 String.format("PAM:%s", System.getProperties().getProperty("tacc.key")), System.getProperties().getProperty("tacc.secret")
