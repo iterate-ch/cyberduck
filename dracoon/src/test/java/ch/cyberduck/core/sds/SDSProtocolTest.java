@@ -27,8 +27,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class SDSProtocolTest {
 
@@ -37,6 +36,10 @@ public class SDSProtocolTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/default/DRACOON (Email Address).cyberduckprofile"));
+        assertTrue(profile.isHostnameConfigurable());
+        assertTrue(profile.isPortConfigurable());
+        assertTrue(profile.isUsernameConfigurable());
+        assertTrue(profile.isPasswordConfigurable());
         factory.register(profile);
         final Host host = new HostParser(factory).get("dracoon://duck");
         assertNotNull(host);
@@ -48,6 +51,10 @@ public class SDSProtocolTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
+        assertTrue(profile.isHostnameConfigurable());
+        assertTrue(profile.isPortConfigurable());
+        assertFalse(profile.isUsernameConfigurable());
+        assertFalse(profile.isPasswordConfigurable());
         factory.register(profile);
         final Host host = new HostParser(factory).get("dracoon-oauth://duck");
         assertNotNull(host);
