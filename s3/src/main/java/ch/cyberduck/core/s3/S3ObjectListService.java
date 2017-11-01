@@ -45,11 +45,10 @@ public class S3ObjectListService implements ListService {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final S3Session session;
-
     private final PathContainerService containerService
             = new S3PathContainerService();
 
+    private final S3Session session;
     private final S3AttributesFinderFeature attributes;
 
     public S3ObjectListService(final S3Session session) {
