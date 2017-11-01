@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -48,13 +49,10 @@ public class MantaSearchFeature implements Search {
                                        final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
 
-        final Predicate<MantaObject> regexPredicate = o -> regex.accept(adapter.toPath(o));
-        final Predicate<MantaObject> fastSearchPredicate = o -> session.isWorldReadable(o) || session.isUserWritable(o);
-        ;
-
         // avoid searching the "special" folders if users search from the account root
         if(workdir.getParent().isRoot()) {
-            final List<Path> homeFolderPaths = findObjectsAsPaths(workdir, fastSearchPredicate.and(regexPredicate));
+            final Predicate<MantaObject> fastSearchPredicate = o -> session.isWorldReadable(o) || session.isUserWritable(o);
+            final List<Path> homeFolderPaths = findObjectsAsPaths(workdir, fastSearchPredicate);
             cleanResults(homeFolderPaths, regex);
             addPaths(list, workdir, listener, homeFolderPaths);
 
@@ -68,7 +66,7 @@ public class MantaSearchFeature implements Search {
             */
         }
         else {
-            final List<Path> foundPaths = findObjectsAsPaths(workdir, regexPredicate);
+            final List<Path> foundPaths = findObjectsAsPaths(workdir, null);
             cleanResults(foundPaths, regex);
             addPaths(list, workdir, listener, foundPaths);
         }
@@ -78,11 +76,18 @@ public class MantaSearchFeature implements Search {
 
     private void cleanResults(final List<Path> foundPaths, final Filter<Path> regex) {
         final Set<Path> removal = new HashSet<>();
+
+        // NullFilter removes everything unless handled separately
+        if(regex.toPattern().pattern().equals(".*") || regex instanceof NullFilter<?>) {
+            return;
+        }
+
         for(final Path f : foundPaths) {
             if(!f.getName().contains(regex.toPattern().pattern())) {
                 removal.add(f);
             }
         }
+
         foundPaths.removeAll(removal);
     }
 
