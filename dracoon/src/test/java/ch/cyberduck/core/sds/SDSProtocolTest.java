@@ -21,10 +21,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,25 +30,27 @@ import java.util.HashSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@Category(IntegrationTest.class)
 public class SDSProtocolTest {
 
     @Test
     public void testParse() throws Exception {
-        final SDSProtocol protocol = new SDSProtocol();
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(protocol)));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local(this.getClass().getResource("/test.cyberduckprofile").getPath()));
+            new Local("../profiles/default/DRACOON (Email Address).cyberduckprofile"));
         factory.register(profile);
-        {
-            final Host host = new HostParser(factory).get("dracoon://duck");
-            assertNotNull(host);
-            assertEquals(profile, host.getProtocol());
-        }
-        {
-            final Host host = new HostParser(factory).get("ssp-oauth://duck");
-            assertNotNull(host);
-            assertEquals(profile, host.getProtocol());
-        }
+        final Host host = new HostParser(factory).get("dracoon://duck");
+        assertNotNull(host);
+        assertEquals(profile, host.getProtocol());
+    }
+
+    @Test
+    public void testParseOAuth() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
+        factory.register(profile);
+        final Host host = new HostParser(factory).get("dracoon-oauth://duck");
+        assertNotNull(host);
+        assertEquals(profile, host.getProtocol());
     }
 }
