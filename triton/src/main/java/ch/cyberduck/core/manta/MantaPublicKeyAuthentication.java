@@ -15,6 +15,7 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
@@ -49,7 +50,8 @@ import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
-public class MantaPublicKeyAuthentication {
+public class MantaPublicKeyAuthentication implements AuthenticationProvider<String> {
+
     private static final Logger log = Logger.getLogger(MantaPublicKeyAuthentication.class);
 
     private final MantaSession session;
@@ -96,6 +98,10 @@ public class MantaPublicKeyAuthentication {
                         }
                         catch(LoginCanceledException ignored) {
                             return null; // user cancelled
+                        }
+
+                        if(StringUtils.isEmpty(provided.getPassword())) {
+                            return null; // user left field blank
                         }
 
                         password = provided.getPassword();

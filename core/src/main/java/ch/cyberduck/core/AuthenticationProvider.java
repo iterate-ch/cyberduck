@@ -18,11 +18,11 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.CancelCallback;
 
-public interface AuthenticationProvider {
+public interface AuthenticationProvider<R> {
 
     /**
      * @return True if authentication is complete
      */
-    boolean authenticate(Host bookmark, HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel)
+    R authenticate(Host bookmark, HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel)
         throws BackgroundException;
 }
