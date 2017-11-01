@@ -15,9 +15,17 @@ package ch.cyberduck.core.hubic;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Collections;
+import java.util.HashSet;
+
+import static org.junit.Assert.*;
 
 public class HubicProtocolTest {
 
@@ -26,4 +34,14 @@ public class HubicProtocolTest {
         assertEquals("ch.cyberduck.core.hubic.Hubic", new HubicProtocol().getPrefix());
     }
 
+    @Test
+    public void testDefaultProfile() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new HubicProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            new Local("../profiles/hubiC.cyberduckprofile"));
+        assertFalse(profile.isHostnameConfigurable());
+        assertFalse(profile.isPortConfigurable());
+        assertTrue(profile.isUsernameConfigurable());
+        assertFalse(profile.isPasswordConfigurable());
+    }
 }
