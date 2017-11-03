@@ -18,7 +18,7 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>triton</string>
+        <string>manta</string>
         <key>Vendor</key>
         <string>iterate GmbH</string>
         <key>Description</key>

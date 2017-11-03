@@ -22,7 +22,7 @@ public class MantaProtocol extends AbstractProtocol {
 
     @Override
     public String getIdentifier() {
-        return "triton";
+        return "manta";
     }
 
     @Override
