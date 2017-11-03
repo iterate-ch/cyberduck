@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -32,8 +33,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -47,14 +48,16 @@ public class S3CopyFeatureTest {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         test.attributes().setSize(0L);
-        new S3TouchFeature(session).touch(test, new TransferStatus());
-        final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(test, new TransferStatus().withMime("application/cyberduck"));
+        final Path copy = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(copy));
+        assertEquals("application/cyberduck",
+            new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(copy).get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -67,9 +70,9 @@ public class S3CopyFeatureTest {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
-        final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path copy = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
