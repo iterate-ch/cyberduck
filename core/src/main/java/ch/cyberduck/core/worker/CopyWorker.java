@@ -89,11 +89,11 @@ public class CopyWorker extends Worker<List<Path>> {
                         targets.add(directory.mkdir(r.getValue(), null, new TransferStatus()));
                     }
                     else {
-                        targets.add(copy.copy(r.getKey(), r.getValue(), new TransferStatus()
+                        final TransferStatus status = new TransferStatus()
                             .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
                             .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
-                            .length(r.getKey().attributes().getSize()), callback)
-                        );
+                            .length(r.getKey().attributes().getSize());
+                        targets.add(copy.copy(r.getKey(), r.getValue(), status, callback));
                     }
                 }
             }

@@ -67,10 +67,11 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             }
             final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), entry.getKey(), entry.getValue());
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                result.put(r.getKey(), move.move(r.getKey(), r.getValue(), new TransferStatus()
-                        .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                        .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
-                        .length(r.getKey().attributes().getSize()),
+                final TransferStatus status = new TransferStatus()
+                    .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                    .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
+                    .length(r.getKey().attributes().getSize());
+                result.put(r.getKey(), move.move(r.getKey(), r.getValue(), status,
                     new Delete.Callback() {
                         @Override
                         public void delete(final Path file) {
