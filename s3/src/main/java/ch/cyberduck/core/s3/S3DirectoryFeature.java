@@ -24,8 +24,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
@@ -62,18 +60,6 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             return folder;
         }
         else {
-            if(Encryption.Algorithm.NONE == status.getEncryption()) {
-                final Encryption encryption = session.getFeature(Encryption.class);
-                if(encryption != null) {
-                    status.setEncryption(encryption.getDefault(folder));
-                }
-            }
-            if(null == status.getStorageClass()) {
-                final Redundancy redundancy = session.getFeature(Redundancy.class);
-                if(redundancy != null) {
-                    status.setStorageClass(redundancy.getDefault());
-                }
-            }
             if(Checksum.NONE == status.getChecksum()) {
                 status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
             }

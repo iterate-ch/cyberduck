@@ -23,6 +23,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
@@ -30,8 +32,7 @@ import java.text.MessageFormat;
 public class CreateDirectoryWorker extends Worker<Path> {
 
     private final Path folder;
-
-    private String region;
+    private final String region;
 
     public CreateDirectoryWorker(final Path folder, final String region) {
         this.folder = folder;
@@ -44,7 +45,16 @@ public class CreateDirectoryWorker extends Worker<Path> {
         if(!feature.isSupported(folder.getParent())) {
             throw new UnsupportedException();
         }
-        return feature.mkdir(folder, region, new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        final Encryption encryption = session.getFeature(Encryption.class);
+        if(encryption != null) {
+            status.setEncryption(encryption.getDefault(folder));
+        }
+        final Redundancy redundancy = session.getFeature(Redundancy.class);
+        if(redundancy != null) {
+            status.setStorageClass(redundancy.getDefault());
+        }
+        return feature.mkdir(folder, region, status);
     }
 
     @Override
