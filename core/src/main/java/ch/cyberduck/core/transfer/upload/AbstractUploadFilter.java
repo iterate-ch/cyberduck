@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
-import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -73,9 +72,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     protected Find find;
 
     protected AttributesFinder attribute;
-
-    private final MimeTypeService mapping
-        = new MappingMimeTypeService();
 
     private final Preferences preferences
         = PreferencesFactory.get();
@@ -172,7 +168,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     status.withDisplayname(file);
                 }
             }
-            status.setMime(mapping.getMime(file.getName()));
+            status.withMime(new MappingMimeTypeService().getMime(file.getName()));
         }
         if(local.isDirectory()) {
             status.setLength(0L);
