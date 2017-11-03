@@ -19,13 +19,9 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.MappingMimeTypeService;
-import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
@@ -39,33 +35,14 @@ import org.jets3t.service.model.StorageObject;
 
 public class S3TouchFeature implements Touch<StorageObject> {
 
-    private final S3Session session;
-
-    private final MimeTypeService mapping
-            = new MappingMimeTypeService();
-
     private Write<StorageObject> writer;
 
     public S3TouchFeature(final S3Session session) {
-        this.session = session;
         this.writer = new S3WriteFeature(session, new S3DisabledMultipartService());
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setMime(mapping.getMime(file.getName()));
-        if(Encryption.Algorithm.NONE == status.getEncryption()) {
-            final Encryption encryption = session.getFeature(Encryption.class);
-            if(encryption != null) {
-                status.setEncryption(encryption.getDefault(file));
-            }
-        }
-        if(null == status.getStorageClass()) {
-            final Redundancy redundancy = session.getFeature(Redundancy.class);
-            if(redundancy != null) {
-                status.setStorageClass(redundancy.getDefault());
-            }
-        }
         if(Checksum.NONE == status.getChecksum()) {
             status.setChecksum(writer.checksum(file).compute(new NullInputStream(0L), status));
         }
