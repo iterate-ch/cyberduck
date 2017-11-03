@@ -90,7 +90,7 @@ public class S3DefaultMultipartServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final S3Object object = new S3WriteFeature(session).getDetails(file.getName(), new TransferStatus());
+        final S3Object object = new S3WriteFeature(session).getDetails(file, new TransferStatus());
         final MultipartUpload first = session.getClient().multipartStartUpload(container.getName(), object);
         assertNotNull(first);
         // Make sure timestamp is later.

@@ -48,13 +48,13 @@ public class S3VersioningFeature implements Versioning {
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3AccessControlListFeature accessControlListFeature;
 
     @SuppressWarnings("unchecked")
     private Map<Path, VersioningConfiguration> cache
-            = Collections.synchronizedMap(new LRUMap<Path, VersioningConfiguration>(10));
+        = Collections.synchronizedMap(new LRUMap<Path, VersioningConfiguration>(10));
 
     public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
@@ -83,20 +83,20 @@ public class S3VersioningFeature implements Versioning {
                         // Enable versioning if not already active.
                         log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
                         session.getClient().enableBucketVersioningWithMFA(container.getName(),
-                                factor.getUsername(), factor.getPassword());
+                            factor.getUsername(), factor.getPassword());
                     }
                 }
                 else {
                     log.debug(String.format("Suspend bucket versioning with MFA %s for %s", factor.getUsername(), container));
                     session.getClient().suspendBucketVersioningWithMFA(container.getName(),
-                            factor.getUsername(), factor.getPassword());
+                        factor.getUsername(), factor.getPassword());
                 }
                 if(configuration.isEnabled() && !configuration.isMultifactor()) {
                     log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), container));
                     // User has choosen to disable MFA
                     final Credentials factor2 = this.getToken(prompt);
                     session.getClient().disableMFAForVersionedBucket(container.getName(),
-                            factor2.getUsername(), factor2.getPassword());
+                        factor2.getUsername(), factor2.getPassword());
                 }
             }
             else {
@@ -105,7 +105,7 @@ public class S3VersioningFeature implements Versioning {
                         final Credentials factor = this.getToken(prompt);
                         log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
                         session.getClient().enableBucketVersioningWithMFA(container.getName(),
-                                factor.getUsername(), factor.getPassword());
+                            factor.getUsername(), factor.getPassword());
                     }
                     else {
                         if(current.isEnabled()) {
@@ -140,9 +140,9 @@ public class S3VersioningFeature implements Versioning {
         }
         try {
             final S3BucketVersioningStatus status
-                    = session.getClient().getBucketVersioningStatus(container.getName());
+                = session.getClient().getBucketVersioningStatus(container.getName());
             final VersioningConfiguration configuration = new VersioningConfiguration(status.isVersioningEnabled(),
-                    status.isMultiFactorAuthDeleteRequired());
+                status.isMultiFactorAuthDeleteRequired());
             cache.put(container, configuration);
             return configuration;
         }
@@ -177,21 +177,16 @@ public class S3VersioningFeature implements Versioning {
                 // Set custom key id stored in KMS
                 destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 // Apply non standard ACL
-                if(null == accessControlListFeature) {
-                    destination.setAcl(null);
+                Acl acl = Acl.EMPTY;
+                try {
+                    acl = accessControlListFeature.getPermission(file);
                 }
-                else {
-                    Acl acl = Acl.EMPTY;
-                    try {
-                        acl = accessControlListFeature.getPermission(file);
-                    }
-                    catch(AccessDeniedException | InteroperabilityException e) {
-                        log.warn(String.format("Ignore failure %s", e.getDetail()));
-                    }
-                    destination.setAcl(accessControlListFeature.convert(acl));
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    log.warn(String.format("Ignore failure %s", e.getDetail()));
                 }
+                destination.setAcl(accessControlListFeature.convert(acl));
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
+                    containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
             }
             catch(ServiceException e) {
                 throw new S3ExceptionMappingService().map("Cannot revert file", e, file);
@@ -211,9 +206,9 @@ public class S3VersioningFeature implements Versioning {
         // Prompt for multi factor authentication credentials.
         final Credentials credentials = callback.prompt(
             session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(session.getHost().getProtocol())
-                        .keychain(false)
-                        .user(false));
+            LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(session.getHost().getProtocol())
+                .keychain(false)
+                .user(false));
         PreferencesFactory.get().setProperty("s3.mfa.serialnumber", credentials.getUsername());
         return credentials;
     }

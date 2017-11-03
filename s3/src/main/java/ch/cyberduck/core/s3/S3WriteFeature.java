@@ -88,7 +88,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final S3Object object = this.getDetails(containerService.getKey(file), status);
+        final S3Object object = this.getDetails(file, status);
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
@@ -117,8 +117,8 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     /**
      * Add default metadata
      */
-    protected S3Object getDetails(final String key, final TransferStatus status) {
-        final S3Object object = new S3Object(key);
+    protected S3Object getDetails(final Path file, final TransferStatus status) {
+        final S3Object object = new S3Object(containerService.getKey(file));
         final String mime = status.getMime();
         if(StringUtils.isNotBlank(mime)) {
             object.setContentType(mime);

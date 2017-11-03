@@ -72,11 +72,7 @@ public class S3CopyFeature implements Copy {
                     log.warn(String.format("Ignore failure %s", e.getDetail()));
                 }
             }
-            final S3Object destination = new S3Object(containerService.getKey(target));
-            destination.setStorageClass(status.getStorageClass());
-            destination.setServerSideEncryptionAlgorithm(status.getEncryption().algorithm);
-            // Set custom key id stored in KMS
-            destination.setServerSideEncryptionKmsKeyId(status.getEncryption().key);
+            final S3Object destination = new S3WriteFeature(session).getDetails(target, status);
             destination.setAcl(accessControlListFeature.convert(status.getAcl()));
             destination.setBucketName(containerService.getContainer(target).getName());
             this.copy(source, destination, status);
