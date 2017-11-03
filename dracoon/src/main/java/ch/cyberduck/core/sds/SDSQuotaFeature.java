@@ -15,18 +15,24 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerData;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
 public class SDSQuotaFeature implements Quota {
+    private static final Logger log = Logger.getLogger(SDSQuotaFeature.class);
 
     private final SDSSession session;
 
@@ -37,12 +43,23 @@ public class SDSQuotaFeature implements Quota {
     @Override
     public Space get() throws BackgroundException {
         try {
+            final Path home = new DefaultHomeFinderService(session).find();
+            if(!home.isRoot()) {
+                final Node node = new NodesApi(session.getClient()).getFsNode(StringUtils.EMPTY,
+                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(home, new DisabledListProgressListener())), null);
+                if(null == node.getQuota()) {
+                    log.warn(String.format("No quota set for node %s", home));
+                }
+                else {
+                    return new Space(node.getSize(), node.getQuota() - node.getSize());
+                }
+            }
             final CustomerData info = new UserApi(session.getClient()).getCustomerInfo(StringUtils.EMPTY, null);
             return new Space(info.getSpaceUsed(), info.getSpaceLimit() - info.getSpaceUsed());
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e,
-                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         }
     }
 }
