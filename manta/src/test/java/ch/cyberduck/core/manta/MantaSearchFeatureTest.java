@@ -22,16 +22,19 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
 
 import org.junit.Assume;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class MantaSearchFeatureTest extends AbstractMantaTest {
 
     private static final EnumSet<AbstractPath.Type> TYPE_DIRECTORY = EnumSet.of(AbstractPath.Type.directory);
