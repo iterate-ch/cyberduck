@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -38,9 +39,9 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -50,7 +51,7 @@ public class S3DirectoryFeatureTest {
     @Ignore
     public void testCreateBucket() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
@@ -58,7 +59,7 @@ public class S3DirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, new S3WriteFeature(session));
         for(Location.Name region : new S3Protocol().getRegions()) {
-            final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            final Path test = new Path(new S3HomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
             test.attributes().setRegion(region.getIdentifier());
             feature.mkdir(test, region.getIdentifier(), new TransferStatus());
             assertTrue(new S3FindFeature(session).find(test));
@@ -70,11 +71,11 @@ public class S3DirectoryFeatureTest {
     @Test
     public void testCreatePlaceholder() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         final AtomicBoolean b = new AtomicBoolean();
-        final String name = UUID.randomUUID().toString();
+        final String name = new AlphanumericRandomStringService().random();
         session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
@@ -99,12 +100,30 @@ public class S3DirectoryFeatureTest {
     }
 
     @Test
-    public void testCreatePlaceholderEqualSign() throws Exception {
+    public void testCreatePlaceholderVersioning() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        final String name = String.format("%s=", UUID.randomUUID().toString());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(test.getType().contains(Path.Type.placeholder));
+        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
+        session.close();
+    }
+
+    @Test
+    public void testCreatePlaceholderEqualSign() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        final String name = String.format("%s=", new AlphanumericRandomStringService().random());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
