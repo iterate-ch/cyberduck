@@ -62,8 +62,6 @@ public abstract class AbstractMantaTest {
         final Profile profile = ProfileReaderFactory.get().read(
             new Local("../profiles/Joyent Triton Object Storage.cyberduckprofile"));
 
-        final boolean liveIntegrationTests = BooleanUtils.toBoolean(System.getProperty("manta.it.live"));
-
         final String hostname;
         final Local file;
         if(ObjectUtils.allNotNull(System.getProperty("manta.key_path"), System.getProperty("manta.url"))) {

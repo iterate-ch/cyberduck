@@ -119,10 +119,10 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                 }
             });
 
-        return this.computeFingerprint(provider, identity);
+        return this.computeFingerprint(provider);
     }
 
-    private String computeFingerprint(final FileKeyProvider provider, final Local identity) throws BackgroundException {
+    private String computeFingerprint(final FileKeyProvider provider) throws BackgroundException {
         try {
             return new SSHFingerprintGenerator().fingerprint(provider.getPublic());
         }
