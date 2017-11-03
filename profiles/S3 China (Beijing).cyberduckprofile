@@ -24,7 +24,7 @@
         <key>Scheme</key>
         <string>https</string>
         <key>Description</key>
-        <string>S3 (China (Beijing))</string>
+        <string>S3 China (Beijing)</string>
         <key>Default Port</key>
         <string>443</string>
         <key>Default Hostname</key>
