@@ -40,13 +40,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.jets3t.service.Constants.AMZ_DELETE_MARKER;
+import static org.jets3t.service.Constants.AMZ_VERSION_ID;
+import static org.jets3t.service.model.S3Object.S3_VERSION_ID;
+
 public class S3AttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
 
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     public S3AttributesFinderFeature(final S3Session session) {
         this.session = session;
@@ -74,19 +78,24 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         final String container = containerService.getContainer(file).getName();
         try {
             return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                    container, containerService.getKey(file));
+                container, containerService.getKey(file));
         }
         catch(ServiceException e) {
+            if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
+                final S3Object marker = new S3Object();
+                marker.addMetadata(S3_VERSION_ID, e.getResponseHeaders().get(AMZ_VERSION_ID));
+                return marker;
+            }
             switch(session.getSignatureVersion()) {
                 case AWS4HMACSHA256:
                     if(new S3ExceptionMappingService().map(e) instanceof InteroperabilityException) {
                         log.warn("Workaround HEAD failure using GET because the expected AWS region cannot be determined " +
-                                "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
-                                "in the authentication header.");
+                            "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
+                            "in the authentication header.");
                         // Fallback to GET if HEAD fails with 400 response
                         try {
                             final S3Object object = session.getClient().getVersionedObject(file.attributes().getVersionId(),
-                                    containerService.getContainer(file).getName(), containerService.getKey(file));
+                                containerService.getContainer(file).getName(), containerService.getKey(file));
                             IOUtils.closeQuietly(object.getDataInputStream());
                             return object;
                         }
@@ -127,7 +136,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         }
         if(object.containsMetadata("server-side-encryption-aws-kms-key-id")) {
             attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
-                    object.getMetadata("server-side-encryption-aws-kms-key-id").toString()) {
+                object.getMetadata("server-side-encryption-aws-kms-key-id").toString()) {
                 @Override
                 public String getDescription() {
                     return String.format("SSE-KMS (%s)", key);
