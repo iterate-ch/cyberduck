@@ -26,10 +26,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
@@ -38,10 +38,10 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -51,14 +51,9 @@ public abstract class AbstractMantaTest {
     protected MantaSession session;
     protected Path testPathPrefix;
 
-    @BeforeClass
-    public static void protocol() {
-        ProtocolFactory.get().register(new MantaProtocol());
-    }
-
     @Before
     public void setup() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new MantaProtocol()))).read(
             new Local("../profiles/Joyent Triton Object Storage.cyberduckprofile"));
 
         final String hostname;
