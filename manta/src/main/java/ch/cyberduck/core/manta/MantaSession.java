@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
@@ -75,14 +76,14 @@ public class MantaSession extends HttpSession<MantaClient> {
     public MantaSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), key);
         config = new AuthAwareConfigContext(new ChainedConfigContext(
+            new DefaultsConfigContext(),
             new StandardConfigContext()
                 .setNoAuth(true)
                 .setMantaKeyPath(null)
                 .setHttpsProtocols(PreferencesFactory.get().getProperty("connection.ssl.protocols"))
                 .setDisableNativeSignatures(true)
                 .setMantaUser(host.getCredentials().getUsername())
-                .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname())),
-            new DefaultsConfigContext()
+                .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname()))
         ));
     }
 
@@ -192,6 +193,9 @@ public class MantaSession extends HttpSession<MantaClient> {
         }
         else if(type == Home.class) {
             return (T) new MantaHomeFinderFeature(this);
+        }
+        else if(type == Search.class) {
+            return (T) new MantaSearchFeature(this);
         }
         return super._getFeature(type);
     }

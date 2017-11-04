@@ -18,7 +18,7 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>triton</string>
+        <string>manta</string>
         <key>Vendor</key>
         <string>iterate GmbH</string>
         <key>Description</key>
@@ -28,7 +28,7 @@
         <key>Default Hostname</key>
         <string>us-east.manta.joyent.com</string>
         <key>Hostname Configurable</key>
-        <false/>
+        <true/>
         <key>Password Configurable</key>
         <false/>
         <key>Anonymous Configurable</key>

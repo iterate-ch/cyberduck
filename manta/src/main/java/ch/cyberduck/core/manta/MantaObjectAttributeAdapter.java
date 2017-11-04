@@ -15,16 +15,20 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaObject;
 
@@ -55,14 +59,28 @@ public final class MantaObjectAttributeAdapter {
         attributes.setETag(object.getEtag());
 
         final byte[] md5Bytes = object.getMd5Bytes();
-
-        if(md5Bytes != null) {
-            attributes.setChecksum(new Checksum(HashAlgorithm.md5, new String(md5Bytes)));
+        if (md5Bytes != null) {
+            attributes.setChecksum(new Checksum(HashAlgorithm.md5, Hex.encodeHexString(md5Bytes)));
         }
 
-        attributes.setStorageClass(object.getHeaderAsString(HEADER_KEY_STORAGE_CLASS));
+        final String storageClass = object.getHeaderAsString(HEADER_KEY_STORAGE_CLASS);
+        if (storageClass != null) {
+            attributes.setStorageClass(storageClass);
+        }
 
         return attributes;
+    }
+
+    public Path toPath(final MantaObject object) {
+        final EnumSet<AbstractPath.Type> type;
+
+        if (object.isDirectory()) {
+            type = EnumSet.of(AbstractPath.Type.directory);
+        } else {
+            type = EnumSet.of(AbstractPath.Type.file);
+        }
+
+        return new Path(object.getPath(), type);
     }
 
     private void populateGenericAttributes(final MantaObject object, final PathAttributes attributes) {
@@ -81,10 +99,9 @@ public final class MantaObjectAttributeAdapter {
         }
     }
 
-
     private void populateLinkAttribute(final PathAttributes attributes, final MantaObject object) {
         // mantaObject.getPath() starts with /
-        final String joinedPath = session.getHost().getDefaultWebURL() + object.getPath();
+        final String joinedPath = session.getHost().getWebURL() + object.getPath();
 
         try {
             final URI link = new URI(joinedPath);

@@ -30,16 +30,13 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
 import com.joyent.manta.config.SettableConfigContext;
@@ -54,6 +51,7 @@ import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class MantaPublicKeyAuthentication implements AuthenticationProvider<String> {
+
     private static final Logger log = Logger.getLogger(MantaPublicKeyAuthentication.class);
 
     private final MantaSession session;
@@ -67,7 +65,10 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
         final Local identity = credentials.getIdentity();
         final KeyFormat format = this.detectKeyFormat(identity);
         final FileKeyProvider provider = this.buildProvider(identity, format);
-        this.readKeyContentsIntoConfig(identity);
+
+        final SettableConfigContext config = (SettableConfigContext) session.getClient().getContext();
+        config.setMantaKeyPath(identity.getAbsolute());
+
         if(log.isInfoEnabled()) {
             log.info(String.format("Reading private key %s with key format %s", identity, format));
         }
@@ -76,10 +77,13 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
             new PasswordFinder() {
                 @Override
                 public char[] reqPassword(Resource<?> resource) {
-                    final String password = keychain.find(bookmark);
-                    if(StringUtils.isEmpty(password)) {
+                    final String password;
+                    final String savedPassword = keychain.find(bookmark);
+
+                    if(StringUtils.isEmpty(savedPassword)) {
+                        final Credentials provided;
                         try {
-                            prompt.prompt(
+                             provided = prompt.prompt(
                                 bookmark,
                                 credentials.getUsername(),
                                 LocaleFactory.localizedString("Private key password protected", "Credentials"),
@@ -87,17 +91,25 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                                     LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
                                     identity.getAbbreviatedPath()),
                                 new LoginOptions(bookmark.getProtocol()));
+
+                            if (provided.getPassword() == null) {
+                                return null;
+                            }
                         }
-                        catch(LoginCanceledException e) {
+                        catch(LoginCanceledException ignored) {
                             return null; // user cancelled
                         }
-                        if(StringUtils.isEmpty(credentials.getPassword())) {
+
+                        if(StringUtils.isEmpty(provided.getPassword())) {
                             return null; // user left field blank
                         }
-                        final SettableConfigContext config = (SettableConfigContext) session.getClient().getContext();
-                        config.setPassword(credentials.getPassword());
-                        return credentials.getPassword().toCharArray();
+
+                        password = provided.getPassword();
+                    } else {
+                        password = savedPassword;
                     }
+
+                    config.setPassword(password);
                     return password.toCharArray();
                 }
 
@@ -106,13 +118,13 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                     return false;
                 }
             });
+
         return this.computeFingerprint(provider);
     }
 
     private String computeFingerprint(final FileKeyProvider provider) throws BackgroundException {
         try {
-            final KeyPair keyPair = new KeyPair(provider.getPublic(), provider.getPrivate());
-            return new SSHFingerprintGenerator().fingerprint(keyPair.getPublic());
+            return new SSHFingerprintGenerator().fingerprint(provider.getPublic());
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -147,24 +159,5 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
             throw new DefaultIOExceptionMappingService().map(e);
         }
         return format;
-    }
-
-    /**
-     * This method is required as a result of https://github.com/joyent/java-manta/issues/294
-     *
-     * @param identity credentials identity to read
-     * @throws BackgroundException when reading the key contents fails
-     */
-    private void readKeyContentsIntoConfig(final Local identity) throws BackgroundException {
-        try (InputStream is = identity.getInputStream();
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            IOUtils.copy(is, baos);
-            final SettableConfigContext config = (SettableConfigContext) session.getClient().getContext();
-            config.setMantaKeyPath(null);
-            config.setPrivateKeyContent(new String(baos.toByteArray(), StandardCharsets.UTF_8));
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
     }
 }

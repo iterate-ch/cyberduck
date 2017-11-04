@@ -45,7 +45,7 @@
         <module>hubic</module>
         <module>onedrive</module>
         <module>dracoon</module>
-        <module>triton</module>
+        <module>manta</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->

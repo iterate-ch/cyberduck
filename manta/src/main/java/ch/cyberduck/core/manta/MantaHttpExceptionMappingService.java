@@ -31,7 +31,7 @@ public class MantaHttpExceptionMappingService extends AbstractExceptionMappingSe
         switch(failure.getStatusCode()) {
             case 403:
                 final StringBuilder buffer = new StringBuilder();
-                this.append(buffer, failure.getMessage());
+                this.append(buffer, failure.getStatusMessage());
                 return new LoginFailureException(buffer.toString(), failure);
         }
         return new HttpResponseExceptionMappingService().map(new HttpResponseException(failure.getStatusCode(), failure.getStatusMessage()));

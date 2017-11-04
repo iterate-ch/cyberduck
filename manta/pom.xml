@@ -22,7 +22,7 @@
         <groupId>ch.cyberduck</groupId>
         <version>6.3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>triton</artifactId>
+    <artifactId>manta</artifactId>
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -42,9 +42,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.iterate.manta</groupId>
+            <groupId>com.joyent.manta</groupId>
             <artifactId>java-manta-client-unshaded</artifactId>
-            <version>3.1.7-SNAPSHOT</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
