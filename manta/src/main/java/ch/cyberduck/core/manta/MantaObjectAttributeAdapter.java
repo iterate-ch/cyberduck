@@ -15,7 +15,6 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -45,70 +44,43 @@ public final class MantaObjectAttributeAdapter {
 
     public PathAttributes convert(final MantaObject object) {
         final PathAttributes attributes = new PathAttributes();
-        populateGenericAttributes(object, attributes);
-
-        if(object.isDirectory()) {
-            return attributes;
-        }
-
-        if(session.isWorldReadable(object)) {
-            populateLinkAttribute(attributes, object);
-        }
-
-        attributes.setSize(object.getContentLength());
-        attributes.setETag(object.getEtag());
-
-        final byte[] md5Bytes = object.getMd5Bytes();
-        if (md5Bytes != null) {
-            attributes.setChecksum(new Checksum(HashAlgorithm.md5, Hex.encodeHexString(md5Bytes)));
-        }
-
-        final String storageClass = object.getHeaderAsString(HEADER_KEY_STORAGE_CLASS);
-        if (storageClass != null) {
-            attributes.setStorageClass(storageClass);
-        }
-
-        return attributes;
-    }
-
-    public Path toPath(final MantaObject object) {
-        final EnumSet<AbstractPath.Type> type;
-
-        if (object.isDirectory()) {
-            type = EnumSet.of(AbstractPath.Type.directory);
-        } else {
-            type = EnumSet.of(AbstractPath.Type.file);
-        }
-
-        return new Path(object.getPath(), type);
-    }
-
-    private void populateGenericAttributes(final MantaObject object, final PathAttributes attributes) {
-        final Permission.Action userPermissions =
-            session.isUserWritable(object)
-                ? Permission.Action.all
-                : Permission.Action.read;
-        final Permission.Action otherPermissions =
-            session.isWorldReadable(object)
-                ? Permission.Action.read
-                : Permission.Action.none;
-        attributes.setPermission(new Permission(userPermissions, Permission.Action.none, otherPermissions));
+        attributes.setPermission(new Permission(
+            session.isUserWritable(object) ? Permission.Action.all : Permission.Action.read,
+            Permission.Action.none,
+            session.isWorldReadable(object) ? Permission.Action.read : Permission.Action.none));
         if(object.getLastModifiedTime() != null) {
             attributes.setModificationDate(object.getLastModifiedTime().getTime());
             attributes.setCreationDate(attributes.getModificationDate());
         }
+        if(object.isDirectory()) {
+            return attributes;
+        }
+        if(session.isWorldReadable(object)) {
+            // mantaObject.getPath() starts with /
+            final String joinedPath = session.getHost().getWebURL() + object.getPath();
+
+            try {
+                final URI link = new URI(joinedPath);
+                attributes.setLink(new DescriptiveUrl(link, DescriptiveUrl.Type.http));
+            }
+            catch(URISyntaxException e) {
+                log.warn(String.format("Cannot set link. Web URL returned %s", joinedPath), e);
+            }
+        }
+        attributes.setSize(object.getContentLength());
+        attributes.setETag(object.getEtag());
+        final byte[] md5Bytes = object.getMd5Bytes();
+        if(md5Bytes != null) {
+            attributes.setChecksum(new Checksum(HashAlgorithm.md5, Hex.encodeHexString(md5Bytes)));
+        }
+        final String storageClass = object.getHeaderAsString(HEADER_KEY_STORAGE_CLASS);
+        if(storageClass != null) {
+            attributes.setStorageClass(storageClass);
+        }
+        return attributes;
     }
 
-    private void populateLinkAttribute(final PathAttributes attributes, final MantaObject object) {
-        // mantaObject.getPath() starts with /
-        final String joinedPath = session.getHost().getWebURL() + object.getPath();
-
-        try {
-            final URI link = new URI(joinedPath);
-            attributes.setLink(new DescriptiveUrl(link, DescriptiveUrl.Type.http));
-        }
-        catch(URISyntaxException e) {
-            log.warn(String.format("Cannot set link. Web URL returned %s", joinedPath), e);
-        }
+    public Path toPath(final MantaObject object) {
+        return new Path(object.getPath(), object.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file));
     }
 }
