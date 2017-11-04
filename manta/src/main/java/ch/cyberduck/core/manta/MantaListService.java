@@ -36,11 +36,9 @@ import com.joyent.manta.exception.MantaObjectException;
 public class MantaListService implements ListService {
 
     private final MantaSession session;
-    private final MantaObjectAttributeAdapter adapter;
 
     public MantaListService(final MantaSession session) {
         this.session = session;
-        adapter = new MantaObjectAttributeAdapter(session);
     }
 
     @Override
@@ -63,6 +61,7 @@ public class MantaListService implements ListService {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e);
         }
+        final MantaObjectAttributeAdapter adapter = new MantaObjectAttributeAdapter(session);
         while(objectsIter.hasNext()) {
             MantaObject o = objectsIter.next();
             final Path file = new Path(directory, FilenameUtils.getName(o.getPath()),
