@@ -93,20 +93,7 @@ public interface Protocol extends Comparable<Protocol> {
         b2,
         file,
         dracoon,
-        manta {
-            @Override
-            public boolean validate(final Credentials credentials, final LoginOptions options) {
-                if(super.validate(credentials, options)) {
-                    if(options.user) {
-                        if(!credentials.getUsername().matches("[A-z0-9._]+(/[A-z0-9._]+)?")) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            }
-        };
+        manta;
 
         /**
          * Check login credentials for validity for this protocol.

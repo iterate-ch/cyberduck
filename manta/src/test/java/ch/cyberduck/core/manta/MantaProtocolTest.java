@@ -53,15 +53,15 @@ public class MantaProtocolTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new MantaProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/Joyent Triton Object Storage.cyberduckprofile"));
         assertFalse(profile.validate(new Credentials(), new LoginOptions(profile)));
-        assertFalse(profile.validate(new Credentials("u"), new LoginOptions(profile)));
-        assertFalse(profile.validate(new Credentials("u", "p"), new LoginOptions(profile)));
-        assertFalse(profile.validate(new Credentials("u").withIdentity(new NullLocal("/f") {
+        assertFalse(profile.validate(new Credentials("u@domain"), new LoginOptions(profile)));
+        assertFalse(profile.validate(new Credentials("u@domain", "p"), new LoginOptions(profile)));
+        assertFalse(profile.validate(new Credentials("u@domain").withIdentity(new NullLocal("/f") {
             @Override
             public boolean exists() {
                 return false;
             }
         }), new LoginOptions(profile)));
-        assertTrue(profile.validate(new Credentials("u").withIdentity(new NullLocal("/f") {
+        assertTrue(profile.validate(new Credentials("u@domain").withIdentity(new NullLocal("/f") {
             @Override
             public boolean exists() {
                 return true;
