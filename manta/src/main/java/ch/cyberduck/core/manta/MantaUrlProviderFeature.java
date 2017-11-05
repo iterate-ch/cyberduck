@@ -22,11 +22,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Duration;
 
 public class MantaUrlProviderFeature implements UrlProvider {
+    private static final Logger log = Logger.getLogger(MantaUrlProviderFeature.class);
 
     private final MantaSession session;
 
@@ -44,33 +47,33 @@ public class MantaUrlProviderFeature implements UrlProvider {
             {
                 final Duration expiresIn = Duration.ofMinutes(1);
                 list.add(new DescriptiveUrl(
-                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
-                        DescriptiveUrl.Type.signed,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                                UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis() + expiresIn.toMillis()))));
+                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                    DescriptiveUrl.Type.signed,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis() + expiresIn.toMillis()))));
             }
             {
                 final Duration expiresIn = Duration.ofHours(1);
                 list.add(new DescriptiveUrl(
-                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
-                        DescriptiveUrl.Type.signed,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                                UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis() + expiresIn.toMillis()))));
+                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                    DescriptiveUrl.Type.signed,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis() + expiresIn.toMillis()))));
             }
             {
                 final Duration expiresIn = Duration.ofDays(1);
                 list.add(new DescriptiveUrl(
-                        session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
-                        DescriptiveUrl.Type.signed,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                                UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis() + expiresIn.toMillis()))));
+                    session.getClient().getAsSignedURI(file.getAbsolute(), "GET", expiresIn),
+                    DescriptiveUrl.Type.signed,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                        UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis() + expiresIn.toMillis()))));
             }
         }
         catch(IOException e) {
-            //
+            log.warn(String.format("Failure creating signed URL for file %s. %s", file, e.getMessage()));
         }
         return list;
     }
