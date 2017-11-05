@@ -48,6 +48,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.IOException;
 import java.security.Security;
+import java.util.Collections;
 
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
@@ -127,6 +128,10 @@ public class MantaSession extends HttpSession<MantaClient> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        if(directory.isRoot()) {
+            return new AttributedList<Path>(Collections.singletonList(
+                new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getNormalizedHomePath()));
+        }
         return new MantaListService(this).list(directory, listener);
     }
 
