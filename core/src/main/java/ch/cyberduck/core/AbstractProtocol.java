@@ -131,6 +131,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isPrivateKeyConfigurable() {
+        return false;
+    }
+
+    @Override
     public boolean isUTCTimezone() {
         return true;
     }

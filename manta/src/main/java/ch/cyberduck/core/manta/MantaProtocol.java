@@ -74,4 +74,9 @@ public class MantaProtocol extends AbstractProtocol {
     public boolean isPasswordConfigurable() {
         return false;
     }
+
+    @Override
+    public boolean isPrivateKeyConfigurable() {
+        return true;
+    }
 }

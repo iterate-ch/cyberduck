@@ -15,13 +15,57 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Collections;
+import java.util.HashSet;
+
+import static org.junit.Assert.*;
 
 public class MantaProtocolTest {
+
     @Test
     public void testPrefix() {
         assertEquals("ch.cyberduck.core.manta.Manta", new MantaProtocol().getPrefix());
+    }
+
+    @Test
+    public void testDefaultProfile() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new MantaProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/Joyent Triton Object Storage.cyberduckprofile"));
+        assertTrue(profile.isHostnameConfigurable());
+        assertFalse(profile.isPortConfigurable());
+        assertTrue(profile.isUsernameConfigurable());
+        assertFalse(profile.isCertificateConfigurable());
+        assertFalse(profile.isPasswordConfigurable());
+    }
+
+    @Test
+    public void testValidateCredentials() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new MantaProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/Joyent Triton Object Storage.cyberduckprofile"));
+        assertFalse(profile.validate(new Credentials(), new LoginOptions(profile)));
+        assertFalse(profile.validate(new Credentials("u"), new LoginOptions(profile)));
+        assertFalse(profile.validate(new Credentials("u", "p"), new LoginOptions(profile)));
+        assertFalse(profile.validate(new Credentials("u").withIdentity(new NullLocal("/f") {
+            @Override
+            public boolean exists() {
+                return false;
+            }
+        }), new LoginOptions(profile)));
+        assertTrue(profile.validate(new Credentials("u").withIdentity(new NullLocal("/f") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        }), new LoginOptions(profile)));
     }
 }

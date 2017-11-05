@@ -347,6 +347,14 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean isPrivateKeyConfigurable() {
+        if(StringUtils.isBlank(this.value("Private Key Configurable"))) {
+            return parent.isPrivateKeyConfigurable();
+        }
+        return this.bool("Private Key Configurable");
+    }
+
+    @Override
     public boolean isHostnameConfigurable() {
         if(StringUtils.isBlank(this.value("Hostname Configurable"))) {
             return StringUtils.isBlank(this.getDefaultHostname());

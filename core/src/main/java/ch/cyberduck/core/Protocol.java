@@ -102,8 +102,9 @@ public interface Protocol extends Comparable<Protocol> {
                             return false;
                         }
                     }
+                    return true;
                 }
-                return credentials.isPublicKeyAuthentication();
+                return false;
             }
         };
 
@@ -124,6 +125,10 @@ public interface Protocol extends Comparable<Protocol> {
                 // No password may be required to decrypt private key
                 if(credentials.isPublicKeyAuthentication()) {
                     return true;
+                }
+                if(!options.password) {
+                    // Require private key
+                    return false;
                 }
             }
             if(options.password) {
@@ -151,6 +156,8 @@ public interface Protocol extends Comparable<Protocol> {
     boolean isPasswordConfigurable();
 
     boolean isCertificateConfigurable();
+
+    boolean isPrivateKeyConfigurable();
 
     /**
      * @return False if the hostname to connect is static.
