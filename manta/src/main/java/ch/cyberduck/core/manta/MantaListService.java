@@ -20,7 +20,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.io.FilenameUtils;
@@ -49,10 +48,6 @@ public class MantaListService implements ListService {
             objectsIter = session.getClient().listObjects(directory.getAbsolute()).iterator();
         }
         catch(MantaObjectException e) {
-            if(directory.isRoot()) {
-                // Most users should not be able to list all buckets, treat this as a regular exception
-                throw new AccessDeniedException("Cannot list buckets.");
-            }
             throw new MantaExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(MantaClientHttpResponseException e) {
