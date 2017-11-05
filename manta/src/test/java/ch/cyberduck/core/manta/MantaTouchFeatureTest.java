@@ -37,9 +37,9 @@ public class MantaTouchFeatureTest extends AbstractMantaTest {
     @Test
     public void testTouch() throws Exception {
         final Path file = new Path(
-                testPathPrefix,
-                new AlphanumericRandomStringService().random(),
-                EnumSet.of(Path.Type.file));
+            testPathPrefix,
+            new AlphanumericRandomStringService().random(),
+            EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new MantaAttributesFinderFeature(session).find(file));
         new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -49,9 +49,9 @@ public class MantaTouchFeatureTest extends AbstractMantaTest {
     public void testWhitespaceTouch() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path file = new Path(
-                testPathPrefix,
-                String.format("%s %s", randomStringService.random(), randomStringService.random()),
-                EnumSet.of(Path.Type.file));
+            testPathPrefix,
+            String.format("%s %s", randomStringService.random(), randomStringService.random()),
+            EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new MantaAttributesFinderFeature(session).find(file));
         new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -97,12 +97,12 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         IOUtils.write(content, out);
         out.close();
         new DefaultUploadFeature<Void>(new MantaWriteFeature(session)).upload(
-                test,
-                local,
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(),
-                new TransferStatus().length(content.length),
-                new DisabledConnectionCallback());
+            test,
+            local,
+            new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            new DisabledStreamListener(),
+            new TransferStatus().length(content.length),
+            new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -133,9 +133,9 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         IOUtils.write(content, out);
         out.close();
         new DefaultUploadFeature<Void>(new MantaWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new TransferStatus().length(content.length),
-                new DisabledConnectionCallback());
+            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new TransferStatus().length(content.length),
+            new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);

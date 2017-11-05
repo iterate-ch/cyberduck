@@ -49,12 +49,12 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
     public void testWhitespaceMkdir() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path target = new MantaDirectoryFeature(session)
-                .mkdir(
-                        new Path(
-                                testPathPrefix,
-                                String.format("%s %s", randomStringService.random(), randomStringService.random()),
-                                EnumSet.of(Path.Type.directory)
-                        ), null, null);
+            .mkdir(
+                new Path(
+                    testPathPrefix,
+                    String.format("%s %s", randomStringService.random(), randomStringService.random()),
+                    EnumSet.of(Path.Type.directory)
+                ), null, null);
         final Attributes found = new MantaAttributesFinderFeature(session).find(target);
         assertNull(found.getOwner());
         assertNotEquals(Permission.EMPTY, found.getPermission());
