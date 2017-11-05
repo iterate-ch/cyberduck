@@ -51,7 +51,6 @@ import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class MantaPublicKeyAuthentication implements AuthenticationProvider<String> {
-
     private static final Logger log = Logger.getLogger(MantaPublicKeyAuthentication.class);
 
     private final MantaSession session;
@@ -83,7 +82,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                     if(StringUtils.isEmpty(savedPassword)) {
                         final Credentials provided;
                         try {
-                             provided = prompt.prompt(
+                            provided = prompt.prompt(
                                 bookmark,
                                 credentials.getUsername(),
                                 LocaleFactory.localizedString("Private key password protected", "Credentials"),
@@ -92,7 +91,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                                     identity.getAbbreviatedPath()),
                                 new LoginOptions(bookmark.getProtocol()));
 
-                            if (provided.getPassword() == null) {
+                            if(provided.getPassword() == null) {
                                 return null;
                             }
                         }
@@ -105,7 +104,8 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                         }
 
                         password = provided.getPassword();
-                    } else {
+                    }
+                    else {
                         password = savedPassword;
                     }
 
