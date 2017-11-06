@@ -53,9 +53,12 @@ namespace Ch.Cyberduck.Cli
 
         protected override void setDefaults()
         {
-            defaults.put("application.container.name", "Cyberduck");
-
             base.setDefaults();
+
+            defaults.put("application.container.name", "Cyberduck");
+            string support = SupportDirectoryFinderFactory.get().find().getAbsolute();
+            defaults.put("application.support.path", support);
+            defaults.put("application.receipt.path", support);
 
             Security.addProvider(new SunMSCAPI());
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
