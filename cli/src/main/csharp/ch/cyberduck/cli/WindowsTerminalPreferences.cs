@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.cli;
+using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Editor;
