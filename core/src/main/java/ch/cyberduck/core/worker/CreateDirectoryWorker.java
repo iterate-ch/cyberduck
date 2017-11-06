@@ -54,6 +54,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
         if(redundancy != null) {
             status.setStorageClass(redundancy.getDefault());
         }
+        status.setTimestamp(System.currentTimeMillis());
         return feature.mkdir(folder, region, status);
     }
 
