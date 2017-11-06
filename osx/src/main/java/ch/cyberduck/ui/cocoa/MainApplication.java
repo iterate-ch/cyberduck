@@ -32,6 +32,7 @@ import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.irods.IRODSProtocol;
+import ch.cyberduck.core.manta.MantaProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
@@ -90,6 +91,7 @@ public final class MainApplication {
                     new HubicProtocol(),
                     new OneDriveProtocol(),
                     new LocalProtocol(),
+                    new MantaProtocol(),
                     new SDSProtocol()
             );
             if(log.isInfoEnabled()) {

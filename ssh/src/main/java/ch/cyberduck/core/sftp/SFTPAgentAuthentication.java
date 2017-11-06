@@ -31,7 +31,7 @@ import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 
-public class SFTPAgentAuthentication implements AuthenticationProvider {
+public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPAgentAuthentication.class);
 
     private final SFTPSession session;
@@ -43,7 +43,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider {
     }
 
     @Override
-    public boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
+    public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
         throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using agent %s for %s", agent, bookmark));

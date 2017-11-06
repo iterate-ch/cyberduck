@@ -39,6 +39,11 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
+            <artifactId>profiles</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
             <artifactId>ftp</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -115,6 +120,11 @@
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>dracoon</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>manta</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

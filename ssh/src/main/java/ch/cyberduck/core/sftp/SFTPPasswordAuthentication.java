@@ -39,7 +39,7 @@ import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.PasswordUpdateProvider;
 import net.schmizz.sshj.userauth.password.Resource;
 
-public class SFTPPasswordAuthentication implements AuthenticationProvider {
+public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPPasswordAuthentication.class);
 
     private final SFTPSession session;
@@ -49,7 +49,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider {
     }
 
     @Override
-    public boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel)
+    public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel)
         throws BackgroundException {
         if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
             final String message;

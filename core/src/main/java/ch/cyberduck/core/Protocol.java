@@ -92,7 +92,8 @@ public interface Protocol extends Comparable<Protocol> {
         irods,
         b2,
         file,
-        dracoon;
+        dracoon,
+        manta;
 
         /**
          * Check login credentials for validity for this protocol.
@@ -111,6 +112,10 @@ public interface Protocol extends Comparable<Protocol> {
                 // No password may be required to decrypt private key
                 if(credentials.isPublicKeyAuthentication()) {
                     return true;
+                }
+                if(!options.password) {
+                    // Require private key
+                    return false;
                 }
             }
             if(options.password) {
@@ -138,6 +143,8 @@ public interface Protocol extends Comparable<Protocol> {
     boolean isPasswordConfigurable();
 
     boolean isCertificateConfigurable();
+
+    boolean isPrivateKeyConfigurable();
 
     /**
      * @return False if the hostname to connect is static.
