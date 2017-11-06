@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -40,25 +39,6 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3VersionedObjectListServiceTest {
-
-    @Test
-    public void testListVersioning() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new S3VersionedObjectListService(session).list(new Path("versioning-test-us-east-1-cyberduck",
-                        EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new DisabledListProgressListener());
-        final PathAttributes att = new PathAttributes();
-        assertFalse(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
-        att.setVersionId("VLphaWnNt9MNseMuYVsLSmCFe6EuJJAq");
-        assertTrue(list.contains(new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), att)));
-        session.close();
-    }
 
     @Test
     public void testDirectory() throws Exception {
