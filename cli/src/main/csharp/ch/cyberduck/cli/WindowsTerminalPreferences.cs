@@ -53,6 +53,8 @@ namespace Ch.Cyberduck.Cli
 
         protected override void setDefaults()
         {
+            defaults.put("application.container.name", "Cyberduck");
+
             base.setDefaults();
 
             Security.addProvider(new SunMSCAPI());
