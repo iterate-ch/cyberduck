@@ -149,7 +149,6 @@ public class B2ObjectListService implements ListService {
                 Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
         );
         final long timestamp = response.getUploadTimestamp();
-        attributes.setCreationDate(timestamp);
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
             attributes.setModificationDate(Long.valueOf(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
         }
