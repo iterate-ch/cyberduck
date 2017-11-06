@@ -20,6 +20,7 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.i18n.RegexLocale;
+import ch.cyberduck.core.local.DesktopBrowserLauncher;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
 import ch.cyberduck.core.local.features.DefaultSymlinkFeature;
 import ch.cyberduck.core.preferences.MemoryPreferences;
@@ -34,6 +35,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -60,6 +62,12 @@ public class TerminalPreferences extends MemoryPreferences {
             case windows:
                 break;
             case linux:
+                if(Desktop.isDesktopSupported()) {
+                    defaults.put("factory.browserlauncher.class", DesktopBrowserLauncher.class.getName());
+                }
+                else {
+                    defaults.put("factory.browserlauncher.class", TerminalBrowserLauncher.class.getName());
+                }
                 defaults.put("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
                 defaults.put("factory.applicationresourcesfinder.class", StaticApplicationResourcesFinder.class.getName());
                 defaults.put("factory.locale.class", RegexLocale.class.getName());
