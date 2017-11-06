@@ -17,12 +17,12 @@ package ch.cyberduck.core.local;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public class DesktopBrowserLauncherTest {
 
     @Test
     public void open() throws Exception {
-        assertTrue(new DesktopBrowserLauncher().open("https://cyberduck.io"));
+        assertFalse(new DesktopBrowserLauncher().open("https://cyberduck.io"));
     }
 }
