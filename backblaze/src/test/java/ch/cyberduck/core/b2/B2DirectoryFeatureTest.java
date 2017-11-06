@@ -45,10 +45,10 @@ public class B2DirectoryFeatureTest {
     @Test
     public void testCreateBucket() throws Exception {
         final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
+            new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -59,10 +59,10 @@ public class B2DirectoryFeatureTest {
     @Test(expected = InteroperabilityException.class)
     public void testBucketExists() throws Exception {
         final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
+            new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -79,10 +79,10 @@ public class B2DirectoryFeatureTest {
     @Test(expected = InteroperabilityException.class)
     public void testBucketInvalidCharacter() throws Exception {
         final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
+            new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("/test.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -99,10 +99,10 @@ public class B2DirectoryFeatureTest {
     @Test
     public void testCreatePlaceholder() throws Exception {
         final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
+            new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -110,6 +110,25 @@ public class B2DirectoryFeatureTest {
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new B2FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testModificationDate() throws Exception {
+        final B2Session session = new B2Session(
+            new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                )));
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final TransferStatus status = new TransferStatus();
+        final long timestamp = 1509959502930L;
+        status.setTimestamp(timestamp);
+        final Path test = new B2DirectoryFeature(session, new B2WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
+        assertEquals(timestamp, new B2AttributesFinderFeature(session).find(test).getModificationDate());
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
