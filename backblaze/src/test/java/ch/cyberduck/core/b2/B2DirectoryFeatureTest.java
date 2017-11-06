@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -32,6 +33,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -127,9 +129,12 @@ public class B2DirectoryFeatureTest {
         final TransferStatus status = new TransferStatus();
         final long timestamp = 1509959502930L;
         status.setTimestamp(timestamp);
-        final Path test = new B2DirectoryFeature(session, new B2WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
+        final Path directory = new B2DirectoryFeature(session, new B2WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
+        final Path test = new B2DirectoryFeature(session, new B2WriteFeature(session)).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
         assertEquals(timestamp, new B2AttributesFinderFeature(session).find(test).getModificationDate());
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        // Timestamp for placeholder is unknown. Only set on /.bzEmpty
+        assertEquals(-1L, new B2ObjectListService(session).list(directory, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
+        new B2DeleteFeature(session).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
