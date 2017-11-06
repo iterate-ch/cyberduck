@@ -33,7 +33,7 @@ public final class QuartzQuickLook implements QuickLook {
     private static final Logger log = Logger.getLogger(QuartzQuickLook.class);
 
     private final List<QLPreviewItem> previews
-            = new ArrayList<QLPreviewItem>();
+        = new ArrayList<QLPreviewItem>();
 
     @Override
     public void select(final List<Local> files) {
@@ -71,7 +71,7 @@ public final class QuartzQuickLook implements QuickLook {
     @Override
     public boolean isOpen() {
         return QLPreviewPanel.sharedPreviewPanelExists()
-                && QLPreviewPanel.sharedPreviewPanel().isVisible();
+            && QLPreviewPanel.sharedPreviewPanel().isVisible();
     }
 
     @Override
@@ -91,11 +91,13 @@ public final class QuartzQuickLook implements QuickLook {
     @Override
     public void close() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Order out panel %s", panel));
+        if(null != panel.currentController()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Order out panel %s", panel));
+            }
+            panel.setDataSource(null);
+            panel.orderOut(null);
         }
-        panel.setDataSource(null);
-        panel.orderOut(null);
         if(log.isDebugEnabled()) {
             log.debug("Clear previews");
         }
