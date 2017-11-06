@@ -50,7 +50,6 @@ public final class MantaObjectAttributeAdapter {
             session.isWorldReadable(object) ? Permission.Action.read : Permission.Action.none));
         if(object.getLastModifiedTime() != null) {
             attributes.setModificationDate(object.getLastModifiedTime().getTime());
-            attributes.setCreationDate(attributes.getModificationDate());
         }
         if(object.isDirectory()) {
             return attributes;

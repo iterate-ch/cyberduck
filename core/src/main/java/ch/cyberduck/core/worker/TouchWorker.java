@@ -56,6 +56,7 @@ public class TouchWorker extends Worker<Path> {
         if(redundancy != null) {
             status.setStorageClass(redundancy.getDefault());
         }
+        status.setTimestamp(System.currentTimeMillis());
         return feature.touch(file, status);
     }
 
