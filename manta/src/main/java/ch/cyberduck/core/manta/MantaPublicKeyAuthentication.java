@@ -76,39 +76,22 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
             new PasswordFinder() {
                 @Override
                 public char[] reqPassword(Resource<?> resource) {
-                    final String password;
-                    final String savedPassword = keychain.find(bookmark);
-
-                    if(StringUtils.isEmpty(savedPassword)) {
-                        final Credentials provided;
+                    String password = keychain.find(bookmark);
+                    if(StringUtils.isEmpty(password)) {
                         try {
-                            provided = prompt.prompt(
-                                bookmark,
-                                credentials.getUsername(),
+                            password = prompt.prompt(bookmark, credentials.getUsername(),
                                 LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                 String.format("%s (%s)",
                                     LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                    identity.getAbbreviatedPath()),
-                                new LoginOptions(bookmark.getProtocol()));
-
-                            if(provided.getPassword() == null) {
-                                return null;
-                            }
+                                    identity.getAbbreviatedPath()), new LoginOptions(bookmark.getProtocol())
+                                    .user(false).password(true)
+                            ).getPassword();
                         }
                         catch(LoginCanceledException ignored) {
-                            return null; // user cancelled
+                            // Return null if user cancels
+                            return null;
                         }
-
-                        if(StringUtils.isEmpty(provided.getPassword())) {
-                            return null; // user left field blank
-                        }
-
-                        password = provided.getPassword();
                     }
-                    else {
-                        password = savedPassword;
-                    }
-
                     config.setPassword(password);
                     return password.toCharArray();
                 }
