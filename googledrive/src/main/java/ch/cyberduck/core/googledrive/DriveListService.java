@@ -33,12 +33,27 @@ public class DriveListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory.getName())) {
-            return new DriveSharedFolderListService(session).list(directory, listener);
+        if(directory.isRoot()) {
+            final AttributedList<Path> list = new AttributedList<>();
+            list.add(DriveHomeFinderService.MYDRIVE_FOLDER);
+            listener.chunk(directory, list);
+            list.add(DriveHomeFinderService.SHARED_FOLDER_NAME);
+            listener.chunk(directory, list);
+            list.add(DriveHomeFinderService.TEAM_DRIVES_NAME);
+            listener.chunk(directory, list);
+            return list;
         }
-        if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(directory.getName())) {
-            return new DriveTeamDrivesListService(session).list(directory, listener);
+        else {
+            if(DriveHomeFinderService.MYDRIVE_FOLDER.equals(directory)) {
+                return new DriveSharedFolderListService(session).list(directory, listener);
+            }
+            if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory)) {
+                return new DriveSharedFolderListService(session).list(directory, listener);
+            }
+            if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(directory)) {
+                return new DriveTeamDrivesListService(session).list(directory, listener);
+            }
+            return new DriveDefaultListService(session, fileid).list(directory, listener);
         }
-        return new DriveDefaultListService(session, fileid).list(directory, listener);
     }
 }

@@ -20,13 +20,23 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
+import java.util.EnumSet;
+
 public class DriveHomeFinderService extends DefaultHomeFinderService {
 
     public static final String ROOT_FOLDER_ID = "root";
-    public static final String SHARED_FOLDER_NAME
-            = LocaleFactory.localizedString("Shared with me", "Google Drive");
-    public static final String TEAM_DRIVES_NAME
-        = LocaleFactory.localizedString("Team Drives", "Google Drive");
+
+    public static final Path MYDRIVE_FOLDER
+        = new Path(LocaleFactory.localizedString("My Drive", "Google Drive"),
+        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+
+    public static final Path SHARED_FOLDER_NAME
+        = new Path(LocaleFactory.localizedString("Shared with me", "Google Drive"),
+        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+
+    public static final Path TEAM_DRIVES_NAME
+        = new Path(LocaleFactory.localizedString("Team Drives", "Google Drive"),
+        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
     public DriveHomeFinderService(final DriveSession session) {
         super(session);
