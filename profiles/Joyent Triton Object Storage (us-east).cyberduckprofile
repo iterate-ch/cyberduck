@@ -22,7 +22,7 @@
         <key>Vendor</key>
         <string>iterate GmbH</string>
         <key>Description</key>
-        <string>Joyent Triton Object Storage</string>
+        <string>Joyent Triton Object Storage (us-east)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
