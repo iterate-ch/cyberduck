@@ -7,6 +7,7 @@ https://cyberduck.io/
 - [Feature] Support for China (Beijing) region (S3)
 - [Bugfix] Allow custom endpoint with default connection profile (S3)
 - [Bugfix] Unnecessary password prompt for connection (Local Disk)
+- [Bugfix] Login where authentication is required with both password and one-time passcode (SFTP)
 
 6.2.11
 - [Bugfix] Application crash restoring workspace (Windows)
