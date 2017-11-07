@@ -78,7 +78,7 @@ public abstract class AbstractDriveListService implements ListService {
                     // Whether Team Drive items should be included in results
                     .setIncludeTeamDriveItems(true)
                     // Whether the requesting application supports Team Drives
-                    .setSupportsTeamDrives(true)
+                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                     .setQ(this.query(directory, listener))
                     .setOrderBy("name")
                     .setPageToken(page)
