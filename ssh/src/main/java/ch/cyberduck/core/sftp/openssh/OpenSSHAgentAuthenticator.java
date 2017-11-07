@@ -22,7 +22,7 @@ import ch.cyberduck.core.sftp.AgentAuthenticator;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -64,12 +64,10 @@ public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Retrieve identities from proxy %s", proxy));
         }
-        final List<Identity> identities
-            = new ArrayList<Identity>();
+        final List<Identity> identities = Arrays.asList(proxy.getIdentities());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Found %d identities", identities.size()));
         }
-        Collections.addAll(identities, proxy.getIdentities());
         return identities;
     }
 
