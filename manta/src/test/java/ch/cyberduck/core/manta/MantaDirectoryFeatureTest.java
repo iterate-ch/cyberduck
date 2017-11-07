@@ -58,7 +58,6 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
         final Attributes found = new MantaAttributesFinderFeature(session).find(target);
         assertNull(found.getOwner());
         assertNotEquals(Permission.EMPTY, found.getPermission());
-        assertNotEquals(-1L, found.getCreationDate());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
