@@ -21,6 +21,8 @@
         <string>s3</string>
         <key>Vendor</key>
         <string>digitalocean</string>
+        <key>Scheme</key>
+        <string>https</string>
         <key>Description</key>
         <string>DigitalOcean Spaces (nyc3)</string>
         <key>Default Hostname</key>
