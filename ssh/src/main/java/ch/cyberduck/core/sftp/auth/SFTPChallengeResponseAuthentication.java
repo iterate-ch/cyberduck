@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sftp;
+package ch.cyberduck.core.sftp.auth;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -25,6 +25,8 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
+import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +38,7 @@ import java.util.List;
 
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
+import net.schmizz.sshj.userauth.method.PasswordResponseProvider;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class SFTPChallengeResponseAuthentication implements AuthenticationProvider<Boolean> {
@@ -80,24 +83,32 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
                     }
-                    final StringAppender message = new StringAppender().append(instruction).append(prompt);
-                    // Properly handle an instruction field with embedded newlines.  They should also
-                    // be able to display at least 30 characters for the name and prompts.
-                    final Credentials additional;
-                    try {
-                        final StringAppender title = new StringAppender().append(name).append(
-                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
-                        );
-                        additional = callback.prompt(bookmark, bookmark.getCredentials().getUsername(), title.toString(),
-                            message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
-                                .usernamePlaceholder(bookmark.getCredentials().getUsername())
-                        );
-                    }
-                    catch(LoginCanceledException e) {
+                    if(echo) {
                         return EMPTY_RESPONSE;
                     }
-                    // Responses are encoded in ISO-10646 UTF-8.
-                    return additional.getPassword().toCharArray();
+                    if(PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                        return bookmark.getCredentials().getPassword().toCharArray();
+                    }
+                    else {
+                        final StringAppender message = new StringAppender().append(instruction).append(prompt);
+                        // Properly handle an instruction field with embedded newlines.  They should also
+                        // be able to display at least 30 characters for the name and prompts.
+                        final Credentials additional;
+                        try {
+                            final StringAppender title = new StringAppender().append(name).append(
+                                LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
+                            );
+                            additional = callback.prompt(bookmark, bookmark.getCredentials().getUsername(), title.toString(),
+                                message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
+                                    .usernamePlaceholder(bookmark.getCredentials().getUsername())
+                            );
+                        }
+                        catch(LoginCanceledException e) {
+                            return EMPTY_RESPONSE;
+                        }
+                        // Responses are encoded in ISO-10646 UTF-8.
+                        return additional.getPassword().toCharArray();
+                    }
                 }
 
                 @Override
