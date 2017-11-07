@@ -42,8 +42,8 @@ public class SpectraWriteFeature extends S3WriteFeature {
     /**
      * Add default metadata
      */
-    protected S3Object getDetails(final String key, final TransferStatus status) {
-        final S3Object object = super.getDetails(key, status);
+    protected S3Object getDetails(final Path file, final TransferStatus status) {
+        final S3Object object = super.getDetails(file, status);
         final Checksum checksum = status.getChecksum();
         if(Checksum.NONE != checksum) {
             switch(checksum.algorithm) {

@@ -45,6 +45,11 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.sftp.auth.SFTPAgentAuthentication;
+import ch.cyberduck.core.sftp.auth.SFTPChallengeResponseAuthentication;
+import ch.cyberduck.core.sftp.auth.SFTPNoneAuthentication;
+import ch.cyberduck.core.sftp.auth.SFTPPasswordAuthentication;
+import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -220,7 +225,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final List<SFTPAuthentication> methods = new ArrayList<SFTPAuthentication>();
+        final List<AuthenticationProvider<Boolean>> methods = new ArrayList<AuthenticationProvider<Boolean>>();
         final Credentials credentials = host.getCredentials();
         if(credentials.isAnonymousLogin()) {
             methods.add(new SFTPNoneAuthentication(this));
@@ -230,25 +235,30 @@ public class SFTPSession extends Session<SSHClient> {
                 methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
                 methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
             }
-            if(credentials.isPublicKeyAuthentication()) {
-                methods.add(new SFTPPublicKeyAuthentication(this, keychain));
-            }
-            methods.add(new SFTPChallengeResponseAuthentication(this));
+            methods.add(new SFTPPublicKeyAuthentication(this));
             methods.add(new SFTPPasswordAuthentication(this));
+            methods.add(new SFTPChallengeResponseAuthentication(this));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods", methods.size()));
         }
         BackgroundException lastFailure = null;
-        for(SFTPAuthentication auth : methods) {
+        for(AuthenticationProvider<Boolean> auth : methods) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication with credentials %s and authentication method %s", credentials, auth));
             }
             cancel.verify();
             try {
-                if(!auth.authenticate(host, prompt, cancel)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Login refused with credentials %s and authentication method %s", credentials, auth));
+                if(!auth.authenticate(host, keychain, prompt, cancel)) {
+                    if(client.getUserAuth().hadPartialSuccess()) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Partial login success with credentials %s and authentication method %s", credentials, auth));
+                        }
+                    }
+                    else {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Login refused with credentials %s and authentication method %s", credentials, auth));
+                        }
                     }
                     continue;
                 }
@@ -279,9 +289,6 @@ public class SFTPSession extends Session<SSHClient> {
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Login successful with authentication method %s", auth));
-            }
-            if(client.getUserAuth().hadPartialSuccess()) {
-                continue;
             }
             break;
         }

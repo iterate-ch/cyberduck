@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -41,15 +42,17 @@ public class S3VersionedObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(S3VersionedObjectListService.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3Session session;
+    private final S3AttributesFinderFeature attributes;
 
     public S3VersionedObjectListService(final S3Session session) {
         this.session = session;
+        this.attributes = new S3AttributesFinderFeature(session);
     }
 
     @Override
@@ -62,37 +65,48 @@ public class S3VersionedObjectListService implements ListService {
             String priorLastVersionId = null;
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                        bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
-                        preferences.getInteger("s3.listing.chunksize"),
-                        priorLastKey, priorLastVersionId, true);
+                    bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
+                    preferences.getInteger("s3.listing.chunksize"),
+                    priorLastKey, priorLastVersionId, true);
                 // Amazon S3 returns object versions in the order in which they were
                 // stored, with the most recently stored returned first.
                 final List<BaseVersionOrDeleteMarker> items = Arrays.asList(chunk.getItems());
                 int i = 0;
                 for(BaseVersionOrDeleteMarker marker : items) {
                     final String key = PathNormalizer.normalize(marker.getKey());
+                    if(String.valueOf(Path.DELIMITER).equals(key)) {
+                        log.warn(String.format("Skipping prefix %s", key));
+                        continue;
+                    }
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
-                    final Path p = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.file));
+                    final PathAttributes attributes = new PathAttributes();
                     if(!StringUtils.equals("null", marker.getVersionId())) {
                         // If you have not enabled versioning, then S3 sets the version ID value to null.
-                        p.attributes().setVersionId(marker.getVersionId());
+                        attributes.setVersionId(marker.getVersionId());
                     }
-                    p.attributes().setRevision(++i);
-                    p.attributes().setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
-                    p.attributes().setModificationDate(marker.getLastModified().getTime());
-                    p.attributes().setRegion(bucket.attributes().getRegion());
+                    attributes.setRevision(++i);
+                    attributes.setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
+                    attributes.setModificationDate(marker.getLastModified().getTime());
+                    attributes.setRegion(bucket.attributes().getRegion());
                     if(marker instanceof S3Version) {
-                        p.attributes().setSize(((S3Version) marker).getSize());
-                        p.attributes().setETag(((S3Version) marker).getEtag());
-                        p.attributes().setStorageClass(((S3Version) marker).getStorageClass());
+                        final S3Version object = (S3Version) marker;
+                        attributes.setSize(object.getSize());
+                        if(StringUtils.isNotBlank(object.getEtag())) {
+                            attributes.setChecksum(Checksum.parse(object.getEtag()));
+                            attributes.setETag(object.getEtag());
+                        }
+                        if(StringUtils.isNotBlank(object.getStorageClass())) {
+                            attributes.setStorageClass(object.getStorageClass());
+                        }
                     }
-                    children.add(p);
+                    final Path f = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
+                    children.add(f);
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
-                    if(common.equals(String.valueOf(Path.DELIMITER))) {
+                    if(String.valueOf(Path.DELIMITER).equals(common)) {
                         log.warn(String.format("Skipping prefix %s", common));
                         continue;
                     }

@@ -45,11 +45,10 @@ public class S3ObjectListService implements ListService {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final S3Session session;
-
     private final PathContainerService containerService
             = new S3PathContainerService();
 
+    private final S3Session session;
     private final S3AttributesFinderFeature attributes;
 
     public S3ObjectListService(final S3Session session) {
@@ -84,6 +83,10 @@ public class S3ObjectListService implements ListService {
                 final StorageObject[] objects = chunk.getObjects();
                 for(StorageObject object : objects) {
                     final String key = PathNormalizer.normalize(object.getKey());
+                    if(String.valueOf(Path.DELIMITER).equals(key)) {
+                        log.warn(String.format("Skipping prefix %s", key));
+                        continue;
+                    }
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
@@ -103,7 +106,7 @@ public class S3ObjectListService implements ListService {
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
-                    if(common.equals(String.valueOf(Path.DELIMITER))) {
+                    if(String.valueOf(Path.DELIMITER).equals(common)) {
                         log.warn(String.format("Skipping prefix %s", common));
                         continue;
                     }

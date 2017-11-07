@@ -39,6 +39,7 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -51,7 +52,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.RandomStringGenerator;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -66,6 +66,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,24 +78,19 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class UDTProxyConfiguratorTest {
 
-    @BeforeClass
-    public static void register() {
-        ProtocolFactory.get().register(new S3Protocol());
-    }
-
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectNoServer() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider() {
-                    @Override
-                    public Host find(final Location.Name region, final boolean tls) {
-                        // No server here
-                        return new Host(new UDTProtocol(), "test-us-east-1-cyberduck", Scheme.udt.getPort());
-                    }
-                }, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+            new LocalhostProxyProvider() {
+                @Override
+                public Host find(final Location.Name region, final boolean tls) {
+                    // No server here
+                    return new Host(new UDTProtocol(), "test-us-east-1-cyberduck", Scheme.udt.getPort());
+                }
+            }, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         try {
@@ -114,10 +110,10 @@ public class UDTProxyConfiguratorTest {
     @Test(expected = MissingReceiptException.class)
     public void testConnectNoReceipt() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new QloudsonicProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
+            new QloudsonicProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         tunneled.open(new DisabledHostKeyCallback());
@@ -126,10 +122,10 @@ public class UDTProxyConfiguratorTest {
     @Test(expected = ConnectionCanceledException.class)
     public void testConnectFailureCertificateTls() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider(), new AbstractX509TrustManager() {
+            new LocalhostProxyProvider(), new AbstractX509TrustManager() {
             @Override
             public X509TrustManager init() {
                 return this;
@@ -160,17 +156,17 @@ public class UDTProxyConfiguratorTest {
     @Test(expected = QuotaException.class)
     public void testUploadQuotaFailure() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider() {
-                    @Override
-                    public List<Header> headers() {
-                        final List<Header> headers = new ArrayList<Header>();
-                        headers.add(new Header("X-Qloudsonic-Voucher", "-u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von"));
-                        return headers;
-                    }
-                }, new DefaultX509TrustManager() {
+            new LocalhostProxyProvider() {
+                @Override
+                public List<Header> headers() {
+                    final List<Header> headers = new ArrayList<Header>();
+                    headers.add(new Header("X-Qloudsonic-Voucher", "-u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von"));
+                    return headers;
+                }
+            }, new DefaultX509TrustManager() {
             @Override
             public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
 
@@ -189,11 +185,11 @@ public class UDTProxyConfiguratorTest {
         out.close();
         status.setLength(content.length);
         final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume)),
-                UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+            UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
         try {
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                new DisabledStreamListener(), status, new DisabledConnectionCallback());
         }
         catch(QuotaException e) {
             assertEquals("Voucher -u9zTIKCXHTWPO9WA4fBsIaQ5SjEH5von not found. Request Error. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -203,13 +199,14 @@ public class UDTProxyConfiguratorTest {
 
     @Test
     public void testUnsecureConnection() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/S3 (HTTP).cyberduckprofile"));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
+            new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
@@ -220,13 +217,14 @@ public class UDTProxyConfiguratorTest {
 
     @Test
     public void testWrite() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/S3 (HTTP).cyberduckprofile"));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, "s3.amazonaws.com", new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
+            new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
@@ -244,10 +242,10 @@ public class UDTProxyConfiguratorTest {
         status.setLength(random.getBytes().length);
 
         final Path test = new Path(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+            UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+            new DisabledStreamListener(), status, new DisabledConnectionCallback());
 
         assertTrue(tunneled.getFeature(Find.class).find(test));
         assertEquals(status.getLength(), tunneled.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
@@ -274,10 +272,10 @@ public class UDTProxyConfiguratorTest {
     @Test
     public void testReadRange() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
-                new LocalhostProxyProvider(), new DefaultX509TrustManager() {
+            new LocalhostProxyProvider(), new DefaultX509TrustManager() {
             @Override
             public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
                 //

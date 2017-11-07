@@ -43,12 +43,10 @@ public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
     private final Deserializer<String> dict;
-
     /**
      * The actual protocol implementation registered
      */
     private final Protocol parent;
-
     private final Local image;
 
     public Profile(final Protocol parent, final Deserializer<String> dict) {
@@ -346,6 +344,14 @@ public class Profile implements Protocol, Serializable {
             return parent.isCertificateConfigurable();
         }
         return this.bool("Certificate Configurable");
+    }
+
+    @Override
+    public boolean isPrivateKeyConfigurable() {
+        if(StringUtils.isBlank(this.value("Private Key Configurable"))) {
+            return parent.isPrivateKeyConfigurable();
+        }
+        return this.bool("Private Key Configurable");
     }
 
     @Override

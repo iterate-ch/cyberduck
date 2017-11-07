@@ -21,6 +21,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -112,6 +113,8 @@ public class S3MultipleDeleteFeatureTest {
             new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse(new S3FindFeature(session).find(test));
         }
+        assertFalse(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(
+            new Path(container, name, EnumSet.of(Path.Type.directory))));
         session.close();
     }
 

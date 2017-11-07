@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSScreen;
 import ch.cyberduck.binding.foundation.NSDictionary;
 
+import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 
 /**
@@ -85,6 +86,13 @@ public abstract class QLPreviewPanel extends NSPanel {
      * <i>native declaration : line 54</i>
      */
     public abstract void updateController();
+
+    /**
+     * You should never change the preview panel’s state (its delegate, datasource, and so on) if you are not controlling it.
+     *
+     * @return The current first responder accepting to control the preview panel.
+     */
+    public abstract ID currentController();
 
     /**
      * @abstract Asks the Preview Panel to reload its data from its data source.<br>

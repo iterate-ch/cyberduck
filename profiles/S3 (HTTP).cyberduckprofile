@@ -16,5 +16,7 @@
         <true/>
         <key>Port Configurable</key>
         <true/>
+        <key>Username Configurable</key>
+        <true/>
     </dict>
 </plist>

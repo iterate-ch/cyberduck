@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -88,10 +89,11 @@ public class CopyWorker extends Worker<List<Path>> {
                         targets.add(directory.mkdir(r.getValue(), null, new TransferStatus()));
                     }
                     else {
-                        targets.add(copy.copy(r.getKey(), r.getValue(), new TransferStatus()
-                                .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
-                                .length(r.getKey().attributes().getSize()), callback)
-                        );
+                        final TransferStatus status = new TransferStatus()
+                            .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                            .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
+                            .length(r.getKey().attributes().getSize());
+                        targets.add(copy.copy(r.getKey(), r.getValue(), status, callback));
                     }
                 }
             }
@@ -126,7 +128,7 @@ public class CopyWorker extends Worker<List<Path>> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
-                files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
+            files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
     }
 
     @Override

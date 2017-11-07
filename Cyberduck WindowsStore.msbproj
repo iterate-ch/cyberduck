@@ -192,6 +192,9 @@
     <LayoutFile Include="$(OutputPath)profiles\DAV.cyberduckprofile">
       <PackagePath>$(PackageLayout)\profiles\DAV.cyberduckprofile</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\DRACOON (Email Address).cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\DRACOON (Email Address).cyberduckprofile</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)profiles\DAVS.cyberduckprofile">
       <PackagePath>$(PackageLayout)\profiles\DAVS.cyberduckprofile</PackagePath>
     </LayoutFile>

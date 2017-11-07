@@ -33,5 +33,7 @@
         <string>yg1uopbf5c1h1rk</string>
         <key>OAuth Redirect Url</key>
         <string>https://cyberduck.io/oauth</string>
+        <key>Password Configurable</key>
+        <false/>
     </dict>
 </plist>

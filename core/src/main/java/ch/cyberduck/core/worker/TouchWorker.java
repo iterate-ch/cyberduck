@@ -23,6 +23,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -42,10 +44,20 @@ public class TouchWorker extends Worker<Path> {
         if(!feature.isSupported(file.getParent())) {
             throw new UnsupportedException();
         }
-        return feature.touch(file, new TransferStatus()
-                .exists(false)
-                .length(0L)
-                .withMime(new MappingMimeTypeService().getMime(file.getName())));
+        final TransferStatus status = new TransferStatus()
+            .exists(false)
+            .length(0L)
+            .withMime(new MappingMimeTypeService().getMime(file.getName()));
+        final Encryption encryption = session.getFeature(Encryption.class);
+        if(encryption != null) {
+            status.setEncryption(encryption.getDefault(file));
+        }
+        final Redundancy redundancy = session.getFeature(Redundancy.class);
+        if(redundancy != null) {
+            status.setStorageClass(redundancy.getDefault());
+        }
+        status.setTimestamp(System.currentTimeMillis());
+        return feature.touch(file, status);
     }
 
     @Override

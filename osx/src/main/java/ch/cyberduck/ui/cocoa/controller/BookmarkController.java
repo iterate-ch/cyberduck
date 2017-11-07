@@ -140,7 +140,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
         for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-                EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.googlestorage)))) {
+            EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.dracoon, Protocol.Type.googlestorage)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
@@ -455,7 +455,8 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                privateKeyPopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.sftp);
+
+                privateKeyPopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.sftp || bookmark.getProtocol().getType() == Protocol.Type.manta);
                 if(credentials.isPublicKeyAuthentication()) {
                     privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(credentials.getIdentity().getAbsolute()));
                 }

@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
@@ -147,6 +148,9 @@ public class LocalSession extends Session<FileSystem> {
         }
         if(type == Home.class) {
             return (T) new LocalHomeFinderFeature(this);
+        }
+        if(type == Quota.class) {
+            return (T) new LocalQuotaFeature(this);
         }
         return super._getFeature(type);
     }

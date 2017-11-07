@@ -399,6 +399,9 @@
       <Component Id="davs.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/DAVS.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="dracoon.cyberduckprofile">
+        <File Source="$(var.cyberduck.TargetDir)/profiles/DRACOON (Email Address).cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="dropbox.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Dropbox.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>

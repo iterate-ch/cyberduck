@@ -109,6 +109,12 @@ public final class HostParser {
                     username = input.substring(begin, input.indexOf(':', begin));
                     begin += username.length() + 1;
                     cut = input.indexOf('@', begin);
+                    try {
+                        username = URLDecoder.decode(username, "UTF-8");
+                    }
+                    catch(UnsupportedEncodingException e) {
+                        log.error(e.getMessage(), e);
+                    }
                     password = input.substring(begin, cut);
                     begin += password.length() + 1;
                 }
@@ -116,6 +122,12 @@ public final class HostParser {
                     // No password given
                     username = input.substring(begin, cut);
                     begin += username.length() + 1;
+                    try {
+                        username = URLDecoder.decode(username, "UTF-8");
+                    }
+                    catch(UnsupportedEncodingException e) {
+                        log.error(e.getMessage(), e);
+                    }
                 }
             }
         }

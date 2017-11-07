@@ -19,8 +19,6 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.MappingMimeTypeService;
-import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -36,9 +34,6 @@ public class SwiftTouchFeature implements Touch<StorageObject> {
     final PathContainerService containerService
             = new PathContainerService();
 
-    private final MimeTypeService mapping
-            = new MappingMimeTypeService();
-
     private Write writer;
 
     public SwiftTouchFeature(final SwiftSession session, final SwiftRegionService regionService) {
@@ -47,7 +42,6 @@ public class SwiftTouchFeature implements Touch<StorageObject> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setMime(mapping.getMime(file.getName()));
         status.setLength(0L);
         new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
         return file;

@@ -18,13 +18,13 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -33,6 +33,8 @@ import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -40,14 +42,10 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class S3SessionTest {
 
-    @BeforeClass
-    public static void register() {
-        ProtocolFactory.get().register(new S3Protocol());
-    }
-
     @Test
     public void testHttpProfile() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
@@ -247,7 +245,8 @@ public class S3SessionTest {
 
     @Test
     public void testBucketVirtualHostStyleEucalyptusDefaultHost() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
@@ -255,7 +254,8 @@ public class S3SessionTest {
 
     @Test
     public void testBucketVirtualHostStyleEucalyptusCustomDeployment() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, "ec.cyberduck.io");
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
@@ -264,7 +264,8 @@ public class S3SessionTest {
     @Test(expected = LoginFailureException.class)
     @Ignore
     public void testTemporaryAccessToken() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile"));
         assertTrue(profile.validate(new Credentials(), new LoginOptions(profile)));
         final Host host = new Host(profile);
@@ -305,11 +306,19 @@ public class S3SessionTest {
     }
 
     @Test
-    @Ignore
-    public void testAuthenticationV4Thirdparty() throws Exception {
+    public void testInteroperabilityMinio() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         ));
+        final S3Session session = new S3Session(host);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testConnectCn_North_1() throws Exception {
+        final Host host = new Host(new S3Protocol(), "s3.cn-north-1.amazonaws.com.cn");
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

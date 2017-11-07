@@ -51,15 +51,7 @@ public interface Protocol extends Comparable<Protocol> {
                 return true;
             }
         },
-        sftp {
-            @Override
-            public boolean validate(final Credentials credentials, final LoginOptions options) {
-                if(options.user) {
-                    return StringUtils.isNotBlank(credentials.getUsername());
-                }
-                return true;
-            }
-        },
+        sftp,
         s3,
         googlestorage {
             @Override
@@ -72,7 +64,7 @@ public interface Protocol extends Comparable<Protocol> {
         googledrive {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only requires the project token
+                // OAuth only
                 return true;
             }
         },
@@ -93,14 +85,15 @@ public interface Protocol extends Comparable<Protocol> {
         onedrive {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only requires the project token
+                // OAuth only
                 return true;
             }
         },
         irods,
         b2,
         file,
-        dracoon;
+        dracoon,
+        manta;
 
         /**
          * Check login credentials for validity for this protocol.
@@ -112,6 +105,16 @@ public interface Protocol extends Comparable<Protocol> {
         public boolean validate(final Credentials credentials, final LoginOptions options) {
             if(options.user) {
                 if(StringUtils.isBlank(credentials.getUsername())) {
+                    return false;
+                }
+            }
+            if(options.publickey) {
+                // No password may be required to decrypt private key
+                if(credentials.isPublicKeyAuthentication()) {
+                    return true;
+                }
+                if(!options.password) {
+                    // Require private key
                     return false;
                 }
             }
@@ -140,6 +143,8 @@ public interface Protocol extends Comparable<Protocol> {
     boolean isPasswordConfigurable();
 
     boolean isCertificateConfigurable();
+
+    boolean isPrivateKeyConfigurable();
 
     /**
      * @return False if the hostname to connect is static.
