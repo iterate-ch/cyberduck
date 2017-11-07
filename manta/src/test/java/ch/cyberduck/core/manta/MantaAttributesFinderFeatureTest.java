@@ -50,7 +50,7 @@ public class MantaAttributesFinderFeatureTest extends AbstractMantaTest {
         new MantaTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         final PathAttributes attributes = new MantaAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
-        assertNotEquals(-1L, attributes.getCreationDate());
+        assertEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
