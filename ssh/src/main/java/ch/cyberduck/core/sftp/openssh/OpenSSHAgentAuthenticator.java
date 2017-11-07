@@ -54,8 +54,8 @@ public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
 
     @Override
     public Collection<Identity> getIdentities() {
-        if(!SSHAgentConnector.isConnectorAvailable()) {
-            log.warn(String.format("Disabled agent %s", this));
+        if(!proxy.isRunning()) {
+            log.warn(String.format("SSH agent %s is not running", this));
             return Collections.emptyList();
         }
         if(null == proxy) {
@@ -65,7 +65,7 @@ public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
             log.debug(String.format("Retrieve identities from proxy %s", proxy));
         }
         final List<Identity> identities
-                = new ArrayList<Identity>();
+            = new ArrayList<Identity>();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Found %d identities", identities.size()));
         }
