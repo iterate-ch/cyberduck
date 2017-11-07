@@ -62,6 +62,15 @@ public class S3ProtocolTest {
     }
 
     @Test
+    public void testScheme() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            new Local("../profiles/Verizon Cloud Storage (AMS1A).cyberduckprofile"));
+        assertTrue(profile.isSecure());
+        assertEquals(Scheme.https, profile.getScheme());
+    }
+
+    @Test
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/default/S3 (HTTPS).cyberduckprofile"));
