@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.cli;
+using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Editor;
@@ -54,6 +55,11 @@ namespace Ch.Cyberduck.Cli
         protected override void setDefaults()
         {
             base.setDefaults();
+
+            defaults.put("application.container.name", "Cyberduck");
+            string support = SupportDirectoryFinderFactory.get().find().getAbsolute();
+            defaults.put("application.support.path", support);
+            defaults.put("application.receipt.path", support);
 
             Security.addProvider(new SunMSCAPI());
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
