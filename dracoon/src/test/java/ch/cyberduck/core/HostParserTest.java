@@ -17,8 +17,10 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +28,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.assertTrue;
 
+@Category(IntegrationTest.class)
 public class HostParserTest {
 
     @Test
