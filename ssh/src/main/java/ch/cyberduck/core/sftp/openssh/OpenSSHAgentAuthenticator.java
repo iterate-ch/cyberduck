@@ -18,7 +18,7 @@ package ch.cyberduck.core.sftp.openssh;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.sftp.AgentAuthenticator;
+import ch.cyberduck.core.sftp.auth.AgentAuthenticator;
 
 import org.apache.log4j.Logger;
 

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sftp;
+package ch.cyberduck.core.sftp.auth;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -26,6 +26,8 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
+import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +45,7 @@ import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PKCS5KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
+import net.schmizz.sshj.userauth.method.AuthPublickey;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
@@ -117,7 +120,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                         return false;
                     }
                 });
-                session.getClient().authPublickey(credentials.getUsername(), provider);
+                session.getClient().auth(credentials.getUsername(), new AuthPublickey(provider));
                 return session.getClient().isAuthenticated();
             }
             catch(IOException e) {

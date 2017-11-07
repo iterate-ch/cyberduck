@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sftp;
+package ch.cyberduck.core.sftp.auth;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -27,6 +27,8 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
+import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import net.schmizz.sshj.userauth.method.AuthPassword;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.PasswordUpdateProvider;
 import net.schmizz.sshj.userauth.password.Resource;
@@ -79,7 +82,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
         }
         try {
             // Use both password and keyboard-interactive
-            session.getClient().authPassword(credentials.getUsername(), new PasswordFinder() {
+            session.getClient().auth(credentials.getUsername(), new AuthPassword(new PasswordFinder() {
                 @Override
                 public char[] reqPassword(final Resource<?> resource) {
                     return credentials.getPassword().toCharArray();
@@ -109,7 +112,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                 public boolean shouldRetry(final Resource<?> resource) {
                     return false;
                 }
-            });
+            }));
             return session.getClient().isAuthenticated();
         }
         catch(IOException e) {
