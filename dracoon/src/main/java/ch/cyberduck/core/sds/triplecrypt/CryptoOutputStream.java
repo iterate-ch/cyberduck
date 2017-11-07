@@ -31,14 +31,14 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import com.dracoon.sdk.crypto.CryptoException;
+import com.dracoon.sdk.crypto.CryptoSystemException;
+import com.dracoon.sdk.crypto.CryptoUtils;
+import com.dracoon.sdk.crypto.FileEncryptionCipher;
+import com.dracoon.sdk.crypto.model.EncryptedDataContainer;
+import com.dracoon.sdk.crypto.model.PlainDataContainer;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import eu.ssp_europe.sds.crypto.CryptoException;
-import eu.ssp_europe.sds.crypto.CryptoSystemException;
-import eu.ssp_europe.sds.crypto.CryptoUtils;
-import eu.ssp_europe.sds.crypto.FileEncryptionCipher;
-import eu.ssp_europe.sds.crypto.model.EncryptedDataContainer;
-import eu.ssp_europe.sds.crypto.model.PlainDataContainer;
 
 public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<VersionId> {
 

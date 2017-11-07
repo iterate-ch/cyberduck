@@ -19,7 +19,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import eu.ssp_europe.sds.crypto.CryptoException;
+import com.dracoon.sdk.crypto.CryptoException;
 
 public class CryptoExceptionMappingService extends AbstractExceptionMappingService<CryptoException> {
 

@@ -105,9 +105,9 @@
             <version>2.2</version>
         </dependency>
         <dependency>
-            <groupId>eu.ssp-europe</groupId>
-            <artifactId>sds-crypto</artifactId>
-            <version>1.0.1</version>
+            <groupId>com.dracoon</groupId>
+            <artifactId>dracoon-crypto-sdk</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

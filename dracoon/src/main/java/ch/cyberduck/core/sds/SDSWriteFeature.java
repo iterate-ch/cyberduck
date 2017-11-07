@@ -57,12 +57,12 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.util.Collections;
 
+import com.dracoon.sdk.crypto.Crypto;
+import com.dracoon.sdk.crypto.CryptoSystemException;
+import com.dracoon.sdk.crypto.InvalidFileKeyException;
+import com.dracoon.sdk.crypto.InvalidKeyPairException;
+import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
-import eu.ssp_europe.sds.crypto.Crypto;
-import eu.ssp_europe.sds.crypto.CryptoSystemException;
-import eu.ssp_europe.sds.crypto.InvalidFileKeyException;
-import eu.ssp_europe.sds.crypto.InvalidKeyPairException;
-import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
 
 public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 

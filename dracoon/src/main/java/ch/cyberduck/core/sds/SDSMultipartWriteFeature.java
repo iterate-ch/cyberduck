@@ -68,12 +68,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.dracoon.sdk.crypto.Crypto;
+import com.dracoon.sdk.crypto.CryptoSystemException;
+import com.dracoon.sdk.crypto.InvalidFileKeyException;
+import com.dracoon.sdk.crypto.InvalidKeyPairException;
+import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
-import eu.ssp_europe.sds.crypto.Crypto;
-import eu.ssp_europe.sds.crypto.CryptoSystemException;
-import eu.ssp_europe.sds.crypto.InvalidFileKeyException;
-import eu.ssp_europe.sds.crypto.InvalidKeyPairException;
-import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
 
 import static ch.cyberduck.core.sds.SDSWriteFeature.DEFAULT_CLASSIFICATION;
 

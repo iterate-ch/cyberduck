@@ -44,12 +44,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import eu.ssp_europe.sds.crypto.Crypto;
-import eu.ssp_europe.sds.crypto.CryptoException;
-import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
-import eu.ssp_europe.sds.crypto.model.PlainFileKey;
-import eu.ssp_europe.sds.crypto.model.UserKeyPair;
-import eu.ssp_europe.sds.crypto.model.UserPrivateKey;
+import com.dracoon.sdk.crypto.Crypto;
+import com.dracoon.sdk.crypto.CryptoException;
+import com.dracoon.sdk.crypto.model.EncryptedFileKey;
+import com.dracoon.sdk.crypto.model.PlainFileKey;
+import com.dracoon.sdk.crypto.model.UserKeyPair;
+import com.dracoon.sdk.crypto.model.UserPrivateKey;
 
 public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature<List<UserFileKeySetRequest>> {
     private static final Logger log = Logger.getLogger(SDSMissingFileKeysSchedulerFeature.class);

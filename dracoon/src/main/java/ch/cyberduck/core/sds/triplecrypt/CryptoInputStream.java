@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import eu.ssp_europe.sds.crypto.CryptoException;
-import eu.ssp_europe.sds.crypto.FileDecryptionCipher;
-import eu.ssp_europe.sds.crypto.model.EncryptedDataContainer;
-import eu.ssp_europe.sds.crypto.model.PlainDataContainer;
+import com.dracoon.sdk.crypto.CryptoException;
+import com.dracoon.sdk.crypto.FileDecryptionCipher;
+import com.dracoon.sdk.crypto.model.EncryptedDataContainer;
+import com.dracoon.sdk.crypto.model.PlainDataContainer;
 
 public class CryptoInputStream extends ProxyInputStream {
 
