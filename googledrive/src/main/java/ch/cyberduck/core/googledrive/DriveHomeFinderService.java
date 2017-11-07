@@ -25,6 +25,8 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
     public static final String ROOT_FOLDER_ID = "root";
     public static final String SHARED_FOLDER_NAME
             = LocaleFactory.localizedString("Shared with me", "Google Drive");
+    public static final String TEAM_DRIVES_NAME
+        = LocaleFactory.localizedString("Team Drives", "Google Drive");
 
     public DriveHomeFinderService(final DriveSession session) {
         super(session);

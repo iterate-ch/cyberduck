@@ -54,6 +54,8 @@ public class DriveDefaultListService extends AbstractDriveListService {
         if(directory.isRoot()) {
             list.add(new Path(DriveHomeFinderService.SHARED_FOLDER_NAME, EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume)));
             listener.chunk(directory, list);
+            list.add(new Path(DriveHomeFinderService.TEAM_DRIVES_NAME, EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume)));
+            listener.chunk(directory, list);
         }
         return list;
     }
