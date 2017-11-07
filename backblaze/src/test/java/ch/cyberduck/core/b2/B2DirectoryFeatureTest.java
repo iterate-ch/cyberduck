@@ -133,7 +133,7 @@ public class B2DirectoryFeatureTest {
         final Path test = new B2DirectoryFeature(session, new B2WriteFeature(session)).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
         assertEquals(timestamp, new B2AttributesFinderFeature(session).find(test).getModificationDate());
         // Timestamp for placeholder is unknown. Only set on /.bzEmpty
-        assertEquals(-1L, new B2ObjectListService(session).list(directory, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
+        assertEquals(timestamp, new B2ObjectListService(session).list(directory, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
         new B2DeleteFeature(session).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

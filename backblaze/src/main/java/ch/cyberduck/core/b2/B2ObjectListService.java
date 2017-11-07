@@ -47,7 +47,7 @@ public class B2ObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(B2ObjectListService.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final B2Session session;
 
@@ -88,10 +88,10 @@ public class B2ObjectListService implements ListService {
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
-                        fileid.getFileid(containerService.getContainer(directory), listener),
-                        marker.nextFilename, marker.nextFileId, chunksize,
-                        containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
-                        String.valueOf(Path.DELIMITER));
+                    fileid.getFileid(containerService.getContainer(directory), listener),
+                    marker.nextFilename, marker.nextFileId, chunksize,
+                    containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
+                    String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
                 listener.chunk(directory, objects);
             }
@@ -114,7 +114,8 @@ public class B2ObjectListService implements ListService {
             }
             if(StringUtils.isBlank(info.getFileId())) {
                 // Common prefix
-                final Path placeholder = new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                final Path placeholder = new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder),
+                    new B2AttributesFinderFeature(session).find(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
                 objects.add(placeholder);
                 continue;
             }
@@ -131,7 +132,7 @@ public class B2ObjectListService implements ListService {
             revisions.put(info.getFileName(), revision);
             attributes.setRevision(revision);
             objects.add(new Path(directory, PathNormalizer.name(info.getFileName()),
-                    info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes));
+                info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes));
         }
         if(null == response.getNextFileName()) {
             return new Marker(response.getNextFileName(), response.getNextFileId());
@@ -146,7 +147,7 @@ public class B2ObjectListService implements ListService {
     protected PathAttributes parse(final B2FileInfoResponse response) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setChecksum(
-                Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
+            Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
         );
         final long timestamp = response.getUploadTimestamp();
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
