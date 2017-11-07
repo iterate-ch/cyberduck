@@ -29,6 +29,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -100,7 +101,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
                         final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
-                        request = new HttpPatch(String.format("%s/upload/drive/v3/files/%s", base, fileid));
+                        request = new HttpPatch(String.format("%s/upload/drive/v3/files/%s?supportsTeamDrives=true", base, fileid));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
                         }
@@ -108,11 +109,11 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                         request.setEntity(entity);
                     }
                     else {
-                        request = new HttpPost(String.format("%s/upload/drive/v3/files?uploadType=resumable", base));
+                        request = new HttpPost(String.format(String.format("%%s/upload/drive/v3/files?uploadType=resumable&supportsTeamDrives=%s", PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")), base));
                         request.setEntity(new StringEntity("{\"name\": \""
-                                + file.getName() + "\", \"parents\": [\""
-                                + new DriveFileidProvider(session).getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
-                                ContentType.create("application/json", "UTF-8")));
+                            + file.getName() + "\", \"parents\": [\""
+                            + new DriveFileidProvider(session).getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
+                            ContentType.create("application/json", "UTF-8")));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             // Set to the media MIME type of the upload data to be transferred in subsequent requests.
                             request.addHeader("X-Upload-Content-Type", status.getMime());
@@ -127,7 +128,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                                 break;
                             default:
                                 throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                        response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                    response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
                     finally {
@@ -147,7 +148,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                                         break;
                                     default:
                                         throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                                putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
+                                            putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
                                 }
                             }
                             finally {
@@ -156,7 +157,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                         }
                         else {
                             throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                    response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
                     return null;

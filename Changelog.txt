@@ -5,6 +5,7 @@ https://cyberduck.io/
 - [Feature] Support for DRACOON cloud service (DRACOON)
 - [Feature] Support for Joyent Triton Object Storage (Triton)
 - [Feature] Support for China (Beijing) region (S3)
+- [Feature] Support for Google Team Drives (Google Drive) (#9928)
 - [Bugfix] Allow custom endpoint with default connection profile (S3)
 - [Bugfix] Unnecessary password prompt for connection (Local Disk)
 - [Bugfix] Login where authentication is required with both password and one-time passcode (SFTP)

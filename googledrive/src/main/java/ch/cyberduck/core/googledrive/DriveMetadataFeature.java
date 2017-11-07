@@ -20,6 +20,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -44,7 +45,8 @@ public class DriveMetadataFeature implements Metadata {
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
             final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
-            final Map<String, String> properties = session.getClient().files().get(fileid).setFields("properties").execute().getProperties();
+            final Map<String, String> properties = session.getClient().files().get(fileid).setFields("properties")
+                .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute().getProperties();
             if(null == properties) {
                 return Collections.emptyMap();
             }
@@ -61,7 +63,8 @@ public class DriveMetadataFeature implements Metadata {
             final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
             final File body = new File();
             body.setProperties(metadata);
-            session.getClient().files().update(fileid, body).setFields("properties").execute();
+            session.getClient().files().update(fileid, body).setFields("properties").
+                setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);

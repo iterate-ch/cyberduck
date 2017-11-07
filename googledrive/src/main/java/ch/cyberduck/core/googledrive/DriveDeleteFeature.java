@@ -20,6 +20,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +41,8 @@ public class DriveDeleteFeature implements Delete {
             }
             callback.delete(file);
             try {
-                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener())).execute();
+                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener()))
+                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             }
             catch(IOException e) {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);

@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -42,7 +43,8 @@ public class DriveCopyFeature implements Copy {
         try {
             final File copy = session.getClient().files().copy(new DriveFileidProvider(session).getFileid(source, new DisabledListProgressListener()), new File()
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())))
-                    .setName(target.getName())).execute();
+                .setName(target.getName()))
+                .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             return new Path(target.getParent(), target.getName(), target.getType(),
                     new PathAttributes(target.attributes()).withVersionId(copy.getId()));
         }

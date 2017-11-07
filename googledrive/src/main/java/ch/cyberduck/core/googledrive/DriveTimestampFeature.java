@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import java.io.IOException;
@@ -39,7 +40,8 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
             final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
             final File properties = new File();
             properties.setModifiedTime(new DateTime(modified));
-            session.getClient().files().update(fileid, properties).setFields("modifiedTime").execute();
+            session.getClient().files().update(fileid, properties).setFields("modifiedTime").
+                setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);

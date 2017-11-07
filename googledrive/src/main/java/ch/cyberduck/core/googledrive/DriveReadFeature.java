@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
@@ -73,7 +74,7 @@ public class DriveReadFeature implements Read {
             }
             else {
                 final String base = session.getClient().getRootUrl();
-                final HttpUriRequest request = new HttpGet(String.format("%s/drive/v3/files/%s?alt=media", base,
+                final HttpUriRequest request = new HttpGet(String.format(String.format("%%s/drive/v3/files/%%s?alt=media&supportsTeamDrives=%s", PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")), base,
                         new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener())));
                 request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                 if(status.isAppend()) {

@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
@@ -64,25 +65,28 @@ public class DriveMoveFeature implements Move {
                 final File properties = new File();
                 properties.setName(renamed.getName());
                 properties.setMimeType(status.getMime());
-                session.getClient().files().update(fileid, properties).execute();
+                session.getClient().files().update(fileid, properties).
+                    setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             }
             // Retrieve the existing parents to remove
             final StringBuilder previousParents = new StringBuilder();
             final File reference = session.getClient().files().get(fileid)
-                    .setFields("parents")
-                    .execute();
+                .setFields("parents")
+                .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                .execute();
             for(String parent : reference.getParents()) {
                 previousParents.append(parent);
                 previousParents.append(',');
             }
             // Move the file to the new folder
             session.getClient().files().update(fileid, null)
-                    .setAddParents(new DriveFileidProvider(session).getFileid(renamed.getParent(), new DisabledListProgressListener()))
-                    .setRemoveParents(previousParents.toString())
-                    .setFields("id, parents")
-                    .execute();
+                .setAddParents(new DriveFileidProvider(session).getFileid(renamed.getParent(), new DisabledListProgressListener()))
+                .setRemoveParents(previousParents.toString())
+                .setFields("id, parents")
+                .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                .execute();
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-                    new PathAttributes(renamed.attributes()).withVersionId(fileid));
+                new PathAttributes(renamed.attributes()).withVersionId(fileid));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);

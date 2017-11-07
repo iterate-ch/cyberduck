@@ -44,6 +44,9 @@ public class DriveFileidProvider implements IdProvider {
         if(file.isRoot()) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
+        if(file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)) {
+            return DriveHomeFinderService.ROOT_FOLDER_ID;
+        }
         final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
         if(null == found) {
@@ -56,5 +59,4 @@ public class DriveFileidProvider implements IdProvider {
     public IdProvider withCache(final Cache<Path> cache) {
         return this;
     }
-
 }
