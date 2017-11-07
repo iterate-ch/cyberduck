@@ -31,10 +31,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
+import com.dracoon.sdk.crypto.Crypto;
+import com.dracoon.sdk.crypto.CryptoSystemException;
+import com.dracoon.sdk.crypto.InvalidFileKeyException;
 import com.fasterxml.jackson.databind.ObjectReader;
-import eu.ssp_europe.sds.crypto.Crypto;
-import eu.ssp_europe.sds.crypto.CryptoSystemException;
-import eu.ssp_europe.sds.crypto.InvalidFileKeyException;
 
 public class CryptoWriteFeature implements Write<VersionId> {
 

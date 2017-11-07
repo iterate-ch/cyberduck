@@ -32,9 +32,9 @@ import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
-import eu.ssp_europe.sds.crypto.Crypto;
-import eu.ssp_europe.sds.crypto.CryptoException;
-import eu.ssp_europe.sds.crypto.model.UserKeyPair;
+import com.dracoon.sdk.crypto.Crypto;
+import com.dracoon.sdk.crypto.CryptoException;
+import com.dracoon.sdk.crypto.model.UserKeyPair;
 
 public class TripleCryptKeyPair {
     private static final Logger log = Logger.getLogger(TripleCryptKeyPair.class);

@@ -31,8 +31,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import com.dracoon.sdk.crypto.Crypto;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import eu.ssp_europe.sds.crypto.Crypto;
 
 public class SDSDelegatingCopyFeature implements Copy {
 

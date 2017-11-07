@@ -21,10 +21,10 @@ import ch.cyberduck.core.sds.io.swagger.client.model.PrivateKeyContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.PublicKeyContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 
-import eu.ssp_europe.sds.crypto.model.EncryptedFileKey;
-import eu.ssp_europe.sds.crypto.model.PlainFileKey;
-import eu.ssp_europe.sds.crypto.model.UserKeyPair;
-import eu.ssp_europe.sds.crypto.model.UserPublicKey;
+import com.dracoon.sdk.crypto.model.EncryptedFileKey;
+import com.dracoon.sdk.crypto.model.PlainFileKey;
+import com.dracoon.sdk.crypto.model.UserKeyPair;
+import com.dracoon.sdk.crypto.model.UserPublicKey;
 
 public class TripleCryptConverter {
     public static FileKey toSwaggerFileKey(final EncryptedFileKey k) {
