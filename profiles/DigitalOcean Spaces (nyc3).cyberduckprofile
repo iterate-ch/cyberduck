@@ -34,6 +34,6 @@
         <key>Password Placeholder</key>
         <string>Secret Key</string>
         <key>Authorization</key>
-        <string>AWS2</string>
+        <string>AWS4</string>
     </dict>
 </plist>
