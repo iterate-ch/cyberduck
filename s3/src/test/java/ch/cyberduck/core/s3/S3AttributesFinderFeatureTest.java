@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -151,23 +150,6 @@ public class S3AttributesFinderFeatureTest {
         assertEquals(0L, attributes.getSize());
         assertEquals(Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"), attributes.getChecksum());
         assertNotEquals(-1L, attributes.getModificationDate());
-        session.close();
-    }
-
-    @Test
-    public void testVersioningReadAttributesFile() throws Exception {
-        final S3Session session = new S3Session(
-            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(
-                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                )));
-        session.open(new DisabledHostKeyCallback());
-        final PathAttributes attributes = new PathAttributes();
-        // Retrieve latest object version
-        attributes.setVersionId("a.wvRLBNdY1MncqxF5Jt.hPn3NejhheK");
-        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        assertEquals("a.wvRLBNdY1MncqxF5Jt.hPn3NejhheK", new S3AttributesFinderFeature(session).find(
-            new Path(bucket, "test", EnumSet.of(AbstractPath.Type.file))).getVersionId());
         session.close();
     }
 
