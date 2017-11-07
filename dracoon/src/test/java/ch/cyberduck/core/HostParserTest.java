@@ -20,7 +20,9 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertTrue;
 
@@ -28,13 +30,12 @@ public class HostParserTest {
 
     @Test
     public void testParseUsernameFromUrlEvent() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(Collections.singleton(new SDSProtocol()));
-        final Profile profile = new ProfilePlistReader(factory).read(
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
             new Local("../profiles/default/DRACOON (Email Address).cyberduckprofile"));
         assertTrue(new Host(new SDSProtocol(), "duck.ssp-europe.eu", 443, "/cyberduck-test/key", new Credentials(
             System.getProperties().getProperty("sds.user")
         ))
-            .compareTo(new HostParser(factory, profile).get(
+            .compareTo(new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
                 "dracoon://post%40iterate.ch@duck.ssp-europe.eu/key")) == 0);
     }
 }
