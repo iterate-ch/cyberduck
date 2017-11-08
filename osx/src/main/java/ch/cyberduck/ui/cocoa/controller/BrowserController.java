@@ -1120,8 +1120,8 @@ public class BrowserController extends WindowController
                 Column.filename.name())));
             c.setMaxWidth(new CGFloat(1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            outlineCellPrototype.setEditable(true);
             c.setDataCell(outlineCellPrototype);
-            c.setEditable(true);
             browserOutlineView.addTableColumn(c);
             browserOutlineView.setOutlineTableColumn(c);
         }
@@ -1282,8 +1282,8 @@ public class BrowserController extends WindowController
                 Column.filename.name())));
             c.setMaxWidth((1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            filenameCellPrototype.setEditable(true);
             c.setDataCell(filenameCellPrototype);
-            c.setEditable(true);
             this.browserListView.addTableColumn(c);
         }
 
