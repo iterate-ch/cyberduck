@@ -154,7 +154,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveFindFeature(this);
         }
         if(type == AttributesFinder.class) {
-            return (T) new DriveFindFeature(this);
+            return (T) new DriveAttributesFinderFeature(this);
         }
         return super._getFeature(type);
     }
