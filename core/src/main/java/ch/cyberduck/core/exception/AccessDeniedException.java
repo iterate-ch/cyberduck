@@ -28,11 +28,11 @@ public class AccessDeniedException extends BackgroundException {
     }
 
     public AccessDeniedException(final String detail) {
-        super(LocaleFactory.localizedString("Access denied", "Credentials"), detail);
+        super(LocaleFactory.localizedString("Access denied", "Error"), detail);
     }
 
     public AccessDeniedException(final String detail, final Throwable cause) {
-        super(LocaleFactory.localizedString("Access denied", "Credentials"), detail, cause);
+        super(LocaleFactory.localizedString("Access denied", "Error"), detail, cause);
     }
 
     @Override
