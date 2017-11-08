@@ -40,7 +40,7 @@ public class MantaProtocolTest {
     @Test
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new MantaProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/Joyent Triton Object Storage.cyberduckprofile"));
+        final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/Joyent Triton Object Storage (us-east).cyberduckprofile"));
         assertTrue(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());
@@ -51,7 +51,7 @@ public class MantaProtocolTest {
     @Test
     public void testValidateCredentials() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new MantaProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/Joyent Triton Object Storage.cyberduckprofile"));
+        final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/Joyent Triton Object Storage (us-east).cyberduckprofile"));
         assertFalse(profile.validate(new Credentials(), new LoginOptions(profile)));
         assertFalse(profile.validate(new Credentials("u@domain"), new LoginOptions(profile)));
         assertFalse(profile.validate(new Credentials("u@domain", "p"), new LoginOptions(profile)));
