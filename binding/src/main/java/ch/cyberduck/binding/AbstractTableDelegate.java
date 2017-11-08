@@ -53,7 +53,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     /**
      * @return By default no column is editable. To be overriden in subclasses
      */
-    public boolean isColumnRowEditable(final NSTableColumn column, final int row) {
+    public boolean isColumnRowEditable(final NSTableColumn column, final NSInteger row) {
         return false;
     }
 
@@ -75,14 +75,14 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
      * @see NSTableView.DataSource
      */
     public boolean tableView_shouldEditTableColumn_row(final NSTableView view, final NSTableColumn c, final NSInteger row) {
-        return this.isColumnRowEditable(c, row.intValue());
+        return this.isColumnRowEditable(c, row);
     }
 
     /**
      * @see NSTableView.DataSource
      */
     public boolean outlineView_shouldEditTableColumn_item(final NSOutlineView view, final NSTableColumn c, final NSObject item) {
-        return this.isColumnRowEditable(c, -1);
+        return this.isColumnRowEditable(c, view.rowForItem(item));
     }
 
     public boolean selectionShouldChange() {
@@ -185,12 +185,12 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     }
 
     public boolean tableView_shouldTypeSelectForEvent_withCurrentSearchString(
-            final NSTableView view, final NSEvent event, final String searchString) {
+        final NSTableView view, final NSEvent event, final String searchString) {
         return this.isTypeSelectSupported();
     }
 
     public boolean outlineView_shouldTypeSelectForEvent_withCurrentSearchString(
-            final NSOutlineView view, final NSEvent event, final String searchString) {
+        final NSOutlineView view, final NSEvent event, final String searchString) {
         return this.isTypeSelectSupported();
     }
 

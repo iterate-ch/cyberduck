@@ -946,9 +946,9 @@ public class InfoController extends ToolbarWindowController {
             aclTable.tableColumnWithIdentifier(AclColumns.GRANTEE.name())
         ) {
             @Override
-            public boolean isColumnRowEditable(NSTableColumn column, int row) {
+            public boolean isColumnRowEditable(NSTableColumn column, NSInteger row) {
                 if(column.identifier().equals(AclColumns.GRANTEE.name())) {
-                    final Acl.UserAndRole grant = acl.get(row);
+                    final Acl.UserAndRole grant = acl.get(row.intValue());
                     if(grant.getUser().isEditable()) {
                         return true;
                     }
@@ -956,7 +956,7 @@ public class InfoController extends ToolbarWindowController {
                     return false;
                 }
                 if(column.identifier().equals(AclColumns.PERMISSION.name())) {
-                    final Acl.UserAndRole grant = acl.get(row);
+                    final Acl.UserAndRole grant = acl.get(row.intValue());
                     if(grant.getRole().isEditable()) {
                         return true;
                     }
@@ -1153,7 +1153,7 @@ public class InfoController extends ToolbarWindowController {
             metadataTable.tableColumnWithIdentifier(MetadataColumns.NAME.name())
         ) {
             @Override
-            public boolean isColumnRowEditable(NSTableColumn column, int row) {
+            public boolean isColumnRowEditable(NSTableColumn column, NSInteger row) {
                 return true;
             }
 
