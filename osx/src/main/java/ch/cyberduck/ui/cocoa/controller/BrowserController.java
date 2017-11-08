@@ -150,7 +150,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class BrowserController extends WindowController
-        implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
+    implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
     private static final Logger log = Logger.getLogger(BrowserController.class);
 
     private static NSPoint cascade = new NSPoint(0, 0);
@@ -167,22 +167,22 @@ public class BrowserController extends WindowController
     private final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
 
     public final BrowserToolbarValidator browserToolbarValidator
-            = new BrowserToolbarValidator(this);
+        = new BrowserToolbarValidator(this);
 
     private final BookmarkCollection bookmarks
-            = BookmarkCollection.defaultCollection();
+        = BookmarkCollection.defaultCollection();
 
     private final BrowserToolbarFactory browserToolbarFactory
-            = new BrowserToolbarFactory(this);
+        = new BrowserToolbarFactory(this);
 
     private final NSNotificationCenter notificationCenter
-            = NSNotificationCenter.defaultCenter();
+        = NSNotificationCenter.defaultCenter();
 
     private final QuickLook quicklook
-            = QuickLookFactory.get();
+        = QuickLookFactory.get();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final Navigation navigation = new Navigation();
 
@@ -204,12 +204,12 @@ public class BrowserController extends WindowController
     private PathPasteboard pasteboard;
 
     private final ListProgressListener listener
-            = new PromptLimitedListProgressListener(this);
+        = new PromptLimitedListProgressListener(this);
     /**
      * Caching files listings of previously listed directories
      */
     private final PathCache cache
-            = new PathCache(preferences.getInteger("browser.cache.size"));
+        = new PathCache(preferences.getInteger("browser.cache.size"));
 
 
     private Scheduler scheduler;
@@ -519,19 +519,19 @@ public class BrowserController extends WindowController
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, pool,
-                                new SessionListWorker(cache, folder, listener) {
-                                    @Override
-                                    public void cleanup(final AttributedList<Path> list) {
-                                        // Put into cache
-                                        super.cleanup(list);
-                                        // Update the working directory if listing is successful
-                                        if(!(AttributedList.<Path>emptyList() == list)) {
-                                            // Reload browser
-                                            reload(browser, model, workdir, selected, folder);
-                                        }
-                                    }
+                        new SessionListWorker(cache, folder, listener) {
+                            @Override
+                            public void cleanup(final AttributedList<Path> list) {
+                                // Put into cache
+                                super.cleanup(list);
+                                // Update the working directory if listing is successful
+                                if(!(AttributedList.<Path>emptyList() == list)) {
+                                    // Reload browser
+                                    reload(browser, model, workdir, selected, folder);
                                 }
-                        )
+                            }
+                        }
+                    )
                 );
             }
         }
@@ -662,7 +662,7 @@ public class BrowserController extends WindowController
     public void windowWillClose(final NSNotification notification) {
         // Convert from lower left to top left coordinates
         cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
-                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
+            this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
         super.windowWillClose(notification);
     }
 
@@ -1094,11 +1094,11 @@ public class BrowserController extends WindowController
         browserOutlineView = view;
         // receive drag events from types
         browserOutlineView.registerForDraggedTypes(NSArray.arrayWithObjects(
-                NSPasteboard.URLPboardType,
-                // Accept files dragged from the Finder for uploading
-                NSPasteboard.FilenamesPboardType,
-                // Accept file promises made myself
-                NSPasteboard.FilesPromisePboardType
+            NSPasteboard.URLPboardType,
+            // Accept files dragged from the Finder for uploading
+            NSPasteboard.FilenamesPboardType,
+            // Accept file promises made myself
+            NSPasteboard.FilesPromisePboardType
         ));
         // setting appearance attributes()
         this._updateBrowserAttributes(browserOutlineView);
@@ -1110,14 +1110,14 @@ public class BrowserController extends WindowController
         browserOutlineView.setAllowsColumnReordering(true);
 
         browserOutlineView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
-                NSFont.systemFontOfSize(preferences.getFloat("browser.font.size"))).intValue() + 2));
+            NSFont.systemFontOfSize(preferences.getFloat("browser.font.size"))).intValue() + 2));
 
         {
             NSTableColumn c = browserOutlineColumnsFactory.create(Column.filename.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth(new CGFloat(100));
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.filename.name())));
+                Column.filename.name())));
             c.setMaxWidth(new CGFloat(1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(outlineCellPrototype);
@@ -1126,7 +1126,7 @@ public class BrowserController extends WindowController
         }
         browserOutlineView.setDataSource((browserOutlineModel = new BrowserOutlineViewDataSource(this, cache)).id());
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate(
-                browserOutlineView.tableColumnWithIdentifier(Column.filename.name())
+            browserOutlineView.tableColumnWithIdentifier(Column.filename.name())
         ) {
             @Override
             public void enterKeyPressed(final ID sender) {
@@ -1144,20 +1144,18 @@ public class BrowserController extends WindowController
              * @see NSOutlineView.Delegate
              */
             @Override
-            public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSTextFieldCell cell,
-                                                                        NSTableColumn tableColumn, NSObject item) {
+            public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSTextFieldCell cell, final NSTableColumn tableColumn, final NSObject item) {
                 if(null == item) {
                     return;
                 }
-                final Path path = cache.lookup(new NSObjectPathReference(item));
-                if(null == path) {
+                final Path file = cache.lookup(new NSObjectPathReference(item));
+                if(null == file) {
                     return;
                 }
                 if(tableColumn.identifier().equals(Column.filename.name())) {
-                    cell.setEditable(pool.getFeature(Move.class).isSupported(path, path));
-                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
+                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(file));
                 }
-                if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(path)) {
+                if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
                     cell.setTextColor(NSColor.disabledControlTextColor());
                 }
                 else {
@@ -1243,11 +1241,11 @@ public class BrowserController extends WindowController
         browserListView = view;
         // receive drag events from types
         browserListView.registerForDraggedTypes(NSArray.arrayWithObjects(
-                NSPasteboard.URLPboardType,
-                // Accept files dragged from the Finder for uploading
-                NSPasteboard.FilenamesPboardType,
-                // Accept file promises made myself
-                NSPasteboard.FilesPromisePboardType
+            NSPasteboard.URLPboardType,
+            // Accept files dragged from the Finder for uploading
+            NSPasteboard.FilenamesPboardType,
+            // Accept file promises made myself
+            NSPasteboard.FilesPromisePboardType
         ));
         // setting appearance attributes()
         this._updateBrowserAttributes(browserListView);
@@ -1259,14 +1257,14 @@ public class BrowserController extends WindowController
         browserListView.setAllowsColumnReordering(true);
 
         browserListView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
-                NSFont.systemFontOfSize(preferences.getFloat("browser.font.size"))).intValue() + 2));
+            NSFont.systemFontOfSize(preferences.getFloat("browser.font.size"))).intValue() + 2));
 
         {
             NSTableColumn c = browserListColumnsFactory.create(Column.icon.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth((20));
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.icon.name())));
+                Column.icon.name())));
             c.setMaxWidth((20));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
@@ -1278,7 +1276,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth((100));
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.filename.name())));
+                Column.filename.name())));
             c.setMaxWidth((1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(filenameCellPrototype);
@@ -1287,7 +1285,7 @@ public class BrowserController extends WindowController
 
         browserListView.setDataSource((browserListModel = new BrowserListViewDataSource(this, cache)).id());
         browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>(
-                browserListView.tableColumnWithIdentifier(Column.filename.name())
+            browserListView.tableColumnWithIdentifier(Column.filename.name())
         ) {
             @Override
             public void enterKeyPressed(final ID sender) {
@@ -1302,14 +1300,11 @@ public class BrowserController extends WindowController
             }
 
             @Override
-            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row) {
+            public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSTextFieldCell cell, final NSTableColumn tableColumn, final NSInteger row) {
                 final String identifier = tableColumn.identifier();
-                final Path path = browserListModel.get(BrowserController.this.workdir()).get(row.intValue());
-                if(identifier.equals(Column.filename.name())) {
-                    cell.setEditable(pool.getFeature(Move.class).isSupported(path, path));
-                }
+                final Path file = browserListModel.get(BrowserController.this.workdir()).get(row.intValue());
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(path)) {
+                    if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
                         cell.setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
@@ -1350,7 +1345,7 @@ public class BrowserController extends WindowController
         c.setWidth(width);
         // Notify the table about the changed row height.
         bookmarkTable.noteHeightOfRowsWithIndexesChanged(
-                NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
+            NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
     }
 
     private void _updateBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate delegate) {
@@ -1360,7 +1355,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Size"));
             c.setMinWidth(50f);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.size.name())));
+                Column.size.name())));
             c.setMaxWidth(150f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1372,7 +1367,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Modified"));
             c.setMinWidth(100f);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.modified.name())));
+                Column.modified.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1384,7 +1379,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Owner"));
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.owner.name())));
+                Column.owner.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1396,7 +1391,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Group"));
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.group.name())));
+                Column.group.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1408,7 +1403,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Permissions"));
             c.setMinWidth(100);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.permission.name())));
+                Column.permission.name())));
             c.setMaxWidth(800);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1420,7 +1415,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Kind"));
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.kind.name())));
+                Column.kind.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1432,7 +1427,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Extension"));
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.extension.name())));
+                Column.extension.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1444,7 +1439,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Region"));
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.region.name())));
+                Column.region.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1456,7 +1451,7 @@ public class BrowserController extends WindowController
             c.headerCell().setStringValue(LocaleFactory.localizedString("Version"));
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
-                    Column.version.name())));
+                Column.version.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1468,9 +1463,9 @@ public class BrowserController extends WindowController
         }
         delegate.setSelectedColumn(selected);
         table.setIndicatorImage_inTableColumn(this.getSelectedBrowserDelegate().isSortedAscending() ?
-                        IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
-                        IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
-                selected
+                IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
+                IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
+            selected
         );
         table.sizeToFit();
         table.setAutosaveName("browser.autosave");
@@ -1518,7 +1513,7 @@ public class BrowserController extends WindowController
             bookmarkTable.addTableColumn(c);
         }
         bookmarkTable.setDelegate((bookmarkTableDelegate = new AbstractTableDelegate<Host>(
-                bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Column.bookmark.name())
+            bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Column.bookmark.name())
         ) {
             private static final double kSwipeGestureLeft = 1.000000;
             private static final double kSwipeGestureRight = -1.000000;
@@ -1607,7 +1602,7 @@ public class BrowserController extends WindowController
                         next = new NSInteger(row.longValue() - 1);
                     }
                     bookmarkTable.selectRowIndexes(
-                            NSIndexSet.indexSetWithIndex(next), false);
+                        NSIndexSet.indexSetWithIndex(next), false);
                 }
                 else if(event.deltaY().doubleValue() == kSwipeGestureDown) {
                     NSInteger row = bookmarkTable.selectedRow();
@@ -1620,18 +1615,18 @@ public class BrowserController extends WindowController
                         next = new NSInteger(row.longValue() + 1);
                     }
                     bookmarkTable.selectRowIndexes(
-                            NSIndexSet.indexSetWithIndex(next), false);
+                        NSIndexSet.indexSetWithIndex(next), false);
                 }
             }
         }).id());
         // receive drag events from types
         bookmarkTable.registerForDraggedTypes(NSArray.arrayWithObjects(
-                NSPasteboard.URLPboardType,
-                NSPasteboard.StringPboardType,
-                // Accept bookmark files dragged from the Finder
-                NSPasteboard.FilenamesPboardType,
-                // Accept file promises made myself
-                NSPasteboard.FilesPromisePboardType
+            NSPasteboard.URLPboardType,
+            NSPasteboard.StringPboardType,
+            // Accept bookmark files dragged from the Finder
+            NSPasteboard.FilenamesPboardType,
+            // Accept file promises made myself
+            NSPasteboard.FilesPromisePboardType
         ));
         this._updateBookmarkCell();
 
@@ -1695,9 +1690,9 @@ public class BrowserController extends WindowController
         // Make sure action is not sent twice.
         this.searchField.cell().setSendsActionOnEndEditing(false);
         this.notificationCenter.addObserver(this.id(),
-                Foundation.selector("searchFieldTextDidEndEditing:"),
-                NSControl.NSControlTextDidEndEditingNotification,
-                this.searchField);
+            Foundation.selector("searchFieldTextDidEndEditing:"),
+            NSControl.NSControlTextDidEndEditingNotification,
+            this.searchField);
     }
 
     @Action
@@ -1744,11 +1739,11 @@ public class BrowserController extends WindowController
                         case NSText.NSReturnTextMovement:
                             // Prompt for recursive search when pressing return key
                             final NSAlert alert = NSAlert.alert(
-                                    MessageFormat.format(LocaleFactory.localizedString("Search for {0}"), input),
-                                    MessageFormat.format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"), workdir.getName()),
-                                    LocaleFactory.localizedString("Search"),
-                                    LocaleFactory.localizedString("Cancel"),
-                                    null
+                                MessageFormat.format(LocaleFactory.localizedString("Search for {0}"), input),
+                                MessageFormat.format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"), workdir.getName()),
+                                LocaleFactory.localizedString("Search"),
+                                LocaleFactory.localizedString("Cancel"),
+                                null
                             );
                             this.alert(alert, new SheetCallback() {
                                 @Override
@@ -1756,16 +1751,16 @@ public class BrowserController extends WindowController
                                     if(returncode == DEFAULT_OPTION) {
                                         // Delay render until path is cached in the background
                                         background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, pool,
-                                                new SearchWorker(workdir, filenameFilter, cache, listener) {
-                                                    @Override
-                                                    public void cleanup(final AttributedList<Path> list) {
-                                                        super.cleanup(list);
-                                                        // Set filter with search result
-                                                        setFilter(new RecursiveSearchFilter(list));
-                                                        // Reload browser
-                                                        reload();
-                                                    }
-                                                })
+                                            new SearchWorker(workdir, filenameFilter, cache, listener) {
+                                                @Override
+                                                public void cleanup(final AttributedList<Path> list) {
+                                                    super.cleanup(list);
+                                                    // Set filter with search result
+                                                    setFilter(new RecursiveSearchFilter(list));
+                                                    // Reload browser
+                                                    reload();
+                                                }
+                                            })
                                         );
                                     }
                                 }
@@ -1786,9 +1781,9 @@ public class BrowserController extends WindowController
                 @Override
                 public boolean accept(Host host) {
                     return StringUtils.lowerCase(BookmarkNameProvider.toString(host)).contains(searchString.toLowerCase(Locale.ROOT))
-                            || ((null != host.getComment()) && StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase(Locale.ROOT)))
-                            || ((null != host.getCredentials().getUsername()) && StringUtils.lowerCase(host.getCredentials().getUsername()).contains(searchString.toLowerCase(Locale.ROOT)))
-                            || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase(Locale.ROOT));
+                        || ((null != host.getComment()) && StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase(Locale.ROOT)))
+                        || ((null != host.getCredentials().getUsername()) && StringUtils.lowerCase(host.getCredentials().getUsername()).contains(searchString.toLowerCase(Locale.ROOT)))
+                        || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase(Locale.ROOT));
                 }
             });
         }
@@ -1818,7 +1813,7 @@ public class BrowserController extends WindowController
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
         final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
-                bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
+            bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
         c.window().makeKeyAndOrderFront(null);
     }
@@ -1887,12 +1882,12 @@ public class BrowserController extends WindowController
             selected.add(bookmarkModel.getSource().get(index.intValue()));
         }
         StringBuilder alertText = new StringBuilder(
-                LocaleFactory.localizedString("Do you want to delete the selected bookmark?"));
+            LocaleFactory.localizedString("Do you want to delete the selected bookmark?"));
         int i = 0;
         Iterator<Host> iter = selected.iterator();
         while(i < 10 && iter.hasNext()) {
             alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(
-                    BookmarkNameProvider.toString(iter.next())
+                BookmarkNameProvider.toString(iter.next())
             );
             i++;
         }
@@ -1900,10 +1895,10 @@ public class BrowserController extends WindowController
             alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
         }
         final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete Bookmark"),
-                alertText.toString(),
-                LocaleFactory.localizedString("Delete"),
-                LocaleFactory.localizedString("Cancel"),
-                null);
+            alertText.toString(),
+            LocaleFactory.localizedString("Delete"),
+            LocaleFactory.localizedString("Cancel"),
+            null);
         this.alert(alert, new SheetCallback() {
             @Override
             public void callback(int returncode) {
@@ -1948,10 +1943,10 @@ public class BrowserController extends WindowController
         this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
         final NSSegmentedCell cell = Rococoa.cast(this.navigationButton.cell(), NSSegmentedCell.class);
         this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff"),
-                NavigationSegment.back.position());
+            NavigationSegment.back.position());
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Back", "Main"), NavigationSegment.back.position());
         this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff"),
-                NavigationSegment.forward.position());
+            NavigationSegment.forward.position());
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Forward", "Main"), NavigationSegment.forward.position());
     }
 
@@ -1995,7 +1990,7 @@ public class BrowserController extends WindowController
         this.upButton.setTarget(this.id());
         this.upButton.setAction(Foundation.selector("upButtonClicked:"));
         this.upButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-up.tiff"),
-                NavigationSegment.up.position());
+            NavigationSegment.up.position());
     }
 
     @Action
@@ -2103,25 +2098,25 @@ public class BrowserController extends WindowController
         if(StringUtils.isNotBlank(label)) {
             // Update the status label at the bottom of the browser window
             statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label,
-                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
             if(getSelectedTabView() == BrowserTab.bookmarks) {
                 statusLabel.setAttributedStringValue(
-                        NSAttributedString.attributedStringWithAttributes(String.format("%s %s", bookmarkTable.numberOfRows(),
-                                LocaleFactory.localizedString("Bookmarks")),
-                                TRUNCATE_MIDDLE_ATTRIBUTES
-                        )
+                    NSAttributedString.attributedStringWithAttributes(String.format("%s %s", bookmarkTable.numberOfRows(),
+                        LocaleFactory.localizedString("Bookmarks")),
+                        TRUNCATE_MIDDLE_ATTRIBUTES
+                    )
                 );
             }
             else {
                 // Browser view
                 if(this.isMounted()) {
                     statusLabel.setAttributedStringValue(
-                            NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
-                                    String.valueOf(getSelectedBrowserView().numberOfRows())),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES
-                            )
+                        NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
+                            String.valueOf(getSelectedBrowserView().numberOfRows())),
+                            TRUNCATE_MIDDLE_ATTRIBUTES
+                        )
                     );
                 }
                 else {
@@ -2243,16 +2238,16 @@ public class BrowserController extends WindowController
             @Override
             public void callback(final boolean edit, final Path file) {
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
-                        new TouchWorker(file) {
-                            @Override
-                            public void cleanup(final Path folder) {
-                                reload(workdir(), Collections.singletonList(file), Collections.singletonList(file));
-                                if(edit) {
-                                    file.attributes().setSize(0L);
-                                    edit(file);
-                                }
+                    new TouchWorker(file) {
+                        @Override
+                        public void cleanup(final Path folder) {
+                            reload(workdir(), Collections.singletonList(file), Collections.singletonList(file));
+                            if(edit) {
+                                file.attributes().setSize(0L);
+                                edit(file);
                             }
-                        }));
+                        }
+                    }));
             }
 
         });
@@ -2284,14 +2279,14 @@ public class BrowserController extends WindowController
                     public void run() {
                         background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
                                 new CopyWorker(selected,
-                                        pool instanceof StatefulSessionPool ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool,
-                                        cache, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
-                                            @Override
-                                            public void cleanup(final List<Path> copied) {
-                                                reload(workdir(), copied, new ArrayList<Path>(selected.values()));
-                                            }
-                                        }
-                                )
+                                    pool instanceof StatefulSessionPool ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool,
+                                    cache, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
+                                    @Override
+                                    public void cleanup(final List<Path> copied) {
+                                        reload(workdir(), copied, new ArrayList<Path>(selected.values()));
+                                    }
+                                }
+                            )
                         );
                     }
                 });
@@ -2304,17 +2299,17 @@ public class BrowserController extends WindowController
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
         final FolderController sheet = new FolderController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
-                feature != null ? feature.getLocations() : Collections.emptySet(), new FolderController.Callback() {
+            feature != null ? feature.getLocations() : Collections.emptySet(), new FolderController.Callback() {
 
             @Override
             public void callback(final Path folder, final String region) {
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
-                        new CreateDirectoryWorker(folder, region) {
-                            @Override
-                            public void cleanup(final Path folder) {
-                                reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
-                            }
-                        }));
+                    new CreateDirectoryWorker(folder, region) {
+                        @Override
+                        public void cleanup(final Path folder) {
+                            reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                        }
+                    }));
             }
         });
         sheet.beginSheet(this);
@@ -2324,16 +2319,16 @@ public class BrowserController extends WindowController
     public void createEncryptedVaultButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
         final VaultController sheet = new VaultController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
-                feature != null ? feature.getLocations() : Collections.emptySet(), new VaultController.Callback() {
+            feature != null ? feature.getLocations() : Collections.emptySet(), new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
-                        new CreateVaultWorker(region, passphrase, VaultFactory.get(folder, PasswordStoreFactory.get())) {
-                            @Override
-                            public void cleanup(final Path vault) {
-                                reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
-                            }
-                        })
+                    new CreateVaultWorker(region, passphrase, VaultFactory.get(folder, PasswordStoreFactory.get())) {
+                        @Override
+                        public void cleanup(final Path vault) {
+                            reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                        }
+                    })
                 );
             }
         });
@@ -2344,7 +2339,7 @@ public class BrowserController extends WindowController
     public void renameFileButtonClicked(final ID sender) {
         final NSTableView browser = this.getSelectedBrowserView();
         browser.editRow(browser.columnWithIdentifier(Column.filename.name()),
-                browser.selectedRow(), true);
+            browser.selectedRow(), true);
         final Path selected = this.getSelectedPath();
         if(StringUtils.isNotBlank(selected.getExtension())) {
             NSText view = browser.currentEditor();
@@ -2373,7 +2368,7 @@ public class BrowserController extends WindowController
         final EditorFactory factory = EditorFactory.instance();
         for(Path selected : this.getSelectedPaths()) {
             final Editor editor = factory.create(this, pool,
-                    new Application(sender.representedObject()), selected);
+                new Application(sender.representedObject()), selected);
             this.edit(editor);
         }
     }
@@ -2391,7 +2386,7 @@ public class BrowserController extends WindowController
 
     protected void edit(final Editor editor) {
         this.background(new WorkerBackgroundAction<Transfer>(this, pool, editor.open(
-                new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DefaultEditorListener(this, pool, editor))));
+            new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DefaultEditorListener(this, pool, editor))));
     }
 
     @Action
@@ -2435,8 +2430,8 @@ public class BrowserController extends WindowController
         downloadToPanel.setAllowsMultipleSelection(false);
         downloadToPanel.setPrompt(LocaleFactory.localizedString("Choose"));
         downloadToPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(pool.getHost()).getAbsolute(),
-                null, this.window, this.id(),
-                Foundation.selector("downloadToPanelDidEnd:returnCode:contextInfo:"), null);
+            null, this.window, this.id(),
+            Foundation.selector("downloadToPanelDidEnd:returnCode:contextInfo:"), null);
     }
 
     @Action
@@ -2464,8 +2459,8 @@ public class BrowserController extends WindowController
         downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download", "Transfer"));
         downloadAsPanel.setCanCreateDirectories(true);
         downloadAsPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(pool.getHost()).getAbsolute(),
-                this.getSelectedPath().getName(), this.window, this.id(),
-                Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"), null);
+            this.getSelectedPath().getName(), this.window, this.id(),
+            Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"), null);
     }
 
     @Action
@@ -2476,7 +2471,7 @@ public class BrowserController extends WindowController
                 final Local target = LocalFactory.get(sheet.filename());
                 new DownloadDirectoryFinder().save(pool.getHost(), target.getParent());
                 final List<TransferItem> downloads
-                        = Collections.singletonList(new TransferItem(this.getSelectedPath(), target));
+                    = Collections.singletonList(new TransferItem(this.getSelectedPath(), target));
                 this.transfer(new DownloadTransfer(pool.getHost(), downloads), Collections.emptyList());
             }
         }
@@ -2486,7 +2481,7 @@ public class BrowserController extends WindowController
     public void syncButtonClicked(final ID sender) {
         final Path selection;
         if(this.getSelectionCount() == 1 &&
-                this.getSelectedPath().isDirectory()) {
+            this.getSelectedPath().isDirectory()) {
             selection = this.getSelectedPath();
         }
         else {
@@ -2499,11 +2494,11 @@ public class BrowserController extends WindowController
         syncPanel.setCanCreateDirectories(true);
         syncPanel.setAllowsMultipleSelection(false);
         syncPanel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Synchronize {0} with"),
-                selection.getName()));
+            selection.getName()));
         syncPanel.setPrompt(LocaleFactory.localizedString("Choose"));
         syncPanel.beginSheetForDirectory(new UploadDirectoryFinder().find(pool.getHost()).getAbsolute(),
-                null, this.window, this.id(),
-                Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
+            null, this.window, this.id(),
+            Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
     }
 
@@ -2532,7 +2527,7 @@ public class BrowserController extends WindowController
         final Local folder = new DownloadDirectoryFinder().find(pool.getHost());
         for(Path file : this.getSelectedPaths()) {
             downloads.add(new TransferItem(
-                    file, LocalFactory.get(folder, file.getName())));
+                file, LocalFactory.get(folder, file.getName())));
         }
         this.transfer(new DownloadTransfer(pool.getHost(), downloads), Collections.emptyList());
     }
@@ -2542,7 +2537,7 @@ public class BrowserController extends WindowController
         uploadPanel = NSOpenPanel.openPanel();
         uploadPanel.setCanChooseDirectories(true);
         uploadPanel.setCanChooseFiles(pool.getFeature(Touch.class).isSupported(
-                new UploadTargetFinder(workdir).find(this.getSelectedPath())
+            new UploadTargetFinder(workdir).find(this.getSelectedPath())
         ));
         uploadPanel.setCanCreateDirectories(false);
         uploadPanel.setTreatsFilePackagesAsDirectories(true);
@@ -2559,10 +2554,10 @@ public class BrowserController extends WindowController
             uploadPanel.setAccessoryView(uploadPanelHiddenFilesCheckbox);
         }
         uploadPanel.beginSheetForDirectory(new UploadDirectoryFinder().find(pool.getHost()).getAbsolute(),
-                null, this.window,
-                this.id(),
-                Foundation.selector("uploadPanelDidEnd:returnCode:contextInfo:"),
-                null);
+            null, this.window,
+            this.id(),
+            Foundation.selector("uploadPanelDidEnd:returnCode:contextInfo:"),
+            null);
     }
 
     @Action
@@ -2584,8 +2579,8 @@ public class BrowserController extends WindowController
                 final Local local = LocalFactory.get(next.toString());
                 new UploadDirectoryFinder().save(pool.getHost(), local.getParent());
                 uploads.add(new TransferItem(
-                        new Path(destination, local.getName(),
-                                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local
+                    new Path(destination, local.getName(),
+                        local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local
                 ));
             }
             this.transfer(new UploadTransfer(pool.getHost(), uploads));
@@ -2675,7 +2670,7 @@ public class BrowserController extends WindowController
         if(this.isActivityRunning()) {
             // Remove all pending actions
             for(BackgroundAction action : registry.toArray(
-                    new BackgroundAction[registry.size()])) {
+                new BackgroundAction[registry.size()])) {
                 action.cancel();
             }
         }
@@ -2803,7 +2798,7 @@ public class BrowserController extends WindowController
             s.add(this.workdir());
         }
         clipboard.declareTypes(NSArray.arrayWithObject(
-                NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+            NSString.stringWithString(NSPasteboard.StringPboardType)), null);
         StringBuilder copy = new StringBuilder();
         for(Iterator<Path> i = s.iterator(); i.hasNext(); ) {
             copy.append(i.next().getAbsolute());
@@ -2875,7 +2870,7 @@ public class BrowserController extends WindowController
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final Local local = LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString());
                         uploads.add(new TransferItem(new Path(workdir, local.getName(),
-                                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
+                            local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
                     }
                     this.transfer(new UploadTransfer(pool.getHost(), uploads));
                 }
@@ -2993,45 +2988,45 @@ public class BrowserController extends WindowController
                 // The browser has no session, we are allowed to proceed
                 final SessionPool connection = SessionPoolFactory.create(BrowserController.this, cache, bookmark, SessionPoolFactory.Usage.browser);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, connection,
-                        new MountWorker(bookmark, cache, listener) {
-                            @Override
-                            public void cleanup(final Path workdir) {
-                                super.cleanup(workdir);
-                                if(null == workdir) {
-                                    doUnmount(() -> {
-                                    });
+                    new MountWorker(bookmark, cache, listener) {
+                        @Override
+                        public void cleanup(final Path workdir) {
+                            super.cleanup(workdir);
+                            if(null == workdir) {
+                                doUnmount(() -> {
+                                });
+                            }
+                            else {
+                                pool = connection;
+                                pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
+                                // Update status icon
+                                bookmarkTable.setNeedsDisplay();
+                                // Set the working directory
+                                setWorkdir(workdir);
+                                // Close bookmarks
+                                selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
+                                // Set the window title
+                                window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(bookmark).getAbsolute());
+                                if(preferences.getBoolean("browser.disconnect.confirm")) {
+                                    window.setDocumentEdited(true);
                                 }
-                                else {
-                                    pool = connection;
-                                    pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
-                                    // Update status icon
-                                    bookmarkTable.setNeedsDisplay();
-                                    // Set the working directory
-                                    setWorkdir(workdir);
-                                    // Close bookmarks
-                                    selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
-                                    // Set the window title
-                                    window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(bookmark).getAbsolute());
-                                    if(preferences.getBoolean("browser.disconnect.confirm")) {
-                                        window.setDocumentEdited(true);
-                                    }
-                                    securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
-                                            : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
-                                    securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
-                                    scheduler = pool.getFeature(Scheduler.class);
-                                    if(scheduler != null) {
-                                        background(new SessionBackgroundAction<Object>(pool, new DisabledAlertCallback(),
-                                                new DisabledProgressListener(), new DisabledTranscriptListener()) {
-                                            @Override
-                                            public Object run(final Session<?> session) throws BackgroundException {
-                                                scheduler.repeat(PasswordCallbackFactory.get(BrowserController.this));
-                                                return null;
-                                            }
-                                        });
-                                    }
+                                securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
+                                    : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
+                                securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
+                                scheduler = pool.getFeature(Scheduler.class);
+                                if(scheduler != null) {
+                                    background(new SessionBackgroundAction<Object>(pool, new DisabledAlertCallback(),
+                                        new DisabledProgressListener(), new DisabledTranscriptListener()) {
+                                        @Override
+                                        public Object run(final Session<?> session) throws BackgroundException {
+                                            scheduler.repeat(PasswordCallbackFactory.get(BrowserController.this));
+                                            return null;
+                                        }
+                                    });
                                 }
                             }
                         }
+                    }
                 ) {
                     @Override
                     public void init() {
@@ -3075,11 +3070,11 @@ public class BrowserController extends WindowController
             if(preferences.getBoolean("browser.disconnect.confirm")) {
                 // Defer the unmount to the callback function
                 final NSAlert alert = NSAlert.alert(
-                        MessageFormat.format(LocaleFactory.localizedString("Disconnect from {0}"), pool.getHost().getHostname()), //title
-                        LocaleFactory.localizedString("The connection will be closed."), // message
-                        LocaleFactory.localizedString("Disconnect"), // defaultbutton
-                        LocaleFactory.localizedString("Cancel"), // alternate button
-                        null //other button
+                    MessageFormat.format(LocaleFactory.localizedString("Disconnect from {0}"), pool.getHost().getHostname()), //title
+                    LocaleFactory.localizedString("The connection will be closed."), // message
+                    LocaleFactory.localizedString("Disconnect"), // defaultbutton
+                    LocaleFactory.localizedString("Cancel"), // alternate button
+                    null //other button
                 );
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
@@ -3182,12 +3177,12 @@ public class BrowserController extends WindowController
                                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                                 if(elements.count().intValue() == 1) {
                                     item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                                            "\"" + elements.objectAtIndex(new NSUInteger(0)) + "\"").trim());
+                                        "\"" + elements.objectAtIndex(new NSUInteger(0)) + "\"").trim());
                                 }
                                 else {
                                     item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                                            MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
-                                                    String.valueOf(elements.count().intValue()))
+                                        MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
+                                            String.valueOf(elements.count().intValue()))
                                     ).trim());
                                 }
                             }
@@ -3197,11 +3192,11 @@ public class BrowserController extends WindowController
                 else {
                     if(pasteboard.size() == 1) {
                         item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                                "\"" + pasteboard.get(0).getName() + "\"").trim());
+                            "\"" + pasteboard.get(0).getName() + "\"").trim());
                     }
                     else {
                         item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                                MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(pasteboard.size()))).trim());
+                            MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(pasteboard.size()))).trim());
                     }
                 }
             }
@@ -3221,11 +3216,11 @@ public class BrowserController extends WindowController
                 }
                 else if(1 == count) {
                     item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                            "\"" + this.getSelectedPath().getName() + "\"").trim());
+                        "\"" + this.getSelectedPath().getName() + "\"").trim());
                 }
                 else {
                     item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                            MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(this.getSelectionCount()))).trim());
+                        MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(this.getSelectionCount()))).trim());
                 }
             }
             else {
@@ -3238,11 +3233,11 @@ public class BrowserController extends WindowController
         else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.encoding.action())) {
             if(this.isMounted()) {
                 item.setState(pool.getHost().getEncoding().equalsIgnoreCase(
-                        item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
+                    item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
             }
             else {
                 item.setState(preferences.getProperty("browser.charset.encoding").equalsIgnoreCase(
-                        item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
+                    item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
             }
         }
         else if(action.equals(Foundation.selector("browserSwitchMenuClicked:"))) {
@@ -3401,7 +3396,7 @@ public class BrowserController extends WindowController
     }
 
     private abstract class AbstractBrowserOutlineViewDelegate extends AbstractBrowserTableDelegate
-            implements NSOutlineView.Delegate {
+        implements NSOutlineView.Delegate {
 
         protected AbstractBrowserOutlineViewDelegate(final NSTableColumn selectedColumn) {
             super(selectedColumn);
@@ -3427,7 +3422,7 @@ public class BrowserController extends WindowController
         @Override
         protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
             browserOutlineView.setIndicatorImage_inTableColumn(image,
-                    browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
+                browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
         }
 
         @Override
@@ -3441,7 +3436,7 @@ public class BrowserController extends WindowController
     }
 
     private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate
-            implements NSTableView.Delegate {
+        implements NSTableView.Delegate {
 
         protected AbstractBrowserListViewDelegate(final NSTableColumn selectedColumn) {
             super(selectedColumn);
@@ -3456,7 +3451,7 @@ public class BrowserController extends WindowController
         @Override
         protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
             browserListView.setIndicatorImage_inTableColumn(image,
-                    browserListView.tableColumnWithIdentifier(columnIdentifier));
+                browserListView.tableColumnWithIdentifier(columnIdentifier));
         }
 
         public String tableView_typeSelectStringForTableColumn_row(final NSTableView view,
@@ -3493,7 +3488,14 @@ public class BrowserController extends WindowController
         @Override
         public boolean isColumnRowEditable(NSTableColumn column, int row) {
             if(preferences.getBoolean("browser.editable")) {
-                return column.identifier().equals(Column.filename.name());
+                if(column.identifier().equals(Column.filename.name())) {
+                    final Path file = this.pathAtRow(row);
+                    if(null == file) {
+                        return false;
+                    }
+                    return pool.getFeature(Move.class).isSupported(file, file);
+
+                }
             }
             return false;
         }
@@ -3527,10 +3529,10 @@ public class BrowserController extends WindowController
                 preferences.setProperty("browser.sort.column", this.selectedColumnIdentifier());
             }
             this.setBrowserColumnSortingIndicator(
-                    this.isSortedAscending() ?
-                            IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
-                            IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
-                    tableColumn.identifier()
+                this.isSortedAscending() ?
+                    IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
+                    IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
+                tableColumn.identifier()
             );
             reload();
         }
@@ -3583,7 +3585,7 @@ public class BrowserController extends WindowController
                     next = new NSInteger(row.longValue() - 1);
                 }
                 BrowserController.this.getSelectedBrowserView().selectRowIndexes(
-                        NSIndexSet.indexSetWithIndex(next), false);
+                    NSIndexSet.indexSetWithIndex(next), false);
             }
             else if(event.deltaY().doubleValue() == kSwipeGestureDown) {
                 NSInteger row = getSelectedBrowserView().selectedRow();
@@ -3596,7 +3598,7 @@ public class BrowserController extends WindowController
                     next = new NSInteger(row.longValue() + 1);
                 }
                 BrowserController.this.getSelectedBrowserView().selectRowIndexes(
-                        NSIndexSet.indexSetWithIndex(next), false);
+                    NSIndexSet.indexSetWithIndex(next), false);
             }
         }
     }
