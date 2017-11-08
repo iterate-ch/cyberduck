@@ -84,7 +84,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                                 String.format("%s (%s)",
                                     LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
                                     identity.getAbbreviatedPath()), new LoginOptions(bookmark.getProtocol())
-                                    .user(false).password(true)
+                                    .user(false).password(true).publickey(false)
                             ).getPassword();
                         }
                         catch(LoginCanceledException ignored) {

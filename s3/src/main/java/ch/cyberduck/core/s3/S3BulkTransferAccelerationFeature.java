@@ -37,7 +37,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     private static final Logger log = Logger.getLogger(S3BulkTransferAccelerationFeature.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final S3Session session;
     private final TransferAcceleration accelerationService;
@@ -80,6 +80,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
                             log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", bucket, accelerationService));
                         }
                         accelerationService.configure(true, bucket);
+                        break;
                     }
                     else {
                         log.warn(String.format("Transfer acceleration disabled for %s", bucket));
