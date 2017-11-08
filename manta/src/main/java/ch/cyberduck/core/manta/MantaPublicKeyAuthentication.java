@@ -79,7 +79,8 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                     String password = keychain.find(bookmark);
                     if(StringUtils.isEmpty(password)) {
                         try {
-                            password = prompt.prompt(bookmark, credentials.getUsername(),
+                            // Use password prompt
+                            password = prompt.prompt(bookmark,
                                 LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                 String.format("%s (%s)",
                                     LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
