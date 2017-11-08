@@ -30,9 +30,23 @@ public interface Copy {
      */
     Path copy(Path source, Path target, TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
+    /**
+     * @param source Source directory or file
+     * @param target Target directory or file
+     * @return True if the operation operates recursively on directories
+     */
     boolean isRecursive(Path source, Path target);
 
+    /**
+     * @param source Source directory or file
+     * @param target Target directory or file
+     * @return True if copying from source to target is supported
+     */
     boolean isSupported(Path source, Path target);
 
+    /**
+     * @param session Target session. Equal to the source session if the protocol is stateless
+     * @return This
+     */
     Copy withTarget(Session<?> session);
 }
