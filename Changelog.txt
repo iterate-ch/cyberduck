@@ -10,6 +10,7 @@ https://cyberduck.io/
 - [Bugfix] Unnecessary password prompt for connection (Local Disk)
 - [Bugfix] Login where authentication is required with both password and one-time passcode (SFTP)
 - [Bugfix] File not found failure when downloading folder form vault (Cryptomator)
+- [Bugfix] Not possible to copy files between browser windows (FTP)
 
 6.2.11
 - [Bugfix] Application crash restoring workspace (Windows)
