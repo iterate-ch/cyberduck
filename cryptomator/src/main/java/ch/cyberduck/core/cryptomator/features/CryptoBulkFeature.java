@@ -40,7 +40,7 @@ import java.util.Map;
 public class CryptoBulkFeature<R> implements Bulk<R> {
 
     private final RandomStringService random
-            = new UUIDRandomStringService();
+        = new UUIDRandomStringService();
 
     private final Session<?> session;
     private final Bulk<R> delegate;
@@ -77,9 +77,16 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
             }
             if(file.isDirectory()) {
                 if(!status.isExists()) {
-                    // Preset directory ID for new folders to avert lookup with not found failure in directory ID provider
-                    final String directoryId = random.random();
-                    encrypted.put(cryptomator.encrypt(session, file, directoryId, false), status);
+                    switch(type) {
+                        case upload:
+                            // Preset directory ID for new folders to avert lookup with not found failure in directory ID provider
+                            final String directoryId = random.random();
+                            encrypted.put(cryptomator.encrypt(session, file, directoryId, false), status);
+                            break;
+                        default:
+                            encrypted.put(cryptomator.encrypt(session, file), status);
+                            break;
+                    }
                 }
                 else {
                     encrypted.put(cryptomator.encrypt(session, file), status);
