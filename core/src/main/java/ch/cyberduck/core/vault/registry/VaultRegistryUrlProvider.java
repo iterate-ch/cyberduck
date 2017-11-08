@@ -40,7 +40,7 @@ public class VaultRegistryUrlProvider implements UrlProvider {
             return registry.find(session, file, false).getFeature(session, UrlProvider.class, proxy).toUrl(file);
         }
         catch(VaultUnlockCancelException e) {
-            return DescriptiveUrlBag.empty();
+            return proxy.toUrl(file);
         }
     }
 
