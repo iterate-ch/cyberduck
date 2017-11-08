@@ -37,7 +37,7 @@ public class LocalQuotaFeature implements Quota {
         final Path home = new DefaultHomeFinderService(session).find();
         try {
             final FileStore store = Files.getFileStore(session.toPath(home));
-            return new Space(store.getTotalSpace() - store.getUsableSpace(), store.getUsableSpace());
+            return new Space(store.getTotalSpace() - store.getUnallocatedSpace(), store.getUnallocatedSpace());
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to read attributes of {0}", e, home);
