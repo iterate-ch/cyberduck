@@ -46,7 +46,7 @@ public class DefaultCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(source.isDirectory()) {
-            if(!to.getFeature(Find.class).find(target)) {
+            if(!status.isExists()) {
                 to.getFeature(Directory.class).mkdir(target, null, new TransferStatus().length(0L));
             }
             return target;
