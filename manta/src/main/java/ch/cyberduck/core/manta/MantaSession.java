@@ -135,38 +135,38 @@ public class MantaSession extends HttpSession<MantaClient> {
         return new MantaListService(this).list(directory, listener);
     }
 
-    protected boolean userIsOwner() throws IllegalStateException {
+    protected boolean userIsOwner() {
         final MantaAccountHomeInfo account = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
         return StringUtils.equals(host.getCredentials().getUsername(),
             account.getAccountOwner());
     }
 
-    protected boolean isUserWritable(final MantaObject mantaObject) {
+    protected boolean isUserWritable(final MantaObject object) {
         final MantaAccountHomeInfo account = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
         return StringUtils.startsWithAny(
-            mantaObject.getPath(),
+            object.getPath(),
             account.getAccountPublicRoot().getAbsolute(),
             account.getAccountPrivateRoot().getAbsolute());
     }
 
-    protected boolean isUserWritable(final Path path) {
+    protected boolean isUserWritable(final Path file) {
         final MantaAccountHomeInfo account = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
-        return path.equals(account.getAccountPublicRoot())
-            || path.equals(account.getAccountPrivateRoot())
-            || path.isChild(account.getAccountPublicRoot())
-            || path.isChild(account.getAccountPrivateRoot());
+        return file.equals(account.getAccountPublicRoot())
+            || file.equals(account.getAccountPrivateRoot())
+            || file.isChild(account.getAccountPublicRoot())
+            || file.isChild(account.getAccountPrivateRoot());
     }
 
-    protected boolean isWorldReadable(final MantaObject mantaObject) {
+    protected boolean isWorldReadable(final MantaObject object) {
         final MantaAccountHomeInfo accountHomeInfo = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
         return StringUtils.startsWithAny(
-            mantaObject.getPath(),
+            object.getPath(),
             accountHomeInfo.getAccountPublicRoot().getAbsolute());
     }
 
-    protected boolean isWorldReadable(final Path path) {
+    protected boolean isWorldReadable(final Path file) {
         final MantaAccountHomeInfo account = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
-        return path.isChild(account.getAccountPublicRoot());
+        return file.isChild(account.getAccountPublicRoot());
     }
 
     @Override
