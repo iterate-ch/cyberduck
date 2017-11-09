@@ -54,7 +54,7 @@ public abstract class AbstractMantaTest {
     @Before
     public void setup() throws Exception {
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new MantaProtocol()))).read(
-            new Local("../profiles/Joyent Triton Object Storage.cyberduckprofile"));
+            new Local("../profiles/Joyent Triton Object Storage (us-east).cyberduckprofile"));
 
         final String hostname;
         final Local file;
