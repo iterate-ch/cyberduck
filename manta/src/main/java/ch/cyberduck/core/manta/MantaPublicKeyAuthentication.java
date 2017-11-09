@@ -32,6 +32,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.openssl.PasswordException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,6 +110,9 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
     private String computeFingerprint(final FileKeyProvider provider) throws BackgroundException {
         try {
             return new SSHFingerprintGenerator().fingerprint(provider.getPublic());
+        }
+        catch(PasswordException e) {
+            throw new LoginCanceledException(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
