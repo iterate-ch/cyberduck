@@ -41,6 +41,7 @@ public class MantaMoveFeature implements Move {
                      final Delete.Callback deleteCallback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             session.getClient().move(file.getAbsolute(), renamed.getAbsolute());
+            return renamed;
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Cannot rename {0}", e, file);
@@ -51,7 +52,6 @@ public class MantaMoveFeature implements Move {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
-        return file;
     }
 
     @Override
