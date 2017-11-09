@@ -24,14 +24,17 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.openssl.EncryptionException;
 import org.bouncycastle.openssl.PasswordException;
 
 import java.io.IOException;
@@ -113,6 +116,11 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
         }
         catch(PasswordException e) {
             throw new LoginCanceledException(e);
+        }
+        catch(EncryptionException e) {
+            final StringAppender appender = new StringAppender();
+            appender.append(StringUtils.capitalize(e.getMessage()));
+            throw new LoginFailureException(appender.toString(), e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
