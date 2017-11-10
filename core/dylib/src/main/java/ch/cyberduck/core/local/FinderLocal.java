@@ -89,7 +89,7 @@ public class FinderLocal extends Local {
         // Get or create application scope bookmark
         final String bookmark = this.getBookmark();
         if(StringUtils.isNotBlank(bookmark)) {
-            dict.setStringForKey(bookmark, "Bookmark");
+            dict.setStringForKey(bookmark, String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name")));
         }
         return dict.getSerialized();
     }
