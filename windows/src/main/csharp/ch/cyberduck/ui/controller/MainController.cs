@@ -884,11 +884,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void SetupServiceHost()
         {
-            serviceHost = new ServiceHost(this, new[]
-            {
-                new Uri("net.pipe://localhost")
-            });
-            serviceHost.AddServiceEndpoint(typeof(ICyberduck), new NetNamedPipeBinding(), "iterate/cyberduck.io");
+            serviceHost = new ServiceHost(this);
+            serviceHost.AddServiceEndpoint(typeof(ICyberduck), new NetNamedPipeBinding(), new Uri("net.pipe://localhost/iterate/cyberduck.io"));
             serviceHost.Description.Behaviors.Add(new ServiceMetadataBehavior());
             serviceHost.Open();
         }
