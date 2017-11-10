@@ -48,7 +48,7 @@ public class VaultRegistryTouchFeature<R> implements Touch<R> {
             return registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).isSupported(workdir);
         }
         catch(VaultUnlockCancelException e) {
-            return false;
+            return proxy.isSupported(workdir);
         }
     }
 

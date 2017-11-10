@@ -24,9 +24,9 @@
         <key>Scheme</key>
         <string>https</string>
         <key>Description</key>
-        <string>DigitalOcean Spaces (nyc3)</string>
+        <string>DigitalOcean Spaces (ams3)</string>
         <key>Default Hostname</key>
-        <string>nyc3.digitaloceanspaces.com</string>
+        <string>ams3.digitaloceanspaces.com</string>
         <key>Default Port</key>
         <string>443</string>
         <key>Username Placeholder</key>

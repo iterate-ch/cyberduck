@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -67,9 +68,8 @@ public class MantaPublicKeyAuthenticationTest {
             session.login(new DisabledPasswordStore(),
                 new DisabledLoginCallback() {
                     @Override
-                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                        // no passphrase to set
-                        return null;
+                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                        throw new LoginCanceledException();
                     }
                 },
                 new DisabledCancelCallback()
@@ -110,8 +110,8 @@ public class MantaPublicKeyAuthenticationTest {
             session.login(new DisabledPasswordStore(),
                 new DisabledLoginCallback() {
                     @Override
-                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                        return new Credentials(username, passphraseKeyPassword);
+                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                        return new VaultCredentials(passphraseKeyPassword);
                     }
                 },
                 new DisabledCancelCallback()

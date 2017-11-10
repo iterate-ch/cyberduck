@@ -65,9 +65,8 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
             return registry.find(session, file).getFeature(session, Write.class, proxy).checksum(file);
         }
         catch(VaultUnlockCancelException e) {
-            // Ignore
+            return proxy.checksum(file);
         }
-        return proxy.checksum(file);
     }
 
     @Override

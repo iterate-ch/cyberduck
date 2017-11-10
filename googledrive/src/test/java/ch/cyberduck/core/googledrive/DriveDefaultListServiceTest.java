@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -64,8 +63,8 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
 
     @Test
     public void testFilenameColon() throws Exception {
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        final Path folder = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory));
+        final Path file = new Path(new DriveHomeFinderService(session).find(), String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final Path folder = new Path(new DriveHomeFinderService(session).find(), String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory));
         new DriveTouchFeature(session).touch(file, new TransferStatus());
         new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));

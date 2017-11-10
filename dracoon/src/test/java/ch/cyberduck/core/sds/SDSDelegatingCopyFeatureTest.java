@@ -186,7 +186,7 @@ public class SDSDelegatingCopyFeatureTest {
         final Path target = new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final SDSCopyFeature feature = new SDSCopyFeature(session);
         assertFalse(feature.isSupported(directory, target));
-        final Path copy = new SDSDelegatingCopyFeature(session, feature).copy(directory, target, new TransferStatus(), new DisabledConnectionCallback());
+        final Path copy = new SDSDelegatingCopyFeature(session, feature).copy(directory, target, new TransferStatus().exists(true), new DisabledConnectionCallback());
         assertTrue(new SDSFindFeature(session).find(file));
         assertTrue(new SDSFindFeature(session).find(target));
         assertTrue(new SDSFindFeature(session).find(copy));

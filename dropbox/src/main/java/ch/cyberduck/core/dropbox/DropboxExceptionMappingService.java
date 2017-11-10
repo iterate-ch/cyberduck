@@ -62,13 +62,13 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final LookupError lookup = error.getPathValue();
             this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
-                case MALFORMED_PATH:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:
                 case NOT_FILE:
                 case NOT_FOLDER:
                     return new NotfoundException(buffer.toString(), failure);
+                case MALFORMED_PATH:
                 case RESTRICTED_CONTENT:
                     return new AccessDeniedException(buffer.toString(), failure);
             }
@@ -78,13 +78,13 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final LookupError lookup = error.getPathLookupValue();
             this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
-                case MALFORMED_PATH:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:
                 case NOT_FILE:
                 case NOT_FOLDER:
                     return new NotfoundException(buffer.toString(), failure);
+                case MALFORMED_PATH:
                 case RESTRICTED_CONTENT:
                     return new AccessDeniedException(buffer.toString(), failure);
             }
@@ -96,13 +96,13 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             switch(lookup.tag()) {
                 case INVALID_PATH_ROOT:
                     return new NotfoundException(buffer.toString(), failure);
-                case MALFORMED_PATH:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:
                 case NOT_FILE:
                 case NOT_FOLDER:
                     return new NotfoundException(buffer.toString(), failure);
+                case MALFORMED_PATH:
                 case RESTRICTED_CONTENT:
                     return new AccessDeniedException(buffer.toString(), failure);
             }
@@ -112,9 +112,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final WriteError lookup = error.getPathValue();
             this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
-                case MALFORMED_PATH:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
+                case MALFORMED_PATH:
                 case DISALLOWED_NAME:
                 case NO_WRITE_PERMISSION:
                 case CONFLICT:
@@ -129,13 +129,13 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
                 case INVALID_PATH_ROOT:
-                case MALFORMED_PATH:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:
                 case NOT_FILE:
                 case NOT_FOLDER:
                     return new NotfoundException(buffer.toString(), failure);
+                case MALFORMED_PATH:
                 case RESTRICTED_CONTENT:
                     return new AccessDeniedException(buffer.toString(), failure);
             }
@@ -145,13 +145,13 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final LookupError lookup = error.getPathValue();
             this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
-                case MALFORMED_PATH:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:
                 case NOT_FILE:
                 case NOT_FOLDER:
                     return new NotfoundException(buffer.toString(), failure);
+                case MALFORMED_PATH:
                 case RESTRICTED_CONTENT:
                     return new AccessDeniedException(buffer.toString(), failure);
             }
@@ -177,9 +177,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final WriteError lookup = error.getPathValue();
             this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
-                case MALFORMED_PATH:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
+                case MALFORMED_PATH:
                 case DISALLOWED_NAME:
                 case NO_WRITE_PERMISSION:
                 case CONFLICT:
@@ -197,9 +197,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 case NOT_FILE:
                 case NOT_FOLDER:
                     return new NotfoundException(buffer.toString(), failure);
+                case MALFORMED_PATH:
                 case RESTRICTED_CONTENT:
                     return new AccessDeniedException(buffer.toString(), failure);
-                case MALFORMED_PATH:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
             }
@@ -213,9 +213,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 case NOT_FILE:
                 case NOT_FOLDER:
                     return new NotfoundException(buffer.toString(), failure);
+                case MALFORMED_PATH:
                 case RESTRICTED_CONTENT:
                     return new AccessDeniedException(buffer.toString(), failure);
-                case MALFORMED_PATH:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
             }

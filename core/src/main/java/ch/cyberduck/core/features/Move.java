@@ -23,19 +23,33 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public interface Move {
 
     /**
-     * @param file               Source file or folder
-     * @param renamed            Target file or folder
+     * @param source             Source file or folder
+     * @param target             Target file or folder
      * @param status             True if the target file exists
      * @param callback           Progress
      * @param connectionCallback Prompt
+     * @return Target file
      */
-    Path move(Path file, Path renamed, TransferStatus status, Delete.Callback callback,
+    Path move(Path source, Path target, TransferStatus status, Delete.Callback callback,
               ConnectionCallback connectionCallback) throws BackgroundException;
 
+    /**
+     * @param source Source file or folder
+     * @param target Target file or folder
+     * @return True if the implementation can move directories recursively
+     */
     boolean isRecursive(final Path source, final Path target);
 
+    /**
+     * @param source Source file or folder
+     * @param target Target file or folder
+     * @return False if not supported for given files
+     */
     boolean isSupported(Path source, final Path target);
 
+    /**
+     * @param delete Delete feature if move operation requires delete after copy
+     * @return This
+     */
     Move withDelete(Delete delete);
-
 }

@@ -99,12 +99,13 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                         final String password = keychain.find(bookmark);
                         if(StringUtils.isEmpty(password)) {
                             try {
-                                return prompt.prompt(bookmark, credentials.getUsername(),
+                                // Use password prompt
+                                return prompt.prompt(bookmark,
                                     LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                     String.format("%s (%s)",
                                         LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
                                         identity.getAbbreviatedPath()), new LoginOptions(bookmark.getProtocol())
-                                        .user(false).password(true)
+                                        .user(false).password(true).publickey(false)
                                 ).getPassword().toCharArray();
                             }
                             catch(LoginCanceledException e) {

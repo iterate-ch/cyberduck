@@ -1120,6 +1120,7 @@ public class BrowserController extends WindowController
                 Column.filename.name())));
             c.setMaxWidth(new CGFloat(1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            outlineCellPrototype.setEditable(true);
             c.setDataCell(outlineCellPrototype);
             browserOutlineView.addTableColumn(c);
             browserOutlineView.setOutlineTableColumn(c);
@@ -1132,7 +1133,9 @@ public class BrowserController extends WindowController
             public void enterKeyPressed(final ID sender) {
                 if(preferences.getBoolean("browser.enterkey.rename")) {
                     if(browserOutlineView.numberOfSelectedRows().intValue() == 1) {
-                        renameFileButtonClicked(sender);
+                        if(browserOutlineViewDelegate.isColumnRowEditable(NSTableColumn.tableColumnWithIdentifier(Column.filename.name()), browserOutlineView.selectedRow())) {
+                            renameFileButtonClicked(sender);
+                        }
                     }
                 }
                 else {
@@ -1279,6 +1282,7 @@ public class BrowserController extends WindowController
                 Column.filename.name())));
             c.setMaxWidth((1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            filenameCellPrototype.setEditable(true);
             c.setDataCell(filenameCellPrototype);
             this.browserListView.addTableColumn(c);
         }
@@ -1291,7 +1295,9 @@ public class BrowserController extends WindowController
             public void enterKeyPressed(final ID sender) {
                 if(preferences.getBoolean("browser.enterkey.rename")) {
                     if(browserListView.numberOfSelectedRows().intValue() == 1) {
-                        renameFileButtonClicked(sender);
+                        if(browserListViewDelegate.isColumnRowEditable(NSTableColumn.tableColumnWithIdentifier(Column.filename.name()), browserListView.selectedRow())) {
+                            renameFileButtonClicked(sender);
+                        }
                     }
                 }
                 else {
@@ -2343,6 +2349,9 @@ public class BrowserController extends WindowController
         final Path selected = this.getSelectedPath();
         if(StringUtils.isNotBlank(selected.getExtension())) {
             NSText view = browser.currentEditor();
+            if(null == view) {
+                return;
+            }
             int index = selected.getName().indexOf(selected.getExtension()) - 1;
             if(index > 0) {
                 view.setSelectedRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(index)));
@@ -3486,10 +3495,10 @@ public class BrowserController extends WindowController
         }
 
         @Override
-        public boolean isColumnRowEditable(NSTableColumn column, int row) {
+        public boolean isColumnRowEditable(final NSTableColumn column, final NSInteger row) {
             if(preferences.getBoolean("browser.editable")) {
                 if(column.identifier().equals(Column.filename.name())) {
-                    final Path file = this.pathAtRow(row);
+                    final Path file = this.pathAtRow(row.intValue());
                     if(null == file) {
                         return false;
                     }

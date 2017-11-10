@@ -61,7 +61,7 @@ public class VaultRegistryMoveFeature implements Move {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Move %s to %s using copy feature %s", source, target, feature));
             }
-            final Path copy = feature.copy(source, target, new TransferStatus().length(source.attributes().getSize()), connectionCallback);
+            final Path copy = feature.copy(source, target, new TransferStatus(status).length(source.attributes().getSize()), connectionCallback);
             // Delete source file after copy is complete
             final Delete delete = session.getFeature(Delete.class);
             if(delete.isSupported(source)) {
@@ -94,7 +94,7 @@ public class VaultRegistryMoveFeature implements Move {
             return session.getFeature(Copy.class).isSupported(source, target);
         }
         catch(VaultUnlockCancelException e) {
-            return false;
+            return proxy.isSupported(source, target);
         }
     }
 

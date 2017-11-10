@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
@@ -28,7 +29,7 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
 
     public static final Path MYDRIVE_FOLDER
         = new Path(LocaleFactory.localizedString("My Drive", "Google Drive"),
-        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume), new PathAttributes().withVersionId(ROOT_FOLDER_ID));
 
     public static final Path SHARED_FOLDER_NAME
         = new Path(LocaleFactory.localizedString("Shared with me", "Google Drive"),
@@ -46,7 +47,7 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
     public Path find() throws BackgroundException {
         final Path home = super.find();
         if(home.isRoot()) {
-            home.attributes().setVersionId(ROOT_FOLDER_ID);
+            return MYDRIVE_FOLDER;
         }
         return home;
     }
@@ -55,7 +56,7 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
     public Path find(final Path root, final String path) {
         final Path home = super.find(root, path);
         if(home.isRoot()) {
-            home.attributes().setVersionId(ROOT_FOLDER_ID);
+            return MYDRIVE_FOLDER;
         }
         return home;
     }
