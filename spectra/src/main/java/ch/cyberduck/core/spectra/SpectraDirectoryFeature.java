@@ -53,7 +53,7 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String name) {
         return true;
     }
 }

@@ -52,7 +52,7 @@ public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String name) {
         return true;
     }
 }

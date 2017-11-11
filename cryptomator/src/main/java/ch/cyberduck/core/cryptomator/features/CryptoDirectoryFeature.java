@@ -73,8 +73,8 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
-        return proxy.isSupported(workdir);
+    public boolean isSupported(final Path workdir, final String name) {
+        return proxy.isSupported(workdir, null);
     }
 
     @Override

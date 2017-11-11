@@ -28,7 +28,7 @@ public interface Directory<Reply> {
      */
     Path mkdir(Path folder, String region, TransferStatus status) throws BackgroundException;
 
-    boolean isSupported(Path workdir);
+    boolean isSupported(Path workdir, String name);
 
     Directory<Reply> withWriter(Write<Reply> writer);
 }

@@ -53,7 +53,7 @@ public class MantaDirectoryFeature implements Directory {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String name) {
         return session.isUserWritable(workdir);
     }
 

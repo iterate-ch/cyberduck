@@ -52,7 +52,7 @@ public class SFTPDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String name) {
         return true;
     }
 

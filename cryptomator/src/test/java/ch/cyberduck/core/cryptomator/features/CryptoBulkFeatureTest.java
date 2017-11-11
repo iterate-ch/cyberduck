@@ -62,7 +62,7 @@ public class CryptoBulkFeatureTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path workdir) {
+                        public boolean isSupported(final Path workdir, final String name) {
                             return true;
                         }
 
@@ -149,7 +149,7 @@ public class CryptoBulkFeatureTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path workdir) {
+                        public boolean isSupported(final Path workdir, final String name) {
                             return true;
                         }
 

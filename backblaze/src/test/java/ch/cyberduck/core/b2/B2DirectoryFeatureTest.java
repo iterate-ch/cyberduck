@@ -36,10 +36,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class B2DirectoryFeatureTest {
@@ -53,8 +51,10 @@ public class B2DirectoryFeatureTest {
                 )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
+        final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final B2DirectoryFeature feature = new B2DirectoryFeature(session);
+        assertTrue(feature.isSupported(bucket.getParent(), bucket.getName()));
+        feature.mkdir(bucket, null, new TransferStatus());
         new B2DeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -87,13 +87,14 @@ public class B2DirectoryFeatureTest {
                 )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path bucket = new Path("/test.cyberduck.io", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertFalse(new B2DirectoryFeature(session).isSupported(bucket.getParent(), bucket.getName()));
         try {
             new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Invalid characters in bucketName: must be alphanumeric or '-'. Please contact your web hosting service provider for assistance.", e.getDetail());
-            assertEquals("Cannot create folder test.cyberduck.io.", e.getMessage());
+            assertEquals("Cannot create folder untitled folder.", e.getMessage());
             throw e;
         }
     }

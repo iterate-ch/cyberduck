@@ -51,7 +51,7 @@ public class DAVDirectoryFeature implements Directory<String> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String name) {
         return true;
     }
 

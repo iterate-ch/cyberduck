@@ -92,7 +92,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             case encoding: {
                 final NSPopUpButton popup = Rococoa.cast(item.view(), NSPopUpButton.class);
                 popup.selectItemAtIndex(popup.indexOfItemWithRepresentedObject(controller.isMounted() ?
-                        controller.getSession().getHost().getEncoding() : PreferencesFactory.get().getProperty("browser.charset.encoding")));
+                    controller.getSession().getHost().getEncoding() : PreferencesFactory.get().getProperty("browser.charset.encoding")));
             }
         }
         return this.validate(item.action());
@@ -144,21 +144,21 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         else if(action.equals(Foundation.selector("deleteBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
                 return controller.getBookmarkModel().getSource().allowsDelete()
-                        && controller.getBookmarkTable().selectedRow().intValue() != -1;
+                    && controller.getBookmarkTable().selectedRow().intValue() != -1;
             }
             return false;
         }
         else if(action.equals(Foundation.selector("duplicateBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
                 return controller.getBookmarkModel().getSource().allowsEdit()
-                        && controller.getBookmarkTable().numberOfSelectedRows().intValue() == 1;
+                    && controller.getBookmarkTable().numberOfSelectedRows().intValue() == 1;
             }
             return false;
         }
         else if(action.equals(Foundation.selector("editBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
                 return controller.getBookmarkModel().getSource().allowsEdit()
-                        && controller.getBookmarkTable().numberOfSelectedRows().intValue() == 1;
+                    && controller.getBookmarkTable().numberOfSelectedRows().intValue() == 1;
             }
             return false;
         }
@@ -217,34 +217,35 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0;
         }
         else if(action.equals(newfolder.action())) {
-            return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Directory.class).isSupported(
-                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
-            );
+            return this.isBrowser() && controller.isMounted() &&
+                controller.getSession().getFeature(Directory.class).isSupported(
+                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), null
+                );
         }
         else if(action.equals(Foundation.selector("createEncryptedVaultButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getVault() != VaultRegistry.DISABLED &&
-                    null == controller.workdir().attributes().getVault() &&
-                    controller.getSession().getFeature(Directory.class).isSupported(
-                            new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
-                    );
+                null == controller.workdir().attributes().getVault() &&
+                controller.getSession().getFeature(Directory.class).isSupported(
+                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), null
+                );
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
-                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
+                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
             );
         }
         else if(action.equals(upload.action())) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
-                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
+                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
             );
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Symlink.class) != null
-                    && controller.getSelectionCount() == 1;
+                && controller.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Copy.class) != null
-                    && controller.getSelectionCount() == 1;
+                && controller.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("renameFileButtonClicked:"))) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
@@ -309,8 +310,8 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(terminal.action())) {
             return this.isBrowser() && controller.isMounted()
-                    && controller.getSession().getHost().getProtocol().getType() == Protocol.Type.sftp
-                    && TerminalServiceFactory.get() != null;
+                && controller.getSession().getHost().getProtocol().getType() == Protocol.Type.sftp
+                && TerminalServiceFactory.get() != null;
         }
         else if(action.equals(archive.action()) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isBrowser() && controller.isMounted()) {
