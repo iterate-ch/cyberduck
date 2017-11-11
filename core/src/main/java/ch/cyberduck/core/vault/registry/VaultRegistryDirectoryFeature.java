@@ -43,7 +43,7 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
 
     @Override
     public boolean isSupported(final Path workdir, final String name) {
-        return proxy.isSupported(workdir, null);
+        return proxy.isSupported(workdir, name);
     }
 
     @Override
