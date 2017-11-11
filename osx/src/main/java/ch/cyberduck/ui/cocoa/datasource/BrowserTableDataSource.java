@@ -44,6 +44,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatter;
@@ -488,15 +489,22 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(pasteboard.getBookmark().compareTo(controller.getSession().getHost()) == 0) {
                     if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                         // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
+                        for(Path file : pasteboard) {
+                            if(!controller.getSession().getFeature(Copy.class).isSupported(file, destination)) {
+                                return NSDraggingInfo.NSDragOperationNone;
+                            }
+                        }
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
-                    for(Path file : pasteboard) {
-                        if(!controller.getSession().getFeature(Move.class).isSupported(file, destination)) {
-                            return NSDraggingInfo.NSDragOperationNone;
+                    else {
+                        for(Path file : pasteboard) {
+                            if(!controller.getSession().getFeature(Move.class).isSupported(file, destination)) {
+                                return NSDraggingInfo.NSDragOperationNone;
+                            }
                         }
+                        // Defaulting to move for same session
+                        return NSDraggingInfo.NSDragOperationMove;
                     }
-                    // Defaulting to move for same session
-                    return NSDraggingInfo.NSDragOperationMove;
                 }
                 else {
                     // Copying between sessions is always supported
