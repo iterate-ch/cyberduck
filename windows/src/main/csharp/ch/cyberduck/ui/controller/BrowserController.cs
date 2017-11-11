@@ -1888,7 +1888,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() &&
                    ((Directory) Session.getFeature(typeof(Directory))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), null);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private bool View_ValidateNewVault()
@@ -1896,7 +1896,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return IsMounted() && Session.getVault() != VaultRegistry.DISABLED &&
                    null == Workdir.attributes().getVault() &&
                    ((Directory) Session.getFeature(typeof(Directory))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), null);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private void View_DuplicateFile()
