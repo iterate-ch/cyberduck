@@ -94,7 +94,9 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     @Override
     public boolean isSupported(final Path workdir, final String name) {
         if(workdir.isRoot()) {
-            return StringUtils.isAlphanumeric(name);
+            if(StringUtils.isNotBlank(name)) {
+                return StringUtils.isAlphanumeric(name);
+            }
         }
         return true;
     }

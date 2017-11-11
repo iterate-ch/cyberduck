@@ -78,7 +78,9 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     @Override
     public boolean isSupported(final Path workdir, final String name) {
         if(workdir.isRoot()) {
-            return ServiceUtils.isBucketNameValidDNSName(name);
+            if(StringUtils.isNotBlank(name)) {
+                return ServiceUtils.isBucketNameValidDNSName(name);
+            }
         }
         return true;
     }

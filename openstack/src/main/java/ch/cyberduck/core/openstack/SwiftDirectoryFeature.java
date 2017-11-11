@@ -85,7 +85,9 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
     @Override
     public boolean isSupported(final Path workdir, final String name) {
         if(workdir.isRoot()) {
-            return StringUtils.isAlphanumeric(name);
+            if(StringUtils.isNotBlank(name)) {
+                return StringUtils.isAlphanumeric(name);
+            }
         }
         return true;
     }
