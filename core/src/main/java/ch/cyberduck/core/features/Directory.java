@@ -28,7 +28,12 @@ public interface Directory<Reply> {
      */
     Path mkdir(Path folder, String region, TransferStatus status) throws BackgroundException;
 
-    boolean isSupported(Path workdir);
+    /**
+     * @param workdir Working directory in browser
+     * @param name    Folder name or null if unknown
+     * @return True if creating directory will succeed
+     */
+    boolean isSupported(Path workdir, String name);
 
     Directory<Reply> withWriter(Write<Reply> writer);
 }

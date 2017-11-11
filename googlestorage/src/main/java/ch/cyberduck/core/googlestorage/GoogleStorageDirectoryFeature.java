@@ -32,7 +32,7 @@ public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
     private final GoogleStorageSession session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     public GoogleStorageDirectoryFeature(final GoogleStorageSession session, final Write<StorageObject> write) {
         super(session, write);
@@ -49,10 +49,5 @@ public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
         else {
             return super.mkdir(folder, region, status);
         }
-    }
-
-    @Override
-    public boolean isSupported(final Path workdir) {
-        return true;
     }
 }

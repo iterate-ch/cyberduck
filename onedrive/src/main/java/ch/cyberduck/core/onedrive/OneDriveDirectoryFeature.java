@@ -49,7 +49,7 @@ public class OneDriveDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String name) {
         return !workdir.isRoot();
     }
 

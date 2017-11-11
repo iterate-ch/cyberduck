@@ -42,7 +42,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
-        if(!feature.isSupported(folder.getParent())) {
+        if(!feature.isSupported(folder.getParent(), folder.getName())) {
             throw new UnsupportedException();
         }
         final TransferStatus status = new TransferStatus();

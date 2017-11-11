@@ -32,6 +32,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -91,7 +92,12 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String name) {
+        if(workdir.isRoot()) {
+            if(StringUtils.isNotBlank(name)) {
+                return StringUtils.isAlphanumeric(name);
+            }
+        }
         return true;
     }
 

@@ -28,6 +28,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -81,7 +83,12 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String name) {
+        if(workdir.isRoot()) {
+            if(StringUtils.isNotBlank(name)) {
+                return StringUtils.isAlphanumeric(name);
+            }
+        }
         return true;
     }
 

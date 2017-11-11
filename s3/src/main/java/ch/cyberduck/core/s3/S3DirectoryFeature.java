@@ -33,6 +33,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.EnumSet;
 
@@ -43,7 +44,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private Write<StorageObject> writer;
 
@@ -68,14 +69,19 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
             final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
-                    new PathAttributes(folder.attributes()));
+                new PathAttributes(folder.attributes()));
             new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
             return placeholder;
         }
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String name) {
+        if(workdir.isRoot()) {
+            if(StringUtils.isNotBlank(name)) {
+                return ServiceUtils.isBucketNameValidDNSName(name);
+            }
+        }
         return true;
     }
 

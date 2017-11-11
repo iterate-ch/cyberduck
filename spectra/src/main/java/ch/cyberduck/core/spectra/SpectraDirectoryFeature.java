@@ -30,7 +30,7 @@ import org.jets3t.service.model.StorageObject;
 public class SpectraDirectoryFeature extends S3DirectoryFeature {
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final Write<StorageObject> writer;
 
@@ -50,10 +50,5 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
             }
             return super.mkdir(folder, region, status);
         }
-    }
-
-    @Override
-    public boolean isSupported(final Path workdir) {
-        return true;
     }
 }
