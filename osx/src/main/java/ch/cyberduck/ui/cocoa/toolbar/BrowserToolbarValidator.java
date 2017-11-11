@@ -39,6 +39,7 @@ import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
@@ -219,14 +220,14 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         else if(action.equals(newfolder.action())) {
             return this.isBrowser() && controller.isMounted() &&
                 controller.getSession().getFeature(Directory.class).isSupported(
-                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), null
+                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
                 );
         }
         else if(action.equals(Foundation.selector("createEncryptedVaultButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getVault() != VaultRegistry.DISABLED &&
                 null == controller.workdir().attributes().getVault() &&
                 controller.getSession().getFeature(Directory.class).isSupported(
-                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), null
+                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
                 );
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
