@@ -77,7 +77,11 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 final List<Path> target = new CopyWorker(Collections.singletonMap(entry.getKey(), entry.getValue()),
                     SessionPoolFactory.create(cache, session.getHost(), PasswordStoreFactory.get(), callback, key, listener, transcript), cache, listener, callback).run(session);
                 for(Path f : target) {
-                    result.put(entry.getKey(), f);
+                    for(Map.Entry<Path, Path> source : files.entrySet()) {
+                        if(source.getValue().equals(f)) {
+                            result.put(source.getKey(), f);
+                        }
+                    }
                 }
                 // Delete source file after copy is complete
                 new DeleteWorker(callback, Collections.singletonList(entry.getKey()), cache, listener).run(session);
