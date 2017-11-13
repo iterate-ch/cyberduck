@@ -2284,9 +2284,8 @@ public class BrowserController extends WindowController
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
-                                new CopyWorker(selected,
-                                    pool instanceof StatefulSessionPool ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool,
-                                    cache, new DisabledProgressListener(), LoginCallbackFactory.get(BrowserController.this)) {
+                            new CopyWorker(selected, pool instanceof StatefulSessionPool ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
+                                BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
                                     @Override
                                     public void cleanup(final List<Path> copied) {
                                         reload(workdir(), copied, new ArrayList<Path>(selected.values()));
