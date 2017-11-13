@@ -254,12 +254,12 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
         newfolder {
             @Override
             public String label() {
-                return LocaleFactory.localizedString("New Folder");
+                return LocaleFactory.localizedString("New Folder", "Folder");
             }
 
             @Override
             public String tooltip() {
-                return LocaleFactory.localizedString("Create New Folder");
+                return LocaleFactory.localizedString("Create new folder", "Folder");
             }
 
             @Override
