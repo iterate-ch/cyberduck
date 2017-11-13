@@ -29,5 +29,6 @@ public enum TerminalAction {
     upload,
     copy,
     synchronize,
-    delete
+    delete,
+    mkdir
 }

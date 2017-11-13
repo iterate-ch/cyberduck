@@ -65,6 +65,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
+import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
@@ -242,6 +243,8 @@ public class Terminal {
                     return this.mount(source);
                 case delete:
                     return this.delete(source, remote);
+                case mkdir:
+                    return this.mkdir(source, remote, input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
             }
             switch(action) {
                 case download:
@@ -388,6 +391,15 @@ public class Terminal {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
         final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<List<Path>>(controller, session, worker);
+        if(!this.execute(action)) {
+            return Exit.failure;
+        }
+        return Exit.success;
+    }
+
+    protected Exit mkdir(final SessionPool session, final Path remote, final String region) throws BackgroundException {
+        final CreateDirectoryWorker worker = new CreateDirectoryWorker(remote, region);
+        final SessionBackgroundAction<Path> action = new TerminalBackgroundAction<Path>(controller, session, worker);
         if(!this.execute(action)) {
             return Exit.failure;
         }
