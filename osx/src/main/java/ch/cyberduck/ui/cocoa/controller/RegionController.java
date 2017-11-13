@@ -49,7 +49,7 @@ public class RegionController extends AlertController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Choose Region", "Folder"));
-        alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new folder", "Folder"));
+        alert.setInformativeText(LocaleFactory.localizedString("Select the region for the new folder", "Folder"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Choose"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
         super.loadBundle(alert);
@@ -79,7 +79,6 @@ public class RegionController extends AlertController {
                 break;
         }
     }
-
 
     public interface Callback {
         void callback(final Location.Name region);
