@@ -935,32 +935,32 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
 
-                foreach (Path sourcePath in args.SourceModels)
-                {
-                    if (sourcePath.isDirectory() && sourcePath.equals(destination))
-                    {
-                        // Do not allow dragging onto myself.
-                        args.Effect = DragDropEffects.None;
-                        args.DropTargetLocation = DropTargetLocation.None;
-                        return;
-                    }
-                    if (sourcePath.isDirectory() && destination.isChild(sourcePath))
-                    {
-                        // Do not allow dragging a directory into its own containing items
-                        args.Effect = DragDropEffects.None;
-                        args.DropTargetLocation = DropTargetLocation.None;
-                        return;
-                    }
-                    if (sourcePath.isFile() && sourcePath.getParent().equals(destination))
-                    {
-                        // Moving file to the same destination makes no sense
-                        args.Effect = DragDropEffects.None;
-                        args.DropTargetLocation = DropTargetLocation.None;
-                        return;
-                    }
-                }
                 if (args.ListView == args.SourceListView)
                 {
+                    foreach (Path sourcePath in args.SourceModels)
+                    {
+                        if (sourcePath.isDirectory() && sourcePath.equals(destination))
+                        {
+                            // Do not allow dragging onto myself.
+                            args.Effect = DragDropEffects.None;
+                            args.DropTargetLocation = DropTargetLocation.None;
+                            return;
+                        }
+                        if (sourcePath.isDirectory() && destination.isChild(sourcePath))
+                        {
+                            // Do not allow dragging a directory into its own containing items
+                            args.Effect = DragDropEffects.None;
+                            args.DropTargetLocation = DropTargetLocation.None;
+                            return;
+                        }
+                        if (sourcePath.isFile() && sourcePath.getParent().equals(destination))
+                        {
+                            // Moving file to the same destination makes no sense
+                            args.Effect = DragDropEffects.None;
+                            args.DropTargetLocation = DropTargetLocation.None;
+                            return;
+                        }
+                    }
                     if (args.Effect == DragDropEffects.Move)
                     {
                         Move move = (Move) Session.getFeature(typeof(Move));
