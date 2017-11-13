@@ -108,7 +108,7 @@ public abstract class Transfer implements Serializable {
      * In Bytes per second
      */
     protected BandwidthThrottle bandwidth
-            = new BandwidthThrottle(BandwidthThrottle.UNLIMITED);
+        = new BandwidthThrottle(BandwidthThrottle.UNLIMITED);
 
 
     /**
@@ -125,7 +125,7 @@ public abstract class Transfer implements Serializable {
      * Unique identifier
      */
     protected String uuid
-            = new UUIDRandomStringService().random();
+        = new UUIDRandomStringService().random();
 
     /**
      * Transfer state
@@ -314,16 +314,18 @@ public abstract class Transfer implements Serializable {
 
     /**
      * The actual transfer implementation
-     *  @param source           Connection to source server of transfer. May be null.
-     * @param destination      Connection to target server of transfer
-     * @param file             Remote
-     * @param local            Local
-     * @param options          Quarantine option
-     * @param status           Transfer status
-     * @param connectionCallback         Prompt
-     * @param passwordCallback
-     * @param progressListener Listener
-     * @param streamListener   Listener
+     *
+     * @param source             Connection to source server of transfer. May be null.
+     * @param destination        Connection to target server of transfer
+     * @param file               Remote
+     * @param local              Local
+     * @param options            Quarantine option
+     * @param status             Transfer status
+     * @param connectionCallback Prompt
+     * @param passwordCallback   Prompt
+     * @param progressListener   Listener
+     * @param streamListener     Listener
+     * @return Target file
      */
     public abstract Path transfer(Session<?> source, Session<?> destination, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
