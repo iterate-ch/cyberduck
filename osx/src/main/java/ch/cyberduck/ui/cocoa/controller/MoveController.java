@@ -19,6 +19,7 @@ import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.HostKeyCallbackFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
@@ -68,18 +69,16 @@ public class MoveController extends ProxyController {
         final DefaultMainAction action = new DefaultMainAction() {
             @Override
             public void run() {
-                parent.background(new WorkerBackgroundAction<Map<Path, Path>>(parent, parent.getSession(),
-                        new MoveWorker(selected, parent, cache, LoginCallbackFactory.get(parent)) {
-                                    @Override
-                                    public void cleanup(final Map<Path, Path> result) {
-                                        final List<Path> changed = new ArrayList<>();
-                                        changed.addAll(result.keySet());
-                                        changed.addAll(result.values());
-                                        parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
-                                    }
-                                }
-                        )
-                );
+                final MoveWorker move = new MoveWorker(selected, cache, LoginCallbackFactory.get(parent), HostKeyCallbackFactory.get(parent, parent.getSession().getHost().getProtocol()), parent, parent) {
+                    @Override
+                    public void cleanup(final Map<Path, Path> result) {
+                        final List<Path> changed = new ArrayList<>();
+                        changed.addAll(result.keySet());
+                        changed.addAll(result.values());
+                        parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
+                    }
+                };
+                parent.background(new WorkerBackgroundAction<Map<Path, Path>>(parent, parent.getSession(), move));
             }
         };
         this.rename(selected, action);
