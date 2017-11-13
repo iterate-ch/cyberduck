@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 expandedInfo: $@"{Localize("Donation Key")}
 
 {Localize("As a contributor to Cyberduck, you receive a donation key that disables this prompt.")}",
-                commandLinks: new[] { Localize("Donate!"), Localize("Later") },
+                commandLinks: new[] { Localize("Donate!"), Localize("Later"), Localize("Buy in Windows Store") },
                 expandedByDefault: true,
                 verificationByDefault: Assembly.GetExecutingAssembly().GetName().Version.ToString().Equals(PreferencesFactory.get().getProperty("donate.reminder")));
             if (result.VerificationChecked == true)
@@ -66,6 +66,10 @@ namespace Ch.Cyberduck.Ui.Controller
             if (result.CommandButtonResult == 0)
             {
                 BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate"));
+            }
+            if (result.CommandButtonResult == 2)
+            {
+                BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.store"));
             }
 
             PreferencesFactory.get().setProperty("donate.reminder.date", DateTime.Now.Ticks);

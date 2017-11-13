@@ -69,6 +69,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         defaults.put(String.format("browser.column.%s.width", Column.version.name()), String.valueOf(80));
 
         defaults.put("browser.sort.column", Column.filename.name());
+        defaults.put("website.store", "macappstore://itunes.apple.com/app/id409222199?mt=12");
     }
 
     @Override

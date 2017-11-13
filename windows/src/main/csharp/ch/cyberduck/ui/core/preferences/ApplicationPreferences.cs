@@ -100,5 +100,12 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
             defaults.put("factory.securerandom.class", typeof(FastSecureRandomProvider).AssemblyQualifiedName);
         }
+
+        protected override void setDefaults()
+        {
+            base.setDefaults();
+
+            defaults.put("website.store", "ms-windows-store://pdp/?ProductId=9NBLGGH43HTB");
+        }
     }
 }
