@@ -108,11 +108,17 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create("D"));
         options.addOption(OptionBuilder
-                .withDescription("Long list format with modification date and permission mask")
-                .withLongOpt(Params.longlist.name())
-                .hasArg(true).withArgName("url")
-                .isRequired(false)
-                .create('L'));
+            .withDescription("Make directory")
+            .withLongOpt(TerminalAction.mkdir.name())
+            .hasArg(true).withArgName("url")
+            .isRequired(false)
+            .create("c"));
+        options.addOption(OptionBuilder
+            .withDescription("Long list format with modification date and permission mask")
+            .withLongOpt(Params.longlist.name())
+            .hasArg(true).withArgName("url")
+            .isRequired(false)
+            .create('L'));
         options.addOption(OptionBuilder
                 .withDescription("Location of bucket or container")
                 .withLongOpt(Params.region.name())
