@@ -43,7 +43,7 @@ public class DonateAlertController extends AlertController {
         message.append(LocaleFactory.localizedString("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!", "Donate"));
         message.append(LocaleFactory.localizedString("As a contributor to Cyberduck, you receive a registration key that disables this prompt.", "Donate"));
         alert.setInformativeText(message.toString());
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Donate!", "Donate"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Donate", "Donate"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Later", "Donate"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Buy in Mac App Store", "Donate"));
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);

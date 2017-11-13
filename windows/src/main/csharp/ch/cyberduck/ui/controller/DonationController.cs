@@ -51,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 mainInstruction: Localize("Thank you for using Cyberduck!"),
                 content: $@"{Localize("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!")}",
                 expandedInfo: $@"{Localize("As a contributor to Cyberduck, you receive a registration key that disables this prompt.")}",
-                commandLinks: new[] { Localize("Donate!"), Localize("Later"), Localize("Buy in Windows Store") },
+                commandLinks: new[] { Localize("Donate"), Localize("Later"), Localize("Buy in Windows Store") },
                 expandedByDefault: true,
                 verificationByDefault: Assembly.GetExecutingAssembly().GetName().Version.ToString().Equals(PreferencesFactory.get().getProperty("donate.reminder")));
             if (result.VerificationChecked == true)
