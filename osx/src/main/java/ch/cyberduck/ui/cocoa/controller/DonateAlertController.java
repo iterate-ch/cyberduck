@@ -40,11 +40,12 @@ public class DonateAlertController extends AlertController {
         final NSAlert alert = NSAlert.alert();
         alert.setMessageText(LocaleFactory.localizedString("Thank you for using Cyberduck!", "Donate"));
         final StringAppender message = new StringAppender();
-        message.append(LocaleFactory.localizedString("It has taken many nights to develop this application. If you enjoy using it, please consider a donation to the author of this software. It will help to make Cyberduck even better!", "Donate"));
-        message.append(LocaleFactory.localizedString("As a contributor to Cyberduck, you receive a donation key that disables this prompt.", "Donate"));
+        message.append(LocaleFactory.localizedString("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!", "Donate"));
+        message.append(LocaleFactory.localizedString("As a contributor to Cyberduck, you receive a registration key that disables this prompt.", "Donate"));
         alert.setInformativeText(message.toString());
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Donate!", "Donate"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Donate", "Donate"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Later", "Donate"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Buy in Mac App Store", "Donate"));
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again for this version.", "Donate"));
@@ -55,11 +56,14 @@ public class DonateAlertController extends AlertController {
     public void callback(final int returncode) {
         if(this.isSuppressed()) {
             preferences.setProperty("donate.reminder",
-                    NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
+                NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
         }
         // Remember this reminder date
         preferences.setProperty("donate.reminder.date", System.currentTimeMillis());
         switch(returncode) {
+            case ALTERNATE_OPTION:
+                BrowserLauncherFactory.get().open(preferences.getProperty("website.store"));
+                break;
             case DEFAULT_OPTION:
                 BrowserLauncherFactory.get().open(preferences.getProperty("website.donate"));
                 break;
@@ -70,7 +74,7 @@ public class DonateAlertController extends AlertController {
     private void terminate() {
         if(this.isSuppressed()) {
             preferences.setProperty("donate.reminder",
-                    NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
+                NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
         }
         // Remember this reminder date
         preferences.setProperty("donate.reminder.date", System.currentTimeMillis());
