@@ -17,17 +17,20 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.MappingMimeTypeService;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionPoolFactory;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
@@ -38,48 +41,64 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
 
     private final Map<Path, Path> files;
     private final ProgressListener listener;
-    private final Cache<Path> cache;
-    private final ConnectionCallback callback;
+    private final PathCache cache;
+    private final LoginCallback callback;
+    private final HostKeyCallback key;
+    private final TranscriptListener transcript;
 
-    public MoveWorker(final Map<Path, Path> files, final ProgressListener listener, final Cache<Path> cache, final ConnectionCallback callback) {
+    public MoveWorker(final Map<Path, Path> files, final PathCache cache,
+                      final LoginCallback callback, final HostKeyCallback key,
+                      final ProgressListener listener, final TranscriptListener transcript) {
         this.files = files;
         this.listener = listener;
         this.cache = cache;
         this.callback = callback;
+        this.key = key;
+        this.transcript = transcript;
     }
 
     @Override
     public Map<Path, Path> run(final Session<?> session) throws BackgroundException {
         final Move move = session.getFeature(Move.class);
+        final ListService list = session.getFeature(ListService.class);
         final Map<Path, Path> result = new HashMap<>();
         for(Map.Entry<Path, Path> entry : files.entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             if(!move.isSupported(entry.getKey(), entry.getValue())) {
-                throw new UnsupportedException();
+                final List<Path> target = new CopyWorker(Collections.singletonMap(entry.getKey(), entry.getValue()),
+                    SessionPoolFactory.create(cache, session.getHost(), PasswordStoreFactory.get(), callback, key, listener, transcript), cache, listener, callback).run(session);
+                for(Path f : target) {
+                    result.put(entry.getKey(), f);
+                }
+                // Delete source file after copy is complete
+                new DeleteWorker(callback, Collections.singletonList(entry.getKey()), cache, listener).run(session);
             }
-            final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), entry.getKey(), entry.getValue());
-            for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                final TransferStatus status = new TransferStatus()
-                    .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                    .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
-                    .length(r.getKey().attributes().getSize());
-                result.put(r.getKey(), move.move(r.getKey(), r.getValue(), status,
-                    new Delete.Callback() {
-                        @Override
-                        public void delete(final Path file) {
-                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                                file.getName()));
-                        }
-                    }, callback)
-                );
+            else {
+                final Map<Path, Path> recursive = this.compile(move, list, entry.getKey(), entry.getValue());
+                for(Map.Entry<Path, Path> r : recursive.entrySet()) {
+                    final TransferStatus status = new TransferStatus()
+                        .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                        .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
+                        .length(r.getKey().attributes().getSize());
+                    result.put(r.getKey(), move.move(r.getKey(), r.getValue(), status,
+                        new Delete.Callback() {
+                            @Override
+                            public void delete(final Path file) {
+                                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                                    file.getName()));
+                            }
+                        }, callback)
+                    );
+                }
             }
         }
         return result;

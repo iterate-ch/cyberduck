@@ -19,7 +19,6 @@ import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.pool.StatelessSessionPool;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -36,8 +35,6 @@ import java.util.Arrays;
 public class SessionPoolFactory {
     private static final Logger log = Logger.getLogger(SessionPoolFactory.class);
 
-    private static final Preferences preferences = PreferencesFactory.get();
-
     private SessionPoolFactory() {
         //
     }
@@ -46,20 +43,29 @@ public class SessionPoolFactory {
         return create(controller, cache, bookmark, Usage.transfer);
     }
 
-    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark, final Usage... usage) {
-        final HostPasswordStore keychain = PasswordStoreFactory.get();
-        final LoginConnectionService connect = new LoginConnectionService(LoginCallbackFactory.get(controller),
-                HostKeyCallbackFactory.get(controller, bookmark.getProtocol()), keychain, controller);
-        return create(connect, controller, cache, bookmark,
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark),
-                VaultRegistryFactory.create(keychain, PasswordCallbackFactory.get(controller)), usage);
+    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark,
+                                     final Usage... usage) {
+        return create(cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
+            bookmark.getProtocol()), controller, controller,
+            usage);
+    }
+
+    public static SessionPool create(final PathCache cache, final Host bookmark,
+                                     final HostPasswordStore keychain, final LoginCallback login, final HostKeyCallback key,
+                                     final ProgressListener listener, final TranscriptListener transcript,
+                                     final Usage... usage) {
+        final LoginConnectionService connect = new LoginConnectionService(login, key, keychain, listener);
+        return create(connect, transcript, cache, bookmark,
+            new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
+            new KeychainX509KeyManager(bookmark),
+            VaultRegistryFactory.create(keychain, login), usage);
     }
 
     public static SessionPool create(final ConnectionService connect, final TranscriptListener transcript,
                                      final PathCache cache, final Host bookmark,
                                      final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
-                                     final VaultRegistry registry, final Usage... usage) {
+                                     final VaultRegistry registry,
+                                     final Usage... usage) {
         switch(bookmark.getProtocol().getType()) {
             case file:
             case sftp:
@@ -87,9 +93,9 @@ public class SessionPoolFactory {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
                 }
                 return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, registry, cache, transcript, bookmark)
-                        .withMinIdle(preferences.getInteger("connection.pool.minidle"))
-                        .withMaxIdle(preferences.getInteger("connection.pool.maxidle"))
-                        .withMaxTotal(preferences.getInteger("connection.pool.maxtotal"));
+                    .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
+                    .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
+                    .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
         }
     }
 

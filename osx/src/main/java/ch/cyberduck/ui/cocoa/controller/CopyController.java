@@ -24,6 +24,8 @@ import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SessionPoolFactory;
+import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -39,7 +41,7 @@ import java.util.Map;
 public class CopyController extends ProxyController {
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final BrowserController parent;
     private final PathCache cache;
@@ -69,17 +71,18 @@ public class CopyController extends ProxyController {
         final DefaultMainAction action = new DefaultMainAction() {
             @Override
             public void run() {
+                final SessionPool pool = parent.getSession();
                 parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
-                        new CopyWorker(selected, SessionPoolFactory.create(parent, cache, parent.getSession().getHost()), cache, parent, LoginCallbackFactory.get(parent)) {
-                                    @Override
-                                    public void cleanup(final List<Path> result) {
-                                        final List<Path> changed = new ArrayList<>();
-                                        changed.addAll(selected.keySet());
-                                        changed.addAll(selected.values());
-                                        parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
-                                    }
-                                }
-                        )
+                        new CopyWorker(selected, pool instanceof StatefulSessionPool ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
+                            @Override
+                            public void cleanup(final List<Path> result) {
+                                final List<Path> changed = new ArrayList<>();
+                                changed.addAll(selected.keySet());
+                                changed.addAll(selected.values());
+                                parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
+                            }
+                        }
+                    )
                 );
             }
         };
@@ -96,7 +99,7 @@ public class CopyController extends ProxyController {
     private void copy(final Map<Path, Path> selected, final DefaultMainAction action) {
         if(preferences.getBoolean("browser.copy.confirm")) {
             StringBuilder alertText = new StringBuilder(
-                    LocaleFactory.localizedString("Do you want to copy the selected files?", "Duplicate"));
+                LocaleFactory.localizedString("Do you want to copy the selected files?", "Duplicate"));
             int i = 0;
             Iterator<Map.Entry<Path, Path>> iter;
             for(iter = selected.entrySet().iterator(); i < 10 && iter.hasNext(); ) {
@@ -108,11 +111,11 @@ public class CopyController extends ProxyController {
                 alertText.append(String.format("\n%s …)", Character.toString('\u2022')));
             }
             final NSAlert alert = NSAlert.alert(
-                    LocaleFactory.localizedString("Copy", "Transfer"), //title
-                    alertText.toString(),
-                    LocaleFactory.localizedString("Copy", "Transfer"), // default button
-                    LocaleFactory.localizedString("Cancel"), //alternative button
-                    null //other button
+                LocaleFactory.localizedString("Copy", "Transfer"), //title
+                alertText.toString(),
+                LocaleFactory.localizedString("Copy", "Transfer"), // default button
+                LocaleFactory.localizedString("Cancel"), //alternative button
+                null //other button
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
