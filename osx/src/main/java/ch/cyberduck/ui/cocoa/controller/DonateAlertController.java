@@ -63,6 +63,7 @@ public class DonateAlertController extends AlertController {
         switch(returncode) {
             case ALTERNATE_OPTION:
                 BrowserLauncherFactory.get().open(preferences.getProperty("website.store"));
+                break;
             case DEFAULT_OPTION:
                 BrowserLauncherFactory.get().open(preferences.getProperty("website.donate"));
                 break;
