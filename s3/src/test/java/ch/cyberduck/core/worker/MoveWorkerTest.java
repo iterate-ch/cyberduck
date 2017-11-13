@@ -19,11 +19,11 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -68,7 +68,7 @@ public class MoveWorkerTest {
             )
         ));
         assertTrue(new S3FindFeature(session).find(source));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new DisabledProgressListener(), PathCache.empty(), new DisabledConnectionCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), PathCache.empty(), new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener());
         worker.run(session);
         assertFalse(new S3FindFeature(session).find(source));
         assertTrue(new S3FindFeature(session).find(target));

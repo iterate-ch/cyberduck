@@ -310,7 +310,7 @@ public class SDSDelegatingMoveFeatureTest {
         final Path folder = new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.directory));
         new SDSDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), new DisabledProgressListener(), PathCache.empty(), new DisabledConnectionCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), PathCache.empty(), new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener());
         worker.run(session);
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertFalse(new SDSFindFeature(session).find(room));
