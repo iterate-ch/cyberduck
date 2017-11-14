@@ -21,6 +21,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -122,12 +123,12 @@ public class CopyTransfer extends Transfer {
         final TransferAction action;
         if(reloadRequested) {
             action = TransferAction.forName(
-                    PreferencesFactory.get().getProperty("queue.copy.reload.action"));
+                PreferencesFactory.get().getProperty("queue.copy.reload.action"));
         }
         else {
             // Use default
             action = TransferAction.forName(
-                    PreferencesFactory.get().getProperty("queue.copy.action"));
+                PreferencesFactory.get().getProperty("queue.copy.action"));
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
@@ -224,15 +225,25 @@ public class CopyTransfer extends Transfer {
     public Path transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus status,
                          final ConnectionCallback connectionCallback,
-                         final PasswordCallback passwordCallback, final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
+                         final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
-        progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
-                source.getName(), mapping.get(source).getName()));
-        final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
-        final Path copy = feature.copy(source, mapping.get(source), status, connectionCallback);
-        this.addTransferred(status.getLength());
-        return copy;
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
+            source.getName(), mapping.get(source).getName()));
+        if(source.isDirectory()) {
+            if(!status.isExists()) {
+                final Directory feature = destination.getFeature(Directory.class);
+                feature.mkdir(mapping.get(source), null, status);
+                status.setComplete();
+            }
+        }
+        else {
+            // Transfer
+            final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
+            feature.copy(source, mapping.get(source), status, connectionCallback);
+            this.addTransferred(status.getLength());
+        }
+        return source;
     }
 }
