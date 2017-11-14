@@ -82,11 +82,11 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     for(Map.Entry<Path, Path> source : files.entrySet()) {
                         if(source.getValue().equals(f)) {
                             result.put(source.getKey(), f);
+                            // Delete source file after copy is complete
+                            new DeleteWorker(callback, Collections.singletonList(source.getKey()), cache, listener).run(session);
                         }
                     }
                 }
-                // Delete source file after copy is complete
-                new DeleteWorker(callback, Collections.singletonList(entry.getKey()), cache, listener).run(session);
             }
             else {
                 final Map<Path, Path> recursive = this.compile(move, list, entry.getKey(), entry.getValue());
