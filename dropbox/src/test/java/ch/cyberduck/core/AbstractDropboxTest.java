@@ -53,17 +53,19 @@ public class AbstractDropboxTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore() {
-                @Override
-                public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                    if(user.equals("Dropbox OAuth2 Access Token")) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
-                    }
-                    if(user.equals("Dropbox OAuth2 Refresh Token")) {
-                        return System.getProperties().getProperty("dropbox.refreshtoken");
-                    }
-                    return null;
-                }
-            }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new TestPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+    }
+
+    public static class TestPasswordStore extends DisabledPasswordStore {
+        @Override
+        public String getPassword(Scheme scheme, int port, String hostname, String user) {
+            if(user.equals("Dropbox OAuth2 Access Token")) {
+                return System.getProperties().getProperty("dropbox.accesstoken");
+            }
+            if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                return System.getProperties().getProperty("dropbox.refreshtoken");
+            }
+            return null;
+        }
     }
 }
