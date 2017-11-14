@@ -65,17 +65,19 @@ public class AbstractDriveTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Google Drive OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("googledrive.accesstoken");
-                        }
-                        if(user.equals("Google Drive OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("googledrive.refreshtoken");
-                        }
-                        return null;
-                    }
-                }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new TestPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+    }
+
+    public static class TestPasswordStore extends DisabledPasswordStore {
+        @Override
+        public String getPassword(Scheme scheme, int port, String hostname, String user) {
+            if(user.equals("Google Drive OAuth2 Access Token")) {
+                return System.getProperties().getProperty("googledrive.accesstoken");
+            }
+            if(user.equals("Google Drive OAuth2 Refresh Token")) {
+                return System.getProperties().getProperty("googledrive.refreshtoken");
+            }
+            return null;
+        }
     }
 }

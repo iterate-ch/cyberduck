@@ -55,7 +55,7 @@ public abstract class AbstractOneDriveTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile"));
+            new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -65,22 +65,19 @@ public abstract class AbstractOneDriveTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.endsWith("OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("onedrive.accesstoken");
-                        }
-                        if(user.endsWith("OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("onedrive.refreshtoken");
-                        }
-                        return null;
-                    }
+            new TestPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+    }
 
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+    public static class TestPasswordStore extends DisabledPasswordStore {
+        @Override
+        public String getPassword(Scheme scheme, int port, String hostname, String user) {
+            if(user.endsWith("OAuth2 Access Token")) {
+                return System.getProperties().getProperty("onedrive.accesstoken");
+            }
+            if(user.endsWith("OAuth2 Refresh Token")) {
+                return System.getProperties().getProperty("onedrive.refreshtoken");
+            }
+            return null;
+        }
     }
 }
