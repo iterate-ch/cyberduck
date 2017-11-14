@@ -49,10 +49,17 @@ public class CopyTransfer extends Transfer {
     private final Comparator<Path> comparator = new NullComparator<Path>();
 
     /**
-     * Mapping source to destination files
+     * Temporary mapping for source to destination files
      */
-    protected final Map<Path, Path> mapping;
+    private final Map<Path, Path> mapping;
+    /**
+     * Root files mapping source to destination
+     */
+    private final Map<Path, Path> selected;
 
+    /**
+     * Target host
+     */
     private final Host destination;
 
     public CopyTransfer(final Host source, final Host destination,
@@ -64,9 +71,11 @@ public class CopyTransfer extends Transfer {
                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
         super(source, new ArrayList<TransferItem>(), bandwidth);
         this.destination = destination;
+        this.selected = selected;
         this.mapping = new HashMap<Path, Path>(selected);
-        for(Path s : selected.keySet()) {
-            roots.add(new TransferItem(s));
+        for(Path f : selected.keySet()) {
+            roots.add(new TransferItem(f));
+
         }
     }
 
@@ -97,8 +106,8 @@ public class CopyTransfer extends Transfer {
         if(destination != null) {
             dict.setObjectForKey(destination, "Destination");
         }
-        dict.setListForKey(new ArrayList<Serializable>(mapping.values()), "Destinations");
-        dict.setListForKey(new ArrayList<Serializable>(mapping.keySet()), "Roots");
+        dict.setListForKey(new ArrayList<Serializable>(selected.values()), "Destinations");
+        dict.setListForKey(new ArrayList<Serializable>(selected.keySet()), "Roots");
         dict.setStringForKey(uuid, "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");

@@ -51,7 +51,6 @@ public class CopyTransferTest {
         final Transfer serialized = new TransferDictionary(new ProtocolFactory(Collections.singleton(new TestProtocol()))).deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.roots, serialized.getRoots());
-        assertEquals(t.mapping, ((CopyTransfer) serialized).mapping);
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
         assertEquals(4L, serialized.getSize(), 0L);
         assertEquals(3L, serialized.getTransferred(), 0L);
