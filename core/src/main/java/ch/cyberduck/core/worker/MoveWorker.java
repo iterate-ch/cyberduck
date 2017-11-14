@@ -18,11 +18,11 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.MappingMimeTypeService;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -47,6 +47,7 @@ import java.util.Map;
 public class MoveWorker extends Worker<Map<Path, Path>> {
 
     private final Map<Path, Path> files;
+    private final HostPasswordStore keychain;
     private final ProgressListener listener;
     private final PathCache cache;
     private final LoginCallback callback;
@@ -54,9 +55,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
     private final TranscriptListener transcript;
 
     public MoveWorker(final Map<Path, Path> files, final PathCache cache,
-                      final LoginCallback callback, final HostKeyCallback key,
+                      final HostPasswordStore keychain, final LoginCallback callback, final HostKeyCallback key,
                       final ProgressListener listener, final TranscriptListener transcript) {
         this.files = files;
+        this.keychain = keychain;
         this.listener = listener;
         this.cache = cache;
         this.callback = callback;
@@ -75,7 +77,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             }
             if(!move.isSupported(entry.getKey(), entry.getValue())) {
                 final List<Path> target = new CopyWorker(Collections.singletonMap(entry.getKey(), entry.getValue()),
-                    SessionPoolFactory.create(cache, session.getHost(), PasswordStoreFactory.get(), callback, key, listener, transcript), cache, listener, callback).run(session);
+                    SessionPoolFactory.create(cache, session.getHost(), keychain, callback, key, listener, transcript), cache, listener, callback).run(session);
                 for(Path f : target) {
                     for(Map.Entry<Path, Path> source : files.entrySet()) {
                         if(source.getValue().equals(f)) {
