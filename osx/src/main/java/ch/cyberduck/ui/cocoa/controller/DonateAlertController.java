@@ -48,7 +48,7 @@ public class DonateAlertController extends AlertController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Buy in Mac App Store", "Donate"));
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setShowsSuppressionButton(true);
-        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again for this version.", "Donate"));
+        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again for this version", "Donate"));
         this.loadBundle(alert);
     }
 
