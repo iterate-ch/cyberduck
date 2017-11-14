@@ -59,11 +59,15 @@ public class CryptoCopyFeature implements Copy {
         }
         else {
             // Copy files from or into vault requires to pass through encryption features
-            return vault.decrypt(session, new DefaultCopyFeature(session).withTarget(target).copy(
+            final Path target = new DefaultCopyFeature(session).withTarget(this.target).copy(
                 vault.contains(source) ? vault.encrypt(session, source) : source,
                 vault.contains(copy) ? vault.encrypt(session, copy) : copy,
                 status,
-                callback));
+                callback);
+            if(vault.contains(copy)) {
+                return vault.decrypt(session, target);
+            }
+            return target;
         }
     }
 
