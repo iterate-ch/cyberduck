@@ -61,6 +61,26 @@ public class SDSSessionTest {
         session.close();
     }
 
+    @Test(expected = LoginFailureException.class)
+    public void testLoginNotfound() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "heroes.dracoon.team", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        try {
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            fail();
+        }
+        catch(LoginFailureException e) {
+            assertEquals("Login failed", e.getMessage());
+            assertEquals("Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
+    }
+
     @Test
     public void testLoginRefreshToken() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
