@@ -57,7 +57,9 @@ public class VaultRegistryMoveFeature implements Move {
             if(registry.find(session, source, false).equals(registry.find(session, target, false))) {
                 return registry.find(session, source, false).getFeature(session, Move.class, proxy).isRecursive(source, target);
             }
-            // Move files from or into vault requires to pass through encryption features
+            if(log.isDebugEnabled()) {
+                log.debug("Move files from or into vault requires to pass through encryption features using copy operation");
+            }
             return false;
         }
         catch(VaultUnlockCancelException e) {
@@ -72,7 +74,9 @@ public class VaultRegistryMoveFeature implements Move {
             if(registry.find(session, source, false).equals(registry.find(session, target, false))) {
                 return registry.find(session, source, false).getFeature(session, Move.class, proxy).isSupported(source, target);
             }
-            // Move files from or into vault requires to pass through encryption features
+            if(log.isDebugEnabled()) {
+                log.debug("Move files from or into vault requires to pass through encryption features using copy operation");
+            }
             return false;
         }
         catch(VaultUnlockCancelException e) {
