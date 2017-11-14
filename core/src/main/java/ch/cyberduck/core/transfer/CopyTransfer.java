@@ -138,7 +138,7 @@ public class CopyTransfer extends Transfer {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
                         // List files in target directory
-                        if(this.list(source, destination, copy, null, listener).isEmpty()) {
+                        if(this.list(destination, destination, copy, null, listener).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
