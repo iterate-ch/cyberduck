@@ -48,6 +48,10 @@
                     <groupId>com.google.http-client</groupId>
                     <artifactId>google-http-client-jackson2</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava-jdk5</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
