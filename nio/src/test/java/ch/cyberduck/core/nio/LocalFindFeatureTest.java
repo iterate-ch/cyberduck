@@ -48,7 +48,6 @@ public class LocalFindFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         assertTrue(new LocalFindFeature(session).find(home));
-        assertTrue(new LocalFindFeature(session).find(new Path(home, ".ssh", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 
