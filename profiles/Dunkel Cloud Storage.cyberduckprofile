@@ -2,51 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Protocol</key>
-	<string>s3</string>
-	<key>Vendor</key>
-	<string>dunkel</string>
-	<key>Description</key>
-	<string>Dunkel Cloud Storage (S3)</string>
-	<key>Default Hostname</key>
-	<string>dcs.dunkel.de</string>
-	<key>Default Port</key>
-	<string>443</string>
-	<key>Username Placeholder</key>
-	<string>Access Key ID</string>
-	<key>Password Placeholder</key>
-	<string>Secret Key</string>
-	<key>Authorization</key>
-	<string>AWS2</string>
-	<key>Icon</key>
-	<string>
-	AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAAAAAAAAAAAAAAA
-	AAAAAAAAAACtRj8Atj83AJg0LQC8lJEAlDMsALZeWAB8KyUArGVfAKY6MgC+YVoArTw0AJs2
-	LgC8QTgAoTcvAJk1LgC3QDcAoTgwAMqZlQDbvrwAun96AKZjXQC9TEQAxkQ7ALM+NQCALCYA
-	umpkAJ5AOQCzPjYAoDcwAIUuKACPMisAizo0AMWXlADFWVIAxY2JANizsADNRz0AmzQtAMJD
-	OgDPpaEApjkxAMhFPACSMisAxIJ9AJleWQC9dXAAdigjAHUnIgB+LCYAeyokAIwwKQCKLykA
-	wUI5AIQuJwCcPzgAhy4nAIYuKACTMywAjTEqAJEyKwCXNC0A9/LxAIowKQCILykAkDIrALU/
-	NgCJLykAizApALhANwC7QTgAqDoyAJ43LwCrOzMArjw0AI4xKgC9QjkAjzErAIcvKACILygA
-	kjMsAIMtJwDn19YArz00AIwxKgDERDsAukE4AMBDOgCVNC0ApDkxAL5COQCOMSsAozgwAKM4
-	MQDv5OQAnTcvAMVFOwCCLScAsD01AL9COQCMMCoAqjszAJY0LQDBQzoAuUA3AKU5MQDPSD4A
-	nzcvALE+NQCcNi4AwkQ6AOjX1gDDRDsAykY9AI8xKgCiODAAmjUuAKM5MQCxPTUAyEY8ALlA
-	OACkODEAyqOgAKw8MwDCoJ0AojgxAKs8NADSsK4AgiwmAIQtJwDNRz4A7uTjAJU0LAClOjIA
-	x0U8AOXW1QCdNi8ArnBrAIswKgCfNi8AtD82ANi9uwCpOzMArz01AIkwKQDRsK4AqToyAKg7
-	MwCqOjIA0KWiAJc0LADQr60AnTYuAL9DOgCwPTQApjkyALE9NADv5OMAsj01AJw1LgCfNzAA
-	lDQtAObX1gDVvLoAv0M5AJo2LwCXPjcA06ajAMqtqwCRMywAgy0mAM2koQDw5eQA2r28AMeh
-	nwDJhH8AunRvAMF2cQDFeHIAwIuIAH81MACga2cAsmdhALRoYgBrJB8Ax46KAMNEOgC1PjUA
-	nzgwAHspIwDOZ18AtHx4AJAxKgC6iYUAgSwlAMpHPQCILicA1EpAAMmOigDLrqwAtEpDAIFA
-	OwCwUksAvFZOAI4wKgDLhYAAmDUtANBTSQCnOjEAs4aDAN3JyACvPDQArj00AK9cVQDMo6EA
-	jEQ/AJtKRADOrqwAllJNAIcuKADQsK0AnzYuAJ42LwClOjEAsT42ALRybgDOe3YAfyslAJIy
-	LADMmZYAxUQ7ALF7dwC6QDgAgS0mAK1RSgCkOTIApE5HAKdPSACqT0gA4crJAOLLyQC7YFkA
-	rDszAOPLygDORz4Awo2JAKFBOgCmRD0AtD42AM5TSQC6dHAAvoB8AMpGPADev7wAy0Y9AG0l
-	IAD///8A1xgeBh4GHgYeBh4GBh4GyBgeHh4eHh4eGB4YHgYYHhgeHh4eHh4eHh4eHgYHEdEH
-	AgICAgICHh4eHh4eJ1H/EQICCAgCAgICAgICHhj+/+42GZTuDQ0CABkJ0QAeHtH/AP+rEzYN
-	Cf+U0f+vAh7A/wju/wEICBISDQJRlAgC2f8IEf+vCAgS7gENElEIAh5dCAn/ewwIK/+vyVH/
-	FQICEgEB/1EMDAh+/1HU/ysNAhMMDBL/+AwBCAgICNF+AQ0aFhYi/7AWFgwMDAgZrw0NNhYW
-	vf8SFhYWDAwMDAgAAv8WFharqxYWFhYMDAgMCAjpvRYWEv8iIhYWFgwMAQgIBQAAAAAAAAAA
-	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-	AAA=
-	</string>
+    <key>Protocol</key>
+    <string>s3</string>
+    <key>Vendor</key>
+    <string>dunkel</string>
+    <key>Description</key>
+    <string>Dunkel Cloud Storage (HTTPS)</string>
+    <key>Default Hostname</key>
+    <string>dcs.dunkel.de</string>
+    <key>Scheme</key>
+    <string>https</string>
+    <key>Default Port</key>
+    <string>443</string>
+    <key>Username Configurable</key>
+    <true/>
+    <key>Authorization</key>
+    <string>AWS4</string>
 </dict>
 </plist>
