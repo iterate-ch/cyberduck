@@ -86,6 +86,7 @@
 		474D863E1DEF6017002D101F /* Cryptomator.strings in Resources */ = {isa = PBXBuildFile; fileRef = 474D86191DEF6017002D101F /* Cryptomator.strings */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		475390151E698AAB00CE1F01 /* Donate.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47538FF21E698A9900CE1F01 /* Donate.strings */; };
+		4754C1AB1FC0CEC60055EE41 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4754C1AA1FC0CEC50055EE41 /* QuartzCore.framework */; };
 		475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 475C6D59170C9214006535BB /* googlestorage.tiff */; };
 		475D17B90805D54C00166B8A /* download5.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17AF0805D54C00166B8A /* download5.icns */; };
 		475D17BA0805D54C00166B8A /* download7.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B00805D54C00166B8A /* download7.icns */; };
@@ -856,6 +857,7 @@
 		475390121E698A9900CE1F01 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = i18n/src/main/resources/el.lproj/Donate.strings; sourceTree = "<group>"; };
 		475390131E698A9900CE1F01 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = i18n/src/main/resources/ro.lproj/Donate.strings; sourceTree = "<group>"; };
 		475390141E698A9900CE1F01 /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = i18n/src/main/resources/bg.lproj/Donate.strings; sourceTree = "<group>"; };
+		4754C1AA1FC0CEC50055EE41 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		47562B25081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = text; name = da; path = i18n/src/main/resources/da.lproj/License.txt; sourceTree = "<group>"; };
 		47562B26081D835D002849AB /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = i18n/src/main/resources/da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47562B27081D835D002849AB /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = i18n/src/main/resources/da.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1618,6 +1620,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4754C1AB1FC0CEC60055EE41 /* QuartzCore.framework in Frameworks */,
 				4796147B1E5D858D00BF7014 /* QuickLookUI.framework in Frameworks */,
 				47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */,
 			);
@@ -1662,6 +1665,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4754C1AA1FC0CEC50055EE41 /* QuartzCore.framework */,
 				4796147A1E5D858D00BF7014 /* QuickLookUI.framework */,
 				479614771E5D848A00BF7014 /* QuickLook.framework */,
 				4791D0521C2829F300CC7DAB /* Sparkle.framework */,
