@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.3.1
+- [Bugfix] Slow user interface performance (Mac) (#9970)
+
 6.3
 - [Feature] Support for DRACOON cloud service (DRACOON)
 - [Feature] Support for Google Team Drives (Google Drive) (#9928)
