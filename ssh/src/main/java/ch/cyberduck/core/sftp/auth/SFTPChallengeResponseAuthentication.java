@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
@@ -59,6 +60,10 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
         }
         try {
             session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
+                /**
+                 * Password sent flag
+                 */
+                private final AtomicBoolean password = new AtomicBoolean();
                 private String name = StringUtils.EMPTY;
                 private String instruction = StringUtils.EMPTY;
 
@@ -79,14 +84,15 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
 
                 @Override
                 public char[] getResponse(final String prompt, final boolean echo) {
-                    // For each prompt, the corresponding echo field indicates whether the user input should be echoed as characters are typed
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
                     }
                     if(echo) {
+                        // For each prompt, the corresponding echo field indicates whether the user input should be echoed as characters are typed
                         return EMPTY_RESPONSE;
                     }
-                    if(PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                    if(!password.get() && PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                        password.set(true);
                         return bookmark.getCredentials().getPassword().toCharArray();
                     }
                     else {
