@@ -33,7 +33,7 @@ public class KeychainLoginService implements LoginService {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final LoginCallback callback;
 
@@ -50,16 +50,16 @@ public class KeychainLoginService implements LoginService {
         if(session.alert(callback)) {
             // Warning if credentials are sent plaintext.
             callback.warn(bookmark, MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
-                    bookmark.getProtocol().getName()),
-                    MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
-                            bookmark.getProtocol().getPasswordPlaceholder()),
-                            LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
-                    LocaleFactory.localizedString("Continue", "Credentials"),
-                    LocaleFactory.localizedString("Disconnect", "Credentials"),
-                    String.format("connection.unsecure.%s", bookmark.getHostname()));
+                bookmark.getProtocol().getName()),
+                MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
+                    bookmark.getProtocol().getPasswordPlaceholder()),
+                    LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                LocaleFactory.localizedString("Continue", "Credentials"),
+                LocaleFactory.localizedString("Disconnect", "Credentials"),
+                String.format("connection.unsecure.%s", bookmark.getHostname()));
         }
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
-                StringUtils.isEmpty(bookmark.getCredentials().getUsername()) ? LocaleFactory.localizedString("Unknown") : bookmark.getCredentials().getUsername()));
+            StringUtils.isEmpty(bookmark.getCredentials().getUsername()) ? LocaleFactory.localizedString("Unknown") : bookmark.getCredentials().getUsername()));
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
@@ -79,8 +79,8 @@ public class KeychainLoginService implements LoginService {
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
             bookmark.setCredentials(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
-                    new LoginOptions(bookmark.getProtocol())));
+                LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
+                new LoginOptions(bookmark.getProtocol())));
             throw e;
         }
     }
@@ -97,40 +97,22 @@ public class KeychainLoginService implements LoginService {
                 credentials.setIdentity(callback.select(credentials.getIdentity()));
             }
         }
-        if(!credentials.validate(bookmark.getProtocol(), options)
-                || credentials.isPublicKeyAuthentication()) {
-            // Lookup password if missing. Always lookup password for public key authentication. See #5754.
+        if(!credentials.validate(bookmark.getProtocol(), options)) {
             if(StringUtils.isNotBlank(credentials.getUsername())) {
-                if(preferences.getBoolean("connection.login.keychain")) {
-                    final String password = keychain.find(bookmark);
-                    if(StringUtils.isBlank(password)) {
-                        if(!credentials.isPublicKeyAuthentication()) {
-                            final StringAppender appender = new StringAppender();
-                            appender.append(message);
-                            appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                            bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
-                                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                                    appender.toString(),
-                                    options));
-                        }
-                        // We decide later if the key is encrypted and a password must be known to decrypt.
-                    }
-                    else {
-                        credentials.setPassword(password);
-                        // No need to reinsert found password to the keychain.
-                        credentials.setSaved(false);
-                    }
+                final String password = keychain.find(bookmark);
+                if(StringUtils.isBlank(password)) {
+                    final StringAppender appender = new StringAppender();
+                    appender.append(message);
+                    appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+                    bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
+                        String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+                        appender.toString(),
+                        options));
                 }
                 else {
-                    if(!credentials.isPublicKeyAuthentication()) {
-                        final StringAppender appender = new StringAppender();
-                        appender.append(message);
-                        appender.append(LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
-                        bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
-                                String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                                appender.toString(), options));
-                    }
-                    // We decide later if the key is encrypted and a password must be known to decrypt.
+                    credentials.setPassword(password);
+                    // No need to reinsert found password to the keychain.
+                    credentials.setSaved(false);
                 }
             }
             else {
@@ -140,22 +122,20 @@ public class KeychainLoginService implements LoginService {
                 appender.append(message);
                 appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                 bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
-                        String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                        appender.toString(), options));
+                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+                    appender.toString(), options));
             }
         }
         else {
             if(!credentials.isPassed()) {
-                if(preferences.getBoolean("connection.login.keychain")) {
-                    final String password = keychain.find(bookmark);
-                    if(StringUtils.isNotBlank(password)) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Fetched password from keychain for %s", bookmark));
-                        }
-                        credentials.setPassword(password);
-                        // No need to reinsert found password to the keychain.
-                        credentials.setSaved(false);
+                final String password = keychain.find(bookmark);
+                if(StringUtils.isNotBlank(password)) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Fetched password from keychain for %s", bookmark));
                     }
+                    credentials.setPassword(password);
+                    // No need to reinsert found password to the keychain.
+                    credentials.setSaved(false);
                 }
             }
             else {
