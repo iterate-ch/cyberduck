@@ -50,7 +50,7 @@ namespace Ch.Cyberduck.Core.Proxy
                 return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
             Uri proxy = _system.GetProxy(target);
-            return new ch.cyberduck.core.proxy.Proxy(ch.cyberduck.core.proxy.Proxy.Type.valueOf(proxy.Scheme.ToUpper()), proxy.Host, proxy.Port);
+            return new ch.cyberduck.core.proxy.Proxy(ch.cyberduck.core.proxy.Proxy.Type.valueOf(proxy.Scheme.ToUpper()), proxy.Host, proxy.Port, proxy.UserInfo);
         }
     }
 }

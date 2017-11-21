@@ -18,6 +18,8 @@ package ch.cyberduck.core.proxy;
  * feedback@cyberduck.io
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 public final class Proxy {
 
     public enum Type {
@@ -36,6 +38,7 @@ public final class Proxy {
     private final Type type;
     private String hostname;
     private int port;
+    private String userinfo;
 
     private Proxy(final Type type) {
         this.type = type;
@@ -45,6 +48,13 @@ public final class Proxy {
         this.type = type;
         this.hostname = hostname;
         this.port = port;
+    }
+
+    public Proxy(final Type type, final String hostname, final int port, final String userinfo) {
+        this.type = type;
+        this.hostname = hostname;
+        this.port = port;
+        this.userinfo = userinfo;
     }
 
     public Type getType() {
@@ -57,6 +67,24 @@ public final class Proxy {
 
     public int getPort() {
         return port;
+    }
+
+    public String getUserinfo() {
+        return userinfo;
+    }
+
+    public String getUser() {
+        if(StringUtils.contains(userinfo, ':')) {
+            return StringUtils.split(userinfo, ':')[0];
+        }
+        return null;
+    }
+
+    public String getPassword() {
+        if(StringUtils.contains(userinfo, ':')) {
+            return StringUtils.split(userinfo, ':')[1];
+        }
+        return null;
     }
 
     @Override

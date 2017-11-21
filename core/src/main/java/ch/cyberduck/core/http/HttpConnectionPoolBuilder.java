@@ -32,8 +32,11 @@ import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthSchemeProvider;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.ConnectionConfig;
@@ -49,6 +52,7 @@ import org.apache.http.impl.auth.DigestSchemeFactory;
 import org.apache.http.impl.auth.KerberosSchemeFactory;
 import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.auth.SPNegoSchemeFactory;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -67,7 +71,7 @@ public class HttpConnectionPoolBuilder {
     private static final Logger log = Logger.getLogger(HttpConnectionPoolBuilder.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final ConnectionSocketFactory socketFactory;
 
@@ -93,8 +97,8 @@ public class HttpConnectionPoolBuilder {
                 }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }
         }, new SSLConnectionSocketFactory(
-                new CustomTrustSSLProtocolSocketFactory(trust, key),
-                new DisabledX509HostnameVerifier()
+            new CustomTrustSSLProtocolSocketFactory(trust, key),
+            new DisabledX509HostnameVerifier()
         ) {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
@@ -128,8 +132,8 @@ public class HttpConnectionPoolBuilder {
                 return socketFactory.createSocket();
             }
         }, new SSLConnectionSocketFactory(
-                new CustomTrustSSLProtocolSocketFactory(trust, key),
-                new DisabledX509HostnameVerifier()
+            new CustomTrustSSLProtocolSocketFactory(trust, key),
+            new DisabledX509HostnameVerifier()
         ) {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
@@ -166,26 +170,28 @@ public class HttpConnectionPoolBuilder {
         // Use HTTP Connect proxy implementation provided here instead of
         // relying on internal proxy support in socket factory
         final Proxy proxy = proxyFinder.find(host);
-        if(proxy.getType() == Proxy.Type.HTTP) {
-            final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Setup proxy %s", h));
-            }
-            configuration.setProxy(h);
-        }
-        if(proxy.getType() == Proxy.Type.HTTPS) {
-            final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.https.name());
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Setup proxy %s", h));
-            }
-            configuration.setProxy(h);
+        switch(proxy.getType()) {
+            case HTTP:
+            case HTTPS:
+                final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), StringUtils.lowerCase(proxy.getType().name()));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Setup proxy %s", h));
+                }
+                configuration.setProxy(h);
+                if(StringUtils.isNotBlank(proxy.getUserinfo())) {
+                    final BasicCredentialsProvider credentials = new BasicCredentialsProvider();
+                    credentials.setCredentials(new AuthScope(proxy.getHostname(), proxy.getPort()),
+                        new UsernamePasswordCredentials(proxy.getHostname(), proxy.getPassword()));
+                    configuration.setDefaultCredentialsProvider(credentials);
+                }
+                break;
         }
         configuration.setUserAgent(new PreferencesUseragentProvider().get());
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         configuration.setDefaultSocketConfig(SocketConfig.custom()
-                .setTcpNoDelay(true)
-                .setSoTimeout(timeout)
-                .build());
+            .setTcpNoDelay(true)
+            .setSoTimeout(timeout)
+            .build());
         configuration.setDefaultRequestConfig(this.createRequestConfig(timeout));
         final String encoding;
         if(null == host.getEncoding()) {
@@ -195,9 +201,9 @@ public class HttpConnectionPoolBuilder {
             encoding = host.getEncoding();
         }
         configuration.setDefaultConnectionConfig(ConnectionConfig.custom()
-                .setBufferSize(preferences.getInteger("http.socket.buffer"))
-                .setCharset(Charset.forName(encoding))
-                .build());
+            .setBufferSize(preferences.getInteger("http.socket.buffer"))
+            .setCharset(Charset.forName(encoding))
+            .build());
         if(preferences.getBoolean("http.connections.reuse")) {
             configuration.setConnectionReuseStrategy(new DefaultClientConnectionReuseStrategy());
         }
@@ -214,33 +220,33 @@ public class HttpConnectionPoolBuilder {
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
         configuration.setConnectionManager(this.createConnectionManager(this.createRegistry()));
         configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
-                .register(AuthSchemes.BASIC, new BasicSchemeFactory(
-                        Charset.forName(preferences.getProperty("http.credentials.charset"))))
-                .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
-                        Charset.forName(preferences.getProperty("http.credentials.charset"))))
-                .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
-                .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
-                .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
+            .register(AuthSchemes.BASIC, new BasicSchemeFactory(
+                Charset.forName(preferences.getProperty("http.credentials.charset"))))
+            .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
+                Charset.forName(preferences.getProperty("http.credentials.charset"))))
+            .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
+            .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
+            .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
         return configuration;
     }
 
     public RequestConfig createRequestConfig(final int timeout) {
         return RequestConfig.custom()
-                .setRedirectsEnabled(true)
-                // Disable use of Expect: Continue by default for all methods
-                .setExpectContinueEnabled(false)
-                .setAuthenticationEnabled(true)
-                .setConnectTimeout(timeout)
-                // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
-                .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
-                .setSocketTimeout(timeout)
-                .build();
+            .setRedirectsEnabled(true)
+            // Disable use of Expect: Continue by default for all methods
+            .setExpectContinueEnabled(false)
+            .setAuthenticationEnabled(true)
+            .setConnectTimeout(timeout)
+            // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
+            .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
+            .setSocketTimeout(timeout)
+            .build();
     }
 
     public Registry<ConnectionSocketFactory> createRegistry() {
         return RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(Scheme.http.toString(), socketFactory)
-                .register(Scheme.https.toString(), sslSocketFactory).build();
+            .register(Scheme.http.toString(), socketFactory)
+            .register(Scheme.https.toString(), sslSocketFactory).build();
     }
 
     public PoolingHttpClientConnectionManager createConnectionManager(final Registry<ConnectionSocketFactory> registry) {
