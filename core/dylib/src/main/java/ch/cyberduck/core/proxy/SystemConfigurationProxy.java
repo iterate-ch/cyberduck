@@ -38,10 +38,10 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
     }
 
     private final HostUrlProvider provider
-            = new ProxyHostUrlProvider();
+        = new ProxyHostUrlProvider();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     @Override
     public Proxy find(final Host target) {
@@ -60,8 +60,9 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
         try {
             proxy = new URI(route);
             try {
+                // User info is never populated. Would have to lookup in keychain but we are unaware of the username
                 return new Proxy(Proxy.Type.valueOf(StringUtils.upperCase(proxy.getScheme())),
-                        proxy.getHost(), proxy.getPort());
+                    proxy.getHost(), proxy.getPort());
             }
             catch(IllegalArgumentException e) {
                 log.warn(String.format("Unsupported scheme for proxy %s", proxy));
