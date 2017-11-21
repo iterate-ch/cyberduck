@@ -17,17 +17,27 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 public abstract class HostPasswordStore implements PasswordStore {
     private static final Logger log = Logger.getLogger(HostPasswordStore.class);
 
+    private final Preferences preferences
+        = PreferencesFactory.get();
+
     /**
      * @param host Hostname
      * @return the password fetched from the keychain or null if it was not found
      */
     public String find(final Host host) {
+        if(preferences.getBoolean("connection.login.keychain")) {
+            log.warn("Keychain disabled in preferences");
+            return null;
+        }
         if(log.isInfoEnabled()) {
             log.info(String.format("Fetching password from keychain for %s", host));
         }
@@ -55,7 +65,7 @@ public abstract class HostPasswordStore implements PasswordStore {
         }
         else {
             p = this.getPassword(host.getProtocol().getScheme(), host.getPort(),
-                    host.getHostname(), credentials.getUsername());
+                host.getHostname(), credentials.getUsername());
         }
         if(null == p) {
             if(log.isInfoEnabled()) {
@@ -102,11 +112,11 @@ public abstract class HostPasswordStore implements PasswordStore {
         }
         if(credentials.isPublicKeyAuthentication()) {
             this.addPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
-                    credentials.getPassword());
+                credentials.getPassword());
         }
         else {
             this.addPassword(host.getProtocol().getScheme(), host.getPort(),
-                    host.getHostname(), credentials.getUsername(), credentials.getPassword());
+                host.getHostname(), credentials.getUsername(), credentials.getPassword());
         }
     }
 }

@@ -84,13 +84,20 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                     if(StringUtils.isEmpty(password)) {
                         try {
                             // Use password prompt
-                            password = prompt.prompt(bookmark,
+                            final Credentials passphrase = prompt.prompt(bookmark,
                                 LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                 String.format("%s (%s)",
                                     LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
                                     identity.getAbbreviatedPath()), new LoginOptions(bookmark.getProtocol())
                                     .user(false).password(true).publickey(false)
-                            ).getPassword();
+                            );
+                            if(passphrase.isSaved()) {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Save passphrase for %s", resource));
+                                }
+                                keychain.addPassword(bookmark.getHostname(), identity.getAbbreviatedPath(), passphrase.getPassword());
+                            }
+                            password = passphrase.getPassword();
                         }
                         catch(LoginCanceledException ignored) {
                             // Return null if user cancels

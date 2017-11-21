@@ -85,46 +85,6 @@ public class KeychainLoginServiceTest {
     }
 
     @Test
-    public void testFindPasswordPrivateKey() throws Exception {
-        final AtomicBoolean keychain = new AtomicBoolean(false);
-        final AtomicBoolean select = new AtomicBoolean(false);
-        KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options)
-                    throws LoginCanceledException {
-                fail();
-                return null;
-            }
-
-            @Override
-            public Local select(final Local identity) throws LoginCanceledException {
-                select.set(true);
-                return identity;
-            }
-        }, new DisabledPasswordStore() {
-            @Override
-            public String getPassword(String hostname, String user) {
-                keychain.set(true);
-                assertEquals("t", user);
-                return null;
-            }
-        }
-        );
-        final Credentials credentials = new Credentials();
-        credentials.setUsername("u");
-        credentials.setIdentity(new NullLocal("t") {
-            @Override
-            public boolean exists() {
-                return true;
-            }
-        });
-        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", credentials);
-        l.validate(host, "m", new LoginOptions(host.getProtocol()).publickey(true));
-        assertTrue(keychain.get());
-        assertTrue(select.get());
-    }
-
-    @Test
     public void testFindPasswordSftp() throws Exception {
         final AtomicBoolean keychain = new AtomicBoolean(false);
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
