@@ -77,8 +77,12 @@ public class SingleTransferWorkerTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        StringBuilder directoryname = new StringBuilder();
+        for(int i = 0; i < 10; i++) {
+            directoryname.append(new AlphanumericRandomStringService().random());
+        }
+        final Path dir1 = new Path(vault, directoryname.toString(), EnumSet.of(Path.Type.directory));
+        final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), directoryname.toString());
         localDirectory1.mkdir();
         final byte[] content = RandomUtils.nextBytes(62768);
         final Path file1 = new Path(dir1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
