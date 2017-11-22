@@ -71,7 +71,7 @@ public class Speedometer {
      * @return Differential by time
      */
     protected Double getSpeed(final Long transferred) {
-        return this.getSpeed(System.currentTimeMillis(), transferred, true);
+        return this.getSpeed(transferred, true);
     }
 
     protected Double getSpeed(final Long transferred, final boolean reset) {
