@@ -18,7 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import java.util.EnumSet;
@@ -41,23 +40,5 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
 
     public DriveHomeFinderService(final DriveSession session) {
         super(session);
-    }
-
-    @Override
-    public Path find() throws BackgroundException {
-        final Path home = super.find();
-        if(home.isRoot()) {
-            return MYDRIVE_FOLDER;
-        }
-        return home;
-    }
-
-    @Override
-    public Path find(final Path root, final String path) {
-        final Path home = super.find(root, path);
-        if(home.isRoot()) {
-            return MYDRIVE_FOLDER;
-        }
-        return home;
     }
 }
