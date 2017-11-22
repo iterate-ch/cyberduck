@@ -564,7 +564,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Username = _credentials.getUsername();
             View.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
             View.UsernameLabel = _host.getProtocol().getUsernamePlaceholder() + ":";
-            View.AnonymousEnabled = _options.anonymous() && _host.getProtocol().isAnonymousConfigurable();
+            View.AnonymousEnabled = _options.anonymous();
             View.AnonymousChecked = _credentials.isAnonymousLogin();
             View.SelectedProtocol = _host.getProtocol();
             View.SelectedTransferMode = _host.getTransferType();
@@ -575,7 +575,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.SelectedConnectMode = _host.getFTPConnectMode();
             }
-            View.PrivateKeyFieldEnabled = _host.getProtocol().getType() == Protocol.Type.sftp;
+            View.PrivateKeyFieldEnabled = _options.publickey();
 
             if (_credentials.isPublicKeyAuthentication())
             {
@@ -591,9 +591,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.SelectedPrivateKey = LocaleFactory.localizedString("None");
             }
-            View.ClientCertificateFieldEnabled = _host.getProtocol().isCertificateConfigurable();
+            View.ClientCertificateFieldEnabled = _options.certificate();
             List<string> keys = new List<string> {LocaleFactory.localizedString("None")};
-            if(_host.getProtocol().isCertificateConfigurable())
+            if(_options.certificate())
             {
                 foreach (String certificate in Utils.ConvertFromJavaList<String>(new KeychainX509KeyManager(_host).list()))
                 {

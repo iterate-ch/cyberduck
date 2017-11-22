@@ -370,7 +370,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                anonymousCheckbox.setEnabled(options.anonymous && bookmark.getProtocol().isAnonymousConfigurable());
+                anonymousCheckbox.setEnabled(options.anonymous);
                 anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
             }
         });
@@ -456,7 +456,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
 
-                privateKeyPopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.sftp || bookmark.getProtocol().getType() == Protocol.Type.manta);
+                privateKeyPopup.setEnabled(options.publickey);
                 if(credentials.isPublicKeyAuthentication()) {
                     privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(credentials.getIdentity().getAbsolute()));
                 }

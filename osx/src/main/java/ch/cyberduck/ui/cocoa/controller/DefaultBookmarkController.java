@@ -101,10 +101,10 @@ public class DefaultBookmarkController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                certificatePopup.setEnabled(bookmark.getProtocol().isCertificateConfigurable());
+                certificatePopup.setEnabled(options.certificate);
                 certificatePopup.removeAllItems();
                 certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
-                if(bookmark.getProtocol().isCertificateConfigurable()) {
+                if(options.certificate) {
                     certificatePopup.menu().addItem(NSMenuItem.separatorItem());
                     for(String certificate : new KeychainX509KeyManager(bookmark).list()) {
                         certificatePopup.addItemWithTitle(certificate);
