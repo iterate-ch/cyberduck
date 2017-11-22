@@ -82,7 +82,8 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
                     }
-                    if(PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                    if(!StringUtils.isBlank(bookmark.getCredentials().getPassword())
+                        && PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
                         return bookmark.getCredentials().getPassword().toCharArray();
                     }
                     else {
