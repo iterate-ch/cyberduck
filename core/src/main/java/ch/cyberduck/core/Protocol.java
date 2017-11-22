@@ -53,21 +53,9 @@ public interface Protocol extends Comparable<Protocol> {
         },
         sftp,
         s3,
-        googlestorage {
-            @Override
-            public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only requires the project token
-                return true;
-            }
-        },
+        googlestorage,
         dropbox,
-        googledrive {
-            @Override
-            public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only
-                return true;
-            }
-        },
+        googledrive,
         swift,
         dav,
         azure {
@@ -82,13 +70,7 @@ public interface Protocol extends Comparable<Protocol> {
                 return false;
             }
         },
-        onedrive {
-            @Override
-            public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only
-                return true;
-            }
-        },
+        onedrive,
         irods,
         b2,
         file,
