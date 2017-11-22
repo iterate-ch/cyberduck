@@ -17,7 +17,6 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSImageView;
 import ch.cyberduck.binding.application.NSTextField;
@@ -46,22 +45,6 @@ public class LoginController extends ConnectionController {
         super(bookmark, credentials, options);
         this.title = title;
         this.reason = reason;
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                if(!options.user) {
-                    usernameField.setEnabled(false);
-                }
-                if(!options.anonymous) {
-                    anonymousCheckbox.setEnabled(false);
-                    anonymousCheckbox.setState(NSCell.NSOffState);
-                }
-                if(!options.publickey) {
-                    privateKeyPopup.setEnabled(false);
-                    privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
-                }
-            }
-        });
     }
 
     @Override
