@@ -117,6 +117,11 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
         return this.computeFingerprint(provider);
     }
 
+    @Override
+    public String getMethod() {
+        return "publickey";
+    }
+
     private String computeFingerprint(final FileKeyProvider provider) throws BackgroundException {
         try {
             return new SSHFingerprintGenerator().fingerprint(provider.getPublic());

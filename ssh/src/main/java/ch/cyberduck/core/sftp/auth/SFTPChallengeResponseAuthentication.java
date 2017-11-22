@@ -124,4 +124,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
         }
         return session.getClient().isAuthenticated();
     }
+
+    @Override
+    public String getMethod() {
+        return "keyboard-interactive";
+    }
 }

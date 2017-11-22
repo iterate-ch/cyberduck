@@ -75,6 +75,11 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
         }
     }
 
+    @Override
+    public String getMethod() {
+        return "password";
+    }
+
     public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback callback, final CancelCallback cancel)
         throws BackgroundException {
         if(log.isDebugEnabled()) {

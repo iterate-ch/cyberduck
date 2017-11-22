@@ -137,4 +137,9 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
         }
         return false;
     }
+
+    @Override
+    public String getMethod() {
+        return "publickey";
+    }
 }
