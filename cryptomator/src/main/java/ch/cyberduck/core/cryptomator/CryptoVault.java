@@ -241,7 +241,8 @@ public class CryptoVault implements Vault {
                     // Write updated masterkey file
                     final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
                     final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
-                    new ContentWriter(session).write(masterKeyFile, upgradedMasterKeyFile.serialize(), new TransferStatus().exists(true));
+                    final byte[] masterKeyFileContent = upgradedMasterKeyFile.serialize();
+                    new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).length(masterKeyFileContent.length));
                     log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION));
                     return KeyFile.parse(upgradedMasterKeyFile.serialize());
                 }
