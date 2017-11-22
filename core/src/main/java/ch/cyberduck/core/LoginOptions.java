@@ -62,6 +62,17 @@ public final class LoginOptions {
         //
     }
 
+    public LoginOptions(final LoginOptions copy) {
+        user = copy.user;
+        password = copy.password;
+        keychain = copy.keychain;
+        publickey = copy.publickey;
+        anonymous = copy.anonymous;
+        icon = copy.icon;
+        usernamePlaceholder = copy.usernamePlaceholder;
+        passwordPlaceholder = copy.passwordPlaceholder;
+    }
+
     public LoginOptions user(boolean e) {
         user = e;
         return this;
@@ -170,11 +181,11 @@ public final class LoginOptions {
         }
         final LoginOptions that = (LoginOptions) o;
         return user == that.user &&
-                password == that.password &&
-                keychain == that.keychain &&
-                publickey == that.publickey &&
-                anonymous == that.anonymous &&
-                Objects.equals(icon, that.icon);
+            password == that.password &&
+            keychain == that.keychain &&
+            publickey == that.publickey &&
+            anonymous == that.anonymous &&
+            Objects.equals(icon, that.icon);
     }
 
     @Override
