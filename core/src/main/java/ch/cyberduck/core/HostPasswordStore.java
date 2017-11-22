@@ -65,10 +65,6 @@ public abstract class HostPasswordStore implements PasswordStore {
      * @return the password fetched from the keychain or null if it was not found
      */
     public String findPrivateKeyPassphrase(final Host bookmark) {
-        if(preferences.getBoolean("connection.login.keychain")) {
-            log.warn("Keychain disabled in preferences");
-            return null;
-        }
         if(StringUtils.isEmpty(bookmark.getHostname())) {
             log.warn("No hostname given");
             return null;
