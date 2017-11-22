@@ -231,13 +231,15 @@ public class SFTPSession extends Session<SSHClient> {
             methods.add(new SFTPNoneAuthentication(this));
         }
         else {
-            if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-                methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
-                methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
+            if(credentials.isPublicKeyAuthentication()) {
+                if(preferences.getBoolean("ssh.authentication.agent.enable")) {
+                    methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
+                    methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
+                }
+                methods.add(new SFTPPublicKeyAuthentication(this));
             }
             methods.add(new SFTPChallengeResponseAuthentication(this));
             methods.add(new SFTPPasswordAuthentication(this));
-            methods.add(new SFTPPublicKeyAuthentication(this));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods", methods.size()));
