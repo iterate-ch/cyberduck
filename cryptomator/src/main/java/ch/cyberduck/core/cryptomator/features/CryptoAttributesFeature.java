@@ -39,7 +39,9 @@ public class CryptoAttributesFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         final PathAttributes attributes = delegate.find(vault.encrypt(session, file));
-        attributes.setSize(vault.toCleartextSize(attributes.getSize()));
+        if(file.isFile()) {
+            attributes.setSize(vault.toCleartextSize(attributes.getSize()));
+        }
         return attributes;
     }
 
