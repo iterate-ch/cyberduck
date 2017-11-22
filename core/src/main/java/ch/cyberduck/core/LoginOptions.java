@@ -38,9 +38,17 @@ public final class LoginOptions {
      */
     public boolean keychain = true;
     /**
+     * Save in keychain checked by default
+     */
+    public boolean save = PreferencesFactory.get().getBoolean("connection.login.keychain");
+    /**
      * Enable option to select public key
      */
     public boolean publickey = false;
+    /**
+     * Enable option to select client certificate
+     */
+    public boolean certificate = false;
     /**
      * Enable option to login as anonymous user
      */
@@ -53,13 +61,21 @@ public final class LoginOptions {
     public String usernamePlaceholder = StringUtils.EMPTY;
     public String passwordPlaceholder = StringUtils.EMPTY;
 
-    /**
-     * Save in keychain checked by default
-     */
-    public boolean save = PreferencesFactory.get().getBoolean("connection.login.keychain");
-
     public LoginOptions() {
         //
+    }
+
+    public LoginOptions(final LoginOptions copy) {
+        user = copy.user;
+        password = copy.password;
+        keychain = copy.keychain;
+        save = copy.save;
+        publickey = copy.publickey;
+        certificate = copy.certificate;
+        anonymous = copy.anonymous;
+        icon = copy.icon;
+        usernamePlaceholder = copy.usernamePlaceholder;
+        passwordPlaceholder = copy.passwordPlaceholder;
     }
 
     public LoginOptions user(boolean e) {
@@ -113,6 +129,10 @@ public final class LoginOptions {
         return publickey;
     }
 
+    public boolean certificate() {
+        return certificate;
+    }
+
     public boolean anonymous() {
         return anonymous;
     }
@@ -152,6 +172,7 @@ public final class LoginOptions {
 
     public void configure(final Protocol protocol) {
         publickey = protocol.isPrivateKeyConfigurable();
+        certificate = protocol.isCertificateConfigurable();
         anonymous = protocol.isAnonymousConfigurable();
         user = protocol.isUsernameConfigurable();
         password = protocol.isPasswordConfigurable();
@@ -170,11 +191,11 @@ public final class LoginOptions {
         }
         final LoginOptions that = (LoginOptions) o;
         return user == that.user &&
-                password == that.password &&
-                keychain == that.keychain &&
-                publickey == that.publickey &&
-                anonymous == that.anonymous &&
-                Objects.equals(icon, that.icon);
+            password == that.password &&
+            keychain == that.keychain &&
+            publickey == that.publickey &&
+            anonymous == that.anonymous &&
+            Objects.equals(icon, that.icon);
     }
 
     @Override

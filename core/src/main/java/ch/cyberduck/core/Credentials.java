@@ -155,6 +155,10 @@ public class Credentials implements Comparable<Credentials> {
         return PreferencesFactory.get().getProperty("connection.login.anon.name").equals(user);
     }
 
+    public boolean isPasswordAuthentication() {
+        return StringUtils.isNotBlank(password);
+    }
+
     /**
      * SSH specific
      *

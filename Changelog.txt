@@ -3,6 +3,7 @@ https://cyberduck.io/
 
 6.3.1
 - [Bugfix] Slow user interface performance (Mac) (#9970)
+- [Bugfix] Prompt for credentials when using public key authentication with agent (SFTP) (#10148)
 
 6.3
 - [Feature] Support for DRACOON cloud service (DRACOON)

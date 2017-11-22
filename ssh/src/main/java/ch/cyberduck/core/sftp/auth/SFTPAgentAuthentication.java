@@ -69,4 +69,9 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
         }
         return session.getClient().isAuthenticated();
     }
+
+    @Override
+    public String getMethod() {
+        return "publickey";
+    }
 }

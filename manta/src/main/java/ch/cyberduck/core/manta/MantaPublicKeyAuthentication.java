@@ -80,7 +80,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
             new PasswordFinder() {
                 @Override
                 public char[] reqPassword(Resource<?> resource) {
-                    String password = keychain.find(bookmark);
+                    String password = keychain.findPrivateKeyPassphrase(bookmark);
                     if(StringUtils.isEmpty(password)) {
                         try {
                             // Use password prompt
@@ -115,6 +115,11 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
             });
 
         return this.computeFingerprint(provider);
+    }
+
+    @Override
+    public String getMethod() {
+        return "publickey";
     }
 
     private String computeFingerprint(final FileKeyProvider provider) throws BackgroundException {

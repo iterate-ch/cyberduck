@@ -104,7 +104,7 @@ public class LoginConnectionServiceTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore() {
             @Override
-            public String find(final Host host) {
+            public String findLoginPassword(final Host bookmark) {
                 keychain.set(true);
                 // Old password stored
                 return "a";

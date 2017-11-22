@@ -111,7 +111,7 @@ public class ConnectionController extends BookmarkController {
             public void change(final Host bookmark) {
                 passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
                 passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
-                if(preferences.getBoolean("connection.login.keychain")) {
+                if(options.keychain) {
                     if(StringUtils.isBlank(bookmark.getHostname())) {
                         return;
                     }

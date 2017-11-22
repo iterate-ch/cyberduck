@@ -16,9 +16,7 @@ package ch.cyberduck.core.hubic;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 
@@ -93,11 +91,5 @@ public class HubicProtocol extends AbstractProtocol {
     @Override
     public String icon() {
         return new SwiftProtocol().icon();
-    }
-
-    @Override
-    public boolean validate(final Credentials credentials, final LoginOptions options) {
-        // OAuth only requires the project token
-        return true;
     }
 }

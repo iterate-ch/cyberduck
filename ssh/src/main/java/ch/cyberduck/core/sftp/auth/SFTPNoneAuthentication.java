@@ -53,4 +53,9 @@ public class SFTPNoneAuthentication implements AuthenticationProvider<Boolean> {
             throw new SFTPExceptionMappingService().map(e);
         }
     }
+
+    @Override
+    public String getMethod() {
+        return "none";
+    }
 }

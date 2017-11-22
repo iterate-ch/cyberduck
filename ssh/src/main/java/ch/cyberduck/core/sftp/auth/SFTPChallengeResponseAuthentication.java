@@ -47,8 +47,6 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
 
     private final SFTPSession session;
 
-    private static final char[] EMPTY_RESPONSE = new char[0];
-
     public SFTPChallengeResponseAuthentication(final SFTPSession session) {
         this.session = session;
     }
@@ -58,12 +56,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using challenge response authentication for %s", bookmark));
         }
+        final AtomicBoolean canceled = new AtomicBoolean();
         try {
             session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
-                /**
-                 * Password sent flag
-                 */
-                private final AtomicBoolean password = new AtomicBoolean();
                 private String name = StringUtils.EMPTY;
                 private String instruction = StringUtils.EMPTY;
 
@@ -87,8 +82,8 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
                     }
-                    if(!password.get() && PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
-                        password.set(true);
+                    if(!StringUtils.isBlank(bookmark.getCredentials().getPassword())
+                        && PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
                         return bookmark.getCredentials().getPassword().toCharArray();
                     }
                     else {
@@ -101,12 +96,14 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             );
                             additional = callback.prompt(bookmark, bookmark.getCredentials().getUsername(), title.toString(),
-                                message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
+                                message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches())
                                     .usernamePlaceholder(bookmark.getCredentials().getUsername())
                             );
                         }
                         catch(LoginCanceledException e) {
-                            return EMPTY_RESPONSE;
+                            canceled.set(true);
+                            // Return null if user cancels
+                            return null;
                         }
                         // Responses are encoded in ISO-10646 UTF-8.
                         return additional.getPassword().toCharArray();
@@ -120,8 +117,16 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
             }));
         }
         catch(IOException e) {
+            if(canceled.get()) {
+                throw new LoginCanceledException();
+            }
             throw new SFTPExceptionMappingService().map(e);
         }
         return session.getClient().isAuthenticated();
+    }
+
+    @Override
+    public String getMethod() {
+        return "keyboard-interactive";
     }
 }

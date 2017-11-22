@@ -30,49 +30,74 @@ public abstract class HostPasswordStore implements PasswordStore {
         = PreferencesFactory.get();
 
     /**
-     * @param host Hostname
+     * Find password for login
+     *
+     * @param bookmark Hostname
      * @return the password fetched from the keychain or null if it was not found
      */
-    public String find(final Host host) {
-        if(preferences.getBoolean("connection.login.keychain")) {
-            log.warn("Keychain disabled in preferences");
-            return null;
-        }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Fetching password from keychain for %s", host));
-        }
-        if(StringUtils.isEmpty(host.getHostname())) {
+    public String findLoginPassword(final Host bookmark) {
+        if(StringUtils.isEmpty(bookmark.getHostname())) {
             log.warn("No hostname given");
             return null;
         }
-        final Credentials credentials = host.getCredentials();
+        final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isEmpty(credentials.getUsername())) {
             log.warn("No username given");
             return null;
         }
-        String p;
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Fetching login password from keychain for %s", bookmark));
+        }
+        final String password = this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+            bookmark.getHostname(), credentials.getUsername());
+        if(null == password) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Password not found in keychain for %s", bookmark));
+            }
+        }
+        return password;
+    }
+
+    /**
+     * Find passphrase for private key
+     *
+     * @param bookmark Hostname
+     * @return the password fetched from the keychain or null if it was not found
+     */
+    public String findPrivateKeyPassphrase(final Host bookmark) {
+        if(StringUtils.isEmpty(bookmark.getHostname())) {
+            log.warn("No hostname given");
+            return null;
+        }
+        final Credentials credentials = bookmark.getCredentials();
+        if(StringUtils.isEmpty(credentials.getUsername())) {
+            log.warn("No username given");
+            return null;
+        }
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Fetching private key passphrase from keychain for %s", bookmark));
+        }
         if(credentials.isPublicKeyAuthentication()) {
             final Local key = credentials.getIdentity();
-            p = this.getPassword(host.getHostname(), key.getAbbreviatedPath());
-            if(null == p) {
+            String passphrase = this.getPassword(bookmark.getHostname(), key.getAbbreviatedPath());
+            if(null == passphrase) {
                 // Interoperability with OpenSSH (ssh, ssh-agent, ssh-add)
-                p = this.getPassword("SSH", key.getAbsolute());
+                passphrase = this.getPassword("SSH", key.getAbsolute());
             }
-            if(null == p) {
+            if(null == passphrase) {
                 // Backward compatibility
-                p = this.getPassword("SSHKeychain", key.getAbbreviatedPath());
+                passphrase = this.getPassword("SSHKeychain", key.getAbbreviatedPath());
             }
+            if(null == passphrase) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Passphrase not found in keychain for %s", key));
+                }
+            }
+            return passphrase;
         }
         else {
-            p = this.getPassword(host.getProtocol().getScheme(), host.getPort(),
-                host.getHostname(), credentials.getUsername());
+            return null;
         }
-        if(null == p) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Password not found in keychain for %s", host));
-            }
-        }
-        return p;
     }
 
     /**

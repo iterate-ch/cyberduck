@@ -25,4 +25,6 @@ public interface AuthenticationProvider<R> {
      */
     R authenticate(Host bookmark, HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel)
         throws BackgroundException;
+
+    String getMethod();
 }

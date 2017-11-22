@@ -77,7 +77,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void Init()
         {
             View.Username = PreferencesFactory.get().getProperty("connection.login.name");
-            View.SavePasswordChecked = PreferencesFactory.get().getBoolean("connection.login.keychain");
+            View.SavePasswordChecked = _options.save();
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
 
             View.ChangedServerEvent += ReadPasswordFromKeychain;
@@ -104,7 +104,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void ReadPasswordFromKeychain()
         {
-            if (PreferencesFactory.get().getBoolean("connection.login.keychain"))
+            if (_options.keychain())
             {
                 if (string.IsNullOrEmpty(View.Hostname))
                 {

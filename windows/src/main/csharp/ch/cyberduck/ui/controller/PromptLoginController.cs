@@ -84,6 +84,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             _bookmark = bookmark;
             _options = options;
+            _credentials.setSaved(_options.save());
 
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");

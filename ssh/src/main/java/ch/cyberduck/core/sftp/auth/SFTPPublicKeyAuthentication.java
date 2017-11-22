@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
@@ -68,6 +69,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
         if(credentials.isPublicKeyAuthentication()) {
             final Local identity = credentials.getIdentity();
             final FileKeyProvider provider;
+            final AtomicBoolean canceled = new AtomicBoolean();
             try {
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
                     new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), true);
@@ -96,7 +98,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
-                        final String password = keychain.find(bookmark);
+                        final String password = keychain.findPrivateKeyPassphrase(bookmark);
                         if(StringUtils.isEmpty(password)) {
                             try {
                                 // Use password prompt
@@ -116,6 +118,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                                 return passphrase.getPassword().toCharArray();
                             }
                             catch(LoginCanceledException e) {
+                                canceled.set(true);
                                 // Return null if user cancels
                                 return null;
                             }
@@ -132,9 +135,17 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                 return session.getClient().isAuthenticated();
             }
             catch(IOException e) {
+                if(canceled.get()) {
+                    throw new LoginCanceledException();
+                }
                 throw new SFTPExceptionMappingService().map(e);
             }
         }
         return false;
+    }
+
+    @Override
+    public String getMethod() {
+        return "publickey";
     }
 }
