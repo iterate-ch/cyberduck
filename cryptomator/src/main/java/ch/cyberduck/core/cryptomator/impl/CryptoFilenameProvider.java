@@ -77,7 +77,9 @@ public class CryptoFilenameProvider {
         if(!find.find(secondLevel)) {
             mkdir.mkdir(secondLevel, null, new TransferStatus());
         }
-        new ContentWriter(session).write(metadataFile, longFileNameBytes);
+        if(!find.find(metadataFile)) {
+            new ContentWriter(session).write(metadataFile, longFileNameBytes);
+        }
         if(log.isInfoEnabled()) {
             log.info(String.format("Deflated %s to %s", filename, shortName));
         }
