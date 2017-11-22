@@ -16,7 +16,6 @@ package ch.cyberduck.core.sftp.auth;
  */
 
 import ch.cyberduck.core.AuthenticationProvider;
-import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
@@ -31,11 +30,9 @@ import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 
 import net.schmizz.sshj.userauth.method.AuthPassword;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
@@ -54,25 +51,10 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
     @Override
     public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel)
         throws BackgroundException {
-        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
-            final String message;
-            if(session.getClient().getUserAuth().hadPartialSuccess()) {
-                message = LocaleFactory.localizedString("Partial authentication success", "Credentials");
-            }
-            else {
-                message = MessageFormat.format(LocaleFactory.localizedString(
-                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark));
-            }
-            final Credentials additional = callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                message,
-                new LoginOptions(bookmark.getProtocol()).user(false).keychain(false).publickey(false)
-                    .usernamePlaceholder(bookmark.getCredentials().getUsername()));
-            return this.authenticate(bookmark, additional, callback, cancel);
-        }
-        else {
+        if(bookmark.getCredentials().isPasswordAuthentication()) {
             return this.authenticate(bookmark, bookmark.getCredentials(), callback, cancel);
         }
+        return false;
     }
 
     @Override
