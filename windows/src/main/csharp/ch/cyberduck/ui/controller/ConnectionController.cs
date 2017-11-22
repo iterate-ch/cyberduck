@@ -104,7 +104,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void ReadPasswordFromKeychain()
         {
-            if (PreferencesFactory.get().getBoolean("connection.login.keychain"))
+            if (_options.keychain())
             {
                 if (string.IsNullOrEmpty(View.Hostname))
                 {
