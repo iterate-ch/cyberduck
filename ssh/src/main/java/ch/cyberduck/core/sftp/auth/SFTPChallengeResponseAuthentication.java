@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
@@ -46,8 +47,6 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
 
     private final SFTPSession session;
 
-    private static final char[] EMPTY_RESPONSE = new char[0];
-
     public SFTPChallengeResponseAuthentication(final SFTPSession session) {
         this.session = session;
     }
@@ -57,6 +56,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using challenge response authentication for %s", bookmark));
         }
+        final AtomicBoolean canceled = new AtomicBoolean();
         try {
             session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
                 private String name = StringUtils.EMPTY;
@@ -101,7 +101,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             );
                         }
                         catch(LoginCanceledException e) {
-                            return EMPTY_RESPONSE;
+                            canceled.set(true);
+                            // Return null if user cancels
+                            return null;
                         }
                         // Responses are encoded in ISO-10646 UTF-8.
                         return additional.getPassword().toCharArray();
@@ -115,6 +117,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
             }));
         }
         catch(IOException e) {
+            if(canceled.get()) {
+                throw new LoginCanceledException();
+            }
             throw new SFTPExceptionMappingService().map(e);
         }
         return session.getClient().isAuthenticated();
