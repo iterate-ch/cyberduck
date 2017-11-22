@@ -80,7 +80,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
             new PasswordFinder() {
                 @Override
                 public char[] reqPassword(Resource<?> resource) {
-                    String password = keychain.find(bookmark);
+                    String password = credentials.getPassword();
                     if(StringUtils.isEmpty(password)) {
                         try {
                             // Use password prompt

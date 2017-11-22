@@ -96,7 +96,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
-                        final String password = keychain.find(bookmark);
+                        final String password = credentials.getPassword();
                         if(StringUtils.isEmpty(password)) {
                             try {
                                 // Use password prompt
