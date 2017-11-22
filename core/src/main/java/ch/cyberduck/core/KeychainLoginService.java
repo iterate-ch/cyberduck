@@ -97,10 +97,24 @@ public class KeychainLoginService implements LoginService {
                 credentials.setIdentity(callback.select(credentials.getIdentity()));
             }
         }
+        final String password;
+        if(options.keychain) {
+            password = keychain.find(bookmark);
+        }
+        else {
+            password = null;
+        }
+        if(StringUtils.isNotBlank(password)) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Fetched password from keychain for %s", bookmark));
+            }
+            // No need to reinsert found password to the keychain.
+            credentials.setSaved(false);
+        }
+        credentials.setPassword(password);
         if(!credentials.validate(bookmark.getProtocol(), options)) {
             if(StringUtils.isNotBlank(credentials.getUsername())) {
-                final String password = keychain.find(bookmark);
-                if(StringUtils.isBlank(password)) {
+                if(StringUtils.isBlank(credentials.getPassword())) {
                     final StringAppender appender = new StringAppender();
                     appender.append(message);
                     appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
@@ -108,11 +122,6 @@ public class KeychainLoginService implements LoginService {
                         String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                         appender.toString(),
                         options));
-                }
-                else {
-                    credentials.setPassword(password);
-                    // No need to reinsert found password to the keychain.
-                    credentials.setSaved(false);
                 }
             }
             else {
@@ -124,22 +133,6 @@ public class KeychainLoginService implements LoginService {
                 bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                     appender.toString(), options));
-            }
-        }
-        else {
-            if(!credentials.isPassed()) {
-                final String password = keychain.find(bookmark);
-                if(StringUtils.isNotBlank(password)) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Fetched password from keychain for %s", bookmark));
-                    }
-                    credentials.setPassword(password);
-                    // No need to reinsert found password to the keychain.
-                    credentials.setSaved(false);
-                }
-            }
-            else {
-                log.warn(String.format("Skip password lookup for previously authenticated connection %s", bookmark));
             }
         }
     }
