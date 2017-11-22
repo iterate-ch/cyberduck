@@ -38,6 +38,10 @@ public final class LoginOptions {
      */
     public boolean keychain = true;
     /**
+     * Save in keychain checked by default
+     */
+    public boolean save = PreferencesFactory.get().getBoolean("connection.login.keychain");
+    /**
      * Enable option to select public key
      */
     public boolean publickey = false;
@@ -57,11 +61,6 @@ public final class LoginOptions {
     public String usernamePlaceholder = StringUtils.EMPTY;
     public String passwordPlaceholder = StringUtils.EMPTY;
 
-    /**
-     * Save in keychain checked by default
-     */
-    public boolean save = PreferencesFactory.get().getBoolean("connection.login.keychain");
-
     public LoginOptions() {
         //
     }
@@ -70,6 +69,7 @@ public final class LoginOptions {
         user = copy.user;
         password = copy.password;
         keychain = copy.keychain;
+        save = copy.save;
         publickey = copy.publickey;
         certificate = copy.certificate;
         anonymous = copy.anonymous;
