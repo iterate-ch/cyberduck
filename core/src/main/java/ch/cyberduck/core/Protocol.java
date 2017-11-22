@@ -90,6 +90,11 @@ public interface Protocol extends Comparable<Protocol> {
                     return false;
                 }
             }
+            if(options.certificate) {
+                if(credentials.isCertificateAuthentication()) {
+                    return true;
+                }
+            }
             if(options.publickey) {
                 // No password may be required to decrypt private key
                 if(credentials.isPublicKeyAuthentication()) {
@@ -101,9 +106,10 @@ public interface Protocol extends Comparable<Protocol> {
                 }
             }
             if(options.password) {
-                if(StringUtils.isEmpty(credentials.getPassword())) {
-                    return false;
+                if(credentials.isPasswordAuthentication()) {
+                    return true;
                 }
+                return false;
             }
             return true;
         }

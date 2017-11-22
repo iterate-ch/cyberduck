@@ -42,6 +42,10 @@ public final class LoginOptions {
      */
     public boolean publickey = false;
     /**
+     * Enable option to select client certificate
+     */
+    public boolean certificate = false;
+    /**
      * Enable option to login as anonymous user
      */
     public boolean anonymous = false;
@@ -67,6 +71,7 @@ public final class LoginOptions {
         password = copy.password;
         keychain = copy.keychain;
         publickey = copy.publickey;
+        certificate = copy.certificate;
         anonymous = copy.anonymous;
         icon = copy.icon;
         usernamePlaceholder = copy.usernamePlaceholder;
@@ -124,6 +129,10 @@ public final class LoginOptions {
         return publickey;
     }
 
+    public boolean certificate() {
+        return certificate;
+    }
+
     public boolean anonymous() {
         return anonymous;
     }
@@ -163,6 +172,7 @@ public final class LoginOptions {
 
     public void configure(final Protocol protocol) {
         publickey = protocol.isPrivateKeyConfigurable();
+        certificate = protocol.isCertificateConfigurable();
         anonymous = protocol.isAnonymousConfigurable();
         user = protocol.isUsernameConfigurable();
         password = protocol.isPasswordConfigurable();
