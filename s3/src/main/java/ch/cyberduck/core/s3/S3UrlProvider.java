@@ -152,7 +152,7 @@ public class S3UrlProvider implements UrlProvider {
         // Determine expiry time for URL
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
-        final String secret = store.find(session.getHost());
+        final String secret = store.findLoginPassword(session.getHost());
         if(StringUtils.isBlank(secret)) {
             log.warn("No secret found in keychain required to sign temporary URL");
             return DescriptiveUrl.EMPTY;

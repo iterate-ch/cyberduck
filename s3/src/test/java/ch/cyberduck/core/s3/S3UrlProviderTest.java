@@ -26,7 +26,7 @@ public class S3UrlProviderTest {
         Path p = new Path("/bucket/f/key f", EnumSet.of(Path.Type.file));
         assertEquals(5, new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
-            public String find(final Host host) {
+            public String findLoginPassword(final Host bookmark) {
                 return "k";
             }
         }).toUrl(p).filter(DescriptiveUrl.Type.signed).size());
@@ -64,7 +64,7 @@ public class S3UrlProviderTest {
         assertEquals(DescriptiveUrl.EMPTY,
                 new S3UrlProvider(session, new DisabledPasswordStore() {
                     @Override
-                    public String find(final Host host) {
+                    public String findLoginPassword(final Host bookmark) {
                         return "k";
                     }
                 }).toUrl(new Path("/test-us-east-1-cyberduck/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
@@ -77,7 +77,7 @@ public class S3UrlProviderTest {
                 new Credentials("k", "s")));
         final S3UrlProvider provider = new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
-            public String find(final Host host) {
+            public String findLoginPassword(final Host bookmark) {
                 return "k";
             }
         });
@@ -93,7 +93,7 @@ public class S3UrlProviderTest {
         )));
         final S3UrlProvider provider = new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
-            public String find(final Host host) {
+            public String findLoginPassword(final Host bookmark) {
                 return "k";
             }
         });

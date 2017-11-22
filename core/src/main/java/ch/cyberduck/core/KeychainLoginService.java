@@ -99,7 +99,7 @@ public class KeychainLoginService implements LoginService {
         }
         String password = credentials.getPassword();
         if(StringUtils.isBlank(password) && options.keychain) {
-            password = keychain.find(bookmark);
+            password = keychain.findLoginPassword(bookmark);
         }
         if(StringUtils.isNotBlank(password)) {
             if(log.isInfoEnabled()) {

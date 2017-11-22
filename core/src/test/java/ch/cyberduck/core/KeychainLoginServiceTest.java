@@ -96,7 +96,7 @@ public class KeychainLoginServiceTest {
             }
         }, new DisabledPasswordStore() {
             @Override
-            public String find(final Host host) {
+            public String findLoginPassword(final Host bookmark) {
                 keychain.set(true);
                 return "P";
             }
