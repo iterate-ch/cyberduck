@@ -236,8 +236,8 @@ public class SFTPSession extends Session<SSHClient> {
                 methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
             }
             methods.add(new SFTPPublicKeyAuthentication(this));
-            methods.add(new SFTPPasswordAuthentication(this));
             methods.add(new SFTPChallengeResponseAuthentication(this));
+            methods.add(new SFTPPasswordAuthentication(this));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods", methods.size()));
