@@ -217,6 +217,9 @@ public class CryptoVault implements Vault {
             if(directoryProvider != null) {
                 directoryProvider.destroy();
             }
+            if(filenameProvider != null) {
+                filenameProvider.destroy();
+            }
         }
         cryptor = null;
     }

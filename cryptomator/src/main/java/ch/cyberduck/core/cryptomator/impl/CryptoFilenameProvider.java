@@ -22,12 +22,15 @@ import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
 
 import java.util.EnumSet;
+import java.util.Map;
 
 import com.google.common.io.BaseEncoding;
 
@@ -44,6 +47,9 @@ public class CryptoFilenameProvider {
 
     private final Path metadataRoot;
 
+    private final Map<String, String> cache = new LRUMap<String, String>(
+        PreferencesFactory.get().getInteger("browser.cache.size"));
+
     public CryptoFilenameProvider(final Path vault) {
         this.metadataRoot = new Path(vault, METADATA_DIR_NAME, vault.getType());
     }
@@ -59,6 +65,9 @@ public class CryptoFilenameProvider {
     public String deflate(final Session<?> session, final String filename) throws BackgroundException {
         if(filename.length() < NAME_SHORTENING_THRESHOLD) {
             return filename;
+        }
+        if(cache.containsKey(filename)) {
+            return cache.get(filename);
         }
         final byte[] longFileNameBytes = filename.getBytes(UTF_8);
         final byte[] hash = MessageDigestSupplier.SHA1.get().digest(longFileNameBytes);
@@ -83,6 +92,7 @@ public class CryptoFilenameProvider {
         if(log.isInfoEnabled()) {
             log.info(String.format("Deflated %s to %s", filename, shortName));
         }
+        cache.put(filename, shortName);
         return shortName;
     }
 
@@ -92,5 +102,9 @@ public class CryptoFilenameProvider {
         // Intermediate directory
         final Path second = new Path(first, filename.substring(2, 4), metadataRoot.getType());
         return new Path(second, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted, Path.Type.vault));
+    }
+
+    public void destroy() {
+        cache.clear();
     }
 }
