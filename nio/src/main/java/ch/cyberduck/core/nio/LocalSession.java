@@ -54,7 +54,7 @@ public class LocalSession extends Session<FileSystem> {
 
     private Object lock;
 
-    protected LocalSession(final Host h) {
+    public LocalSession(final Host h) {
         super(h);
     }
 

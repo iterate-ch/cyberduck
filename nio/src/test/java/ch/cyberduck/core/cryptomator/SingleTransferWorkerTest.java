@@ -24,14 +24,14 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.nio.LocalAttributesFinderFeature;
+import ch.cyberduck.core.nio.LocalDeleteFeature;
+import ch.cyberduck.core.nio.LocalFindFeature;
+import ch.cyberduck.core.nio.LocalHomeFinderFeature;
+import ch.cyberduck.core.nio.LocalProtocol;
+import ch.cyberduck.core.nio.LocalReadFeature;
+import ch.cyberduck.core.nio.LocalSession;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
-import ch.cyberduck.core.sftp.SFTPDeleteFeature;
-import ch.cyberduck.core.sftp.SFTPFindFeature;
-import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPReadFeature;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -58,7 +58,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
@@ -68,14 +67,10 @@ public class SingleTransferWorkerTest {
 
     @Test
     public void testUpload() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final AtomicBoolean failed = new AtomicBoolean();
-        final SFTPSession session = new SFTPSession(host);
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path home = new LocalHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         StringBuilder directoryname = new StringBuilder();
         for(int i = 0; i < 10; i++) {
@@ -111,25 +106,25 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()) {
 
         }.run(session, session));
-        assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(dir1));
-        Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file1).getSize());
+        assertTrue(new CryptoFindFeature(session, new LocalFindFeature(session), cryptomator).find(dir1));
+        Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new LocalAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new LocalReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file2).getSize());
+        Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new LocalAttributesFinderFeature(session), cryptomator).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new LocalReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new LocalDeleteFeature(session), cryptomator).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

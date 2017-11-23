@@ -39,7 +39,7 @@ public class ContentWriter {
     }
 
     public void write(final Path file, final byte[] content) throws BackgroundException {
-        this.write(file, content, new TransferStatus());
+        this.write(file, content, new TransferStatus().length(content.length));
     }
 
     public void write(final Path file, final byte[] content, final TransferStatus status) throws BackgroundException {
