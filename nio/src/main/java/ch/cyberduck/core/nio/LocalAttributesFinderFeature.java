@@ -58,7 +58,9 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
         final PathAttributes attributes = new PathAttributes();
         final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
         final BasicFileAttributes a = Files.readAttributes(file, provider, LinkOption.NOFOLLOW_LINKS);
-        attributes.setSize(a.size());
+        if(Files.isRegularFile(file)) {
+            attributes.setSize(a.size());
+        }
         attributes.setModificationDate(a.lastModifiedTime().toMillis());
         attributes.setCreationDate(a.creationTime().toMillis());
         attributes.setAccessedDate(a.lastAccessTime().toMillis());
@@ -79,7 +81,7 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
                 actions = actions.or(Permission.Action.execute);
             }
             attributes.setPermission(new Permission(
-                    actions, Permission.Action.none, Permission.Action.none
+                actions, Permission.Action.none, Permission.Action.none
             ));
         }
         return attributes;
