@@ -45,47 +45,6 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public void authenticate(final Session session, final Cache<Path> cache, final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
-        final Host bookmark = session.getHost();
-        if(session.alert(callback)) {
-            // Warning if credentials are sent plaintext.
-            callback.warn(bookmark, MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
-                bookmark.getProtocol().getName()),
-                MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
-                    bookmark.getProtocol().getPasswordPlaceholder()),
-                    LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
-                LocaleFactory.localizedString("Continue", "Credentials"),
-                LocaleFactory.localizedString("Disconnect", "Credentials"),
-                String.format("connection.unsecure.%s", bookmark.getHostname()));
-        }
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
-            StringUtils.isEmpty(bookmark.getCredentials().getUsername()) ? LocaleFactory.localizedString("Unknown") : bookmark.getCredentials().getUsername()));
-        try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Attempt authentication for %s", bookmark));
-            }
-            session.login(keychain, callback, cancel);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Login successful for session %s", session));
-            }
-            listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
-            // Write credentials to keychain
-            keychain.save(bookmark);
-            // Flag for successful authentication
-            bookmark.getCredentials().setPassed(true);
-            // Nullify password.
-            bookmark.getCredentials().setPassword(null);
-        }
-        catch(LoginFailureException e) {
-            listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
-            bookmark.setCredentials(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
-                new LoginOptions(bookmark.getProtocol())));
-            throw e;
-        }
-    }
-
-    @Override
     public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
@@ -131,6 +90,47 @@ public class KeychainLoginService implements LoginService {
                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                     appender.toString(), options));
             }
+        }
+    }
+
+    @Override
+    public void authenticate(final Session session, final Cache<Path> cache, final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
+        final Host bookmark = session.getHost();
+        if(session.alert(callback)) {
+            // Warning if credentials are sent plaintext.
+            callback.warn(bookmark, MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
+                bookmark.getProtocol().getName()),
+                MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
+                    bookmark.getProtocol().getPasswordPlaceholder()),
+                    LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                LocaleFactory.localizedString("Continue", "Credentials"),
+                LocaleFactory.localizedString("Disconnect", "Credentials"),
+                String.format("connection.unsecure.%s", bookmark.getHostname()));
+        }
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
+            StringUtils.isEmpty(bookmark.getCredentials().getUsername()) ? LocaleFactory.localizedString("Unknown") : bookmark.getCredentials().getUsername()));
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Attempt authentication for %s", bookmark));
+            }
+            session.login(keychain, callback, cancel);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Login successful for session %s", session));
+            }
+            listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
+            // Write credentials to keychain
+            keychain.save(bookmark);
+            // Flag for successful authentication
+            bookmark.getCredentials().setPassed(true);
+            // Nullify password.
+            bookmark.getCredentials().setPassword(null);
+        }
+        catch(LoginFailureException e) {
+            listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
+            bookmark.setCredentials(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
+                new LoginOptions(bookmark.getProtocol())));
+            throw e;
         }
     }
 }

@@ -22,6 +22,14 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
 public interface LoginService {
+    /**
+     * Obtain password from keychain or prompt panel
+     *
+     * @param bookmark Credentials
+     * @param message  Prompt message
+     * @param options  Login mechanism features
+     */
+    void validate(Host bookmark, String message, LoginOptions options) throws LoginCanceledException;
 
     /**
      * Login and prompt on failure
@@ -33,13 +41,4 @@ public interface LoginService {
      */
     void authenticate(Session session, Cache<Path> cache, ProgressListener listener,
                       CancelCallback cancel) throws BackgroundException;
-
-    /**
-     * Obtain password from keychain or prompt panel
-     *
-     * @param bookmark Credentials
-     * @param message  Prompt message
-     * @param options  Login mechanism features
-     */
-    void validate(Host bookmark, String message, LoginOptions options) throws LoginCanceledException;
 }
