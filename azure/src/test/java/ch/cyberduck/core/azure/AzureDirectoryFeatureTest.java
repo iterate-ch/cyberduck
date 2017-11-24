@@ -10,6 +10,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -36,12 +37,30 @@ public class AzureDirectoryFeatureTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new AzureDirectoryFeature(session, null).mkdir(container, null, new TransferStatus());
+        final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
+        assertTrue(feature.isSupported(container.getParent(), container.getName()));
+        feature.mkdir(container, null, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(container));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(container));
     }
 
+    @Test(expected = InteroperabilityException.class)
+    public void testCreateContainerInvalidName() throws Exception {
+        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
+            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
+        ));
+        final AzureSession session = new AzureSession(host);
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final Path container = new Path("untitled folder", EnumSet.of(Path.Type.directory));
+        final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
+        assertFalse(feature.isSupported(container.getParent(), container.getName()));
+        feature.mkdir(container, null, new TransferStatus());
+        assertTrue(new AzureFindFeature(session, null).find(container));
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new AzureFindFeature(session, null).find(container));
+    }
 
     @Test
     public void testCreatePlaceholder() throws Exception {

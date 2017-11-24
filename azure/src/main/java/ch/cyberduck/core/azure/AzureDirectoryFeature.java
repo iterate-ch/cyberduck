@@ -32,6 +32,7 @@ import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URISyntaxException;
 import java.util.EnumSet;
@@ -89,6 +90,11 @@ public class AzureDirectoryFeature implements Directory<Void> {
 
     @Override
     public boolean isSupported(final Path workdir, final String name) {
+        if(workdir.isRoot()) {
+            if(StringUtils.isNotBlank(name)) {
+                return StringUtils.isAlphanumeric(name);
+            }
+        }
         return true;
     }
 
