@@ -26,7 +26,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,24 +56,6 @@ public class SwiftDirectoryFeatureTest {
         final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
         assertTrue(feature.isSupported(container.getParent(), container.getName()));
-        feature.mkdir(container, "ORD", new TransferStatus());
-        assertTrue(new SwiftFindFeature(session).find(container));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new SwiftFindFeature(session).find(container));
-        session.close();
-    }
-
-    @Test(expected = InteroperabilityException.class)
-    public void testCreateContainerInvalidName() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("untitled folder", EnumSet.of(Path.Type.directory));
-        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
-        assertFalse(feature.isSupported(container.getParent(), container.getName()));
         feature.mkdir(container, "ORD", new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(container));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
