@@ -19,8 +19,12 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
+
+import com.microsoft.azure.storage.core.Base64;
 
 public class AzureProtocol extends AbstractProtocol {
 
@@ -76,5 +80,16 @@ public class AzureProtocol extends AbstractProtocol {
     @Override
     public Scheme getScheme() {
         return Scheme.https;
+    }
+
+    @Override
+    public boolean validate(final Credentials credentials, final LoginOptions options) {
+        if(super.validate(credentials, options)) {
+            if(options.password) {
+                return Base64.validateIsBase64String(credentials.getPassword());
+            }
+            return true;
+        }
+        return false;
     }
 }

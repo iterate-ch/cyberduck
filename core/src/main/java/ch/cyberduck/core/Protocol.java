@@ -20,10 +20,10 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.features.Location;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public interface Protocol extends Comparable<Protocol> {
@@ -31,26 +31,7 @@ public interface Protocol extends Comparable<Protocol> {
     boolean validate(Credentials credentials, LoginOptions options);
 
     enum Type {
-        ftp {
-            /**
-             * Allows empty string for password.
-             *
-             * @return True if username is not blank and password is not null
-             */
-            @Override
-            public boolean validate(final Credentials credentials, final LoginOptions options) {
-                if(options.user) {
-                    if(StringUtils.isBlank(credentials.getUsername())) {
-                        return false;
-                    }
-                }
-                if(options.password) {
-                    // Allow empty passwords
-                    return credentials.getPassword() != null;
-                }
-                return true;
-            }
-        },
+        ftp,
         sftp,
         s3,
         googlestorage,
@@ -58,18 +39,7 @@ public interface Protocol extends Comparable<Protocol> {
         googledrive,
         swift,
         dav,
-        azure {
-            @Override
-            public boolean validate(final Credentials credentials, final LoginOptions options) {
-                if(super.validate(credentials, options)) {
-                    if(Base64.isBase64(credentials.getPassword())) {
-                        return true;
-                    }
-                    // Storage Key is not a valid base64 encoded string
-                }
-                return false;
-            }
-        },
+        azure,
         onedrive,
         irods,
         b2,
@@ -107,7 +77,12 @@ public interface Protocol extends Comparable<Protocol> {
             }
             if(options.password) {
                 if(credentials.isPasswordAuthentication()) {
-                    return true;
+                    switch(this) {
+                        case ftp:
+                            return Objects.nonNull(credentials.getPassword());
+                        default:
+                            return StringUtils.isNotBlank(credentials.getPassword());
+                    }
                 }
                 return false;
             }
