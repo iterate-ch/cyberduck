@@ -171,30 +171,6 @@ public class SDSDelegatingCopyFeatureTest {
     }
 
     @Test
-    public void testCopyDirectory() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path room = new SDSDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path directory = new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final String name = new AlphanumericRandomStringService().random();
-        final Path file = new SDSTouchFeature(session).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path target = new SDSDirectoryFeature(session).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final SDSCopyFeature feature = new SDSCopyFeature(session);
-        assertFalse(feature.isSupported(directory, target));
-        final Path copy = new SDSDelegatingCopyFeature(session, feature).copy(directory, target, new TransferStatus().exists(true), new DisabledConnectionCallback());
-        assertTrue(new SDSFindFeature(session).find(file));
-        assertTrue(new SDSFindFeature(session).find(target));
-        assertTrue(new SDSFindFeature(session).find(copy));
-        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
-    }
-
-    @Test
     public void testCopyFileToDifferentDataRoom() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
