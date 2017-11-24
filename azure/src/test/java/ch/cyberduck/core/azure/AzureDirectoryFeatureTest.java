@@ -1,5 +1,6 @@
 package ch.cyberduck.core.azure;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -36,7 +37,7 @@ public class AzureDirectoryFeatureTest {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory));
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
         assertTrue(feature.isSupported(container.getParent(), container.getName()));
         feature.mkdir(container, null, new TransferStatus());
