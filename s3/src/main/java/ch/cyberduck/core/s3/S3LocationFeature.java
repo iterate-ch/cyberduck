@@ -40,10 +40,10 @@ public class S3LocationFeature implements Location {
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private RegionEndpointCache cache
-            = new RegionEndpointCache();
+        = new RegionEndpointCache();
 
     public S3LocationFeature(final S3Session session) {
         this.session = session;
@@ -56,6 +56,9 @@ public class S3LocationFeature implements Location {
 
     @Override
     public Set<Name> getLocations() {
+        if(StringUtils.isNotBlank(session.getHost().getRegion())) {
+            return Collections.singleton(new S3Region(session.getHost().getRegion()));
+        }
         // Only for AWS
         if(session.getHost().getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
             return session.getHost().getProtocol().getRegions();

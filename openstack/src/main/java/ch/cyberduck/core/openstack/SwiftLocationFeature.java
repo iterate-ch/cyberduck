@@ -50,7 +50,7 @@ public class SwiftLocationFeature implements Location {
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final Map<Path, Name> cache = new HashMap<Path, Name>();
 
@@ -61,25 +61,30 @@ public class SwiftLocationFeature implements Location {
     @Override
     public Set<Name> getLocations() {
         final Set<Name> locations = new LinkedHashSet<Name>();
-        final List<Region> regions = new ArrayList<Region>(session.getClient().getRegions());
-        Collections.sort(regions, new Comparator<Region>() {
-            @Override
-            public int compare(final Region r1, final Region r2) {
-                if(r1.isDefault()) {
-                    return -1;
+        if(StringUtils.isNotBlank(session.getHost().getRegion())) {
+            locations.add(new SwiftRegion(session.getHost().getRegion()));
+        }
+        else {
+            final List<Region> regions = new ArrayList<Region>(session.getClient().getRegions());
+            Collections.sort(regions, new Comparator<Region>() {
+                @Override
+                public int compare(final Region r1, final Region r2) {
+                    if(r1.isDefault()) {
+                        return -1;
+                    }
+                    if(r2.isDefault()) {
+                        return 1;
+                    }
+                    return 0;
                 }
-                if(r2.isDefault()) {
-                    return 1;
+            });
+            for(Region region : regions) {
+                if(StringUtils.isBlank(region.getRegionId())) {
+                    // v1 authentication contexts do not have region support
+                    continue;
                 }
-                return 0;
+                locations.add(new SwiftRegion(region.getRegionId()));
             }
-        });
-        for(Region region : regions) {
-            if(StringUtils.isBlank(region.getRegionId())) {
-                // v1 authentication contexts do not have region support
-                continue;
-            }
-            locations.add(new SwiftRegion(region.getRegionId()));
         }
         return locations;
     }
@@ -100,7 +105,7 @@ public class SwiftLocationFeature implements Location {
                 for(Region r : client.getRegions()) {
                     try {
                         cache.put(container, new SwiftRegion(
-                                        client.getContainerInfo(r, container.getName()).getRegion().getRegionId())
+                            client.getContainerInfo(r, container.getName()).getRegion().getRegionId())
                         );
                     }
                     catch(ContainerNotFoundException | AuthorizationException e) {
