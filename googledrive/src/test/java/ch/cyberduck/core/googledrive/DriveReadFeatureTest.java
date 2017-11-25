@@ -52,14 +52,14 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new DriveReadFeature(session).read(new Path(new DriveHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new DriveReadFeature(session).read(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
     public void testReadRange() throws Exception {
 
         final String name = "ä-" + UUID.randomUUID().toString();
-        final Path test = new Path(new DriveHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
         final OutputStream out = local.getOutputStream(false);

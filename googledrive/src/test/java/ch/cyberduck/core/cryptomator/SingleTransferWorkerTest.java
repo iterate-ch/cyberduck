@@ -71,7 +71,7 @@ public class SingleTransferWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testUpload() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());

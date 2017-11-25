@@ -38,12 +38,12 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
     @Test
     public void testFindFileNotFound() throws Exception {
         final DriveFindFeature f = new DriveFindFeature(session);
-        assertFalse(f.find(new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertFalse(f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testFind() throws Exception {
-        final Path file = new Path(new DriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DriveFindFeature(session).find(file));
         new DriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

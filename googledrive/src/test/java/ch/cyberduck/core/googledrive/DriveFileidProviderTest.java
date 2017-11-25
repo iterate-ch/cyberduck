@@ -46,7 +46,7 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
 
     @Test
     public void testGetFileid() throws Exception {
-        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());
         assertNotNull(new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

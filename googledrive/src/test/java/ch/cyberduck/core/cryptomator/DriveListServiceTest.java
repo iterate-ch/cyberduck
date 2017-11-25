@@ -53,7 +53,7 @@ public class DriveListServiceTest extends AbstractDriveTest {
 
     @Test
     public void testListCryptomator() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));

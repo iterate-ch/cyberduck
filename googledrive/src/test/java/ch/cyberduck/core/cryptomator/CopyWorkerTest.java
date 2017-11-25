@@ -76,7 +76,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testCopyFile() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -102,7 +102,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testCopyToDifferentFolderCryptomator() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -125,7 +125,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testCopyToDifferentFolderLongFilenameCryptomator() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory));
@@ -148,7 +148,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testCopyFolder() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -178,7 +178,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testCopyFileIntoVault() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(cleartextFile, new TransferStatus());
@@ -202,7 +202,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testCopyDirectoryIntoVault() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -229,7 +229,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testCopyFileOutsideVault() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
@@ -255,7 +255,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testCopyDirectoryOutsideVault() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

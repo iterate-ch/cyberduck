@@ -57,7 +57,7 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
         status.setLength(content.length);
-        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(session.getHost(), new ThreadLocalHostnameDelegatingTrustManager(
                 new DisabledX509TrustManager(), session.getHost().getHostname()), new DefaultX509KeyManager(), new DisabledProxyFinder()
         );

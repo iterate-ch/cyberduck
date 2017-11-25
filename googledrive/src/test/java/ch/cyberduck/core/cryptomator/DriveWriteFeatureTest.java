@@ -65,7 +65,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));

@@ -36,7 +36,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());
         new DriveMetadataFeature(session).setMetadata(test, Collections.singletonMap("test", "t"));
@@ -49,7 +49,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testSetTimestampDirectory() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final long modified = System.currentTimeMillis();

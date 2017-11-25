@@ -63,8 +63,8 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
 
     @Test
     public void testFilenameColon() throws Exception {
-        final Path file = new Path(new DriveHomeFinderService(session).find(), String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        final Path folder = new Path(new DriveHomeFinderService(session).find(), String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory));
+        final Path file = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory));
         new DriveTouchFeature(session).touch(file, new TransferStatus());
         new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));

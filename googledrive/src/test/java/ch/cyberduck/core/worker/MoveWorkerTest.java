@@ -48,7 +48,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
 
     @Test
     public void testMoveFolder() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path folder = new DriveDirectoryFeature(session).mkdir(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));

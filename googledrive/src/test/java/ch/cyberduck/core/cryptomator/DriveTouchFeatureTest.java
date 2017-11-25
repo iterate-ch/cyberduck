@@ -48,7 +48,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testTouchLongFilenameEncrypted() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
@@ -61,7 +61,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testTouchLongFilenameEncryptedDefaultFeature() throws Exception {
-        final Path home = new DriveHomeFinderService(session).find();
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));

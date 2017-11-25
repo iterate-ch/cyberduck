@@ -37,7 +37,7 @@ public class DriveUrlProviderTest extends AbstractDriveTest {
     @Test
     public void testToUrl() throws Exception {
         final DriveUrlProvider provider = new DriveUrlProvider();
-        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertNotNull(provider.toUrl(test));
         assertTrue(provider.toUrl(test).isEmpty());
         new DriveTouchFeature(session).touch(test, new TransferStatus());
