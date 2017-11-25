@@ -44,7 +44,7 @@ public class AbstractDropboxTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DropboxProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/default/Dropbox.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname());
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = new DropboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -59,10 +59,10 @@ public class AbstractDropboxTest {
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
         public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("Dropbox OAuth2 Access Token")) {
+            if(user.equals("Dropbox (cyberduck) OAuth2 Access Token")) {
                 return System.getProperties().getProperty("dropbox.accesstoken");
             }
-            if(user.equals("Dropbox OAuth2 Refresh Token")) {
+            if(user.equals("Dropbox (cyberduck) OAuth2 Refresh Token")) {
                 return System.getProperties().getProperty("dropbox.refreshtoken");
             }
             return null;
