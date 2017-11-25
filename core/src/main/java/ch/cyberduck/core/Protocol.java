@@ -76,15 +76,12 @@ public interface Protocol extends Comparable<Protocol> {
                 }
             }
             if(options.password) {
-                if(credentials.isPasswordAuthentication()) {
-                    switch(this) {
-                        case ftp:
-                            return Objects.nonNull(credentials.getPassword());
-                        default:
-                            return StringUtils.isNotBlank(credentials.getPassword());
-                    }
+                switch(this) {
+                    case ftp:
+                        return Objects.nonNull(credentials.getPassword());
+                    default:
+                        return StringUtils.isNotBlank(credentials.getPassword());
                 }
-                return false;
             }
             return true;
         }
