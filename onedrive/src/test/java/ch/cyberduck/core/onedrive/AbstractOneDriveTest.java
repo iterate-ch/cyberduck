@@ -56,7 +56,7 @@ public abstract class AbstractOneDriveTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname());
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -71,10 +71,10 @@ public abstract class AbstractOneDriveTest {
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
         public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.endsWith("OAuth2 Access Token")) {
+            if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Access Token")) {
                 return System.getProperties().getProperty("onedrive.accesstoken");
             }
-            if(user.endsWith("OAuth2 Refresh Token")) {
+            if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Refresh Token")) {
                 return System.getProperties().getProperty("onedrive.refreshtoken");
             }
             return null;
