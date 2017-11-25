@@ -56,7 +56,7 @@ public class AbstractDriveTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/default/Google Drive.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname());
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -71,10 +71,10 @@ public class AbstractDriveTest {
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
         public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("Google Drive OAuth2 Access Token")) {
+            if(user.equals("Google Drive (cyberduck) OAuth2 Access Token")) {
                 return System.getProperties().getProperty("googledrive.accesstoken");
             }
-            if(user.equals("Google Drive OAuth2 Refresh Token")) {
+            if(user.equals("Google Drive (cyberduck) OAuth2 Refresh Token")) {
                 return System.getProperties().getProperty("googledrive.refreshtoken");
             }
             return null;
