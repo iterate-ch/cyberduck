@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -40,7 +41,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
     private static final Logger log = Logger.getLogger(FolderTransferCollection.class);
 
     private static final FolderTransferCollection TRANSFER_COLLECTION = new FolderTransferCollection(
-            LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Transfers"));
+        LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Transfers"));
 
     /**
      * @return Singleton instance
@@ -65,7 +66,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
     private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final Local folder;
 
@@ -96,7 +97,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
             this.getFile(transfer).delete();
             preferences.deleteProperty(String.format("%s%s", prefix, transfer.getUuid()));
         }
-        catch(AccessDeniedException e) {
+        catch(AccessDeniedException | NotfoundException e) {
             log.error(String.format("Failure removing transfer %s", e.getMessage()));
         }
         finally {
@@ -166,17 +167,17 @@ public class FolderTransferCollection extends Collection<Transfer> {
                 folder.mkdir();
             }
             final AttributedList<Local> transfers = folder.list().filter(
-                    new Filter<Local>() {
-                        @Override
-                        public boolean accept(final Local file) {
-                            return file.getName().endsWith(".cyberducktransfer");
-                        }
-
-                        @Override
-                        public Pattern toPattern() {
-                            return Pattern.compile(".*\\.cyberducktransfer");
-                        }
+                new Filter<Local>() {
+                    @Override
+                    public boolean accept(final Local file) {
+                        return file.getName().endsWith(".cyberducktransfer");
                     }
+
+                    @Override
+                    public Pattern toPattern() {
+                        return Pattern.compile(".*\\.cyberducktransfer");
+                    }
+                }
             );
             for(Local next : transfers) {
                 final Transfer transfer = reader.read(next);
@@ -257,7 +258,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
             @Override
             public int compare(Transfer o1, Transfer o2) {
                 return Integer.valueOf(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid()))).compareTo(
-                        preferences.getInteger(String.format("%s%s", prefix, o2.getUuid()))
+                    preferences.getInteger(String.format("%s%s", prefix, o2.getUuid()))
                 );
             }
         });
@@ -292,7 +293,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
             }
         }
         return new TransferProgress(size, transferred, MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
-                sizeFormatter.format(transferred),
-                sizeFormatter.format(size)), -1d);
+            sizeFormatter.format(transferred),
+            sizeFormatter.format(size)), -1d);
     }
 }

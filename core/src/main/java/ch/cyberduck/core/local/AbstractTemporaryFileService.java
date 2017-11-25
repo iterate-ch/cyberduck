@@ -17,6 +17,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
@@ -60,7 +61,7 @@ public abstract class AbstractTemporaryFileService implements TemporaryFileServi
             try {
                 f.delete();
             }
-            catch(AccessDeniedException e) {
+            catch(AccessDeniedException | NotfoundException e) {
                 log.warn(String.format("Failure deleting file %s in shutdown hook. %s", f, e.getMessage()));
             }
         }

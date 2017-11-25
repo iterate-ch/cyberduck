@@ -20,6 +20,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 
@@ -83,7 +84,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             final Local file = this.getFile(bookmark);
             file.delete();
         }
-        catch(AccessDeniedException e) {
+        catch(AccessDeniedException | NotfoundException e) {
             log.error(String.format("Failure removing bookmark %s", e.getMessage()));
         }
         finally {
@@ -128,18 +129,18 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                 folder.mkdir();
             }
             final AttributedList<Local> bookmarks = folder.list().filter(
-                    new Filter<Local>() {
-                        @Override
-                        public boolean accept(final Local file) {
-                            return file.getName().endsWith(".duck");
-                        }
-
-                        @Override
-                        public Pattern toPattern() {
-                            return Pattern.compile(".*\\.duck");
-                        }
-
+                new Filter<Local>() {
+                    @Override
+                    public boolean accept(final Local file) {
+                        return file.getName().endsWith(".duck");
                     }
+
+                    @Override
+                    public Pattern toPattern() {
+                        return Pattern.compile(".*\\.duck");
+                    }
+
+                }
             );
             for(Local next : bookmarks) {
                 final Host bookmark = reader.read(next);

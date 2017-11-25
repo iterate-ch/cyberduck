@@ -18,6 +18,7 @@ package ch.cyberduck.core.io;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 
@@ -116,7 +117,7 @@ public class FileBuffer implements Buffer {
                     temporary.delete();
                     file = null;
                 }
-                catch(AccessDeniedException e) {
+                catch(AccessDeniedException | NotfoundException e) {
                     log.warn(String.format("Failure removing temporary file %s for buffer %s. Schedule for delete on exit.", temporary, this));
                     Paths.get(temporary.getAbsolute()).toFile().deleteOnExit();
                 }

@@ -44,6 +44,7 @@ import java.io.OutputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -67,8 +68,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public Local(final String parent, final String name, final String delimiter) throws LocalAccessDeniedException {
         this(parent.endsWith(delimiter) ?
-                String.format("%s%s", parent, name) :
-                String.format("%s%c%s", parent, CharUtils.toChar(delimiter), name));
+            String.format("%s%s", parent, name) :
+            String.format("%s%c%s", parent, CharUtils.toChar(delimiter), name));
     }
 
     public Local(final Local parent, final String name) throws LocalAccessDeniedException {
@@ -77,8 +78,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public Local(final Local parent, final String name, final String delimiter) throws LocalAccessDeniedException {
         this(parent.isRoot() ?
-                String.format("%s%s", parent.getAbsolute(), name) :
-                String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(delimiter), name));
+            String.format("%s%s", parent.getAbsolute(), name) :
+            String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(delimiter), name));
     }
 
     /**
@@ -192,16 +193,19 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Cannot create folder {0}", "Error"), path), e);
+                "Cannot create folder {0}", "Error"), path), e);
         }
     }
 
     /**
      * Delete the file
      */
-    public void delete() throws AccessDeniedException {
+    public void delete() throws AccessDeniedException, NotfoundException {
         try {
-            Files.deleteIfExists(Paths.get(path));
+            Files.delete(Paths.get(path));
+        }
+        catch(NoSuchFileException e) {
+            throw new LocalNotfoundException(String.format("Delete %s failed", path), e);
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(String.format("Delete %s failed", path), e);
