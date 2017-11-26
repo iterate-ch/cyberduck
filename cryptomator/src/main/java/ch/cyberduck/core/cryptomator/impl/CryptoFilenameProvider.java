@@ -43,7 +43,7 @@ public class CryptoFilenameProvider {
     private static final String LONG_NAME_FILE_EXT = ".lng";
     private static final String METADATA_DIR_NAME = "m";
 
-    private static final int NAME_SHORTENING_THRESHOLD = 129;
+    private static final int NAME_SHORTENING_THRESHOLD = 130;
 
     private final Path metadataRoot;
 
