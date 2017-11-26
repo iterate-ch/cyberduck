@@ -48,7 +48,7 @@ public class SFTPPublicKeyAuthenticationTest {
     @Test
     public void testAuthenticateKeyNoPassword() throws Exception {
         final Credentials credentials = new Credentials(
-                System.getProperties().getProperty("sftp.user")
+            System.getProperties().getProperty("sftp.user")
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
@@ -60,7 +60,7 @@ public class SFTPPublicKeyAuthenticationTest {
             session.open(new DisabledHostKeyCallback());
             assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     fail();
                     throw new LoginCanceledException();
                 }
@@ -75,7 +75,7 @@ public class SFTPPublicKeyAuthenticationTest {
     @Test(expected = LoginFailureException.class)
     public void testAuthenticatePuTTYKeyWithWrongPassword() throws Exception {
         final Credentials credentials = new Credentials(
-                System.getProperties().getProperty("sftp.user"), ""
+            System.getProperties().getProperty("sftp.user"), ""
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
@@ -88,7 +88,7 @@ public class SFTPPublicKeyAuthenticationTest {
             final AtomicBoolean p = new AtomicBoolean();
             assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     p.set(true);
                     throw new LoginCanceledException();
                 }
@@ -104,7 +104,7 @@ public class SFTPPublicKeyAuthenticationTest {
     @Test(expected = LoginFailureException.class)
     public void testAuthenticateOpenSSHKeyWithPassword() throws Exception {
         final Credentials credentials = new Credentials(
-                System.getProperties().getProperty("sftp.user"), ""
+            System.getProperties().getProperty("sftp.user"), ""
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
@@ -117,7 +117,7 @@ public class SFTPPublicKeyAuthenticationTest {
             final AtomicBoolean b = new AtomicBoolean();
             assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     b.set(true);
                     throw new LoginCanceledException();
                 }
@@ -133,7 +133,7 @@ public class SFTPPublicKeyAuthenticationTest {
     @Test(expected = InteroperabilityException.class)
     public void testUnknownFormat() throws Exception {
         final Credentials credentials = new Credentials(
-                System.getProperties().getProperty("sftp.user"), ""
+            System.getProperties().getProperty("sftp.user"), ""
         );
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
@@ -145,7 +145,7 @@ public class SFTPPublicKeyAuthenticationTest {
             session.open(new DisabledHostKeyCallback());
             assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     fail();
                     throw new LoginCanceledException();
                 }
