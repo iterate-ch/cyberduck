@@ -60,7 +60,7 @@ public class LoginCallbackTest {
                 assertEquals("t", title);
                 assertTrue(options.keychain);
                 assertFalse(options.publickey);
-                assertTrue(options.anonymous);
+                assertFalse(options.anonymous);
                 throw new LoginCanceledException();
             }
         };
