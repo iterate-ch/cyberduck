@@ -264,4 +264,14 @@ public abstract class AbstractProtocol implements Protocol {
         result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
         return result;
     }
+
+    @Override
+    public CredentialsConfigurator getCredentialsFinder() {
+        return new DisabledCredentialsConfigurator();
+    }
+
+    @Override
+    public HostnameConfigurator getHostnameFinder() {
+        return new DisabledHostnameConfigurator();
+    }
 }

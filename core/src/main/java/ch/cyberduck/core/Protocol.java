@@ -30,6 +30,10 @@ public interface Protocol extends Comparable<Protocol> {
 
     boolean validate(Credentials credentials, LoginOptions options);
 
+    CredentialsConfigurator getCredentialsFinder();
+
+    HostnameConfigurator getHostnameFinder();
+
     enum Type {
         ftp,
         sftp,

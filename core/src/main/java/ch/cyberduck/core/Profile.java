@@ -246,6 +246,16 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public CredentialsConfigurator getCredentialsFinder() {
+        return parent.getCredentialsFinder();
+    }
+
+    @Override
+    public HostnameConfigurator getHostnameFinder() {
+        return parent.getHostnameFinder();
+    }
+
+    @Override
     public Scheme getScheme() {
         final String v = this.value("Scheme");
         if(StringUtils.isBlank(v)) {
