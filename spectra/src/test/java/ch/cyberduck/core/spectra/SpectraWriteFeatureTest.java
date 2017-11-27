@@ -184,7 +184,7 @@ public class SpectraWriteFeatureTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("CYBERDUCK-SPECTRA-69", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), "SPECTRA-69", EnumSet.of(Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);
