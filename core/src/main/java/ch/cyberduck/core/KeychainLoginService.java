@@ -59,13 +59,13 @@ public class KeychainLoginService implements LoginService {
         String password = credentials.getPassword();
         if(StringUtils.isBlank(password) && options.keychain) {
             password = keychain.findLoginPassword(bookmark);
-        }
-        if(StringUtils.isNotBlank(password)) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Fetched password from keychain for %s", bookmark));
+            if(StringUtils.isNotBlank(password)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Fetched password from keychain for %s", bookmark));
+                }
+                // No need to reinsert found password to the keychain.
+                credentials.setSaved(false);
             }
-            // No need to reinsert found password to the keychain.
-            credentials.setSaved(false);
         }
         credentials.setPassword(password);
         if(!credentials.validate(bookmark.getProtocol(), options)) {
