@@ -41,7 +41,8 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
         final Credentials credentials = host.getCredentials();
         // Only for AWS
         if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
-            if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
+            if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
+                // Lookup from default profile if no access key is set in bookmark
                 for(AWSCredentialsProvider provider : providers) {
                     try {
                         final AWSCredentials c = provider.getCredentials();
