@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.s3;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -15,10 +15,11 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.s3.S3AttributesFinderFeature;
-import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.commons.lang3.StringUtils;
 
