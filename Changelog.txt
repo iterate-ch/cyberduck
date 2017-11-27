@@ -2,6 +2,7 @@ Cyberduck
 https://cyberduck.io/
 
 6.3.1
+- [Feature] Support authenticating with HTTP proxy (Windows)
 - [Bugfix] Slow user interface performance (Mac) (#9970)
 - [Bugfix] Prompt for credentials when using public key authentication with agent (SFTP) (#10148)
 
