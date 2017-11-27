@@ -67,4 +67,9 @@ public class DAVSSLProtocol extends AbstractProtocol {
     public boolean isCertificateConfigurable() {
         return true;
     }
+
+    @Override
+    public boolean isAnonymousConfigurable() {
+        return true;
+    }
 }
