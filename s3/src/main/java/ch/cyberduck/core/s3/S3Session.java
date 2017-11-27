@@ -34,6 +34,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
+import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -206,7 +207,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(Scheme.isURL(host.getProtocol().getContext())) {
             try {
-                client.setProviderCredentials(new S3SessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get());
+                client.setProviderCredentials(new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get());
             }
             catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException | InteroperabilityException e) {
                 log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));

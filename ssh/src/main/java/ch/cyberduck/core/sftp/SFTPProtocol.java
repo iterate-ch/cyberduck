@@ -18,12 +18,19 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class SFTPProtocol extends AbstractProtocol {
+
+    private final CredentialsConfigurator credentials = new OpenSSHCredentialsConfigurator();
+    private final HostnameConfigurator hostnmame = new OpenSSHHostnameConfigurator();
 
     @Override
     public Type getType() {
@@ -58,5 +65,15 @@ public class SFTPProtocol extends AbstractProtocol {
     @Override
     public boolean isPrivateKeyConfigurable() {
         return true;
+    }
+
+    @Override
+    public CredentialsConfigurator getCredentialsFinder() {
+        return credentials;
+    }
+
+    @Override
+    public HostnameConfigurator getHostnameFinder() {
+        return hostnmame;
     }
 }

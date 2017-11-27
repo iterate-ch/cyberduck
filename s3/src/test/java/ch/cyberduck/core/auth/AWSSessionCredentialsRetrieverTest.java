@@ -1,20 +1,18 @@
-package ch.cyberduck.core.s3;
+package ch.cyberduck.core.auth;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -35,11 +33,11 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
-public class S3SessionCredentialsRetrieverTest {
+public class AWSSessionCredentialsRetrieverTest {
 
     @Test
     public void testParse() throws Exception {
-        final AWSCredentials c = new S3SessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener(),
+        final AWSCredentials c = new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener(),
                 "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
                 .parse(IOUtils.toInputStream("{\n" +
                         "  \"Code\" : \"Success\",\n" +
@@ -58,7 +56,7 @@ public class S3SessionCredentialsRetrieverTest {
     @Test(expected = ConnectionTimeoutException.class)
     @Ignore
     public void testGet() throws Exception {
-        new S3SessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new ProtocolFactory(Collections.singleton(new DAVProtocol())), new DisabledTranscriptListener(),
+        new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new ProtocolFactory(Collections.singleton(new DAVProtocol())), new DisabledTranscriptListener(),
                 "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
                 .get();
     }

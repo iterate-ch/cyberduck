@@ -18,46 +18,17 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
-
 public final class CredentialsConfiguratorFactory {
 
     private CredentialsConfiguratorFactory() {
         //
     }
 
-    private static CredentialsConfigurator instance;
-
-    private static final Object lock = new Object();
-
     /**
      * @param protocol Protocol
      * @return Configurator for default settings
      */
     public static CredentialsConfigurator get(final Protocol protocol) {
-        if(protocol.getType() == Protocol.Type.sftp) {
-            synchronized(lock) {
-                if(null == instance) {
-                    instance = new OpenSSHCredentialsConfigurator();
-                }
-                else {
-                    instance.reload();
-                }
-                return instance;
-            }
-        }
-        return new NullCredentialsConfigurator();
-    }
-
-    private static final class NullCredentialsConfigurator implements CredentialsConfigurator {
-        @Override
-        public Credentials configure(final Host host) {
-            return host.getCredentials();
-        }
-
-        @Override
-        public void reload() {
-            //
-        }
+        return protocol.getCredentialsFinder();
     }
 }

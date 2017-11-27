@@ -1,21 +1,18 @@
 package ch.cyberduck.core.sftp.openssh;
 
 /*
- * Copyright (c) 2012 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.Credentials;
@@ -23,6 +20,7 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
@@ -34,12 +32,12 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = Logger.getLogger(OpenSSHCredentialsConfigurator.class);
 
     private static final Local file
-            = LocalFactory.get(Local.HOME, ".ssh/config");
+        = LocalFactory.get(Local.HOME, ".ssh/config");
 
     private final OpenSshConfig configuration;
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     public OpenSSHCredentialsConfigurator() {
         this(new OpenSshConfig(file));
@@ -52,16 +50,18 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     @Override
     public Credentials configure(final Host host) {
         final Credentials credentials = host.getCredentials();
-        if(!credentials.isPublicKeyAuthentication()) {
-            if(StringUtils.isNotBlank(host.getHostname())) {
-                // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
-                final OpenSshConfig.Host entry = configuration.lookup(host.getHostname());
-                if(StringUtils.isNotBlank(entry.getUser())) {
+        if(StringUtils.isNotBlank(host.getHostname())) {
+            // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
+            final OpenSshConfig.Host entry = configuration.lookup(host.getHostname());
+            if(StringUtils.isNotBlank(entry.getUser())) {
+                if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Using username %s from %s", entry, file));
                     }
                     credentials.setUsername(entry.getUser());
                 }
+            }
+            if(!credentials.isPublicKeyAuthentication()) {
                 if(null != entry.getIdentityFile()) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Using identity %s from %s", entry, file));

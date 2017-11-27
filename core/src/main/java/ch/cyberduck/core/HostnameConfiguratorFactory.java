@@ -18,51 +18,17 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
-
 public final class HostnameConfiguratorFactory {
 
     private HostnameConfiguratorFactory() {
         //
     }
 
-    private static HostnameConfigurator instance;
-
-    private static final Object lock = new Object();
-
     /**
      * @param protocol Protocol
      * @return Configurator for default settings
      */
     public static HostnameConfigurator get(final Protocol protocol) {
-        if(protocol.getType() == Protocol.Type.sftp) {
-            synchronized(lock) {
-                if(null == instance) {
-                    instance = new OpenSSHHostnameConfigurator();
-                }
-                else {
-                    instance.reload();
-                }
-                return instance;
-            }
-        }
-        return new NullHostnameConfigurator();
-    }
-
-    private static final class NullHostnameConfigurator implements HostnameConfigurator {
-        @Override
-        public String getHostname(String alias) {
-            return alias;
-        }
-
-        @Override
-        public int getPort(final String alias) {
-            return -1;
-        }
-
-        @Override
-        public void reload() {
-            //
-        }
+        return protocol.getHostnameFinder();
     }
 }
