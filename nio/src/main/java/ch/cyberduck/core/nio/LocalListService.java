@@ -54,7 +54,7 @@ public class LocalListService implements ListService {
                     if(Files.isDirectory(path)) {
                         type.add(Path.Type.directory);
                     }
-                    if(Files.isRegularFile(path)) {
+                    else {
                         type.add(Path.Type.file);
                     }
                     if(Files.isSymbolicLink(path)) {
