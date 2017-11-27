@@ -19,6 +19,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -38,17 +39,20 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
     @Override
     public Credentials configure(final Host host) {
         final Credentials credentials = host.getCredentials();
-        if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
-            for(AWSCredentialsProvider provider : providers) {
-                try {
-                    final AWSCredentials c = provider.getCredentials();
-                    credentials.setUsername(c.getAWSAccessKeyId());
-                    credentials.setPassword(c.getAWSSecretKey());
-                    break;
-                }
-                catch(SdkClientException e) {
-                    log.debug(String.format("Ignore failure loading credentials from provider %s", provider));
-                    // Continue searching with next provider
+        // Only for AWS
+        if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+            if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
+                for(AWSCredentialsProvider provider : providers) {
+                    try {
+                        final AWSCredentials c = provider.getCredentials();
+                        credentials.setUsername(c.getAWSAccessKeyId());
+                        credentials.setPassword(c.getAWSSecretKey());
+                        break;
+                    }
+                    catch(SdkClientException e) {
+                        log.debug(String.format("Ignore failure loading credentials from provider %s", provider));
+                        // Continue searching with next provider
+                    }
                 }
             }
         }
