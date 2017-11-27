@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class AbstractProtocol implements Protocol {
@@ -228,7 +229,38 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
-        return this.getType().validate(credentials, options);
+        if(options.user) {
+            if(StringUtils.isBlank(credentials.getUsername())) {
+                return false;
+            }
+        }
+        if(options.certificate) {
+            if(credentials.isCertificateAuthentication()) {
+                return true;
+            }
+        }
+        if(options.publickey) {
+            // No password may be required to decrypt private key
+            if(credentials.isPublicKeyAuthentication()) {
+                return true;
+            }
+            if(!options.password) {
+                // Require private key
+                return false;
+            }
+        }
+        if(options.password) {
+            switch(this.getType()) {
+                case ftp:
+                    return Objects.nonNull(credentials.getPassword());
+                case sftp:
+                    // SFTP agent auth requires no password and no private key selection
+                    return true;
+                default:
+                    return StringUtils.isNotBlank(credentials.getPassword());
+            }
+        }
+        return true;
     }
 
     @Override

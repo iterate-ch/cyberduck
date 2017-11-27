@@ -20,14 +20,18 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.features.Location;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 public interface Protocol extends Comparable<Protocol> {
 
+    /**
+     * Check login credentials for validity for this protocol.
+     *
+     * @param credentials Login credentials
+     * @param options     Options
+     * @return True if username is not a blank string and password is not empty ("") and not null.
+     */
     boolean validate(Credentials credentials, LoginOptions options);
 
     CredentialsConfigurator getCredentialsFinder();
@@ -49,49 +53,7 @@ public interface Protocol extends Comparable<Protocol> {
         b2,
         file,
         dracoon,
-        manta;
-
-        /**
-         * Check login credentials for validity for this protocol.
-         *
-         * @param credentials Login credentials
-         * @param options     Options
-         * @return True if username is not a blank string and password is not empty ("") and not null.
-         */
-        public boolean validate(final Credentials credentials, final LoginOptions options) {
-            if(options.user) {
-                if(StringUtils.isBlank(credentials.getUsername())) {
-                    return false;
-                }
-            }
-            if(options.certificate) {
-                if(credentials.isCertificateAuthentication()) {
-                    return true;
-                }
-            }
-            if(options.publickey) {
-                // No password may be required to decrypt private key
-                if(credentials.isPublicKeyAuthentication()) {
-                    return true;
-                }
-                if(!options.password) {
-                    // Require private key
-                    return false;
-                }
-            }
-            if(options.password) {
-                switch(this) {
-                    case ftp:
-                        return Objects.nonNull(credentials.getPassword());
-                    case sftp:
-                        // SFTP agent auth requires no password and no private key selection
-                        return true;
-                    default:
-                        return StringUtils.isNotBlank(credentials.getPassword());
-                }
-            }
-            return true;
-        }
+        manta
     }
 
     /**
