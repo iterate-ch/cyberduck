@@ -79,6 +79,9 @@ public interface Protocol extends Comparable<Protocol> {
                 switch(this) {
                     case ftp:
                         return Objects.nonNull(credentials.getPassword());
+                    case sftp:
+                        // SFTP agent auth requires no password and no private key selection
+                        return true;
                     default:
                         return StringUtils.isNotBlank(credentials.getPassword());
                 }

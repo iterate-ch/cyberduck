@@ -16,6 +16,7 @@ package ch.cyberduck.core.sftp.auth;
  */
 
 import ch.cyberduck.core.AuthenticationProvider;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
@@ -33,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -84,6 +86,21 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                     }
                     if(!StringUtils.isBlank(bookmark.getCredentials().getPassword())
                         && PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
+                            try {
+                                bookmark.getCredentials().setPassword(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+                                    MessageFormat.format(LocaleFactory.localizedString(
+                                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
+                                    new LoginOptions(bookmark.getProtocol()).publickey(false)
+                                        .usernamePlaceholder(bookmark.getCredentials().getUsername())).getPassword());
+                            }
+                            catch(LoginCanceledException e) {
+                                canceled.set(true);
+                                // Return null if user cancels
+                                return null;
+                            }
+                        }
                         return bookmark.getCredentials().getPassword().toCharArray();
                     }
                     else {
