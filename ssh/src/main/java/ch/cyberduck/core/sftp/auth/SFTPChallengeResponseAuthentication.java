@@ -98,7 +98,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             catch(LoginCanceledException e) {
                                 canceled.set(true);
                                 // Return null if user cancels
-                                return null;
+                                return StringUtils.EMPTY.toCharArray();
                             }
                         }
                         return bookmark.getCredentials().getPassword().toCharArray();
@@ -120,7 +120,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                         catch(LoginCanceledException e) {
                             canceled.set(true);
                             // Return null if user cancels
-                            return null;
+                            return StringUtils.EMPTY.toCharArray();
                         }
                         // Responses are encoded in ISO-10646 UTF-8.
                         return additional.getPassword().toCharArray();

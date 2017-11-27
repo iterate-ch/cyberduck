@@ -101,7 +101,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                         }
                         catch(LoginCanceledException ignored) {
                             // Return null if user cancels
-                            return null;
+                            return StringUtils.EMPTY.toCharArray();
                         }
                     }
                     config.setPassword(password);

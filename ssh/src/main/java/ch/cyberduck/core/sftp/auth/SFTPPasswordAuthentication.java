@@ -99,7 +99,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                     }
                     catch(LoginCanceledException e) {
                         // Return null if user cancels
-                        return null;
+                        return StringUtils.EMPTY.toCharArray();
                     }
                 }
 

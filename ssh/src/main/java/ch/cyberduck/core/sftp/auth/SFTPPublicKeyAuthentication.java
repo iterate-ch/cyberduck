@@ -120,7 +120,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                             catch(LoginCanceledException e) {
                                 canceled.set(true);
                                 // Return null if user cancels
-                                return null;
+                                return StringUtils.EMPTY.toCharArray();
                             }
                         }
                         return password.toCharArray();
