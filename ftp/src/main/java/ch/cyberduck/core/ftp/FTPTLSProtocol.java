@@ -74,4 +74,9 @@ public class FTPTLSProtocol extends AbstractProtocol {
     public boolean isCertificateConfigurable() {
         return true;
     }
+
+    @Override
+    public boolean isAnonymousConfigurable() {
+        return true;
+    }
 }
