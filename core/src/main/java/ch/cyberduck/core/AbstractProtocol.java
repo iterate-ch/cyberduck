@@ -112,7 +112,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isAnonymousConfigurable() {
-        return true;
+        return false;
     }
 
     @Override

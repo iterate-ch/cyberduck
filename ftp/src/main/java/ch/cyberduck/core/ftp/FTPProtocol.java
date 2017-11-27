@@ -55,4 +55,9 @@ public class FTPProtocol extends AbstractProtocol {
     public boolean isEncodingConfigurable() {
         return true;
     }
+
+    @Override
+    public boolean isAnonymousConfigurable() {
+        return true;
+    }
 }

@@ -93,11 +93,6 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isAnonymousConfigurable() {
-        return false;
-    }
-
-    @Override
     public String getUsernamePlaceholder() {
         return LocaleFactory.localizedString("Project ID or Number", "Credentials");
     }

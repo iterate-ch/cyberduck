@@ -92,11 +92,6 @@ public class LocalProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isAnonymousConfigurable() {
-        return false;
-    }
-
-    @Override
     public String getDefaultHostname() {
         return LOCAL_HOSTNAME;
     }

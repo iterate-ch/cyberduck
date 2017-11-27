@@ -65,11 +65,6 @@ public class SDSProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isAnonymousConfigurable() {
-        return false;
-    }
-
-    @Override
     public boolean isUsernameConfigurable() {
         switch(Authorization.valueOf(this.getAuthorization())) {
             case oauth:

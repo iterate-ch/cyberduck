@@ -50,11 +50,6 @@ public class SwiftProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isAnonymousConfigurable() {
-        return false;
-    }
-
-    @Override
     public String getUsernamePlaceholder() {
         return "Tenant ID:Access Key";
     }

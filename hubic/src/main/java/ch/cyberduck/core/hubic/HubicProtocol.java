@@ -63,11 +63,6 @@ public class HubicProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isAnonymousConfigurable() {
-        return false;
-    }
-
-    @Override
     public String getUsernamePlaceholder() {
         return "Email";
     }

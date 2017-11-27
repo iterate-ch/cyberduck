@@ -56,11 +56,6 @@ public class MantaProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isAnonymousConfigurable() {
-        return false;
-    }
-
-    @Override
     public boolean isUsernameConfigurable() {
         return true;
     }
