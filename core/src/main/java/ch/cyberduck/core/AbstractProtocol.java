@@ -252,6 +252,7 @@ public abstract class AbstractProtocol implements Protocol {
         if(options.password) {
             switch(this.getType()) {
                 case ftp:
+                case dav:
                     return Objects.nonNull(credentials.getPassword());
                 case sftp:
                     // SFTP agent auth requires no password and no private key selection
