@@ -16,6 +16,8 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
@@ -27,31 +29,34 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
 
     private final Session<?> session;
     private final VaultRegistry registry;
+    private final PasswordStore keychain;
     private final PasswordCallback prompt;
 
-    public LoadingVaultLookupListener(final Session<?> session, final VaultRegistry registry, final PasswordCallback prompt) {
+    public LoadingVaultLookupListener(final Session<?> session, final VaultRegistry registry, final PasswordStore keychain, final PasswordCallback prompt) {
         this.session = session;
         this.registry = registry;
+        this.keychain = keychain;
         this.prompt = prompt;
     }
 
     @Override
-    public void found(final Vault vault) throws VaultUnlockCancelException {
+    public Vault load(final Path directory) throws VaultUnlockCancelException {
         synchronized(registry) {
-            if(registry.contains(vault)) {
-                log.warn(String.format("Ignore vault %s found already loaded", vault));
-                return;
+            if(registry.contains(directory)) {
+                return registry.find(session, directory);
             }
+            final Vault vault = VaultFactory.get(directory, keychain);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
             }
             try {
-                registry.found(vault.load(session, prompt));
+                registry.add(vault.load(session, prompt));
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure loading vault %s. %s", vault, e.getDetail()));
                 throw new VaultUnlockCancelException(vault, e);
             }
+            return vault;
         }
     }
 }

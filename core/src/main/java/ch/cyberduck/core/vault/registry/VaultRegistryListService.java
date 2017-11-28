@@ -18,7 +18,6 @@ package ch.cyberduck.core.vault.registry;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,19 +39,17 @@ public class VaultRegistryListService implements ListService {
 
     private final VaultRegistry registry;
     private final VaultLookupListener lookup;
-    private final PasswordStore keychain;
     private final Session<?> session;
     private final ListService proxy;
 
     private boolean autodetect = preferences.getBoolean("cryptomator.vault.autodetect")
         && preferences.getBoolean("cryptomator.enable");
 
-    public VaultRegistryListService(final Session<?> session, final ListService proxy, final VaultRegistry registry, final VaultLookupListener lookup, final PasswordStore keychain) {
+    public VaultRegistryListService(final Session<?> session, final ListService proxy, final VaultRegistry registry, final VaultLookupListener lookup) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
         this.lookup = lookup;
-        this.keychain = keychain;
     }
 
     @Override
@@ -63,7 +60,7 @@ public class VaultRegistryListService implements ListService {
                 return vault.getFeature(session, ListService.class, proxy).list(directory, listener);
             }
             if(autodetect) {
-                return new VaultFinderListService(session, proxy, new VaultFinderListProgressListener(keychain, lookup)).list(directory, listener);
+                return new VaultFinderListService(session, proxy, new VaultFinderListProgressListener(lookup)).list(directory, listener);
             }
             return proxy.list(directory, listener);
         }

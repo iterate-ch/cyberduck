@@ -21,9 +21,21 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
+import java.util.EnumSet;
 import java.util.Objects;
 
 public final class DisabledVault implements Vault {
+
+    private final Path home;
+
+    public DisabledVault() {
+        this(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)));
+    }
+
+    public DisabledVault(final Path home) {
+        this.home = home;
+    }
+
     @Override
     public Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         return null;
@@ -82,22 +94,24 @@ public final class DisabledVault implements Vault {
 
     @Override
     public Path getHome() {
-        return null;
+        return home;
     }
+
 
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
             return true;
         }
-        if(!(o instanceof DisabledVault)) {
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        return true;
+        final DisabledVault that = (DisabledVault) o;
+        return Objects.equals(home, that.home);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(DisabledVault.class);
+        return Objects.hash(home);
     }
 }

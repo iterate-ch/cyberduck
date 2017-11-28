@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
@@ -23,7 +24,8 @@ public final class DisabledVaultLookupListener implements VaultLookupListener {
     private static final Logger log = Logger.getLogger(DisabledVaultLookupListener.class);
 
     @Override
-    public void found(final Vault vault) {
-        log.warn(String.format("Ignore vault %s", vault));
+    public Vault load(final Path directory) throws VaultUnlockCancelException {
+        log.warn(String.format("Ignore vault %s", directory));
+        return Vault.DISABLED;
     }
 }
