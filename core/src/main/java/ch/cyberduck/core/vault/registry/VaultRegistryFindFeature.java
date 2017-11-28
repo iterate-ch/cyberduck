@@ -23,6 +23,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.VaultFactory;
 import ch.cyberduck.core.vault.VaultLookupListener;
@@ -43,6 +44,8 @@ public class VaultRegistryFindFeature implements Find {
     private final VaultLookupListener lookup;
     private final PasswordStore keychain;
 
+    private final Preferences preferences = PreferencesFactory.get();
+
     private Cache<Path> cache = PathCache.empty();
 
     public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry, final VaultLookupListener lookup, final PasswordStore keychain) {
@@ -57,8 +60,7 @@ public class VaultRegistryFindFeature implements Find {
     public boolean find(final Path file) throws BackgroundException {
         final Vault vault = registry.find(session, file);
         if(vault.equals(Vault.DISABLED)) {
-            if(PreferencesFactory.get().getBoolean("cryptomator.enable")
-                    && PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect")) {
+            if(preferences.getBoolean("cryptomator.enable") && preferences.getBoolean("cryptomator.vault.autodetect")) {
                 if(proxy.withCache(cache).find(new Path(file.getParent(), MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Found master key %s", file));
@@ -70,15 +72,15 @@ public class VaultRegistryFindFeature implements Find {
                             log.info(String.format("Found vault %s", cryptomator));
                         }
                         return cryptomator.getFeature(session, Find.class, proxy)
-                                .withCache(cache)
-                                .find(file);
+                            .withCache(cache)
+                            .find(file);
                     }
                 }
             }
         }
         return vault.getFeature(session, Find.class, proxy)
-                .withCache(cache)
-                .find(file);
+            .withCache(cache)
+            .find(file);
     }
 
     @Override
