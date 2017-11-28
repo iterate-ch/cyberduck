@@ -45,7 +45,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
             if(registry.contains(directory)) {
                 return registry.find(session, directory);
             }
-            final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
+            final Vault vault = VaultFactory.get(directory, keychain);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
             }
