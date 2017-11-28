@@ -23,6 +23,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.registry.*;
 
 import org.apache.log4j.Logger;
@@ -33,8 +35,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultRegistry {
     private static final Logger log = Logger.getLogger(DefaultVaultRegistry.class);
 
+    private final Preferences preferences = PreferencesFactory.get();
+
     private final PasswordStore keychain;
     private final PasswordCallback prompt;
+
+    private boolean autodetect = preferences.getBoolean("cryptomator.vault.autodetect")
+        && preferences.getBoolean("cryptomator.enable");
 
     public DefaultVaultRegistry(final PasswordCallback prompt) {
         this(PasswordStoreFactory.get(), prompt);
@@ -119,11 +126,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                new LoadingVaultLookupListener(session, this, prompt), keychain);
+                new LoadingVaultLookupListener(session, this, prompt), keychain).withAutodetect(autodetect);
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                new LoadingVaultLookupListener(session, this, prompt), keychain);
+                new LoadingVaultLookupListener(session, this, prompt), keychain).withAutodetect(autodetect);
         }
         if(type == Bulk.class) {
             return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);
@@ -213,5 +220,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             return (T) new VaultRegistryVersioningFeature(session, (Versioning) proxy, this);
         }
         return proxy;
+    }
+
+    @Override
+    public DefaultVaultRegistry withAutodetect(final boolean autodetect) {
+        this.autodetect = autodetect && preferences.getBoolean("cryptomator.enable");
+        return this;
     }
 }
