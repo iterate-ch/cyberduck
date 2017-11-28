@@ -57,7 +57,7 @@ public class CredentialsTest {
     public void testValidateEmpty() throws Exception {
         Credentials c = new Credentials("user", "");
         assertTrue(c.validate(new TestProtocol(Scheme.ftp), new LoginOptions()));
-        assertFalse(c.validate(new TestProtocol(Scheme.http), new LoginOptions()));
+        assertTrue(c.validate(new TestProtocol(Scheme.http), new LoginOptions()));
         assertTrue(c.validate(new TestProtocol(Scheme.sftp), new LoginOptions()));
     }
 
@@ -65,7 +65,7 @@ public class CredentialsTest {
     public void testValidateBlank() throws Exception {
         Credentials c = new Credentials("user", " ");
         assertTrue(c.validate(new TestProtocol(Scheme.ftp), new LoginOptions()));
-        assertFalse(c.validate(new TestProtocol(Scheme.http), new LoginOptions()));
+        assertTrue(c.validate(new TestProtocol(Scheme.http), new LoginOptions()));
         assertTrue(c.validate(new TestProtocol(Scheme.sftp), new LoginOptions()));
     }
 
