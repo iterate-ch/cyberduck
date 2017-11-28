@@ -59,14 +59,13 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public void found(final Vault vault) {
-        // Add if absent
-        this.add(vault);
-    }
-
-    @Override
-    public boolean contains(final Vault vault) {
-        return super.contains(vault);
+    public boolean contains(final Path directory) {
+        for(Vault vault : this) {
+            if(directory.equals(vault.getHome())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -99,22 +98,16 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             }
         }
         if(lookup) {
-            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, prompt);
+            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, keychain, prompt);
             if(file.attributes().getVault() != null) {
-                return this.find(session, file, listener);
+                return listener.load(file.attributes().getVault());
             }
             final Path directory = file.getParent();
             if(directory.attributes().getVault() != null) {
-                return this.find(session, directory, listener);
+                return listener.load(directory.attributes().getVault());
             }
         }
         return Vault.DISABLED;
-    }
-
-    protected Vault find(final Session<?> session, final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
-        final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
-        listener.found(vault);
-        return vault;
     }
 
     @Override
@@ -126,11 +119,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                new LoadingVaultLookupListener(session, this, prompt), keychain).withAutodetect(autodetect);
+                new LoadingVaultLookupListener(session, this, keychain, prompt)).withAutodetect(autodetect);
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                new LoadingVaultLookupListener(session, this, prompt), keychain).withAutodetect(autodetect);
+                new LoadingVaultLookupListener(session, this, keychain, prompt)).withAutodetect(autodetect);
         }
         if(type == Bulk.class) {
             return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);

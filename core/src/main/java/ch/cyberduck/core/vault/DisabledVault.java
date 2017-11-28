@@ -94,7 +94,7 @@ public final class DisabledVault implements Vault {
 
     @Override
     public Path getHome() {
-        return null;
+        return home;
     }
 
 

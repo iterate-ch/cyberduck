@@ -17,7 +17,6 @@ package ch.cyberduck.core.vault;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
@@ -29,11 +28,9 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
 
     private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
 
-    private final PasswordStore keychain;
     private final VaultLookupListener listener;
 
-    public VaultFinderListProgressListener(final PasswordStore keychain, final VaultLookupListener listener) {
-        this.keychain = keychain;
+    public VaultFinderListProgressListener(final VaultLookupListener listener) {
         this.listener = listener;
     }
 
@@ -49,18 +46,16 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found master key %s", file));
             }
-            final Vault vault = VaultFactory.get(directory, keychain);
-            if(vault.equals(Vault.DISABLED)) {
-                return;
-            }
             try {
-                listener.found(vault);
+                final Vault vault = listener.load(directory);
+                if(vault.equals(Vault.DISABLED)) {
+                    return;
+                }
+                throw new VaultFoundListCanceledException(vault, list);
             }
             catch(VaultUnlockCancelException e) {
                 // Continue
-                return;
             }
-            throw new VaultFoundListCanceledException(vault, list);
         }
     }
 }

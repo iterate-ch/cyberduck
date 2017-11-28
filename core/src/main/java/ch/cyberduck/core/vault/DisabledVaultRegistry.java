@@ -37,7 +37,7 @@ public class DisabledVaultRegistry implements VaultRegistry {
     }
 
     @Override
-    public boolean contains(final Vault vault) {
+    public boolean contains(final Path vault) {
         return false;
     }
 
@@ -47,7 +47,7 @@ public class DisabledVaultRegistry implements VaultRegistry {
     }
 
     @Override
-    public void found(final Vault vault) {
-        //
+    public boolean add(final Vault vault) {
+        return false;
     }
 }
