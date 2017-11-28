@@ -39,4 +39,6 @@ public interface VaultRegistry extends VaultLookupListener {
     <T> T getFeature(Session<?> session, Class<T> type, T proxy);
 
     boolean contains(Vault vault);
+
+    VaultRegistry withAutodetect(boolean autodetect);
 }
