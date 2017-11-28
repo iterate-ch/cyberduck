@@ -94,18 +94,18 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(lookup) {
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, prompt);
             if(file.attributes().getVault() != null) {
-                return this.find(session, file, listener);
+                return this.find(session, file.attributes().getVault(), listener);
             }
             final Path directory = file.getParent();
             if(directory.attributes().getVault() != null) {
-                return this.find(session, directory, listener);
+                return this.find(session, directory.attributes().getVault(), listener);
             }
         }
         return Vault.DISABLED;
     }
 
     protected Vault find(final Session<?> session, final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
-        final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
+        final Vault vault = VaultFactory.get(directory, file, keychain);
         listener.found(vault);
         return vault;
     }

@@ -68,8 +68,8 @@ public class CryptoVault implements Vault {
         Security.insertProviderAt(provider, position);
     }
 
-    private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
-    private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
+    private static final String DEFAULT_MASTERKEY_FILE_NAME = "masterkey.cryptomator";
+    private static final String DEFAULT_BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
 
     private static final int VAULT_VERSION = 6;
 
@@ -81,6 +81,7 @@ public class CryptoVault implements Vault {
      * Root of vault directory
      */
     private final Path home;
+    private final Path masterkey;
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -90,7 +91,12 @@ public class CryptoVault implements Vault {
     private final CryptoDirectoryProvider directoryProvider;
 
     public CryptoVault(final Path home, final PasswordStore keychain) {
+        this(home, new Path(home, DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)), keychain);
+    }
+
+    public CryptoVault(final Path home, final Path masterkey, final PasswordStore keychain) {
         this.home = home;
+        this.masterkey = masterkey;
         this.keychain = keychain;
         // New vault home with vault flag set for internal use
         final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(home.getType());
@@ -103,23 +109,22 @@ public class CryptoVault implements Vault {
     @Override
     public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
-                FastSecureRandomProvider.get().provide()
+            FastSecureRandomProvider.get().provide()
         );
-        final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
             keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
         }
         final String passphrase = credentials.getPassword();
         final KeyFile masterKeyFileContent = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Write master key to %s", masterKeyFile));
+            log.debug(String.format("Write master key to %s", masterkey));
         }
         // Obtain non encrypted directory writer
         final Directory directory = session._getFeature(Directory.class);
         final Path vault = directory.mkdir(home, region, new TransferStatus());
-        new ContentWriter(session).write(masterKeyFile, masterKeyFileContent.serialize());
+        new ContentWriter(session).write(masterkey, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
         final Path firstLevel = secondLevel.getParent();
@@ -139,11 +144,10 @@ public class CryptoVault implements Vault {
             log.warn(String.format("Skip unlock of open vault %s", this));
             return this;
         }
-        final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Attempt to read master key from %s", masterKeyFile));
+            log.debug(String.format("Attempt to read master key from %s", masterkey));
         }
-        final String json = new ContentReader(session).read(masterKeyFile);
+        final String json = new ContentReader(session).read(masterkey);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Read master key %s", json));
         }
@@ -152,13 +156,13 @@ public class CryptoVault implements Vault {
             masterKeyFileContent = KeyFile.parse(json.getBytes());
         }
         catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
-            throw new VaultException(String.format("Failure reading vault master key file %s", masterKeyFile.getName()), e);
+            throw new VaultException(String.format("Failure reading vault master key file %s", masterkey.getName()), e);
         }
         final Host bookmark = session.getHost();
         final String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl());
-        this.unlock(session, masterKeyFile, masterKeyFileContent, passphrase, bookmark, prompt,
-                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
+            new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
+        this.unlock(session, masterkey, masterKeyFileContent, passphrase, bookmark, prompt,
+            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         home.attributes().setVault(home);
         return this;
     }
@@ -169,13 +173,13 @@ public class CryptoVault implements Vault {
         if(null == passphrase) {
             credentials = prompt.prompt(
                 bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
-                    message,
-                    new LoginOptions()
-                        .save(preferences.getBoolean("vault.keychain"))
-                            .user(false)
-                            .anonymous(false)
-                            .icon("cryptomator.tiff")
-                            .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
+                message,
+                new LoginOptions()
+                    .save(preferences.getBoolean("vault.keychain"))
+                    .user(false)
+                    .anonymous(false)
+                    .icon("cryptomator.tiff")
+                    .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
             if(null == credentials.getPassword()) {
                 throw new LoginCanceledException();
             }
@@ -192,16 +196,16 @@ public class CryptoVault implements Vault {
                 }
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                    new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
                 // Save masterkey.cryptomator content in preferences
                 preferences.setProperty(new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(),
-                        new String(masterKeyFileContent.serialize()));
+                    new String(masterKeyFileContent.serialize()));
             }
         }
         catch(CryptoAuthenticationException e) {
             this.unlock(session, masterKeyFile, masterKeyFileContent, null, bookmark,
-                    prompt, String.format("%s %s.", e.getDetail(),
-                            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
+                prompt, String.format("%s %s.", e.getDetail(),
+                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
         }
     }
 
@@ -232,18 +236,18 @@ public class CryptoVault implements Vault {
                 log.warn(String.format("Upgrade vault version %d to %d", keyFile.getVersion(), VAULT_VERSION));
                 try {
                     final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
-                            FastSecureRandomProvider.get().provide()
+                        FastSecureRandomProvider.get().provide()
                     );
                     final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, keyFile.getVersion());
                     // Create backup, as soon as we know the password was correct
-                    final Path masterKeyFileBackup = new Path(home, BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                    final Path masterKeyFileBackup = new Path(home, DEFAULT_BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
                     new ContentWriter(session).write(masterKeyFileBackup, keyFile.serialize());
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Master key backup saved in %s", masterKeyFileBackup));
                     }
                     // Write updated masterkey file
                     final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
-                    final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                    final Path masterKeyFile = new Path(home, DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
                     final byte[] masterKeyFileContent = upgradedMasterKeyFile.serialize();
                     new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).length(masterKeyFileContent.length));
                     log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION));
@@ -263,7 +267,7 @@ public class CryptoVault implements Vault {
 
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
-                FastSecureRandomProvider.get().provide()
+            FastSecureRandomProvider.get().provide()
         );
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
@@ -380,7 +384,7 @@ public class CryptoVault implements Vault {
             final String ciphertext = m.group(1);
             try {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
-                        ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
+                    ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(inflated.getName().startsWith(DIR_PREFIX)) {
                     final Permission permission = attributes.getPermission();
@@ -405,12 +409,12 @@ public class CryptoVault implements Vault {
             }
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException(
-                        "Failure to decrypt due to an unauthentic ciphertext", e);
+                    "Failure to decrypt due to an unauthentic ciphertext", e);
             }
         }
         else {
             throw new CryptoFilenameMismatchException(
-                    String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
+                String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
         }
     }
 
@@ -470,7 +474,7 @@ public class CryptoVault implements Vault {
 
     public int numberOfChunks(final long cleartextFileSize) {
         return (int) (cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
-                ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
+            ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
     }
 
     @Override

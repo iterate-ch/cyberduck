@@ -49,7 +49,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found master key %s", file));
             }
-            final Vault vault = VaultFactory.get(directory, keychain);
+            final Vault vault = VaultFactory.get(directory, file, keychain);
             if(vault.equals(Vault.DISABLED)) {
                 return;
             }

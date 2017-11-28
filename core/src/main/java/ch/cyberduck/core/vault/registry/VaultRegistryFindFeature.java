@@ -61,11 +61,12 @@ public class VaultRegistryFindFeature implements Find {
         final Vault vault = registry.find(session, file);
         if(vault.equals(Vault.DISABLED)) {
             if(preferences.getBoolean("cryptomator.enable") && preferences.getBoolean("cryptomator.vault.autodetect")) {
-                if(proxy.withCache(cache).find(new Path(file.getParent(), MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
+                final Path key = new Path(file.getParent(), MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+                if(proxy.withCache(cache).find(key)) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Found master key %s", file));
+                        log.info(String.format("Found master key %s", key));
                     }
-                    final Vault cryptomator = VaultFactory.get(file.getParent(), keychain);
+                    final Vault cryptomator = VaultFactory.get(file.getParent(), key, keychain);
                     if(!cryptomator.equals(Vault.DISABLED)) {
                         lookup.found(cryptomator);
                         if(log.isInfoEnabled()) {
