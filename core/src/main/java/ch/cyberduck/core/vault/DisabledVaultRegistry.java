@@ -20,6 +20,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
 
 public class DisabledVaultRegistry implements VaultRegistry {
+
     @Override
     public Vault find(final Session session, final Path file) {
         return Vault.DISABLED;
@@ -38,6 +39,11 @@ public class DisabledVaultRegistry implements VaultRegistry {
     @Override
     public boolean contains(final Vault vault) {
         return false;
+    }
+
+    @Override
+    public VaultRegistry withAutodetect(final boolean autodetect) {
+        return this;
     }
 
     @Override
