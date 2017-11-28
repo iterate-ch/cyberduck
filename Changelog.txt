@@ -6,6 +6,7 @@ https://cyberduck.io/
 - [Feature] Read credentials from AWS configuration file in ~/.aws/credentials (S3)
 - [Bugfix] Slow user interface performance (Mac) (#9970)
 - [Bugfix] Prompt for credentials when using public key authentication with agent (SFTP) (#10148)
+- [Bugfix] Failure opening files in vault on disk with long filename (Cryptomator, Local Disk)
 
 6.3
 - [Feature] Support for DRACOON cloud service (DRACOON)
