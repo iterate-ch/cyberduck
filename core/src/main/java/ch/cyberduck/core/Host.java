@@ -82,13 +82,13 @@ public class Host implements Serializable, Comparable<Host> {
      * The connect mode to use if FTP
      */
     private FTPConnectMode connectMode
-            = FTPConnectMode.unknown;
+        = FTPConnectMode.unknown;
 
     /**
      * The maximum number of concurrent sessions to this host
      */
     private TransferType transfer
-            = TransferType.unknown;
+        = TransferType.unknown;
 
     /**
      * The custom download folder
@@ -350,11 +350,21 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @param protocol The protocol to use or null to use the default protocol for this port number
+     * @param protocol Connection profile
      */
     public void setProtocol(final Protocol protocol) {
+        this.setProtocol(protocol, true);
+    }
+
+    /**
+     * @param protocol  Connection profile
+     * @param configure Auto configure hostname and credentials
+     */
+    public void setProtocol(final Protocol protocol, final boolean configure) {
         this.protocol = protocol;
-        this.configure();
+        if(configure) {
+            this.configure();
+        }
     }
 
     public String getUuid() {
@@ -394,15 +404,21 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * Sets the name for this host. Also reverts the nickname if no custom nickname is set.
-     * <p>
-     * Configures credentials according to new hostname.
-     *
      * @param hostname Server
      */
     public void setHostname(final String hostname) {
+        this.setHostname(hostname, true);
+    }
+
+    /**
+     * @param hostname  Server
+     * @param configure Auto configure credentials according to new hostname.
+     */
+    public void setHostname(final String hostname, boolean configure) {
         this.hostname = hostname.trim();
-        this.configure();
+        if(configure) {
+            this.configure();
+        }
     }
 
     /**
