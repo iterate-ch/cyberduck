@@ -102,6 +102,7 @@ public class BackgroundCallable<T> implements Callable<T> {
             return action.call();
         }
         catch(ConnectionCanceledException e) {
+            this.failure(client, e);
             // Do not report as failed
             log.warn(String.format("Connection canceled for background task %s", action));
             // Canceled action yields no result
