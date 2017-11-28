@@ -54,22 +54,6 @@ public class CredentialsTest {
     }
 
     @Test
-    public void testValidateEmpty() throws Exception {
-        Credentials c = new Credentials("user", "");
-        assertTrue(c.validate(new TestProtocol(Scheme.ftp), new LoginOptions()));
-        assertTrue(c.validate(new TestProtocol(Scheme.http), new LoginOptions()));
-        assertTrue(c.validate(new TestProtocol(Scheme.sftp), new LoginOptions()));
-    }
-
-    @Test
-    public void testValidateBlank() throws Exception {
-        Credentials c = new Credentials("user", " ");
-        assertTrue(c.validate(new TestProtocol(Scheme.ftp), new LoginOptions()));
-        assertTrue(c.validate(new TestProtocol(Scheme.http), new LoginOptions()));
-        assertTrue(c.validate(new TestProtocol(Scheme.sftp), new LoginOptions()));
-    }
-
-    @Test
     public void testLoginReasonable() {
         Credentials credentials = new Credentials("guest", "changeme");
         assertTrue(credentials.validate(new TestProtocol(Scheme.ftp), new LoginOptions()));

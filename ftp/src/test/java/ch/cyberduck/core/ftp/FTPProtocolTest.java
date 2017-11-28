@@ -14,6 +14,8 @@
 
 package ch.cyberduck.core.ftp;
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 
 import org.junit.Test;
@@ -41,10 +43,22 @@ public class FTPProtocolTest {
         for(Protocol p : Arrays.asList(new FTPProtocol(), new FTPTLSProtocol())) {
             assertNotNull(p.disk());
             assertNotNull(p.icon());
-            assertNotNull(p.getDefaultPort());
+            assertNotEquals(-1, p.getDefaultPort());
             assertNotNull(p.getDefaultHostname());
             assertNotNull(p.getDescription());
             assertNotNull(p.getIdentifier());
         }
+    }
+
+    @Test
+    public void testValidateCredentialsEmpty() throws Exception {
+        Credentials c = new Credentials("user", "");
+        assertTrue(c.validate(new FTPProtocol(), new LoginOptions(new FTPProtocol())));
+    }
+
+    @Test
+    public void testValidateCredentialsBlank() throws Exception {
+        Credentials c = new Credentials("user", " ");
+        assertTrue(c.validate(new FTPProtocol(), new LoginOptions(new FTPProtocol())));
     }
 }

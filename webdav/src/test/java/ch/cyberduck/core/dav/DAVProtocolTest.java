@@ -1,5 +1,7 @@
 package ch.cyberduck.core.dav;
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
 
 import org.junit.Test;
@@ -25,5 +27,17 @@ public class DAVProtocolTest {
     @Test
     public void testSchemes() {
         assertTrue(Arrays.asList(new DAVProtocol().getSchemes()).contains(Scheme.http));
+    }
+
+    @Test
+    public void testValidateCredentialsEmpty() throws Exception {
+        Credentials c = new Credentials("user", "");
+        assertTrue(c.validate(new DAVProtocol(), new LoginOptions(new DAVProtocol())));
+    }
+
+    @Test
+    public void testValidateCredentialsBlank() throws Exception {
+        Credentials c = new Credentials("user", " ");
+        assertTrue(c.validate(new DAVProtocol(), new LoginOptions(new DAVProtocol())));
     }
 }

@@ -33,4 +33,16 @@ public class SFTPProtocolTest {
         assertTrue(new SFTPProtocol().validate(new Credentials(null, "123414"), new LoginOptions().user(false).publickey(false).keychain(false)));
         assertFalse(new SFTPProtocol().validate(new Credentials("", "123414"), new LoginOptions().user(true).publickey(false).keychain(false)));
     }
+
+    @Test
+    public void testValidateCredentialsEmpty() throws Exception {
+        Credentials c = new Credentials("user", "");
+        assertTrue(c.validate(new SFTPProtocol(), new LoginOptions(new SFTPProtocol())));
+    }
+
+    @Test
+    public void testValidateCredentialsBlank() throws Exception {
+        Credentials c = new Credentials("user", " ");
+        assertTrue(c.validate(new SFTPProtocol(), new LoginOptions(new SFTPProtocol())));
+    }
 }

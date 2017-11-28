@@ -27,9 +27,9 @@ import static org.junit.Assert.assertTrue;
 public class AzureProtocolTest {
 
     @Test
-    public void testValidate() {
-        assertFalse(new AzureProtocol().validate(new Credentials("u"), new LoginOptions().password(true)));
-        assertFalse(new AzureProtocol().validate(new Credentials("u", "abc"), new LoginOptions().password(true)));
-        assertTrue(new AzureProtocol().validate(new Credentials("u", Base64.encodeBase64String("abc".getBytes())), new LoginOptions().password(true)));
+    public void testValidateCredentials() {
+        assertFalse(new AzureProtocol().validate(new Credentials("u"), new LoginOptions(new AzureProtocol())));
+        assertFalse(new AzureProtocol().validate(new Credentials("u", "abc"), new LoginOptions(new AzureProtocol())));
+        assertTrue(new AzureProtocol().validate(new Credentials("u", Base64.encodeBase64String("abc".getBytes())), new LoginOptions(new AzureProtocol())));
     }
 }

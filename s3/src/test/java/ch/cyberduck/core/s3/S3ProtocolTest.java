@@ -1,6 +1,8 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -78,5 +80,12 @@ public class S3ProtocolTest {
         assertTrue(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());
         assertTrue(profile.isPasswordConfigurable());
+    }
+
+    @Test
+    public void testValidateCredentials() throws Exception {
+        assertFalse(new Credentials("user", "").validate(new S3Protocol(), new LoginOptions(new S3Protocol())));
+        assertFalse(new Credentials("user", " ").validate(new S3Protocol(), new LoginOptions(new S3Protocol())));
+        assertTrue(new Credentials("user", "key").validate(new S3Protocol(), new LoginOptions(new S3Protocol())));
     }
 }
