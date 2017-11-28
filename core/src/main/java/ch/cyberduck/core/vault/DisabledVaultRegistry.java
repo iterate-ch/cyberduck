@@ -41,7 +41,7 @@ public class DisabledVaultRegistry implements VaultRegistry {
     }
 
     @Override
-    public void found(final Vault vault) throws VaultUnlockCancelException {
+    public void found(final Vault vault) {
         //
     }
 }

@@ -25,6 +25,11 @@ public class VaultUnlockCancelException extends ConnectionCanceledException {
         this.vault = vault;
     }
 
+    public VaultUnlockCancelException(final Vault vault, final Throwable cause) {
+        super(cause);
+        this.vault = vault;
+    }
+
     public Vault getVault() {
         return vault;
     }

@@ -50,7 +50,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure loading vault %s. %s", vault, e.getDetail()));
-                throw new VaultUnlockCancelException(vault);
+                throw new VaultUnlockCancelException(vault, e);
             }
         }
     }

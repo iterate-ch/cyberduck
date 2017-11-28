@@ -52,7 +52,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public void found(final Vault vault) throws VaultUnlockCancelException {
+    public void found(final Vault vault) {
         // Add if absent
         this.add(vault);
     }
@@ -119,11 +119,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                    new LoadingVaultLookupListener(session, this, prompt), keychain);
+                new LoadingVaultLookupListener(session, this, prompt), keychain);
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                    new LoadingVaultLookupListener(session, this, prompt), keychain);
+                new LoadingVaultLookupListener(session, this, prompt), keychain);
         }
         if(type == Bulk.class) {
             return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);

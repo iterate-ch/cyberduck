@@ -23,7 +23,7 @@ public final class DisabledVaultLookupListener implements VaultLookupListener {
     private static final Logger log = Logger.getLogger(DisabledVaultLookupListener.class);
 
     @Override
-    public void found(final Vault vault) throws VaultUnlockCancelException {
+    public void found(final Vault vault) {
         log.warn(String.format("Ignore vault %s", vault));
     }
 }
