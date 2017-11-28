@@ -44,8 +44,8 @@ public class LocalDictionary {
             return null;
         }
         final Local file = LocalFactory.get(path);
-        if(StringUtils.isNotBlank(String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name")))) {
-            file.setBookmark(String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name")));
+        if(StringUtils.isNotBlank(dict.stringForKey(String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name"))))) {
+            file.setBookmark(dict.stringForKey(String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name"))));
         }
         else {
             if(StringUtils.isNotBlank(dict.stringForKey("Bookmark"))) {
