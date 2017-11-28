@@ -36,6 +36,7 @@ import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.RendezvousCollection;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
@@ -82,7 +83,6 @@ import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultFactory;
 import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
@@ -2328,7 +2328,7 @@ public class BrowserController extends WindowController
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
-                    new CreateVaultWorker(region, passphrase, VaultFactory.get(folder, PasswordStoreFactory.get())) {
+                    new CreateVaultWorker(region, passphrase, new CryptoVault(folder, PasswordStoreFactory.get())) {
                         @Override
                         public void cleanup(final Path vault) {
                             reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
