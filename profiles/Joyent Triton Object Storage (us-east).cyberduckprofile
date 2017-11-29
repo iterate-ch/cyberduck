@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>manta</string>
         <key>Vendor</key>
-        <string>iterate GmbH</string>
+        <string>triton</string>
         <key>Description</key>
         <string>Joyent Triton Object Storage (us-east)</string>
         <key>Scheme</key>
