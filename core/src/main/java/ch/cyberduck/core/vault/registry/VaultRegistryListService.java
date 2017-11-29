@@ -18,11 +18,11 @@ package ch.cyberduck.core.vault.registry;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.VaultFinderListProgressListener;
 import ch.cyberduck.core.vault.VaultFinderListService;
@@ -35,18 +35,21 @@ import org.apache.log4j.Logger;
 public class VaultRegistryListService implements ListService {
     private static final Logger log = Logger.getLogger(VaultRegistryListService.class);
 
+    private final Preferences preferences = PreferencesFactory.get();
+
     private final VaultRegistry registry;
     private final VaultLookupListener lookup;
-    private final PasswordStore keychain;
     private final Session<?> session;
     private final ListService proxy;
 
-    public VaultRegistryListService(final Session<?> session, final ListService proxy, final VaultRegistry registry, final VaultLookupListener lookup, final PasswordStore keychain) {
+    private boolean autodetect = preferences.getBoolean("cryptomator.vault.autodetect")
+        && preferences.getBoolean("cryptomator.enable");
+
+    public VaultRegistryListService(final Session<?> session, final ListService proxy, final VaultRegistry registry, final VaultLookupListener lookup) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
         this.lookup = lookup;
-        this.keychain = keychain;
     }
 
     @Override
@@ -56,8 +59,8 @@ public class VaultRegistryListService implements ListService {
             if(vault.contains(directory)) {
                 return vault.getFeature(session, ListService.class, proxy).list(directory, listener);
             }
-            if(PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect")) {
-                return new VaultFinderListService(session, proxy, new VaultFinderListProgressListener(keychain, lookup)).list(directory, listener);
+            if(autodetect) {
+                return new VaultFinderListService(session, proxy, new VaultFinderListProgressListener(lookup)).list(directory, listener);
             }
             return proxy.list(directory, listener);
         }
@@ -65,6 +68,11 @@ public class VaultRegistryListService implements ListService {
             log.warn(String.format("Canceled loading vault %s. %s", e.getVault(), e.getDetail()));
             throw e;
         }
+    }
+
+    public VaultRegistryListService withAutodetect(final boolean autodetect) {
+        this.autodetect = autodetect && preferences.getBoolean("cryptomator.enable");
+        return this;
     }
 
     @Override

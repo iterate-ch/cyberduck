@@ -15,8 +15,9 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Vault;
 
 public interface VaultLookupListener {
-    void found(Vault vault) throws VaultUnlockCancelException;
+    Vault load(Path directory) throws VaultUnlockCancelException;
 }

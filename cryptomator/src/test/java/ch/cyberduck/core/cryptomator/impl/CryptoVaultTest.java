@@ -24,7 +24,6 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -36,10 +35,7 @@ import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.serializer.PathDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
-import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -64,14 +60,14 @@ public class CryptoVaultTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
-                                    "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
-                                    "}";
+                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                "  \"scryptCostParam\": 16384,\n" +
+                                "  \"scryptBlockSize\": 8,\n" +
+                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                "  \"version\": 5\n" +
+                                "}";
                             return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
 
@@ -127,14 +123,14 @@ public class CryptoVaultTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
-                                    "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
-                                    "}";
+                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                "  \"scryptCostParam\": 16384,\n" +
+                                "  \"scryptBlockSize\": 8,\n" +
+                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                "  \"version\": 5\n" +
+                                "}";
                             return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
 
@@ -156,14 +152,6 @@ public class CryptoVaultTest {
             }
         }).getHome());
         assertEquals(Vault.State.open, vault.getState());
-        final AtomicBoolean found = new AtomicBoolean();
-        assertEquals(vault, new DefaultVaultRegistry(new DisabledPasswordCallback()) {
-            protected Vault find(final Session<?> session, final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
-                found.set(true);
-                return vault;
-            }
-        }.find(session, home));
-        assertTrue(found.get());
         vault.close();
     }
 
@@ -178,14 +166,14 @@ public class CryptoVaultTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
-                                    "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
-                                    "}";
+                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                "  \"scryptCostParam\": 16384,\n" +
+                                "  \"scryptBlockSize\": 8,\n" +
+                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                "  \"version\": 5\n" +
+                                "}";
                             return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
 
@@ -222,14 +210,14 @@ public class CryptoVaultTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
-                                    "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
-                                    "}";
+                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                "  \"scryptCostParam\": 16384,\n" +
+                                "  \"scryptBlockSize\": 8,\n" +
+                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                "  \"version\": 5\n" +
+                                "}";
                             return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
 
@@ -244,7 +232,7 @@ public class CryptoVaultTest {
         };
         final AtomicBoolean prompt = new AtomicBoolean();
         final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+            new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
@@ -279,14 +267,14 @@ public class CryptoVaultTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
-                                    "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
-                                    "}";
+                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                "  \"scryptCostParam\": 16384,\n" +
+                                "  \"scryptBlockSize\": 8,\n" +
+                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                "  \"version\": 5\n" +
+                                "}";
                             return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
 
@@ -300,7 +288,7 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+            new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
@@ -326,14 +314,14 @@ public class CryptoVaultTest {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
-                                    "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
-                                    "}";
+                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                "  \"scryptCostParam\": 16384,\n" +
+                                "  \"scryptBlockSize\": 8,\n" +
+                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                "  \"version\": 5\n" +
+                                "}";
                             return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
 
@@ -347,7 +335,7 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+            new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
@@ -393,7 +381,7 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                home, new DisabledPasswordStore());
+            home, new DisabledPasswordStore());
         vault.create(session, null, new VaultCredentials("test"));
     }
 
@@ -428,7 +416,7 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                home, new DisabledPasswordStore());
+            home, new DisabledPasswordStore());
         vault.create(session, null, new VaultCredentials("test"));
         // zero ciphertextFileSize
         try {

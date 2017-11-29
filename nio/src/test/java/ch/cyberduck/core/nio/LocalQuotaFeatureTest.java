@@ -25,9 +25,6 @@ import ch.cyberduck.core.features.Quota;
 
 import org.junit.Test;
 
-import java.nio.file.Files;
-
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class LocalQuotaFeatureTest {
@@ -41,6 +38,5 @@ public class LocalQuotaFeatureTest {
         final Quota.Space quota = new LocalQuotaFeature(session).get();
         assertNotNull(quota.used);
         assertNotNull(quota.available);
-        assertEquals(Files.getFileStore(session.toPath(home)).getTotalSpace(), quota.used + quota.available);
     }
 }
