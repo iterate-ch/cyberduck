@@ -24,11 +24,8 @@ import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
-import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -40,10 +37,10 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class ProxySocketFactoryTest {
 
     @Test
@@ -81,22 +78,21 @@ public class ProxySocketFactoryTest {
             public String getTarget() {
                 return "localhost";
             }
-        }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket("::1", 22);
+        }).withBlacklistedNetworkInterfaces(Arrays.<String>asList("awdl0", "utun0")).createSocket("::1", 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
     }
 
     // IPv6 in the test environment
     @Test
-    @Ignore
-    public void testConnectIPv6LocalAddress() throws Exception {
-        for(String address : Arrays.asList("fe80::c62c:3ff:fe0b:8670")) {
+    public void testConnectIPv6Loopback() throws Exception {
+        for(String address : Collections.singletonList("::1")) {
             final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
                 @Override
                 public String getTarget() {
                     return "localhost";
                 }
-            }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket(address, 22);
+            }).withBlacklistedNetworkInterfaces(Arrays.<String>asList("awdl0", "utun0")).createSocket(address, 22);
             assertNotNull(socket);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
@@ -104,13 +100,13 @@ public class ProxySocketFactoryTest {
 
     @Test(expected = SocketException.class)
     public void testCreateSocketIPv6LocalAddressConnectionRefused() throws Exception {
-        for(String address : Arrays.asList("fe80::9272:40ff:fe02:c363")) {
+        for(String address : Collections.singletonList("fe80::9272:40ff:fe02:c363")) {
             final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
                 @Override
                 public String getTarget() {
                     return "localhost";
                 }
-            }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket(address, 22);
+            }).withBlacklistedNetworkInterfaces(Arrays.<String>asList("awdl0", "utun0")).createSocket(address, 22);
         }
     }
 
@@ -129,9 +125,8 @@ public class ProxySocketFactoryTest {
 
     // IPv6 in the test environment
     @Test
-    @Ignore
     public void testCreateSocketIPv6OnlyWithInetAddress() throws Exception {
-        for(String address : Arrays.asList("ftp6.netbsd.org")) {
+        for(String address : Collections.singletonList("ftp6.netbsd.org")) {
             final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
                 @Override
                 public String getTarget() {
@@ -144,7 +139,7 @@ public class ProxySocketFactoryTest {
                     assertEquals(((Inet6Address) socket.getInetAddress()).getScopeId(),
                             ((Inet6Address) InetAddress.getByName("::1%en0")).getScopedInterface().getIndex());
                 }
-            }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket(address, 21);
+            }).withBlacklistedNetworkInterfaces(Arrays.<String>asList("awdl0", "utun0")).createSocket(address, 21);
             assertNotNull(socket);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
@@ -152,9 +147,8 @@ public class ProxySocketFactoryTest {
 
     // IPv6 in the test environment
     @Test
-    @Ignore
     public void testCreateSocketIPv6OnlyUnknownDestination() throws Exception {
-        for(String address : Arrays.asList("ftp6.netbsd.org")) {
+        for(String address : Collections.singletonList("ftp6.netbsd.org")) {
             final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
                 @Override
                 public String getTarget() {
@@ -166,7 +160,7 @@ public class ProxySocketFactoryTest {
                     // Not yet connected
                     assertNull(socket.getInetAddress());
                 }
-            }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0")).createSocket();
+            }).withBlacklistedNetworkInterfaces(Arrays.<String>asList("awdl0", "utun0")).createSocket();
             assertNotNull(socket);
             assertNull(socket.getInetAddress());
             socket.connect(new InetSocketAddress(address, 21), 0);
@@ -189,7 +183,6 @@ public class ProxySocketFactoryTest {
 
     // IPv6 in the test environment
     @Test
-    @Ignore
     public void testDefaultNetworkInterfaceForIP6Address() throws Exception {
         assertEquals(InetAddress.getByName("::1"), InetAddress.getByName("::1%en0"));
         // Bug. Defaults to awdl0 on OS X
@@ -204,7 +197,7 @@ public class ProxySocketFactoryTest {
             public String getTarget() {
                 return "localhost";
             }
-        }).withBlacklistedNetworkInterfaces(Arrays.asList("awdl0"));
+        }).withBlacklistedNetworkInterfaces(Arrays.<String>asList("awdl0", "utun0"));
         assertEquals(
                 ((Inet6Address) factory.createSocket("::1%en0", 80).getInetAddress()).getScopeId(),
                 ((Inet6Address) factory.createSocket("::1", 80).getInetAddress()).getScopeId()

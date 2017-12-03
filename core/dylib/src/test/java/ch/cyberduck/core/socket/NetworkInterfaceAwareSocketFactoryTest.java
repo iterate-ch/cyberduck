@@ -17,11 +17,7 @@ package ch.cyberduck.core.socket;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.test.IntegrationTest;
-
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -32,7 +28,6 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class NetworkInterfaceAwareSocketFactoryTest {
 
     @Test
@@ -67,7 +62,6 @@ public class NetworkInterfaceAwareSocketFactoryTest {
 
     // IPv6 in the test environment
     @Test
-    @Ignore
     public void testFindEn0DefaultWithUnknownHost() throws Exception {
         final Socket socket = new NetworkInterfaceAwareSocketFactory(Arrays.<String>asList("awdl0", "utun0")).createSocket();
         assertNotNull(socket);
