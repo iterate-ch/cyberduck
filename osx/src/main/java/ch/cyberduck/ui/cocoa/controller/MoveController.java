@@ -19,12 +19,12 @@ import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HostKeyCallbackFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -43,13 +43,13 @@ public class MoveController extends ProxyController {
             = PreferencesFactory.get();
 
     private final BrowserController parent;
-    private final PathCache cache;
+    private final Cache<Path> cache;
 
     public MoveController(final BrowserController parent) {
         this(parent, parent.getCache());
     }
 
-    public MoveController(final BrowserController parent, final PathCache cache) {
+    public MoveController(final BrowserController parent, final Cache<Path> cache) {
         this.parent = parent;
         this.cache = cache;
     }

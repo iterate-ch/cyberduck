@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.copy;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -55,10 +56,10 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
 
     protected final Session<?> destinationSession;
 
-    protected PathCache sourceCache
+    protected Cache<Path> sourceCache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    protected final PathCache destinationCache
+    protected final Cache<Path> destinationCache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     protected final Map<Path, Path> files;
@@ -78,7 +79,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferPathFilter withCache(final PathCache cache) {
+    public TransferPathFilter withCache(final Cache<Path> cache) {
         // With cache from source host
         this.sourceCache = cache;
         return this;

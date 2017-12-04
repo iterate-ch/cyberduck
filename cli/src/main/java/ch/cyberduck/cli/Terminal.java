@@ -94,7 +94,7 @@ public class Terminal {
     private final Preferences preferences;
     private final TerminalController controller;
     private final TerminalPromptReader reader;
-    private final PathCache cache;
+    private final Cache<Path> cache;
     private final ProgressListener progress;
     private final TranscriptListener transcript;
 

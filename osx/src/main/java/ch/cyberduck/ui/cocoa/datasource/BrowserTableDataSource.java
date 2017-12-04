@@ -32,13 +32,13 @@ import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -107,7 +107,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     protected final BrowserController controller;
 
-    protected final PathCache cache;
+    protected final Cache<Path> cache;
 
     private static final class Item {
         private final Path file;
@@ -153,7 +153,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
     }
 
-    protected BrowserTableDataSource(final BrowserController controller, final PathCache cache) {
+    protected BrowserTableDataSource(final BrowserController controller, final Cache<Path> cache) {
         this.controller = controller;
         this.cache = cache;
     }

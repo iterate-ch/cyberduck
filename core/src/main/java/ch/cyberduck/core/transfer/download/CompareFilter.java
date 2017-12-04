@@ -60,7 +60,7 @@ public class CompareFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public AbstractDownloadFilter withCache(final PathCache cache) {
+    public AbstractDownloadFilter withCache(final Cache<Path> cache) {
         comparisonService.withCache(cache);
         return super.withCache(cache);
     }
