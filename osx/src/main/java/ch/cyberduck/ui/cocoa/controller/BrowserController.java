@@ -209,8 +209,7 @@ public class BrowserController extends WindowController
      * Caching files listings of previously listed directories
      */
     private final Cache<Path> cache
-        = new PathCache(preferences.getInteger("browser.cache.size"));
-
+        = new ReverseLookupCache<Path>(new PathCache(preferences.getInteger("browser.cache.size")), preferences.getInteger("browser.cache.size"));
 
     private Scheduler scheduler;
 

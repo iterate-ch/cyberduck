@@ -31,6 +31,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NSObjectTransferItemReference;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.ReverseLookupCache;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -70,7 +71,7 @@ public abstract class TransferPromptController extends SheetController implement
     protected final Transfer transfer;
 
     protected final Cache<TransferItem> cache
-            = new TransferItemCache(Integer.MAX_VALUE);
+        = new ReverseLookupCache<TransferItem>(new TransferItemCache(Integer.MAX_VALUE), Integer.MAX_VALUE);
 
     protected final NSButtonCell buttonCellPrototype = NSButtonCell.buttonCell();
     protected final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
