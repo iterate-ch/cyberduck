@@ -16,7 +16,6 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullFilter;
@@ -30,7 +29,8 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SearchWorkerTest {
 
@@ -48,7 +48,7 @@ public class SearchWorkerTest {
         folder.add(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file)));
         cache.put(new Path("/folder", EnumSet.of(Path.Type.directory)), folder);
         final SearchWorker search = new SearchWorker(new Path("/", EnumSet.of(Path.Type.directory)),
-                new SearchFilter(".png"), cache, new DisabledListProgressListener());
+            new SearchFilter(".png"), cache, new DisabledListProgressListener());
         final AttributedList<Path> found = search.run(new NullSession(new Host(new TestProtocol())));
         assertTrue(found.contains(new Path("/t1.png", EnumSet.of(Path.Type.file))));
         assertFalse(found.contains(new Path("/t1.gif", EnumSet.of(Path.Type.file))));
@@ -75,7 +75,7 @@ public class SearchWorkerTest {
         cache.put(new Path("/folder", EnumSet.of(Path.Type.directory)), folder);
 
         final AttributedList<Path> search1 = new SearchWorker(new Path("/", EnumSet.of(Path.Type.directory)),
-                new SearchFilter(".png"), cache, new DisabledListProgressListener()).run(new NullSession(new Host(new TestProtocol())));
+            new SearchFilter(".png"), cache, new DisabledListProgressListener()).run(new NullSession(new Host(new TestProtocol())));
 
         assertTrue(search1.contains(new Path("/t1.png", EnumSet.of(Path.Type.file))));
         assertFalse(search1.contains(new Path("/folder", EnumSet.of(Path.Type.directory))));
@@ -83,19 +83,15 @@ public class SearchWorkerTest {
         assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory))).contains(new Path("/t1.png", EnumSet.of(Path.Type.file))));
         assertFalse(cache.get(new Path("/", EnumSet.of(Path.Type.directory))).contains(new Path("/folder", EnumSet.of(Path.Type.directory))));
         assertFalse(cache.get(new Path("/folder", EnumSet.of(Path.Type.directory))).contains(
-                new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
+            new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
 
         final AttributedList<Path> search2 = new SearchWorker(new Path("/", EnumSet.of(Path.Type.directory)),
-                new NullFilter<Path>(), cache, new DisabledListProgressListener()).run(new NullSession(new Host(new TestProtocol())));
+            new NullFilter<Path>(), cache, new DisabledListProgressListener()).run(new NullSession(new Host(new TestProtocol())));
         assertTrue(search2.contains(new Path("/t1.png", EnumSet.of(Path.Type.file))));
         assertTrue(search2.contains(new Path("/folder", EnumSet.of(Path.Type.directory))));
         assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory))).contains(new Path("/t1.png", EnumSet.of(Path.Type.file))));
         assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory))).contains(new Path("/folder", EnumSet.of(Path.Type.directory))));
         assertTrue(cache.get(new Path("/folder", EnumSet.of(Path.Type.directory))).contains(
-                new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
-
-        assertNotNull(cache.lookup(new DefaultPathPredicate(new Path("/folder", EnumSet.of(Path.Type.directory)))));
-        assertNotNull(cache.lookup(new DefaultPathPredicate(new Path("/t1.png", EnumSet.of(Path.Type.file)))));
-        assertNotNull(cache.lookup(new DefaultPathPredicate(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file)))));
+            new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
     }
 }
