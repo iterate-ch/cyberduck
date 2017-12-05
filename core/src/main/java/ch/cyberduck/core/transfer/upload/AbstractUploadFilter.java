@@ -19,13 +19,13 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -86,7 +86,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public AbstractUploadFilter withCache(final PathCache cache) {
+    public AbstractUploadFilter withCache(final Cache<Path> cache) {
         find.withCache(cache);
         attribute.withCache(cache);
         return this;

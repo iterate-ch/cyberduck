@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
@@ -69,7 +70,7 @@ public class UploadTransfer extends Transfer {
 
     private final Comparator<Local> comparator;
 
-    private PathCache cache
+    private Cache<Path> cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private UploadFilterOptions options = new UploadFilterOptions();
@@ -100,7 +101,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public Transfer withCache(final PathCache cache) {
+    public Transfer withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

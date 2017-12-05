@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -69,7 +70,7 @@ public class SyncTransfer extends Transfer {
 
     private final TransferItem item;
 
-    private PathCache cache
+    private Cache<Path> cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private final Map<TransferItem, Comparison> comparisons = Collections.synchronizedMap(new LRUMap<TransferItem, Comparison>(
@@ -93,7 +94,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public Transfer withCache(final PathCache cache) {
+    public Transfer withCache(final Cache<Path> cache) {
         this.cache = cache;
         // Populate cache for root items. See #8712
         for(TransferItem root : roots) {

@@ -208,7 +208,7 @@ public class BrowserController extends WindowController
     /**
      * Caching files listings of previously listed directories
      */
-    private final PathCache cache
+    private final Cache<Path> cache
         = new PathCache(preferences.getInteger("browser.cache.size"));
 
 
@@ -2715,7 +2715,7 @@ public class BrowserController extends WindowController
         return pool;
     }
 
-    public PathCache getCache() {
+    public Cache<Path> getCache() {
         return cache;
     }
 

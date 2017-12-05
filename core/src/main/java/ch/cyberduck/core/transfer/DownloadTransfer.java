@@ -17,20 +17,7 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
@@ -71,7 +58,7 @@ public class DownloadTransfer extends Transfer {
 
     private final Comparator<Path> comparator;
 
-    private PathCache cache
+    private Cache<Path> cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private final DownloadSymlinkResolver symlinkResolver;
@@ -105,7 +92,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public DownloadTransfer withCache(final PathCache cache) {
+    public DownloadTransfer withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }
@@ -135,7 +122,7 @@ public class DownloadTransfer extends Transfer {
         }
         else {
             final AttributedList<Path> list;
-            if(cache.containsKey(directory)) {
+            if(cache.isCached(directory)) {
                 list = cache.get(directory);
             }
             else {

@@ -15,9 +15,10 @@
 
 package ch.cyberduck.core.pool;
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,12 +38,12 @@ public class StatelessSessionPool implements SessionPool {
     private final ConnectionService connect;
     private final TranscriptListener transcript;
     private final Session<?> session;
-    private final PathCache cache;
+    private final Cache<Path> cache;
     private final VaultRegistry registry;
 
     private final Object lock = new Object();
 
-    public StatelessSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
+    public StatelessSessionPool(final ConnectionService connect, final Session<?> session, final Cache<Path> cache,
                                 final TranscriptListener transcript, final VaultRegistry registry) {
         this.connect = connect;
         this.transcript = transcript;
@@ -123,7 +124,7 @@ public class StatelessSessionPool implements SessionPool {
     }
 
     @Override
-    public PathCache getCache() {
+    public Cache<Path> getCache() {
         return cache;
     }
 

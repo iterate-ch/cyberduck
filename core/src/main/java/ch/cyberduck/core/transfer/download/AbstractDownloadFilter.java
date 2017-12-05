@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
@@ -24,7 +25,6 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -94,7 +94,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public AbstractDownloadFilter withCache(final PathCache cache) {
+    public AbstractDownloadFilter withCache(final Cache<Path> cache) {
         attribute.withCache(cache);
         return this;
     }

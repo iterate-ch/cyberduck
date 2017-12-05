@@ -15,12 +15,12 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -46,10 +46,10 @@ public class CopyWorker extends Worker<List<Path>> {
     private final Map<Path, Path> files;
     private final SessionPool target;
     private final ProgressListener listener;
-    private final PathCache cache;
+    private final Cache<Path> cache;
     private final ConnectionCallback callback;
 
-    public CopyWorker(final Map<Path, Path> files, final SessionPool target, final PathCache cache, final ProgressListener listener,
+    public CopyWorker(final Map<Path, Path> files, final SessionPool target, final Cache<Path> cache, final ProgressListener listener,
                       final ConnectionCallback callback) {
         this.files = files;
         this.target = target;
