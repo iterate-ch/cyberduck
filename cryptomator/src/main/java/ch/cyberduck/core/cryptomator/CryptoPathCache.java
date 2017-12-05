@@ -44,6 +44,11 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
+    public CacheReference key(final Path object) {
+        return delegate.key(object);
+    }
+
+    @Override
     public boolean isCached(final Path folder) {
         return delegate.isCached(this.toDecrypted(folder));
     }
