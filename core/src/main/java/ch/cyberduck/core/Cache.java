@@ -18,6 +18,13 @@ package ch.cyberduck.core;
 import java.util.Set;
 
 public interface Cache<T extends Referenceable> {
+
+    /**
+     * @param object Value object
+     * @return Key used for internal comparison in map
+     */
+    CacheReference key(T object);
+
     /**
      * @param parent Directory
      * @return True if directory is cached
