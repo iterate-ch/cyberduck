@@ -21,6 +21,7 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
@@ -77,6 +78,12 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
                 final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
                 credentials.setPassword(String.valueOf(input));
                 Arrays.fill(input, ' ');
+            }
+            if(options.save && options.keychain) {
+                credentials.setSaved(prompt.prompt(LocaleFactory.get().localize("Save password", "Credentials")));
+            }
+            else {
+                credentials.setSaved(options.save);
             }
             return credentials;
         }
