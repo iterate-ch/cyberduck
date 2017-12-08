@@ -86,7 +86,7 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
 
     @Override
     public AttributedList<T> get(final T parent) {
-        throw new UnsupportedOperationException();
+        return proxy.get(parent);
     }
 
     /**
