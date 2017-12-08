@@ -33,8 +33,10 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class S3BucketCreateServiceTest {
@@ -46,22 +48,28 @@ public class S3BucketCreateServiceTest {
                 new Credentials(
                     System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                 )));
+        final AtomicBoolean header = new AtomicBoolean();
+        final AtomicBoolean signature = new AtomicBoolean();
         session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
-                assertFalse(StringUtils.containsIgnoreCase(message, "expect"));
+                if(StringUtils.contains(message, "Expect: 100-continue")) {
+                    header.set(true);
+                }
+                if(StringUtils.contains(message, "SignedHeaders=content-type;date;expect;host;x-amz-acl;x-amz-content-sha256;x-amz-date")) {
+                    signature.set(true);
+                }
             }
         });
         assertNotNull(session.open(new DisabledHostKeyCallback()));
-        final S3FindFeature find = new S3FindFeature(session);
-        final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         final S3BucketCreateService create = new S3BucketCreateService(session);
         final Path bucket = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         create.create(bucket, "eu-central-1");
+        assertTrue(header.get());
+        assertTrue(signature.get());
         bucket.attributes().setRegion("eu-central-1");
-        assertTrue(find.find(bucket));
-        delete.delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(find.find(bucket));
+        assertTrue(new S3FindFeature(session).find(bucket));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
