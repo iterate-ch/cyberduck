@@ -151,7 +151,6 @@ public class ConnectionController extends BookmarkController {
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
-        this.keychainCheckbox.setState(options.save ? NSCell.NSOnState : NSCell.NSOffState);
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
         this.addObserver(new BookmarkObserver() {
