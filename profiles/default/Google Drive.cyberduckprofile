@@ -30,6 +30,7 @@
         <key>Scopes</key>
         <array>
             <string>https://www.googleapis.com/auth/drive</string>
+            <string>https://www.googleapis.com/auth/drive.photos.readonly</string>
         </array>
         <key>OAuth Client ID</key>
         <string>996125414232.apps.googleusercontent.com</string>
