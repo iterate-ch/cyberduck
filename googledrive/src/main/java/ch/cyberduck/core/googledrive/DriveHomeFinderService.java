@@ -38,7 +38,7 @@ public class DriveHomeFinderService extends DefaultHomeFinderService {
         = new Path(LocaleFactory.localizedString("Team Drives", "Google Drive"),
         EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 
-    public static final Path PHOTOS_NAME
+    public static final Path PHOTOS_FOLDER_NAME
         = new Path(LocaleFactory.localizedString("Google Photos", "Google Drive"),
         EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
 

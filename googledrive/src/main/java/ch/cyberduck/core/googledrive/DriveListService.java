@@ -43,7 +43,7 @@ public class DriveListService implements ListService {
             listener.chunk(directory, list);
             list.add(DriveHomeFinderService.TEAM_DRIVES_NAME);
             listener.chunk(directory, list);
-            list.add(DriveHomeFinderService.PHOTOS_NAME);
+            list.add(DriveHomeFinderService.PHOTOS_FOLDER_NAME);
             listener.chunk(directory, list);
             return list;
         }
@@ -54,7 +54,7 @@ public class DriveListService implements ListService {
             if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(directory)) {
                 return new DriveTeamDrivesListService(session).list(directory, listener);
             }
-            if(DriveHomeFinderService.PHOTOS_NAME.equals(directory)) {
+            if(DriveHomeFinderService.PHOTOS_FOLDER_NAME.equals(directory)) {
                 return new DrivePhotosListService(session).list(directory, listener);
             }
             return new DriveDefaultListService(session, fileid).list(directory, listener);

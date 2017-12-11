@@ -47,6 +47,9 @@ public class DriveFileidProvider implements IdProvider {
         if(file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
+        if(file.equals(DriveHomeFinderService.PHOTOS_FOLDER_NAME)) {
+            return DriveHomeFinderService.ROOT_FOLDER_ID;
+        }
         final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
         if(null == found) {
