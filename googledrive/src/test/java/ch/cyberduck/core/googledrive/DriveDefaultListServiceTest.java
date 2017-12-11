@@ -32,6 +32,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import com.google.api.services.drive.model.File;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -70,5 +72,25 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(folder));
         new DriveDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSameFoldername() throws Exception {
+        final String f1 = new AlphanumericRandomStringService().random();
+        final String f2 = new AlphanumericRandomStringService().random();
+        final Path parent = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory));
+        final Path folder = new Path(parent, f2, EnumSet.of(Path.Type.directory));
+        new DriveDirectoryFeature(session).mkdir(parent, null, new TransferStatus());
+        new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        assertTrue(new DefaultFindFeature(session).find(folder));
+        assertEquals(1, new DriveDefaultListService(session).list(parent, new DisabledListProgressListener()).size());
+        final String fileid = new DriveFileidProvider(session).getFileid(folder, new DisabledListProgressListener());
+        final File body = new File();
+        body.set("trashed", true);
+        session.getClient().files().update(fileid, body).execute();
+        new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        assertEquals(2, new DriveDefaultListService(session).list(parent, new DisabledListProgressListener()).size());
+        new DriveDeleteFeature(session).delete(Arrays.asList(parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DefaultFindFeature(session).find(parent));
     }
 }
