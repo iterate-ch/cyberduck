@@ -1,21 +1,21 @@
 package ch.cyberduck.core.ftp;
 
-/*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
- */
+    /*
+     * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+     * http://cyberduck.ch/
+     *
+     * This program is free software; you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation; either version 2 of the License, or
+     * (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+     */
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
@@ -49,7 +49,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
 
     @Override
     public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener)
-            throws IOException, FTPInvalidListException, ConnectionCanceledException {
+        throws IOException, FTPInvalidListException, ConnectionCanceledException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed
         boolean success = false;
@@ -142,14 +142,14 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     if(StringUtils.contains(flags, 'r') || StringUtils.contains(flags, 'l')) {
                         // RETR command may be applied to that object
                         // Listing commands, LIST, NLST, and MLSD may be applied
-                        user.or(Permission.Action.read);
+                        user = user.or(Permission.Action.read);
                     }
                     if(StringUtils.contains(flags, 'w') || StringUtils.contains(flags, 'm') || StringUtils.contains(flags, 'c')) {
-                        user.or(Permission.Action.write);
+                        user = user.or(Permission.Action.write);
                     }
                     if(StringUtils.contains(flags, 'e')) {
                         // CWD command naming the object should succeed
-                        user.or(Permission.Action.execute);
+                        user = user.or(Permission.Action.execute);
                     }
                     final Permission permission = new Permission(user, Permission.Action.none, Permission.Action.none);
                     parsed.attributes().setPermission(permission);
