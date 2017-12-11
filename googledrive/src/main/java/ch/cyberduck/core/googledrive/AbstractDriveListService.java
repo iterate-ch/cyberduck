@@ -45,8 +45,6 @@ import com.google.api.services.drive.model.FileList;
 public abstract class AbstractDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
 
-    protected static final String SPACE_DRIVE = "drive";
-    protected static final String SPACE_PHOTOS = "photos";
     protected static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
     protected static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
     protected static final String DEFAULT_FIELDS = "files(createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink),nextPageToken";
@@ -125,9 +123,7 @@ public abstract class AbstractDriveListService implements ListService {
         }
     }
 
-    protected String getSpaces() {
-        return SPACE_DRIVE;
-    }
+    protected abstract String getSpaces();
 
     protected PathAttributes toAttributes(final File f) {
         final PathAttributes attributes = new PathAttributes();

@@ -33,4 +33,9 @@ public class DriveSharedFolderListService extends AbstractDriveListService {
     protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return "sharedWithMe";
     }
+
+    @Override
+    protected String getSpaces() {
+        return DriveListService.SPACE_DRIVE;
+    }
 }

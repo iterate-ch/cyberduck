@@ -18,11 +18,11 @@ package ch.cyberduck.core.googledrive;
 public class DrivePhotosListService extends DriveDefaultListService {
 
     public DrivePhotosListService(final DriveSession session) {
-        super(session, new DriveFileidProvider(session, SPACE_PHOTOS));
+        super(session);
     }
 
     @Override
     protected String getSpaces() {
-        return SPACE_PHOTOS;
+        return DriveListService.SPACE_PHOTOS;
     }
 }

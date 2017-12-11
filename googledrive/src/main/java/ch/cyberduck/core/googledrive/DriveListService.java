@@ -23,6 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public class DriveListService implements ListService {
 
+    protected static final String SPACE_DRIVE = "drive";
+    protected static final String SPACE_PHOTOS = "photos";
     private final DriveSession session;
     private final DriveFileidProvider fileid;
 

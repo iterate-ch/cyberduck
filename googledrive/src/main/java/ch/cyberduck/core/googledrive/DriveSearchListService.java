@@ -33,4 +33,9 @@ public class DriveSearchListService extends AbstractDriveListService {
         // The contains operator only performs prefix matching for a name.
         return String.format("name contains '%s'", query);
     }
+
+    @Override
+    protected String getSpaces() {
+        return String.format("%s,%s", DriveListService.SPACE_DRIVE, DriveListService.SPACE_PHOTOS);
+    }
 }
