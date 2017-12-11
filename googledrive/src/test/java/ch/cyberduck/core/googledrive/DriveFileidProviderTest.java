@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import com.google.api.services.drive.model.File;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -41,7 +43,7 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
     @Test
     public void testGetFileidRoot() throws Exception {
         assertEquals("root", new DriveFileidProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
-                .getFileid(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+            .getFileid(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
     }
 
     @Test
@@ -50,5 +52,19 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
         new DriveTouchFeature(session).touch(test, new TransferStatus());
         assertNotNull(new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testGetFileidSameName() throws Exception {
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path p1 = new DriveTouchFeature(session).touch(test, new TransferStatus());
+        assertEquals(p1.attributes().getVersionId(), new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
+        final File body = new File();
+        body.set("trashed", true);
+        session.getClient().files().update(p1.attributes().getVersionId(), body).execute();
+        final Path p2 = new DriveTouchFeature(session).touch(test, new TransferStatus());
+        assertEquals(p2.attributes().getVersionId(), new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
+        session.getClient().files().delete(p1.attributes().getVersionId());
+        session.getClient().files().delete(p2.attributes().getVersionId());
     }
 }
