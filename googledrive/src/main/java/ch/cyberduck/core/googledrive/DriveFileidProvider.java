@@ -31,9 +31,15 @@ import org.apache.commons.lang3.StringUtils;
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
+    private final String space;
 
     public DriveFileidProvider(final DriveSession session) {
+        this(session, "drive");
+    }
+
+    public DriveFileidProvider(final DriveSession session, final String space) {
         this.session = session;
+        this.space = space;
     }
 
     @Override
@@ -47,7 +53,12 @@ public class DriveFileidProvider implements IdProvider {
         if(file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
-        final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
+        final AttributedList<Path> list = new FileidDriveListService(session, this, file) {
+            @Override
+            protected String getSpaces() {
+                return space;
+            }
+        }.list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());

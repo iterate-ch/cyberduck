@@ -1,19 +1,19 @@
 package ch.cyberduck.core.googledrive;
 
-/*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+    /*
+     * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+     * https://cyberduck.io/
+     *
+     * This program is free software; you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation; either version 2 of the License, or
+     * (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     */
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
@@ -45,6 +45,8 @@ import com.google.api.services.drive.model.FileList;
 public abstract class AbstractDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
 
+    protected static final String SPACE_DRIVE = "drive";
+    protected static final String SPACE_PHOTOS = "photos";
     protected static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
     protected static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
     protected static final String DEFAULT_FIELDS = "files(createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink),nextPageToken";
@@ -75,6 +77,8 @@ public abstract class AbstractDriveListService implements ListService {
             String page = null;
             do {
                 final FileList list = session.getClient().files().list()
+                    // A comma-separated list of spaces to query within the corpus. Supported values are 'drive', 'appDataFolder' and 'photos'.
+                    .setSpaces(this.getSpaces())
                     // Whether Team Drive items should be included in results
                     .setIncludeTeamDriveItems(true)
                     // Whether the requesting application supports Team Drives
@@ -119,6 +123,10 @@ public abstract class AbstractDriveListService implements ListService {
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
         }
+    }
+
+    protected String getSpaces() {
+        return SPACE_DRIVE;
     }
 
     protected PathAttributes toAttributes(final File f) {
