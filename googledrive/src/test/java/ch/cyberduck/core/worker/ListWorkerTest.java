@@ -30,9 +30,11 @@ import ch.cyberduck.core.googledrive.DriveFileidProvider;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.RegexFilter;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -42,6 +44,7 @@ import com.google.api.services.drive.model.File;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Category(IntegrationTest.class)
 public class ListWorkerTest extends AbstractDriveTest {
 
     @Test
