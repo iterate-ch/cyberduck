@@ -72,19 +72,18 @@ import com.amazonaws.services.cloudfront.model.*;
 public class CloudFrontDistributionConfiguration implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
     private static final Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
-    protected final S3Session session;
-    private final Host bookmark;
-
-    private final ClientConfiguration configuration;
-
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final Map<Path, Distribution> cache
-            = new HashMap<Path, Distribution>();
+        = new HashMap<Path, Distribution>();
 
     private final Preferences preferences = PreferencesFactory.get();
 
+    protected final S3Session session;
+
+    private final Host bookmark;
+    private final ClientConfiguration configuration;
     private final Location locationFeature;
 
     public CloudFrontDistributionConfiguration(final S3Session session) {
