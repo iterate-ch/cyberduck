@@ -1,19 +1,19 @@
 package ch.cyberduck.ui.cocoa.controller;
 
-/*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+    /*
+     * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+     * https://cyberduck.io/
+     *
+     * This program is free software; you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation; either version 2 of the License, or
+     * (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     */
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.AlertController;
@@ -146,6 +146,8 @@ public class MainController extends BundleController implements NSApplication.De
      */
     private final AbstractHostCollection sessions = new FolderBookmarkCollection(
         LocalFactory.get(preferences.getProperty("application.support.path"), "Sessions"), "session");
+
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
     /**
      * Display donation reminder dialog
@@ -898,7 +900,6 @@ public class MainController extends BundleController implements NSApplication.De
 
     // User bookmarks and thirdparty applications
     private final CountDownLatch bookmarksSemaphore = new CountDownLatch(1);
-    private final CountDownLatch thirdpartySemaphore = new CountDownLatch(1);
 
     /**
      * Sent by the default notification center after the application has been launched and initialized but
@@ -945,12 +946,12 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             });
         }
+        final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
         // Load all bookmarks in background
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
             public Void run() throws BackgroundException {
-                final BookmarkCollection c = BookmarkCollection.defaultCollection();
-                c.load();
+                bookmarks.load();
                 bookmarksSemaphore.countDown();
                 return null;
             }
@@ -965,38 +966,24 @@ public class MainController extends BundleController implements NSApplication.De
                 // Set delegate for NSService
                 NSApplication.sharedApplication().setServicesProvider(MainController.this.id());
             }
-
+        });
+        this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public String getActivity() {
-                return "Loading Bookmarks";
+            public Void run() throws BackgroundException {
+                final HistoryCollection history = HistoryCollection.defaultCollection();
+                history.load();
+                return null;
             }
         });
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
             public Void run() throws BackgroundException {
-                HistoryCollection.defaultCollection().load();
+                final TransferCollection transfers = TransferCollection.defaultCollection();
+                transfers.load();
                 return null;
-            }
-
-            @Override
-            public String getActivity() {
-                return "Loading History";
-            }
-        });
-        this.background(new AbstractBackgroundAction<Void>() {
-            @Override
-            public Void run() throws BackgroundException {
-                TransferCollection.defaultCollection().load();
-                return null;
-            }
-
-            @Override
-            public String getActivity() {
-                return "Loading Transfers";
             }
         });
         final Rendezvous bonjour = RendezvousFactory.instance();
-
         bonjour.addListener(new NotificationRendezvousListener(bonjour));
         if(preferences.getBoolean("defaulthandler.reminder")
             && preferences.getInteger("uses") > 0) {
@@ -1031,15 +1018,15 @@ public class MainController extends BundleController implements NSApplication.De
         // the NSWorkspace object, instead of going through the application’s default
         // notification center as most notifications do. To receive NSWorkspace notifications,
         // your application must register an observer with the NSWorkspace notification center.
-        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.id(),
+        workspace.notificationCenter().addObserver(this.id(),
             Foundation.selector("workspaceWillPowerOff:"),
             NSWorkspace.WorkspaceWillPowerOffNotification,
             null);
-        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.id(),
+        workspace.notificationCenter().addObserver(this.id(),
             Foundation.selector("workspaceWillLogout:"),
             NSWorkspace.WorkspaceSessionDidResignActiveNotification,
             null);
-        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.id(),
+        workspace.notificationCenter().addObserver(this.id(),
             Foundation.selector("workspaceWillSleep:"),
             NSWorkspace.WorkspaceWillSleepNotification,
             null);
@@ -1055,82 +1042,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
         });
         // Import thirdparty bookmarks.
-        this.background(new AbstractBackgroundAction<Void>() {
-            private List<ThirdpartyBookmarkCollection> thirdpartyBookmarkCollections = Collections.emptyList();
-
-            @Override
-            public Void run() {
-                thirdpartyBookmarkCollections = this.getThirdpartyBookmarks();
-                for(ThirdpartyBookmarkCollection t : thirdpartyBookmarkCollections) {
-                    if(!t.isInstalled()) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("No application installed for %s", t.getBundleIdentifier()));
-                        }
-                        continue;
-                    }
-                    try {
-                        t.load();
-                    }
-                    catch(AccessDeniedException e) {
-                        log.warn(String.format("Failure %s loading bookmarks from %s", e, t));
-                    }
-                    if(t.isEmpty()) {
-                        // Flag as imported
-                        preferences.setProperty(t.getConfiguration(), true);
-                    }
-                }
-                try {
-                    bookmarksSemaphore.await();
-                }
-                catch(InterruptedException e) {
-                    log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
-                }
-                return null;
-            }
-
-            @Override
-            public void cleanup() {
-                for(ThirdpartyBookmarkCollection t : thirdpartyBookmarkCollections) {
-                    final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
-                    t.filter(bookmarks);
-                    if(t.isEmpty()) {
-                        preferences.setProperty(t.getConfiguration(), true);
-                        continue;
-                    }
-                    final NSAlert alert = NSAlert.alert(
-                        MessageFormat.format(LocaleFactory.localizedString("Import {0} Bookmarks", "Configuration"), t.getName()),
-                        MessageFormat.format(LocaleFactory.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), t.size()),
-                        LocaleFactory.localizedString("Import", "Configuration"), //default
-                        null, //other
-                        LocaleFactory.localizedString("Cancel", "Configuration"));
-                    alert.setShowsSuppressionButton(true);
-                    alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                    alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                    int choice = new AlertSheetReturnCodeMapper().getOption(alert.runModal()); //alternate
-                    if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                        // Never show again.
-                        preferences.setProperty(t.getConfiguration(), true);
-                    }
-                    if(choice == SheetCallback.DEFAULT_OPTION) {
-                        bookmarks.addAll(t);
-                        // Flag as imported
-                        preferences.setProperty(t.getConfiguration(), true);
-                    }
-                }
-                thirdpartySemaphore.countDown();
-            }
-
-            @Override
-            public String getActivity() {
-                return "Loading thirdparty bookmarks";
-            }
-
-            private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
-                return Arrays.asList(new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
-                    new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
-                    new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection());
-            }
-        });
+        this.background(new ImporterBackgroundAction(bookmarks, bookmarksSemaphore));
         final CrashReporter reporter = CrashReporter.create();
         if(log.isInfoEnabled()) {
             log.info("Check for crash report");
@@ -1416,4 +1328,83 @@ public class MainController extends BundleController implements NSApplication.De
         }
     }
 
+    private static final class ImporterBackgroundAction extends AbstractBackgroundAction<Void> {
+        private final Preferences preferences = PreferencesFactory.get();
+
+        private final BookmarkCollection bookmarks;
+        private final List<ThirdpartyBookmarkCollection> collections;
+        private final CountDownLatch lock;
+
+        public ImporterBackgroundAction(final BookmarkCollection bookmarks, final CountDownLatch lock) {
+            this(bookmarks, lock, Arrays.asList(
+                new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
+                new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
+                new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection()));
+        }
+
+        public ImporterBackgroundAction(final BookmarkCollection bookmarks, final CountDownLatch lock, final List<ThirdpartyBookmarkCollection> collections) {
+            this.bookmarks = bookmarks;
+            this.lock = lock;
+            this.collections = collections;
+        }
+
+        @Override
+        public Void run() {
+            for(ThirdpartyBookmarkCollection t : collections) {
+                if(!t.isInstalled()) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("No application installed for %s", t.getBundleIdentifier()));
+                    }
+                    continue;
+                }
+                try {
+                    t.load();
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Failure %s loading bookmarks from %s", e, t));
+                }
+                if(t.isEmpty()) {
+                    // Flag as imported
+                    preferences.setProperty(t.getConfiguration(), true);
+                }
+            }
+            try {
+                lock.await();
+            }
+            catch(InterruptedException e) {
+                log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
+            }
+            return null;
+        }
+
+        @Override
+        public void cleanup() {
+            for(ThirdpartyBookmarkCollection t : collections) {
+                t.filter(bookmarks);
+                if(t.isEmpty()) {
+                    preferences.setProperty(t.getConfiguration(), true);
+                    continue;
+                }
+                final NSAlert alert = NSAlert.alert(
+                    MessageFormat.format(LocaleFactory.localizedString("Import {0} Bookmarks", "Configuration"), t.getName()),
+                    MessageFormat.format(LocaleFactory.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), t.size()),
+                    LocaleFactory.localizedString("Import", "Configuration"), //default
+                    null, //other
+                    LocaleFactory.localizedString("Cancel", "Configuration"));
+                alert.setShowsSuppressionButton(true);
+                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
+                alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+                int choice = new AlertSheetReturnCodeMapper().getOption(alert.runModal()); //alternate
+                if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                    // Never show again.
+                    preferences.setProperty(t.getConfiguration(), true);
+                }
+                if(choice == SheetCallback.DEFAULT_OPTION) {
+                    bookmarks.addAll(t);
+                    // Flag as imported
+                    preferences.setProperty(t.getConfiguration(), true);
+                }
+            }
+        }
+    }
 }
