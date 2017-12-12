@@ -60,8 +60,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                 String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                 MessageFormat.format(LocaleFactory.localizedString(
                     "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                new LoginOptions(bookmark.getProtocol()).publickey(false)
-                    .usernamePlaceholder(credentials.getUsername()));
+                new LoginOptions(bookmark.getProtocol()).publickey(false));
             credentials.setSaved(input.isSaved());
             credentials.setPassword(input.getPassword());
         }
@@ -96,8 +95,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                     try {
                         final StringAppender message = new StringAppender().append(prompt);
                         final Credentials changed = callback.prompt(host, credentials.getUsername(), LocaleFactory.localizedString("Change Password", "Credentials"), message.toString(),
-                            new LoginOptions(host.getProtocol()).anonymous(false).user(false).publickey(false)
-                                .usernamePlaceholder(credentials.getUsername()));
+                            new LoginOptions(host.getProtocol()).anonymous(false).user(false).publickey(false));
                         return changed.getPassword().toCharArray();
                     }
                     catch(LoginCanceledException e) {

@@ -92,8 +92,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                                     MessageFormat.format(LocaleFactory.localizedString(
                                         "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                                    new LoginOptions(bookmark.getProtocol()).publickey(false)
-                                        .usernamePlaceholder(credentials.getUsername()));
+                                    new LoginOptions(bookmark.getProtocol()).publickey(false));
                                 credentials.setSaved(input.isSaved());
                                 credentials.setPassword(input.getPassword());
                             }
@@ -116,7 +115,6 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             );
                             additional = callback.prompt(bookmark, credentials.getUsername(), title.toString(),
                                 message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
-                                    .usernamePlaceholder(credentials.getUsername())
                             );
                         }
                         catch(LoginCanceledException e) {
