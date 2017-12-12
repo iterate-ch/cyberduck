@@ -32,8 +32,7 @@ import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.TimeZone;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class FTPMlsdListResponseReaderTest {
@@ -56,9 +55,15 @@ public class FTPMlsdListResponseReaderTest {
         assertEquals(3, children.size());
         assertEquals("writable", children.get(0).getName());
         assertTrue(children.get(0).isFile());
+        assertTrue(children.get(0).attributes().getPermission().isReadable());
+        assertTrue(children.get(0).attributes().getPermission().isWritable());
         assertEquals(" leading space", children.get(1).getName());
         assertTrue(children.get(1).isFile());
+        assertTrue(children.get(1).attributes().getPermission().isReadable());
+        assertFalse(children.get(1).attributes().getPermission().isWritable());
         assertTrue(children.get(2).isDirectory());
+        assertTrue(children.get(2).attributes().getPermission().isReadable());
+        assertTrue(children.get(2).attributes().getPermission().isWritable());
     }
 
     @Test(expected = FTPInvalidListException.class)
