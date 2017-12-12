@@ -90,6 +90,9 @@ public final class LoginOptions {
 
     public LoginOptions keychain(boolean e) {
         keychain = e;
+        if(!keychain) {
+            save = false;
+        }
         return this;
     }
 
