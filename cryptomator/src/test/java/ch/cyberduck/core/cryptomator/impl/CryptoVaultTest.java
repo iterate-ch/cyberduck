@@ -425,6 +425,8 @@ public class CryptoVaultTest {
         }
         catch(CryptoInvalidFilesizeException e) {
         }
+        // x = cleartextSize(ciphertextSize(x))
+        assertEquals(25329651, vault.toCleartextSize(vault.toCiphertextSize(25329651)));
         // ciphertextFileSize == headerSize
         assertEquals(0L, vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize()));
         // ciphertextFileSize == headerSize + 1
