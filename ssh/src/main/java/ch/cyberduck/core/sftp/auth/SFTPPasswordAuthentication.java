@@ -54,15 +54,18 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
     @Override
     public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel)
         throws BackgroundException {
-        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
-            bookmark.getCredentials().setPassword(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
+        final Credentials credentials = bookmark.getCredentials();
+        if(StringUtils.isBlank(credentials.getPassword())) {
+            final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
                 String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                 MessageFormat.format(LocaleFactory.localizedString(
                     "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
                 new LoginOptions(bookmark.getProtocol()).publickey(false)
-                    .usernamePlaceholder(bookmark.getCredentials().getUsername())).getPassword());
+                    .usernamePlaceholder(credentials.getUsername()));
+            credentials.setSaved(input.isSaved());
+            credentials.setPassword(input.getPassword());
         }
-        return this.authenticate(bookmark, bookmark.getCredentials(), callback, cancel);
+        return this.authenticate(bookmark, credentials, callback, cancel);
     }
 
     @Override
