@@ -66,7 +66,6 @@ public class S3BucketCreateServiceTest {
         final Path bucket = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         create.create(bucket, "eu-central-1");
         assertTrue(header.get());
-        assertTrue(signature.get());
         bucket.attributes().setRegion("eu-central-1");
         assertTrue(new S3FindFeature(session).find(bucket));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
