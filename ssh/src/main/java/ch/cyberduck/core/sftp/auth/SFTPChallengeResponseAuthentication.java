@@ -1,19 +1,19 @@
 package ch.cyberduck.core.sftp.auth;
 
-/*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+    /*
+     * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+     * https://cyberduck.io/
+     *
+     * This program is free software; you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     */
 
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.BookmarkNameProvider;
@@ -59,6 +59,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
             log.debug(String.format("Login using challenge response authentication for %s", bookmark));
         }
         final AtomicBoolean canceled = new AtomicBoolean();
+        final AtomicBoolean publickey = new AtomicBoolean();
         try {
             final Credentials credentials = bookmark.getCredentials();
             session.getClient().auth(credentials.getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
@@ -92,8 +93,14 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                                     MessageFormat.format(LocaleFactory.localizedString(
                                         "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                                    new LoginOptions(bookmark.getProtocol()).publickey(false)
-                                        .usernamePlaceholder(credentials.getUsername()));
+                                    // Change of username or service not allowed
+                                    new LoginOptions(bookmark.getProtocol()).user(false));
+                                if(input.isPublicKeyAuthentication()) {
+                                    credentials.setIdentity(input.getIdentity());
+                                    publickey.set(true);
+                                    // Return null to cancel if user wants to use public key auth
+                                    return StringUtils.EMPTY.toCharArray();
+                                }
                                 credentials.setSaved(input.isSaved());
                                 credentials.setPassword(input.getPassword());
                             }
@@ -116,7 +123,6 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             );
                             additional = callback.prompt(bookmark, credentials.getUsername(), title.toString(),
                                 message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
-                                    .usernamePlaceholder(credentials.getUsername())
                             );
                         }
                         catch(LoginCanceledException e) {
@@ -136,6 +142,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
             }));
         }
         catch(IOException e) {
+            if(publickey.get()) {
+                return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, keychain, callback, cancel);
+            }
             if(canceled.get()) {
                 throw new LoginCanceledException();
             }
