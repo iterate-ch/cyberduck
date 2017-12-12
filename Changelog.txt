@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+6.3.2
+- [Feature] Option to save passwords (Cyberduck CLI, Linux)
+- [Bugfix] Failure parsing permissions from MLSD reply (FTP)
+- [Bugfix] Signed links incorrectly URL-encoded (Triton) (#10151)
+
 6.3.1
 - [Feature] Support authenticating with HTTP proxy (Windows)
 - [Feature] Read credentials from AWS configuration file in ~/.aws/credentials (S3)
