@@ -34,6 +34,7 @@ import ch.cyberduck.core.vault.VaultException;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.cryptomator.cryptolib.Cryptors;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -103,13 +104,13 @@ public class CryptoVault implements Vault {
     @Override
     public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
-                FastSecureRandomProvider.get().provide()
+            FastSecureRandomProvider.get().provide()
         );
         final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
             keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
         }
         final String passphrase = credentials.getPassword();
         final KeyFile masterKeyFileContent = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
@@ -156,9 +157,9 @@ public class CryptoVault implements Vault {
         }
         final Host bookmark = session.getHost();
         final String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl());
+            new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl());
         this.unlock(session, masterKeyFile, masterKeyFileContent, passphrase, bookmark, prompt,
-                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
+            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         home.attributes().setVault(home);
         return this;
     }
@@ -169,13 +170,13 @@ public class CryptoVault implements Vault {
         if(null == passphrase) {
             credentials = prompt.prompt(
                 bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
-                    message,
-                    new LoginOptions()
-                        .save(preferences.getBoolean("vault.keychain"))
-                            .user(false)
-                            .anonymous(false)
-                            .icon("cryptomator.tiff")
-                            .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
+                message,
+                new LoginOptions()
+                    .save(preferences.getBoolean("vault.keychain"))
+                    .user(false)
+                    .anonymous(false)
+                    .icon("cryptomator.tiff")
+                    .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
             if(null == credentials.getPassword()) {
                 throw new LoginCanceledException();
             }
@@ -192,16 +193,16 @@ public class CryptoVault implements Vault {
                 }
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                    new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
                 // Save masterkey.cryptomator content in preferences
                 preferences.setProperty(new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(),
-                        new String(masterKeyFileContent.serialize()));
+                    new String(masterKeyFileContent.serialize()));
             }
         }
         catch(CryptoAuthenticationException e) {
             this.unlock(session, masterKeyFile, masterKeyFileContent, null, bookmark,
-                    prompt, String.format("%s %s.", e.getDetail(),
-                            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
+                prompt, String.format("%s %s.", e.getDetail(),
+                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
         }
     }
 
@@ -232,7 +233,7 @@ public class CryptoVault implements Vault {
                 log.warn(String.format("Upgrade vault version %d to %d", keyFile.getVersion(), VAULT_VERSION));
                 try {
                     final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
-                            FastSecureRandomProvider.get().provide()
+                        FastSecureRandomProvider.get().provide()
                     );
                     final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, keyFile.getVersion());
                     // Create backup, as soon as we know the password was correct
@@ -263,7 +264,7 @@ public class CryptoVault implements Vault {
 
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
-                FastSecureRandomProvider.get().provide()
+            FastSecureRandomProvider.get().provide()
         );
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
@@ -380,7 +381,7 @@ public class CryptoVault implements Vault {
             final String ciphertext = m.group(1);
             try {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
-                        ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
+                    ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(inflated.getName().startsWith(DIR_PREFIX)) {
                     final Permission permission = attributes.getPermission();
@@ -405,12 +406,12 @@ public class CryptoVault implements Vault {
             }
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException(
-                        "Failure to decrypt due to an unauthentic ciphertext", e);
+                    "Failure to decrypt due to an unauthentic ciphertext", e);
             }
         }
         else {
             throw new CryptoFilenameMismatchException(
-                    String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
+                String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
         }
     }
 
@@ -419,10 +420,7 @@ public class CryptoVault implements Vault {
         if(-1L == cleartextFileSize) {
             return -1L;
         }
-        final int headerSize = cryptor.fileHeaderCryptor().headerSize();
-        final int cleartextChunkSize = cryptor.fileContentCryptor().cleartextChunkSize();
-        final int chunkHeaderSize = cryptor.fileContentCryptor().ciphertextChunkSize() - cleartextChunkSize;
-        return cleartextFileSize + headerSize + (cleartextFileSize > 0 ? chunkHeaderSize : 0) + chunkHeaderSize * ((cleartextFileSize - 1) / cleartextChunkSize);
+        return cryptor.fileHeaderCryptor().headerSize() + Cryptors.ciphertextSize(cleartextFileSize, cryptor);
     }
 
     @Override
@@ -431,16 +429,15 @@ public class CryptoVault implements Vault {
             return -1L;
         }
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
-        final int ciphertextChunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
-        final int chunkHeaderSize = ciphertextChunkSize - cryptor.fileContentCryptor().cleartextChunkSize();
-        if(ciphertextFileSize < headerSize) {
+        try {
+            return Cryptors.cleartextSize(ciphertextFileSize - headerSize, cryptor);
+        }
+        catch(AssertionError e) {
             throw new CryptoInvalidFilesizeException(String.format("Encrypted file size must be at least %d bytes", headerSize));
         }
-        final long remainder = (ciphertextFileSize - headerSize) % ciphertextChunkSize;
-        if(remainder > 0 && remainder < chunkHeaderSize) {
+        catch(IllegalArgumentException e) {
             throw new CryptoInvalidFilesizeException("Invalid file size");
         }
-        return ciphertextFileSize - (headerSize + (ciphertextFileSize / ciphertextChunkSize) * chunkHeaderSize + (remainder == 0 ? 0 : chunkHeaderSize));
     }
 
     private Path inflate(final Session<?> session, final Path file) throws BackgroundException {
@@ -470,7 +467,7 @@ public class CryptoVault implements Vault {
 
     public int numberOfChunks(final long cleartextFileSize) {
         return (int) (cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
-                ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
+            ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
     }
 
     @Override

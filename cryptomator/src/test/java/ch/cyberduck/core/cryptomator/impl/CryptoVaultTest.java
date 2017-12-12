@@ -439,4 +439,43 @@ public class CryptoVaultTest {
         // ciphertextFileSize == headerSize + (32768 + chunkHeaderSize) + (1 + chunkHeaderSize) + 1
         assertEquals(32769L, vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
     }
+
+    @Test
+    public void testCleartextSizeCiphertextCalculation() throws Exception {
+        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Directory.class) {
+                    return (T) new Directory() {
+
+                        @Override
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                            assertTrue(folder.equals(home) || folder.isChild(home));
+                            return folder;
+                        }
+
+                        @Override
+                        public boolean isSupported(final Path workdir, final String name) {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public Directory withWriter(final Write writer) {
+                            return this;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final CryptoVault vault = new CryptoVault(
+            home, new DisabledPasswordStore());
+        vault.create(session, null, new VaultCredentials("test"));
+        for(int i = 0; i < 26000000; i++) {
+            // i = cleartextSize(ciphertextSize(i))
+            assertEquals(i, vault.toCleartextSize(vault.toCiphertextSize(i)));
+        }
+    }
 }
