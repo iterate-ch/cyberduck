@@ -313,6 +313,7 @@ public class Terminal {
             preferences.setProperty("queue.connections.limit",
                 NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2));
         }
+        preferences.setProperty("connection.login.keychain", !input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name()));
     }
 
     protected Exit transfer(final Transfer transfer, final SessionPool source, final SessionPool destination) {
