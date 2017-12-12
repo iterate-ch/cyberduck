@@ -60,7 +60,8 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
         }
         final AtomicBoolean canceled = new AtomicBoolean();
         try {
-            session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
+            final Credentials credentials = bookmark.getCredentials();
+            session.getClient().auth(credentials.getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
                 private String name = StringUtils.EMPTY;
                 private String instruction = StringUtils.EMPTY;
 
@@ -84,16 +85,17 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
                     }
-                    if(!StringUtils.isBlank(bookmark.getCredentials().getPassword())
-                        && PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
-                        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
+                    if(PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                        if(StringUtils.isBlank(credentials.getPassword())) {
                             try {
-                                bookmark.getCredentials().setPassword(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                                final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
                                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                                     MessageFormat.format(LocaleFactory.localizedString(
                                         "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
                                     new LoginOptions(bookmark.getProtocol()).publickey(false)
-                                        .usernamePlaceholder(bookmark.getCredentials().getUsername())).getPassword());
+                                        .usernamePlaceholder(credentials.getUsername()));
+                                credentials.setSaved(input.isSaved());
+                                credentials.setPassword(input.getPassword());
                             }
                             catch(LoginCanceledException e) {
                                 canceled.set(true);
@@ -101,7 +103,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                 return StringUtils.EMPTY.toCharArray();
                             }
                         }
-                        return bookmark.getCredentials().getPassword().toCharArray();
+                        return credentials.getPassword().toCharArray();
                     }
                     else {
                         final StringAppender message = new StringAppender().append(instruction).append(prompt);
@@ -112,9 +114,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             final StringAppender title = new StringAppender().append(name).append(
                                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             );
-                            additional = callback.prompt(bookmark, bookmark.getCredentials().getUsername(), title.toString(),
-                                message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches())
-                                    .usernamePlaceholder(bookmark.getCredentials().getUsername())
+                            additional = callback.prompt(bookmark, credentials.getUsername(), title.toString(),
+                                message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
+                                    .usernamePlaceholder(credentials.getUsername())
                             );
                         }
                         catch(LoginCanceledException e) {
