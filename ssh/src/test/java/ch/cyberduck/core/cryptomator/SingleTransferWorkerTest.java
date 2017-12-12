@@ -19,6 +19,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
@@ -49,7 +50,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -61,8 +61,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SingleTransferWorkerTest {
@@ -119,8 +118,9 @@ public class SingleTransferWorkerTest {
         }.run(session, session));
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(dir1));
         final PathAttributes attributes1 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file1);
-        Assert.assertEquals(1513092263000L, attributes1.getModificationDate());
-        Assert.assertEquals(content.length, attributes1.getSize());
+        assertEquals(1513092263000L, attributes1.getModificationDate());
+        assertEquals(1513092263000L, new CryptoListService(session, session, cryptomator).list(dir1, new DisabledListProgressListener()).get(file1).attributes().getModificationDate());
+        assertEquals(content.length, attributes1.getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
@@ -128,7 +128,7 @@ public class SingleTransferWorkerTest {
             assertArrayEquals(content, buffer.toByteArray());
         }
         final PathAttributes attributes2 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file2);
-        Assert.assertEquals(content.length, attributes2.getSize());
+        assertEquals(content.length, attributes2.getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
