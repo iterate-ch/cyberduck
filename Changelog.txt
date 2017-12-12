@@ -5,6 +5,7 @@ https://cyberduck.io/
 - [Feature] Option to save passwords (Cyberduck CLI, Linux)
 - [Bugfix] Failure parsing permissions from MLSD reply (FTP)
 - [Bugfix] Signed links incorrectly URL-encoded (Triton) (#10151)
+- [Bugfix] Passwords not saved in keychain (SFTP) (#10159)
 
 6.3.1
 - [Feature] Support authenticating with HTTP proxy (Windows)
