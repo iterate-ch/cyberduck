@@ -60,7 +60,8 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                 String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                 MessageFormat.format(LocaleFactory.localizedString(
                     "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                new LoginOptions(bookmark.getProtocol()));
+                // Change of username or service not allowed
+                new LoginOptions(bookmark.getProtocol()).user(false));
             if(input.isPublicKeyAuthentication()) {
                 credentials.setIdentity(input.getIdentity());
                 return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, keychain, callback, cancel);

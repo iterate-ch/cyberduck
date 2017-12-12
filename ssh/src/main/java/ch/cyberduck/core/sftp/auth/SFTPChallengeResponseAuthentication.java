@@ -93,7 +93,8 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                                     MessageFormat.format(LocaleFactory.localizedString(
                                         "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                                    new LoginOptions(bookmark.getProtocol()).publickey(false));
+                                    // Change of username or service not allowed
+                                    new LoginOptions(bookmark.getProtocol()).user(false));
                                 if(input.isPublicKeyAuthentication()) {
                                     credentials.setIdentity(input.getIdentity());
                                     publickey.set(true);
