@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
@@ -151,6 +152,9 @@ public class LocalSession extends Session<FileSystem> {
         }
         if(type == Quota.class) {
             return (T) new LocalQuotaFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new LocalTimestampFeature(this);
         }
         return super._getFeature(type);
     }
