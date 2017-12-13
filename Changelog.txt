@@ -6,6 +6,8 @@ https://cyberduck.io/
 - [Bugfix] Failure parsing permissions from MLSD reply (FTP)
 - [Bugfix] Signed links incorrectly URL-encoded (Triton) (#10151)
 - [Bugfix] Passwords not saved in keychain (SFTP) (#10159)
+- [Bugfix] Set modification date on uploaded files (Local Disk)
+- [Bugfix] Allow to switch to authentication with private key in login prompt (SFTP)
 
 6.3.1
 - [Feature] Support authenticating with HTTP proxy (Windows)
