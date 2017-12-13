@@ -295,6 +295,9 @@ namespace Ch.Cyberduck.Core.Preferences
             defaults.put("bookmark.import.expandrive5.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "ExpanDrive", "expandrive5.favorites.js"));
+            defaults.put("bookmark.import.expandrive6.location",
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "ExpanDrive", "expandrive6.favorites.js"));
             defaults.put("bookmark.import.netdrive2.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     "NetDrive2", "drives.dat"));

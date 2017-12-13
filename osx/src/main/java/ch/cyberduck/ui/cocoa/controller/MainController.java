@@ -45,6 +45,7 @@ import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
 import ch.cyberduck.core.importer.Expandrive3BookmarkCollection;
 import ch.cyberduck.core.importer.Expandrive4BookmarkCollection;
 import ch.cyberduck.core.importer.Expandrive5BookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive6BookmarkCollection;
 import ch.cyberduck.core.importer.FetchBookmarkCollection;
 import ch.cyberduck.core.importer.FilezillaBookmarkCollection;
 import ch.cyberduck.core.importer.FireFtpBookmarkCollection;
@@ -1339,7 +1340,7 @@ public class MainController extends BundleController implements NSApplication.De
             this(bookmarks, lock, Arrays.asList(
                 new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
                 new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
-                new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection()));
+                new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection(), new Expandrive6BookmarkCollection()));
         }
 
         public ImporterBackgroundAction(final BookmarkCollection bookmarks, final CountDownLatch lock, final List<ThirdpartyBookmarkCollection> collections) {
