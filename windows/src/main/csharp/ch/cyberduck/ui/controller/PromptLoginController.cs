@@ -85,10 +85,11 @@ namespace Ch.Cyberduck.Ui.Controller
             _bookmark = bookmark;
             _options = options;
             _credentials.setSaved(_options.save());
+            _credentials.setUsername(username);
 
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
-            View.Username = _credentials.getUsername();
+            View.Username = username;
             View.SavePasswordState = _options.save();
             View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
 
