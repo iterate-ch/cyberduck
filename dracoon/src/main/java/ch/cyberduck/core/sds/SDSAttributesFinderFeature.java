@@ -57,8 +57,8 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setChecksum(Checksum.parse(node.getHash()));
-        attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getTime() : System.currentTimeMillis());
-        attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getTime() : System.currentTimeMillis());
+        attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getTime() : -1L);
+        attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getTime() : -1L);
         attributes.setSize(node.getSize());
         attributes.setPermission(this.toPermission(node));
         attributes.setAcl(this.toAcl(node));
