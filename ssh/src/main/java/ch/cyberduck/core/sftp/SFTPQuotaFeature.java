@@ -74,7 +74,7 @@ public class SFTPQuotaFeature implements Quota {
                     Long bytesAvailableToUser = response.readUInt64();
                     Long unusedBytesAvailableToUser = response.readUInt64();
                     Integer bytesPerAllocationUnit = response.readUInt32AsInt();
-                    return new Space(bytesAvailableToUser - unusedBytesAvailableToUser, bytesAvailableToUser);
+                    return new Space(bytesAvailableToUser - unusedBytesAvailableToUser, unusedBytesAvailableToUser);
                 default:
                     throw new IOException(String.format("Unexpected response type %s", response.getType()));
             }
@@ -104,7 +104,7 @@ public class SFTPQuotaFeature implements Quota {
                     Long total = totalBlocks * filesystemBlockSize;
                     Long available = blocksAvailable * blockSize;
                     Long used = total - available;
-                    return new Space(used, total);
+                    return new Space(used, available);
                 default:
                     throw new IOException(String.format("Unexpected response type %s", response.getType()));
             }
