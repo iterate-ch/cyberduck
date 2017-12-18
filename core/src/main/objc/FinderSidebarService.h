@@ -23,6 +23,14 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_add
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeItem
   (JNIEnv *, jobject, jstring, jstring);
 
+/*
+ * Class:     ch_cyberduck_core_local_FinderSidebarService
+ * Method:    removeAllItems
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeAllItems
+(JNIEnv *, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif
