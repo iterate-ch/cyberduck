@@ -97,7 +97,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_rem
     OSStatus err;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
-        if (LSSharedFileListItemCopyProperty(item, (__bridge CFStringRef)getBundleName())) {
+        if (LSSharedFileListItemCopyProperty(item, (CFStringRef)getBundleName())) {
             if(noErr != (err = LSSharedFileListItemRemove(list, item))) {
                 NSLog(@"Error removing shared file list item. %s", GetMacOSStatusErrorString(err));
                 break;
