@@ -128,7 +128,7 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\IndexedLinkedList.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\LRUCache.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\CrashReporter.cs" />
-    <Compile Include="core\src\main\csharp\ch\cyberduck\core\CredentialManagerPasswordStore.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\CredentialManagerProxyCredentialsStore.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\credentialmanager\Credential.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\credentialmanager\WinCredentialManager.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\credentialmanager\CriticalCredentialHandle.cs" />
