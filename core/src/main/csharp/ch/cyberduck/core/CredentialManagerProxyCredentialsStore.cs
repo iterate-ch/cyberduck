@@ -16,33 +16,23 @@
 // feedback@cyberduck.io
 // 
 
-using System;
 using System.Net;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core.CredentialManager;
 
 namespace Ch.Cyberduck.Core
 {
-    public class CredentialManagerPasswordStore : HostPasswordStore
+    public class CredentialManagerProxyCredentialsStore : ProxyCredentialsStore
     {
-        public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
+        public Credentials getCredentials(string proxy)
         {
-            WinCredentialManager.SaveCredentials(hostName, new NetworkCredential(user, password));
+            var credential = WinCredentialManager.GetCredentials(proxy);
+            return credential != null ? new Credentials(credential.UserName, credential.Password) : null;
         }
 
-        public override string getPassword(Scheme scheme, int port, String hostName, String user)
+        public void addCredentials(string proxy, string user, string password)
         {
-            return WinCredentialManager.GetCredentials(hostName)?.Password;
-        }
-
-        public override void addPassword(String serviceName, String user, String password)
-        {
-            WinCredentialManager.SaveCredentials(serviceName, new NetworkCredential(user, password));
-        }
-
-        public override string getPassword(String serviceName, String user)
-        {
-            return WinCredentialManager.GetCredentials(serviceName)?.Password;
+            WinCredentialManager.SaveCredentials(proxy, new NetworkCredential(user, password));
         }
     }
 }

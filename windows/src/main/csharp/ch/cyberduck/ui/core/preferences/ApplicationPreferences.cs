@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -16,9 +16,9 @@
 // feedback@cyberduck.io
 // 
 
-using ch.cyberduck.core.local;
 using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.core.cryptomator.random;
+using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.AquaticPrime;
 using Ch.Cyberduck.Core.Bonjour;
@@ -54,6 +54,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.locale.class", typeof(DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.dateformatter.class", typeof(UserDefaultsDateFormatter).AssemblyQualifiedName);
             defaults.put("factory.passwordstore.class", typeof(DataProtectorPasswordStore).AssemblyQualifiedName);
+            defaults.put("factory.proxycredentialsstore.class",
+                typeof(CredentialManagerProxyCredentialsStore).AssemblyQualifiedName);
             defaults.put("factory.alertcallback.class", typeof(DialogAlertCallback).AssemblyQualifiedName);
             defaults.put("factory.certificatestore.class", typeof(SystemCertificateStore).AssemblyQualifiedName);
             defaults.put("factory.hostkeycallback.class", typeof(HostKeyController).AssemblyQualifiedName);
@@ -84,7 +86,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.notification.class", typeof(ToolstripNotificationService).AssemblyQualifiedName);
             if (Cyberduck.Core.Utils.IsWin7OrLater)
             {
-                defaults.put("factory.badgelabeler.class", typeof(TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
+                defaults.put("factory.badgelabeler.class",
+                    typeof(TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
             }
             defaults.put("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
             defaults.put("factory.schemehandler.class", typeof(URLSchemeHandlerConfiguration).AssemblyQualifiedName);
