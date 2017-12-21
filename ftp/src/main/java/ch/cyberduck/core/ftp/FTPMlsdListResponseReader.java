@@ -150,6 +150,9 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     if(StringUtils.contains(flags, 'e')) {
                         // CWD command naming the object should succeed
                         user = user.or(Permission.Action.execute);
+                        if(parsed.isDirectory()) {
+                            user = user.or(Permission.Action.read);
+                        }
                     }
                     final Permission permission = new Permission(user, Permission.Action.none, Permission.Action.none);
                     parsed.attributes().setPermission(permission);

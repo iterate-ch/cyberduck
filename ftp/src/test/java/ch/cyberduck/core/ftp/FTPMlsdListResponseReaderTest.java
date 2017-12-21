@@ -41,17 +41,17 @@ public class FTPMlsdListResponseReaderTest {
     public void testMlsd() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", EnumSet.of(Path.Type.directory));
+            "/www", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
-                "Type=file;Perm=awr;Unique=keVO1+8G4; writable",
-                "Type=file;Perm=r;Unique=keVO1+IH4;  leading space",
-                "Type=dir;Perm=cpmel;Unique=keVO1+7G4; incoming",
+            "Type=file;Perm=awr;Unique=keVO1+8G4; writable",
+            "Type=file;Perm=r;Unique=keVO1+IH4;  leading space",
+            "Type=dir;Perm=cpmel;Unique=keVO1+7G4; incoming",
         };
 
 
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
         assertEquals(3, children.size());
         assertEquals("writable", children.get(0).getName());
         assertTrue(children.get(0).isFile());
@@ -64,6 +64,25 @@ public class FTPMlsdListResponseReaderTest {
         assertTrue(children.get(2).isDirectory());
         assertTrue(children.get(2).attributes().getPermission().isReadable());
         assertTrue(children.get(2).attributes().getPermission().isWritable());
+        assertTrue(children.get(2).attributes().getPermission().isExecutable());
+    }
+
+    @Test
+    public void testParsePermissions() throws Exception {
+        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
+        Path path = new Path(
+            "/www", EnumSet.of(Path.Type.directory));
+
+        String[] replies = new String[]{
+            "Type=dir;Modify=20171202151917;Unique=04c800e7ef006c54;Perm=cmpdfe; progrocklists",
+        };
+        final AttributedList<Path> children = new FTPMlsdListResponseReader()
+            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+        assertEquals(1, children.size());
+        assertTrue(children.get(0).isDirectory());
+        assertTrue(children.get(0).attributes().getPermission().isReadable());
+        assertTrue(children.get(0).attributes().getPermission().isWritable());
+        assertTrue(children.get(0).attributes().getPermission().isExecutable());
     }
 
     @Test(expected = FTPInvalidListException.class)
