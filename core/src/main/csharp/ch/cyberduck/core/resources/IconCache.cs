@@ -391,7 +391,7 @@ namespace Ch.Cyberduck.Core.Resources
                 _protocolIcons = new Dictionary<string, Bitmap>();
                 foreach (Protocol p in ProtocolFactory.get().find().toArray(new Protocol[] {}))
                 {
-                    _protocolIcons[p.getIdentifier()] = IconForName(p.icon(), 16);
+                    _protocolIcons[p.disk()] = IconForName(p.icon(), 16);
                 }
             }
             return _protocolIcons;
