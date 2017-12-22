@@ -71,34 +71,28 @@ public class SFTPQuotaFeature implements Quota {
             final Response response = sftp.request(request).retrieve();
             switch(response.getType()) {
                 case EXTENDED_REPLY:
-                    BigInteger bytesOnDevice = response.readUInt64AsBigInteger();
-                    BigInteger unusedBytesOnDevice = response.readUInt64AsBigInteger();
-                    BigInteger bytesAvailableToUser = response.readUInt64AsBigInteger();
-                    BigInteger unusedBytesAvailableToUser = response.readUInt64AsBigInteger();
+                    long bytesOnDevice = response.readUInt64();
+                    long unusedBytesOnDevice = response.readUInt64();
+                    long bytesAvailableToUser = response.readUInt64();
+                    long unusedBytesAvailableToUser = response.readUInt64();
                     int bytesPerAllocationUnit = response.readUInt32AsInt();
 
-                    if(BigInteger.ZERO.equals(bytesAvailableToUser)) {
-                        if(BigInteger.ZERO.equals(bytesOnDevice)) {
+                    if(bytesAvailableToUser == 0) {
+                        if(bytesOnDevice == 0) {
                             throw new IOException("SFTPv6 space-available did not return valid values.");
                         }
                         else {
-                            BigInteger available = unusedBytesOnDevice;
-                            BigInteger used = bytesOnDevice.subtract(unusedBytesOnDevice);
+                            long available = unusedBytesOnDevice;
+                            long used = bytesOnDevice - unusedBytesOnDevice;
 
-                            if(threshold.compareTo(available) < 0 || threshold.compareTo(used) < 0) {
-                                throw new IOException(String.format("Available %s or used %s exceed threshold of %s", available, used, threshold));
-                            }
-                            return new Space(used.longValue(), available.longValue());
+                            return new Space(used, available);
                         }
                     }
                     else {
-                        BigInteger available = unusedBytesAvailableToUser;
-                        BigInteger used = bytesAvailableToUser.subtract(unusedBytesAvailableToUser);
+                        long available = unusedBytesAvailableToUser;
+                        long used = bytesAvailableToUser - unusedBytesAvailableToUser;
 
-                        if(threshold.compareTo(available) < 0 || threshold.compareTo(used) < 0) {
-                            throw new IOException(String.format("Available %s or used %s exceed threshold of %s", available, used, threshold));
-                        }
-                        return new Space(used.longValue(), available.longValue());
+                        return new Space(used, available);
                     }
 
                 default:
@@ -116,28 +110,24 @@ public class SFTPQuotaFeature implements Quota {
             final Response response = sftp.request(request).retrieve();
             switch(response.getType()) {
                 case EXTENDED_REPLY:
-                    BigInteger blockSize = response.readUInt64AsBigInteger(); /* file system block size */
-                    BigInteger filesystemBlockSize = response.readUInt64AsBigInteger(); /* fundamental fs block size */
-                    BigInteger totalBlocks = response.readUInt64AsBigInteger(); /* number of blocks (unit f_frsize) */
-                    BigInteger filesystemFreeBlocks = response.readUInt64AsBigInteger(); /* free blocks in file system */
-                    BigInteger blocksAvailable = response.readUInt64AsBigInteger(); /* free blocks for non-root */
-                    BigInteger fileInodes = response.readUInt64AsBigInteger(); /* total file inodes */
-                    BigInteger fileInodesFree = response.readUInt64AsBigInteger(); /* free file inodes */
-                    BigInteger fileInodesAvailable = response.readUInt64AsBigInteger(); /* free file inodes for to non-root */
-                    BigInteger filesystemID = response.readUInt64AsBigInteger(); /* file system id */
-                    BigInteger flags = response.readUInt64AsBigInteger(); /* bit mask of f_flag values */
-                    BigInteger maximumFilenameLength = response.readUInt64AsBigInteger(); /* maximum filename length */
+                    long blockSize = response.readUInt64(); /* file system block size */
+                    long filesystemBlockSize = response.readUInt64(); /* fundamental fs block size */
+                    long totalBlocks = response.readUInt64(); /* number of blocks (unit f_frsize) */
+                    long filesystemFreeBlocks = response.readUInt64(); /* free blocks in file system */
+                    long blocksAvailable = response.readUInt64(); /* free blocks for non-root */
+                    long fileInodes = response.readUInt64(); /* total file inodes */
+                    long fileInodesFree = response.readUInt64(); /* free file inodes */
+                    long fileInodesAvailable = response.readUInt64(); /* free file inodes for to non-root */
+                    byte[] filesystemID = new byte[8]; /* file system id */
+                    response.readRawBytes(filesystemID);
+                    long flags = response.readUInt64(); /* bit mask of f_flag values */
+                    long maximumFilenameLength = response.readUInt64(); /* maximum filename length */
 
-                    BigInteger total = totalBlocks.multiply(filesystemBlockSize);
-                    BigInteger available = blocksAvailable.multiply(blockSize);
-                    BigInteger used = total.subtract(available);
+                    long total = totalBlocks * filesystemBlockSize;
+                    long available = blocksAvailable * blockSize;
+                    long used = total - available;
 
-                    BigInteger threshold = BigInteger.valueOf(Long.MAX_VALUE);
-
-                    if(threshold.compareTo(available) < 0 || threshold.compareTo(used) < 0) {
-                        throw new IOException(String.format("Available %s or used %s exceed threshold of %s", available, used, threshold));
-                    }
-                    return new Space(used.longValue(), available.longValue());
+                    return new Space(used, available);
                 default:
                     throw new IOException(String.format("Unexpected response type %s", response.getType()));
             }
