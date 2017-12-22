@@ -20,9 +20,8 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.BackgroundException;
 
 public interface ComparisonService {
 
-    Comparison compare(PathAttributes file, LocalAttributes local) throws BackgroundException;
+    Comparison compare(PathAttributes file, LocalAttributes local);
 }

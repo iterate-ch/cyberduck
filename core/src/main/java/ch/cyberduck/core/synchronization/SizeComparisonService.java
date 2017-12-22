@@ -20,7 +20,6 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 
@@ -28,7 +27,7 @@ public class SizeComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(SizeComparisonService.class);
 
     @Override
-    public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
+    public Comparison compare(final PathAttributes remote, final LocalAttributes local) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare size for %s with %s", remote, local));
         }
