@@ -241,7 +241,7 @@
         </File>
       </Component>
       <Component Id="ikvm.misc" Guid="29564F63-CA76-4944-9022-D705E038DF24">
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes">
            <netfx:NativeImage Id="ngen_ikvm.misc" Platform="32bit" Priority="3" />
         </File>
       </Component>
