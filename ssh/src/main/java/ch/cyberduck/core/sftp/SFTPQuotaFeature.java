@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import net.schmizz.sshj.sftp.Request;
 import net.schmizz.sshj.sftp.Response;
@@ -32,6 +33,7 @@ import net.schmizz.sshj.sftp.SFTPEngine;
 
 public class SFTPQuotaFeature implements Quota {
     private static final Logger log = Logger.getLogger(SFTPQuotaFeature.class);
+    private static final BigInteger threshold = BigInteger.valueOf(Long.MAX_VALUE);
 
     private final SFTPSession session;
 
@@ -69,12 +71,36 @@ public class SFTPQuotaFeature implements Quota {
             final Response response = sftp.request(request).retrieve();
             switch(response.getType()) {
                 case EXTENDED_REPLY:
-                    Long bytesOnDevice = response.readUInt64();
-                    Long unusedBytesOnDevice = response.readUInt64();
-                    Long bytesAvailableToUser = response.readUInt64();
-                    Long unusedBytesAvailableToUser = response.readUInt64();
-                    Integer bytesPerAllocationUnit = response.readUInt32AsInt();
-                    return new Space(bytesAvailableToUser - unusedBytesAvailableToUser, unusedBytesAvailableToUser);
+                    BigInteger bytesOnDevice = response.readUInt64AsBigInteger();
+                    BigInteger unusedBytesOnDevice = response.readUInt64AsBigInteger();
+                    BigInteger bytesAvailableToUser = response.readUInt64AsBigInteger();
+                    BigInteger unusedBytesAvailableToUser = response.readUInt64AsBigInteger();
+                    int bytesPerAllocationUnit = response.readUInt32AsInt();
+
+                    if(BigInteger.ZERO.equals(bytesAvailableToUser)) {
+                        if(BigInteger.ZERO.equals(bytesOnDevice)) {
+                            throw new IOException("SFTPv6 space-available did not return valid values.");
+                        }
+                        else {
+                            BigInteger available = unusedBytesOnDevice;
+                            BigInteger used = bytesOnDevice.subtract(unusedBytesOnDevice);
+
+                            if(threshold.compareTo(available) < 0 || threshold.compareTo(used) < 0) {
+                                throw new IOException(String.format("Available %s or used %s exceed threshold of %s", available, used, threshold));
+                            }
+                            return new Space(used.longValue(), available.longValue());
+                        }
+                    }
+                    else {
+                        BigInteger available = unusedBytesAvailableToUser;
+                        BigInteger used = bytesAvailableToUser.subtract(unusedBytesAvailableToUser);
+
+                        if(threshold.compareTo(available) < 0 || threshold.compareTo(used) < 0) {
+                            throw new IOException(String.format("Available %s or used %s exceed threshold of %s", available, used, threshold));
+                        }
+                        return new Space(used.longValue(), available.longValue());
+                    }
+
                 default:
                     throw new IOException(String.format("Unexpected response type %s", response.getType()));
             }
