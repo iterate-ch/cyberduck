@@ -116,21 +116,28 @@ public class SFTPQuotaFeature implements Quota {
             final Response response = sftp.request(request).retrieve();
             switch(response.getType()) {
                 case EXTENDED_REPLY:
-                    Long blockSize = response.readUInt64(); /* file system block size */
-                    Long filesystemBlockSize = response.readUInt64(); /* fundamental fs block size */
-                    Long totalBlocks = response.readUInt64(); /* number of blocks (unit f_frsize) */
-                    Long filesystemFreeBlocks = response.readUInt64(); /* free blocks in file system */
-                    Long blocksAvailable = response.readUInt64(); /* free blocks for non-root */
-                    Long fileInodes = response.readUInt64(); /* total file inodes */
-                    Long fileInodesFree = response.readUInt64(); /* free file inodes */
-                    Long fileInodesAvailable = response.readUInt64(); /* free file inodes for to non-root */
-                    Long filesystemID = response.readUInt64(); /* file system id */
-                    Long flags = response.readUInt64(); /* bit mask of f_flag values */
-                    Long maximumFilenameLength = response.readUInt64(); /* maximum filename length */
-                    Long total = totalBlocks * filesystemBlockSize;
-                    Long available = blocksAvailable * blockSize;
-                    Long used = total - available;
-                    return new Space(used, available);
+                    BigInteger blockSize = response.readUInt64AsBigInteger(); /* file system block size */
+                    BigInteger filesystemBlockSize = response.readUInt64AsBigInteger(); /* fundamental fs block size */
+                    BigInteger totalBlocks = response.readUInt64AsBigInteger(); /* number of blocks (unit f_frsize) */
+                    BigInteger filesystemFreeBlocks = response.readUInt64AsBigInteger(); /* free blocks in file system */
+                    BigInteger blocksAvailable = response.readUInt64AsBigInteger(); /* free blocks for non-root */
+                    BigInteger fileInodes = response.readUInt64AsBigInteger(); /* total file inodes */
+                    BigInteger fileInodesFree = response.readUInt64AsBigInteger(); /* free file inodes */
+                    BigInteger fileInodesAvailable = response.readUInt64AsBigInteger(); /* free file inodes for to non-root */
+                    BigInteger filesystemID = response.readUInt64AsBigInteger(); /* file system id */
+                    BigInteger flags = response.readUInt64AsBigInteger(); /* bit mask of f_flag values */
+                    BigInteger maximumFilenameLength = response.readUInt64AsBigInteger(); /* maximum filename length */
+
+                    BigInteger total = totalBlocks.multiply(filesystemBlockSize);
+                    BigInteger available = blocksAvailable.multiply(blockSize);
+                    BigInteger used = total.subtract(available);
+
+                    BigInteger threshold = BigInteger.valueOf(Long.MAX_VALUE);
+
+                    if(threshold.compareTo(available) < 0 || threshold.compareTo(used) < 0) {
+                        throw new IOException(String.format("Available %s or used %s exceed threshold of %s", available, used, threshold));
+                    }
+                    return new Space(used.longValue(), available.longValue());
                 default:
                     throw new IOException(String.format("Unexpected response type %s", response.getType()));
             }
