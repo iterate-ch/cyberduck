@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.math.BigInteger;
 
 import net.schmizz.sshj.sftp.Request;
 import net.schmizz.sshj.sftp.Response;
@@ -33,7 +32,6 @@ import net.schmizz.sshj.sftp.SFTPEngine;
 
 public class SFTPQuotaFeature implements Quota {
     private static final Logger log = Logger.getLogger(SFTPQuotaFeature.class);
-    private static final BigInteger threshold = BigInteger.valueOf(Long.MAX_VALUE);
 
     private final SFTPSession session;
 
