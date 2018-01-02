@@ -66,7 +66,7 @@ public class FTPDataFallback {
      * @param listener Progress callback
      * @return True if action was successful
      */
-    protected <T> T data(final DataConnectionAction<T> action, final ProgressListener listener)
+    public <T> T data(final DataConnectionAction<T> action, final ProgressListener listener)
         throws IOException, BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
