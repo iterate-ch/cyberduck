@@ -107,6 +107,7 @@ namespace Ch.Cyberduck.Ui
             {
                 argsTask.Wait();
             }
+            mutex.Close();
         }
     }
 }
