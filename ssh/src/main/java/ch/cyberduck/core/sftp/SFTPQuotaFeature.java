@@ -69,12 +69,30 @@ public class SFTPQuotaFeature implements Quota {
             final Response response = sftp.request(request).retrieve();
             switch(response.getType()) {
                 case EXTENDED_REPLY:
-                    Long bytesOnDevice = response.readUInt64();
-                    Long unusedBytesOnDevice = response.readUInt64();
-                    Long bytesAvailableToUser = response.readUInt64();
-                    Long unusedBytesAvailableToUser = response.readUInt64();
-                    Integer bytesPerAllocationUnit = response.readUInt32AsInt();
-                    return new Space(bytesAvailableToUser - unusedBytesAvailableToUser, unusedBytesAvailableToUser);
+                    long bytesOnDevice = response.readUInt64();
+                    long unusedBytesOnDevice = response.readUInt64();
+                    long bytesAvailableToUser = response.readUInt64();
+                    long unusedBytesAvailableToUser = response.readUInt64();
+                    int bytesPerAllocationUnit = response.readUInt32AsInt();
+
+                    if(bytesAvailableToUser == 0) {
+                        if(bytesOnDevice == 0) {
+                            throw new IOException("SFTPv6 space-available did not return valid values.");
+                        }
+                        else {
+                            long available = unusedBytesOnDevice;
+                            long used = bytesOnDevice - unusedBytesOnDevice;
+
+                            return new Space(used, available);
+                        }
+                    }
+                    else {
+                        long available = unusedBytesAvailableToUser;
+                        long used = bytesAvailableToUser - unusedBytesAvailableToUser;
+
+                        return new Space(used, available);
+                    }
+
                 default:
                     throw new IOException(String.format("Unexpected response type %s", response.getType()));
             }
@@ -90,20 +108,23 @@ public class SFTPQuotaFeature implements Quota {
             final Response response = sftp.request(request).retrieve();
             switch(response.getType()) {
                 case EXTENDED_REPLY:
-                    Long blockSize = response.readUInt64(); /* file system block size */
-                    Long filesystemBlockSize = response.readUInt64(); /* fundamental fs block size */
-                    Long totalBlocks = response.readUInt64(); /* number of blocks (unit f_frsize) */
-                    Long filesystemFreeBlocks = response.readUInt64(); /* free blocks in file system */
-                    Long blocksAvailable = response.readUInt64(); /* free blocks for non-root */
-                    Long fileInodes = response.readUInt64(); /* total file inodes */
-                    Long fileInodesFree = response.readUInt64(); /* free file inodes */
-                    Long fileInodesAvailable = response.readUInt64(); /* free file inodes for to non-root */
-                    Long filesystemID = response.readUInt64(); /* file system id */
-                    Long flags = response.readUInt64(); /* bit mask of f_flag values */
-                    Long maximumFilenameLength = response.readUInt64(); /* maximum filename length */
-                    Long total = totalBlocks * filesystemBlockSize;
-                    Long available = blocksAvailable * blockSize;
-                    Long used = total - available;
+                    long blockSize = response.readUInt64(); /* file system block size */
+                    long filesystemBlockSize = response.readUInt64(); /* fundamental fs block size */
+                    long totalBlocks = response.readUInt64(); /* number of blocks (unit f_frsize) */
+                    long filesystemFreeBlocks = response.readUInt64(); /* free blocks in file system */
+                    long blocksAvailable = response.readUInt64(); /* free blocks for non-root */
+                    long fileInodes = response.readUInt64(); /* total file inodes */
+                    long fileInodesFree = response.readUInt64(); /* free file inodes */
+                    long fileInodesAvailable = response.readUInt64(); /* free file inodes for to non-root */
+                    byte[] filesystemID = new byte[8]; /* file system id */
+                    response.readRawBytes(filesystemID);
+                    long flags = response.readUInt64(); /* bit mask of f_flag values */
+                    long maximumFilenameLength = response.readUInt64(); /* maximum filename length */
+
+                    long total = totalBlocks * filesystemBlockSize;
+                    long available = blocksAvailable * blockSize;
+                    long used = total - available;
+
                     return new Space(used, available);
                 default:
                     throw new IOException(String.format("Unexpected response type %s", response.getType()));
