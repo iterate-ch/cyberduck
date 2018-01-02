@@ -16,8 +16,10 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -44,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 public class DAVTimestampFeatureTest {
 
     @Test
-    public void testSetTimestampNoSupport() throws Exception {
+    public void testSetTimestamp() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
@@ -54,8 +56,9 @@ public class DAVTimestampFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
-        new DAVTimestampFeature(session).setTimestamp(file, 500L);
-        // assertEquals(500L, new DAVAttributesFeature(session).find(file).getModificationDate());
+        new DAVTimestampFeature(session).setTimestamp(file, 5000L);
+        assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
+        assertEquals(5000L, new DAVListService(session).list(file.getParent(), new DisabledListProgressListener()).find(new DefaultPathPredicate(file)).attributes().getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
