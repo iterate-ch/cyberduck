@@ -18,7 +18,7 @@ package ch.cyberduck.core;
 public class DisabledProxyCredentialsStore implements ProxyCredentialsStore {
     @Override
     public Credentials getCredentials(final String proxy) {
-        return null;
+        return new Credentials();
     }
 
     @Override

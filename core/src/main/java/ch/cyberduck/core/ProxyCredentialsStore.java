@@ -21,7 +21,7 @@ public interface ProxyCredentialsStore {
      * Find proxy credentials for a proxy host
      *
      * @param proxy Proxy hostname
-     * @return Credentials if found or null otherwise
+     * @return Credentials if found. Empty values if not found
      */
     Credentials getCredentials(String proxy);
 
