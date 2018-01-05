@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public final class Keychain extends HostPasswordStore implements PasswordStore, CertificateStore, ProxyCredentialsStore {
+public final class Keychain extends HostPasswordStore implements PasswordStore, CertificateStore {
     private static final Logger log = Logger.getLogger(Keychain.class);
 
     static {
@@ -219,14 +219,4 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
      * @return Selected certificate
      */
     private native byte[] chooseCertificateNative(Object[] certificates, String hostname, String prompt);
-
-    @Override
-    public Credentials getCredentials(final String proxy) {
-        return null;
-    }
-
-    @Override
-    public void addCredentials(final String proxy, final String accountName, final String password) {
-        //
-    }
 }
