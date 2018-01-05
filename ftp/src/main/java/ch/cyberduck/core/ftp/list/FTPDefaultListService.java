@@ -1,20 +1,18 @@
-package ch.cyberduck.core.ftp;
+package ch.cyberduck.core.ftp.list;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.AttributedList;
@@ -24,6 +22,12 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.ftp.DataConnectionAction;
+import ch.cyberduck.core.ftp.DataConnectionActionExecutor;
+import ch.cyberduck.core.ftp.FTPClient;
+import ch.cyberduck.core.ftp.FTPException;
+import ch.cyberduck.core.ftp.FTPExceptionMappingService;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import java.io.IOException;
@@ -32,13 +36,9 @@ import java.util.List;
 public class FTPDefaultListService implements ListService {
 
     private final FTPSession session;
-
     private final FTPListService.Command command;
-
     private final FTPDataResponseReader reader;
-
     private final HostPasswordStore keychain;
-
     private final LoginCallback prompt;
 
     public FTPDefaultListService(final FTPSession session, final HostPasswordStore keychain, final LoginCallback prompt,
@@ -61,7 +61,7 @@ public class FTPDefaultListService implements ListService {
                 // data connection in type ASCII or type EBCDIC.
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            final List<String> list = new FTPDataFallback(session, keychain, prompt).data(new DataConnectionAction<List<String>>() {
+            final List<String> list = new DataConnectionActionExecutor(session).data(new DataConnectionAction<List<String>>() {
                 @Override
                 public List<String> execute() throws BackgroundException {
                     try {
