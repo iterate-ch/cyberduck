@@ -279,7 +279,6 @@ public class Terminal {
         finally {
             this.disconnect(source);
             this.disconnect(destination);
-            console.printf("%n%s", StringUtils.EMPTY);
         }
         return Exit.failure;
     }
