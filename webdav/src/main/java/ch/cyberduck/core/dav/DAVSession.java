@@ -44,6 +44,7 @@ import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -139,12 +140,19 @@ public class DAVSession extends HttpSession<DAVClient> {
             preferences.getProperty("webdav.ntlm.workstation"),
             preferences.getProperty("webdav.ntlm.domain"));
         if(preferences.getBoolean("webdav.basic.preemptive")) {
-            // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-            client.enablePreemptiveAuthentication(host.getHostname(),
-                host.getPort(),
-                host.getPort(),
-                Charset.forName(preferences.getProperty("http.credentials.charset"))
-            );
+            switch(ProxyFactory.get().find(host).getType()) {
+                case DIRECT:
+                case SOCKS:
+                    // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
+                    client.enablePreemptiveAuthentication(host.getHostname(),
+                        host.getPort(),
+                        host.getPort(),
+                        Charset.forName(preferences.getProperty("http.credentials.charset"))
+                    );
+                    break;
+                default:
+                    client.disablePreemptiveAuthentication();
+            }
         }
         else {
             client.disablePreemptiveAuthentication();
