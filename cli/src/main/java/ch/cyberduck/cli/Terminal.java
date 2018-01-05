@@ -448,7 +448,12 @@ public class Terminal {
         if(session == SessionPool.DISCONNECTED) {
             return;
         }
-        this.execute(new DisconnectBackgroundAction(controller, session));
+        this.execute(new DisconnectBackgroundAction(controller, session) {
+            @Override
+            public void message(final String message) {
+                // No output
+            }
+        });
     }
 
     protected <T> boolean execute(final SessionBackgroundAction<T> action) {
@@ -463,5 +468,4 @@ public class Terminal {
             return false;
         }
     }
-
 }
