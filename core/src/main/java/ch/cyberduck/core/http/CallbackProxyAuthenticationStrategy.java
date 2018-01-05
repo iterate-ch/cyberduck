@@ -25,9 +25,6 @@ import ch.cyberduck.core.ProxyCredentialsStoreFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFactory;
-import ch.cyberduck.core.proxy.ProxyFinder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -65,15 +62,13 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
     private final Host bookmark;
     private final LoginCallback prompt;
 
-    private final ProxyFinder proxyFinder;
     private final ProxyCredentialsStore keychain;
 
     public CallbackProxyAuthenticationStrategy(final Host bookmark, final LoginCallback prompt) {
-        this(ProxyFactory.get(), ProxyCredentialsStoreFactory.get(), bookmark, prompt);
+        this(ProxyCredentialsStoreFactory.get(), bookmark, prompt);
     }
 
-    public CallbackProxyAuthenticationStrategy(final ProxyFinder proxyFinder, final ProxyCredentialsStore keychain, final Host bookmark, final LoginCallback prompt) {
-        this.proxyFinder = proxyFinder;
+    public CallbackProxyAuthenticationStrategy(final ProxyCredentialsStore keychain, final Host bookmark, final LoginCallback prompt) {
         this.keychain = keychain;
         this.bookmark = bookmark;
         this.prompt = prompt;
@@ -120,40 +115,31 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                     authScheme.getRealm(),
                     authScheme.getSchemeName());
 
-                final Proxy proxy = proxyFinder.find(bookmark);
-                switch(proxy.getType()) {
-                    case HTTP:
-                    case HTTPS:
-                        final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), StringUtils.lowerCase(proxy.getType().name()));
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Setup proxy %s", h));
-                        }
-                        final Credentials saved = keychain.getCredentials(proxy.getHostname());
-                        if(StringUtils.isEmpty(saved.getPassword())) {
-                            try {
-                                final Credentials input = prompt.prompt(bookmark,
-                                    proxy.getUser(),
-                                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
-                                    authScheme.getRealm(),
-                                    new LoginOptions().user(true).password(true)
-                                );
-                                if(input.isSaved()) {
-                                    if(log.isInfoEnabled()) {
-                                        log.info(String.format("Save passphrase for proxy %s", proxy));
-                                    }
-                                    keychain.addCredentials(proxy.getHostname(), input.getUsername(), input.getPassword());
-                                }
-                                options.add(new AuthOption(authScheme, new NTCredentials(input.getUsername(), input.getPassword(),
-                                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
+                final Credentials saved = keychain.getCredentials(authhost.getHostName());
+                if(StringUtils.isEmpty(saved.getPassword())) {
+                    try {
+                        final Credentials input = prompt.prompt(bookmark,
+                            bookmark.getCredentials().getUsername(),
+                            String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
+                            authScheme.getRealm(),
+                            new LoginOptions().user(true).password(true)
+                        );
+                        if(input.isSaved()) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Save passphrase for proxy %s", authhost));
                             }
-                            catch(LoginCanceledException ignored) {
-                                // Ignore dismiss of prompt
-                            }
+                            keychain.addCredentials(authhost.getHostName(), input.getUsername(), input.getPassword());
                         }
-                        else {
-                            options.add(new AuthOption(authScheme, new NTCredentials(saved.getUsername(), saved.getPassword(),
-                                preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
-                        }
+                        options.add(new AuthOption(authScheme, new NTCredentials(input.getUsername(), input.getPassword(),
+                            preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
+                    }
+                    catch(LoginCanceledException ignored) {
+                        // Ignore dismiss of prompt
+                    }
+                }
+                else {
+                    options.add(new AuthOption(authScheme, new NTCredentials(saved.getUsername(), saved.getPassword(),
+                        preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
                 }
             }
             else {

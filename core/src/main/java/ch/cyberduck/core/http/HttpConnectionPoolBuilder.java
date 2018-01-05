@@ -178,7 +178,7 @@ public class HttpConnectionPoolBuilder {
                     log.info(String.format("Setup proxy %s", h));
                 }
                 configuration.setProxy(h);
-                configuration.setProxyAuthenticationStrategy(new CallbackProxyAuthenticationStrategy(proxyFinder, ProxyCredentialsStoreFactory.get(), host, prompt));
+                configuration.setProxyAuthenticationStrategy(new CallbackProxyAuthenticationStrategy(ProxyCredentialsStoreFactory.get(), host, prompt));
                 break;
         }
         configuration.setUserAgent(new PreferencesUseragentProvider().get());
