@@ -33,6 +33,8 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,12 +42,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class FTPDataFallbackTest {
+public class DataConnectionActionExecutorTest {
 
     @Test
     public void testFallbackDataConnectionSocketTimeout() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setFTPConnectMode(FTPConnectMode.active);
 
@@ -56,18 +58,24 @@ public class FTPDataFallbackTest {
         session.getClient().setDefaultTimeout(2000);
         session.getClient().setConnectTimeout(2000);
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path path = new Path("/pub/debian/README.html", EnumSet.of(Path.Type.file));
+        final Path file = new Path("/pub/debian/README.html", EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
+        final DataConnectionAction<InputStream> action = new DataConnectionAction<InputStream>() {
             @Override
-            public Void execute() throws BackgroundException {
-                if(count.get() == 0) {
-                    throw new FTPExceptionMappingService().map(new SocketTimeoutException());
+            public InputStream execute() throws BackgroundException {
+                try {
+                    final InputStream in = session.getClient().retrieveFileStream(file.getAbsolute());
+                    if(count.get() == 0) {
+                        throw new FTPExceptionMappingService().map(new SocketTimeoutException());
+                    }
+                    return in;
                 }
-                return null;
+                catch(IOException e) {
+                    throw new FTPExceptionMappingService().map(e);
+                }
             }
         };
-        final FTPDataFallback f = new FTPDataFallback(session, new DisabledPasswordStore(), new DisabledLoginCallback(), true) {
+        final DataConnectionActionExecutor f = new DataConnectionActionExecutor(session, true) {
             @Override
             protected <T> T fallback(final DataConnectionAction<T> action) throws BackgroundException {
                 count.incrementAndGet();
@@ -82,7 +90,7 @@ public class FTPDataFallbackTest {
     @Test
     public void testFallbackDataConnection500Error() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
+            System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         host.setFTPConnectMode(FTPConnectMode.active);
         final AtomicInteger count = new AtomicInteger();
@@ -99,7 +107,7 @@ public class FTPDataFallbackTest {
                 return null;
             }
         };
-        final FTPDataFallback f = new FTPDataFallback(session, new DisabledPasswordStore(), new DisabledLoginCallback(), true) {
+        final DataConnectionActionExecutor f = new DataConnectionActionExecutor(session, true) {
             @Override
             protected <T> T fallback(final DataConnectionAction<T> action) throws BackgroundException {
                 count.incrementAndGet();
