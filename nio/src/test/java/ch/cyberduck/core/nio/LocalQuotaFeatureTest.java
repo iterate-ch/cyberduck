@@ -32,7 +32,7 @@ public class LocalQuotaFeatureTest {
     @Test
     public void get() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         final Quota.Space quota = new LocalQuotaFeature(session).get();

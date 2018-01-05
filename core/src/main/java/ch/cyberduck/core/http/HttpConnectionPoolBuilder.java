@@ -18,7 +18,9 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.ProxyCredentialsStoreFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.preferences.Preferences;
@@ -35,8 +37,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthSchemeProvider;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.ConnectionConfig;
@@ -52,7 +52,6 @@ import org.apache.http.impl.auth.DigestSchemeFactory;
 import org.apache.http.impl.auth.KerberosSchemeFactory;
 import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.auth.SPNegoSchemeFactory;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -74,11 +73,8 @@ public class HttpConnectionPoolBuilder {
         = PreferencesFactory.get();
 
     private final ConnectionSocketFactory socketFactory;
-
     private final ConnectionSocketFactory sslSocketFactory;
-
     private final ProxyFinder proxyFinder;
-
     private final Host host;
 
     public HttpConnectionPoolBuilder(final Host host,
@@ -124,8 +120,7 @@ public class HttpConnectionPoolBuilder {
     }
 
     protected HttpConnectionPoolBuilder(final Host host, final X509TrustManager trust, final X509KeyManager key,
-                                        final ProxyFinder proxy,
-                                        final SocketFactory socketFactory) {
+                                        final ProxyFinder proxy, final SocketFactory socketFactory) {
         this(host, new PlainConnectionSocketFactory() {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
@@ -165,7 +160,12 @@ public class HttpConnectionPoolBuilder {
         this.proxyFinder = proxyFinder;
     }
 
-    public HttpClientBuilder build(final TranscriptListener listener) {
+    /**
+     * @param listener Log listener
+     * @param prompt   Prompt for proxy credentials
+     * @return Builder for HTTP client
+     */
+    public HttpClientBuilder build(final TranscriptListener listener, final LoginCallback prompt) {
         final HttpClientBuilder configuration = HttpClients.custom();
         // Use HTTP Connect proxy implementation provided here instead of
         // relying on internal proxy support in socket factory
@@ -178,12 +178,7 @@ public class HttpConnectionPoolBuilder {
                     log.info(String.format("Setup proxy %s", h));
                 }
                 configuration.setProxy(h);
-                if(StringUtils.isNotBlank(proxy.getUserinfo())) {
-                    final BasicCredentialsProvider credentials = new BasicCredentialsProvider();
-                    credentials.setCredentials(new AuthScope(proxy.getHostname(), proxy.getPort()),
-                        new UsernamePasswordCredentials(proxy.getHostname(), proxy.getPassword()));
-                    configuration.setDefaultCredentialsProvider(credentials);
-                }
+                configuration.setProxyAuthenticationStrategy(new CallbackProxyAuthenticationStrategy(ProxyCredentialsStoreFactory.get(), host, prompt));
                 break;
         }
         configuration.setUserAgent(new PreferencesUseragentProvider().get());

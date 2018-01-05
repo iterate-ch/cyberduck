@@ -167,7 +167,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     @Override
     public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
                                   final Host bookmark, final String prompt)
-            throws ConnectionCanceledException {
+        throws ConnectionCanceledException {
         final List<X509Certificate> certificates = new ArrayList<X509Certificate>();
         final CertificateStoreX509KeyManager manager;
         try {
@@ -202,7 +202,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             }
             final CertificateFactory factory = CertificateFactory.getInstance("X.509");
             final X509Certificate selected = (X509Certificate) factory.generateCertificate(
-                    new ByteArrayInputStream(select.get()));
+                new ByteArrayInputStream(select.get()));
             if(log.isDebugEnabled()) {
                 log.info(String.format("Selected certificate %s", selected));
             }

@@ -112,7 +112,7 @@ public class LoginConnectionServiceTest {
         }, new DisabledProgressListener());
         final Session session = new NullSession(new Host(new TestProtocol(), "localhost", new Credentials("user", ""))) {
             @Override
-            public Void connect(final HostKeyCallback key) throws BackgroundException {
+            public Void connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
                 connected.set(true);
                 return null;
             }

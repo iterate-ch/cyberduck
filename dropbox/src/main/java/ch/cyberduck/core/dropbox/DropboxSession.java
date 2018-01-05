@@ -63,30 +63,28 @@ import com.dropbox.core.v2.DbxRawClientV2;
 public class DropboxSession extends HttpSession<DbxRawClientV2> {
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final UseragentProvider useragent
-            = new PreferencesUseragentProvider();
+        = new PreferencesUseragentProvider();
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-
-    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
-            authorizationService);
+    private OAuth2RequestInterceptor authorizationService;
 
     public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
-    protected DbxRawClientV2 connect(final HostKeyCallback callback) throws BackgroundException {
-        final HttpClientBuilder configuration = builder.build(this);
+    protected DbxRawClientV2 connect(final HostKeyCallback callback, final LoginCallback prompt) {
+        authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        final HttpClientBuilder configuration = builder.build(this, prompt);
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(retryHandler);
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
         final CloseableHttpClient client = configuration.build();
         return new DbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
-                .withAutoRetryDisabled()
-                .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(), DbxHost.DEFAULT) {
+            .withAutoRetryDisabled()
+            .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(), DbxHost.DEFAULT) {
             @Override
             protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
                 // OAuth Bearer added in interceptor

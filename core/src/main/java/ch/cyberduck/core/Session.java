@@ -143,15 +143,16 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      * Connect to host
      *
      * @param key Host identity verification callback
+     * @param login Prompt for proxy credentials
      * @return Client
      */
-    public C open(final HostKeyCallback key) throws BackgroundException {
+    public C open(final HostKeyCallback key, final LoginCallback login) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
         // Update status flag
         state = State.opening;
-        client = this.connect(key);
+        client = this.connect(key, login);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did open to %s", host));
         }
@@ -160,7 +161,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         return client;
     }
 
-    protected abstract C connect(HostKeyCallback key) throws BackgroundException;
+    protected abstract C connect(HostKeyCallback key, final LoginCallback prompt) throws BackgroundException;
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.

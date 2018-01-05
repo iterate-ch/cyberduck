@@ -59,7 +59,7 @@ public class IRODSListServiceTest {
 
         final IRODSSession session = new IRODSSession(host);
 
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -83,7 +83,7 @@ public class IRODSListServiceTest {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final IRODSListService service = new IRODSListService(session);

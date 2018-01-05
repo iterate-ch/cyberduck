@@ -90,9 +90,9 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public Client connect(final HostKeyCallback key) throws BackgroundException {
+    public Client connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
-        final HttpClientBuilder pool = builder.build(this);
+        final HttpClientBuilder pool = builder.build(this, prompt);
         pool.disableContentCompression();
         return new Client(pool.build());
     }

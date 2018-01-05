@@ -56,21 +56,19 @@ public class DriveSession extends HttpSession<Drive> {
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
-        .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-
-    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
-        authorizationService);
+    private OAuth2RequestInterceptor authorizationService;
 
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
-    protected Drive connect(final HostKeyCallback callback) throws BackgroundException {
-        final HttpClientBuilder configuration = builder.build(this);
+    protected Drive connect(final HostKeyCallback callback, final LoginCallback prompt) {
+        authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        final HttpClientBuilder configuration = builder.build(this, prompt);
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(retryHandler);
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
         this.transport = new ApacheHttpTransport(configuration.build());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override

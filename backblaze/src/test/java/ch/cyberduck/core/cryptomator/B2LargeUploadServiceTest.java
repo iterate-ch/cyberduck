@@ -78,7 +78,7 @@ public class B2LargeUploadServiceTest {
                         System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                 ));
         final B2Session session = new B2Session(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("/test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(
@@ -120,7 +120,7 @@ public class B2LargeUploadServiceTest {
                         System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                 ));
         final B2Session session = new B2Session(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("/test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(

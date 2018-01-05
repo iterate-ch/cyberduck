@@ -55,7 +55,7 @@ public class IRODSAttributesFinderFeatureTest {
             System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         new IRODSAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
@@ -69,7 +69,7 @@ public class IRODSAttributesFinderFeatureTest {
             System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

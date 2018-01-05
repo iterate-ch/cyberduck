@@ -40,7 +40,7 @@ public class LocalSymlinkFeatureTest {
     public void testSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(session.isPosixFilesystem()) {
-            session.open(new DisabledHostKeyCallback());
+            session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
             final Path workdir = new LocalHomeFinderFeature(session).find();
             final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

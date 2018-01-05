@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledLocale;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProxyCredentialsStore;
 import ch.cyberduck.core.DisabledSleepPreventer;
 import ch.cyberduck.core.DisabledTerminalService;
 import ch.cyberduck.core.Host;
@@ -1246,6 +1247,7 @@ public abstract class Preferences {
         defaults.put("factory.watchservice.class", NIOEventWatchService.class.getName());
         defaults.put("factory.proxy.class", DisabledProxyFinder.class.getName());
         defaults.put("factory.passwordstore.class", DisabledPasswordStore.class.getName());
+        defaults.put("factory.proxycredentialsstore.class", DisabledProxyCredentialsStore.class.getName());
         defaults.put("factory.dateformatter.class", DefaultUserDateFormatter.class.getName());
         defaults.put("factory.trash.class", NativeLocalTrashFeature.class.getName());
         defaults.put("factory.symlink.class", NullLocalSymlinkFeature.class.getName());

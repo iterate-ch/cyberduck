@@ -89,8 +89,8 @@ public class MantaSession extends HttpSession<MantaClient> {
     }
 
     @Override
-    protected MantaClient connect(final HostKeyCallback key) throws BackgroundException {
-        return new MantaClient(config, new MantaConnectionFactoryConfigurator(builder.build(this)));
+    protected MantaClient connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+        return new MantaClient(config, new MantaConnectionFactoryConfigurator(builder.build(this, prompt)));
     }
 
     @Override

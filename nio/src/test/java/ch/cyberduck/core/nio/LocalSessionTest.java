@@ -16,6 +16,7 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class LocalSessionTest {
     @Test
     public void toPath() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         assertNotNull(session.toPath("/Users/username"));
         assertNotNull(session.toPath("/C:\\Users\\Administrator"));
         assertEquals("C:\\Users\\Administrator", "/C:\\Users\\Administrator".replaceFirst("^/(.:[/\\\\])", "$1"));

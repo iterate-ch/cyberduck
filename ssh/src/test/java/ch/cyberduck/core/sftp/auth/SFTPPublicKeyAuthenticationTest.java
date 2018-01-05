@@ -56,7 +56,7 @@ public class SFTPPublicKeyAuthenticationTest {
             IOUtils.copy(new StringReader(System.getProperties().getProperty("sftp.key")), key.getOutputStream(false), Charset.forName("UTF-8"));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
-            session.open(new DisabledHostKeyCallback());
+            session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
             assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -101,7 +101,7 @@ public class SFTPPublicKeyAuthenticationTest {
             IOUtils.copy(new StringReader(putty), key.getOutputStream(false), Charset.forName("UTF-8"));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
-            session.open(new DisabledHostKeyCallback());
+            session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
             final AtomicBoolean p = new AtomicBoolean();
             try {
                 assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
@@ -165,7 +165,7 @@ public class SFTPPublicKeyAuthenticationTest {
             IOUtils.copy(new StringReader(rsa), key.getOutputStream(false), Charset.forName("UTF-8"));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
-            session.open(new DisabledHostKeyCallback());
+            session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
             final AtomicBoolean b = new AtomicBoolean();
             try {
                 assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
@@ -200,7 +200,7 @@ public class SFTPPublicKeyAuthenticationTest {
             IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false), Charset.forName("UTF-8"));
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
-            session.open(new DisabledHostKeyCallback());
+            session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
             assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
