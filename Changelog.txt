@@ -1,6 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
+6.3.3
+- [Feature] Support authenticating with HTTP proxy (Windows)
+- [Bugfix] Display of created date instead of modification date (WebDAV)
+- [Bugfix] Custom disk icon from connection profile not displayed in bookmarks (Windows)
+- [Bugfix] Application error when opening connection (DRACOON) (Windows)
+
 6.3.2
 - [Feature] Option to save passwords (Cyberduck CLI, Linux)
 - [Bugfix] Failure parsing permissions from MLSD reply (FTP)
@@ -10,7 +16,6 @@ https://cyberduck.io/
 - [Bugfix] Allow to switch to authentication with private key in login prompt (SFTP)
 
 6.3.1
-- [Feature] Support authenticating with HTTP proxy (Windows)
 - [Feature] Read credentials from AWS configuration file in ~/.aws/credentials (S3)
 - [Bugfix] Slow user interface performance (Mac) (#9970)
 - [Bugfix] Prompt for credentials when using public key authentication with agent (SFTP) (#10148)
