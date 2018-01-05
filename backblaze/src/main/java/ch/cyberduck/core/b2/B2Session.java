@@ -45,8 +45,7 @@ import synapticloop.b2.exception.B2ApiException;
 
 public class B2Session extends HttpSession<B2ApiClient> {
 
-    private final B2ErrorResponseInterceptor retryHandler = new B2ErrorResponseInterceptor(
-            this);
+    private B2ErrorResponseInterceptor retryHandler;
 
     public B2Session(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -65,9 +64,10 @@ public class B2Session extends HttpSession<B2ApiClient> {
     }
 
     @Override
-    public B2ApiClient connect(final HostKeyCallback key) throws BackgroundException {
-        final HttpClientBuilder configuration = builder.build(this);
-        configuration.setServiceUnavailableRetryStrategy(retryHandler);
+    public B2ApiClient connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+        final HttpClientBuilder configuration = builder.build(this, prompt);
+        configuration.setServiceUnavailableRetryStrategy(retryHandler = new B2ErrorResponseInterceptor(
+            this));
         configuration.addInterceptorLast(retryHandler);
         return new B2ApiClient(configuration.build());
     }

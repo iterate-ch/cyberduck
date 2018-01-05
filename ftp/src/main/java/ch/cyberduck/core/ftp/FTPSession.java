@@ -184,7 +184,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public FTPClient connect(final HostKeyCallback callback) throws BackgroundException {
+    public FTPClient connect(final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
         try {
             final CustomTrustSSLProtocolSocketFactory f
                     = new CustomTrustSSLProtocolSocketFactory(trust, key);

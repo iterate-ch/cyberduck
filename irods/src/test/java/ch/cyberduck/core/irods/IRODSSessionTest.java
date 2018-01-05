@@ -56,7 +56,7 @@ public class IRODSSessionTest {
 
         final IRODSSession session = new IRODSSession(host);
 
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
 
@@ -75,7 +75,7 @@ public class IRODSSessionTest {
 
         final IRODSSession session = new IRODSSession(host);
 
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
 
@@ -101,7 +101,7 @@ public class IRODSSessionTest {
 
         final IRODSSession session = new IRODSSession(host);
 
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
 
@@ -120,7 +120,7 @@ public class IRODSSessionTest {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("a", "a"));
 
         final IRODSSession session = new IRODSSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -136,7 +136,7 @@ public class IRODSSessionTest {
                 String.format("PAM:%s", System.getProperties().getProperty("tacc.key")), System.getProperties().getProperty("tacc.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }

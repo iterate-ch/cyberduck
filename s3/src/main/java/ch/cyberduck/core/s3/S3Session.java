@@ -199,8 +199,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
-        return new RequestEntityRestStorageService(this, this.configure(), builder.build(this));
+    public RequestEntityRestStorageService connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+        return new RequestEntityRestStorageService(this, this.configure(), builder.build(this, prompt));
     }
 
     @Override

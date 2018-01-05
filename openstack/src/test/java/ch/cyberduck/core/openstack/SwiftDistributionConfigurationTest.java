@@ -62,7 +62,7 @@ public class SwiftDistributionConfigurationTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
                 new SwiftDistributionConfigurationLoader(session).repeat(new DisabledPasswordCallback()));
@@ -95,7 +95,7 @@ public class SwiftDistributionConfigurationTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
                 new SwiftDistributionConfigurationLoader(session).repeat(new DisabledPasswordCallback()));

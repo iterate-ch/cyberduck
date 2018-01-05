@@ -78,7 +78,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     }
 
     @Override
-    protected IRODSFileSystemAO connect(final HostKeyCallback key) throws BackgroundException {
+    protected IRODSFileSystemAO connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         try {
             final IRODSFileSystem fs = this.configure(IRODSFileSystem.instance());
             final IRODSAccessObjectFactory factory = fs.getIRODSAccessObjectFactory();

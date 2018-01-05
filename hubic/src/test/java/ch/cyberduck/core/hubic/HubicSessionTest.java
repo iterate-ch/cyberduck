@@ -48,7 +48,7 @@ public class HubicSessionTest {
             new Local("../profiles/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
             new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         try {
             session.login(new DisabledPasswordStore() {
                 @Override
@@ -71,7 +71,7 @@ public class HubicSessionTest {
             new Local("../profiles/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
             new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {

@@ -73,7 +73,7 @@ public class B2WriteFeatureTest {
                         System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                 ));
         final B2Session session = new B2Session(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;

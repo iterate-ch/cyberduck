@@ -18,6 +18,7 @@ package ch.cyberduck.core.auth;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
@@ -68,7 +69,7 @@ public class AWSSessionCredentialsRetriever {
         final Path access = new Path(address.getDefaultPath(), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));
         final DAVSession connection = new DAVSession(address, trust, key);
-        connection.withListener(transcript).open(new DisabledHostKeyCallback());
+        connection.withListener(transcript).open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final InputStream in = new DAVReadFeature(connection).read(access, new TransferStatus(), new DisabledConnectionCallback());
         try {
             final AWSCredentials credentials = this.parse(in);

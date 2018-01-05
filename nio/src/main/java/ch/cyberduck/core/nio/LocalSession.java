@@ -77,7 +77,7 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
-    protected FileSystem connect(final HostKeyCallback key) throws BackgroundException {
+    protected FileSystem connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         return FileSystems.getDefault();
     }
 

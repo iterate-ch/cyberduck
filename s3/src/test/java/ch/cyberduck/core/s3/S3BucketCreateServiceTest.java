@@ -61,7 +61,7 @@ public class S3BucketCreateServiceTest {
                 }
             }
         });
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         final S3BucketCreateService create = new S3BucketCreateService(session);
         final Path bucket = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         create.create(bucket, "eu-central-1");

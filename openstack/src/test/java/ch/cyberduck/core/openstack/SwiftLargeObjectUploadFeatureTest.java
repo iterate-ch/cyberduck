@@ -47,7 +47,7 @@ public class SwiftLargeObjectUploadFeatureTest {
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
                                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
@@ -106,7 +106,7 @@ public class SwiftLargeObjectUploadFeatureTest {
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
                                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
@@ -168,7 +168,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));

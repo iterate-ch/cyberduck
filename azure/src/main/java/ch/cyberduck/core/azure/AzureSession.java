@@ -99,7 +99,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public CloudBlobClient connect(final HostKeyCallback callback) throws BackgroundException {
+    public CloudBlobClient connect(final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
         try {
             final StorageCredentialsAccountAndKey credentials
                 = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");

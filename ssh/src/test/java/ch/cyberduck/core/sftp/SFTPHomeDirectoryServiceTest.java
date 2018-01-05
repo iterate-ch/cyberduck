@@ -40,7 +40,7 @@ public class SFTPHomeDirectoryServiceTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), new SFTPHomeDirectoryService(session).find());
         session.close();

@@ -50,7 +50,7 @@ public class B2SessionTest {
                 System.getProperties().getProperty("b2.user"), "s"
         ));
         final B2Session session = new B2Session(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 }

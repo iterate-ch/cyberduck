@@ -43,11 +43,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 public class HubicSession extends SwiftSession {
     private static final Logger log = Logger.getLogger(HubicSession.class);
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-
-    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
-            authorizationService);
+    private OAuth2RequestInterceptor authorizationService;
 
     public HubicSession(final Host host) {
         super(host);
@@ -66,10 +62,12 @@ public class HubicSession extends SwiftSession {
     }
 
     @Override
-    public Client connect(final HostKeyCallback key) throws BackgroundException {
-        final HttpClientBuilder configuration = builder.build(this);
+    public Client connect(final HostKeyCallback key, final LoginCallback prompt) {
+        authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        final HttpClientBuilder configuration = builder.build(this, prompt);
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(retryHandler);
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
         return new Client(configuration.build());
     }
 

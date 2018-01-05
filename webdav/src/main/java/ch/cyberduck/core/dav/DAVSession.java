@@ -115,9 +115,9 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public DAVClient connect(final HostKeyCallback key) throws BackgroundException {
+    public DAVClient connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
-        final HttpClientBuilder pool = builder.build(this);
+        final HttpClientBuilder pool = builder.build(this, prompt);
         pool.setRedirectStrategy(new DAVRedirectStrategy(redirect));
         return new DAVClient(new HostUrlProvider(false).get(host), pool);
     }

@@ -40,7 +40,7 @@ public class LocalUnixPermissionFeatureTest {
     public void testSetUnixPermission() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(session.isPosixFilesystem()) {
-            assertNotNull(session.open(new DisabledHostKeyCallback()));
+            assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
             assertTrue(session.isConnected());
             assertNotNull(session.getClient());
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

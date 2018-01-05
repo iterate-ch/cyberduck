@@ -52,7 +52,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -78,10 +77,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
 
-    protected final SDSErrorResponseInterceptor retryHandler
-        = new SDSErrorResponseInterceptor(this);
-
-    private final OAuth2RequestInterceptor authorizationService;
+    protected SDSErrorResponseInterceptor retryHandler;
+    protected OAuth2RequestInterceptor authorizationService;
 
     private final ExpiringObjectHolder<UserAccountWrapper> userAccount
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
@@ -93,31 +90,33 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
-        this.authorizationService = new OAuth2RequestInterceptor(builder.build(this).addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                request.addHeader(HttpHeaders.AUTHORIZATION,
-                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
-            }
-        }).build(),
-            host).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
     }
 
+
     @Override
-    protected SDSApiClient connect(final HostKeyCallback key) throws BackgroundException {
-        final HttpClientBuilder configuration = builder.build(this);
+    protected SDSApiClient connect(final HostKeyCallback key, final LoginCallback prompt) {
+        final HttpClientBuilder configuration = builder.build(this, prompt);
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
+                authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
+                    @Override
+                    public void process(final HttpRequest request, final HttpContext context) throws IOException {
+                        request.addHeader(HttpHeaders.AUTHORIZATION,
+                            String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
+                    }
+                }).build(),
+                    host).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
                 configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
                 configuration.addInterceptorLast(authorizationService);
                 configuration.addInterceptorLast(new HttpRequestInterceptor() {
                     @Override
-                    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                    public void process(final HttpRequest request, final HttpContext context) {
                         request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
                     }
                 });
                 break;
             default:
+                retryHandler = new SDSErrorResponseInterceptor(this);
                 configuration.setServiceUnavailableRetryStrategy(retryHandler);
                 configuration.addInterceptorLast(retryHandler);
                 break;

@@ -20,6 +20,7 @@ package ch.cyberduck.core.udt;
 
 import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -160,8 +161,8 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         }
 
         @Override
-        public HttpClientBuilder build(final TranscriptListener listener) {
-            final HttpClientBuilder builder = super.build(listener);
+        public HttpClientBuilder build(final TranscriptListener listener, final LoginCallback prompt) {
+            final HttpClientBuilder builder = super.build(listener, prompt);
             // Add filter to inject custom headers to authenticate with proxy
             builder.setRequestExecutor(
                     new CustomHeaderHttpRequestExecutor(headers)
