@@ -51,7 +51,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
     private final DAVSession session;
 
     private final RFC1123DateFormatter dateParser
-            = new RFC1123DateFormatter();
+        = new RFC1123DateFormatter();
 
     public DAVAttributesFinderFeature(DAVSession session) {
         this.session = session;
@@ -64,7 +64,8 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
         }
         try {
             try {
-                final List<DavResource> status = session.getClient().list(new DAVPathEncoder().encode(file), 1, Collections.<QName>emptySet());
+                final List<DavResource> status = session.getClient().list(new DAVPathEncoder().encode(file), 1,
+                    Collections.singleton(DAVTimestampFeature.LAST_MODIFIED));
                 for(final DavResource resource : status) {
                     if(resource.isDirectory()) {
                         if(!file.getType().contains(Path.Type.directory)) {
@@ -76,28 +77,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                             throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
                         }
                     }
-                    final PathAttributes attributes = new PathAttributes();
-                    if(resource.getModified() != null) {
-                        attributes.setModificationDate(resource.getModified().getTime());
-                    }
-                    if(resource.getCreation() != null) {
-                        attributes.setCreationDate(resource.getCreation().getTime());
-                    }
-                    if(resource.getContentLength() != null) {
-                        attributes.setSize(resource.getContentLength());
-                    }
-                    if(StringUtils.isNotBlank(resource.getEtag())) {
-                        attributes.setETag(resource.getEtag());
-                        // Setting checksum is disabled. See #8798
-                        // attributes.setChecksum(Checksum.parse(resource.getEtag()));
-                    }
-                    if(StringUtils.isNotBlank(resource.getDisplayName())) {
-                        attributes.setDisplayname(resource.getDisplayName());
-                    }
-                    if(StringUtils.isNotBlank(resource.getDisplayName())) {
-                        attributes.setDisplayname(resource.getDisplayName());
-                    }
-                    return attributes;
+                    return this.toAttributes(resource);
                 }
                 throw new NotfoundException(file.getAbsolute());
             }
@@ -109,7 +89,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                     // PROPFIND Method not allowed
                     log.warn(String.format("Failure with PROPFIND request for %s. %s", file, i.getMessage()));
                     final Map<String, String> headers = session.getClient().execute(
-                            new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
+                        new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
                     final PathAttributes attributes = new PathAttributes();
                     try {
                         attributes.setModificationDate(dateParser.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
@@ -139,6 +119,40 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e, file);
         }
+    }
+
+    protected PathAttributes toAttributes(final DavResource resource) {
+        final PathAttributes attributes = new PathAttributes();
+        final Map<QName, String> properties = resource.getCustomPropsNS();
+        if(properties.containsKey(DAVTimestampFeature.LAST_MODIFIED)) {
+            final String value = properties.get(DAVTimestampFeature.LAST_MODIFIED);
+            try {
+                attributes.setModificationDate(
+                    new RFC1123DateFormatter().parse(value).getTime());
+            }
+            catch(InvalidDateException e) {
+                log.warn(String.format("Failure parsing property %s", value));
+            }
+        }
+        else if(resource.getModified() != null) {
+            attributes.setModificationDate(resource.getModified().getTime());
+        }
+        if(resource.getCreation() != null) {
+            attributes.setCreationDate(resource.getCreation().getTime());
+        }
+        if(resource.getContentLength() != null) {
+            attributes.setSize(resource.getContentLength());
+        }
+        if(StringUtils.isNotBlank(resource.getEtag())) {
+            attributes.setETag(resource.getEtag());
+        }
+        if(StringUtils.isNotBlank(resource.getDisplayName())) {
+            attributes.setDisplayname(resource.getDisplayName());
+        }
+        if(StringUtils.isNotBlank(resource.getDisplayName())) {
+            attributes.setDisplayname(resource.getDisplayName());
+        }
+        return attributes;
     }
 
     @Override

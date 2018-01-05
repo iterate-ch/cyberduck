@@ -27,10 +27,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -52,7 +50,8 @@ public class DAVListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.<QName>emptySet());
+            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(directory), 1,
+                Collections.singleton(DAVTimestampFeature.LAST_MODIFIED));
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
@@ -64,24 +63,7 @@ public class DAVListService implements ListService {
                     }
                     throw new NotfoundException(directory.getAbsolute());
                 }
-                final PathAttributes attributes = new PathAttributes();
-                if(resource.getModified() != null) {
-                    attributes.setModificationDate(resource.getModified().getTime());
-                }
-                if(resource.getCreation() != null) {
-                    attributes.setCreationDate(resource.getCreation().getTime());
-                }
-                if(resource.getContentLength() != null) {
-                    attributes.setSize(resource.getContentLength());
-                }
-                if(StringUtils.isNotBlank(resource.getEtag())) {
-                    attributes.setETag(resource.getEtag());
-                    // Setting checksum is disabled. See #8798
-                    // attributes.setChecksum(Checksum.parse(resource.getEtag()));
-                }
-                if(StringUtils.isNotBlank(resource.getDisplayName())) {
-                    attributes.setDisplayname(resource.getDisplayName());
-                }
+                final PathAttributes attributes = new DAVAttributesFinderFeature(session).toAttributes(resource);
                 final Path file = new Path(directory, PathNormalizer.name(href),
                         resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
                         attributes);
