@@ -17,10 +17,10 @@ extern "C" {
 #define ch_cyberduck_core_local_FinderLocal_VOLUME_TYPE 8L
 /*
  * Class:     ch_cyberduck_core_local_FinderLocal
- * Method:    resolveAlias
+ * Method:    resolveAliasNative
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAlias
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAliasNative
   (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus

@@ -271,6 +271,7 @@ public abstract class Preferences {
         defaults.put("path.normalize.unicode", String.valueOf(false));
 
         defaults.put("local.user.home", System.getProperty("user.home"));
+        defaults.put("local.alias.resolve", String.valueOf(true));
         defaults.put("local.symboliclink.resolve", String.valueOf(false));
         defaults.put("local.normalize.prefix", String.valueOf(false));
         defaults.put("local.normalize.unicode", String.valueOf(true));
