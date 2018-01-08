@@ -19,14 +19,12 @@ import ch.cyberduck.core.preferences.ApplicationTerminalPreferences;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
-import java.io.IOException;
-
 public class ApplicationTerminal extends Terminal {
     public ApplicationTerminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
         super(defaults, options, input);
     }
 
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args) {
         open(args, new ApplicationTerminalPreferences());
     }
 }

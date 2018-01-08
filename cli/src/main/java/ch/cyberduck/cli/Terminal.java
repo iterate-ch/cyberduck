@@ -81,7 +81,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -151,7 +150,7 @@ public class Terminal {
      *
      * @param args Command line arguments
      */
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args) {
         open(args, new TerminalPreferences());
     }
 
@@ -280,7 +279,6 @@ public class Terminal {
         finally {
             this.disconnect(source);
             this.disconnect(destination);
-            console.printf("%n%s", StringUtils.EMPTY);
         }
         return Exit.failure;
     }
@@ -447,9 +445,15 @@ public class Terminal {
     }
 
     protected void disconnect(final SessionPool session) {
-        if(session != null) {
-            controller.background(new DisconnectBackgroundAction(controller, session));
+        if(session == SessionPool.DISCONNECTED) {
+            return;
         }
+        this.execute(new DisconnectBackgroundAction(controller, session) {
+            @Override
+            public void message(final String message) {
+                // No output
+            }
+        });
     }
 
     protected <T> boolean execute(final SessionBackgroundAction<T> action) {
@@ -464,5 +468,4 @@ public class Terminal {
             return false;
         }
     }
-
 }

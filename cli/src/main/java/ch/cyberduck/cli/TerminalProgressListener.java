@@ -37,6 +37,7 @@ public class TerminalProgressListener implements ProgressListener {
         appender.append(message);
         // Clear the line and append message. Used instead of \r because the line width may vary
         console.printf("\r%s%s%s", Ansi.ansi()
+                .fg(Ansi.Color.CYAN)
                 .saveCursorPosition()
                 .eraseLine(Ansi.Erase.ALL)
                         .restoreCursorPosition(), appender.toString(),
