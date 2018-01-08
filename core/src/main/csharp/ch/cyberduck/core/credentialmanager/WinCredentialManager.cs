@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -239,17 +239,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
             cred.Persist = NativeCode.Persistance.Entrprise;
             NativeCode.NativeCredential ncred = cred.GetNativeCredential();
             // Write the info into the CredMan storage.
-            bool written = NativeCode.CredWrite(ref ncred, 0);
-            int lastError = Marshal.GetLastWin32Error();
-            if (written)
-            {
-                return true;
-            }
-            else
-            {
-                string message = string.Format("CredWrite failed with the error code {0}.", lastError);
-                throw new Exception(message);
-            }
+            return NativeCode.CredWrite(ref ncred, 0);
         }
 
 
@@ -257,7 +247,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
         /// Extract the stored credential from WIndows Credential store
         /// </summary>
         /// <param name="Target">Name of the application/Url where the credential is used for</param>
-        /// <returns>null if target not found, else stored credentials</returns>
+        /// <returns>empty credentials if target not found, else stored credentials</returns>
         public static NetworkCredential GetCredentials(string Target)
         {
             IntPtr nCredPtr;
@@ -267,10 +257,6 @@ namespace Ch.Cyberduck.Core.CredentialManager
 
             // Make the API call using the P/Invoke signature
             bool ret = NativeCode.CredRead(Target, NativeCode.CredentialType.Generic, 0, out nCredPtr);
-            int lastError = Marshal.GetLastWin32Error();
-            if (!ret)
-                throw new Win32Exception(lastError, "CredRead threw an error");
-
             // If the API was successful then...
             if (ret)
             {
@@ -281,23 +267,18 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     var user = cred.UserName;
                     StringBuilder userBuilder = new StringBuilder();
                     StringBuilder domainBuilder = new StringBuilder();
-                    var ret1 = NativeCode.CredUIParseUserName(user, userBuilder, int.MaxValue, domainBuilder,
-                        int.MaxValue);
-                    lastError = Marshal.GetLastWin32Error();
-
-                    //assuming invalid account name to be not meeting condition for CredUIParseUserName 
+                    var code = NativeCode.CredUIParseUserName(user, userBuilder, int.MaxValue, domainBuilder, int.MaxValue);
+                    //assuming invalid account name to be not meeting condition for CredUIParseUserName
                     //"The name must be in UPN or down-level format, or a certificate"
-                    if (ret1 == NativeCode.CredentialUIReturnCodes.InvalidAccountName)
+                    if (code == NativeCode.CredentialUIReturnCodes.InvalidAccountName)
+                    {
                         userBuilder.Append(user);
-                    else if ((uint) ret1 > 0)
-                        throw new Win32Exception(lastError, "CredUIParseUserName threw an error");
-
+                    }
                     username = userBuilder.ToString();
                     domain = domainBuilder.ToString();
-                    return new NetworkCredential(username, passwd, domain);
                 }
             }
-            return null;
+            return new NetworkCredential(username, passwd, domain);
         }
 
 
@@ -309,11 +290,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
         public static bool RemoveCredentials(string Target)
         {
             // Make the API call using the P/Invoke signature
-            var ret = NativeCode.CredDelete(Target, NativeCode.CredentialType.Generic, 0);
-            int lastError = Marshal.GetLastWin32Error();
-            if (!ret)
-                throw new Win32Exception(lastError, "CredDelete threw an error");
-            return ret;
+            return NativeCode.CredDelete(Target, NativeCode.CredentialType.Generic, 0);
         }
 
         /// <summary>

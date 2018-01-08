@@ -33,7 +33,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthOption;
 import org.apache.http.auth.AuthScheme;
 import org.apache.http.auth.AuthSchemeProvider;
-import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.MalformedChallengeException;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.config.AuthSchemes;
@@ -63,6 +62,8 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
     private final LoginCallback prompt;
 
     private final ProxyCredentialsStore keychain;
+
+    private static final String PROXY_CREDENTIALS_INPUT_ID = "cyberduck.credentials.input";
 
     public CallbackProxyAuthenticationStrategy(final Host bookmark, final LoginCallback prompt) {
         this(ProxyCredentialsStoreFactory.get(), bookmark, prompt);
@@ -109,32 +110,28 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                 }
                 final AuthScheme authScheme = authSchemeProvider.create(context);
                 authScheme.processChallenge(challenge);
-                final AuthScope authScope = new AuthScope(
-                    authhost.getHostName(),
-                    authhost.getPort(),
-                    authScheme.getRealm(),
-                    authScheme.getSchemeName());
-
                 final Credentials saved = keychain.getCredentials(authhost.getHostName());
                 if(StringUtils.isEmpty(saved.getPassword())) {
                     try {
                         final Credentials input = prompt.prompt(bookmark,
-                            bookmark.getCredentials().getUsername(),
+                            StringUtils.EMPTY,
                             String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
                             authScheme.getRealm(),
-                            new LoginOptions().user(true).password(true)
+                            new LoginOptions()
+                                .icon(bookmark.getProtocol().disk())
+                                .usernamePlaceholder(bookmark.getProtocol().getUsernamePlaceholder())
+                                .passwordPlaceholder(bookmark.getProtocol().getPasswordPlaceholder())
+                                .user(true).password(true)
                         );
                         if(input.isSaved()) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Save passphrase for proxy %s", authhost));
-                            }
-                            keychain.addCredentials(authhost.getHostName(), input.getUsername(), input.getPassword());
+                            context.setAttribute(PROXY_CREDENTIALS_INPUT_ID, input);
                         }
                         options.add(new AuthOption(authScheme, new NTCredentials(input.getUsername(), input.getPassword(),
                             preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
                     }
                     catch(LoginCanceledException ignored) {
                         // Ignore dismiss of prompt
+                        throw new MalformedChallengeException(ignored.getMessage(), ignored);
                     }
                 }
                 else {
@@ -150,5 +147,25 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             }
         }
         return options;
+    }
+
+    @Override
+    public void authSucceeded(final HttpHost authhost, final AuthScheme authScheme, final HttpContext context) {
+        final HttpClientContext clientContext = HttpClientContext.adapt(context);
+        final Credentials credentials = clientContext.getAttribute(PROXY_CREDENTIALS_INPUT_ID, Credentials.class);
+        if(null != credentials) {
+            clientContext.removeAttribute(PROXY_CREDENTIALS_INPUT_ID);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Save passphrase for proxy %s", authhost));
+            }
+            keychain.addCredentials(authhost.getHostName(), credentials.getUsername(), credentials.getPassword());
+        }
+        super.authSucceeded(authhost, authScheme, context);
+    }
+
+    @Override
+    public void authFailed(final HttpHost authhost, final AuthScheme authScheme, final HttpContext context) {
+        keychain.deleteCredentials(authhost.getHostName());
+        super.authFailed(authhost, authScheme, context);
     }
 }

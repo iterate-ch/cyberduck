@@ -30,13 +30,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.JSON;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
@@ -92,6 +92,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
+    public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
+    }
 
     @Override
     protected SDSApiClient connect(final HostKeyCallback key, final LoginCallback prompt) {
@@ -179,7 +182,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 return new AuthApi(client).login(request).getToken();
             }
             catch(ApiException e) {
-                throw new LoginFailureException(new SDSExceptionMappingService().map(e).getDetail(false), e);
+                throw new SDSExceptionMappingService().map(e);
             }
         }
         catch(PartialLoginFailureException e) {

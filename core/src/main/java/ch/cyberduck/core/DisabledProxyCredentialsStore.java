@@ -25,4 +25,9 @@ public class DisabledProxyCredentialsStore implements ProxyCredentialsStore {
     public void addCredentials(final String proxy, final String accountName, final String password) {
         //
     }
+
+    @Override
+    public void deleteCredentials(final String proxy) {
+        //
+    }
 }
