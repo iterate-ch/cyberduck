@@ -564,7 +564,6 @@ public class DAVSessionTest {
         session.close();
     }
 
-    @Ignore
     @Test(expected = ConnectionRefusedException.class)
     public void testProxyNoConnect() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
