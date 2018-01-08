@@ -21,11 +21,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.log4j.Logger;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
@@ -33,7 +31,6 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
 
     private final long period;
     private final ScheduledThreadPool scheduler = new ScheduledThreadPool();
-    private final CountDownLatch exit = new CountDownLatch(1);
 
     public AbstractSchedulerFeature(final long period) {
         this.period = period;
@@ -42,7 +39,7 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
     protected abstract R operate(PasswordCallback callback, Path file) throws BackgroundException;
 
     @Override
-    public R repeat(final PasswordCallback callback) throws BackgroundException {
+    public R repeat(final PasswordCallback callback) {
         scheduler.repeat(() -> {
             try {
                 this.operate(callback, null);
@@ -54,19 +51,11 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
                 log.warn(String.format("Failure processing missing file keys. %s", e.getDetail()));
             }
         }, period, TimeUnit.MILLISECONDS);
-        try {
-            exit.await();
-        }
-        catch(InterruptedException e) {
-            log.error(String.format("Error waiting for exit signal %s", e.getMessage()));
-            throw new DefaultExceptionMappingService().map(e);
-        }
         return null;
     }
 
     @Override
     public void shutdown() {
         scheduler.shutdown();
-        exit.countDown();
     }
 }
