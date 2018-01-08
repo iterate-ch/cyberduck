@@ -114,7 +114,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                 if(StringUtils.isEmpty(saved.getPassword())) {
                     try {
                         final Credentials input = prompt.prompt(bookmark,
-                            bookmark.getCredentials().getUsername(),
+                            StringUtils.EMPTY,
                             String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
                             authScheme.getRealm(),
                             new LoginOptions()
