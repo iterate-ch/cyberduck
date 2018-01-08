@@ -63,6 +63,8 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
 
     private final ProxyCredentialsStore keychain;
 
+    private static final String PROXY_CREDENTIALS_INPUT_ID = "PROXY_CREDENTIALS_INPUT";
+
     public CallbackProxyAuthenticationStrategy(final Host bookmark, final LoginCallback prompt) {
         this(ProxyCredentialsStoreFactory.get(), bookmark, prompt);
     }
@@ -122,10 +124,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                                 .user(true).password(true)
                         );
                         if(input.isSaved()) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Save passphrase for proxy %s", authhost));
-                            }
-                            keychain.addCredentials(authhost.getHostName(), input.getUsername(), input.getPassword());
+                            context.setAttribute(PROXY_CREDENTIALS_INPUT_ID, input);
                         }
                         options.add(new AuthOption(authScheme, new NTCredentials(input.getUsername(), input.getPassword(),
                             preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
@@ -147,5 +146,25 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             }
         }
         return options;
+    }
+
+    @Override
+    public void authSucceeded(final HttpHost authhost, final AuthScheme authScheme, final HttpContext context) {
+        final HttpClientContext clientContext = HttpClientContext.adapt(context);
+        final Credentials credentials = clientContext.getAttribute(PROXY_CREDENTIALS_INPUT_ID, Credentials.class);
+        if(null != credentials) {
+            clientContext.removeAttribute(PROXY_CREDENTIALS_INPUT_ID);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Save passphrase for proxy %s", authhost));
+            }
+            keychain.addCredentials(authhost.getHostName(), credentials.getUsername(), credentials.getPassword());
+        }
+        super.authSucceeded(authhost, authScheme, context);
+    }
+
+    @Override
+    public void authFailed(final HttpHost authhost, final AuthScheme authScheme, final HttpContext context) {
+        keychain.deleteCredentials(authhost.getHostName());
+        super.authFailed(authhost, authScheme, context);
     }
 }
