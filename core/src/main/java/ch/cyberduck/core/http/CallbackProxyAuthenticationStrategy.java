@@ -131,6 +131,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                     }
                     catch(LoginCanceledException ignored) {
                         // Ignore dismiss of prompt
+                        throw new MalformedChallengeException(ignored.getMessage(), ignored);
                     }
                 }
                 else {
