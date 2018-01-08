@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -257,7 +257,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
         /// Extract the stored credential from WIndows Credential store
         /// </summary>
         /// <param name="Target">Name of the application/Url where the credential is used for</param>
-        /// <returns>null if target not found, else stored credentials</returns>
+        /// <returns>empty credentials if target not found, else stored credentials</returns>
         public static NetworkCredential GetCredentials(string Target)
         {
             IntPtr nCredPtr;
@@ -267,10 +267,6 @@ namespace Ch.Cyberduck.Core.CredentialManager
 
             // Make the API call using the P/Invoke signature
             bool ret = NativeCode.CredRead(Target, NativeCode.CredentialType.Generic, 0, out nCredPtr);
-            int lastError = Marshal.GetLastWin32Error();
-            if (!ret)
-                throw new Win32Exception(lastError, "CredRead threw an error");
-
             // If the API was successful then...
             if (ret)
             {
@@ -283,7 +279,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     StringBuilder domainBuilder = new StringBuilder();
                     var ret1 = NativeCode.CredUIParseUserName(user, userBuilder, int.MaxValue, domainBuilder,
                         int.MaxValue);
-                    lastError = Marshal.GetLastWin32Error();
+                    int lastError = Marshal.GetLastWin32Error();
 
                     //assuming invalid account name to be not meeting condition for CredUIParseUserName 
                     //"The name must be in UPN or down-level format, or a certificate"
@@ -294,10 +290,9 @@ namespace Ch.Cyberduck.Core.CredentialManager
 
                     username = userBuilder.ToString();
                     domain = domainBuilder.ToString();
-                    return new NetworkCredential(username, passwd, domain);
                 }
             }
-            return null;
+            return new NetworkCredential(username, passwd, domain);
         }
 
 
