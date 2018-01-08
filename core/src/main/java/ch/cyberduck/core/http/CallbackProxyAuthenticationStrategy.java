@@ -63,7 +63,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
 
     private final ProxyCredentialsStore keychain;
 
-    private static final String PROXY_CREDENTIALS_INPUT_ID = "PROXY_CREDENTIALS_INPUT";
+    private static final String PROXY_CREDENTIALS_INPUT_ID = "cyberduck.credentials.input";
 
     public CallbackProxyAuthenticationStrategy(final Host bookmark, final LoginCallback prompt) {
         this(ProxyCredentialsStoreFactory.get(), bookmark, prompt);
