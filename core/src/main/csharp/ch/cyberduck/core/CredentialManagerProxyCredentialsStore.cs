@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Core
         public Credentials getCredentials(string proxy)
         {
             var credential = WinCredentialManager.GetCredentials(proxy);
-            return credential != null ? new Credentials(credential.UserName, credential.Password) : null;
+            return new Credentials(credential.UserName, credential.Password);
         }
 
         public void addCredentials(string proxy, string user, string password)
