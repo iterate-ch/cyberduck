@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -75,12 +75,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
-        private Scheduler _scheduler;
         private Comparator _comparator = new NullComparator();
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
         private PathPasteboard _pasteboard;
+        private Scheduler _scheduler;
         private bool _showHiddenFiles;
 
         public BrowserController(IBrowserView view)
@@ -3308,32 +3308,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
                         _controller._scheduler = (Scheduler) _pool.getFeature(typeof(Scheduler));
-                        if (_controller._scheduler != null)
-                        {
-                            _controller.background(new BackgroundAction(_controller, _pool, new DisabledAlertCallback(),
-                                new DisabledProgressListener(), new DisabledTranscriptListener(), _controller._scheduler));
-                        }
+                        _controller._scheduler?.repeat(PasswordCallbackFactory.get(_controller));
                     }
-                }
-            }
-
-            private class BackgroundAction : SessionBackgroundAction
-            {
-                private readonly Scheduler _background;
-                private readonly BrowserController _controller;
-
-                public BackgroundAction(BrowserController controller, SessionPool pool, AlertCallback alert,
-                    ProgressListener progress, TranscriptListener transcript, Scheduler background) : base(pool, alert,
-                    progress, transcript)
-                {
-                    _controller = controller;
-                    _background = background;
-                }
-
-                public override object run(Session s)
-                {
-                    _background.repeat(PasswordCallbackFactory.get(_controller));
-                    return null;
                 }
             }
         }
@@ -3351,7 +3327,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerMoveWorker(BrowserController controller, Map files, PathCache cache)
-                    : base(files, cache, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller, controller.Session.getHost().getProtocol()), controller, controller)
+                    : base(files, cache, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller),
+                        HostKeyCallbackFactory.get(controller, controller.Session.getHost().getProtocol()), controller,
+                        controller)
                 {
                     _controller = controller;
                     _files = files;
@@ -3362,7 +3340,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     List changed = new ArrayList();
                     changed.addAll(_files.keySet());
                     changed.addAll(_files.values());
-                    _controller.Reload(_controller.Workdir, (IList<Path>)Utils.ConvertFromJavaList<Path>(changed),
+                    _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(changed),
                         (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
             }
@@ -3381,7 +3359,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerCopyWorker(BrowserController controller, Map files, PathCache cache)
-                    : base(files, controller.Session is StatefulSessionPool ? SessionPoolFactory.create(controller, cache, controller.Session.getHost()) : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
+                    : base(files,
+                        controller.Session is StatefulSessionPool
+                            ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
+                            : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
                 {
                     _controller = controller;
                     _files = files;
@@ -3392,7 +3373,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     List changed = new ArrayList();
                     changed.addAll(_files.keySet());
                     changed.addAll(_files.values());
-                    _controller.Reload(_controller.Workdir, (IList<Path>)Utils.ConvertFromJavaList<Path>(changed),
+                    _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(changed),
                         (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
             }

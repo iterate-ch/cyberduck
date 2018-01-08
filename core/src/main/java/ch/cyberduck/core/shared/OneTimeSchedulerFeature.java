@@ -19,7 +19,11 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.log4j.Logger;
+
 public abstract class OneTimeSchedulerFeature<R> extends AbstractSchedulerFeature<R> {
+
+    private static final Logger log = Logger.getLogger(OneTimeSchedulerFeature.class);
 
     private final Path file;
 
@@ -29,7 +33,13 @@ public abstract class OneTimeSchedulerFeature<R> extends AbstractSchedulerFeatur
     }
 
     @Override
-    public R repeat(final PasswordCallback callback) throws BackgroundException {
-        return this.operate(callback, file);
+    public R repeat(final PasswordCallback callback) {
+        try {
+            return this.operate(callback, file);
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Failure processing missing file keys. %s", e.getDetail()));
+        }
+        return null;
     }
 }
