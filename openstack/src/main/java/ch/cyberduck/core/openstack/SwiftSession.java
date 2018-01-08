@@ -38,7 +38,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -50,7 +50,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
-import javax.net.SocketFactory;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
@@ -81,18 +80,10 @@ public class SwiftSession extends HttpSession<Client> {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
-    public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
-    }
-
-    public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
-    }
-
     @Override
-    public Client connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    public Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
-        final HttpClientBuilder pool = builder.build(this, prompt);
+        final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         pool.disableContentCompression();
         return new Client(pool.build());
     }
@@ -108,7 +99,7 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final Set<? extends AuthenticationRequest> options = new SwiftAuthenticationService().getRequest(host, prompt);
             for(Iterator<? extends AuthenticationRequest> iter = options.iterator(); iter.hasNext(); ) {

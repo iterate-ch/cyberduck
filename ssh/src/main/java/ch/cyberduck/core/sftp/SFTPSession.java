@@ -43,7 +43,7 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.auth.SFTPAgentAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPChallengeResponseAuthentication;
@@ -106,10 +106,6 @@ public class SFTPSession extends Session<SSHClient> {
         this(h, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h)));
     }
 
-    public SFTPSession(final Host h, final ProxyFinder proxy) {
-        this(h, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h), proxy));
-    }
-
     public SFTPSession(final Host h, final SocketFactory socketFactory) {
         super(h);
         this.socketFactory = socketFactory;
@@ -124,7 +120,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public SSHClient connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    public SSHClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         try {
             final DefaultConfig configuration = new DefaultConfig();
             if("zlib".equals(preferences.getProperty("ssh.compression"))) {
@@ -224,7 +220,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<AuthenticationProvider<Boolean>>();
         final Credentials credentials = host.getCredentials();
         if(credentials.isAnonymousLogin()) {

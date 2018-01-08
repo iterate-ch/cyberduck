@@ -43,7 +43,7 @@ public class S3LifecycleConfigurationTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertEquals(30, new S3LifecycleConfiguration(session).getConfiguration(
                 new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         ).getExpiration(), 0L);
@@ -60,7 +60,7 @@ public class S3LifecycleConfigurationTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertEquals(LifecycleConfiguration.empty(), new S3LifecycleConfiguration(session).getConfiguration(
                 new Path("bucket", EnumSet.of(Path.Type.directory))
         ));

@@ -44,6 +44,7 @@ import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -75,10 +76,10 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     }
 
     @Override
-    protected DbxRawClientV2 connect(final HostKeyCallback callback, final LoginCallback prompt) {
-        authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).build(), host.getProtocol())
+    protected DbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
+        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol())
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-        final HttpClientBuilder configuration = builder.build(this, prompt);
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
         final CloseableHttpClient client = configuration.build();
@@ -93,7 +94,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
     }
 

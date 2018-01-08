@@ -41,7 +41,7 @@ public class SFTPPasswordAuthenticationTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         assertTrue(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
@@ -52,7 +52,7 @@ public class SFTPPasswordAuthenticationTest {
                 System.getProperties().getProperty("sftp.user"), "p"
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         assertFalse(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }

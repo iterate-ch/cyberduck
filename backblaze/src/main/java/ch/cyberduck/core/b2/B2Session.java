@@ -27,7 +27,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -37,7 +37,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import javax.net.SocketFactory;
 import java.io.IOException;
 
 import synapticloop.b2.B2ApiClient;
@@ -55,17 +54,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
-    public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxyFinder) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxyFinder);
-    }
-
-    public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
-    }
-
     @Override
-    public B2ApiClient connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
-        final HttpClientBuilder configuration = builder.build(this, prompt);
+    public B2ApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(retryHandler = new B2ErrorResponseInterceptor(
             this));
         configuration.addInterceptorLast(retryHandler);
@@ -88,7 +79,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final String accountId = host.getCredentials().getUsername();
             final String applicationKey = host.getCredentials().getPassword();

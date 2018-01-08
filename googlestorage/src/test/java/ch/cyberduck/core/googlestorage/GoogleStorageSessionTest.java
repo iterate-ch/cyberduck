@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -46,7 +47,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testConnect() throws Exception {
-        session.login(new DisabledPasswordStore() {
+        session.login(Proxy.DIRECT, new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
@@ -62,7 +63,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidRefreshToken() throws Exception {
-        session.login(new DisabledPasswordStore() {
+        session.login(Proxy.DIRECT, new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
@@ -78,7 +79,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testConnectInvalidAccessTokenRefreshToken() throws Exception {
-        session.login(new DisabledPasswordStore() {
+        session.login(Proxy.DIRECT, new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
@@ -99,7 +100,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         session.getHost().setCredentials(
                 System.getProperties().getProperty("google.projectid") + "1", null
         );
-        session.login(new DisabledPasswordStore() {
+        session.login(Proxy.DIRECT, new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
@@ -115,7 +116,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectMissingKey() throws Exception {
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username,
                                       final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -127,10 +128,10 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testCallbackOauth() throws Exception {
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test
@@ -149,7 +150,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         session.getHost().setCredentials(
                 "duck-1432", ""
         );
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -157,7 +158,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         session.getHost().setCredentials(
                 "stellar-perigee-775", ""
         );
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 // OAuth2

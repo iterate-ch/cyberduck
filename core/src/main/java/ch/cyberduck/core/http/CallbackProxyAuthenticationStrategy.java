@@ -151,4 +151,14 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
         }
         return options;
     }
+
+    @Override
+    public void authSucceeded(final HttpHost authhost, final AuthScheme authScheme, final HttpContext context) {
+        super.authSucceeded(authhost, authScheme, context);
+    }
+
+    @Override
+    public void authFailed(final HttpHost authhost, final AuthScheme authScheme, final HttpContext context) {
+        super.authFailed(authhost, authScheme, context);
+    }
 }

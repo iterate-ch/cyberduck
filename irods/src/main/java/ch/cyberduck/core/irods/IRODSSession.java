@@ -41,6 +41,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -78,7 +79,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     }
 
     @Override
-    protected IRODSFileSystemAO connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    protected IRODSFileSystemAO connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         try {
             final IRODSFileSystem fs = this.configure(IRODSFileSystem.instance());
             final IRODSAccessObjectFactory factory = fs.getIRODSAccessObjectFactory();
@@ -129,7 +130,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final IRODSAccount account = client.getIRODSAccount();
             final Credentials credentials = host.getCredentials();

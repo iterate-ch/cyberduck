@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -92,7 +93,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return false;
         }
         return preferences.getBoolean(
-                String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
+            String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
     public Session<?> withListener(final TranscriptListener listener) {
@@ -142,17 +143,18 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     /**
      * Connect to host
      *
-     * @param key Host identity verification callback
+     * @param proxy Proxy configuration
+     * @param key   Host identity verification callback
      * @param login Prompt for proxy credentials
      * @return Client
      */
-    public C open(final HostKeyCallback key, final LoginCallback login) throws BackgroundException {
+    public C open(final Proxy proxy, final HostKeyCallback key, final LoginCallback login) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
         // Update status flag
         state = State.opening;
-        client = this.connect(key, login);
+        client = this.connect(proxy, key, login);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did open to %s", host));
         }
@@ -161,16 +163,17 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         return client;
     }
 
-    protected abstract C connect(HostKeyCallback key, final LoginCallback prompt) throws BackgroundException;
+    protected abstract C connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt) throws BackgroundException;
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
+     * @param proxy    Proxy configuration
      * @param keychain Password store
      * @param prompt   Prompt
      * @param cancel   Cancel callback
      */
-    public abstract void login(HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
+    public abstract void login(final Proxy proxy, HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
 
     /**
      * Logout and close client connection

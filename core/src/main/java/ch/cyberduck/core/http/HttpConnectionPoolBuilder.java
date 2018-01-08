@@ -74,7 +74,6 @@ public class HttpConnectionPoolBuilder {
 
     private final ConnectionSocketFactory socketFactory;
     private final ConnectionSocketFactory sslSocketFactory;
-    private final ProxyFinder proxyFinder;
     private final Host host;
 
     public HttpConnectionPoolBuilder(final Host host,
@@ -116,11 +115,11 @@ public class HttpConnectionPoolBuilder {
                 trust.setTarget(remoteAddress.getHostName());
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
-        }, proxy);
+        });
     }
 
     protected HttpConnectionPoolBuilder(final Host host, final X509TrustManager trust, final X509KeyManager key,
-                                        final ProxyFinder proxy, final SocketFactory socketFactory) {
+                                        final SocketFactory socketFactory) {
         this(host, new PlainConnectionSocketFactory() {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
@@ -147,29 +146,27 @@ public class HttpConnectionPoolBuilder {
                 }
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
-        }, proxy);
+        });
     }
 
     public HttpConnectionPoolBuilder(final Host host,
                                      final ConnectionSocketFactory socketFactory,
-                                     final ConnectionSocketFactory sslSocketFactory,
-                                     final ProxyFinder proxyFinder) {
+                                     final ConnectionSocketFactory sslSocketFactory) {
         this.host = host;
         this.socketFactory = socketFactory;
         this.sslSocketFactory = sslSocketFactory;
-        this.proxyFinder = proxyFinder;
     }
 
     /**
+     * @param proxy    Proxy configuration
      * @param listener Log listener
      * @param prompt   Prompt for proxy credentials
      * @return Builder for HTTP client
      */
-    public HttpClientBuilder build(final TranscriptListener listener, final LoginCallback prompt) {
+    public HttpClientBuilder build(final Proxy proxy, final TranscriptListener listener, final LoginCallback prompt) {
         final HttpClientBuilder configuration = HttpClients.custom();
         // Use HTTP Connect proxy implementation provided here instead of
         // relying on internal proxy support in socket factory
-        final Proxy proxy = proxyFinder.find(host);
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:

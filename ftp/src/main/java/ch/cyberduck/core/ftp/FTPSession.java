@@ -48,7 +48,7 @@ import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -67,7 +67,6 @@ import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
-import javax.net.SocketFactory;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -77,39 +76,20 @@ public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private Timestamp timestamp;
-
     private UnixPermission permission;
-
     private Symlink symlink;
-
     private FTPListService listService;
-
     private Case casesensitivity = Case.sensitive;
-
-    private final SocketFactory socketFactory;
 
     public FTPSession(final Host h) {
         this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
     }
 
-    public FTPSession(final Host h, final SocketFactory socketFactory) {
-        this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager(), socketFactory);
-    }
-
     public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
-        this(h, trust, key, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h)));
-    }
-
-    public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        this(h, trust, key, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h), proxy));
-    }
-
-    public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
         super(h, trust, key);
-        this.socketFactory = socketFactory;
     }
 
     @Override
@@ -154,9 +134,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
     }
 
-    protected void configure(final FTPClient client) throws IOException {
+    protected void configure(final Proxy proxy, final FTPClient client) throws IOException {
         client.setProtocol(host.getProtocol());
-        client.setSocketFactory(socketFactory);
+        client.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host), proxy));
         client.setControlEncoding(host.getEncoding());
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         client.setConnectTimeout(timeout);
@@ -185,10 +165,10 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public FTPClient connect(final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
+    public FTPClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
         try {
             final CustomTrustSSLProtocolSocketFactory f
-                    = new CustomTrustSSLProtocolSocketFactory(trust, key);
+                = new CustomTrustSSLProtocolSocketFactory(trust, key);
 
             final LoggingProtocolCommandListener listener = new LoggingProtocolCommandListener(this);
             final FTPClient client = new FTPClient(host.getProtocol(), f, f.getSSLContext()) {
@@ -203,7 +183,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 }
             };
             client.addProtocolCommandListener(listener);
-            this.configure(client);
+            this.configure(proxy, client);
             client.connect(new PunycodeConverter().convert(host.getHostname()), host.getPort());
             client.setTcpNoDelay(false);
             return client;
@@ -232,24 +212,24 @@ public class FTPSession extends SSLSession<FTPClient> {
         if(super.alert(callback)) {
             try {
                 if(client.hasFeature("AUTH", "TLS")
-                        && client.hasFeature("PBSZ")
-                        && client.hasFeature("PROT")) {
+                    && client.hasFeature("PBSZ")
+                    && client.hasFeature("PROT")) {
                     // Propose protocol change if AUTH TLS is available.
                     try {
                         callback.warn(host,
-                                MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
-                                MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
-                                        ProtocolFactory.get().forScheme(Scheme.ftps).getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
-                                LocaleFactory.localizedString("Continue", "Credentials"),
-                                LocaleFactory.localizedString("Change", "Credentials"),
-                                String.format("connection.unsecure.%s", host.getHostname()));
+                            MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                            MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
+                                ProtocolFactory.get().forScheme(Scheme.ftps).getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                            LocaleFactory.localizedString("Continue", "Credentials"),
+                            LocaleFactory.localizedString("Change", "Credentials"),
+                            String.format("connection.unsecure.%s", host.getHostname()));
                         // Continue chosen. Login using plain FTP.
                     }
                     catch(LoginCanceledException e) {
                         // Protocol switch
                         host.setProtocol(ProtocolFactory.get().forScheme(Scheme.ftps));
                         // Reconfigure client for TLS
-                        this.configure(client);
+                        this.configure(proxy, client);
                         client.execAUTH();
                         client.sslNegotiation();
                     }
@@ -267,7 +247,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             if(client.login(host.getCredentials().getUsername(), host.getCredentials().getPassword())) {
                 if(host.getProtocol().isSecure()) {

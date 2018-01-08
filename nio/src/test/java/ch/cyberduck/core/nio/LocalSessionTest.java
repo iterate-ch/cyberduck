@@ -29,7 +29,7 @@ public class LocalSessionTest {
     @Test
     public void toPath() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         assertNotNull(session.toPath("/Users/username"));
         assertNotNull(session.toPath("/C:\\Users\\Administrator"));
         assertEquals("C:\\Users\\Administrator", "/C:\\Users\\Administrator".replaceFirst("^/(.:[/\\\\])", "$1"));

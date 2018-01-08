@@ -30,6 +30,7 @@ import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.SocketConfigurator;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -161,15 +162,15 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
         }
 
         @Override
-        public HttpClientBuilder build(final TranscriptListener listener, final LoginCallback prompt) {
-            final HttpClientBuilder builder = super.build(listener, prompt);
+        public HttpClientBuilder build(final Proxy proxy, final TranscriptListener listener, final LoginCallback prompt) {
+            final HttpClientBuilder builder = super.build(proxy, listener, prompt);
             // Add filter to inject custom headers to authenticate with proxy
             builder.setRequestExecutor(
                     new CustomHeaderHttpRequestExecutor(headers)
             );
             // Set proxy router planer
             builder.setRoutePlanner(new DefaultProxyRoutePlanner(
-                    new HttpHost(proxy.getHostname(), proxy.getPort(), proxy.getProtocol().getScheme().name()),
+                new HttpHost(this.proxy.getHostname(), this.proxy.getPort(), this.proxy.getProtocol().getScheme().name()),
                     new DefaultSchemePortResolver()));
             return builder;
         }

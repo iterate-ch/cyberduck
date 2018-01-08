@@ -112,7 +112,7 @@ public class LoginConnectionServiceTest {
         }, new DisabledProgressListener());
         final Session session = new NullSession(new Host(new TestProtocol(), "localhost", new Credentials("user", ""))) {
             @Override
-            public Void connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+            public Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
                 connected.set(true);
                 return null;
             }
@@ -123,7 +123,7 @@ public class LoginConnectionServiceTest {
             }
 
             @Override
-            public void login(final HostPasswordStore p, final LoginCallback l, final CancelCallback cancel) throws BackgroundException {
+            public void login(final Proxy proxy, final HostPasswordStore p, final LoginCallback l, final CancelCallback cancel) throws BackgroundException {
                 if(prompt.get()) {
                     assertEquals("b", host.getCredentials().getPassword());
                     throw new LoginCanceledException();

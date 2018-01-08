@@ -44,8 +44,7 @@ import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.ProxyFactory;
-import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -106,19 +105,15 @@ public class DAVSession extends HttpSession<DAVClient> {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
     }
 
-    public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
-    }
-
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory, final RedirectCallback redirect) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
         this.redirect = redirect;
     }
 
     @Override
-    public DAVClient connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
-        final HttpClientBuilder pool = builder.build(this, prompt);
+        final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         pool.setRedirectStrategy(new DAVRedirectStrategy(redirect));
         return new DAVClient(new HostUrlProvider(false).get(host), pool);
     }
@@ -134,13 +129,13 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
             // Windows credentials. Provide empty string for NTLM domain by default.
             preferences.getProperty("webdav.ntlm.workstation"),
             preferences.getProperty("webdav.ntlm.domain"));
         if(preferences.getBoolean("webdav.basic.preemptive")) {
-            switch(ProxyFactory.get().find(host).getType()) {
+            switch(proxy.getType()) {
                 case DIRECT:
                 case SOCKS:
                     // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
