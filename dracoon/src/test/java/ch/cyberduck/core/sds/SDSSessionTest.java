@@ -19,6 +19,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -56,7 +57,7 @@ public class SDSSessionTest {
         session.close();
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test(expected = NotfoundException.class)
     public void testLoginNotfound() throws Exception {
         final Host host = new Host(new SDSProtocol(), "heroes.dracoon.team", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
@@ -65,15 +66,8 @@ public class SDSSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            fail();
-        }
-        catch(LoginFailureException e) {
-            assertEquals("Login failed", e.getMessage());
-            assertEquals("Please contact your web hosting service provider for assistance.", e.getDetail());
-            throw e;
-        }
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        fail();
     }
 
     @Test

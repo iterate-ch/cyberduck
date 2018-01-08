@@ -30,7 +30,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
@@ -183,7 +182,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 return new AuthApi(client).login(request).getToken();
             }
             catch(ApiException e) {
-                throw new LoginFailureException(new SDSExceptionMappingService().map(e).getDetail(false), e);
+                throw new SDSExceptionMappingService().map(e);
             }
         }
         catch(PartialLoginFailureException e) {
