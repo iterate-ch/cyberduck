@@ -34,5 +34,10 @@ namespace Ch.Cyberduck.Core
         {
             WinCredentialManager.SaveCredentials(proxy, new NetworkCredential(user, password));
         }
+
+        public void deleteCredentials(string proxy)
+        {
+            WinCredentialManager.RemoveCredentials(proxy);
+        }
     }
 }

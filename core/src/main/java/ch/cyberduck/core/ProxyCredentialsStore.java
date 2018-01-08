@@ -33,4 +33,11 @@ public interface ProxyCredentialsStore {
      * @param password    Password to save for proxy
      */
     void addCredentials(String proxy, String accountName, String password);
+
+    /**
+     * Delete proxy credentials from store
+     *
+     * @param proxy Proxy hostname
+     */
+    void deleteCredentials(String proxy);
 }
