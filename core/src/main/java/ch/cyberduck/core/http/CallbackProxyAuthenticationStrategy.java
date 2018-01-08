@@ -33,7 +33,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthOption;
 import org.apache.http.auth.AuthScheme;
 import org.apache.http.auth.AuthSchemeProvider;
-import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.MalformedChallengeException;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.config.AuthSchemes;
@@ -109,12 +108,6 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                 }
                 final AuthScheme authScheme = authSchemeProvider.create(context);
                 authScheme.processChallenge(challenge);
-                final AuthScope authScope = new AuthScope(
-                    authhost.getHostName(),
-                    authhost.getPort(),
-                    authScheme.getRealm(),
-                    authScheme.getSchemeName());
-
                 final Credentials saved = keychain.getCredentials(authhost.getHostName());
                 if(StringUtils.isEmpty(saved.getPassword())) {
                     try {
@@ -122,7 +115,11 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                             bookmark.getCredentials().getUsername(),
                             String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
                             authScheme.getRealm(),
-                            new LoginOptions().user(true).password(true)
+                            new LoginOptions()
+                                .icon(bookmark.getProtocol().disk())
+                                .usernamePlaceholder(bookmark.getProtocol().getUsernamePlaceholder())
+                                .passwordPlaceholder(bookmark.getProtocol().getPasswordPlaceholder())
+                                .user(true).password(true)
                         );
                         if(input.isSaved()) {
                             if(log.isInfoEnabled()) {
