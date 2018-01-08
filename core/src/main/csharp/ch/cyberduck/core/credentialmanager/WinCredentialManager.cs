@@ -271,10 +271,11 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     //assuming invalid account name to be not meeting condition for CredUIParseUserName
                     //"The name must be in UPN or down-level format, or a certificate"
                     if (code == NativeCode.CredentialUIReturnCodes.InvalidAccountName)
+                    {
                         userBuilder.Append(user);
-                    else if (code == NativeCode.CredentialUIReturnCodes.Success)
-                        username = userBuilder.ToString();
-                        domain = domainBuilder.ToString();
+                    }
+                    username = userBuilder.ToString();
+                    domain = domainBuilder.ToString();
                 }
             }
             return new NetworkCredential(username, passwd, domain);
