@@ -119,8 +119,8 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                             authScheme.getRealm(),
                             new LoginOptions()
                                 .icon(bookmark.getProtocol().disk())
-                                .usernamePlaceholder(bookmark.getProtocol().getUsernamePlaceholder())
-                                .passwordPlaceholder(bookmark.getProtocol().getPasswordPlaceholder())
+                                .usernamePlaceholder(LocaleFactory.localizedString("Username", "Credentials"))
+                                .passwordPlaceholder(LocaleFactory.localizedString("Password", "Credentials"))
                                 .user(true).password(true)
                         );
                         if(input.isSaved()) {
