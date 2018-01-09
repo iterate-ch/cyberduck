@@ -132,6 +132,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
             }
             catch(InvalidDateException e) {
                 log.warn(String.format("Failure parsing property %s", value));
+                attributes.setModificationDate(resource.getModified().getTime());
             }
         }
         else if(resource.getModified() != null) {
