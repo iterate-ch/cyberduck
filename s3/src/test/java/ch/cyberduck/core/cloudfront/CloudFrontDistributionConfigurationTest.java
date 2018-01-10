@@ -48,15 +48,15 @@ public class CloudFrontDistributionConfigurationTest {
     public void testGetMethods() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING),
-                new CloudFrontDistributionConfiguration(session
-                ).getMethods(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+            new CloudFrontDistributionConfiguration(session,
+                Collections.emptyMap()).getMethods(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
     public void testGetName() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(
-                session);
+            session, Collections.emptyMap());
         assertEquals("Amazon CloudFront", configuration.getName());
         assertEquals("Amazon CloudFront", configuration.getName(Distribution.CUSTOM));
     }
@@ -65,7 +65,7 @@ public class CloudFrontDistributionConfigurationTest {
     public void testGetOrigin() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+            = new CloudFrontDistributionConfiguration(session, Collections.emptyMap());
         assertEquals("bbb.s3.amazonaws.com",
                 configuration.getOrigin(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume)), Distribution.DOWNLOAD).getHost());
     }
@@ -78,7 +78,7 @@ public class CloudFrontDistributionConfigurationTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+            = new CloudFrontDistributionConfiguration(session, Collections.emptyMap());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
         assertEquals("ETW0HTI5PZK7X", distribution.getId());
@@ -98,7 +98,7 @@ public class CloudFrontDistributionConfigurationTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+            = new CloudFrontDistributionConfiguration(session, Collections.emptyMap());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.STREAMING, new DisabledLoginCallback());
         assertEquals("E25267XDMTRRIW", distribution.getId());
@@ -113,7 +113,7 @@ public class CloudFrontDistributionConfigurationTest {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         final S3Session session = new S3Session(host);
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+            = new CloudFrontDistributionConfiguration(session, Collections.emptyMap());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
     }
@@ -133,7 +133,7 @@ public class CloudFrontDistributionConfigurationTest {
         host.getCredentials().setPassword(null);
         assertNull(host.getCredentials().getPassword());
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+            = new CloudFrontDistributionConfiguration(session, Collections.emptyMap());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AtomicBoolean set = new AtomicBoolean();
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback() {
@@ -155,7 +155,7 @@ public class CloudFrontDistributionConfigurationTest {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+        final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, Collections.emptyMap()) {
             @Override
             protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
                 fail();
@@ -182,7 +182,7 @@ public class CloudFrontDistributionConfigurationTest {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+        final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, Collections.emptyMap()) {
             @Override
             protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
                 fail();
@@ -204,15 +204,15 @@ public class CloudFrontDistributionConfigurationTest {
     @Test
     public void testProtocol() {
         assertEquals("cloudfront.amazonaws.com", new CloudFrontDistributionConfiguration(
-                new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
-        ).getHostname());
+            new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())),
+            Collections.emptyMap()).getHostname());
     }
 
     @Test
     public void testFeatures() {
         final CloudFrontDistributionConfiguration d = new CloudFrontDistributionConfiguration(
-                new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
-        );
+            new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())),
+            Collections.emptyMap());
         assertNotNull(d.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Purge.class, Distribution.WEBSITE_CDN));
         assertNull(d.getFeature(Purge.class, Distribution.STREAMING));
@@ -234,7 +234,7 @@ public class CloudFrontDistributionConfigurationTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CloudFrontDistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session);
+            = new CloudFrontDistributionConfiguration(session, Collections.emptyMap());
         final Path container = new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new Path("/test-us-east-1-cyberduck/directory", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
