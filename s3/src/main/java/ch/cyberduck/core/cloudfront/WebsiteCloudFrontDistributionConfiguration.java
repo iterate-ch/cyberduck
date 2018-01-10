@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import com.amazonaws.services.cloudfront.model.OriginProtocolPolicy;
 
@@ -55,8 +56,8 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
-        super(session);
+    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final Map<Path, Distribution> distributions, final X509TrustManager trust, final X509KeyManager key) {
+        super(session, distributions);
     }
 
     /**
