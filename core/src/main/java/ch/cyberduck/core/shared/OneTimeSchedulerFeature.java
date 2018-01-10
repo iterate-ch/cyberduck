@@ -19,6 +19,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Scheduler;
+import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 
 import org.apache.log4j.Logger;
@@ -31,6 +32,8 @@ public abstract class OneTimeSchedulerFeature<R> implements Scheduler<Void> {
 
     private final Path file;
 
+    private final ThreadPool scheduler = ThreadPoolFactory.get("scheduler", 1);
+
     public OneTimeSchedulerFeature(final Path file) {
         this.file = file;
     }
@@ -39,7 +42,7 @@ public abstract class OneTimeSchedulerFeature<R> implements Scheduler<Void> {
 
     @Override
     public Void repeat(final PasswordCallback callback) {
-        ThreadPoolFactory.get("scheduler", 1).execute(new Callable<R>() {
+        scheduler.execute(new Callable<R>() {
             @Override
             public R call() throws Exception {
                 return operate(callback, file);
@@ -50,6 +53,6 @@ public abstract class OneTimeSchedulerFeature<R> implements Scheduler<Void> {
 
     @Override
     public void shutdown() {
-        //
+        scheduler.shutdown(false);
     }
 }
