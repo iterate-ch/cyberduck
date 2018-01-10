@@ -306,6 +306,7 @@ namespace Ch.Cyberduck.Core.Preferences
             defaults.put("defaulthandler.reminder", false.ToString());
 
             defaults.put("update.check.last", "0");
+            defaults.put("update.check.privilege", true);
 
             defaults.put("queue.download.folder", DefaultDownloadPath);
             defaults.put("queue.upload.permissions.default", true.ToString());

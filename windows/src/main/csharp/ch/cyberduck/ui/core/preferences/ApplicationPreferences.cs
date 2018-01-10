@@ -109,6 +109,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             base.setDefaults();
 
             defaults.put("website.store", "ms-windows-store://pdp/?ProductId=9NBLGGH43HTB");
+
+            defaults.put("update.check.privilege", false);
         }
     }
 }
