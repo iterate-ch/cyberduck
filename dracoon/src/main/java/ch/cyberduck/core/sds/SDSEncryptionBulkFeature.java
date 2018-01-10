@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.transfer.Transfer;
@@ -79,11 +80,13 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             case download:
                 break;
             default:
-                if(session.userAccount().isEncryptionEnabled()) {
-                    final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
-                    for(Path file : files.keySet()) {
-                        if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
-                            background.operate(callback, file);
+                if(PreferencesFactory.get().getBoolean("sds.encryption.missingkeys.upload")) {
+                    if(session.userAccount().isEncryptionEnabled()) {
+                        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
+                        for(Path file : files.keySet()) {
+                            if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+                                background.operate(callback, file);
+                            }
                         }
                     }
                 }
