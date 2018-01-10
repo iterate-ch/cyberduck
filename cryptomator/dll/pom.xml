@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>6.3.4-SNAPSHOT</version>
+        <version>6.3.4</version>
     </parent>
     <artifactId>Cyberduck.Cryptomator</artifactId>
     <packaging>pom</packaging>
