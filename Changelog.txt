@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+6.3.4
+- [Bugfix] Application error when opening connection to BigCommerce (WebDAV)
+- [Bugfix] Preload CloudFront configurations for buckets to allow display of CDN URLs (S3) (#10184)
+
 6.3.3
 - [Feature] Support authenticating with HTTP proxy (Windows)
 - [Bugfix] Display of created date instead of modification date (WebDAV)
