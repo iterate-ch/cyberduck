@@ -17,8 +17,6 @@
 // 
 
 using System;
-using System.Runtime.InteropServices;
-using System.Security.Principal;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
@@ -31,11 +29,7 @@ namespace Ch.Cyberduck.Core.Sparkle
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WinSparklePeriodicUpdateChecker).Name);
         private readonly ch.cyberduck.core.preferences.Preferences _preferences = PreferencesFactory.get();
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern bool GetTokenInformation(IntPtr tokenHandle, TokenInformationClass tokenInformationClass,
-            IntPtr tokenInformation, int tokenInformationLength, out int returnLength);
-
+        
         public WinSparklePeriodicUpdateChecker(Controller controller)
             : base(controller)
         {
@@ -89,105 +83,7 @@ namespace Ch.Cyberduck.Core.Sparkle
 
         public override bool hasUpdatePrivileges()
         {
-            var identity = WindowsIdentity.GetCurrent();
-            if (identity == null)
-            {
-                Log.warn("Couldn't get the current user identity");
-                return false;
-            }
-            var principal = new WindowsPrincipal(identity);
-
-            // Check if this user has the Administrator role. If they do, return immediately.
-            // If UAC is on, and the process is not elevated, then this will actually return false.
-            if (principal.IsInRole(WindowsBuiltInRole.Administrator)) return true;
-
-            // If we're not running in Vista onwards, we don't have to worry about checking for UAC.
-            if (Environment.OSVersion.Platform != PlatformID.Win32NT || Environment.OSVersion.Version.Major < 6)
-            {
-                // Operating system does not support UAC; skipping elevation check.
-                return false;
-            }
-
-            int tokenInfLength = Marshal.SizeOf(typeof (int));
-            IntPtr tokenInformation = Marshal.AllocHGlobal(tokenInfLength);
-
-            try
-            {
-                var result = GetTokenInformation(identity.Token, TokenInformationClass.TokenElevationType,
-                    tokenInformation, tokenInfLength, out tokenInfLength);
-
-                if (!result)
-                {
-                    var exception = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-                    Log.warn("Exception while retrieving token information", exception);
-                    return false;
-                }
-
-                var elevationType = (TokenElevationType) Marshal.ReadInt32(tokenInformation);
-
-                switch (elevationType)
-                {
-                    case TokenElevationType.TokenElevationTypeDefault:
-                        // TokenElevationTypeDefault - User is not using a split token, so they cannot elevate.
-                        return false;
-                    case TokenElevationType.TokenElevationTypeFull:
-                        // TokenElevationTypeFull - User has a split token, and the process is running elevated. Assuming they're an administrator.
-                        return true;
-                    case TokenElevationType.TokenElevationTypeLimited:
-                        // TokenElevationTypeLimited - User has a split token, but the process is not running elevated. Assuming they're an administrator.
-                        return true;
-                    default:
-                        Log.warn($"Unknown token elevation type: {elevationType}");
-                        return false;
-                }
-            }
-            finally
-            {
-                if (tokenInformation != IntPtr.Zero) Marshal.FreeHGlobal(tokenInformation);
-            }
-        }
-
-        private enum TokenInformationClass
-        {
-            TokenUser = 1,
-            TokenGroups,
-            TokenPrivileges,
-            TokenOwner,
-            TokenPrimaryGroup,
-            TokenDefaultDacl,
-            TokenSource,
-            TokenType,
-            TokenImpersonationLevel,
-            TokenStatistics,
-            TokenRestrictedSids,
-            TokenSessionId,
-            TokenGroupsAndPrivileges,
-            TokenSessionReference,
-            TokenSandBoxInert,
-            TokenAuditPolicy,
-            TokenOrigin,
-            TokenElevationType,
-            TokenLinkedToken,
-            TokenElevation,
-            TokenHasRestrictions,
-            TokenAccessInformation,
-            TokenVirtualizationAllowed,
-            TokenVirtualizationEnabled,
-            TokenIntegrityLevel,
-            TokenUiAccess,
-            TokenMandatoryPolicy,
-            TokenLogonSid,
-            MaxTokenInfoClass
-        }
-
-        /// <summary>
-        /// The elevation type for a user token.
-        /// </summary>
-        private enum TokenElevationType
-        {
-            TokenElevationTypeDefault = 1,
-            TokenElevationTypeFull,
-            TokenElevationTypeLimited
+            return true;
         }
     }
 }
