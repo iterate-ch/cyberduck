@@ -24,6 +24,7 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3BucketListService;
+import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
@@ -50,7 +51,7 @@ public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedul
         if(null == feature) {
             return Collections.emptyMap();
         }
-        final AttributedList<Path> containers = new S3BucketListService(session).list(
+        final AttributedList<Path> containers = new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()
         );
         final Map<Path, Distribution> distributions = new ConcurrentHashMap<>();

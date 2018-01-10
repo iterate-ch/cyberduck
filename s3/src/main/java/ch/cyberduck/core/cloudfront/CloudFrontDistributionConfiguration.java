@@ -41,6 +41,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
+import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -668,7 +669,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             }
             if(this.getFeature(DistributionLogging.class, method) != null) {
                 try {
-                    distribution.setContainers(new S3BucketListService(session).list(
+                    distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
                         new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                         new DisabledListProgressListener()).toList());
                 }
@@ -710,7 +711,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
             }
             if(this.getFeature(DistributionLogging.class, method) != null) {
-                distribution.setContainers(new S3BucketListService(session).list(
+                distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
                     new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                     new DisabledListProgressListener()).toList());
             }
