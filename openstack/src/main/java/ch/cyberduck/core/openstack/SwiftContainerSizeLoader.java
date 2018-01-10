@@ -54,9 +54,4 @@ public class SwiftContainerSizeLoader extends OneTimeSchedulerFeature<Long> {
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
-
-    @Override
-    public void shutdown() {
-        //
-    }
 }

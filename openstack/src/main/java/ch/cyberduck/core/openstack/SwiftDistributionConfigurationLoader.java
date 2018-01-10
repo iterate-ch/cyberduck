@@ -64,9 +64,4 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
         }
         return distributions;
     }
-
-    @Override
-    public void shutdown() {
-        //
-    }
 }
