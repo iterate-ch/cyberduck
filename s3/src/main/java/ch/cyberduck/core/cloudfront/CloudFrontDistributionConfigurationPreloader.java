@@ -1,7 +1,7 @@
-package ch.cyberduck.core.openstack;
+package ch.cyberduck.core.cloudfront;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.s3.S3BucketListService;
+import ch.cyberduck.core.s3.S3LocationFeature;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
 import org.apache.log4j.Logger;
@@ -32,15 +35,12 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Preload CDN configuration
- */
-public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeature<Map<Path, Distribution>> {
-    private static final Logger log = Logger.getLogger(SwiftDistributionConfigurationLoader.class);
+public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedulerFeature<Map<Path, Distribution>> {
+    private static final Logger log = Logger.getLogger(CloudFrontDistributionConfigurationPreloader.class);
 
-    private final SwiftSession session;
+    private final S3Session session;
 
-    public SwiftDistributionConfigurationLoader(final SwiftSession session) {
+    public CloudFrontDistributionConfigurationPreloader(final S3Session session) {
         super(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         this.session = session;
     }
@@ -51,7 +51,7 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
         if(null == feature) {
             return Collections.emptyMap();
         }
-        final AttributedList<Path> containers = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(file, new DisabledListProgressListener());
+        final AttributedList<Path> containers = new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(file, new DisabledListProgressListener());
         final Map<Path, Distribution> distributions = new ConcurrentHashMap<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {
@@ -63,10 +63,5 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
             }
         }
         return distributions;
-    }
-
-    @Override
-    public void shutdown() {
-        //
     }
 }

@@ -31,6 +31,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
+import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import com.amazonaws.services.cloudfront.model.OriginProtocolPolicy;
 
@@ -55,8 +57,8 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
-        super(session);
+    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final Map<Path, Distribution> distributions, final X509TrustManager trust, final X509KeyManager key) {
+        super(session, distributions);
     }
 
     /**
@@ -109,7 +111,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 // http://example-bucket.s3-website-us-east-1.amazonaws.com/
                 distribution.setUrl(URI.create(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container))));
                 distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
-                distribution.setContainers(new S3BucketListService(session).list(
+                distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
                         new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()).toList());
                 return distribution;
             }

@@ -27,6 +27,7 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
@@ -35,7 +36,9 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
+import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -54,6 +57,7 @@ import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -72,7 +76,9 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
@@ -80,11 +86,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final Preferences preferences
         = PreferencesFactory.get();
 
-    private DistributionConfiguration cdn
-        = new WebsiteCloudFrontDistributionConfiguration(this, trust, key);
-
     private Versioning versioning
         = new S3VersioningFeature(this, new S3AccessControlListFeature(this));
+
+    private Map<Path, Distribution> distributions = Collections.emptyMap();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
         = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
@@ -353,7 +358,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == DistributionConfiguration.class) {
-            return (T) cdn;
+            return (T) new WebsiteCloudFrontDistributionConfiguration(this, distributions, trust, key);
         }
         if(type == UrlProvider.class) {
             return (T) new S3UrlProvider(this);
@@ -386,6 +391,16 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == IdProvider.class) {
             return (T) new S3VersionIdProvider(this);
+        }
+        if(type == Scheduler.class) {
+            return (T) new DelegatingSchedulerFeature(
+                new CloudFrontDistributionConfigurationPreloader(this) {
+                    @Override
+                    public Map<Path, Distribution> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
+                        return distributions = super.operate(callback, container);
+                    }
+                }
+            );
         }
         return super._getFeature(type);
     }
