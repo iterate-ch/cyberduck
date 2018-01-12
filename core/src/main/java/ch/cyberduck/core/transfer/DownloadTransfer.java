@@ -75,7 +75,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots) {
-        this(host, new DownloadRootPathsNormalizer().normalize(roots),
+        this(host, roots,
                 PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new DownloadDuplicateFilter());
     }
 
