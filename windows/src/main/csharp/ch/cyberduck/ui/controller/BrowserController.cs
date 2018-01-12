@@ -1759,7 +1759,6 @@ namespace Ch.Cyberduck.Ui.Controller
             List uploads = Utils.ConvertToJavaList(paths, delegate(string path)
             {
                 Local local = LocalFactory.get(path);
-                new UploadDirectoryFinder().save(Session.getHost(), local.getParent());
                 return
                     new TransferItem(
                         new Path(destination, local.getName(),

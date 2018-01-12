@@ -2581,7 +2581,6 @@ public class BrowserController extends WindowController
             NSObject next;
             while((next = iterator.nextObject()) != null) {
                 final Local local = LocalFactory.get(next.toString());
-                new UploadDirectoryFinder().save(pool.getHost(), local.getParent());
                 uploads.add(new TransferItem(
                     new Path(destination, local.getName(),
                         local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local
