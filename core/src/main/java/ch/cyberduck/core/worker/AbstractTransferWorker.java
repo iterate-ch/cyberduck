@@ -204,6 +204,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             transfer.reset();
 
             // Normalize Paths before preparing
+            progress.message(LocaleFactory.localizedString("Collecting files …", "Status"));
+
             transfer.normalizePaths();
 
             // Calculate information about the files in advance to give progress information
