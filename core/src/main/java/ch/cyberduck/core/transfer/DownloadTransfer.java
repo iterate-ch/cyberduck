@@ -280,8 +280,10 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    protected List<TransferItem> normalizedPaths(final List<TransferItem> roots) {
-        return new DownloadRootPathsNormalizer().normalize(roots);
+    public void normalizePaths() {
+        List<TransferItem> roots = getRoots();
+        List<TransferItem> normalizedPaths = new DownloadRootPathsNormalizer().normalize(roots);
+        roots.clear();
+        roots.addAll(normalizedPaths);
     }
-
 }

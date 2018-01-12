@@ -337,17 +337,10 @@ public abstract class Transfer implements Serializable {
         state = State.running;
         // Will be set to true in #reset when transfer action is determined
         reset = false;
-
-        normalizePaths();
     }
 
-    private void normalizePaths() {
-        final List<TransferItem> normalizedPaths = normalizedPaths(roots);
-        roots.clear();
-        roots.addAll(normalizedPaths);
+    public void normalizePaths() {
     }
-
-    protected abstract List<TransferItem> normalizedPaths(List<TransferItem> roots);
 
     public void stop() {
         state = State.stopped;

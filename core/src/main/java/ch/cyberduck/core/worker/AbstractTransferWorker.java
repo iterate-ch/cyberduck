@@ -202,6 +202,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             }
             // Reset the cached size of the transfer and progress value
             transfer.reset();
+
+            // Normalize Paths before preparing
+            transfer.normalizePaths();
+
             // Calculate information about the files in advance to give progress information
             for(TransferItem next : transfer.getRoots()) {
                 this.prepare(next.remote, next.local, new TransferStatus().exists(true), action);
