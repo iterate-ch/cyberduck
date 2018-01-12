@@ -281,6 +281,9 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public void normalizePaths() {
-        getRoots().addAll(new DownloadRootPathsNormalizer().normalize(getRawRoots()));
+        List<TransferItem> roots = getRoots();
+        List<TransferItem> normalizedPaths = new DownloadRootPathsNormalizer().normalize(roots);
+        roots.clear();
+        roots.addAll(normalizedPaths);
     }
 }

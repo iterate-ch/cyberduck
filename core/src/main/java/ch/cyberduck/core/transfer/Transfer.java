@@ -53,8 +53,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Files and folders initially selected to be part of this transfer
      */
-    protected final List<TransferItem> roots;
-    protected final List<TransferItem> rawRoots;
+    protected final List<TransferItem> roots = new ArrayList<>();
 
     /**
      * The sum of the file length of all files in the <code>queue</code> or null if unknown
@@ -163,10 +162,8 @@ public abstract class Transfer implements Serializable {
      */
     public Transfer(final Host host, final List<TransferItem> roots, final BandwidthThrottle bandwidth) {
         this.host = host;
-        this.rawRoots = roots;
+        this.roots.addAll(roots);
         this.bandwidth = bandwidth;
-
-        this.roots = new ArrayList<>();
     }
 
     public abstract Transfer withCache(final Cache<Path> cache);
@@ -247,10 +244,6 @@ public abstract class Transfer implements Serializable {
 
     public List<TransferItem> getRoots() {
         return roots;
-    }
-
-    public List<TransferItem> getRawRoots() {
-        return rawRoots;
     }
 
     public Host getSource() {
