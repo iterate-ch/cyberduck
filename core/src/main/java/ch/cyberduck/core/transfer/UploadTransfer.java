@@ -275,10 +275,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public void normalizePaths() {
-        List<TransferItem> roots = getRoots();
-        List<TransferItem> normalizedPaths = new UploadRootPathsNormalizer().normalize(roots);
-        roots.clear();
-        roots.addAll(normalizedPaths);
+        getRoots().addAll(new UploadRootPathsNormalizer().normalize(getRawRoots()));
     }
 
     @Override
