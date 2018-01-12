@@ -255,4 +255,9 @@ public class CopyTransfer extends Transfer {
         }
         return source;
     }
+
+    @Override
+    protected List<TransferItem> normalizedPaths(final List<TransferItem> roots) {
+        return roots;
+    }
 }

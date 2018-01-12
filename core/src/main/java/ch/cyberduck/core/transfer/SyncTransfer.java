@@ -242,6 +242,11 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
+    protected List<TransferItem> normalizedPaths(final List<TransferItem> roots) {
+        return roots;
+    }
+
+    @Override
     public void stop() {
         download.stop();
         upload.stop();

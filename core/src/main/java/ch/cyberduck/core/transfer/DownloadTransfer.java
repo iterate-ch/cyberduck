@@ -84,8 +84,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots, final Filter<Path> f, final Comparator<Path> comparator) {
-        super(host, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
-                PreferencesFactory.get().getFloat("queue.download.bandwidth.bytes")));
+        super(host, roots, new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.download.bandwidth.bytes")));
         this.filter = f;
         this.comparator = comparator;
         this.symlinkResolver = new DownloadSymlinkResolver(roots);
@@ -278,6 +277,11 @@ public class DownloadTransfer extends Transfer {
             }
         }
         return file;
+    }
+
+    @Override
+    protected List<TransferItem> normalizedPaths(final List<TransferItem> roots) {
+        return new DownloadRootPathsNormalizer().normalize(roots);
     }
 
 }

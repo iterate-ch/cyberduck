@@ -94,8 +94,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f, final Comparator<Local> comparator) {
-        super(host, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
-                PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
+        super(host, roots, new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
         this.filter = f;
         this.comparator = comparator;
     }
@@ -272,6 +271,11 @@ public class UploadTransfer extends Transfer {
             }
         }
         return file;
+    }
+
+    @Override
+    protected List<TransferItem> normalizedPaths(final List<TransferItem> roots) {
+        return new UploadRootPathsNormalizer().normalize(roots);
     }
 
     @Override
