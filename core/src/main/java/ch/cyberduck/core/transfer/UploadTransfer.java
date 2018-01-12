@@ -85,7 +85,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots) {
-        this(host, new UploadRootPathsNormalizer().normalize(roots),
+        this(host, roots,
                 PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
     }
 
