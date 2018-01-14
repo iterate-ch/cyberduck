@@ -122,7 +122,7 @@ public class SFTPQuotaFeature implements Quota {
                     long maximumFilenameLength = response.readUInt64(); /* maximum filename length */
 
                     long total = totalBlocks * filesystemBlockSize;
-                    long available = blocksAvailable * blockSize;
+                    long available = blocksAvailable * filesystemBlockSize;
                     long used = total - available;
 
                     return new Space(used, available);
