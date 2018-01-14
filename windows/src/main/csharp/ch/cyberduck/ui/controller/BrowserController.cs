@@ -1755,10 +1755,24 @@ namespace Ch.Cyberduck.Ui.Controller
             string[] paths = View.UploadDialog(null);
             if (null == paths || paths.Length == 0) return;
 
+            bool parentFound = false;
+            Local parent = null;
             Path destination = new UploadTargetFinder(Workdir).find(SelectedPath);
             List uploads = Utils.ConvertToJavaList(paths, delegate(string path)
             {
                 Local local = LocalFactory.get(path);
+                Local localParent = local.getParent();
+
+                if (!parentFound && localParent != parent)
+                {
+                    parentFound = true;
+                    localParent = parent;
+                }
+                else if (parentFound && localParent != parent)
+                {
+                    localParent = null;
+                }
+
                 return
                     new TransferItem(
                         new Path(destination, local.getName(),
@@ -1766,6 +1780,10 @@ namespace Ch.Cyberduck.Ui.Controller
                                 ? EnumSet.of(AbstractPath.Type.directory)
                                 : EnumSet.of(AbstractPath.Type.file)), local);
             });
+            if (parent != null)
+            {
+                new UploadDirectoryFinder().save(Session.getHost(), parent);
+            }
             transfer(new UploadTransfer(Session.getHost(), uploads));
         }
 

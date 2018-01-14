@@ -2579,12 +2579,26 @@ public class BrowserController extends WindowController
             final NSEnumerator iterator = selected.objectEnumerator();
             final List<TransferItem> uploads = new ArrayList<TransferItem>();
             NSObject next;
+            boolean parentFound = false;
+            Local parent = null;
             while((next = iterator.nextObject()) != null) {
                 final Local local = LocalFactory.get(next.toString());
+                final Local localParent = local.getParent();
+
+                if (!parentFound && localParent != parent) {
+                    parentFound = true;
+                    parent = localParent;
+                } else if (parentFound && localParent != parent) {
+                    parent = null;
+                }
+
                 uploads.add(new TransferItem(
                     new Path(destination, local.getName(),
                         local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local
                 ));
+            }
+            if (parent != null) {
+                new UploadDirectoryFinder().save(pool.getHost(), parent);
             }
             this.transfer(new UploadTransfer(pool.getHost(), uploads));
         }
