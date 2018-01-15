@@ -24,20 +24,24 @@ import ch.cyberduck.core.io.Checksum;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermissions;
 
 public class LocalAttributes extends Attributes {
     private static final Logger log = Logger.getLogger(LocalAttributes.class);
 
     private final String path;
     private Checksum checksum = Checksum.NONE;
-    private Permission permission = Permission.EMPTY;
 
     public LocalAttributes(final String path) {
         this.path = path;
-        this.permission = new LocalPermission();
     }
 
     @Override
@@ -77,7 +81,7 @@ public class LocalAttributes extends Attributes {
             Files.setLastModifiedTime(Paths.get(path), FileTime.fromMillis(timestamp));
         }
         catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Cannot change timestamp for %s", path), e);
+            throw new LocalAccessDeniedException(String.format("Cannot change timestamp of %s", path), e);
         }
     }
 
@@ -96,11 +100,25 @@ public class LocalAttributes extends Attributes {
 
     @Override
     public Permission getPermission() {
-        return permission;
+        final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
+        final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
+        final BasicFileAttributes attributes;
+        try {
+            attributes = Files.readAttributes(Paths.get(path), provider, LinkOption.NOFOLLOW_LINKS);
+        }
+        catch(IOException e) {
+            return Permission.EMPTY;
+        }
+        return new LocalPermission(PosixFilePermissions.toString(((PosixFileAttributes) attributes).permissions()));
     }
 
     public void setPermission(final Permission permission) throws AccessDeniedException {
-        this.permission = permission;
+        try {
+            Files.setPosixFilePermissions(Paths.get(path), PosixFilePermissions.fromString(permission.getSymbol()));
+        }
+        catch(IllegalArgumentException | IOException e) {
+            throw new LocalAccessDeniedException(String.format("Cannot change permissions of %s", path), e);
+        }
     }
 
     /**
@@ -161,9 +179,8 @@ public class LocalAttributes extends Attributes {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("LocalAttributes{");
-        sb.append("checksum='").append(checksum).append('\'');
-        sb.append(", timestamp=").append(this.getModificationDate());
-        sb.append(", permission=").append(permission);
+        sb.append("path='").append(path).append('\'');
+        sb.append(", checksum=").append(checksum);
         sb.append('}');
         return sb.toString();
     }
