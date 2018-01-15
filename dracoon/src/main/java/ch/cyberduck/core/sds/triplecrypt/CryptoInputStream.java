@@ -107,4 +107,9 @@ public class CryptoInputStream extends ProxyInputStream {
         System.arraycopy(bytes, 0, b, 0, len);
         return new EncryptedDataContainer(b, tag);
     }
+
+    @Override
+    public long skip(final long len) throws IOException {
+        return IOUtils.skip(this, len);
+    }
 }
