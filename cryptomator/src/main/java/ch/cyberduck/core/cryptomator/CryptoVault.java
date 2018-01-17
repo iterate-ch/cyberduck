@@ -182,8 +182,7 @@ public class CryptoVault implements Vault {
             }
         }
         else {
-            credentials = new VaultCredentials(passphrase);
-            credentials.setSaved(preferences.getBoolean("vault.keychain"));
+            credentials = new VaultCredentials(passphrase).withSaved(preferences.getBoolean("vault.keychain"));
         }
         try {
             this.open(this.upgrade(session, masterKeyFileContent, credentials.getPassword()), credentials.getPassword());

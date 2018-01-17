@@ -16,14 +16,23 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class VaultCredentials extends Credentials {
 
     public VaultCredentials() {
-        super();
+        this(null);
     }
 
     public VaultCredentials(final String password) {
         super(null, password);
+        // Disable save in keychain by default
+        this.setSaved(PreferencesFactory.get().getBoolean("vault.keychain"));
+    }
+
+    @Override
+    public VaultCredentials withSaved(final boolean saved) {
+        super.withSaved(saved);
+        return this;
     }
 }

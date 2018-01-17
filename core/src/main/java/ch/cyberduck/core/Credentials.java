@@ -137,6 +137,11 @@ public class Credentials implements Comparable<Credentials> {
         this.persist = saved;
     }
 
+    public Credentials withSaved(final boolean saved) {
+        this.persist = saved;
+        return this;
+    }
+
     public boolean isPassed() {
         return passed;
     }
@@ -244,9 +249,9 @@ public class Credentials implements Comparable<Credentials> {
         }
         final Credentials that = (Credentials) o;
         return Objects.equals(user, that.user) &&
-                Objects.equals(password, that.password) &&
-                Objects.equals(identity, that.identity) &&
-                Objects.equals(certificate, that.certificate);
+            Objects.equals(password, that.password) &&
+            Objects.equals(identity, that.identity) &&
+            Objects.equals(certificate, that.certificate);
     }
 
     @Override
