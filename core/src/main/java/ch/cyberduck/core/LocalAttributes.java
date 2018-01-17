@@ -29,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -100,24 +99,26 @@ public class LocalAttributes extends Attributes {
 
     @Override
     public Permission getPermission() {
-        final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
-        final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
-        final BasicFileAttributes attributes;
-        try {
-            attributes = Files.readAttributes(Paths.get(path), provider, LinkOption.NOFOLLOW_LINKS);
+        if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+            final BasicFileAttributes attributes;
+            try {
+                return new LocalPermission(PosixFilePermissions.toString(Files.readAttributes(Paths.get(path), PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS).permissions()));
+            }
+            catch(IOException e) {
+                return Permission.EMPTY;
+            }
         }
-        catch(IOException e) {
-            return Permission.EMPTY;
-        }
-        return new LocalPermission(PosixFilePermissions.toString(((PosixFileAttributes) attributes).permissions()));
+        return Permission.EMPTY;
     }
 
     public void setPermission(final Permission permission) throws AccessDeniedException {
-        try {
-            Files.setPosixFilePermissions(Paths.get(path), PosixFilePermissions.fromString(permission.getSymbol()));
-        }
-        catch(IllegalArgumentException | IOException e) {
-            throw new LocalAccessDeniedException(String.format("Cannot change permissions of %s", path), e);
+        if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+            try {
+                Files.setPosixFilePermissions(Paths.get(path), PosixFilePermissions.fromString(permission.getSymbol()));
+            }
+            catch(IllegalArgumentException | IOException e) {
+                throw new LocalAccessDeniedException(String.format("Cannot change permissions of %s", path), e);
+            }
         }
     }
 
