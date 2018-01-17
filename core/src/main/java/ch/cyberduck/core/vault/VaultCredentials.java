@@ -29,4 +29,10 @@ public class VaultCredentials extends Credentials {
         // Disable save in keychain by default
         this.setSaved(PreferencesFactory.get().getBoolean("vault.keychain"));
     }
+
+    @Override
+    public VaultCredentials withSaved(final boolean saved) {
+        super.withSaved(saved);
+        return this;
+    }
 }
