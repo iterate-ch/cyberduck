@@ -340,8 +340,12 @@ public abstract class Transfer implements Serializable {
         reset = false;
     }
 
-    public void normalizePaths() {
-    }
+    /**
+     * Normalize paths of root files
+     *
+     * @see ch.cyberduck.core.transfer.normalizer.RootPathsNormalizer
+     */
+    public abstract void normalize();
 
     public void stop() {
         state = State.stopped;

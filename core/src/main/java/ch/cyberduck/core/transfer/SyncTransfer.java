@@ -71,10 +71,10 @@ public class SyncTransfer extends Transfer {
     private final TransferItem item;
 
     private Cache<Path> cache
-            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
+        = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private final Map<TransferItem, Comparison> comparisons = Collections.synchronizedMap(new LRUMap<TransferItem, Comparison>(
-            PreferencesFactory.get().getInteger("transfer.cache.size")));
+        PreferencesFactory.get().getInteger("transfer.cache.size")));
 
     public SyncTransfer(final Host host, final TransferItem item) {
         this(host, item, TransferAction.callback);
@@ -82,7 +82,7 @@ public class SyncTransfer extends Transfer {
 
     public SyncTransfer(final Host host, final TransferItem item, final TransferAction action) {
         super(host, Collections.singletonList(item),
-                new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
+            new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
         this.item = item;
         this.action = action;
@@ -141,7 +141,7 @@ public class SyncTransfer extends Transfer {
     @Override
     public String getName() {
         return this.getRoot().remote.getName()
-                + " \u2194 " /*left-right arrow*/ + this.getRoot().local.getName();
+            + " \u2194 " /*left-right arrow*/ + this.getRoot().local.getName();
     }
 
     @Override
@@ -157,12 +157,12 @@ public class SyncTransfer extends Transfer {
         }
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
-                comparison = new CachingComparisonServiceFilter(
-                        new ComparisonServiceFilter(source, source.getHost().getTimezone(), listener).withCache(cache)
-                ).withCache(comparisons),
-                download.filter(source, destination, TransferAction.overwrite, listener),
-                upload.filter(source, destination, TransferAction.overwrite, listener),
-                action
+            comparison = new CachingComparisonServiceFilter(
+                new ComparisonServiceFilter(source, source.getHost().getTimezone(), listener).withCache(cache)
+            ).withCache(comparisons),
+            download.filter(source, destination, TransferAction.overwrite, listener),
+            upload.filter(source, destination, TransferAction.overwrite, listener),
+            action
         ).withCache(cache);
     }
 
@@ -258,10 +258,9 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void normalizePaths() {
-        download.normalizePaths();
-        upload.normalizePaths();
-        super.normalizePaths();
+    public void normalize() {
+        download.normalize();
+        upload.normalize();
     }
 
     @Override
