@@ -1,6 +1,13 @@
 Cyberduck
 https://cyberduck.io/
 
+6.3.6
+- [Bugfix] Do not save passphrase for vaults by defaults (Cryptomator, Windows)
+- [Bugfix] Application freezes for long time when selecting many files for upload (Windows)
+
+6.3.5
+- [Bugfix] Crash on launch in update checker (Windows)
+
 6.3.4
 - [Bugfix] Application error when opening connection to BigCommerce (WebDAV)
 - [Bugfix] Preload CloudFront configurations for buckets to allow display of CDN URLs (S3) (#10184)
