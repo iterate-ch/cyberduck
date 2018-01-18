@@ -29,6 +29,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -154,7 +155,7 @@ public class FTPListServiceTest {
         session.close();
     }
 
-    @Test
+    @Test(expected = ConnectionTimeoutException.class)
     public void testListIOFailureStat() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
@@ -173,19 +174,11 @@ public class FTPListServiceTest {
                     fail();
                 }
                 set.set(true);
-                throw new BackgroundException("t", new SocketTimeoutException());
+                throw new ConnectionTimeoutException("t", new SocketTimeoutException());
             }
         });
         final Path directory = new FTPWorkdirService(session).find();
-        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
-        assertTrue(set.get());
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        assertTrue(list.contains(file));
-        service.list(directory, new DisabledListProgressListener());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
