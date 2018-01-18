@@ -255,4 +255,9 @@ public class CopyTransfer extends Transfer {
         }
         return source;
     }
+
+    @Override
+    public void normalize() {
+        //
+    }
 }
