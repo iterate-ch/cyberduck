@@ -40,8 +40,8 @@ public class DAVQuotaFeature implements Quota {
         try {
             final DavQuota quota = session.getClient().getQuota(new DAVPathEncoder().encode(home));
             return new Space(
-                    quota.getQuotaUsedBytes() > 0 ? quota.getQuotaUsedBytes() : 0,
-                    quota.getQuotaAvailableBytes() > 0 ? quota.getQuotaAvailableBytes() : Long.MAX_VALUE
+                quota.getQuotaUsedBytes() > 0 ? quota.getQuotaUsedBytes() : 0,
+                quota.getQuotaAvailableBytes() >= 0 ? quota.getQuotaAvailableBytes() : Long.MAX_VALUE
             );
         }
         catch(SardineException e) {
