@@ -200,6 +200,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         configuration.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
         configuration.setProperty("storage-service.request-signature-version", authenticationHeaderSignatureVersion.toString());
         configuration.setProperty("storage-service.disable-live-md5", String.valueOf(true));
+        configuration.setProperty("storage-service.default-region", host.getRegion());
         return configuration;
     }
 
