@@ -5,7 +5,7 @@
 	<key>Protocol</key>
 	<string>s3</string>
 	<key>Vendor</key>
-	<string>oracle-us-phoenix-1</string>
+	<string>oracle-us-ashburn-1</string>
 	<key>Description</key>
 	<string>Oracle Cloud Infrastructure</string>
 	<key>Default Hostname</key>
