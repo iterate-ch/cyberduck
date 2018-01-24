@@ -126,15 +126,20 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
         final Map<QName, String> properties = resource.getCustomPropsNS();
         if(properties.containsKey(DAVTimestampFeature.LAST_MODIFIED)) {
             final String value = properties.get(DAVTimestampFeature.LAST_MODIFIED);
-            try {
-                attributes.setModificationDate(
-                    new RFC1123DateFormatter().parse(value).getTime());
-            }
-            catch(InvalidDateException e) {
-                log.warn(String.format("Failure parsing property %s", value));
-                if(resource.getModified() != null) {
-                    attributes.setModificationDate(resource.getModified().getTime());
+            if(StringUtils.isNotBlank(value)) {
+                try {
+                    attributes.setModificationDate(
+                        new RFC1123DateFormatter().parse(value).getTime());
                 }
+                catch(InvalidDateException e) {
+                    log.warn(String.format("Failure parsing property %s with value %s", DAVTimestampFeature.LAST_MODIFIED, value));
+                    if(resource.getModified() != null) {
+                        attributes.setModificationDate(resource.getModified().getTime());
+                    }
+                }
+            }
+            else {
+                log.debug(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED));
             }
         }
         else if(resource.getModified() != null) {
