@@ -72,13 +72,13 @@ public class CopyController extends ProxyController {
             @Override
             public void run() {
                 final SessionPool pool = parent.getSession();
-                parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
+                parent.background(new WorkerBackgroundAction<Map<Path, Path>>(parent, parent.getSession(),
                         new CopyWorker(selected, pool instanceof StatefulSessionPool ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
                             @Override
-                            public void cleanup(final List<Path> result) {
+                            public void cleanup(final Map<Path, Path> result) {
                                 final List<Path> changed = new ArrayList<>();
-                                changed.addAll(selected.keySet());
-                                changed.addAll(selected.values());
+                                changed.addAll(result.keySet());
+                                changed.addAll(result.values());
                                 parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
                             }
                         }

@@ -41,7 +41,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
@@ -76,17 +75,13 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 throw new ConnectionCanceledException();
             }
             if(!move.isSupported(entry.getKey(), entry.getValue())) {
-                final List<Path> target = new CopyWorker(Collections.singletonMap(entry.getKey(), entry.getValue()),
+                final Map<Path, Path> copy = new CopyWorker(Collections.singletonMap(entry.getKey(), entry.getValue()),
                     SessionPoolFactory.create(cache, session.getHost(), keychain, callback, key, listener, transcript), cache, listener, callback).run(session);
-                for(Path f : target) {
-                    for(Map.Entry<Path, Path> source : files.entrySet()) {
-                        if(source.getValue().equals(f)) {
-                            result.put(source.getKey(), f);
-                            // Delete source file after copy is complete
-                            new DeleteWorker(callback, Collections.singletonList(source.getKey()), cache, listener).run(session);
-                        }
-                    }
+                for(Map.Entry<Path, Path> r : files.entrySet()) {
+                    // Delete source files recursively after copy is complete
+                    new DeleteWorker(callback, Collections.singletonList(r.getKey()), cache, listener).run(session);
                 }
+                result.putAll(copy);
             }
             else {
                 final Map<Path, Path> recursive = this.compile(move, list, entry.getKey(), entry.getValue());
