@@ -30,12 +30,9 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -59,25 +56,6 @@ public class DAVTimestampFeatureTest {
         new DAVTimestampFeature(session).setTimestamp(file, 5000L);
         assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(5000L, new DAVListService(session).list(file.getParent(), new DisabledListProgressListener()).find(new DefaultPathPredicate(file)).attributes().getModificationDate());
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
-    }
-
-    @Test
-    @Ignore
-    public void testSetTimestampOwncloud() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "demo.nextcloud.com", new Credentials(
-                "test", "test"
-        ));
-        host.setDefaultPath("/remote.php/webdav");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
-        final long millis = LocalDateTime.of(2015, 1, 1, 1, 1).toInstant(ZoneOffset.UTC).toEpochMilli();
-        new DAVTimestampFeature(session).setTimestamp(file, millis);
-        assertEquals(millis, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
