@@ -35,13 +35,12 @@ import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-public class CopyWorker extends Worker<List<Path>> {
+public class CopyWorker extends Worker<Map<Path, Path>> {
 
     private final Map<Path, Path> files;
     private final SessionPool target;
@@ -59,7 +58,7 @@ public class CopyWorker extends Worker<List<Path>> {
     }
 
     @Override
-    public List<Path> run(final Session<?> session) throws BackgroundException {
+    public Map<Path, Path> run(final Session<?> session) throws BackgroundException {
         final Session<?> destination = target.borrow(new BackgroundActionState() {
             @Override
             public boolean isCanceled() {
@@ -73,7 +72,7 @@ public class CopyWorker extends Worker<List<Path>> {
         });
         try {
             final Copy copy = session.getFeature(Copy.class).withTarget(destination);
-            final List<Path> targets = new ArrayList<Path>();
+            final Map<Path, Path> result = new HashMap<>();
             for(Map.Entry<Path, Path> entry : files.entrySet()) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
@@ -84,20 +83,20 @@ public class CopyWorker extends Worker<List<Path>> {
                 final ListService list = session.getFeature(ListService.class);
                 final Map<Path, Path> recursive = this.compile(copy, list, entry.getKey(), entry.getValue());
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                    if(r.getKey().isDirectory() && !copy.isRecursive(r.getKey(), r.getValue())) {
+                    if(r.getKey().isDirectory()) {
                         final Directory directory = session.getFeature(Directory.class);
-                        targets.add(directory.mkdir(r.getValue(), null, new TransferStatus()));
+                        result.put(r.getKey(), directory.mkdir(r.getValue(), null, new TransferStatus()));
                     }
                     else {
                         final TransferStatus status = new TransferStatus()
                             .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
                             .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
                             .length(r.getKey().attributes().getSize());
-                        targets.add(copy.copy(r.getKey(), r.getValue(), status, callback));
+                        result.put(r.getKey(), copy.copy(r.getKey(), r.getValue(), status, callback));
                     }
                 }
             }
-            return targets;
+            return result;
         }
         finally {
             target.release(destination, null);
@@ -132,8 +131,8 @@ public class CopyWorker extends Worker<List<Path>> {
     }
 
     @Override
-    public List<Path> initialize() {
-        return Collections.emptyList();
+    public Map<Path, Path> initialize() {
+        return Collections.emptyMap();
     }
 
     @Override

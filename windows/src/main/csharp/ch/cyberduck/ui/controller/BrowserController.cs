@@ -3388,8 +3388,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object result)
                 {
                     List changed = new ArrayList();
-                    changed.addAll(_files.keySet());
-                    changed.addAll(_files.values());
+                    changed.addAll(((Map) result).keySet());
+                    changed.addAll(((Map) result).values());
                     _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(changed),
                         (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
                 }

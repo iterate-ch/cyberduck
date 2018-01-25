@@ -2279,12 +2279,15 @@ public class BrowserController extends WindowController
                 new OverwriteController(BrowserController.this).overwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
                     @Override
                     public void run() {
-                        background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
+                        background(new WorkerBackgroundAction<Map<Path, Path>>(BrowserController.this, pool,
                             new CopyWorker(selected, pool instanceof StatefulSessionPool ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
                                 BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
                                     @Override
-                                    public void cleanup(final List<Path> copied) {
-                                        reload(workdir(), copied, new ArrayList<Path>(selected.values()));
+                                    public void cleanup(final Map<Path, Path> result) {
+                                        final List<Path> changed = new ArrayList<>();
+                                        changed.addAll(result.keySet());
+                                        changed.addAll(result.values());
+                                        reload(workdir(), changed, new ArrayList<Path>(selected.values()));
                                     }
                                 }
                             )
@@ -2585,10 +2588,11 @@ public class BrowserController extends WindowController
                 final Local local = LocalFactory.get(next.toString());
                 final Local localParent = local.getParent();
 
-                if (!parentFound && localParent != parent) {
+                if(!parentFound && localParent != parent) {
                     parentFound = true;
                     parent = localParent;
-                } else if (parentFound && localParent != parent) {
+                }
+                else if(parentFound && localParent != parent) {
                     parent = null;
                 }
 
@@ -2597,7 +2601,7 @@ public class BrowserController extends WindowController
                         local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local
                 ));
             }
-            if (parent != null) {
+            if(parent != null) {
                 new UploadDirectoryFinder().save(pool.getHost(), parent);
             }
             this.transfer(new UploadTransfer(pool.getHost(), uploads));
