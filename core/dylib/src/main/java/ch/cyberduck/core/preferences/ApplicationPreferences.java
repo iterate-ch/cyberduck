@@ -58,7 +58,6 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         defaults.put("factory.local.class", FinderLocal.class.getName());
         defaults.put("factory.locale.class", BundleLocale.class.getName());
         defaults.put("factory.passwordstore.class", Keychain.class.getName());
-        defaults.put("factory.proxycredentialsstore.class", DisabledProxyCredentialsStore.class.getName());
         defaults.put("factory.certificatestore.class", Keychain.class.getName());
         defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
         defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
