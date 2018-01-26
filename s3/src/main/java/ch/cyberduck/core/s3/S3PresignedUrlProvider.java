@@ -43,7 +43,8 @@ public class S3PresignedUrlProvider {
             public String getEndpoint() {
                 return host.getHostname();
             }
-        }.createSignedUrlUsingSignatureVersion(host.getProtocol().getAuthorization(),
+        }.createSignedUrlUsingSignatureVersion(
+            S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(host.getProtocol().getAuthorization()).toString(),
             region, "GET", bucket, key, null, null, expiry / 1000, false, true, false);
     }
 }
