@@ -43,6 +43,7 @@ import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -116,7 +117,9 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                         final Credentials input = prompt.prompt(bookmark,
                             StringUtils.EMPTY,
                             String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
-                            authScheme.getRealm(),
+                            StringUtils.isNotBlank(authScheme.getRealm()) ? authScheme.getRealm() :
+                                MessageFormat.format(LocaleFactory.localizedString(
+                                    "Login {0} with username and password", "Credentials"), authhost.getHostName()),
                             new LoginOptions()
                                 .icon(bookmark.getProtocol().disk())
                                 .usernamePlaceholder(LocaleFactory.localizedString("Username", "Credentials"))
