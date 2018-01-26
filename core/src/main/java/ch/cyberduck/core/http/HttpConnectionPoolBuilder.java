@@ -34,7 +34,6 @@ import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.config.AuthSchemes;
@@ -173,7 +172,7 @@ public class HttpConnectionPoolBuilder {
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:
-                final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), StringUtils.lowerCase(proxy.getType().name()));
+                final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Setup proxy %s", h));
                 }
