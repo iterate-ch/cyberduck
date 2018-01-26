@@ -34,8 +34,11 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
 
     private final DAVSession session;
 
-    public static final QName LAST_MODIFIED = new QName(
+    public static final QName LAST_MODIFIED_DEFAULT_NAMESPACE = new QName(
         SardineUtil.DEFAULT_NAMESPACE_URI, "lastmodified", SardineUtil.DEFAULT_NAMESPACE_PREFIX);
+
+    public static final QName LAST_MODIFIED_CUSTOM_NAMESPACE = new QName(
+        SardineUtil.CUSTOM_NAMESPACE_URI, "lastmodified", SardineUtil.CUSTOM_NAMESPACE_PREFIX);
 
     public DAVTimestampFeature(final DAVSession session) {
         this.session = session;
@@ -45,8 +48,8 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
     public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         try {
             final HashMap<QName, String> props = new HashMap<>();
-            props.put(LAST_MODIFIED,
-                    new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("UTC")));
+            props.put(LAST_MODIFIED_CUSTOM_NAMESPACE,
+                new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("UTC")));
             session.getClient().patch(new DAVPathEncoder().encode(file), props);
         }
         catch(SardineException e) {

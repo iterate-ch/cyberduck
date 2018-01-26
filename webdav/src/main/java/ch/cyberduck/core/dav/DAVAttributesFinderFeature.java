@@ -65,7 +65,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
         try {
             try {
                 final List<DavResource> status = session.getClient().list(new DAVPathEncoder().encode(file), 1,
-                    Collections.singleton(DAVTimestampFeature.LAST_MODIFIED));
+                    Collections.singleton(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE));
                 for(final DavResource resource : status) {
                     if(resource.isDirectory()) {
                         if(!file.getType().contains(Path.Type.directory)) {
@@ -124,22 +124,22 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final DavResource resource) {
         final PathAttributes attributes = new PathAttributes();
         final Map<QName, String> properties = resource.getCustomPropsNS();
-        if(properties.containsKey(DAVTimestampFeature.LAST_MODIFIED)) {
-            final String value = properties.get(DAVTimestampFeature.LAST_MODIFIED);
+        if(properties.containsKey(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE)) {
+            final String value = properties.get(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
             if(StringUtils.isNotBlank(value)) {
                 try {
                     attributes.setModificationDate(
                         new RFC1123DateFormatter().parse(value).getTime());
                 }
                 catch(InvalidDateException e) {
-                    log.warn(String.format("Failure parsing property %s with value %s", DAVTimestampFeature.LAST_MODIFIED, value));
+                    log.warn(String.format("Failure parsing property %s with value %s", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, value));
                     if(resource.getModified() != null) {
                         attributes.setModificationDate(resource.getModified().getTime());
                     }
                 }
             }
             else {
-                log.debug(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED));
+                log.debug(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE));
             }
         }
         else if(resource.getModified() != null) {
