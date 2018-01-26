@@ -98,10 +98,32 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
         if(authPrefs == null) {
             authPrefs = DEFAULT_SCHEME_PRIORITY;
         }
+        Credentials credentials = keychain.getCredentials(authhost.getHostName());
+        if(StringUtils.isEmpty(credentials.getPassword())) {
+            try {
+                credentials = prompt.prompt(bookmark,
+                    StringUtils.EMPTY,
+                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
+                    MessageFormat.format(LocaleFactory.localizedString(
+                        "Login {0} with username and password", "Credentials"), authhost.getHostName()),
+                    new LoginOptions()
+                        .icon(bookmark.getProtocol().disk())
+                        .usernamePlaceholder(LocaleFactory.localizedString("Username", "Credentials"))
+                        .passwordPlaceholder(LocaleFactory.localizedString("Password", "Credentials"))
+                        .user(true).password(true)
+                );
+                if(credentials.isSaved()) {
+                    context.setAttribute(PROXY_CREDENTIALS_INPUT_ID, credentials);
+                }
+            }
+            catch(LoginCanceledException ignored) {
+                // Ignore dismiss of prompt
+                throw new MalformedChallengeException(ignored.getMessage(), ignored);
+            }
+        }
         if(log.isDebugEnabled()) {
             log.debug("Authentication schemes in the order of preference: " + authPrefs);
         }
-
         for(final String id : authPrefs) {
             final Header challenge = challenges.get(id.toLowerCase(Locale.ROOT));
             if(challenge != null) {
@@ -111,36 +133,8 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                 }
                 final AuthScheme authScheme = authSchemeProvider.create(context);
                 authScheme.processChallenge(challenge);
-                final Credentials saved = keychain.getCredentials(authhost.getHostName());
-                if(StringUtils.isEmpty(saved.getPassword())) {
-                    try {
-                        final Credentials input = prompt.prompt(bookmark,
-                            StringUtils.EMPTY,
-                            String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
-                            StringUtils.isNotBlank(authScheme.getRealm()) ? authScheme.getRealm() :
-                                MessageFormat.format(LocaleFactory.localizedString(
-                                    "Login {0} with username and password", "Credentials"), authhost.getHostName()),
-                            new LoginOptions()
-                                .icon(bookmark.getProtocol().disk())
-                                .usernamePlaceholder(LocaleFactory.localizedString("Username", "Credentials"))
-                                .passwordPlaceholder(LocaleFactory.localizedString("Password", "Credentials"))
-                                .user(true).password(true)
-                        );
-                        if(input.isSaved()) {
-                            context.setAttribute(PROXY_CREDENTIALS_INPUT_ID, input);
-                        }
-                        options.add(new AuthOption(authScheme, new NTCredentials(input.getUsername(), input.getPassword(),
-                            preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
-                    }
-                    catch(LoginCanceledException ignored) {
-                        // Ignore dismiss of prompt
-                        throw new MalformedChallengeException(ignored.getMessage(), ignored);
-                    }
-                }
-                else {
-                    options.add(new AuthOption(authScheme, new NTCredentials(saved.getUsername(), saved.getPassword(),
-                        preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
-                }
+                options.add(new AuthOption(authScheme, new NTCredentials(credentials.getUsername(), credentials.getPassword(),
+                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
             }
             else {
                 if(log.isDebugEnabled()) {
