@@ -24,8 +24,10 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -34,6 +36,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Category(IntegrationTest.class)
 public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testSetTimestamp() throws Exception {
