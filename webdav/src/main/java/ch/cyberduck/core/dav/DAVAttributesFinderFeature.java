@@ -150,7 +150,10 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                             }
                         }
                         else {
-                            log.warn(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE));
+                            log.debug(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE));
+                            if(resource.getModified() != null) {
+                                attributes.setModificationDate(resource.getModified().getTime());
+                            }
                         }
                     }
                     else {
@@ -166,7 +169,10 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                 }
             }
             else {
-                log.warn(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE));
+                log.debug(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE));
+                if(resource.getModified() != null) {
+                    attributes.setModificationDate(resource.getModified().getTime());
+                }
             }
         }
         else if(resource.getModified() != null) {
