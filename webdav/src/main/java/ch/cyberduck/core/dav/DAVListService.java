@@ -51,7 +51,7 @@ public class DAVListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
             final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(directory), 1,
-                Collections.singleton(DAVTimestampFeature.LAST_MODIFIED));
+                Collections.singleton(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE));
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
@@ -65,8 +65,8 @@ public class DAVListService implements ListService {
                 }
                 final PathAttributes attributes = new DAVAttributesFinderFeature(session).toAttributes(resource);
                 final Path file = new Path(directory, PathNormalizer.name(href),
-                        resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
-                        attributes);
+                    resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
+                    attributes);
                 children.add(file);
                 listener.chunk(directory, children);
             }
