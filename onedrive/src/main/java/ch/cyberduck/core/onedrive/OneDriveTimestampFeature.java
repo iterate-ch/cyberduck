@@ -48,7 +48,7 @@ public class OneDriveTimestampFeature extends DefaultTimestampFeature {
     public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
         final FileSystemInfoFacet facet = new FileSystemInfoFacet();
-        facet.setLastModifiedDateTime(OffsetDateTime.ofInstant(Instant.ofEpochMilli(modified), ZoneId.systemDefault()));
+        facet.setLastModifiedDateTime(Instant.ofEpochMilli(modified).atOffset(ZoneOffset.UTC));
         patchOperation.facet("fileSystemInfo", facet);
 
         try {
