@@ -34,11 +34,11 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
 
     private final DAVSession session;
 
-    public static final QName LAST_MODIFIED_DEFAULT_NAMESPACE = new QName(
-        SardineUtil.DEFAULT_NAMESPACE_URI, "lastmodified", SardineUtil.DEFAULT_NAMESPACE_PREFIX);
+    public static final QName LAST_MODIFIED_DEFAULT_NAMESPACE =
+        SardineUtil.createQNameWithDefaultNamespace("lastmodified");
 
-    public static final QName LAST_MODIFIED_CUSTOM_NAMESPACE = new QName(
-        SardineUtil.CUSTOM_NAMESPACE_URI, "lastmodified", SardineUtil.CUSTOM_NAMESPACE_PREFIX);
+    public static final QName LAST_MODIFIED_CUSTOM_NAMESPACE =
+        SardineUtil.createQNameWithCustomNamespace("lastmodified");
 
     public DAVTimestampFeature(final DAVSession session) {
         this.session = session;
