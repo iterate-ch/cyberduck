@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>verizoncloudstorage</string>
+        <string>verizoncloudstorage-ams1a</string>
         <key>Description</key>
         <string>Verizon Cloud Storage (Netherlands, EU)</string>
         <key>Default Hostname</key>
