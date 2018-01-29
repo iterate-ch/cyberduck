@@ -38,13 +38,21 @@ public class S3PresignedUrlProvider {
     public String create(final Host host, final String user, final String secret,
                          final String bucket, final String region, final String key,
                          final long expiry) {
+        final S3Protocol.AuthenticationHeaderSignatureVersion signature;
+        if(StringUtils.isBlank(region)) {
+            signature = S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
+        }
+        else {
+            // Region is required for AWS4-HMAC-SHA256 signature
+            signature = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(host.getProtocol().getAuthorization());
+        }
         return new RestS3Service(new AWSCredentials(StringUtils.strip(user), StringUtils.strip(secret))) {
             @Override
             public String getEndpoint() {
                 return host.getHostname();
             }
         }.createSignedUrlUsingSignatureVersion(
-            S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(host.getProtocol().getAuthorization()).toString(),
+            signature.toString(),
             region, "GET", bucket, key, null, null, expiry / 1000, false, true, false);
     }
 }
