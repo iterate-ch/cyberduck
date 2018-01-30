@@ -40,10 +40,10 @@ import org.rococoa.Foundation;
 public class ConnectionController extends BookmarkController {
 
     private final HostPasswordStore keychain
-            = PasswordStoreFactory.get();
+        = PasswordStoreFactory.get();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     @Outlet
     private NSTextField passwordField;
@@ -70,7 +70,7 @@ public class ConnectionController extends BookmarkController {
         if(options.user) {
             window.makeFirstResponder(usernameField);
         }
-        if(options.password) {
+        if(options.password && !StringUtils.isBlank(credentials.getUsername())) {
             window.makeFirstResponder(passwordField);
         }
     }
@@ -103,9 +103,9 @@ public class ConnectionController extends BookmarkController {
         this.passwordField = field;
         this.updateField(this.passwordField, credentials.getPassword());
         this.notificationCenter.addObserver(this.id(),
-                Foundation.selector("passwordFieldTextDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
-                this.passwordField);
+            Foundation.selector("passwordFieldTextDidChange:"),
+            NSControl.NSControlTextDidChangeNotification,
+            this.passwordField);
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -119,9 +119,9 @@ public class ConnectionController extends BookmarkController {
                         return;
                     }
                     final String password = keychain.getPassword(bookmark.getProtocol().getScheme(),
-                            bookmark.getPort(),
-                            bookmark.getHostname(),
-                            credentials.getUsername());
+                        bookmark.getPort(),
+                        bookmark.getHostname(),
+                        credentials.getUsername());
                     if(StringUtils.isNotBlank(password)) {
                         credentials.setPassword(password);
                         updateField(passwordField, password);
@@ -142,8 +142,8 @@ public class ConnectionController extends BookmarkController {
             @Override
             public void change(final Host bookmark) {
                 passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isNotBlank(options.getPasswordPlaceholder()) ? String.format("%s:",
-                                options.getPasswordPlaceholder()) : StringUtils.EMPTY, LABEL_ATTRIBUTES
+                    StringUtils.isNotBlank(options.getPasswordPlaceholder()) ? String.format("%s:",
+                        options.getPasswordPlaceholder()) : StringUtils.EMPTY, LABEL_ATTRIBUTES
                 ));
             }
         });
