@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
@@ -50,19 +51,20 @@ public class DriveBatchDeleteFeature implements Delete {
         for(Path file : files) {
             try {
                 session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener()))
-                        .queue(batch, new JsonBatchCallback<Void>() {
-                            @Override
-                            public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) throws IOException {
-                                log.warn(String.format("Failure deleting %s. %s", file, e.getMessage()));
-                                failures.add(new HttpResponseExceptionMappingService().map(
-                                        new HttpResponseException(e.getCode(), e.getMessage())));
-                            }
+                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                    .queue(batch, new JsonBatchCallback<Void>() {
+                        @Override
+                        public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) throws IOException {
+                            log.warn(String.format("Failure deleting %s. %s", file, e.getMessage()));
+                            failures.add(new HttpResponseExceptionMappingService().map(
+                                new HttpResponseException(e.getCode(), e.getMessage())));
+                        }
 
-                            @Override
-                            public void onSuccess(final Void aVoid, final HttpHeaders responseHeaders) throws IOException {
-                                callback.delete(file);
-                            }
-                        });
+                        @Override
+                        public void onSuccess(final Void aVoid, final HttpHeaders responseHeaders) throws IOException {
+                            callback.delete(file);
+                        }
+                    });
             }
             catch(IOException e) {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);
