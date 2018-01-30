@@ -108,7 +108,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
         }
 
         // if available try to authenticate with Integrated Windows Authentication
-        if(preferences.getBoolean("webdav.iwa")) {
+        if(preferences.getBoolean("connection.proxy.windows.authentication.enable")) {
             if(WinHttpClients.isWinAuthAvailable()) {
                 for(String s : IWA_SCHEME_PRIORITY) {
                     final Header challenge = challenges.get(s.toLowerCase(Locale.ROOT));

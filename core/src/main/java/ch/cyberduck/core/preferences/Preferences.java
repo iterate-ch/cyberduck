@@ -802,9 +802,6 @@ public abstract class Preferences {
         defaults.put("webdav.ntlm.domain", StringUtils.EMPTY);
         defaults.put("webdav.ntlm.workstation", StringUtils.EMPTY);
 
-        // Disable Integrated Windows Authentication
-        defaults.put("webdav.iwa", String.valueOf(false));
-
         /*
           Enable preemptive authentication if valid credentials are found
          */
@@ -932,6 +929,10 @@ public abstract class Preferences {
          */
         defaults.put("connection.proxy.enable", String.valueOf(true));
         defaults.put("connection.proxy.ntlm.domain", StringUtils.EMPTY);
+        /*
+          Integrated Windows Authentication
+         */
+        defaults.put("connection.proxy.windows.authentication.enable", String.valueOf(false));
 
         /*
           Warning when opening connections sending credentials in plaintext
