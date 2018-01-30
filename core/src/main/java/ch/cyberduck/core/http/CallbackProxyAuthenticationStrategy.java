@@ -33,13 +33,17 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthOption;
 import org.apache.http.auth.AuthScheme;
 import org.apache.http.auth.AuthSchemeProvider;
+import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.MalformedChallengeException;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Lookup;
+import org.apache.http.impl.auth.win.WindowsCredentialsProvider;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
+import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
+import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
@@ -66,6 +70,8 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
 
     private static final String PROXY_CREDENTIALS_INPUT_ID = "cyberduck.credentials.input";
 
+    private static final String PROXY_CREDENTIALS_IWA_ID = "cyberduck.credentials.iwa";
+
     public CallbackProxyAuthenticationStrategy(final Host bookmark, final LoginCallback prompt) {
         this(ProxyCredentialsStoreFactory.get(), bookmark, prompt);
     }
@@ -85,6 +91,11 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             AuthSchemes.DIGEST,
             AuthSchemes.BASIC));
 
+    private static final List<String> IWA_SCHEME_PRIORITY =
+        Collections.unmodifiableList(Arrays.asList(
+            AuthSchemes.SPNEGO,
+            AuthSchemes.NTLM));
+
     @Override
     public Queue<AuthOption> select(final Map<String, Header> challenges, final HttpHost authhost, final HttpResponse response, final HttpContext context) throws MalformedChallengeException {
         final HttpClientContext clientContext = HttpClientContext.adapt(context);
@@ -98,6 +109,34 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
         if(authPrefs == null) {
             authPrefs = DEFAULT_SCHEME_PRIORITY;
         }
+
+        // if available try to authenticate with Integrated Windows Authentication
+        if(WinHttpClients.isWinAuthAvailable() &&
+            context.getAttribute(PROXY_CREDENTIALS_IWA_ID) == null) {
+            for(String s : IWA_SCHEME_PRIORITY) {
+                final Header challenge = challenges.get(s.toLowerCase(Locale.ROOT));
+                if(challenge != null) {
+                    final AuthSchemeProvider provider = registry.lookup(s);
+                    if(provider != null) {
+                        final AuthScheme authScheme = provider.create(context);
+                        authScheme.processChallenge(challenge);
+                        final AuthScope authScope = new AuthScope(
+                            authhost.getHostName(),
+                            authhost.getPort(),
+                            authScheme.getRealm(),
+                            authScheme.getSchemeName());
+                        log.debug(String.format("Add authentication options for scheme %s", authPrefs));
+                        options.add(new AuthOption(authScheme, new WindowsCredentialsProvider(new SystemDefaultCredentialsProvider()).getCredentials(authScope)));
+                    }
+                }
+            }
+            if(!options.isEmpty()) {
+                log.debug(String.format("Set attribute %s in client context", PROXY_CREDENTIALS_IWA_ID));
+                context.setAttribute(PROXY_CREDENTIALS_IWA_ID, true);
+                return options;
+            }
+        }
+
         Credentials credentials = keychain.getCredentials(authhost.getHostName());
         if(StringUtils.isEmpty(credentials.getPassword())) {
             try {
@@ -122,7 +161,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             }
         }
         if(log.isDebugEnabled()) {
-            log.debug("Authentication schemes in the order of preference: " + authPrefs);
+            log.debug(String.format("Authentication schemes in the order of preference: %s", authPrefs));
         }
         for(final String id : authPrefs) {
             final Header challenge = challenges.get(id.toLowerCase(Locale.ROOT));
@@ -138,7 +177,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             }
             else {
                 if(log.isDebugEnabled()) {
-                    log.debug("Challenge for " + id + " authentication scheme not available");
+                    log.debug(String.format("Challenge for %s authentication scheme not available", id));
                     // Try again
                 }
             }

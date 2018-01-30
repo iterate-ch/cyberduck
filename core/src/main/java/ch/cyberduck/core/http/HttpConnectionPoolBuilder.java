@@ -51,9 +51,12 @@ import org.apache.http.impl.auth.DigestSchemeFactory;
 import org.apache.http.impl.auth.KerberosSchemeFactory;
 import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.auth.SPNegoSchemeFactory;
+import org.apache.http.impl.auth.win.WindowsNTLMSchemeFactory;
+import org.apache.http.impl.auth.win.WindowsNegotiateSchemeFactory;
 import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
@@ -218,8 +221,12 @@ public class HttpConnectionPoolBuilder {
                 Charset.forName(preferences.getProperty("http.credentials.charset"))))
             .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
                 Charset.forName(preferences.getProperty("http.credentials.charset"))))
-            .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
-            .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
+            .register(AuthSchemes.NTLM, WinHttpClients.isWinAuthAvailable() ?
+                new WindowsNTLMSchemeFactory(null) :
+                new NTLMSchemeFactory())
+            .register(AuthSchemes.SPNEGO, WinHttpClients.isWinAuthAvailable() ?
+                new WindowsNegotiateSchemeFactory(null) :
+                new SPNegoSchemeFactory())
             .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
         return configuration;
     }
