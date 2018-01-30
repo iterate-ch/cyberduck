@@ -63,7 +63,6 @@ public class SwiftWriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        Thread.sleep(1000L);
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
@@ -79,6 +78,8 @@ public class SwiftWriteFeatureTest {
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("duck", metadata.get("X-Object-Meta-C"));
+        final OutputStream overwrite = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(0L), new DisabledConnectionCallback());
+        overwrite.close();
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
