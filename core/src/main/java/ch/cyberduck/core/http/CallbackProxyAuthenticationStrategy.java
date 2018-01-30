@@ -125,14 +125,18 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                             authhost.getPort(),
                             authScheme.getRealm(),
                             authScheme.getSchemeName());
-                        log.debug(String.format("Add authentication options for scheme %s", authPrefs));
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Add authentication options for scheme %s", authPrefs));
+                        }
                         options.add(new AuthOption(authScheme, new WindowsCredentialsProvider(
                             null == clientContext.getCredentialsProvider() ? new BasicCredentialsProvider() : clientContext.getCredentialsProvider()).getCredentials(authScope)));
                     }
                 }
             }
             if(!options.isEmpty()) {
-                log.debug(String.format("Set attribute %s in client context", PROXY_CREDENTIALS_IWA_ID));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set attribute %s in client context", PROXY_CREDENTIALS_IWA_ID));
+                }
                 context.setAttribute(PROXY_CREDENTIALS_IWA_ID, true);
                 return options;
             }
@@ -197,6 +201,10 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             }
             keychain.addCredentials(authhost.getHostName(), credentials.getUsername(), credentials.getPassword());
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Remove attribute %s in client context", PROXY_CREDENTIALS_IWA_ID));
+        }
+        context.removeAttribute(PROXY_CREDENTIALS_IWA_ID);
         super.authSucceeded(authhost, authScheme, context);
     }
 
