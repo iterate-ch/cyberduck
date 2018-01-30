@@ -369,6 +369,9 @@ namespace Ch.Cyberduck.Core.Preferences
             defaults.put("connection.ssl.securerandom.algorithm", "Windows-PRNG");
             defaults.put("connection.ssl.securerandom.provider", "SunMSCAPI");
 
+            // Enable Integrated Windows Authentication
+            defaults.put("connection.proxy.windows.authentication.enable", true.ToString());
+
             defaults.put("webdav.ntlm.environment", false.ToString());
             if (getBoolean("webdav.ntlm.environment"))
             {

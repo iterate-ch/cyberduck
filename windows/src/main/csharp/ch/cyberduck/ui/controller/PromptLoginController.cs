@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -40,10 +40,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private readonly HostPasswordStore keychain = PasswordStoreFactory.get();
 
-        private Host _bookmark;
-        private Credentials _credentials = new Credentials();
-        private LoginOptions _options;
-
         public PromptLoginController(WindowController c) : base(c)
         {
             _browser = c;
@@ -54,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public void warn(Host bookmark, String title, String message, String continueButton, String disconnectButton,
             String preference)
         {
-            AsyncController.AsyncDelegate d = delegate
+            AsyncDelegate d = delegate
             {
                 _browser.CommandBox(title, title, message, String.Format("{0}|{1}", continueButton, disconnectButton),
                     false, LocaleFactory.localizedString("Don't show again", "Credentials"), TaskDialogIcon.Question,
@@ -80,24 +76,21 @@ namespace Ch.Cyberduck.Ui.Controller
         public Credentials prompt(Host bookmark, String username, String title, String reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
-            InitEventHandlers();
+            var credentials = new Credentials().withSaved(options.save()).withUsername(username);
+            InitEventHandlers(bookmark, credentials, options);
 
-            _bookmark = bookmark;
-            _options = options;
-            _credentials.setSaved(_options.save());
-            _credentials.setUsername(username);
 
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = username;
-            View.SavePasswordState = _options.save();
-            View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
+            View.SavePasswordState = options.save();
+            View.DiskIcon = IconCache.Instance.IconForName(options.icon(), 64);
 
             InitPrivateKeys();
 
-            Update();
+            Update(credentials, options);
 
-            AsyncController.AsyncDelegate d = delegate
+            AsyncDelegate d = delegate
             {
                 if (DialogResult.Cancel == View.ShowDialog(_browser.View))
                 {
@@ -105,7 +98,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             };
             _browser.Invoke(d);
-            return _credentials;
+            return credentials;
         }
 
         public Local select(Local identity)
@@ -126,56 +119,56 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PopulatePrivateKeys(_keys);
         }
 
-        private void View_ChangedAnonymousCheckboxEvent()
+        private void View_ChangedAnonymousCheckboxEvent(Credentials credentials, LoginOptions options)
         {
             if (View.AnonymousState)
             {
-                _credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));
-                _credentials.setPassword(PreferencesFactory.get().getProperty("connection.login.anon.pass"));
+                credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));
+                credentials.setPassword(PreferencesFactory.get().getProperty("connection.login.anon.pass"));
             }
             else
             {
-                _credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.name"));
-                _credentials.setPassword(null);
+                credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.name"));
+                credentials.setPassword(null);
             }
-            View.Username = _credentials.getUsername();
-            View.Password = _credentials.getPassword();
-            Update();
+            View.Username = credentials.getUsername();
+            View.Password = credentials.getPassword();
+            Update(credentials, options);
         }
 
-        private void View_ChangedSavePasswordCheckboxEvent()
+        private void View_ChangedSavePasswordCheckboxEvent(Credentials credentials)
         {
-            _credentials.setSaved(View.SavePasswordState);
+            credentials.setSaved(View.SavePasswordState);
         }
 
-        private void View_ChangedPasswordEvent()
+        private void View_ChangedPasswordEvent(Credentials credentials)
         {
-            _credentials.setPassword(Utils.SafeString(View.Password));
+            credentials.setPassword(Utils.SafeString(View.Password));
         }
 
-        private void View_ChangedUsernameEvent()
+        private void View_ChangedUsernameEvent(Host bookmark, Credentials credentials, LoginOptions options)
         {
-            _credentials.setUsername(Utils.SafeString(View.Username));
-            if (Utils.IsNotBlank(_credentials.getUsername()))
+            credentials.setUsername(Utils.SafeString(View.Username));
+            if (Utils.IsNotBlank(credentials.getUsername()))
             {
-                String password = keychain.getPassword(_bookmark.getProtocol().getScheme(), _bookmark.getPort(),
-                    _bookmark.getHostname(), _credentials.getUsername());
+                String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                    bookmark.getHostname(), credentials.getUsername());
                 if (Utils.IsNotBlank(password))
                 {
                     View.Password = password;
                 }
             }
-            Update();
+            Update(credentials, options);
         }
 
-        private void InitEventHandlers()
+        private void InitEventHandlers(Host bookmark, Credentials credentials, LoginOptions options)
         {
-            View.ChangedUsernameEvent += View_ChangedUsernameEvent;
-            View.ChangedPasswordEvent += View_ChangedPasswordEvent;
-            View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
-            View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
-            View.ChangedPrivateKey += View_ChangedPrivateKey;
-            View.ValidateInput += View_ValidateInput;
+            View.ChangedUsernameEvent += () => View_ChangedUsernameEvent(bookmark, credentials, options);
+            View.ChangedPasswordEvent += () => View_ChangedPasswordEvent(credentials);
+            View.ChangedSavePasswordCheckboxEvent += () => View_ChangedSavePasswordCheckboxEvent(credentials);
+            View.ChangedAnonymousCheckboxEvent += () => View_ChangedAnonymousCheckboxEvent(credentials, options);
+            View.ChangedPrivateKey += (o, args) => View_ChangedPrivateKey(o, args, credentials, options);
+            View.ValidateInput += () => View_ValidateInput(bookmark, credentials, options);
             View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
         }
 
@@ -190,34 +183,36 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ShowPrivateKeyBrowser(selectedKeyFile);
         }
 
-        private bool View_ValidateInput()
+        private bool View_ValidateInput(Host bookmark, Credentials credentials, LoginOptions options)
         {
-            return _credentials.validate(_bookmark.getProtocol(), _options);
+            return credentials.validate(bookmark.getProtocol(), options);
         }
 
-        private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
+        private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e, Credentials credentials,
+            LoginOptions options)
         {
-            _credentials.setIdentity(null == e.KeyFile ? null : LocalFactory.get(e.KeyFile));
+            credentials.setIdentity(null == e.KeyFile ? null : LocalFactory.get(e.KeyFile));
             if (!_keys.Contains(e.KeyFile))
             {
                 _keys.Add(e.KeyFile);
                 View.PopulatePrivateKeys(_keys);
             }
-            Update();
+            Update(credentials, options);
         }
 
-        private void Update()
+        private void Update(Credentials credentials, LoginOptions options)
         {
-            View.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
-            View.PasswordEnabled = _options.password() && !_credentials.isAnonymousLogin();
-            View.UsernameLabel = _options.getUsernamePlaceholder() + ":";
-            View.PasswordLabel = _options.getPasswordPlaceholder() + ":";
+            View.UsernameEnabled = options.user() && !credentials.isAnonymousLogin();
+            View.PasswordEnabled = options.password() && !credentials.isAnonymousLogin();
+            View.UsernameLabel = options.getUsernamePlaceholder() + ":";
+            View.PasswordLabel = options.getPasswordPlaceholder() + ":";
             {
-                View.SavePasswordEnabled = _options.keychain() && !_credentials.isAnonymousLogin();;
-                View.SavePasswordState = _credentials.isSaved();
+                View.SavePasswordEnabled = options.keychain() && !credentials.isAnonymousLogin();
+                ;
+                View.SavePasswordState = credentials.isSaved();
             }
-            View.AnonymousEnabled = _options.anonymous();
-            if (_options.anonymous() && _credentials.isAnonymousLogin())
+            View.AnonymousEnabled = options.anonymous();
+            if (options.anonymous() && credentials.isAnonymousLogin())
             {
                 View.AnonymousState = true;
             }
@@ -225,10 +220,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.AnonymousState = false;
             }
-            View.PrivateKeyFieldEnabled = _options.publickey();
-            if (_options.publickey() && _credentials.isPublicKeyAuthentication())
+            View.PrivateKeyFieldEnabled = options.publickey();
+            if (options.publickey() && credentials.isPublicKeyAuthentication())
             {
-                View.SelectedPrivateKey = _credentials.getIdentity().getAbsolute();
+                View.SelectedPrivateKey = credentials.getIdentity().getAbsolute();
             }
         }
     }

@@ -28,6 +28,7 @@ public class PreferencesProxyCredentialsStore implements ProxyCredentialsStore {
 
     public PreferencesProxyCredentialsStore(final Preferences preferences) {
         this.preferences = preferences;
+        this.preferences.load();
     }
 
     @Override

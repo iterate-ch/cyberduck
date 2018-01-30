@@ -929,6 +929,10 @@ public abstract class Preferences {
          */
         defaults.put("connection.proxy.enable", String.valueOf(true));
         defaults.put("connection.proxy.ntlm.domain", StringUtils.EMPTY);
+        /*
+          Integrated Windows Authentication
+         */
+        defaults.put("connection.proxy.windows.authentication.enable", String.valueOf(false));
 
         /*
           Warning when opening connections sending credentials in plaintext
