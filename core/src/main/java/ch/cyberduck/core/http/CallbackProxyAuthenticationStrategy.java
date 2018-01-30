@@ -41,8 +41,8 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Lookup;
 import org.apache.http.impl.auth.win.WindowsCredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
-import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
@@ -126,7 +126,8 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                             authScheme.getRealm(),
                             authScheme.getSchemeName());
                         log.debug(String.format("Add authentication options for scheme %s", authPrefs));
-                        options.add(new AuthOption(authScheme, new WindowsCredentialsProvider(new SystemDefaultCredentialsProvider()).getCredentials(authScope)));
+                        options.add(new AuthOption(authScheme, new WindowsCredentialsProvider(
+                            null == clientContext.getCredentialsProvider() ? new BasicCredentialsProvider() : clientContext.getCredentialsProvider()).getCredentials(authScope)));
                     }
                 }
             }
