@@ -29,7 +29,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -59,7 +58,7 @@ public class S3ThresholdUploadServiceTest {
                         )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3ThresholdUploadService m = new S3ThresholdUploadService(session,
                 5 * 1024L
         );
@@ -78,7 +77,7 @@ public class S3ThresholdUploadServiceTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
                 5 * 1024L
         );
@@ -116,7 +115,7 @@ public class S3ThresholdUploadServiceTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
                 5 * 1024L
 

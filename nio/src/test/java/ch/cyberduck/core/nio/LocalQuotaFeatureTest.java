@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.proxy.Proxy;
 
 import org.junit.Test;
 
@@ -34,7 +33,7 @@ public class LocalQuotaFeatureTest {
     public void get() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         final Quota.Space quota = new LocalQuotaFeature(session).get();
         assertNotNull(quota.used);

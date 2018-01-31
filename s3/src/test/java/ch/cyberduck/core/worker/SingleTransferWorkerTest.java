@@ -35,7 +35,6 @@ import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -76,7 +75,7 @@ public class SingleTransferWorkerTest {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = TemporaryFileServiceFactory.get().create(test);

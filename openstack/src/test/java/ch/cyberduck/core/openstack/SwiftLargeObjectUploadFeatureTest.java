@@ -15,7 +15,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -49,7 +48,7 @@ public class SwiftLargeObjectUploadFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -108,7 +107,7 @@ public class SwiftLargeObjectUploadFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -170,7 +169,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         container.attributes().setRegion("DFW");
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

@@ -32,7 +32,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
 import ch.cyberduck.core.sds.SDSProtocol;
@@ -69,7 +68,7 @@ public class DefaultDownloadFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session).touch(
@@ -116,7 +115,7 @@ public class DefaultDownloadFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

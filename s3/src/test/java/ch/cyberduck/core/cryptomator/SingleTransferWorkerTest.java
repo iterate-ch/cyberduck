@@ -36,7 +36,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
@@ -81,7 +80,7 @@ public class SingleTransferWorkerTest {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

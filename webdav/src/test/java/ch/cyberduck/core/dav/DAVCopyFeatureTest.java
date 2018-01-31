@@ -30,7 +30,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -57,7 +56,7 @@ public class DAVCopyFeatureTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -77,7 +76,7 @@ public class DAVCopyFeatureTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -100,7 +99,7 @@ public class DAVCopyFeatureTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));

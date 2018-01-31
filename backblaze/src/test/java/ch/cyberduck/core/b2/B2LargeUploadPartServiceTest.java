@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -51,7 +50,7 @@ public class B2LargeUploadPartServiceTest {
                         )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
@@ -70,7 +69,7 @@ public class B2LargeUploadPartServiceTest {
                         )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse start1Response = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
@@ -96,7 +95,7 @@ public class B2LargeUploadPartServiceTest {
                         )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
@@ -115,7 +114,7 @@ public class B2LargeUploadPartServiceTest {
                         )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),

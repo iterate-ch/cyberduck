@@ -37,7 +37,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -81,7 +80,7 @@ public class SingleTransferWorkerTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -147,7 +146,7 @@ public class SingleTransferWorkerTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());

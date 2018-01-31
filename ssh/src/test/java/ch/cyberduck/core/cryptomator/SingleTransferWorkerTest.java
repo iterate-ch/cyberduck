@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPFindFeature;
@@ -75,7 +74,7 @@ public class SingleTransferWorkerTest {
         final AtomicBoolean failed = new AtomicBoolean();
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         StringBuilder directoryname = new StringBuilder();

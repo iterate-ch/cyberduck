@@ -42,7 +42,6 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -77,7 +76,7 @@ public class DAVWriteFeatureTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);

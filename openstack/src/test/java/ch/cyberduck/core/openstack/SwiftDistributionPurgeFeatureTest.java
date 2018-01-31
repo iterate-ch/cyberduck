@@ -9,7 +9,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -31,7 +30,7 @@ public class SwiftDistributionPurgeFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
@@ -46,7 +45,7 @@ public class SwiftDistributionPurgeFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");

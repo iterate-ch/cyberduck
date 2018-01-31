@@ -22,7 +22,6 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.spectra.SpectraBulkService;
@@ -130,7 +129,7 @@ public class SingleTransferWorkerTest {
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);

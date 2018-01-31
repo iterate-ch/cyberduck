@@ -26,7 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -57,7 +56,7 @@ public class S3EncryptionFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
@@ -78,7 +77,7 @@ public class S3EncryptionFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());

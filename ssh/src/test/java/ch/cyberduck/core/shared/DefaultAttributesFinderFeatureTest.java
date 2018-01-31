@@ -16,7 +16,6 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -46,7 +45,7 @@ public class DefaultAttributesFinderFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         new DefaultAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -66,7 +65,7 @@ public class DefaultAttributesFinderFeatureTest {
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathCache cache = new PathCache(1);
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
         final Path workdir = new SFTPHomeDirectoryService(session).find();

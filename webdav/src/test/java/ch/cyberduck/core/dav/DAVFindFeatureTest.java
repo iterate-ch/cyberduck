@@ -8,7 +8,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -32,7 +31,7 @@ public class DAVFindFeatureTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(new DAVFindFeature(session).find(new DefaultHomeFinderService(session).find()));
         assertFalse(new DAVFindFeature(session).find(
             new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
@@ -51,7 +50,7 @@ public class DAVFindFeatureTest {
         ));
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(new DAVFindFeature(session).find(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(new DAVFindFeature(session).find(new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertFalse(new DAVFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume))));

@@ -31,7 +31,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoMoveFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPDirectoryFeature;
 import ch.cyberduck.core.sftp.SFTPFindFeature;
@@ -70,7 +69,7 @@ public class SFTPMoveFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -99,7 +98,7 @@ public class SFTPMoveFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -131,7 +130,7 @@ public class SFTPMoveFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
@@ -163,7 +162,7 @@ public class SFTPMoveFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -192,7 +191,7 @@ public class SFTPMoveFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -218,7 +217,7 @@ public class SFTPMoveFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, "folder-1", EnumSet.of(Path.Type.directory));

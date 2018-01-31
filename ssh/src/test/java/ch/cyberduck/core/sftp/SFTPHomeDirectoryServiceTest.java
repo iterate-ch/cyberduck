@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -42,7 +41,7 @@ public class SFTPHomeDirectoryServiceTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), new SFTPHomeDirectoryService(session).find());
         session.close();
     }

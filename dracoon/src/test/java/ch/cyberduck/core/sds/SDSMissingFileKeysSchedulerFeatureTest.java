@@ -30,7 +30,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetRequest;
 import ch.cyberduck.core.sds.triplecrypt.CryptoWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -64,7 +63,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -107,7 +106,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
         final AtomicBoolean prompt = new AtomicBoolean();
         final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {

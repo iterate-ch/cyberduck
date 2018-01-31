@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -54,7 +53,7 @@ public class FTPUTIMETimestampFeatureTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPWorkdirService workdir = new FTPWorkdirService(session);
         final Path home = workdir.find();
         final long modified = System.currentTimeMillis();
@@ -75,7 +74,7 @@ public class FTPUTIMETimestampFeatureTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertNull(session.getFeature(Timestamp.class));
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertNotNull(session.getFeature(Timestamp.class));
         session.close();
     }

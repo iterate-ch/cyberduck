@@ -66,7 +66,7 @@ public class SFTPSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());

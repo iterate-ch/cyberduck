@@ -32,7 +32,6 @@ import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.nio.LocalReadFeature;
 import ch.cyberduck.core.nio.LocalSession;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -70,7 +69,7 @@ public class SingleTransferWorkerTest {
     public void testUpload() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         StringBuilder directoryname = new StringBuilder();

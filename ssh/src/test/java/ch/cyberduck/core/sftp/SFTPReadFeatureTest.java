@@ -29,7 +29,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -57,7 +56,7 @@ public class SFTPReadFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         new SFTPReadFeature(session).read(new Path(new SFTPHomeDirectoryService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
@@ -69,7 +68,7 @@ public class SFTPReadFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
@@ -103,7 +102,7 @@ public class SFTPReadFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test, new TransferStatus());

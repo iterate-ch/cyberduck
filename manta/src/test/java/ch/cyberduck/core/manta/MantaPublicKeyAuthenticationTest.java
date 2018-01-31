@@ -25,7 +25,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -66,7 +65,7 @@ public class MantaPublicKeyAuthenticationTest {
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            session.login(Proxy.DIRECT, new DisabledPasswordStore(),
+            session.login(new DisabledPasswordStore(),
                 new DisabledLoginCallback() {
                     @Override
                     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -108,7 +107,7 @@ public class MantaPublicKeyAuthenticationTest {
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            session.login(Proxy.DIRECT, new DisabledPasswordStore(),
+            session.login(new DisabledPasswordStore(),
                 new DisabledLoginCallback() {
                     @Override
                     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {

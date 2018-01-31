@@ -30,7 +30,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -63,7 +62,7 @@ public class IRODSListServiceTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final AttributedList<Path> list = new IRODSListService(session).list(new IRODSHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path p : list) {
@@ -85,7 +84,7 @@ public class IRODSListServiceTest {
 
         final IRODSSession session = new IRODSSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final IRODSListService service = new IRODSListService(session);
         service.list(f, new DisabledListProgressListener());

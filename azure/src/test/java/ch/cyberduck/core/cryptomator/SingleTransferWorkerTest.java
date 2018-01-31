@@ -42,7 +42,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -81,7 +80,7 @@ public class SingleTransferWorkerTest {
         ));
         final AzureSession session = new AzureSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));

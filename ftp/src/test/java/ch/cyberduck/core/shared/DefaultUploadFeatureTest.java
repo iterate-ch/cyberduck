@@ -33,7 +33,6 @@ import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -61,7 +60,7 @@ public class DefaultUploadFeatureTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new byte[32770];
         new Random().nextBytes(content);

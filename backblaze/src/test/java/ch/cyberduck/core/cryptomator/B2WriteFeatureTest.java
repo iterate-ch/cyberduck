@@ -41,7 +41,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -75,7 +74,7 @@ public class B2WriteFeatureTest {
                 ));
         final B2Session session = new B2Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);

@@ -32,7 +32,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -65,7 +64,7 @@ public class B2LargeUploadServiceTest {
                         )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(bucket, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -114,7 +113,7 @@ public class B2LargeUploadServiceTest {
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -172,7 +171,7 @@ public class B2LargeUploadServiceTest {
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

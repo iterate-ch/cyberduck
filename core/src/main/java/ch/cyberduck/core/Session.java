@@ -169,15 +169,17 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     protected abstract C connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt) throws BackgroundException;
 
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        this.login(ProxyFactory.get().find(host), keychain, prompt, cancel);
+    }
+
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
-     *
-     * @param proxy    Proxy configuration
      * @param keychain Password store
      * @param prompt   Prompt
      * @param cancel   Cancel callback
      */
-    public abstract void login(final Proxy proxy, HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
+    public abstract void login(Proxy proxy, HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
 
     /**
      * Logout and close client connection

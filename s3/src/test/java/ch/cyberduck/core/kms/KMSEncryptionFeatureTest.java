@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -61,7 +60,7 @@ public class KMSEncryptionFeatureTest {
                         )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
@@ -84,7 +83,7 @@ public class KMSEncryptionFeatureTest {
                         )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
@@ -106,7 +105,7 @@ public class KMSEncryptionFeatureTest {
                         )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
@@ -128,7 +127,7 @@ public class KMSEncryptionFeatureTest {
                         )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final KMSEncryptionFeature kms = new KMSEncryptionFeature(session);
         assertFalse(kms.getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback()).isEmpty());
         session.close();
@@ -143,7 +142,7 @@ public class KMSEncryptionFeatureTest {
                         )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final KMSEncryptionFeature kms = new KMSEncryptionFeature(session);
         final Set<Encryption.Algorithm> keys = kms.getKeys(new Path("test-ap-southeast-2-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
         assertTrue(keys.contains(Encryption.Algorithm.NONE));
@@ -174,7 +173,7 @@ public class KMSEncryptionFeatureTest {
                         )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, 1);
         try {
             kms.getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());

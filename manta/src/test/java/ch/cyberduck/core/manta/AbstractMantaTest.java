@@ -29,7 +29,6 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -75,7 +74,7 @@ public abstract class AbstractMantaTest {
         final Host host = new Host(profile, hostname, new Credentials(user).withIdentity(file));
         session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final String testRoot = "cyberduck-test-" + new AlphanumericRandomStringService().random();
         testPathPrefix = new Path(new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountPrivateRoot(), testRoot, EnumSet.of(Type.directory));
         session.getClient().putDirectory(testPathPrefix.getAbsolute());

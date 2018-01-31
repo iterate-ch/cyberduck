@@ -30,7 +30,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -57,7 +56,7 @@ public class SDSSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
         session.close();
     }
@@ -72,7 +71,7 @@ public class SDSSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         try {
-            session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
             fail();
         }
         catch(LoginFailureException e) {
@@ -121,7 +120,7 @@ public class SDSSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 assertEquals("Multi-Factor Authentication", reason);
@@ -146,7 +145,7 @@ public class SDSSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore() {
+        session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(Scheme scheme, int port, String hostname, String user) {
                 if(user.equals("Secure Data Space (post@iterate.ch) OAuth2 Access Token")) {
@@ -171,7 +170,7 @@ public class SDSSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
 }

@@ -32,7 +32,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3ReadFeature;
@@ -69,9 +68,9 @@ public class DefaultDownloadFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3TouchFeature(session).touch(

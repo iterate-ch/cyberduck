@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.proxy.Proxy;
 
 import org.junit.Test;
 
@@ -52,6 +51,6 @@ public class B2SessionTest {
         ));
         final B2Session session = new B2Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 }

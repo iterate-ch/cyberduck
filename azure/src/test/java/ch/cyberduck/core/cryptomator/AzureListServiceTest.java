@@ -34,7 +34,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,7 +60,7 @@ public class AzureListServiceTest {
         ));
         final AzureSession session = new AzureSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());

@@ -42,7 +42,6 @@ import ch.cyberduck.core.openstack.SwiftReadFeature;
 import ch.cyberduck.core.openstack.SwiftRegionService;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.openstack.SwiftWriteFeature;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -75,7 +74,7 @@ public class SwiftWriteFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);

@@ -39,7 +39,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -71,7 +70,7 @@ public class B2LargeUploadWriteFeatureTest {
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());

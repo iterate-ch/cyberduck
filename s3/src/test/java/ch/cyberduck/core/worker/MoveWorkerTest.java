@@ -28,7 +28,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3MetadataFeature;
@@ -56,7 +55,7 @@ public class MoveWorkerTest {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

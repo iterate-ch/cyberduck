@@ -14,7 +14,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -107,7 +106,7 @@ public class S3AttributesFinderFeatureTest {
                     System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                 )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(container);
         assertEquals(-1L, attributes.getSize());
@@ -183,7 +182,7 @@ public class S3AttributesFinderFeatureTest {
                 )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final Path file = new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
@@ -202,7 +201,7 @@ public class S3AttributesFinderFeatureTest {
                 )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final Path file = new Path(container, String.format("%s@", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));

@@ -34,7 +34,6 @@ import ch.cyberduck.core.azure.AzureSession;
 import ch.cyberduck.core.azure.AzureTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
@@ -59,7 +58,7 @@ public class CopyWorkerTest {
         ));
         final AzureSession session = new AzureSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -80,7 +79,7 @@ public class CopyWorkerTest {
         ));
         final AzureSession session = new AzureSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(sourceFile, new TransferStatus());
@@ -105,7 +104,7 @@ public class CopyWorkerTest {
         ));
         final AzureSession session = new AzureSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

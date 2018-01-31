@@ -28,7 +28,6 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -52,7 +51,7 @@ public class S3VersioningFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final VersioningConfiguration configuration
                 = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
@@ -69,7 +68,7 @@ public class S3VersioningFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final VersioningConfiguration configuration
                 = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
@@ -85,7 +84,7 @@ public class S3VersioningFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(container, null, new TransferStatus());
         final Versioning feature = new S3VersioningFeature(session, new S3AccessControlListFeature(session));
