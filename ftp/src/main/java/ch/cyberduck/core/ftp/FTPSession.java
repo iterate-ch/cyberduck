@@ -44,6 +44,7 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -184,7 +185,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public FTPClient connect(final HostKeyCallback callback) throws BackgroundException {
+    public FTPClient connect(final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
         try {
             final CustomTrustSSLProtocolSocketFactory f
                     = new CustomTrustSSLProtocolSocketFactory(trust, key);

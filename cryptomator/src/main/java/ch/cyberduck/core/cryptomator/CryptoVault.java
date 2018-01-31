@@ -34,6 +34,7 @@ import ch.cyberduck.core.vault.VaultException;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.cryptomator.cryptolib.Cryptors;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -185,8 +186,7 @@ public class CryptoVault implements Vault {
             }
         }
         else {
-            credentials = new VaultCredentials(passphrase);
-            credentials.setSaved(preferences.getBoolean("vault.keychain"));
+            credentials = new VaultCredentials(passphrase).withSaved(preferences.getBoolean("vault.keychain"));
         }
         try {
             this.open(this.upgrade(session, masterKeyFileContent, credentials.getPassword()), credentials.getPassword());
@@ -423,10 +423,7 @@ public class CryptoVault implements Vault {
         if(-1L == cleartextFileSize) {
             return -1L;
         }
-        final int headerSize = cryptor.fileHeaderCryptor().headerSize();
-        final int cleartextChunkSize = cryptor.fileContentCryptor().cleartextChunkSize();
-        final int chunkHeaderSize = cryptor.fileContentCryptor().ciphertextChunkSize() - cleartextChunkSize;
-        return cleartextFileSize + headerSize + (cleartextFileSize > 0 ? chunkHeaderSize : 0) + chunkHeaderSize * ((cleartextFileSize - 1) / cleartextChunkSize);
+        return cryptor.fileHeaderCryptor().headerSize() + Cryptors.ciphertextSize(cleartextFileSize, cryptor);
     }
 
     @Override
@@ -435,16 +432,15 @@ public class CryptoVault implements Vault {
             return -1L;
         }
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
-        final int ciphertextChunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
-        final int chunkHeaderSize = ciphertextChunkSize - cryptor.fileContentCryptor().cleartextChunkSize();
-        if(ciphertextFileSize < headerSize) {
+        try {
+            return Cryptors.cleartextSize(ciphertextFileSize - headerSize, cryptor);
+        }
+        catch(AssertionError e) {
             throw new CryptoInvalidFilesizeException(String.format("Encrypted file size must be at least %d bytes", headerSize));
         }
-        final long remainder = (ciphertextFileSize - headerSize) % ciphertextChunkSize;
-        if(remainder > 0 && remainder < chunkHeaderSize) {
+        catch(IllegalArgumentException e) {
             throw new CryptoInvalidFilesizeException("Invalid file size");
         }
-        return ciphertextFileSize - (headerSize + (ciphertextFileSize / ciphertextChunkSize) * chunkHeaderSize + (remainder == 0 ? 0 : chunkHeaderSize));
     }
 
     private Path inflate(final Session<?> session, final Path file) throws BackgroundException {

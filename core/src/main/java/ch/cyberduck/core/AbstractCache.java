@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,54 +31,22 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
 
     private final Map<T, AttributedList<T>> impl;
 
-    private final Map<CacheReference, T> reverse;
-
     public AbstractCache(int size) {
         if(size == Integer.MAX_VALUE) {
             // Unlimited
             impl = Collections.synchronizedMap(new LinkedHashMap<T, AttributedList<T>>());
-            reverse = Collections.synchronizedMap(new LinkedHashMap<CacheReference, T>());
         }
         else if(size == 0) {
             impl = Collections.emptyMap();
-            reverse = Collections.emptyMap();
         }
         else {
             // Will inflate to the given size
             impl = Collections.synchronizedMap(new LRUMap<T, AttributedList<T>>(size));
-            reverse = Collections.synchronizedMap(new LinkedHashMap<CacheReference, T>());
         }
     }
 
-    protected abstract CacheReference key(final T object);
-
-    /**
-     * Lookup a path by reference in the cache.
-     *
-     * @param reference A child object of a cached directory listing in the cache
-     * @return Null if the path is not in the cache
-     * @see ch.cyberduck.core.AttributedList#get(Referenceable)
-     */
-    public T lookup(final CacheReference reference) {
-        final T parent = reverse.get(reference);
-        final AttributedList<T> list = impl.get(parent);
-        if(null == list) {
-            log.warn(String.format("Lookup failed for %s in reverse cache", reference));
-            return null;
-        }
-        final T[] entries = list.toArray();
-        for(T entry : entries) {
-            if(this.key(entry).equals(reference)) {
-                return entry;
-            }
-        }
-        final List<T> hidden = list.attributes().getHidden();
-        for(T entry : hidden) {
-            if(this.key(entry).equals(reference)) {
-                return entry;
-            }
-        }
-        log.warn(String.format("Lookup failed for %s in reverse cache", reference));
+    @Override
+    public T lookup(final CacheReference<T> reference) {
         return null;
     }
 
@@ -111,9 +78,6 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
             // Not previously in cache
             return AttributedList.emptyList();
         }
-        for(T r : removed) {
-            reverse.remove(this.key(r));
-        }
         return removed;
     }
 
@@ -140,16 +104,6 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
     public AttributedList<T> put(final T reference, final AttributedList<T> children) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Caching %s", reference));
-        }
-        for(T f : children) {
-            final CacheReference key = this.key(f);
-            reverse.remove(key);
-            reverse.put(key, reference);
-        }
-        for(T f : children.attributes().getHidden()) {
-            final CacheReference key = this.key(f);
-            reverse.remove(key);
-            reverse.put(key, reference);
         }
         return impl.put(reference, children);
     }
@@ -191,7 +145,6 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
             log.info(String.format("Clearing cache %s", this.toString()));
         }
         impl.clear();
-        reverse.clear();
     }
 
     @Override

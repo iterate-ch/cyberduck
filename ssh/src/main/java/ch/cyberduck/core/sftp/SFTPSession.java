@@ -124,7 +124,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public SSHClient connect(final HostKeyCallback key) throws BackgroundException {
+    public SSHClient connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         try {
             final DefaultConfig configuration = new DefaultConfig();
             if("zlib".equals(preferences.getProperty("ssh.compression"))) {

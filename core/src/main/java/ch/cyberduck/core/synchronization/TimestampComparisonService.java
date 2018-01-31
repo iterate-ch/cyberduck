@@ -22,7 +22,6 @@ import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.date.CalendarService;
 import ch.cyberduck.core.date.Instant;
-import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 
@@ -38,7 +37,7 @@ public class TimestampComparisonService implements ComparisonService {
     }
 
     @Override
-    public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
+    public Comparison compare(final PathAttributes remote, final LocalAttributes local) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare timestamp for %s with %s", remote, local));
         }

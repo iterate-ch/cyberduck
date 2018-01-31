@@ -27,20 +27,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -68,19 +55,9 @@ import java.util.Set;
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol()) {
-        @Override
-        public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-            if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
-                super.process(request, context);
-            }
-        }
-    }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-
-    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
-            authorizationService);
+    private OAuth2RequestInterceptor authorizationService;
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -88,7 +65,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     public OneDriveFile toFile(final Path file) {
         return new OneDriveFile(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
-                URIEncoder.encode(containerService.getKey(file)));
+            URIEncoder.encode(containerService.getKey(file)));
     }
 
     public OneDriveFolder toFolder(final Path file) {
@@ -99,14 +76,22 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             return new OneDriveDrive(client, containerService.getContainer(file).getName()).getRoot();
         }
         return new OneDriveFolder(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
-                URIEncoder.encode(containerService.getKey(file)));
+            URIEncoder.encode(containerService.getKey(file)));
     }
 
     @Override
-    protected OneDriveAPI connect(final HostKeyCallback key) throws BackgroundException {
-        final HttpClientBuilder configuration = builder.build(this);
+    protected OneDriveAPI connect(final HostKeyCallback key, final LoginCallback prompt) {
+        authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).build(), host.getProtocol()) {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
+                    super.process(request, context);
+                }
+            }
+        }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        final HttpClientBuilder configuration = builder.build(this, prompt);
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(retryHandler);
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
         final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(configuration.build()) {
             @Override
             public void addAuthorizationHeader(final Set<RequestHeader> headers) {
@@ -209,6 +194,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == Search.class) {
             return (T) new OneDriveSearchFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new OneDriveTimestampFeature(this);
         }
         return super._getFeature(type);
     }

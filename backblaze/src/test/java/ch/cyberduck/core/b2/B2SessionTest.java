@@ -27,11 +27,14 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertNotNull;
 
+@Category(IntegrationTest.class)
 public class B2SessionTest {
 
     @Test
@@ -47,10 +50,10 @@ public class B2SessionTest {
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
         final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("b2.user"), "s"
+            System.getProperties().getProperty("b2.user"), "s"
         ));
         final B2Session session = new B2Session(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 }

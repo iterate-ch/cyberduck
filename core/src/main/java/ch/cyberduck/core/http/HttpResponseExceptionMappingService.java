@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.ProxyLoginFailureException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
@@ -46,6 +47,8 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
         switch(statusCode) {
             case HttpStatus.SC_UNAUTHORIZED:
                 return new LoginFailureException(buffer.toString(), failure);
+            case HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED:
+                return new ProxyLoginFailureException(buffer.toString(), failure);
             case HttpStatus.SC_FORBIDDEN:
             case HttpStatus.SC_NOT_ACCEPTABLE:
                 return new AccessDeniedException(buffer.toString(), failure);

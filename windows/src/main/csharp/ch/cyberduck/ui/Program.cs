@@ -105,8 +105,16 @@ namespace Ch.Cyberduck.Ui
             }
             else
             {
-                argsTask.Wait();
+                try
+                {
+                    argsTask.Wait();
+                }
+                catch (CommunicationObjectFaultedException)
+                {
+                    // silent catch this error.
+                }
             }
+            mutex.Close();
         }
     }
 }

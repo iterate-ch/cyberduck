@@ -1,19 +1,19 @@
 package ch.cyberduck.core.sftp.auth;
 
-/*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+    /*
+     * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+     * https://cyberduck.io/
+     *
+     * This program is free software; you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     */
 
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.BookmarkNameProvider;
@@ -59,8 +59,10 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
             log.debug(String.format("Login using challenge response authentication for %s", bookmark));
         }
         final AtomicBoolean canceled = new AtomicBoolean();
+        final AtomicBoolean publickey = new AtomicBoolean();
         try {
-            session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
+            final Credentials credentials = bookmark.getCredentials();
+            session.getClient().auth(credentials.getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
                 private String name = StringUtils.EMPTY;
                 private String instruction = StringUtils.EMPTY;
 
@@ -84,16 +86,23 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
                     }
-                    if(!StringUtils.isBlank(bookmark.getCredentials().getPassword())
-                        && PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
-                        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
+                    if(PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                        if(StringUtils.isBlank(credentials.getPassword())) {
                             try {
-                                bookmark.getCredentials().setPassword(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                                final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
                                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                                     MessageFormat.format(LocaleFactory.localizedString(
                                         "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                                    new LoginOptions(bookmark.getProtocol()).publickey(false)
-                                        .usernamePlaceholder(bookmark.getCredentials().getUsername())).getPassword());
+                                    // Change of username or service not allowed
+                                    new LoginOptions(bookmark.getProtocol()).user(false));
+                                if(input.isPublicKeyAuthentication()) {
+                                    credentials.setIdentity(input.getIdentity());
+                                    publickey.set(true);
+                                    // Return null to cancel if user wants to use public key auth
+                                    return StringUtils.EMPTY.toCharArray();
+                                }
+                                credentials.setSaved(input.isSaved());
+                                credentials.setPassword(input.getPassword());
                             }
                             catch(LoginCanceledException e) {
                                 canceled.set(true);
@@ -101,7 +110,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                 return StringUtils.EMPTY.toCharArray();
                             }
                         }
-                        return bookmark.getCredentials().getPassword().toCharArray();
+                        return credentials.getPassword().toCharArray();
                     }
                     else {
                         final StringAppender message = new StringAppender().append(instruction).append(prompt);
@@ -112,9 +121,8 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             final StringAppender title = new StringAppender().append(name).append(
                                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             );
-                            additional = callback.prompt(bookmark, bookmark.getCredentials().getUsername(), title.toString(),
-                                message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches())
-                                    .usernamePlaceholder(bookmark.getCredentials().getUsername())
+                            additional = callback.prompt(bookmark, credentials.getUsername(), title.toString(),
+                                message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
                             );
                         }
                         catch(LoginCanceledException e) {
@@ -134,6 +142,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
             }));
         }
         catch(IOException e) {
+            if(publickey.get()) {
+                return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, keychain, callback, cancel);
+            }
             if(canceled.get()) {
                 throw new LoginCanceledException();
             }

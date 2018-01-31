@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>6.3.1-SNAPSHOT</version>
+        <version>6.3.6-SNAPSHOT</version>
     </parent>
     <artifactId>dracoon</artifactId>
     <properties>
@@ -129,7 +129,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>https://dataspace.ssp-europe.eu/swagger-proxy/api_v4/</inputSpec>
+                            <inputSpec>https://demo.dracoon.com/swagger-proxy/api_v4/</inputSpec>
                             <language>java</language>
                             <output>${project.build.directory}/generated-sources</output>
                             <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>

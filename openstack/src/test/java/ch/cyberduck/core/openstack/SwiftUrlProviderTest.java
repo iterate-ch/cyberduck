@@ -57,7 +57,7 @@ public class SwiftUrlProviderTest {
                 new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
         );
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
@@ -72,9 +72,10 @@ public class SwiftUrlProviderTest {
                 new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
         );
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).repeat(new DisabledPasswordCallback());
+        final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).operate(new DisabledPasswordCallback(),
+            new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         final UrlProvider provider = new SwiftUrlProvider(session, accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");

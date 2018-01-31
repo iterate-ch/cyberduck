@@ -80,7 +80,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public Transfer withCache(final PathCache cache) {
+    public Transfer withCache(final Cache<Path> cache) {
         return this;
     }
 
@@ -254,5 +254,10 @@ public class CopyTransfer extends Transfer {
             this.addTransferred(status.getLength());
         }
         return source;
+    }
+
+    @Override
+    public void normalize() {
+        //
     }
 }

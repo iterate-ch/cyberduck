@@ -28,6 +28,8 @@ import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Comparator;
+
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
@@ -48,7 +50,12 @@ public class DriveFileidProvider implements IdProvider {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
         final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
-        final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+        final Path found = list.filter(new Comparator<Path>() {
+            @Override
+            public int compare(final Path p1, final Path p2) {
+                return -Long.compare(p1.attributes().getModificationDate(), p2.attributes().getModificationDate());
+            }
+        }, new NullFilter<>()).find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }

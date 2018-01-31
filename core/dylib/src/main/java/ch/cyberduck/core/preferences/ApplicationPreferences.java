@@ -16,6 +16,7 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.ApplescriptTerminalService;
+import ch.cyberduck.core.DisabledProxyCredentialsStore;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;

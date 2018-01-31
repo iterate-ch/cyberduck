@@ -19,10 +19,10 @@ import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.pool.StatefulSessionPool;
@@ -44,13 +44,13 @@ public class CopyController extends ProxyController {
         = PreferencesFactory.get();
 
     private final BrowserController parent;
-    private final PathCache cache;
+    private final Cache<Path> cache;
 
     public CopyController(final BrowserController parent) {
         this(parent, parent.getCache());
     }
 
-    public CopyController(final BrowserController parent, final PathCache cache) {
+    public CopyController(final BrowserController parent, final Cache<Path> cache) {
         this.parent = parent;
         this.cache = cache;
     }
@@ -72,13 +72,13 @@ public class CopyController extends ProxyController {
             @Override
             public void run() {
                 final SessionPool pool = parent.getSession();
-                parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
+                parent.background(new WorkerBackgroundAction<Map<Path, Path>>(parent, parent.getSession(),
                         new CopyWorker(selected, pool instanceof StatefulSessionPool ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
                             @Override
-                            public void cleanup(final List<Path> result) {
+                            public void cleanup(final Map<Path, Path> result) {
                                 final List<Path> changed = new ArrayList<>();
-                                changed.addAll(selected.keySet());
-                                changed.addAll(selected.values());
+                                changed.addAll(result.keySet());
+                                changed.addAll(result.values());
                                 parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
                             }
                         }

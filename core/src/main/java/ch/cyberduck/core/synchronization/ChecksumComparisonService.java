@@ -20,7 +20,6 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.log4j.Logger;
@@ -29,7 +28,7 @@ public class ChecksumComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(ChecksumComparisonService.class);
 
     @Override
-    public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
+    public Comparison compare(final PathAttributes remote, final LocalAttributes local) {
         if(Checksum.NONE == remote.getChecksum()) {
             log.warn(String.format("No remote checksum available for comparison %s", remote));
             return Comparison.notequal;

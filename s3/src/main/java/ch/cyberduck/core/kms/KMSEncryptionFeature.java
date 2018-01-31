@@ -59,7 +59,6 @@ import com.amazonaws.services.kms.model.KeyListEntry;
 public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static final Logger log = Logger.getLogger(KMSEncryptionFeature.class);
 
-    private final S3Session session;
     private final Host bookmark;
 
     private final Preferences preferences = PreferencesFactory.get();
@@ -77,7 +76,6 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     public KMSEncryptionFeature(final S3Session session, final int timeout) {
         super(session);
-        this.session = session;
         this.bookmark = session.getHost();
         configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);

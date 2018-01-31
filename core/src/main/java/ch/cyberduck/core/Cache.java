@@ -18,24 +18,67 @@ package ch.cyberduck.core;
 import java.util.Set;
 
 public interface Cache<T extends Referenceable> {
+
+    /**
+     * @param object Value object
+     * @return Key used for internal comparison in map
+     */
+    CacheReference key(T object);
+
+    /**
+     * @param parent Directory
+     * @return True if directory is cached
+     */
     boolean isCached(T parent);
 
+    /**
+     * @return True if no directory is cached
+     */
     boolean isEmpty();
 
     boolean isHidden(T item);
 
     boolean isValid(T item);
 
+    /**
+     * Cache directory listing
+     *
+     * @param parent   Directory
+     * @param children Folder listing
+     * @return Return previous list
+     */
     AttributedList<T> put(T parent, AttributedList<T> children);
 
+    /**
+     * @param parent Directory
+     * @return Cached directory listing. Empty if none is cached
+     * @see #isCached(Referenceable)
+     */
     AttributedList<T> get(T parent);
 
+    /**
+     * Remove from cache
+     *
+     * @param parent Directory
+     * @return Previous list
+     */
     AttributedList<T> remove(T parent);
 
+    /**
+     * @return Set of folders that have a cached directory listing
+     */
     Set<T> keySet();
 
+    /**
+     * Mark cached directory listing as out of date
+     *
+     * @param parent Directory
+     */
     void invalidate(T parent);
 
+    /**
+     * Remove all cached directory listing
+     */
     void clear();
 
     T lookup(CacheReference<T> reference);

@@ -23,7 +23,7 @@
 #import <Foundation/Foundation.h>
 #import <JavaNativeFoundation/JNFString.h>
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAlias(JNIEnv *env, jobject this, jstring absolute)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAliasNative(JNIEnv *env, jobject this, jstring absolute)
 {
     NSString *path = JNFJavaToNSString(env, absolute);
     NSString *resolvedPath = nil;

@@ -57,9 +57,6 @@ public class LocalListService implements ListService {
                     else {
                         type.add(Path.Type.file);
                     }
-                    if(Files.isSymbolicLink(path)) {
-                        type.add(Path.Type.symboliclink);
-                    }
                     final Path file = new Path(directory, path.getFileName().toString(), type, attributes);
                     if(this.post(path, file)) {
                         paths.add(file);

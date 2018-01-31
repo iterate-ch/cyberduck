@@ -62,9 +62,4 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
-
-    @Override
-    public void shutdown() {
-        //
-    }
 }

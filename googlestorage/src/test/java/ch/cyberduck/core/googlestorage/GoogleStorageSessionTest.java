@@ -127,7 +127,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testCallbackOauth() throws Exception {
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

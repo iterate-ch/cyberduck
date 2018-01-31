@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>digitalocean</string>
+        <string>digitalocean-nyc3</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Description</key>

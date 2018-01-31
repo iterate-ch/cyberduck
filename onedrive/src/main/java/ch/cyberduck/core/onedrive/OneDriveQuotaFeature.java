@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 
@@ -34,16 +35,16 @@ public class OneDriveQuotaFeature implements Quota {
 
     @Override
     public Space get() throws BackgroundException {
-        OneDriveDrive drive = new OneDriveDrive(session.getClient(), new OneDriveHomeFinderFeature(session).find().getName());
+        final Path home = new OneDriveHomeFinderFeature(session).find();
         final OneDriveDrive.Metadata metadata;
         try {
-            metadata = drive.getMetadata();
+            metadata = new OneDriveDrive(session.getClient(), home.getName()).getMetadata();
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Cannot get space {0}", e);
+            throw new OneDriveExceptionMappingService().map("Failure to read attributes of {0}", e, home);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot get space {0}", e);
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, home);
         }
         return new Space(metadata.getUsed(), metadata.getTotal());
     }

@@ -81,7 +81,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,7 +93,7 @@ public class Terminal {
     private final Preferences preferences;
     private final TerminalController controller;
     private final TerminalPromptReader reader;
-    private final PathCache cache;
+    private final Cache<Path> cache;
     private final ProgressListener progress;
     private final TranscriptListener transcript;
 
@@ -151,7 +150,7 @@ public class Terminal {
      *
      * @param args Command line arguments
      */
-    public static void main(final String... args) throws IOException {
+    public static void main(final String... args) {
         open(args, new TerminalPreferences());
     }
 
@@ -220,7 +219,7 @@ public class Terminal {
             final String uri = input.getOptionValue(action.name());
             final Host host = new CommandLineUriParser(input).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
-                new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress);
+                new TerminalLoginCallback(reader)), new TerminalLoginCallback(reader), new TerminalHostKeyVerifier(reader), progress);
             source = SessionPoolFactory.create(connect, transcript, cache, host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
                 new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
@@ -280,7 +279,6 @@ public class Terminal {
         finally {
             this.disconnect(source);
             this.disconnect(destination);
-            console.printf("%n%s", StringUtils.EMPTY);
         }
         return Exit.failure;
     }
@@ -313,6 +311,7 @@ public class Terminal {
             preferences.setProperty("queue.connections.limit",
                 NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2));
         }
+        preferences.setProperty("connection.login.keychain", !input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name()));
     }
 
     protected Exit transfer(final Transfer transfer, final SessionPool source, final SessionPool destination) {
@@ -446,9 +445,15 @@ public class Terminal {
     }
 
     protected void disconnect(final SessionPool session) {
-        if(session != null) {
-            controller.background(new DisconnectBackgroundAction(controller, session));
+        if(session == SessionPool.DISCONNECTED) {
+            return;
         }
+        this.execute(new DisconnectBackgroundAction(controller, session) {
+            @Override
+            public void message(final String message) {
+                // No output
+            }
+        });
     }
 
     protected <T> boolean execute(final SessionBackgroundAction<T> action) {
@@ -463,5 +468,4 @@ public class Terminal {
             return false;
         }
     }
-
 }

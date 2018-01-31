@@ -89,6 +89,12 @@ namespace Ch.Cyberduck.Core.Sparkle
 
         public override bool hasUpdatePrivileges()
         {
+            var privilegeCheck = PreferencesFactory.get().getBoolean("update.check.privilege");
+            if (!privilegeCheck)
+            {
+                return true;
+            }
+
             var identity = WindowsIdentity.GetCurrent();
             if (identity == null)
             {

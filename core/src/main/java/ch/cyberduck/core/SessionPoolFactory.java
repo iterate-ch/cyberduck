@@ -39,18 +39,18 @@ public class SessionPoolFactory {
         //
     }
 
-    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
+    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark) {
         return create(controller, cache, bookmark, Usage.transfer);
     }
 
-    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark,
+    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
                                      final Usage... usage) {
         return create(cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
             bookmark.getProtocol()), controller, controller,
             usage);
     }
 
-    public static SessionPool create(final PathCache cache, final Host bookmark,
+    public static SessionPool create(final Cache<Path> cache, final Host bookmark,
                                      final HostPasswordStore keychain, final LoginCallback login, final HostKeyCallback key,
                                      final ProgressListener listener, final TranscriptListener transcript,
                                      final Usage... usage) {
@@ -62,7 +62,7 @@ public class SessionPoolFactory {
     }
 
     public static SessionPool create(final ConnectionService connect, final TranscriptListener transcript,
-                                     final PathCache cache, final Host bookmark,
+                                     final Cache<Path> cache, final Host bookmark,
                                      final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
                                      final VaultRegistry registry,
                                      final Usage... usage) {
@@ -103,7 +103,7 @@ public class SessionPoolFactory {
      * @return Single stateless session
      */
     protected static SessionPool stateless(final ConnectionService connect, final TranscriptListener transcript,
-                                           final PathCache cache, final Host bookmark,
+                                           final Cache<Path> cache, final Host bookmark,
                                            final X509TrustManager trust, final X509KeyManager key,
                                            final VaultRegistry vault) {
         if(log.isInfoEnabled()) {
@@ -117,7 +117,7 @@ public class SessionPoolFactory {
      * @return Single stateful session
      */
     protected static SessionPool stateful(final ConnectionService connect, final TranscriptListener transcript,
-                                          final PathCache cache, final Host bookmark,
+                                          final Cache<Path> cache, final Host bookmark,
                                           final X509TrustManager trust, final X509KeyManager key,
                                           final VaultRegistry vault) {
         if(log.isInfoEnabled()) {

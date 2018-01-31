@@ -21,12 +21,12 @@ public class NullSession extends Session<Void> {
     }
 
     @Override
-    public Void open(HostKeyCallback c) throws BackgroundException {
+    public Void open(final HostKeyCallback c, final LoginCallback login) throws BackgroundException {
         return null;
     }
 
     @Override
-    protected Void connect(final HostKeyCallback key) throws BackgroundException {
+    protected Void connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         return null;
     }
 

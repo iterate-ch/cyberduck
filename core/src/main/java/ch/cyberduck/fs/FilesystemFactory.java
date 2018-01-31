@@ -17,11 +17,12 @@ package ch.cyberduck.fs;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -35,7 +36,7 @@ public class FilesystemFactory extends Factory<Filesystem> {
         super("factory.filesystem.class");
     }
 
-    public Filesystem create(final Controller controller, final Host bookmark, final PathCache cache) {
+    public Filesystem create(final Controller controller, final Host bookmark, final Cache<Path> cache) {
         final String clazz = PreferencesFactory.get().getProperty("factory.filesystem.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
@@ -51,7 +52,7 @@ public class FilesystemFactory extends Factory<Filesystem> {
         }
     }
 
-    public static Filesystem get(final Controller controller, final Host bookmark, final PathCache cache) {
+    public static Filesystem get(final Controller controller, final Host bookmark, final Cache<Path> cache) {
         return new FilesystemFactory().create(controller, bookmark, cache);
     }
 }

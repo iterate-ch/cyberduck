@@ -15,8 +15,9 @@ package ch.cyberduck.core.pool;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -36,7 +37,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
     private final Session<?> session;
 
     public StatefulSessionPool(final ConnectionService connect, final Session<?> session,
-                               final PathCache cache, final TranscriptListener transcript, final VaultRegistry registry) {
+                               final Cache<Path> cache, final TranscriptListener transcript, final VaultRegistry registry) {
         super(connect, session, cache, transcript, registry);
         this.session = session;
     }

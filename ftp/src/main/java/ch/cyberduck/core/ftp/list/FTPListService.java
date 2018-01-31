@@ -1,36 +1,33 @@
-package ch.cyberduck.core.ftp;
+package ch.cyberduck.core.ftp.list;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.ftp.FTPExceptionMappingService;
+import ch.cyberduck.core.ftp.FTPParserSelector;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -56,7 +53,7 @@ public class FTPListService implements ListService {
     private final FTPSession session;
 
     protected final Map<Command, ListService> implementations
-            = new HashMap<Command, ListService>();
+        = new HashMap<Command, ListService>();
 
     public enum Command {
         stat(FTPCmd.STAT),
@@ -151,21 +148,6 @@ public class FTPListService implements ListService {
                     return this.post(directory, implementations.get(Command.stat).list(directory, listener), listener);
                 }
                 catch(FTPInvalidListException | InteroperabilityException e) {
-                    this.remove(Command.stat);
-                }
-                catch(BackgroundException e) {
-                    if(e.getCause() instanceof FTPException) {
-                        log.warn(String.format("Command STAT failed with FTP error %s", e.getMessage()));
-                    }
-                    else {
-                        log.warn(String.format("Command STAT failed with I/O error %s", e.getMessage()));
-                        new LoginConnectionService(
-                                new DisabledLoginCallback(),
-                                new DisabledHostKeyCallback(),
-                                new DisabledPasswordStore(),
-                                listener
-                        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-                    }
                     this.remove(Command.stat);
                 }
             }

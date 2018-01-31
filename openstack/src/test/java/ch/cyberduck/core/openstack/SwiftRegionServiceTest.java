@@ -34,7 +34,7 @@ public class SwiftRegionServiceTest {
             System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Region lookup = new SwiftRegionService(session).lookup(Location.unknown);
         assertTrue(lookup.isDefault());

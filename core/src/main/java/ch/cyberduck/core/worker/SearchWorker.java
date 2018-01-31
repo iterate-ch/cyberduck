@@ -16,11 +16,11 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -39,10 +39,10 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
 
     private final Path directory;
     private final Filter<Path> filter;
-    private final PathCache cache;
+    private final Cache<Path> cache;
     private final ListProgressListener listener;
 
-    public SearchWorker(final Path directory, final Filter<Path> filter, final PathCache cache, final ListProgressListener listener) {
+    public SearchWorker(final Path directory, final Filter<Path> filter, final Cache<Path> cache, final ListProgressListener listener) {
         this.directory = directory;
         this.filter = filter;
         this.cache = cache;

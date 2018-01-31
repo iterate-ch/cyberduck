@@ -61,11 +61,7 @@ import java.util.Collections;
 
 public class GoogleStorageSession extends S3Session {
 
-    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(), host.getProtocol())
-        .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-
-    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
-        authorizationService);
+    private OAuth2RequestInterceptor authorizationService;
 
     public GoogleStorageSession(final Host h) {
         super(h);
@@ -84,10 +80,12 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
-        final HttpClientBuilder configuration = builder.build(this);
+    public RequestEntityRestStorageService connect(final HostKeyCallback key, final LoginCallback prompt) {
+        authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        final HttpClientBuilder configuration = builder.build(this, prompt);
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(retryHandler);
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
         return new OAuth2RequestEntityRestStorageService(this, this.configure(), configuration);
     }
 

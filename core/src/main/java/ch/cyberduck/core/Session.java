@@ -92,7 +92,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return false;
         }
         return preferences.getBoolean(
-                String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
+            String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
     public Session<?> withListener(final TranscriptListener listener) {
@@ -142,16 +142,17 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     /**
      * Connect to host
      *
-     * @param key Host identity verification callback
+     * @param key   Host identity verification callback
+     * @param login Prompt for proxy credentials
      * @return Client
      */
-    public C open(final HostKeyCallback key) throws BackgroundException {
+    public C open(final HostKeyCallback key, final LoginCallback login) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
         // Update status flag
         state = State.opening;
-        client = this.connect(key);
+        client = this.connect(key, login);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did open to %s", host));
         }
@@ -160,7 +161,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         return client;
     }
 
-    protected abstract C connect(HostKeyCallback key) throws BackgroundException;
+    protected abstract C connect(HostKeyCallback key, final LoginCallback prompt) throws BackgroundException;
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
@@ -277,17 +278,36 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     @Override
     public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
+    /**
+     * Get feature implementation
+     *
+     * @param type Feature type
+     * @return Feature implementation or null when not supported
+     */
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         metrics.increment(type);
         return this.getFeature(type, this._getFeature(type));
     }
 
+    /**
+     * Wrap proxy with cryptographic feature
+     *
+     * @param type    Feature type
+     * @param feature Proxy implementation to wrap with vault features
+     * @return Feature implementation or null when not supported
+     */
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T feature) {
         return registry.getFeature(this, type, feature);
     }
 
+    /**
+     * Get feature implementation
+     *
+     * @param type Feature type
+     * @return Feature implementation or null when not supported
+     */
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {

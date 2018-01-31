@@ -28,6 +28,8 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
+import org.apache.commons.lang.StringUtils;
+
 public class LoginController extends ConnectionController {
 
     private final String title;
@@ -65,7 +67,7 @@ public class LoginController extends ConnectionController {
     public void setTextField(NSTextField textField) {
         this.textField = textField;
         this.textField.setSelectable(true);
-        if(reason.startsWith(Scheme.http.name())) {
+        if(StringUtils.startsWith(reason, Scheme.http.name())) {
             // For OAuth2
             this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(reason));
             this.textField.setAllowsEditingTextAttributes(true);

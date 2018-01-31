@@ -21,6 +21,10 @@ package ch.cyberduck.core;
 import java.util.regex.Pattern;
 
 public interface Filter<E> {
+    /**
+     * @param file
+     * @return False if file is filtered
+     */
     boolean accept(E file);
 
     Pattern toPattern();

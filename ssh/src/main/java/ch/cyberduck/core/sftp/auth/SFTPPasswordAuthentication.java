@@ -1,19 +1,19 @@
 package ch.cyberduck.core.sftp.auth;
 
-/*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+    /*
+     * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+     * https://cyberduck.io/
+     *
+     * This program is free software; you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     */
 
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.BookmarkNameProvider;
@@ -54,15 +54,22 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
     @Override
     public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel)
         throws BackgroundException {
-        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
-            bookmark.getCredentials().setPassword(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
+        final Credentials credentials = bookmark.getCredentials();
+        if(StringUtils.isBlank(credentials.getPassword())) {
+            final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
                 String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                 MessageFormat.format(LocaleFactory.localizedString(
                     "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                new LoginOptions(bookmark.getProtocol()).publickey(false)
-                    .usernamePlaceholder(bookmark.getCredentials().getUsername())).getPassword());
+                // Change of username or service not allowed
+                new LoginOptions(bookmark.getProtocol()).user(false));
+            if(input.isPublicKeyAuthentication()) {
+                credentials.setIdentity(input.getIdentity());
+                return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, keychain, callback, cancel);
+            }
+            credentials.setSaved(input.isSaved());
+            credentials.setPassword(input.getPassword());
         }
-        return this.authenticate(bookmark, bookmark.getCredentials(), callback, cancel);
+        return this.authenticate(bookmark, credentials, callback, cancel);
     }
 
     @Override
@@ -93,8 +100,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                     try {
                         final StringAppender message = new StringAppender().append(prompt);
                         final Credentials changed = callback.prompt(host, credentials.getUsername(), LocaleFactory.localizedString("Change Password", "Credentials"), message.toString(),
-                            new LoginOptions(host.getProtocol()).anonymous(false).user(false).publickey(false)
-                                .usernamePlaceholder(credentials.getUsername()));
+                            new LoginOptions(host.getProtocol()).anonymous(false).user(false).publickey(false));
                         return changed.getPassword().toCharArray();
                     }
                     catch(LoginCanceledException e) {

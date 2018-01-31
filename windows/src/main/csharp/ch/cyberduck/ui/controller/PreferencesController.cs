@@ -1177,32 +1177,32 @@ namespace Ch.Cyberduck.Ui.Controller
                 EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getIdentifier()));
+                    protocol.disk()));
             }
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
                 EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.dracoon,
                     Protocol.Type.googlestorage))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getIdentifier()));
+                    protocol.disk()));
             }
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
                     EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))
                 .toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getIdentifier()));
+                    protocol.disk()));
             }
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
                 EnumSet.of(Protocol.Type.file))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getIdentifier()));
+                    protocol.disk()));
             }
             foreach (Protocol protocol in p.find(new ProfileProtocolPredicate()).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.getIdentifier()));
+                    protocol.disk()));
             }
             View.PopulateProtocols(protocols);
         }
@@ -1214,7 +1214,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (Host host in BookmarkCollection.defaultCollection())
             {
                 bookmarks.Add(new KeyValueIconTriple<Host, string>(host, BookmarkNameProvider.toString(host),
-                    host.getProtocol().getIdentifier()));
+                    host.getProtocol().disk()));
             }
             View.PopulateBookmarks(bookmarks);
         }

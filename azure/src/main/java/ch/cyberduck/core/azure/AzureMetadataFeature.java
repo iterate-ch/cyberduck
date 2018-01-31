@@ -73,8 +73,7 @@ public class AzureMetadataFeature implements Headers {
                         .getBlobReferenceFromServer(containerService.getKey(file));
                 // Populates the blob properties and metadata
                 blob.downloadAttributes(null, null, context);
-                final Map<String, String> metadata = new HashMap<String, String>();
-                metadata.putAll(blob.getMetadata());
+                final Map<String, String> metadata = new HashMap<String, String>(blob.getMetadata());
                 final BlobProperties properties = blob.getProperties();
                 if(StringUtils.isNotBlank(properties.getCacheControl())) {
                     metadata.put(HttpHeaders.CACHE_CONTROL, properties.getCacheControl());

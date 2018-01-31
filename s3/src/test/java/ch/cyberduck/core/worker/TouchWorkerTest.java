@@ -59,7 +59,7 @@ public class TouchWorkerTest {
                 return super._getFeature(type);
             }
         };
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

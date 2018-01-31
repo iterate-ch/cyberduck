@@ -76,13 +76,16 @@ public class S3DefaultDeleteFeature implements Delete {
                                 file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : file.attributes().getVersionId(),
                                 containerService.getContainer(file).getName(), containerService.getKey(file));
                     }
-                    catch(ServiceException e) {
-                        try {
-                            throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
-                        }
-                        catch(NotfoundException ignored) {
+                    catch(NotfoundException e) {
+                        if(file.isDirectory()) {
                             log.warn(String.format("Ignore missing placeholder object %s", file));
                         }
+                        else {
+                            throw e;
+                        }
+                    }
+                    catch(ServiceException e) {
+                        throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
                     }
                 }
             }

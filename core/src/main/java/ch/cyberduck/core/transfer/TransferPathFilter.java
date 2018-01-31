@@ -18,15 +18,15 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface TransferPathFilter {
 
-    TransferPathFilter withCache(final PathCache cache);
+    TransferPathFilter withCache(final Cache<Path> cache);
 
 
     /**

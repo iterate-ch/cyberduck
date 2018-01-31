@@ -58,10 +58,10 @@ public class FinderLocal extends Local {
     }
 
     private static final NSFileManager manager
-            = NSFileManager.defaultManager();
+        = NSFileManager.defaultManager();
 
     private static final FilesystemBookmarkResolver<NSURL> resolver
-            = FilesystemBookmarkResolverFactory.get();
+        = FilesystemBookmarkResolverFactory.get();
 
     /**
      * Application scoped bookmark to access outside of sandbox
@@ -69,7 +69,7 @@ public class FinderLocal extends Local {
     private String bookmark;
 
     private final FinderLocalAttributes attributes
-            = new FinderLocalAttributes(this);
+        = new FinderLocalAttributes(this);
 
     public FinderLocal(final Local parent, final String name) throws LocalAccessDeniedException {
         super(parent, name);
@@ -251,11 +251,18 @@ public class FinderLocal extends Local {
         }
     }
 
+    private static String resolveAlias(final String absolute) {
+        if(PreferencesFactory.get().getBoolean("local.alias.resolve")) {
+            return resolveAliasNative(absolute);
+        }
+        return absolute;
+    }
+
     /**
      * @param absolute The absolute path of the alias file.
      * @return The absolute path this alias is pointing to.
      */
-    private static native String resolveAlias(String absolute);
+    private static native String resolveAliasNative(String absolute);
 
     @Override
     public FinderLocalAttributes attributes() {
@@ -266,7 +273,7 @@ public class FinderLocal extends Local {
     public Local getSymlinkTarget() throws NotfoundException, LocalAccessDeniedException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
         final String destination = manager.destinationOfSymbolicLinkAtPath_error(
-                this.getAbsolute(), error);
+            this.getAbsolute(), error);
         if(null == destination) {
             final NSError f = error.getValueAs(NSError.class);
             if(null == f) {

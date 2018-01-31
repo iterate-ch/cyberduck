@@ -19,6 +19,7 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -61,7 +62,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
                                                            final X509KeyManager key) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(new S3Protocol(),
-                new S3Protocol().getDefaultHostname(), origin.getCdnCredentials()), trust, key));
+            new S3Protocol().getDefaultHostname(), origin.getCdnCredentials()), trust, key), Collections.emptyMap());
         this.origin = origin;
     }
 
@@ -71,7 +72,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T connected(final Connected<T> run) throws BackgroundException {
         if(!session.isConnected()) {
-            session.open(new DisabledHostKeyCallback());
+            session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         }
         return run.call();
     }

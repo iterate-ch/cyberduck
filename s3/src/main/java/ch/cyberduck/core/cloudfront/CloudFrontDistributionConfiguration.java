@@ -41,6 +41,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
+import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -54,7 +55,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -72,24 +72,23 @@ import com.amazonaws.services.cloudfront.model.*;
 public class CloudFrontDistributionConfiguration implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
     private static final Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
-    protected final S3Session session;
-    private final Host bookmark;
-
-    private final ClientConfiguration configuration;
-
     private final PathContainerService containerService
-            = new PathContainerService();
-
-    private final Map<Path, Distribution> cache
-            = new HashMap<Path, Distribution>();
+        = new PathContainerService();
 
     private final Preferences preferences = PreferencesFactory.get();
 
+    protected final S3Session session;
+
+    private final Host bookmark;
+    private final ClientConfiguration configuration;
     private final Location locationFeature;
 
-    public CloudFrontDistributionConfiguration(final S3Session session) {
+    private final Map<Path, Distribution> distributions;
+
+    public CloudFrontDistributionConfiguration(final S3Session session, final Map<Path, Distribution> distributions) {
         this.session = session;
         this.bookmark = session.getHost();
+        this.distributions = distributions;
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
@@ -115,8 +114,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false)
-                .usernamePlaceholder(LocaleFactory.localizedString("Access Key ID", "S3"))
-                .passwordPlaceholder(LocaleFactory.localizedString("Secret Access Key", "S3"));
+            .usernamePlaceholder(LocaleFactory.localizedString("Access Key ID", "S3"))
+            .passwordPlaceholder(LocaleFactory.localizedString("Secret Access Key", "S3"));
         try {
             final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
             login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
@@ -124,7 +123,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         }
         catch(LoginFailureException failure) {
             bookmark.setCredentials(prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
+                LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
             return this.authenticated(run, prompt);
         }
     }
@@ -155,8 +154,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        if(cache.containsKey(containerService.getContainer(file))) {
-            return new DistributionUrlProvider(cache.get(containerService.getContainer(file))).toUrl(file);
+        if(distributions.containsKey(containerService.getContainer(file))) {
+            return new DistributionUrlProvider(distributions.get(containerService.getContainer(file))).toUrl(file);
         }
         return DescriptiveUrlBag.empty();
     }
@@ -179,15 +178,13 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     final AmazonCloudFront client = client(container);
                     if(method.equals(Distribution.STREAMING)) {
                         for(StreamingDistributionSummary d : client.listStreamingDistributions(
-                                new ListStreamingDistributionsRequest()).getStreamingDistributionList().getItems()) {
+                            new ListStreamingDistributionsRequest()).getStreamingDistributionList().getItems()) {
                             final S3Origin config = d.getS3Origin();
                             if(config != null) {
                                 final URI origin = getOrigin(container, method);
                                 if(config.getDomainName().equals(origin.getHost())) {
                                     // We currently only support one distribution per bucket
-                                    final Distribution distribution = readStreamingDistribution(client, d, container, method);
-                                    cache.put(container, distribution);
-                                    return distribution;
+                                    return readStreamingDistribution(client, d, container, method);
                                 }
                             }
                         }
@@ -195,25 +192,23 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     else if(method.equals(Distribution.DOWNLOAD)) {
                         // List distributions restricting to bucket name origin
                         for(DistributionSummary d : client.listDistributions(
-                                new ListDistributionsRequest()).getDistributionList().getItems()) {
+                            new ListDistributionsRequest()).getDistributionList().getItems()) {
                             for(Origin o : d.getOrigins().getItems()) {
                                 final S3OriginConfig config = o.getS3OriginConfig();
                                 if(config != null) {
                                     final URI origin = getOrigin(container, method);
                                     if(o.getDomainName().equals(origin.getHost())) {
                                         // We currently only support one distribution per bucket
-                                        final Distribution distribution = readDownloadDistribution(client, d, container, method);
-                                        cache.put(container, distribution);
-                                        return distribution;
+                                        return readDownloadDistribution(client, d, container, method);
                                     }
                                 }
                             }
                         }
                     }
                     else if(method.equals(Distribution.CUSTOM)
-                            || method.equals(Distribution.WEBSITE_CDN)) {
+                        || method.equals(Distribution.WEBSITE_CDN)) {
                         for(DistributionSummary d : client.listDistributions(
-                                new ListDistributionsRequest()).getDistributionList().getItems()) {
+                            new ListDistributionsRequest()).getDistributionList().getItems()) {
                             for(Origin o : d.getOrigins().getItems()) {
                                 // Listing all distributions and look for custom origin
                                 final CustomOriginConfig config = o.getCustomOriginConfig();
@@ -221,9 +216,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                                     final URI origin = getOrigin(container, method);
                                     if(o.getDomainName().equals(origin.getHost())) {
                                         // We currently only support one distribution per bucket
-                                        final Distribution distribution = readDownloadDistribution(client, d, container, method);
-                                        cache.put(container, distribution);
-                                        return distribution;
+                                        return readDownloadDistribution(client, d, container, method);
                                     }
                                 }
                             }
@@ -259,7 +252,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             distribution.setId(createDownloadDistribution(container, distribution).getId());
                         }
                         else if(distribution.getMethod().equals(Distribution.CUSTOM)
-                                || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
+                            || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
                             distribution.setId(createCustomDistribution(container, distribution).getId());
                         }
                     }
@@ -271,7 +264,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             distribution.setEtag(updateStreamingDistribution(container, distribution).getETag());
                         }
                         else if(distribution.getMethod().equals(Distribution.CUSTOM)
-                                || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
+                            || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
                             distribution.setEtag(updateCustomDistribution(container, distribution).getETag());
                         }
                     }
@@ -292,22 +285,22 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Purge.class || type == Index.class) {
             if(method.equals(Distribution.DOWNLOAD)
-                    || method.equals(Distribution.WEBSITE_CDN)
-                    || method.equals(Distribution.CUSTOM)) {
+                || method.equals(Distribution.WEBSITE_CDN)
+                || method.equals(Distribution.CUSTOM)) {
                 return (T) this;
             }
         }
         if(type == DistributionLogging.class) {
             if(method.equals(Distribution.DOWNLOAD)
-                    || method.equals(Distribution.STREAMING)
-                    || method.equals(Distribution.CUSTOM)) {
+                || method.equals(Distribution.STREAMING)
+                || method.equals(Distribution.CUSTOM)) {
                 return (T) this;
             }
         }
         if(type == AnalyticsProvider.class) {
             if(method.equals(Distribution.DOWNLOAD)
-                    || method.equals(Distribution.STREAMING)
-                    || method.equals(Distribution.CUSTOM)) {
+                || method.equals(Distribution.STREAMING)
+                || method.equals(Distribution.CUSTOM)) {
                 return (T) new QloudstatAnalyticsProvider();
             }
         }
@@ -354,7 +347,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             else {
                 final AmazonCloudFront client = client(container);
                 client.createInvalidation(new CreateInvalidationRequest(d.getId(),
-                        new InvalidationBatch(new Paths().withItems(keys).withQuantity(keys.size()), new AlphanumericRandomStringService().random())
+                    new InvalidationBatch(new Paths().withItems(keys).withQuantity(keys.size()), new AlphanumericRandomStringService().random())
                 ));
             }
         }
@@ -375,8 +368,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             String marker = null;
             do {
                 final ListInvalidationsResult response = client.listInvalidations(new ListInvalidationsRequest(distribution.getId())
-                        .withMaxItems(String.valueOf(1000))
-                        .withMarker(marker));
+                    .withMaxItems(String.valueOf(1000))
+                    .withMarker(marker));
                 for(InvalidationSummary s : response.getInvalidationList().getItems()) {
                     // When the invalidation batch is finished, the status is Completed.
                     if("Completed".equals(s.getStatus())) {
@@ -410,7 +403,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @return Distribution configuration
      */
     protected StreamingDistribution createStreamingDistribution(final Path container, final Distribution distribution)
-            throws BackgroundException {
+        throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
         }
@@ -418,26 +411,26 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final URI origin = this.getOrigin(container, distribution.getMethod());
         final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
         final StreamingDistributionConfig config = new StreamingDistributionConfig(new AlphanumericRandomStringService().random(),
-                new S3Origin(origin.getHost(), StringUtils.EMPTY), distribution.isEnabled())
-                .withComment(originId)
-                .withTrustedSigners(new TrustedSigners().withEnabled(false).withQuantity(0))
-                .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
+            new S3Origin(origin.getHost(), StringUtils.EMPTY), distribution.isEnabled())
+            .withComment(originId)
+            .withTrustedSigners(new TrustedSigners().withEnabled(false).withQuantity(0))
+            .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
         // Make bucket name fully qualified
         final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
-                false, new S3Protocol().getDefaultHostname());
+            false, new S3Protocol().getDefaultHostname());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
         }
         config.setLogging(new StreamingLoggingConfig()
-                .withEnabled(distribution.isLogging())
-                .withBucket(loggingTarget)
-                .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+            .withEnabled(distribution.isLogging())
+            .withBucket(loggingTarget)
+            .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
         );
         return client.createStreamingDistribution(new CreateStreamingDistributionRequest(config)).getStreamingDistribution();
     }
 
     protected com.amazonaws.services.cloudfront.model.Distribution createDownloadDistribution(final Path container, final Distribution distribution)
-            throws BackgroundException {
+        throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
         }
@@ -445,43 +438,43 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final URI origin = this.getOrigin(container, distribution.getMethod());
         final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
         final DistributionConfig config = new DistributionConfig(new AlphanumericRandomStringService().random(), distribution.isEnabled())
-                .withComment(originId)
-                .withOrigins(new Origins()
-                        .withQuantity(1)
-                        .withItems(new Origin()
-                                .withId(originId)
-                                .withCustomHeaders(new CustomHeaders().withQuantity(0))
-                                .withOriginPath(StringUtils.EMPTY)
-                                .withDomainName(origin.getHost())
-                                .withS3OriginConfig(new S3OriginConfig().withOriginAccessIdentity(StringUtils.EMPTY))
-                        )
+            .withComment(originId)
+            .withOrigins(new Origins()
+                .withQuantity(1)
+                .withItems(new Origin()
+                    .withId(originId)
+                    .withCustomHeaders(new CustomHeaders().withQuantity(0))
+                    .withOriginPath(StringUtils.EMPTY)
+                    .withDomainName(origin.getHost())
+                    .withS3OriginConfig(new S3OriginConfig().withOriginAccessIdentity(StringUtils.EMPTY))
                 )
-                .withPriceClass(PriceClass.PriceClass_All)
-                .withDefaultCacheBehavior(new DefaultCacheBehavior()
-                        .withTargetOriginId(originId)
-                        .withForwardedValues(new ForwardedValues().withQueryString(true).withCookies(new CookiePreference().withForward(ItemSelection.All)))
-                        .withViewerProtocolPolicy(ViewerProtocolPolicy.AllowAll)
-                        .withMinTTL(0L)
-                        .withTrustedSigners(new TrustedSigners().withEnabled(false).withQuantity(0)))
-                .withDefaultRootObject(distribution.getIndexDocument())
-                .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
+            )
+            .withPriceClass(PriceClass.PriceClass_All)
+            .withDefaultCacheBehavior(new DefaultCacheBehavior()
+                .withTargetOriginId(originId)
+                .withForwardedValues(new ForwardedValues().withQueryString(true).withCookies(new CookiePreference().withForward(ItemSelection.All)))
+                .withViewerProtocolPolicy(ViewerProtocolPolicy.AllowAll)
+                .withMinTTL(0L)
+                .withTrustedSigners(new TrustedSigners().withEnabled(false).withQuantity(0)))
+            .withDefaultRootObject(distribution.getIndexDocument())
+            .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
         // Make bucket name fully qualified
         final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
-                false, new S3Protocol().getDefaultHostname());
+            false, new S3Protocol().getDefaultHostname());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
         }
         config.setLogging(new LoggingConfig()
-                .withEnabled(distribution.isLogging())
-                .withIncludeCookies(true)
-                .withBucket(loggingTarget)
-                .withPrefix(preferences.getProperty("cloudfront.logging.prefix")
-                ));
+            .withEnabled(distribution.isLogging())
+            .withIncludeCookies(true)
+            .withBucket(loggingTarget)
+            .withPrefix(preferences.getProperty("cloudfront.logging.prefix")
+            ));
         return client.createDistribution(new CreateDistributionRequest(config)).getDistribution();
     }
 
     protected com.amazonaws.services.cloudfront.model.Distribution createCustomDistribution(final Path container, final Distribution distribution)
-            throws BackgroundException {
+        throws BackgroundException {
         final AmazonCloudFront client = client(container);
         int httpPort = 80;
         int httpsPort = 443;
@@ -496,41 +489,41 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         }
         final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
         final DistributionConfig config = new DistributionConfig(new AlphanumericRandomStringService().random(), distribution.isEnabled())
-                .withComment(originId)
-                .withOrigins(new Origins()
-                        .withQuantity(1)
-                        .withItems(new Origin()
-                                .withId(originId)
-                                .withDomainName(origin.getHost())
-                                .withCustomOriginConfig(new CustomOriginConfig()
-                                        .withHTTPPort(httpPort)
-                                        .withHTTPSPort(httpsPort)
-                                        .withOriginSslProtocols(new OriginSslProtocols().withQuantity(2).withItems("TLSv1.1", "TLSv1.2"))
-                                        .withOriginProtocolPolicy(this.getPolicy(distribution.getMethod()))
-                                )
-                        )
+            .withComment(originId)
+            .withOrigins(new Origins()
+                .withQuantity(1)
+                .withItems(new Origin()
+                    .withId(originId)
+                    .withDomainName(origin.getHost())
+                    .withCustomOriginConfig(new CustomOriginConfig()
+                        .withHTTPPort(httpPort)
+                        .withHTTPSPort(httpsPort)
+                        .withOriginSslProtocols(new OriginSslProtocols().withQuantity(2).withItems("TLSv1.1", "TLSv1.2"))
+                        .withOriginProtocolPolicy(this.getPolicy(distribution.getMethod()))
+                    )
                 )
-                .withPriceClass(PriceClass.PriceClass_All)
-                .withDefaultCacheBehavior(new DefaultCacheBehavior()
-                        .withTargetOriginId(originId)
-                        .withForwardedValues(new ForwardedValues().withQueryString(true).withCookies(new CookiePreference().withForward(ItemSelection.All)))
-                        .withViewerProtocolPolicy(ViewerProtocolPolicy.AllowAll)
-                        .withMinTTL(0L)
-                        .withTrustedSigners(new TrustedSigners().withEnabled(false).withQuantity(0)))
-                .withDefaultRootObject(distribution.getIndexDocument())
-                .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
+            )
+            .withPriceClass(PriceClass.PriceClass_All)
+            .withDefaultCacheBehavior(new DefaultCacheBehavior()
+                .withTargetOriginId(originId)
+                .withForwardedValues(new ForwardedValues().withQueryString(true).withCookies(new CookiePreference().withForward(ItemSelection.All)))
+                .withViewerProtocolPolicy(ViewerProtocolPolicy.AllowAll)
+                .withMinTTL(0L)
+                .withTrustedSigners(new TrustedSigners().withEnabled(false).withQuantity(0)))
+            .withDefaultRootObject(distribution.getIndexDocument())
+            .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
         if(distribution.isLogging()) {
             // Make bucket name fully qualified
             final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
-                    false, new S3Protocol().getDefaultHostname());
+                false, new S3Protocol().getDefaultHostname());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
             }
             config.setLogging(new LoggingConfig()
-                    .withEnabled(distribution.isLogging())
-                    .withIncludeCookies(true)
-                    .withBucket(loggingTarget)
-                    .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+                .withEnabled(distribution.isLogging())
+                .withIncludeCookies(true)
+                .withBucket(loggingTarget)
+                .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
             );
         }
         return client.createDistribution(new CreateDistributionRequest(config)).getDistribution();
@@ -540,7 +533,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
      */
     protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution)
-            throws IOException, BackgroundException {
+        throws IOException, BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -548,28 +541,28 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final AmazonCloudFront client = client(container);
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
         final DistributionConfig config = response.getDistributionConfig()
-                .withEnabled(distribution.isEnabled())
-                .withDefaultRootObject(distribution.getIndexDocument())
-                .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
+            .withEnabled(distribution.isEnabled())
+            .withDefaultRootObject(distribution.getIndexDocument())
+            .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
         if(distribution.isLogging()) {
             // Make bucket name fully qualified
             final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
-                    false, new S3Protocol().getDefaultHostname());
+                false, new S3Protocol().getDefaultHostname());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
             }
             config.setLogging(new LoggingConfig()
-                    .withEnabled(distribution.isLogging())
-                    .withIncludeCookies(true)
-                    .withBucket(loggingTarget)
-                    .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+                .withEnabled(distribution.isLogging())
+                .withIncludeCookies(true)
+                .withBucket(loggingTarget)
+                .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
             );
         }
         return client.updateDistribution(new UpdateDistributionRequest(config, distribution.getId(), response.getETag()));
     }
 
     protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution)
-            throws IOException, BackgroundException {
+        throws IOException, BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -577,27 +570,27 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final AmazonCloudFront client = client(container);
         final GetStreamingDistributionConfigResult response = client.getStreamingDistributionConfig(new GetStreamingDistributionConfigRequest(distribution.getId()));
         final StreamingDistributionConfig config = response.getStreamingDistributionConfig()
-                .withEnabled(distribution.isEnabled())
-                .withS3Origin(new S3Origin(origin.getHost(), StringUtils.EMPTY))
-                .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
+            .withEnabled(distribution.isEnabled())
+            .withS3Origin(new S3Origin(origin.getHost(), StringUtils.EMPTY))
+            .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
         if(distribution.isLogging()) {
             // Make bucket name fully qualified
             final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
-                    false, new S3Protocol().getDefaultHostname());
+                false, new S3Protocol().getDefaultHostname());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
             }
             config.setLogging(new StreamingLoggingConfig()
-                    .withEnabled(distribution.isLogging())
-                    .withBucket(loggingTarget)
-                    .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+                .withEnabled(distribution.isLogging())
+                .withBucket(loggingTarget)
+                .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
             );
         }
         return client.updateStreamingDistribution(new UpdateStreamingDistributionRequest(config, distribution.getId(), response.getETag()));
     }
 
     protected UpdateDistributionResult updateCustomDistribution(final Path container, final Distribution distribution)
-            throws IOException, BackgroundException {
+        throws IOException, BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -605,26 +598,26 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         final AmazonCloudFront client = client(container);
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
         final DistributionConfig config = response.getDistributionConfig()
-                .withEnabled(distribution.isEnabled())
-                .withDefaultRootObject(distribution.getIndexDocument() != null ? distribution.getIndexDocument() : StringUtils.EMPTY)
-                .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
+            .withEnabled(distribution.isEnabled())
+            .withDefaultRootObject(distribution.getIndexDocument() != null ? distribution.getIndexDocument() : StringUtils.EMPTY)
+            .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
         // Make bucket name fully qualified
         final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
-                false, new S3Protocol().getDefaultHostname());
+            false, new S3Protocol().getDefaultHostname());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
         }
         config.setLogging(new LoggingConfig()
-                .withEnabled(distribution.isLogging())
-                .withIncludeCookies(true)
-                .withBucket(loggingTarget)
-                .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
+            .withEnabled(distribution.isLogging())
+            .withIncludeCookies(true)
+            .withBucket(loggingTarget)
+            .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
         );
         return client.updateDistribution(new UpdateDistributionRequest(config, distribution.getId(), response.getETag()));
     }
 
     protected void deleteDownloadDistribution(final Path container, final Distribution distribution)
-            throws IOException, BackgroundException {
+        throws IOException, BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -634,7 +627,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected void deleteStreamingDistribution(final Path container, final Distribution distribution)
-            throws IOException, BackgroundException {
+        throws IOException, BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -670,15 +663,15 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             distribution.setCNAMEs(configuration.getAliases().getItems().toArray(new String[configuration.getAliases().getItems().size()]));
             distribution.setLogging(configuration.getLogging().isEnabled());
             distribution.setLoggingContainer(StringUtils.isNotBlank(configuration.getLogging().getBucket()) ?
-                    ServiceUtils.findBucketNameInHostname(configuration.getLogging().getBucket(), new S3Protocol().getDefaultHostname()) : null);
+                ServiceUtils.findBucketNameInHostname(configuration.getLogging().getBucket(), new S3Protocol().getDefaultHostname()) : null);
             if(this.getFeature(Purge.class, method) != null) {
                 distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
             }
             if(this.getFeature(DistributionLogging.class, method) != null) {
                 try {
-                    distribution.setContainers(new S3BucketListService(session).list(
-                            new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            new DisabledListProgressListener()).toList());
+                    distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                        new DisabledListProgressListener()).toList());
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
@@ -710,7 +703,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             distribution.setCNAMEs(configuration.getAliases().getItems().toArray(new String[configuration.getAliases().getItems().size()]));
             distribution.setLogging(configuration.getLogging().isEnabled());
             distribution.setLoggingContainer(StringUtils.isNotBlank(configuration.getLogging().getBucket()) ?
-                    ServiceUtils.findBucketNameInHostname(configuration.getLogging().getBucket(), new S3Protocol().getDefaultHostname()) : null);
+                ServiceUtils.findBucketNameInHostname(configuration.getLogging().getBucket(), new S3Protocol().getDefaultHostname()) : null);
             if(StringUtils.isNotBlank(configuration.getDefaultRootObject())) {
                 distribution.setIndexDocument(configuration.getDefaultRootObject());
             }
@@ -718,9 +711,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
             }
             if(this.getFeature(DistributionLogging.class, method) != null) {
-                distribution.setContainers(new S3BucketListService(session).list(
-                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                        new DisabledListProgressListener()).toList());
+                distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                    new DisabledListProgressListener()).toList());
             }
             return distribution;
         }
@@ -731,17 +724,17 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     private AmazonCloudFront client(final Path container) throws BackgroundException {
         return AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
-                new com.amazonaws.auth.AWSCredentials() {
-                    @Override
-                    public String getAWSAccessKeyId() {
-                        return bookmark.getCredentials().getUsername();
-                    }
+            new com.amazonaws.auth.AWSCredentials() {
+                @Override
+                public String getAWSAccessKeyId() {
+                    return bookmark.getCredentials().getUsername();
+                }
 
-                    @Override
-                    public String getAWSSecretKey() {
-                        return bookmark.getCredentials().getPassword();
-                    }
-                })
+                @Override
+                public String getAWSSecretKey() {
+                    return bookmark.getCredentials().getPassword();
+                }
+            })
         ).withClientConfiguration(configuration).withRegion(locationFeature.getLocation(container).getIdentifier()).build();
     }
 }

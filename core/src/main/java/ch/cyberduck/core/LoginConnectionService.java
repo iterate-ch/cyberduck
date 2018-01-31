@@ -38,6 +38,10 @@ public class LoginConnectionService implements ConnectionService {
     private final Resolver resolver = new Resolver();
     private final HostKeyCallback key;
     private final ProgressListener listener;
+    /**
+     * Proxy credentials prompt
+     */
+    private final LoginCallback prompt;
     private final ProxyFinder proxy;
     private final LoginService login;
 
@@ -45,7 +49,7 @@ public class LoginConnectionService implements ConnectionService {
                                   final HostKeyCallback key,
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener) {
-        this(new KeychainLoginService(prompt, keychain), key, listener);
+        this(new KeychainLoginService(prompt, keychain), prompt, key, listener);
     }
 
     public LoginConnectionService(final LoginCallback prompt,
@@ -53,20 +57,23 @@ public class LoginConnectionService implements ConnectionService {
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener,
                                   final ProxyFinder proxy) {
-        this(new KeychainLoginService(prompt, keychain), key, listener, proxy);
+        this(new KeychainLoginService(prompt, keychain), prompt, key, listener, proxy);
     }
 
     public LoginConnectionService(final LoginService login,
+                                  final LoginCallback prompt,
                                   final HostKeyCallback key,
                                   final ProgressListener listener) {
-        this(login, key, listener, ProxyFactory.get());
+        this(login, prompt, key, listener, ProxyFactory.get());
     }
 
     public LoginConnectionService(final LoginService login,
+                                  final LoginCallback prompt,
                                   final HostKeyCallback key,
                                   final ProgressListener listener,
                                   final ProxyFinder proxy) {
         this.login = login;
+        this.prompt = prompt;
         this.proxy = proxy;
         this.key = key;
         this.listener = listener;
@@ -135,7 +142,7 @@ public class LoginConnectionService implements ConnectionService {
             bookmark.getProtocol().getName(), hostname));
 
         // The IP address could successfully be determined
-        session.open(key);
+        session.open(key, prompt);
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
             bookmark.getProtocol().getName()));

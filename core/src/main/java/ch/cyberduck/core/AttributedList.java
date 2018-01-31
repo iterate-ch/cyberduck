@@ -22,12 +22,10 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
@@ -55,13 +53,13 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     };
 
     private final List<E> impl
-            = new CopyOnWriteArrayList<>();
+        = new CopyOnWriteArrayList<>();
 
     /**
      * Metadata of file listing
      */
     private final AttributedListAttributes<E> attributes
-            = new AttributedListAttributes<E>().withTimestamp(System.currentTimeMillis());
+        = new AttributedListAttributes<E>().withTimestamp(System.currentTimeMillis());
 
     /**
      * Initialize an attributed list with default attributes
@@ -195,17 +193,17 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
                 // Clear the previously set of hidden files
                 hidden.clear();
             }
-            final Set<E> removal = new HashSet<>();
-            for(final E child : impl) {
-                if(!filter.accept(child)) {
-                    // Child not accepted by filter; add to cached hidden files
-                    if(attributes.addHidden(child)) {
-                        // Remove hidden file from current file listing
-                        removal.add(child);
+            impl.removeIf(new Predicate<E>() {
+                @Override
+                public boolean test(final E e) {
+                    final boolean accept = filter.accept(e);
+                    if(!accept) {
+                        // Child not accepted by filter; add to cached hidden files
+                        attributes.addHidden(e);
                     }
+                    return !accept;
                 }
-            }
-            impl.removeAll(removal);
+            });
             // Saving last filter
             attributes.setFilter(filter);
             // Sort again because the list has changed
