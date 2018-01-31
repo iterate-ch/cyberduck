@@ -24,6 +24,8 @@ import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
+import java.util.EnumSet;
+
 public class LoadingVaultLookupListener implements VaultLookupListener {
     private static final Logger log = Logger.getLogger(LoadingVaultLookupListener.class);
 
@@ -45,7 +47,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
             if(registry.contains(directory)) {
                 return registry.find(session, directory);
             }
-            final Vault vault = VaultFactory.get(directory, keychain);
+            final Vault vault = VaultFactory.get(directory, new Path(directory, "masterkey.cryptomator", EnumSet.of(Path.Type.file, Path.Type.vault)), keychain);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
             }
