@@ -79,7 +79,7 @@ public class S3SessionTest {
                 return null;
             }
         }, new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -91,7 +91,7 @@ public class S3SessionTest {
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -99,7 +99,7 @@ public class S3SessionTest {
         session.close();
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -112,7 +112,7 @@ public class S3SessionTest {
         ));
         host.setDefaultPath("/test-us-east-1-cyberduck");
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
@@ -123,7 +123,7 @@ public class S3SessionTest {
                 System.getProperties().getProperty("s3.key"), "s"
         ));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
@@ -155,7 +155,7 @@ public class S3SessionTest {
         ));
         final S3Session session = new S3Session(host);
         try {
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
@@ -183,7 +183,7 @@ public class S3SessionTest {
                 }
             }
         });
-        session.open(Proxy.DIRECT, new HostKeyCallback() {
+        session.open(new HostKeyCallback() {
             @Override
             public boolean verify(final String hostname, final int port, final PublicKey key)
                     throws ConnectionCanceledException {
@@ -271,7 +271,7 @@ public class S3SessionTest {
         assertTrue(profile.validate(new Credentials(), new LoginOptions(profile)));
         final Host host = new Host(profile);
         final S3Session s = new S3Session(host);
-        s.open(proxy, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        s.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         try {
             s.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
@@ -312,7 +312,7 @@ public class S3SessionTest {
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         ));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
@@ -321,7 +321,7 @@ public class S3SessionTest {
     public void testConnectCn_North_1() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.cn-north-1.amazonaws.com.cn");
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }

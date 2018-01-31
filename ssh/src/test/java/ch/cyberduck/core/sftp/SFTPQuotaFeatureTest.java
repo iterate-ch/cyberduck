@@ -41,7 +41,7 @@ public class SFTPQuotaFeatureTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Quota.Space quota = new SFTPQuotaFeature(session).get();

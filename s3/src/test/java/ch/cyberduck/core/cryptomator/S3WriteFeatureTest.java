@@ -72,7 +72,7 @@ public class S3WriteFeatureTest {
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;

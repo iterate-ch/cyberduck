@@ -50,7 +50,7 @@ public class S3AttributesFinderFeatureTest {
                 return super._getFeature(type);
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
@@ -91,7 +91,7 @@ public class S3AttributesFinderFeatureTest {
                 return super._getFeature(type);
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
@@ -106,7 +106,7 @@ public class S3AttributesFinderFeatureTest {
                 new Credentials(
                     System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                 )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(container);
@@ -129,7 +129,7 @@ public class S3AttributesFinderFeatureTest {
             }
 
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
@@ -143,7 +143,7 @@ public class S3AttributesFinderFeatureTest {
                 new Credentials(
                     System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                 )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
@@ -161,7 +161,7 @@ public class S3AttributesFinderFeatureTest {
                 new Credentials(
                     System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                 )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
@@ -182,7 +182,7 @@ public class S3AttributesFinderFeatureTest {
                     System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                 )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
@@ -201,7 +201,7 @@ public class S3AttributesFinderFeatureTest {
                     System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                 )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");

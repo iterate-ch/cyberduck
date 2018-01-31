@@ -57,7 +57,7 @@ public class SpectraDeleteFeatureTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");

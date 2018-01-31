@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -143,11 +144,14 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     /**
      * Connect to host
      *
-     * @param proxy Proxy configuration
      * @param key   Host identity verification callback
      * @param login Prompt for proxy credentials
      * @return Client
      */
+    public C open(final HostKeyCallback key, final LoginCallback login) throws BackgroundException {
+        return this.open(ProxyFactory.get().find(host), key, login);
+    }
+
     public C open(final Proxy proxy, final HostKeyCallback key, final LoginCallback login) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));

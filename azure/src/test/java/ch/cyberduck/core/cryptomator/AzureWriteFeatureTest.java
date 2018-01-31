@@ -76,7 +76,7 @@ public class AzureWriteFeatureTest {
                 System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1048576);

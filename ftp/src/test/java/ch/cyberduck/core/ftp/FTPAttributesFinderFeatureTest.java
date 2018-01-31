@@ -59,7 +59,7 @@ public class FTPAttributesFinderFeatureTest {
                 throw new AccessDeniedException("f");
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
         f.find(new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file)));
@@ -78,7 +78,7 @@ public class FTPAttributesFinderFeatureTest {
                 throw new AccessDeniedException("f");
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
         final Path file = new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file));

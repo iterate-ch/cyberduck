@@ -42,7 +42,7 @@ public class S3MultipartWriteFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
@@ -75,7 +75,7 @@ public class S3MultipartWriteFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));

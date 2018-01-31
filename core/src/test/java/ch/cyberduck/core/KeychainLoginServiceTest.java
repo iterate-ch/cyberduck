@@ -26,7 +26,7 @@ public class KeychainLoginServiceTest {
                 throw new LoginCanceledException();
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         LoginService l = new KeychainLoginService(new DisabledLoginCallback(), new DisabledPasswordStore());
         l.authenticate(Proxy.DIRECT, session, PathCache.empty(), new ProgressListener() {
             int i = 0;
@@ -61,7 +61,7 @@ public class KeychainLoginServiceTest {
         ));
         final AtomicBoolean warned = new AtomicBoolean(false);
         final Session session = new NullSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         LoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message,

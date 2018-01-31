@@ -49,7 +49,7 @@ public class SFTPDeleteFeatureTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), "t", EnumSet.of(Path.Type.file));
         try {
@@ -71,7 +71,7 @@ public class SFTPDeleteFeatureTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path folder = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SFTPDirectoryFeature(session).mkdir(folder, null, new TransferStatus());

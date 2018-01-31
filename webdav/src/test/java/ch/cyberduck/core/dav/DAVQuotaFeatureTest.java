@@ -42,7 +42,7 @@ public class DAVQuotaFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Quota.Space quota = new DAVQuotaFeature(session).get();
         assertNotNull(quota);
@@ -56,7 +56,7 @@ public class DAVQuotaFeatureTest {
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Quota.Space quota = new DAVQuotaFeature(session).get();
         assertNotNull(quota);

@@ -57,7 +57,7 @@ public class FTPDefaultListServiceTest {
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
@@ -76,7 +76,7 @@ public class FTPDefaultListServiceTest {
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),

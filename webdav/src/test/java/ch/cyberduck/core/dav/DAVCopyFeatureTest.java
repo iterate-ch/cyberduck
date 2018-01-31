@@ -56,7 +56,7 @@ public class DAVCopyFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(test, new TransferStatus());
@@ -76,7 +76,7 @@ public class DAVCopyFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
@@ -99,7 +99,7 @@ public class DAVCopyFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final String name = new AlphanumericRandomStringService().random();

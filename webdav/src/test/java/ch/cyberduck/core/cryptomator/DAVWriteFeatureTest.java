@@ -76,7 +76,7 @@ public class DAVWriteFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;

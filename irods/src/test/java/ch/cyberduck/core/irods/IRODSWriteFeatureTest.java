@@ -71,11 +71,11 @@ public class IRODSWriteFeatureTest {
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
-        session1.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session1.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session1.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final IRODSSession session2 = new IRODSSession(host);
-        session2.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session2.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session2.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test1 = new Path(new IRODSHomeFinderService(session1).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -117,11 +117,11 @@ public class IRODSWriteFeatureTest {
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
-        session1.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session1.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session1.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final IRODSSession session2 = new IRODSSession(host);
-        session2.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session2.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session2.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final CountDownLatch cw1 = new CountDownLatch(1);
@@ -223,7 +223,7 @@ public class IRODSWriteFeatureTest {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -296,7 +296,7 @@ public class IRODSWriteFeatureTest {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

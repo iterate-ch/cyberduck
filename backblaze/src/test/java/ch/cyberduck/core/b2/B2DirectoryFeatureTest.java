@@ -50,7 +50,7 @@ public class B2DirectoryFeatureTest {
                 new Credentials(
                     System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                 )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2DirectoryFeature feature = new B2DirectoryFeature(session);
@@ -66,7 +66,7 @@ public class B2DirectoryFeatureTest {
                 new Credentials(
                     System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                 )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         try {
@@ -86,7 +86,7 @@ public class B2DirectoryFeatureTest {
                 new Credentials(
                     System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                 )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertFalse(new B2DirectoryFeature(session).isSupported(bucket.getParent(), bucket.getName()));
@@ -107,7 +107,7 @@ public class B2DirectoryFeatureTest {
                 new Credentials(
                     System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                 )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new B2DirectoryFeature(session, new B2WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
@@ -125,7 +125,7 @@ public class B2DirectoryFeatureTest {
                 new Credentials(
                     System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                 )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();

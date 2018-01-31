@@ -42,7 +42,7 @@ public class LocalAttributesFinderFeatureTest {
     public void testConvert() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(session.isPosixFilesystem()) {
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+            session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
             final Path file = new Path(new LocalHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
             new LocalTouchFeature(session).touch(file, new TransferStatus());

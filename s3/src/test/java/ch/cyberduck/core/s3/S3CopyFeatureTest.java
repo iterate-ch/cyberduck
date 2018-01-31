@@ -46,7 +46,7 @@ public class S3CopyFeatureTest {
                 new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         test.attributes().setSize(0L);
@@ -68,7 +68,7 @@ public class S3CopyFeatureTest {
                 new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());

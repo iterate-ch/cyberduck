@@ -47,7 +47,7 @@ public class S3LocationFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3LocationFeature feature = new S3LocationFeature(session);
         assertEquals(new S3LocationFeature.S3Region("eu-west-1"), feature.getLocation(
@@ -71,7 +71,7 @@ public class S3LocationFeatureTest {
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         assertEquals(unknown,
                 new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
         session.close();
@@ -89,7 +89,7 @@ public class S3LocationFeatureTest {
                 return S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
             }
         };
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
                 new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
@@ -116,7 +116,7 @@ public class S3LocationFeatureTest {
                 return properties;
             }
         };
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
                 new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))

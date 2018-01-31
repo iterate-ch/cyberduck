@@ -74,7 +74,7 @@ public abstract class AbstractMantaTest {
         final String user = System.getProperty("manta.user");
         final Host host = new Host(profile, hostname, new Credentials(user).withIdentity(file));
         session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final String testRoot = "cyberduck-test-" + new AlphanumericRandomStringService().random();
         testPathPrefix = new Path(new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getAccountPrivateRoot(), testRoot, EnumSet.of(Type.directory));

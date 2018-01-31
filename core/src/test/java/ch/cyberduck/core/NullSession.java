@@ -22,7 +22,7 @@ public class NullSession extends Session<Void> {
     }
 
     @Override
-    public Void open(final Proxy proxy, final HostKeyCallback c, final LoginCallback login) throws BackgroundException {
+    public Void open(final HostKeyCallback c, final LoginCallback login) throws BackgroundException {
         return null;
     }
 

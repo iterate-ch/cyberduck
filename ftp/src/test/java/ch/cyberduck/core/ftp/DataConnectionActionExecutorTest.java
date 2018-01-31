@@ -55,7 +55,7 @@ public class DataConnectionActionExecutorTest {
         final AtomicInteger count = new AtomicInteger();
 
         final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.getClient().setDefaultTimeout(2000);
         session.getClient().setConnectTimeout(2000);
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -96,7 +96,7 @@ public class DataConnectionActionExecutorTest {
         host.setFTPConnectMode(FTPConnectMode.active);
         final AtomicInteger count = new AtomicInteger();
         final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {

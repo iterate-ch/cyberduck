@@ -32,7 +32,7 @@ public class LocalHomeFinderFeatureTest {
     @Test
     public void testFind() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(new LocalHomeFinderFeature(session).find().getAbsolute().endsWith(
                 System.getProperty("user.home").replaceAll("\\\\", "/")));
@@ -42,7 +42,7 @@ public class LocalHomeFinderFeatureTest {
     @Test
     public void testWindowsHome() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals("/C:/Users/Default", new LocalHomeFinderFeature(session).toPath("C:\\Users\\Default").getAbsolute());
         session.close();

@@ -143,7 +143,7 @@ public class LoginConnectionService implements ConnectionService {
             bookmark.getProtocol().getName(), hostname));
 
         // The IP address could successfully be determined
-        session.open(Proxy.DIRECT, key, prompt);
+        session.open(proxy, key, prompt);
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
             bookmark.getProtocol().getName()));

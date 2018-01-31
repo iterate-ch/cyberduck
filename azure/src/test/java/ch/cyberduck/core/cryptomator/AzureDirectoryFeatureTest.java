@@ -58,7 +58,7 @@ public class AzureDirectoryFeatureTest {
                 System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(
@@ -78,7 +78,7 @@ public class AzureDirectoryFeatureTest {
                 System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(

@@ -57,7 +57,7 @@ public class SwiftLargeUploadWriteFeatureTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftLargeUploadWriteFeature feature = new SwiftLargeUploadWriteFeature(session, regionService,
@@ -91,7 +91,7 @@ public class SwiftLargeUploadWriteFeatureTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftLargeUploadWriteFeature feature = new SwiftLargeUploadWriteFeature(session, regionService,

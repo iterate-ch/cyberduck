@@ -58,7 +58,7 @@ public class SpectraDirectoryFeatureTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SpectraDirectoryFeature feature = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session));
         final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -94,7 +94,7 @@ public class SpectraDirectoryFeatureTest {
                 }
             }
         });
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());

@@ -50,7 +50,7 @@ public class B2BucketListServiceTest {
                         new Credentials(
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new B2DirectoryFeature(session).mkdir(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final AttributedList<Path> list = new B2BucketListService(session).list(
