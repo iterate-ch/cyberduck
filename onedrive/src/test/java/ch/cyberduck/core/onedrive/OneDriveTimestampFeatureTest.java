@@ -42,7 +42,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
 
-        final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).toEpochMilli();
+        final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new OneDriveTimestampFeature(session).setTimestamp(file, modified);
         assertEquals(modified, new OneDriveAttributesFinderFeature(session).find(file).getModificationDate());
 
@@ -56,7 +56,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         new OneDriveDirectoryFeature(session).mkdir(test, null, null);
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(test));
 
-        final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).toEpochMilli();
+        final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new OneDriveTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified, new OneDriveAttributesFinderFeature(session).find(test).getModificationDate());
 
