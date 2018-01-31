@@ -493,18 +493,19 @@ public class DAVSessionTest {
     public void testProxyNoConnect() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(host, new DisabledCertificateStore()), new ProxyFinder() {
-            @Override
-            public Proxy find(final Host target) {
-                return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
-            }
-        }) {
+            new KeychainX509KeyManager(host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback(),
             new DisabledHostKeyCallback(),
             new DisabledPasswordStore(),
-            new DisabledProgressListener()
+            new DisabledProgressListener(),
+            new ProxyFinder() {
+                @Override
+                public Proxy find(final Host target) {
+                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                }
+            }
         );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         session.close();
@@ -515,12 +516,7 @@ public class DAVSessionTest {
     public void testConnectProxyInvalidCredentials() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(host, new DisabledCertificateStore()), new ProxyFinder() {
-            @Override
-            public Proxy find(final Host target) {
-                return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
-            }
-        }) {
+            new KeychainX509KeyManager(host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback() {
@@ -531,7 +527,13 @@ public class DAVSessionTest {
             },
             new DisabledHostKeyCallback(),
             new DisabledPasswordStore(),
-            new DisabledProgressListener()
+            new DisabledProgressListener(),
+            new ProxyFinder() {
+                @Override
+                public Proxy find(final Host target) {
+                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                }
+            }
         );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         session.close();
@@ -542,12 +544,7 @@ public class DAVSessionTest {
     public void testConnectProxy() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(host, new DisabledCertificateStore()), new ProxyFinder() {
-            @Override
-            public Proxy find(final Host target) {
-                return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
-            }
-        }) {
+            new KeychainX509KeyManager(host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback() {
@@ -558,7 +555,13 @@ public class DAVSessionTest {
             },
             new DisabledHostKeyCallback(),
             new DisabledPasswordStore(),
-            new DisabledProgressListener()
+            new DisabledProgressListener(),
+            new ProxyFinder() {
+                @Override
+                public Proxy find(final Host target) {
+                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                }
+            }
         );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         session.close();
