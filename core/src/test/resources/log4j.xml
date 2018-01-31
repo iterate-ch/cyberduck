@@ -21,9 +21,6 @@
             <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
         </layout>
     </appender>
-    <logger name="ch.cyberduck">
-        <level value="debug"/>
-    </logger>
     <logger name="ch.cyberduck.transcript.request">
         <level value="debug"/>
     </logger>
