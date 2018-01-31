@@ -40,7 +40,7 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
     private final OneDriveSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     public OneDriveAttributesFinderFeature(final OneDriveSession session) {
         this.session = session;
@@ -77,10 +77,11 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         catch(URISyntaxException e) {
             log.warn(String.format("Cannot set link. Web URL returned %s", metadata.getWebUrl()), e);
         }
-        if (null != metadata.getFileSystemInfo()) {
+        if(null != metadata.getFileSystemInfo()) {
             attributes.setModificationDate(metadata.getFileSystemInfo().getLastModifiedDateTime().toInstant().toEpochMilli());
             attributes.setCreationDate(metadata.getFileSystemInfo().getCreatedDateTime().toInstant().toEpochMilli());
-        } else {
+        }
+        else {
             attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
             attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
         }
