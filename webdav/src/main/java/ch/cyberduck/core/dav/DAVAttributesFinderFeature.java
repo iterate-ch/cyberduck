@@ -129,7 +129,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final DavResource resource) {
         final PathAttributes attributes = new PathAttributes();
         final Map<QName, String> properties = resource.getCustomPropsNS();
-        if(properties.containsKey(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE)) {
+        if(null != properties && properties.containsKey(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE)) {
             final String value = properties.get(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
             if(StringUtils.isNotBlank(value)) {
                 try {
