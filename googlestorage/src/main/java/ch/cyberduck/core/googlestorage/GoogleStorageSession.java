@@ -30,6 +30,7 @@ import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3CopyFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -80,10 +81,10 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final HostKeyCallback key, final LoginCallback prompt) {
-        authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).build(), host.getProtocol())
+    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol())
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-        final HttpClientBuilder configuration = builder.build(this, prompt);
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
         return new OAuth2RequestEntityRestStorageService(this, this.configure(), configuration);
@@ -96,7 +97,7 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt,
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt,
                       final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
     }

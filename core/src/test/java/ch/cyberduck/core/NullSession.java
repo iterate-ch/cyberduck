@@ -5,6 +5,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import java.util.function.Predicate;
@@ -26,12 +27,12 @@ public class NullSession extends Session<Void> {
     }
 
     @Override
-    protected Void connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    protected Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         return null;
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         throw new LoginCanceledException();
     }
 

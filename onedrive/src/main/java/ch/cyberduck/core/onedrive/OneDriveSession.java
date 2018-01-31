@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -80,8 +81,8 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     }
 
     @Override
-    protected OneDriveAPI connect(final HostKeyCallback key, final LoginCallback prompt) {
-        authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).build(), host.getProtocol()) {
+    protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol()) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
@@ -89,7 +90,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                 }
             }
         }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-        final HttpClientBuilder configuration = builder.build(this, prompt);
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
         final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(configuration.build()) {
@@ -128,7 +129,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
     }
 

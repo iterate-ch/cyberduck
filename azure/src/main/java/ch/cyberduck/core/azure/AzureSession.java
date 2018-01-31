@@ -49,7 +49,6 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -99,7 +98,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public CloudBlobClient connect(final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
+    public CloudBlobClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
         try {
             final StorageCredentialsAccountAndKey credentials
                 = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
@@ -124,7 +123,6 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                     }
                 }
             });
-            final Proxy proxy = ProxyFactory.get().find(host);
             switch(proxy.getType()) {
                 case SOCKS: {
                     if(log.isInfoEnabled()) {
@@ -154,7 +152,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         // Update credentials
         final StorageCredentials credentials = client.getCredentials();
         if(credentials instanceof StorageCredentialsAccountAndKey) {

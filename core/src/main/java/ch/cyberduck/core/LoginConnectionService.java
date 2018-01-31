@@ -128,7 +128,8 @@ public class LoginConnectionService implements ConnectionService {
         final String hostname = configurator.getHostname(bookmark.getHostname());
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"),
             hostname));
-        if(proxy.find(bookmark) == Proxy.DIRECT) {
+        final Proxy proxy = this.proxy.find(bookmark);
+        if(proxy == Proxy.DIRECT) {
             // Only try to resolve target hostname if direct connection
             try {
                 resolver.resolve(hostname, callback);
@@ -142,7 +143,7 @@ public class LoginConnectionService implements ConnectionService {
             bookmark.getProtocol().getName(), hostname));
 
         // The IP address could successfully be determined
-        session.open(key, prompt);
+        session.open(proxy, key, prompt);
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
             bookmark.getProtocol().getName()));
@@ -151,7 +152,7 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
-            this.authenticate(session, cache, callback);
+            this.authenticate(proxy, session, cache, callback);
         }
         catch(BackgroundException e) {
             this.close(session);
@@ -159,14 +160,14 @@ public class LoginConnectionService implements ConnectionService {
         }
     }
 
-    private void authenticate(final Session session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
+    private void authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
         try {
-            login.authenticate(session, cache, listener, callback);
+            login.authenticate(proxy, session, cache, listener, callback);
         }
         catch(LoginFailureException e) {
             if(session.isConnected()) {
                 // Next attempt with updated credentials
-                this.authenticate(session, cache, callback);
+                this.authenticate(proxy, session, cache, callback);
             }
             else {
                 // Reconnect and next attempt with updated credentials

@@ -40,6 +40,7 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -77,7 +78,7 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
-    protected FileSystem connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    protected FileSystem connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         return FileSystems.getDefault();
     }
 
@@ -87,7 +88,7 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Path home = new LocalHomeFinderFeature(this).find();
         try {
             lock = LocalFactory.get(this.toPath(home).toString()).lock(true);

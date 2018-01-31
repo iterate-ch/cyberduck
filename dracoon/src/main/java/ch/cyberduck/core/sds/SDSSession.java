@@ -36,7 +36,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.JSON;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
@@ -92,16 +92,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
-    public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
-    }
-
     @Override
-    protected SDSApiClient connect(final HostKeyCallback key, final LoginCallback prompt) {
-        final HttpClientBuilder configuration = builder.build(this, prompt);
+    protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
-                authorizationService = new OAuth2RequestInterceptor(builder.build(this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
+                authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
                     @Override
                     public void process(final HttpRequest request, final HttpContext context) throws IOException {
                         request.addHeader(HttpHeaders.AUTHORIZATION,
@@ -139,7 +135,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         final String login = host.getCredentials().getUsername();
         final String password = host.getCredentials().getPassword();
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.

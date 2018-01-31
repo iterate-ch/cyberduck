@@ -56,7 +56,7 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -104,12 +104,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
             new LaxHostnameDelegatingTrustManager(trust, host.getHostname()) :
             new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
-    }
-
-    public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
-            new LaxHostnameDelegatingTrustManager(trust, host.getHostname()) :
-            new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
     }
 
     @Override
@@ -205,12 +199,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
-        return new RequestEntityRestStorageService(this, this.configure(), builder.build(this, prompt));
+    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+        return new RequestEntityRestStorageService(this, this.configure(), builder.build(proxy, this, prompt));
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(Scheme.isURL(host.getProtocol().getContext())) {
             try {
                 client.setProviderCredentials(new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get());
