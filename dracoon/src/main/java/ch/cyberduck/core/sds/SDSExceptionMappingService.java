@@ -134,7 +134,6 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
             }
             catch(JsonParseException e) {
                 // Ignore
-                this.append(buffer, failure.getMessage());
             }
         }
         switch(failure.getCode()) {

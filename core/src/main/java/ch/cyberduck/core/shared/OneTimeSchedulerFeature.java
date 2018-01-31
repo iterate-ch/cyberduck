@@ -18,18 +18,41 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Scheduler;
+import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 
-public abstract class OneTimeSchedulerFeature<R> extends AbstractSchedulerFeature<R> {
+import org.apache.log4j.Logger;
+
+import java.util.concurrent.Callable;
+
+public abstract class OneTimeSchedulerFeature<R> implements Scheduler<Void> {
+
+    private static final Logger log = Logger.getLogger(OneTimeSchedulerFeature.class);
 
     private final Path file;
 
+    private final ThreadPool scheduler = ThreadPoolFactory.get("scheduler", 1);
+
     public OneTimeSchedulerFeature(final Path file) {
-        super(Long.MAX_VALUE);
         this.file = file;
     }
 
+    protected abstract R operate(PasswordCallback callback, Path file) throws BackgroundException;
+
     @Override
-    public R repeat(final PasswordCallback callback) throws BackgroundException {
-        return this.operate(callback, file);
+    public Void repeat(final PasswordCallback callback) {
+        scheduler.execute(new Callable<R>() {
+            @Override
+            public R call() throws Exception {
+                return operate(callback, file);
+            }
+        });
+        return null;
+    }
+
+    @Override
+    public void shutdown() {
+        scheduler.shutdown(false);
     }
 }

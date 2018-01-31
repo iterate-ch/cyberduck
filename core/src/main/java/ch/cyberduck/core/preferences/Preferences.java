@@ -25,11 +25,11 @@ import ch.cyberduck.core.DisabledLocale;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProxyCredentialsStore;
 import ch.cyberduck.core.DisabledSleepPreventer;
 import ch.cyberduck.core.DisabledTerminalService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.PreferencesProxyCredentialsStore;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
@@ -791,6 +791,8 @@ public abstract class Preferences {
 
         defaults.put("sds.listing.chunksize", String.valueOf(500));
         defaults.put("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
+        // Run missing file keys in bulk feature after upload
+        defaults.put("sds.encryption.missingkeys.upload", String.valueOf(true));
         defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
         defaults.put("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
 
@@ -927,6 +929,10 @@ public abstract class Preferences {
          */
         defaults.put("connection.proxy.enable", String.valueOf(true));
         defaults.put("connection.proxy.ntlm.domain", StringUtils.EMPTY);
+        /*
+          Integrated Windows Authentication
+         */
+        defaults.put("connection.proxy.windows.authentication.enable", String.valueOf(false));
 
         /*
           Warning when opening connections sending credentials in plaintext
@@ -1248,7 +1254,7 @@ public abstract class Preferences {
         defaults.put("factory.watchservice.class", NIOEventWatchService.class.getName());
         defaults.put("factory.proxy.class", DisabledProxyFinder.class.getName());
         defaults.put("factory.passwordstore.class", DisabledPasswordStore.class.getName());
-        defaults.put("factory.proxycredentialsstore.class", DisabledProxyCredentialsStore.class.getName());
+        defaults.put("factory.proxycredentialsstore.class", PreferencesProxyCredentialsStore.class.getName());
         defaults.put("factory.dateformatter.class", DefaultUserDateFormatter.class.getName());
         defaults.put("factory.trash.class", NativeLocalTrashFeature.class.getName());
         defaults.put("factory.symlink.class", NullLocalSymlinkFeature.class.getName());

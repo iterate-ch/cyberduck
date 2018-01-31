@@ -306,6 +306,7 @@ namespace Ch.Cyberduck.Core.Preferences
             defaults.put("defaulthandler.reminder", false.ToString());
 
             defaults.put("update.check.last", "0");
+            defaults.put("update.check.privilege", true.ToString());
 
             defaults.put("queue.download.folder", DefaultDownloadPath);
             defaults.put("queue.upload.permissions.default", true.ToString());
@@ -368,6 +369,9 @@ namespace Ch.Cyberduck.Core.Preferences
             defaults.put("connection.ssl.securerandom.algorithm", "Windows-PRNG");
             defaults.put("connection.ssl.securerandom.provider", "SunMSCAPI");
 
+            // Enable Integrated Windows Authentication
+            defaults.put("connection.proxy.windows.authentication.enable", true.ToString());
+
             defaults.put("webdav.ntlm.environment", false.ToString());
             if (getBoolean("webdav.ntlm.environment"))
             {
@@ -415,6 +419,7 @@ namespace Ch.Cyberduck.Core.Preferences
                 getProperty("application.name").ToLower().Replace(" ", "") + ".log");
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
                 fileName, true);
+            appender.setEncoding("UTF-8");
             appender.setMaxFileSize("10MB");
             appender.setMaxBackupIndex(0);
             root.addAppender(appender);

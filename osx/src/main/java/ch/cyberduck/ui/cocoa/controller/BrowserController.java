@@ -40,7 +40,6 @@ import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Scheduler;
@@ -62,9 +61,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.threading.DisabledAlertCallback;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
-import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
@@ -2282,12 +2279,15 @@ public class BrowserController extends WindowController
                 new OverwriteController(BrowserController.this).overwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
                     @Override
                     public void run() {
-                        background(new WorkerBackgroundAction<List<Path>>(BrowserController.this, pool,
+                        background(new WorkerBackgroundAction<Map<Path, Path>>(BrowserController.this, pool,
                             new CopyWorker(selected, pool instanceof StatefulSessionPool ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
                                 BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
                                     @Override
-                                    public void cleanup(final List<Path> copied) {
-                                        reload(workdir(), copied, new ArrayList<Path>(selected.values()));
+                                    public void cleanup(final Map<Path, Path> result) {
+                                        final List<Path> changed = new ArrayList<>();
+                                        changed.addAll(result.keySet());
+                                        changed.addAll(result.values());
+                                        reload(workdir(), changed, new ArrayList<Path>(selected.values()));
                                     }
                                 }
                             )
@@ -2582,13 +2582,27 @@ public class BrowserController extends WindowController
             final NSEnumerator iterator = selected.objectEnumerator();
             final List<TransferItem> uploads = new ArrayList<TransferItem>();
             NSObject next;
+            boolean parentFound = false;
+            Local parent = null;
             while((next = iterator.nextObject()) != null) {
                 final Local local = LocalFactory.get(next.toString());
-                new UploadDirectoryFinder().save(pool.getHost(), local.getParent());
+                final Local localParent = local.getParent();
+
+                if(!parentFound && localParent != parent) {
+                    parentFound = true;
+                    parent = localParent;
+                }
+                else if(parentFound && localParent != parent) {
+                    parent = null;
+                }
+
                 uploads.add(new TransferItem(
                     new Path(destination, local.getName(),
                         local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local
                 ));
+            }
+            if(parent != null) {
+                new UploadDirectoryFinder().save(pool.getHost(), parent);
             }
             this.transfer(new UploadTransfer(pool.getHost(), uploads));
         }
@@ -3022,14 +3036,7 @@ public class BrowserController extends WindowController
                                 securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
                                 scheduler = pool.getFeature(Scheduler.class);
                                 if(scheduler != null) {
-                                    background(new SessionBackgroundAction<Object>(pool, new DisabledAlertCallback(),
-                                        new DisabledProgressListener(), new DisabledTranscriptListener()) {
-                                        @Override
-                                        public Object run(final Session<?> session) throws BackgroundException {
-                                            scheduler.repeat(PasswordCallbackFactory.get(BrowserController.this));
-                                            return null;
-                                        }
-                                    });
+                                    scheduler.repeat(PasswordCallbackFactory.get(BrowserController.this));
                                 }
                             }
                         }

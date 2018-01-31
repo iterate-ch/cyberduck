@@ -39,6 +39,7 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -52,7 +53,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Files and folders initially selected to be part of this transfer
      */
-    protected final List<TransferItem> roots;
+    protected final List<TransferItem> roots = new ArrayList<>();
 
     /**
      * The sum of the file length of all files in the <code>queue</code> or null if unknown
@@ -161,7 +162,7 @@ public abstract class Transfer implements Serializable {
      */
     public Transfer(final Host host, final List<TransferItem> roots, final BandwidthThrottle bandwidth) {
         this.host = host;
-        this.roots = roots;
+        this.roots.addAll(roots);
         this.bandwidth = bandwidth;
     }
 
@@ -338,6 +339,13 @@ public abstract class Transfer implements Serializable {
         // Will be set to true in #reset when transfer action is determined
         reset = false;
     }
+
+    /**
+     * Normalize paths of root files
+     *
+     * @see ch.cyberduck.core.transfer.normalizer.RootPathsNormalizer
+     */
+    public abstract void normalize();
 
     public void stop() {
         state = State.stopped;

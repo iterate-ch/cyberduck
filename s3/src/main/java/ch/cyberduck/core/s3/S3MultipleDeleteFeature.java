@@ -87,9 +87,19 @@ public class S3MultipleDeleteFeature implements Delete {
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
+                try {
+                    keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
                         file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : file.attributes().getVersionId()
-                ));
+                    ));
+                }
+                catch(NotfoundException e) {
+                    if(file.isDirectory()) {
+                        log.warn(String.format("Ignore missing placeholder object %s", file));
+                    }
+                    else {
+                        throw e;
+                    }
+                }
                 if(map.containsKey(container)) {
                     map.get(container).addAll(keys);
                 }

@@ -16,7 +16,6 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Scheduler;
 
 public class DelegatingSchedulerFeature implements Scheduler<Void> {
@@ -28,7 +27,7 @@ public class DelegatingSchedulerFeature implements Scheduler<Void> {
     }
 
     @Override
-    public Void repeat(final PasswordCallback callback) throws BackgroundException {
+    public Void repeat(final PasswordCallback callback) {
         for(Scheduler scheduler : features) {
             scheduler.repeat(callback);
         }

@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>verizoncloudstorage</string>
+        <string>verizoncloudstorage-iad3a</string>
         <key>Description</key>
         <string>Verizon Cloud Storage (East Coast USA)</string>
         <key>Default Hostname</key>

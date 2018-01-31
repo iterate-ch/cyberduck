@@ -62,7 +62,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
                                                            final X509KeyManager key) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(new S3Protocol(),
-                new S3Protocol().getDefaultHostname(), origin.getCdnCredentials()), trust, key));
+            new S3Protocol().getDefaultHostname(), origin.getCdnCredentials()), trust, key), Collections.emptyMap());
         this.origin = origin;
     }
 

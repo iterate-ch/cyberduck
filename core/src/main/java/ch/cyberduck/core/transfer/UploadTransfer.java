@@ -85,7 +85,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots) {
-        this(host, new UploadRootPathsNormalizer().normalize(roots),
+        this(host, roots,
                 PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
     }
 
@@ -94,8 +94,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f, final Comparator<Local> comparator) {
-        super(host, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
-                PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
+        super(host, roots, new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
         this.filter = f;
         this.comparator = comparator;
     }
@@ -272,6 +271,13 @@ public class UploadTransfer extends Transfer {
             }
         }
         return file;
+    }
+
+    @Override
+    public void normalize() {
+        List<TransferItem> normalized = new UploadRootPathsNormalizer().normalize(roots);
+        roots.clear();
+        roots.addAll(normalized);
     }
 
     @Override

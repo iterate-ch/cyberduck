@@ -20,8 +20,10 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 
@@ -36,6 +38,10 @@ public class SwiftExceptionMappingService extends AbstractExceptionMappingServic
         final StatusLine status = e.getHttpStatusLine();
         if(null != status) {
             this.append(buffer, String.format("%d %s", status.getStatusCode(), status.getReasonPhrase()));
+        }
+        switch(e.getHttpStatusCode()) {
+            case HttpStatus.SC_BAD_REQUEST:
+                return new LoginFailureException(buffer.toString(), e);
         }
         return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getHttpStatusCode(), buffer.toString()));
     }

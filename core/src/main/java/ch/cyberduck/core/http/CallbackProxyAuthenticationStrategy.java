@@ -40,10 +40,14 @@ import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Lookup;
+import org.apache.http.impl.auth.win.WindowsCredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
+import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,12 +60,27 @@ import java.util.Queue;
 public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStrategy {
     private static final Logger log = Logger.getLogger(CallbackProxyAuthenticationStrategy.class);
 
+    private static final String PROXY_CREDENTIALS_INPUT_ID = "cyberduck.credentials.input";
+
+    private static final List<String> DEFAULT_SCHEME_PRIORITY =
+        Collections.unmodifiableList(Arrays.asList(
+            AuthSchemes.SPNEGO,
+            AuthSchemes.KERBEROS,
+            AuthSchemes.NTLM,
+            AuthSchemes.CREDSSP,
+            AuthSchemes.DIGEST,
+            AuthSchemes.BASIC));
+
+    private static final List<String> IWA_SCHEME_PRIORITY =
+        Collections.unmodifiableList(Arrays.asList(
+            AuthSchemes.SPNEGO,
+            AuthSchemes.NTLM));
+
     private final Preferences preferences
         = PreferencesFactory.get();
 
     private final Host bookmark;
     private final LoginCallback prompt;
-
     private final ProxyCredentialsStore keychain;
 
     public CallbackProxyAuthenticationStrategy(final Host bookmark, final LoginCallback prompt) {
@@ -73,15 +92,6 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
         this.bookmark = bookmark;
         this.prompt = prompt;
     }
-
-    private static final List<String> DEFAULT_SCHEME_PRIORITY =
-        Collections.unmodifiableList(Arrays.asList(
-            AuthSchemes.SPNEGO,
-            AuthSchemes.KERBEROS,
-            AuthSchemes.NTLM,
-            AuthSchemes.CREDSSP,
-            AuthSchemes.DIGEST,
-            AuthSchemes.BASIC));
 
     @Override
     public Queue<AuthOption> select(final Map<String, Header> challenges, final HttpHost authhost, final HttpResponse response, final HttpContext context) throws MalformedChallengeException {
@@ -96,10 +106,62 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
         if(authPrefs == null) {
             authPrefs = DEFAULT_SCHEME_PRIORITY;
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Authentication schemes in the order of preference: " + authPrefs);
+
+        // if available try to authenticate with Integrated Windows Authentication
+        if(preferences.getBoolean("connection.proxy.windows.authentication.enable")) {
+            if(WinHttpClients.isWinAuthAvailable()) {
+                for(String s : IWA_SCHEME_PRIORITY) {
+                    final Header challenge = challenges.get(s.toLowerCase(Locale.ROOT));
+                    if(challenge != null) {
+                        final AuthSchemeProvider provider = registry.lookup(s);
+                        if(provider != null) {
+                            final AuthScheme authScheme = provider.create(context);
+                            authScheme.processChallenge(challenge);
+                            final AuthScope authScope = new AuthScope(
+                                authhost.getHostName(),
+                                authhost.getPort(),
+                                authScheme.getRealm(),
+                                authScheme.getSchemeName());
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Add authentication options for scheme %s", authPrefs));
+                            }
+                            options.add(new AuthOption(authScheme, new WindowsCredentialsProvider(
+                                null == clientContext.getCredentialsProvider() ? new BasicCredentialsProvider() : clientContext.getCredentialsProvider()).getCredentials(authScope)));
+                        }
+                    }
+                }
+                if(!options.isEmpty()) {
+                    return options;
+                }
+            }
         }
 
+        Credentials credentials = keychain.getCredentials(authhost.getHostName());
+        if(StringUtils.isEmpty(credentials.getPassword())) {
+            try {
+                credentials = prompt.prompt(bookmark,
+                    StringUtils.EMPTY,
+                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
+                    MessageFormat.format(LocaleFactory.localizedString(
+                        "Login {0} with username and password", "Credentials"), authhost.getHostName()),
+                    new LoginOptions()
+                        .icon(bookmark.getProtocol().disk())
+                        .usernamePlaceholder(LocaleFactory.localizedString("Username", "Credentials"))
+                        .passwordPlaceholder(LocaleFactory.localizedString("Password", "Credentials"))
+                        .user(true).password(true)
+                );
+                if(credentials.isSaved()) {
+                    context.setAttribute(PROXY_CREDENTIALS_INPUT_ID, credentials);
+                }
+            }
+            catch(LoginCanceledException ignored) {
+                // Ignore dismiss of prompt
+                throw new MalformedChallengeException(ignored.getMessage(), ignored);
+            }
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Authentication schemes in the order of preference: %s", authPrefs));
+        }
         for(final String id : authPrefs) {
             final Header challenge = challenges.get(id.toLowerCase(Locale.ROOT));
             if(challenge != null) {
@@ -109,42 +171,12 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                 }
                 final AuthScheme authScheme = authSchemeProvider.create(context);
                 authScheme.processChallenge(challenge);
-                final AuthScope authScope = new AuthScope(
-                    authhost.getHostName(),
-                    authhost.getPort(),
-                    authScheme.getRealm(),
-                    authScheme.getSchemeName());
-
-                final Credentials saved = keychain.getCredentials(authhost.getHostName());
-                if(StringUtils.isEmpty(saved.getPassword())) {
-                    try {
-                        final Credentials input = prompt.prompt(bookmark,
-                            bookmark.getCredentials().getUsername(),
-                            String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), authhost.getHostName()),
-                            authScheme.getRealm(),
-                            new LoginOptions().user(true).password(true)
-                        );
-                        if(input.isSaved()) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Save passphrase for proxy %s", authhost));
-                            }
-                            keychain.addCredentials(authhost.getHostName(), input.getUsername(), input.getPassword());
-                        }
-                        options.add(new AuthOption(authScheme, new NTCredentials(input.getUsername(), input.getPassword(),
-                            preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
-                    }
-                    catch(LoginCanceledException ignored) {
-                        // Ignore dismiss of prompt
-                    }
-                }
-                else {
-                    options.add(new AuthOption(authScheme, new NTCredentials(saved.getUsername(), saved.getPassword(),
-                        preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
-                }
+                options.add(new AuthOption(authScheme, new NTCredentials(credentials.getUsername(), credentials.getPassword(),
+                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))));
             }
             else {
                 if(log.isDebugEnabled()) {
-                    log.debug("Challenge for " + id + " authentication scheme not available");
+                    log.debug(String.format("Challenge for %s authentication scheme not available", id));
                     // Try again
                 }
             }
@@ -154,11 +186,21 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
 
     @Override
     public void authSucceeded(final HttpHost authhost, final AuthScheme authScheme, final HttpContext context) {
+        final HttpClientContext clientContext = HttpClientContext.adapt(context);
+        final Credentials credentials = clientContext.getAttribute(PROXY_CREDENTIALS_INPUT_ID, Credentials.class);
+        if(null != credentials) {
+            clientContext.removeAttribute(PROXY_CREDENTIALS_INPUT_ID);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Save passphrase for proxy %s", authhost));
+            }
+            keychain.addCredentials(authhost.getHostName(), credentials.getUsername(), credentials.getPassword());
+        }
         super.authSucceeded(authhost, authScheme, context);
     }
 
     @Override
     public void authFailed(final HttpHost authhost, final AuthScheme authScheme, final HttpContext context) {
+        keychain.deleteCredentials(authhost.getHostName());
         super.authFailed(authhost, authScheme, context);
     }
 }
