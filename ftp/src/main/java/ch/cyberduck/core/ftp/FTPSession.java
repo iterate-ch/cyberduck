@@ -134,9 +134,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
     }
 
-    protected void configure(final Proxy proxy, final FTPClient client) throws IOException {
+    protected void configure(final FTPClient client) throws IOException {
         client.setProtocol(host.getProtocol());
-        client.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host), proxy));
+        client.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host)));
         client.setControlEncoding(host.getEncoding());
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         client.setConnectTimeout(timeout);
@@ -183,7 +183,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 }
             };
             client.addProtocolCommandListener(listener);
-            this.configure(proxy, client);
+            this.configure(client);
             client.connect(new PunycodeConverter().convert(host.getHostname()), host.getPort());
             client.setTcpNoDelay(false);
             return client;
@@ -229,7 +229,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                         // Protocol switch
                         host.setProtocol(ProtocolFactory.get().forScheme(Scheme.ftps));
                         // Reconfigure client for TLS
-                        this.configure(proxy, client);
+                        this.configure(client);
                         client.execAUTH();
                         client.sslNegotiation();
                     }
