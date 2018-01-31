@@ -16,26 +16,17 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePatchOperation;
 import org.nuxeo.onedrive.client.facets.FileSystemInfoFacet;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-
-import com.sun.scenario.effect.Offset;
 
 public class OneDriveTimestampFeature extends DefaultTimestampFeature {
     private final OneDriveSession session;
@@ -46,19 +37,18 @@ public class OneDriveTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
-        final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
-        final FileSystemInfoFacet facet = new FileSystemInfoFacet();
-        facet.setLastModifiedDateTime(Instant.ofEpochMilli(modified).atOffset(ZoneOffset.UTC));
-        patchOperation.facet("fileSystemInfo", facet);
-
+        final OneDrivePatchOperation patch = new OneDrivePatchOperation();
+        final FileSystemInfoFacet info = new FileSystemInfoFacet();
+        info.setLastModifiedDateTime(Instant.ofEpochMilli(modified).atOffset(ZoneOffset.UTC));
+        patch.facet("fileSystemInfo", info);
         try {
-            session.toFile(file).patch(patchOperation);
+            session.toFile(file).patch(patch);
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Cannot patch timestamp {0}", e, file);
+            throw new OneDriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot patch timestamp {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 }
