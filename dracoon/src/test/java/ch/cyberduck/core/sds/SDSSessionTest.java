@@ -168,18 +168,18 @@ public class SDSSessionTest {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final LoginConnectionService c = new LoginConnectionService(
+            new DisabledLoginCallback(),
+            new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(),
+            new DisabledProgressListener(),
             new ProxyFinder() {
                 @Override
                 public Proxy find(final Host target) {
                     return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
                 }
-            });
-        final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback(),
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener()
+            }
         );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         session.close();
@@ -192,12 +192,7 @@ public class SDSSessionTest {
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(host, new DisabledCertificateStore()), new ProxyFinder() {
-            @Override
-            public Proxy find(final Host target) {
-                return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
-            }
-        }) {
+            new KeychainX509KeyManager(host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback() {
@@ -208,7 +203,13 @@ public class SDSSessionTest {
             },
             new DisabledHostKeyCallback(),
             new DisabledPasswordStore(),
-            new DisabledProgressListener()
+            new DisabledProgressListener(),
+            new ProxyFinder() {
+                @Override
+                public Proxy find(final Host target) {
+                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                }
+            }
         );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         session.close();
