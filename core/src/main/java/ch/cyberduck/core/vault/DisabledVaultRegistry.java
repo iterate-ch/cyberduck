@@ -42,11 +42,6 @@ public class DisabledVaultRegistry implements VaultRegistry {
     }
 
     @Override
-    public VaultRegistry withAutodetect(final boolean autodetect) {
-        return this;
-    }
-
-    @Override
     public boolean add(final Vault vault) {
         return false;
     }

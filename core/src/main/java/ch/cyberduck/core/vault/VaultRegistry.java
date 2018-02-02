@@ -41,6 +41,4 @@ public interface VaultRegistry {
     <T> T getFeature(Session<?> session, Class<T> type, T proxy);
 
     boolean contains(Path vault);
-
-    VaultRegistry withAutodetect(boolean autodetect);
 }
