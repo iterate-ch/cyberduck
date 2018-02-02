@@ -1,7 +1,7 @@
 Cyberduck
 https://cyberduck.io/
 
-6.3.6
+6.4.0
 - [Feature] Support for eu-west-3 (Paris) region (S3)
 - [Feature] Support for Integrated Windows Authentication (IWA) authentication (WebDAV, Windows)
 - [Bugfix] Support for Oracle Cloud Infrastructure (OCI) Object Storage (S3) (#10194)
