@@ -22,6 +22,7 @@ public abstract class IndexedListProgressListener implements ListProgressListene
 
     private Integer index = 0;
 
+    @Override
     public IndexedListProgressListener reset() {
         index = 0;
         return this;
