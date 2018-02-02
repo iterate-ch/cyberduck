@@ -53,6 +53,7 @@ public final class TerminalHelpPrinter {
             protocols.append(p.getDescription());
             protocols.append(StringUtils.LF);
             switch(p.getType()) {
+                case b2:
                 case s3:
                 case googlestorage:
                 case swift:

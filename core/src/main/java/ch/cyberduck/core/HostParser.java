@@ -219,6 +219,7 @@ public final class HostParser {
             }
         }
         switch(protocol.getType()) {
+            case b2:
             case s3:
             case googlestorage:
             case swift:
