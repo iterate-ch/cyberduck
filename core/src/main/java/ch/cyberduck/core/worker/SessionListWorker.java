@@ -135,6 +135,11 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
         }
 
         @Override
+        public ListProgressListener reset() {
+            return proxy.reset();
+        }
+
+        @Override
         public void message(final String message) {
             proxy.message(message);
         }
