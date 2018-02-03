@@ -53,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.local.class", typeof(SystemLocal).AssemblyQualifiedName);
             defaults.put("factory.locale.class", typeof(DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.dateformatter.class", typeof(UserDefaultsDateFormatter).AssemblyQualifiedName);
-            defaults.put("factory.passwordstore.class", typeof(DataProtectorPasswordStore).AssemblyQualifiedName);
+            defaults.put("factory.passwordstore.class", typeof(PasswordStoreFacade).AssemblyQualifiedName);
             defaults.put("factory.proxycredentialsstore.class",
                 typeof(CredentialManagerProxyCredentialsStore).AssemblyQualifiedName);
             defaults.put("factory.alertcallback.class", typeof(DialogAlertCallback).AssemblyQualifiedName);
