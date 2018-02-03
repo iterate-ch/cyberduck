@@ -242,7 +242,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(status.isExists()) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
                         file.getName()));
-                    status.setEncryption(feature.getEncryption(file));
+                    try {
+                        status.setEncryption(feature.getEncryption(file));
+                    }
+                    catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
+                        status.setEncryption(feature.getDefault(file));
+                    }
                 }
                 else {
                     status.setEncryption(feature.getDefault(file));
@@ -256,7 +261,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     if(status.isExists()) {
                         progress.message(MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
                             file.getName()));
-                        status.setStorageClass(feature.getClass(file));
+                        try {
+                            status.setStorageClass(feature.getClass(file));
+                        }
+                        catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
+                            status.setStorageClass(feature.getDefault());
+                        }
                     }
                     else {
                         status.setStorageClass(feature.getDefault());
