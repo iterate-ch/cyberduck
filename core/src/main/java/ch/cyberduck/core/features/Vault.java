@@ -16,6 +16,7 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,7 +35,7 @@ public interface Vault {
      * @throws BackgroundException    Failure reading master key from server
      * @throws NotfoundException      No master key file in home
      */
-    Path create(Session<?> session, String region, final VaultCredentials credentials) throws BackgroundException;
+    Path create(Session<?> session, String region, final VaultCredentials credentials, final PasswordStore keychain) throws BackgroundException;
 
     /**
      * Open existing vault
@@ -44,7 +45,7 @@ public interface Vault {
      * @throws BackgroundException    Failure reading master key from server
      * @throws NotfoundException      No master key file in home
      */
-    Vault load(Session<?> session, final PasswordCallback prompt) throws BackgroundException;
+    Vault load(Session<?> session, final PasswordCallback prompt, final PasswordStore keychain) throws BackgroundException;
 
     /**
      * Close vault

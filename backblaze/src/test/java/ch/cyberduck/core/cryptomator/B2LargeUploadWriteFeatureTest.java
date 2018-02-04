@@ -73,8 +73,8 @@ public class B2LargeUploadWriteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
-        final Path vault = cryptomator.create(session, null, new VaultCredentials("test"));
+            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
+        final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final CryptoWriteFeature feature = new CryptoWriteFeature<VersionId>(session, new B2LargeUploadWriteFeature(session), cryptomator);
         final TransferStatus writeStatus = new TransferStatus();

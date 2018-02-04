@@ -70,8 +70,8 @@ public class CryptoChecksumComputeTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
-        cryptomator.create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(vault);
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final Cryptor cryptor = cryptomator.getCryptor();
         final ByteBuffer header = cryptor.fileHeaderCryptor().encryptHeader(cryptor.fileHeaderCryptor().create());
         // DEFAULT_PIPE_SIZE=1024

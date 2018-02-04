@@ -96,7 +96,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCreateVaultWorker(BrowserController controller, Path folder, String filename,
                     String region, String passphrase)
-                    : base(region, new VaultCredentials(passphrase), new CryptoVault(folder, PasswordStoreFactory.get()))
+                    : base(region, new VaultCredentials(passphrase), PasswordStoreFactory.get(), new CryptoVault(folder))
                 {
                     _controller = controller;
                     _folder = folder;

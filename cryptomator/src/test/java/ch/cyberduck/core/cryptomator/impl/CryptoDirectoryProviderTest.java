@@ -47,7 +47,7 @@ public class CryptoDirectoryProviderTest {
     @Test(expected = NotfoundException.class)
     public void testToEncryptedInvalidArgument() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
-        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        final CryptoVault vault = new CryptoVault(home);
         final CryptoDirectoryProvider provider = new CryptoDirectoryProvider(home, vault);
         provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/vault/f", EnumSet.of(Path.Type.file)));
     }
@@ -55,7 +55,7 @@ public class CryptoDirectoryProviderTest {
     @Test(expected = NotfoundException.class)
     public void testToEncryptedInvalidPath() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
-        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        final CryptoVault vault = new CryptoVault(home);
         final CryptoDirectoryProvider provider = new CryptoDirectoryProvider(home, vault);
         provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/", EnumSet.of(Path.Type.directory)));
     }
@@ -92,13 +92,13 @@ public class CryptoDirectoryProviderTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        final CryptoVault vault = new CryptoVault(home);
         vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("vault");
             }
-        });
+        }, new DisabledPasswordStore());
         final CryptoDirectoryProvider provider = new CryptoDirectoryProvider(home, vault);
         assertNotNull(provider.toEncrypted(session, null, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));

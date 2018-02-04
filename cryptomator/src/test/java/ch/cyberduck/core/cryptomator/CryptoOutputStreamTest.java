@@ -71,8 +71,8 @@ public class CryptoOutputStreamTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
-        vault.create(session, null, new VaultCredentials("test"));
+        final CryptoVault vault = new CryptoVault(home);
+        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         return vault;
     }
 

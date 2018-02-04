@@ -16,6 +16,7 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,12 +38,12 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain) throws BackgroundException {
         return null;
     }
 
     @Override
-    public Vault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
+    public Vault load(final Session<?> session, final PasswordCallback prompt, final PasswordStore keychain) throws BackgroundException {
         return this;
     }
 

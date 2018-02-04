@@ -76,8 +76,6 @@ public class CryptoVault implements Vault {
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
 
-    private final PasswordStore keychain;
-
     /**
      * Root of vault directory
      */
@@ -93,19 +91,18 @@ public class CryptoVault implements Vault {
 
     private final byte[] pepper;
 
-    public CryptoVault(final Path home, final PasswordStore keychain) {
-        this(home, new Path(home, DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)), keychain);
+    public CryptoVault(final Path home) {
+        this(home, new Path(home, DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)));
     }
 
-    public CryptoVault(final Path home, final Path masterkey, final PasswordStore keychain) {
-        this(home, masterkey, new byte[0], keychain);
+    public CryptoVault(final Path home, final Path masterkey) {
+        this(home, masterkey, new byte[0]);
     }
 
-    public CryptoVault(final Path home, final Path masterkey, final byte[] pepper, final PasswordStore keychain) {
+    public CryptoVault(final Path home, final Path masterkey, final byte[] pepper) {
         this.home = home;
         this.masterkey = masterkey;
         this.pepper = pepper;
-        this.keychain = keychain;
         // New vault home with vault flag set for internal use
         final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(home.getType());
         type.add(Path.Type.vault);
@@ -115,7 +112,7 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
             FastSecureRandomProvider.get().provide()
         );
@@ -147,7 +144,7 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public synchronized CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
+    public synchronized CryptoVault load(final Session<?> session, final PasswordCallback prompt, final PasswordStore keychain) throws BackgroundException {
         if(this.isUnlocked()) {
             log.warn(String.format("Skip unlock of open vault %s", this));
             return this;
@@ -170,13 +167,14 @@ public class CryptoVault implements Vault {
         final String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
             new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
         this.unlock(session, masterkey, masterKeyFileContent, passphrase, bookmark, prompt,
-            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
+            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()),
+            keychain);
         home.attributes().setVault(home);
         return this;
     }
 
     private void unlock(final Session<?> session, final Path masterKeyFile, final KeyFile masterKeyFileContent,
-                        String passphrase, final Host bookmark, final PasswordCallback prompt, final String message) throws BackgroundException {
+                        String passphrase, final Host bookmark, final PasswordCallback prompt, final String message, final PasswordStore keychain) throws BackgroundException {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = prompt.prompt(
@@ -212,7 +210,7 @@ public class CryptoVault implements Vault {
         catch(CryptoAuthenticationException e) {
             this.unlock(session, masterKeyFile, masterKeyFileContent, null, bookmark,
                 prompt, String.format("%s %s.", e.getDetail(),
-                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
+                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())), keychain);
         }
     }
 

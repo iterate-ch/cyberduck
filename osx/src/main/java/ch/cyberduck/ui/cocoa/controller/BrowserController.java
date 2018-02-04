@@ -2327,7 +2327,7 @@ public class BrowserController extends WindowController
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
-                    new CreateVaultWorker(region, passphrase, new CryptoVault(folder, PasswordStoreFactory.get())) {
+                    new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), new CryptoVault(folder)) {
                         @Override
                         public void cleanup(final Path vault) {
                             reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));

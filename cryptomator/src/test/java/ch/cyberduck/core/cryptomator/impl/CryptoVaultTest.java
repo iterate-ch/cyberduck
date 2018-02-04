@@ -81,13 +81,13 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        final CryptoVault vault = new CryptoVault(home);
         vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("vault");
             }
-        });
+        }, new DisabledPasswordStore());
         assertEquals(Vault.State.open, vault.getState());
         assertNotSame(home, vault.encrypt(session, home));
         assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
@@ -144,13 +144,13 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        final CryptoVault vault = new CryptoVault(home);
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("vault");
             }
-        }).getHome());
+        }, new DisabledPasswordStore()).getHome());
         assertEquals(Vault.State.open, vault.getState());
         vault.close();
     }
@@ -187,13 +187,13 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        final CryptoVault vault = new CryptoVault(home);
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 return new VaultCredentials("vault");
             }
-        }).getHome());
+        }, new DisabledPasswordStore()).getHome());
         assertEquals(Vault.State.open, vault.getState());
         assertEquals(home, new PathDictionary().deserialize(home.serialize(SerializerFactory.get())));
         vault.close();
@@ -232,7 +232,7 @@ public class CryptoVaultTest {
         };
         final AtomicBoolean prompt = new AtomicBoolean();
         final CryptoVault vault = new CryptoVault(
-            new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+            new Path("/", EnumSet.of(Path.Type.directory)));
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
@@ -247,7 +247,7 @@ public class CryptoVaultTest {
                         throw new LoginCanceledException();
                     }
                 }
-            });
+            }, new DisabledPasswordStore());
             fail();
         }
         catch(LoginCanceledException e) {
@@ -288,14 +288,14 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-            new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+            new Path("/", EnumSet.of(Path.Type.directory)));
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     throw new LoginCanceledException();
                 }
-            });
+            }, new DisabledPasswordStore());
             fail();
         }
         catch(LoginCanceledException e) {
@@ -335,14 +335,14 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-            new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+            new Path("/", EnumSet.of(Path.Type.directory)));
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     return new VaultCredentials(null);
                 }
-            });
+            }, new DisabledPasswordStore());
             fail();
         }
         catch(LoginCanceledException e) {
@@ -381,8 +381,8 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-            home, new DisabledPasswordStore());
-        vault.create(session, null, new VaultCredentials("test"));
+            home);
+        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
     }
 
     @Test
@@ -416,8 +416,8 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-            home, new DisabledPasswordStore());
-        vault.create(session, null, new VaultCredentials("test"));
+            home);
+        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0);
@@ -471,8 +471,8 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-            home, new DisabledPasswordStore());
-        vault.create(session, null, new VaultCredentials("test"));
+            home);
+        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         for(int i = 0; i < 26000000; i++) {
             // i = cleartextSize(ciphertextSize(i))
             assertEquals(i, vault.toCleartextSize(vault.toCiphertextSize(i)));
