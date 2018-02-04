@@ -91,13 +91,20 @@ public class CryptoVault implements Vault {
     private final CryptoFilenameProvider filenameProvider;
     private final CryptoDirectoryProvider directoryProvider;
 
+    private final byte[] pepper;
+
     public CryptoVault(final Path home, final PasswordStore keychain) {
         this(home, new Path(home, DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)), keychain);
     }
 
     public CryptoVault(final Path home, final Path masterkey, final PasswordStore keychain) {
+        this(home, masterkey, new byte[0], keychain);
+    }
+
+    public CryptoVault(final Path home, final Path masterkey, final byte[] pepper, final PasswordStore keychain) {
         this.home = home;
         this.masterkey = masterkey;
+        this.pepper = pepper;
         this.keychain = keychain;
         // New vault home with vault flag set for internal use
         final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(home.getType());
@@ -118,7 +125,7 @@ public class CryptoVault implements Vault {
                 new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
         }
         final String passphrase = credentials.getPassword();
-        final KeyFile masterKeyFileContent = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
+        final KeyFile masterKeyFileContent = provider.createNew().writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write master key to %s", masterkey));
         }
@@ -238,7 +245,7 @@ public class CryptoVault implements Vault {
                     final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                         FastSecureRandomProvider.get().provide()
                     );
-                    final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, keyFile.getVersion());
+                    final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, pepper, keyFile.getVersion());
                     // Create backup, as soon as we know the password was correct
                     final Path masterKeyFileBackup = new Path(home, DEFAULT_BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
                     new ContentWriter(session).write(masterKeyFileBackup, keyFile.serialize());
@@ -246,7 +253,7 @@ public class CryptoVault implements Vault {
                         log.info(String.format("Master key backup saved in %s", masterKeyFileBackup));
                     }
                     // Write updated masterkey file
-                    final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
+                    final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION);
                     final Path masterKeyFile = new Path(home, DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
                     final byte[] masterKeyFileContent = upgradedMasterKeyFile.serialize();
                     new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).length(masterKeyFileContent.length));
@@ -273,7 +280,7 @@ public class CryptoVault implements Vault {
             log.debug(String.format("Initialized crypto provider %s", provider));
         }
         try {
-            cryptor = provider.createFromKeyFile(keyFile, new NFCNormalizer().normalize(passphrase), VAULT_VERSION);
+            cryptor = provider.createFromKeyFile(keyFile, new NFCNormalizer().normalize(passphrase), pepper, VAULT_VERSION);
         }
         catch(IllegalArgumentException e) {
             throw new VaultException("Failure reading key file", e);

@@ -35,11 +35,11 @@ public class VaultFactory extends Factory<Vault> {
         super("factory.vault.class");
     }
 
-    public static Vault get(final Path directory, final Path masterkey, final PasswordStore keychain) {
-        return new VaultFactory().create(directory, masterkey, keychain);
+    public static Vault get(final Path directory, final Path masterkey, final byte[] pepper, final PasswordStore keychain) {
+        return new VaultFactory().create(directory, masterkey, pepper, keychain);
     }
 
-    private Vault create(final Path directory, final Path masterkey, final PasswordStore keychain) {
+    private Vault create(final Path directory, final Path masterkey, final byte[] pepper, final PasswordStore keychain) {
         final String clazz = PreferencesFactory.get().getProperty("factory.vault.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
@@ -47,7 +47,7 @@ public class VaultFactory extends Factory<Vault> {
         try {
             final Class<Vault> name = (Class<Vault>) Class.forName(clazz);
             final Constructor<Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
-                directory.getClass(), masterkey.getClass(), keychain.getClass());
+                directory.getClass(), masterkey.getClass(), pepper.getClass(), keychain.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", directory.getClass()));
                 // Call default constructor for disabled implementations

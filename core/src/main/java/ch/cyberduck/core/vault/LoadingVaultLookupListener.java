@@ -47,7 +47,8 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
             if(registry.contains(directory)) {
                 return registry.find(session, directory);
             }
-            final Vault vault = VaultFactory.get(directory, new Path(directory, "masterkey.cryptomator", EnumSet.of(Path.Type.file, Path.Type.vault)), keychain);
+            final Vault vault = VaultFactory.get(directory, new Path(directory, "masterkey.cryptomator", EnumSet.of(Path.Type.file, Path.Type.vault)),
+                new byte[0], keychain);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
             }
