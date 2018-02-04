@@ -29,6 +29,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 
@@ -69,9 +70,6 @@ public class CryptoVault implements Vault {
         Security.insertProviderAt(provider, position);
     }
 
-    private static final String DEFAULT_MASTERKEY_FILE_NAME = "masterkey.cryptomator";
-    private static final String DEFAULT_BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
-
     private static final int VAULT_VERSION = 6;
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
@@ -92,7 +90,7 @@ public class CryptoVault implements Vault {
     private final byte[] pepper;
 
     public CryptoVault(final Path home) {
-        this(home, new Path(home, DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)));
+        this(home, new Path(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)));
     }
 
     public CryptoVault(final Path home, final Path masterkey) {
@@ -245,14 +243,14 @@ public class CryptoVault implements Vault {
                     );
                     final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, pepper, keyFile.getVersion());
                     // Create backup, as soon as we know the password was correct
-                    final Path masterKeyFileBackup = new Path(home, DEFAULT_BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                    final Path masterKeyFileBackup = new Path(home, DefaultVaultRegistry.DEFAULT_BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
                     new ContentWriter(session).write(masterKeyFileBackup, keyFile.serialize());
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Master key backup saved in %s", masterKeyFileBackup));
                     }
                     // Write updated masterkey file
                     final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION);
-                    final Path masterKeyFile = new Path(home, DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                    final Path masterKeyFile = new Path(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
                     final byte[] masterKeyFileContent = upgradedMasterKeyFile.serialize();
                     new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).length(masterKeyFileContent.length));
                     log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION));
@@ -459,6 +457,14 @@ public class CryptoVault implements Vault {
 
     public Path getHome() {
         return home;
+    }
+
+    public Path getMasterkey() {
+        return masterkey;
+    }
+
+    public byte[] getPepper() {
+        return pepper;
     }
 
     public Cryptor getCryptor() {

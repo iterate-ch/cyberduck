@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Find;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 public class CryptoDeleteFeature implements Delete {
@@ -99,7 +98,7 @@ public class CryptoDeleteFeature implements Delete {
                         }
                         metadata.add(metaRoot);
                     }
-                    metadata.add(new Path(f, "masterkey.cryptomator", EnumSet.of(Path.Type.file)));
+                    metadata.add(vault.getMasterkey());
                 }
                 metadata.add(f);
                 proxy.delete(metadata, prompt, callback);

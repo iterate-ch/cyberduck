@@ -42,13 +42,12 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     }
 
     @Override
-    public Vault load(final Path directory) throws VaultUnlockCancelException {
+    public Vault load(final Path directory, final String masterkey, final byte[] pepper) throws VaultUnlockCancelException {
         synchronized(registry) {
             if(registry.contains(directory)) {
                 return registry.find(session, directory);
             }
-            final Vault vault = VaultFactory.get(directory, new Path(directory, "masterkey.cryptomator", EnumSet.of(Path.Type.file, Path.Type.vault)),
-                new byte[0]);
+            final Vault vault = VaultFactory.get(directory, new Path(directory, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault)), pepper);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
             }

@@ -24,7 +24,7 @@ public final class DisabledVaultLookupListener implements VaultLookupListener {
     private static final Logger log = Logger.getLogger(DisabledVaultLookupListener.class);
 
     @Override
-    public Vault load(final Path directory) throws VaultUnlockCancelException {
+    public Vault load(final Path directory, final String masterkey, final byte[] pepper) throws VaultUnlockCancelException {
         log.warn(String.format("Ignore vault %s", directory));
         return Vault.DISABLED;
     }
