@@ -42,14 +42,14 @@ public class VaultFinderListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            return delegate.list(directory, new ProxyListProgressListener(finder.reset(), listener));
+            return delegate.list(directory, new ProxyListProgressListener(finder, listener));
         }
         catch(VaultFoundListCanceledException finder) {
             final Vault cryptomator = finder.getVault();
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found vault %s", cryptomator));
             }
-            return delegate.list(cryptomator.encrypt(session, directory), new DecryptingListProgressListener(session, cryptomator, listener));
+            return delegate.list(cryptomator.encrypt(session, directory), new DecryptingListProgressListener(session, cryptomator, listener.reset()));
         }
     }
 }

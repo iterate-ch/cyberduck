@@ -19,24 +19,20 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.LimitedListProgressListener;
-import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
-import ch.cyberduck.core.exception.ListCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.fusesource.jansi.Ansi;
 
-import java.text.MessageFormat;
-
-public class TerminalListProgressListener extends LimitedListProgressListener {
+public class TerminalListProgressListener extends IndexedListProgressListener {
 
     private final Console console = new Console();
 
     private final AbstractUserDateFormatter formatter
-            = UserDateFormatterFactory.get();
+        = UserDateFormatterFactory.get();
 
     private int size = 0;
 
@@ -45,7 +41,6 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
     private TerminalPromptReader prompt;
 
     public TerminalListProgressListener() {
-        super(new TerminalProgressListener());
         this.prompt = new InteractiveTerminalPromptReader();
     }
 
@@ -53,63 +48,50 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
      * @param l Long format
      */
     public TerminalListProgressListener(final boolean l) {
-        super(new TerminalProgressListener());
         this.l = l;
     }
 
     public TerminalListProgressListener(final TerminalPromptReader prompt) {
-        super(new TerminalProgressListener());
         this.prompt = prompt;
     }
 
     public TerminalListProgressListener(final TerminalPromptReader prompt, final boolean l) {
-        super(new TerminalProgressListener());
         this.l = l;
         this.prompt = prompt;
     }
 
     @Override
-    public void chunk(final Path folder, final AttributedList<Path> list) throws ListCanceledException {
-        for(int i = size; i < list.size(); i++) {
-            final Path file = list.get(i);
-            if(l) {
-                if(file.isSymbolicLink()) {
-                    console.printf("%n%sl%s\t%s\t%s -> %s%s",
-                            Ansi.ansi().bold(),
-                            file.attributes().getPermission().getSymbol(),
-                            formatter.getMediumFormat(
-                                    file.attributes().getModificationDate()),
-                            file.getName(), file.getSymlinkTarget().getAbsolute(),
-                            Ansi.ansi().reset());
-                }
-                else {
-                    console.printf("%n%s%s%s\t%s\t%s\t%s%s",
-                            Ansi.ansi().bold(),
-                            file.isDirectory() ? "d" : "-",
-                            file.attributes().getPermission().getSymbol(),
-                            formatter.getMediumFormat(
-                                    file.attributes().getModificationDate()),
-                            StringUtils.isNotBlank(file.attributes().getRegion())
-                                    ? file.attributes().getRegion() : StringUtils.EMPTY,
-                            file.getName(),
-                            Ansi.ansi().reset());
-                }
+    public void visit(final AttributedList<Path> list, final int index, final Path file) {
+        if(l) {
+            if(file.isSymbolicLink()) {
+                console.printf("%n%sl%s\t%s\t%s -> %s%s",
+                    Ansi.ansi().bold(),
+                    file.attributes().getPermission().getSymbol(),
+                    formatter.getMediumFormat(
+                        file.attributes().getModificationDate()),
+                    file.getName(), file.getSymlinkTarget().getAbsolute(),
+                    Ansi.ansi().reset());
             }
             else {
-                console.printf("%n%s%s%s", Ansi.ansi().bold(), file.getName(), Ansi.ansi().reset());
+                console.printf("%n%s%s%s\t%s\t%s\t%s%s",
+                    Ansi.ansi().bold(),
+                    file.isDirectory() ? "d" : "-",
+                    file.attributes().getPermission().getSymbol(),
+                    formatter.getMediumFormat(
+                        file.attributes().getModificationDate()),
+                    StringUtils.isNotBlank(file.attributes().getRegion())
+                        ? file.attributes().getRegion() : StringUtils.EMPTY,
+                    file.getName(),
+                    Ansi.ansi().reset());
             }
         }
-        size += list.size() - size;
-        try {
-            super.chunk(folder, list);
+        else {
+            console.printf("%n%s%s%s", Ansi.ansi().bold(), file.getName(), Ansi.ansi().reset());
         }
-        catch(ListCanceledException e) {
-            final String message = String.format("%s %s?: ",
-                    MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()),
-                    LocaleFactory.localizedString("Continue", "Credentials"));
-            if(!prompt.prompt(message)) {
-                throw e;
-            }
-        }
+    }
+
+    @Override
+    public void message(final String message) {
+        //
     }
 }

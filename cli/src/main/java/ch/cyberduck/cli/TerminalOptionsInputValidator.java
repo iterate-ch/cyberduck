@@ -140,6 +140,7 @@ public class TerminalOptionsInputValidator {
         }
         final Host host = new HostParser(factory).get(uri);
         switch(host.getProtocol().getType()) {
+            case b2:
             case s3:
             case googlestorage:
             case swift:

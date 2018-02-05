@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
-public class SessionListWorker extends Worker<AttributedList<Path>> implements ListProgressListener {
+public class SessionListWorker extends Worker<AttributedList<Path>> {
     private static final Logger log = Logger.getLogger(SessionListWorker.class);
 
     private final Cache<Path> cache;
@@ -42,7 +42,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     public SessionListWorker(final Cache<Path> cache, final Path directory, final ListProgressListener listener) {
         this.cache = cache;
         this.directory = directory;
-        this.listener = listener;
+        this.listener = new ConnectionCancelListProgressListener(this, directory, listener);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
         try {
             if(this.isCached()) {
                 final AttributedList<Path> list = cache.get(directory);
-                this.chunk(directory, list);
+                listener.chunk(directory, list);
                 return list;
             }
             return session.getFeature(ListService.class).list(directory, listener);
@@ -74,25 +74,9 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     }
 
     @Override
-    public void chunk(final Path parent, final AttributedList<Path> list) throws ConnectionCanceledException {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
-        }
-        if(this.isCanceled()) {
-            throw new ConnectionCanceledException();
-        }
-        listener.chunk(directory, list);
-    }
-
-    @Override
-    public void message(final String message) {
-        listener.message(message);
-    }
-
-    @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
-                directory.getName());
+            directory.getName());
     }
 
     @Override
@@ -126,5 +110,38 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
         sb.append("directory=").append(directory);
         sb.append('}');
         return sb.toString();
+    }
+
+    private static final class ConnectionCancelListProgressListener implements ListProgressListener {
+        private final Worker worker;
+        private final Path directory;
+        private final ListProgressListener proxy;
+
+        public ConnectionCancelListProgressListener(final Worker worker, final Path directory, final ListProgressListener proxy) {
+            this.worker = worker;
+            this.directory = directory;
+            this.proxy = proxy;
+        }
+
+        @Override
+        public void chunk(final Path parent, final AttributedList<Path> list) throws ConnectionCanceledException {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
+            }
+            if(worker.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
+            proxy.chunk(directory, list);
+        }
+
+        @Override
+        public ListProgressListener reset() {
+            return proxy.reset();
+        }
+
+        @Override
+        public void message(final String message) {
+            proxy.message(message);
+        }
     }
 }
