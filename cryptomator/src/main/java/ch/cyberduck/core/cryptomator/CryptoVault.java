@@ -90,16 +90,16 @@ public class CryptoVault implements Vault {
     private final byte[] pepper;
 
     public CryptoVault(final Path home) {
-        this(home, new Path(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)));
+        this(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME);
     }
 
-    public CryptoVault(final Path home, final Path masterkey) {
+    public CryptoVault(final Path home, final String masterkey) {
         this(home, masterkey, new byte[0]);
     }
 
-    public CryptoVault(final Path home, final Path masterkey, final byte[] pepper) {
+    public CryptoVault(final Path home, final String masterkey, final byte[] pepper) {
         this.home = home;
-        this.masterkey = masterkey;
+        this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
         this.pepper = pepper;
         // New vault home with vault flag set for internal use
         final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(home.getType());

@@ -34,11 +34,11 @@ public class VaultFactory extends Factory<Vault> {
         super("factory.vault.class");
     }
 
-    public static Vault get(final Path directory, final Path masterkey, final byte[] pepper) {
+    public static Vault get(final Path directory, final String masterkey, final byte[] pepper) {
         return new VaultFactory().create(directory, masterkey, pepper);
     }
 
-    private Vault create(final Path directory, final Path masterkey, final byte[] pepper) {
+    private Vault create(final Path directory, final String masterkey, final byte[] pepper) {
         final String clazz = PreferencesFactory.get().getProperty("factory.vault.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
