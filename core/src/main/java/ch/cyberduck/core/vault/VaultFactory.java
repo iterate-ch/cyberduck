@@ -52,7 +52,7 @@ public class VaultFactory extends Factory<Vault> {
                 // Call default constructor for disabled implementations
                 return name.newInstance();
             }
-            return constructor.newInstance(directory, masterkey);
+            return constructor.newInstance(directory, masterkey, pepper);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
