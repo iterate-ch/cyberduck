@@ -40,9 +40,6 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     private final PasswordStore keychain;
     private final PasswordCallback prompt;
 
-    private boolean autodetect = preferences.getBoolean("cryptomator.vault.autodetect")
-        && preferences.getBoolean("cryptomator.enable");
-
     public DefaultVaultRegistry(final PasswordCallback prompt) {
         this(PasswordStoreFactory.get(), prompt);
     }
@@ -119,11 +116,15 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                new LoadingVaultLookupListener(session, this, keychain, prompt)).withAutodetect(autodetect);
+                new LoadingVaultLookupListener(session, this, keychain, prompt))
+                .withAutodetect(preferences.getBoolean("cryptomator.vault.autodetect")
+                );
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                new LoadingVaultLookupListener(session, this, keychain, prompt)).withAutodetect(autodetect);
+                new LoadingVaultLookupListener(session, this, keychain, prompt))
+                .withAutodetect(preferences.getBoolean("cryptomator.vault.autodetect")
+                );
         }
         if(type == Bulk.class) {
             return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);
@@ -213,11 +214,5 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             return (T) new VaultRegistryVersioningFeature(session, (Versioning) proxy, this);
         }
         return proxy;
-    }
-
-    @Override
-    public DefaultVaultRegistry withAutodetect(final boolean autodetect) {
-        this.autodetect = autodetect && preferences.getBoolean("cryptomator.enable");
-        return this;
     }
 }
