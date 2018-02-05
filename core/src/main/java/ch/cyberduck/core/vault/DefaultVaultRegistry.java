@@ -35,6 +35,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultRegistry {
     private static final Logger log = Logger.getLogger(DefaultVaultRegistry.class);
 
+    public static final String DEFAULT_MASTERKEY_FILE_NAME = "masterkey.cryptomator";
+    public static final String DEFAULT_BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
+
+    public static final byte[] DEFAULT_PEPPER = new byte[0];
+
     private final Preferences preferences = PreferencesFactory.get();
 
     private final PasswordStore keychain;
@@ -97,11 +102,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(lookup) {
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, keychain, prompt);
             if(file.attributes().getVault() != null) {
-                return listener.load(file.attributes().getVault());
+                return listener.load(file.attributes().getVault(), DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_PEPPER);
             }
             final Path directory = file.getParent();
             if(directory.attributes().getVault() != null) {
-                return listener.load(directory.attributes().getVault());
+                return listener.load(directory.attributes().getVault(), DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_PEPPER);
             }
         }
         return Vault.DISABLED;

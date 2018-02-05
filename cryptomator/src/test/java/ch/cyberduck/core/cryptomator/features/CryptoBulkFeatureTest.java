@@ -75,8 +75,8 @@ public class CryptoBulkFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
-        cryptomator.create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(vault);
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final CryptoBulkFeature<Map<Path, TransferStatus>> bulk = new CryptoBulkFeature<Map<Path, TransferStatus>>(session, new Bulk<Map<Path, TransferStatus>>() {
             @Override
             public Map<Path, TransferStatus> pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
@@ -162,8 +162,8 @@ public class CryptoBulkFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore());
-        cryptomator.create(session, null, new VaultCredentials("test"));
+        final CryptoVault cryptomator = new CryptoVault(vault);
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final CryptoBulkFeature<Map<Path, TransferStatus>> bulk = new CryptoBulkFeature<Map<Path, TransferStatus>>(session, new Bulk<Map<Path, TransferStatus>>() {
             @Override
             public Map<Path, TransferStatus> pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {

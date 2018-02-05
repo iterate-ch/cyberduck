@@ -19,5 +19,5 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Vault;
 
 public interface VaultLookupListener {
-    Vault load(Path directory) throws VaultUnlockCancelException;
+    Vault load(Path directory, String masterkey, byte[] pepper) throws VaultUnlockCancelException;
 }

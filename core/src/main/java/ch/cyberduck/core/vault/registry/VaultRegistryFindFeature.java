@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -34,8 +35,6 @@ import java.util.EnumSet;
 
 public class VaultRegistryFindFeature implements Find {
     private static final Logger log = Logger.getLogger(VaultRegistryFindFeature.class);
-
-    private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -62,7 +61,7 @@ public class VaultRegistryFindFeature implements Find {
         if(vault.equals(Vault.DISABLED)) {
             if(autodetect) {
                 final Path directory = file.getParent();
-                final Path key = new Path(directory, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+                final Path key = new Path(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
                 if(proxy.withCache(cache).find(key)) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Found master key %s", key));
@@ -71,7 +70,7 @@ public class VaultRegistryFindFeature implements Find {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Found vault %s", directory));
                         }
-                        return lookup.load(directory).getFeature(session, Find.class, proxy)
+                        return lookup.load(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER).getFeature(session, Find.class, proxy)
                             .withCache(cache)
                             .find(file);
                     }

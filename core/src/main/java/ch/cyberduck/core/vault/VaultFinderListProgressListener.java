@@ -26,8 +26,6 @@ import org.apache.log4j.Logger;
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
     private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
 
-    private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
-
     private final VaultLookupListener listener;
 
     public VaultFinderListProgressListener(final VaultLookupListener listener) {
@@ -42,12 +40,12 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException {
         final Path directory = file.getParent();
-        if(MASTERKEY_FILE_NAME.equals(file.getName())) {
+        if(DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME.equals(file.getName())) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found master key %s", file));
             }
             try {
-                final Vault vault = listener.load(directory);
+                final Vault vault = listener.load(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER);
                 if(vault.equals(Vault.DISABLED)) {
                     return;
                 }

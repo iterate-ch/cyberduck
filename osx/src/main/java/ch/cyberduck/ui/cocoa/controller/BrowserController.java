@@ -78,6 +78,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultFactory;
 import ch.cyberduck.core.worker.CopyWorker;
@@ -2327,7 +2328,7 @@ public class BrowserController extends WindowController
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
-                    new CreateVaultWorker(region, passphrase, VaultFactory.get(folder, PasswordStoreFactory.get())) {
+                    new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), VaultFactory.get(folder, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER)) {
                         @Override
                         public void cleanup(final Path vault) {
                             reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
