@@ -41,7 +41,6 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -53,33 +52,49 @@ public class SwiftLargeUploadWriteFeatureTest {
     @Test
     public void testWriteUploadLargeBuffer() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final SwiftLargeUploadWriteFeature feature = new SwiftLargeUploadWriteFeature(session, regionService,
-                new SwiftSegmentService(session, ".segments-test/"));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final TransferStatus status = new TransferStatus();
-        status.setLength(-1L);
-        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = feature.write(file, status, new DisabledConnectionCallback());
-        final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
-        final ByteArrayInputStream in = new ByteArrayInputStream(content);
-        final TransferStatus progress = new TransferStatus();
-        new StreamCopier(new TransferStatus(), progress).transfer(in, out);
-        assertEquals(content.length, progress.getOffset());
-        in.close();
-        out.close();
-        assertTrue(new SwiftFindFeature(session).find(file));
-        final byte[] compare = new byte[content.length];
-        final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
-        IOUtils.readFully(stream, compare);
-        stream.close();
-        assertArrayEquals(content, compare);
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(-1L);
+            final OutputStream out = new SwiftLargeUploadWriteFeature(session, regionService,
+                new SwiftSegmentService(session, ".segments-test/")).write(file, status, new DisabledConnectionCallback());
+            final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
+            final ByteArrayInputStream in = new ByteArrayInputStream(content);
+            final TransferStatus progress = new TransferStatus();
+            new StreamCopier(new TransferStatus(), progress).transfer(in, out);
+            assertEquals(content.length, progress.getOffset());
+            assertTrue(new SwiftFindFeature(session).find(file));
+            final byte[] compare = new byte[content.length];
+            final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            IOUtils.readFully(stream, compare);
+            stream.close();
+            assertArrayEquals(content, compare);
+        }
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(-1L);
+            final OutputStream out = new SwiftLargeUploadWriteFeature(session, regionService,
+                new SwiftSegmentService(session, ".segments-test/")).write(file, status, new DisabledConnectionCallback());
+            final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
+            final ByteArrayInputStream in = new ByteArrayInputStream(content);
+            final TransferStatus progress = new TransferStatus();
+            new StreamCopier(new TransferStatus(), progress).transfer(in, out);
+            assertEquals(content.length, progress.getOffset());
+            assertTrue(new SwiftFindFeature(session).find(file));
+            final byte[] compare = new byte[content.length];
+            final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            IOUtils.readFully(stream, compare);
+            stream.close();
+            assertArrayEquals(content, compare);
+        }
         new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -87,14 +102,14 @@ public class SwiftLargeUploadWriteFeatureTest {
     @Test
     public void testWriteZeroLength() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftLargeUploadWriteFeature feature = new SwiftLargeUploadWriteFeature(session, regionService,
-                new SwiftSegmentService(session, ".segments-test/"));
+            new SwiftSegmentService(session, ".segments-test/"));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
