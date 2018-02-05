@@ -105,9 +105,8 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
             if(StringUtils.isNotBlank(status.getMime())) {
                 blob.getProperties().setContentType(status.getMime());
             }
-            final HashMap<String, String> headers = new HashMap<>();
             // Add previous metadata when overwriting file
-            headers.putAll(status.getMetadata());
+            final HashMap<String, String> headers = new HashMap<>(status.getMetadata());
             blob.setMetadata(headers);
             // Remove additional headers not allowed in metadata and move to properties
             if(headers.containsKey(HttpHeaders.CACHE_CONTROL)) {
@@ -115,7 +114,7 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
                 headers.remove(HttpHeaders.CACHE_CONTROL);
             }
             if(headers.containsKey(HttpHeaders.CONTENT_TYPE)) {
-                blob.getProperties().setCacheControl(headers.get(HttpHeaders.CONTENT_TYPE));
+                blob.getProperties().setContentType(headers.get(HttpHeaders.CONTENT_TYPE));
                 headers.remove(HttpHeaders.CONTENT_TYPE);
             }
             final Checksum checksum = status.getChecksum();
