@@ -136,7 +136,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             }
         }
 
-        Credentials credentials = keychain.getCredentials(authhost.getHostName());
+        Credentials credentials = keychain.getCredentials(authhost.toURI());
         if(StringUtils.isEmpty(credentials.getPassword())) {
             try {
                 credentials = prompt.prompt(bookmark,
@@ -193,7 +193,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
             if(log.isInfoEnabled()) {
                 log.info(String.format("Save passphrase for proxy %s", authhost));
             }
-            keychain.addCredentials(authhost.getHostName(), credentials.getUsername(), credentials.getPassword());
+            keychain.addCredentials(authhost.toURI(), credentials.getUsername(), credentials.getPassword());
         }
         super.authSucceeded(authhost, authScheme, context);
     }
