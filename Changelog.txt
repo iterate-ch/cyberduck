@@ -4,6 +4,7 @@ https://cyberduck.io/
 6.4.0
 - [Feature] Support for eu-west-3 (Paris) region (S3)
 - [Feature] Support for Integrated Windows Authentication (IWA) authentication (WebDAV, Windows)
+- [Feature] Save passwords in credential manager (Windows) (#9988)
 - [Bugfix] Support for Oracle Cloud Infrastructure (OCI) Object Storage (S3) (#10194)
 - [Bugfix] Do not save passphrase for vaults by defaults (Cryptomator, Windows)
 - [Bugfix] Application freezes for long time when selecting many files for upload (Windows)
