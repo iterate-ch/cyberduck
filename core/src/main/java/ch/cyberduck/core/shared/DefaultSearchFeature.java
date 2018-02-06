@@ -76,6 +76,11 @@ public class DefaultSearchFeature implements Search {
         }
 
         @Override
+        public ListProgressListener reset() {
+            return this;
+        }
+
+        @Override
         public void message(final String message) {
             delegate.message(message);
         }

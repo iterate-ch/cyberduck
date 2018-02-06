@@ -65,6 +65,11 @@ public class LimitedListProgressListener implements ListProgressListener {
         }
     }
 
+    @Override
+    public ListProgressListener reset() {
+        return this;
+    }
+
     protected void disable() {
         preferences.setProperty("browser.list.limit.directory", Integer.MAX_VALUE);
         preferences.setProperty("browser.list.limit.container", Integer.MAX_VALUE);

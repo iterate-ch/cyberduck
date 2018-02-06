@@ -38,4 +38,9 @@ public class ProxyListProgressListener implements ListProgressListener {
             listener.chunk(folder, list);
         }
     }
+
+    @Override
+    public ListProgressListener reset() {
+        return this;
+    }
 }
