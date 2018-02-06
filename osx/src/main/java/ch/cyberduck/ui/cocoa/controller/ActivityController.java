@@ -45,10 +45,10 @@ public final class ActivityController extends WindowController {
     private static final Logger log = Logger.getLogger(ActivityController.class);
 
     private final BackgroundActionRegistry registry
-            = BackgroundActionRegistry.global();
+        = BackgroundActionRegistry.global();
 
     private final Map<BackgroundAction, TaskController> tasks
-            = Collections.synchronizedMap(new LinkedHashMap<BackgroundAction, TaskController>());
+        = Collections.synchronizedMap(new LinkedHashMap<BackgroundAction, TaskController>());
 
     @Override
     public void awakeFromNib() {
@@ -57,7 +57,7 @@ public final class ActivityController extends WindowController {
         registry.addListener(backgroundActionListener);
         // Add already running background actions
         final BackgroundAction[] actions = registry.toArray(
-                new BackgroundAction[registry.size()]);
+            new BackgroundAction[registry.size()]);
         for(final BackgroundAction action : actions) {
             tasks.put(action, new TaskController(action));
         }
@@ -73,7 +73,7 @@ public final class ActivityController extends WindowController {
     }
 
     private final AbstractCollectionListener<BackgroundAction> backgroundActionListener
-            = new AbstractCollectionListener<BackgroundAction>() {
+        = new AbstractCollectionListener<BackgroundAction>() {
 
         @Override
         public void collectionItemAdded(final BackgroundAction action) {
@@ -128,13 +128,13 @@ public final class ActivityController extends WindowController {
     private ListDataSource model;
 
     @Delegate
-    private AbstractTableDelegate<TaskController> delegate;
+    private AbstractTableDelegate<TaskController, ActivityColumn> delegate;
 
     public void setTable(NSTableView table) {
         this.table = table;
         this.table.setRowHeight(new CGFloat(42));
         {
-            final NSTableColumn c = tableColumnsFactory.create("Default");
+            final NSTableColumn c = tableColumnsFactory.create(ActivityColumn.single.name());
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
@@ -151,8 +151,8 @@ public final class ActivityController extends WindowController {
                 return new NSInteger(tasks.size());
             }
         }).id());
-        this.table.setDelegate((delegate = new AbstractTableDelegate<TaskController>(
-                table.tableColumnWithIdentifier("Default")
+        this.table.setDelegate((delegate = new AbstractTableDelegate<TaskController, ActivityColumn>(
+            table.tableColumnWithIdentifier("Default")
         ) {
             @Override
             public void enterKeyPressed(final ID sender) {
@@ -163,7 +163,7 @@ public final class ActivityController extends WindowController {
             }
 
             @Override
-            public String tooltip(final TaskController c) {
+            public String tooltip(final TaskController c, final ActivityColumn column) {
                 return null;
             }
 
@@ -204,5 +204,9 @@ public final class ActivityController extends WindowController {
     @Override
     protected String getBundleName() {
         return "Activity";
+    }
+
+    private enum ActivityColumn {
+        single
     }
 }

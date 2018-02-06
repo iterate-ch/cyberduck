@@ -18,34 +18,15 @@ package ch.cyberduck.ui.browser;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.date.AbstractUserDateFormatter;
-import ch.cyberduck.core.formatter.SizeFormatter;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class PathTooltipService {
+public class PathTooltipService implements TooltipService<Path> {
 
-    private final SizeFormatter sizeFormatter;
-
-    private final AbstractUserDateFormatter dateFormatter;
-
-    public PathTooltipService() {
-        this(SizeFormatterFactory.get(), UserDateFormatterFactory.get());
-    }
-
-    public PathTooltipService(final SizeFormatter sizeFormatter, final AbstractUserDateFormatter dateFormatter) {
-        this.sizeFormatter = sizeFormatter;
-        this.dateFormatter = dateFormatter;
-    }
-
+    @Override
     public String getTooltip(final Path file) {
         final StringBuilder tooltip = new StringBuilder(file.getAbsolute());
-        if(StringUtils.isNotBlank(file.attributes().getRegion())) {
-            tooltip.append("\n").append(file.attributes().getRegion());
-        }
         final Checksum checksum = file.attributes().getChecksum();
         if(Checksum.NONE != checksum) {
             tooltip.append("\n").append(String.format("%s %s", StringUtils.upperCase(checksum.algorithm.name()), checksum.hash));
@@ -53,8 +34,6 @@ public class PathTooltipService {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             tooltip.append("\n").append(file.attributes().getVersionId());
         }
-        tooltip.append("\n").append(sizeFormatter.format(file.attributes().getSize()));
-        tooltip.append("\n").append(dateFormatter.getLongFormat(file.attributes().getModificationDate()));
         return tooltip.toString();
     }
 }

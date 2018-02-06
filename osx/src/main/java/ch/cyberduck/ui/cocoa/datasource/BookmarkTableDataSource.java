@@ -44,6 +44,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.ui.browser.BookmarkColumn;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import ch.cyberduck.ui.cocoa.controller.TransferControllerFactory;
 
@@ -64,12 +65,6 @@ import java.util.concurrent.TimeUnit;
 
 public class BookmarkTableDataSource extends ListDataSource {
     private static final Logger log = Logger.getLogger(BookmarkTableDataSource.class);
-
-    public enum Column {
-        icon,
-        bookmark,
-        status,
-    }
 
     protected final BrowserController controller;
 
@@ -253,11 +248,11 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         final String identifier = tableColumn.identifier();
         final Host host = this.getSource().get(row.intValue());
-        if(identifier.equals(Column.icon.name())) {
+        if(identifier.equals(BookmarkColumn.icon.name())) {
             return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
                     PreferencesFactory.get().getInteger("bookmark.icon.size"));
         }
-        if(identifier.equals(Column.bookmark.name())) {
+        if(identifier.equals(BookmarkColumn.bookmark.name())) {
             final NSMutableDictionary dict = NSMutableDictionary.dictionary();
             dict.setObjectForKey(BookmarkNameProvider.toString(host), "Nickname");
             dict.setObjectForKey(host.getHostname(), "Hostname");
@@ -268,7 +263,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
             return dict;
         }
-        if(identifier.equals(Column.status.name())) {
+        if(identifier.equals(BookmarkColumn.status.name())) {
             final SessionPool session = controller.getSession();
             if(host.equals(session.getHost())) {
                 switch(session.getState()) {

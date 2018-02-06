@@ -72,7 +72,7 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.updater.PeriodicUpdateChecker;
 import ch.cyberduck.core.updater.PeriodicUpdateCheckerFactory;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.ui.browser.Column;
+import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate;
@@ -298,15 +298,15 @@ public class MainController extends BundleController implements NSApplication.De
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
         Map<String, String> columns = new HashMap<String, String>();
-        columns.put(String.format("browser.column.%s", Column.kind.name()), LocaleFactory.localizedString("Kind"));
-        columns.put(String.format("browser.column.%s", Column.extension.name()), LocaleFactory.localizedString("Extension"));
-        columns.put(String.format("browser.column.%s", Column.size.name()), LocaleFactory.localizedString("Size"));
-        columns.put(String.format("browser.column.%s", Column.modified.name()), LocaleFactory.localizedString("Modified"));
-        columns.put(String.format("browser.column.%s", Column.owner.name()), LocaleFactory.localizedString("Owner"));
-        columns.put(String.format("browser.column.%s", Column.group.name()), LocaleFactory.localizedString("Group"));
-        columns.put(String.format("browser.column.%s", Column.permission.name()), LocaleFactory.localizedString("Permissions"));
-        columns.put(String.format("browser.column.%s", Column.region.name()), LocaleFactory.localizedString("Region"));
-        columns.put(String.format("browser.column.%s", Column.version.name()), LocaleFactory.localizedString("Version"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.kind.name()), LocaleFactory.localizedString("Kind"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.extension.name()), LocaleFactory.localizedString("Extension"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.size.name()), LocaleFactory.localizedString("Size"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.modified.name()), LocaleFactory.localizedString("Modified"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.owner.name()), LocaleFactory.localizedString("Owner"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.group.name()), LocaleFactory.localizedString("Group"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.permission.name()), LocaleFactory.localizedString("Permissions"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.region.name()), LocaleFactory.localizedString("Region"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.version.name()), LocaleFactory.localizedString("Version"));
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
                 Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);
