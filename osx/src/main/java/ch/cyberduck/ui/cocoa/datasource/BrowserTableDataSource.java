@@ -64,7 +64,7 @@ import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.ui.browser.Column;
+import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import ch.cyberduck.ui.cocoa.controller.CopyController;
 import ch.cyberduck.ui.cocoa.controller.DeleteController;
@@ -179,7 +179,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set new value %s for item %s", value, item));
         }
-        if(identifier.equals(Column.filename.name())) {
+        if(identifier.equals(BrowserColumn.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
                 final Path renamed = new Path(
                         item.getParent(), value.toString(), item.getType());
@@ -202,7 +202,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(log.isTraceEnabled()) {
             log.trace("objectValueForItem:" + item.getAbsolute());
         }
-        if(identifier.equals(Column.icon.name())) {
+        if(identifier.equals(BrowserColumn.icon.name())) {
             return this.iconForPath(item);
         }
         final Item key = new Item(item, identifier);
@@ -214,36 +214,36 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(log.isTraceEnabled()) {
             log.trace(String.format("Lookup failed for %s in cache", key));
         }
-        if(identifier.equals(Column.filename.name())) {
+        if(identifier.equals(BrowserColumn.filename.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                     item.getName(),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        else if(identifier.equals(Column.size.name())) {
+        else if(identifier.equals(BrowserColumn.size.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                     sizeFormatter.format(item.attributes().getSize()),
                     TableCellAttributes.browserFontRightAlignment());
         }
-        else if(identifier.equals(Column.modified.name())) {
+        else if(identifier.equals(BrowserColumn.modified.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                     dateFormatter.getShortFormat(item.attributes().getModificationDate(),
                             preferences.getBoolean("browser.date.natural")),
                     TableCellAttributes.browserFontLeftAlignment()
             );
         }
-        else if(identifier.equals(Column.owner.name())) {
+        else if(identifier.equals(BrowserColumn.owner.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isBlank(item.attributes().getOwner()) ?
                             LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        else if(identifier.equals(Column.group.name())) {
+        else if(identifier.equals(BrowserColumn.group.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isBlank(item.attributes().getGroup()) ?
                             LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        else if(identifier.equals(Column.permission.name())) {
+        else if(identifier.equals(BrowserColumn.permission.name())) {
             final Acl acl = item.attributes().getAcl();
             if(!Acl.EMPTY.equals(acl)) {
                 final StringBuilder s = new StringBuilder();
@@ -261,24 +261,24 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         TableCellAttributes.browserFontLeftAlignment());
             }
         }
-        else if(identifier.equals(Column.kind.name())) {
+        else if(identifier.equals(BrowserColumn.kind.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                     descriptor.getKind(item),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        else if(identifier.equals(Column.extension.name())) {
+        else if(identifier.equals(BrowserColumn.extension.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                     item.isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() :
                             LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        else if(identifier.equals(Column.region.name())) {
+        else if(identifier.equals(BrowserColumn.region.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() :
                             LocaleFactory.localizedString("Unknown"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
-        else if(identifier.equals(Column.version.name())) {
+        else if(identifier.equals(BrowserColumn.version.name())) {
             value = NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() :
                             LocaleFactory.localizedString("None"),

@@ -19,8 +19,9 @@ import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.browser.Column;
+import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.PathTooltipService;
+import ch.cyberduck.ui.browser.SizeTooltipService;
 import ch.cyberduck.ui.comparator.ExtensionComparator;
 import ch.cyberduck.ui.comparator.FileTypeComparator;
 import ch.cyberduck.ui.comparator.FilenameComparator;
@@ -36,10 +37,8 @@ import org.apache.log4j.Logger;
 
 import java.util.Comparator;
 
-public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path> {
+public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path, BrowserColumn> {
     private static final Logger log = Logger.getLogger(AbstractTableDelegate.class);
-
-    private final PathTooltipService tooltip = new PathTooltipService();
 
     protected AbstractPathTableDelegate(final NSTableColumn selectedColumn) {
         super(selectedColumn);
@@ -49,15 +48,20 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
      * @return A tooltip string containing the size and modification date of the path
      */
     @Override
-    public String tooltip(Path file) {
-        return tooltip.getTooltip(file);
+    public String tooltip(final Path file, final BrowserColumn column) {
+        switch(column) {
+            case size:
+                return new SizeTooltipService().getTooltip(file);
+            default:
+                return new PathTooltipService().getTooltip(file);
+        }
     }
 
     @Override
     public Comparator<Path> getSortingComparator() {
         final boolean ascending = this.isSortedAscending();
         final String identifier = this.selectedColumnIdentifier();
-        switch(Column.valueOf(identifier)) {
+        switch(BrowserColumn.valueOf(identifier)) {
             case icon:
             case kind:
                 return new FileTypeComparator(ascending);

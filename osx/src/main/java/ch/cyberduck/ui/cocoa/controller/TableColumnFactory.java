@@ -22,7 +22,7 @@ import java.util.HashMap;
 public class TableColumnFactory extends HashMap<String, NSTableColumn> {
     private static final long serialVersionUID = -1455753054446012489L;
 
-    public NSTableColumn create(String identifier) {
+    public NSTableColumn create(final String identifier) {
         if(!this.containsKey(identifier)) {
             this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
         }

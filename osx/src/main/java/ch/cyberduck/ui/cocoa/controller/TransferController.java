@@ -91,13 +91,13 @@ public final class TransferController extends WindowController implements Transf
     private final TransferToolbarValidator toolbarValidator = new TransferToolbarValidator(this);
 
     private final TransferToolbarFactory toolbarFactory
-            = new TransferToolbarFactory(this);
+        = new TransferToolbarFactory(this);
 
     private final NSNotificationCenter notificationCenter
-            = NSNotificationCenter.defaultCenter();
+        = NSNotificationCenter.defaultCenter();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final TransferCollection collection = TransferCollection.defaultCollection();
 
@@ -106,7 +106,7 @@ public final class TransferController extends WindowController implements Transf
     private TranscriptController transcript;
 
     private final BandwidthMenuDelegate bandwidthMenuDelegate
-            = new BandwidthMenuDelegate();
+        = new BandwidthMenuDelegate();
 
     @Outlet
     private NSProgressIndicator transferSpinner;
@@ -129,7 +129,7 @@ public final class TransferController extends WindowController implements Transf
     @Delegate
     private TransferTableDataSource transferTableModel;
     @Delegate
-    private AbstractTableDelegate<Transfer> transferTableDelegate;
+    private AbstractTableDelegate<Transfer, TransferColumn> transferTableDelegate;
 
     public TransferController() {
         collection.addListener(new AbstractCollectionListener<Transfer>() {
@@ -267,9 +267,9 @@ public final class TransferController extends WindowController implements Transf
     public void setFilterField(NSTextField filterField) {
         this.filterField = filterField;
         notificationCenter.addObserver(this.id(),
-                Foundation.selector("filterFieldTextDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
-                this.filterField);
+            Foundation.selector("filterFieldTextDidChange:"),
+            NSControl.NSControlTextDidChangeNotification,
+            this.filterField);
     }
 
     public void filterFieldTextDidChange(NSNotification notification) {
@@ -360,18 +360,18 @@ public final class TransferController extends WindowController implements Transf
         this.transferTable = view;
         this.transferTable.setRowHeight(new CGFloat(82));
         {
-            NSTableColumn c = tableColumnsFactory.create(TransferTableDataSource.Column.progress.name());
+            NSTableColumn c = tableColumnsFactory.create(TransferColumn.progress.name());
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             this.transferTable.addTableColumn(c);
         }
         this.transferTable.setDataSource((transferTableModel = new TransferTableDataSource()).id());
-        this.transferTable.setDelegate((transferTableDelegate = new AbstractTableDelegate<Transfer>(
-                transferTable.tableColumnWithIdentifier(TransferTableDataSource.Column.progress.name())
+        this.transferTable.setDelegate((transferTableDelegate = new AbstractTableDelegate<Transfer, TransferColumn>(
+            transferTable.tableColumnWithIdentifier(TransferColumn.progress.name())
         ) {
             @Override
-            public String tooltip(final Transfer t) {
+            public String tooltip(final Transfer t, final TransferColumn column) {
                 return t.getName();
             }
 
@@ -405,8 +405,8 @@ public final class TransferController extends WindowController implements Transf
                 updateHighlight();
                 updateSelection();
                 transferTable.noteHeightOfRowsWithIndexesChanged(
-                        NSIndexSet.indexSetWithIndexesInRange(
-                                NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(transferTable.numberOfRows()))));
+                    NSIndexSet.indexSetWithIndexesInRange(
+                        NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(transferTable.numberOfRows()))));
             }
 
             public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
@@ -428,9 +428,9 @@ public final class TransferController extends WindowController implements Transf
         // a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
         // and then use the private pasteboard instead.
         this.transferTable.registerForDraggedTypes(NSArray.arrayWithObjects(
-                NSPasteboard.StringPboardType,
-                // Accept file promises made myself
-                NSPasteboard.FilesPromisePboardType));
+            NSPasteboard.StringPboardType,
+            // Accept file promises made myself
+            NSPasteboard.FilesPromisePboardType));
         // No grid lines until list is loaded
         this.transferTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
         // Set sselection properties
@@ -482,7 +482,7 @@ public final class TransferController extends WindowController implements Transf
             final String local = transfer.getLocal();
             if(local != null) {
                 localField.setAttributedStringValue(
-                        HyperlinkAttributedStringFactory.create(local, LocalFactory.get(local)));
+                    HyperlinkAttributedStringFactory.create(local, LocalFactory.get(local)));
             }
             else {
                 localField.setStringValue(StringUtils.EMPTY);
@@ -533,11 +533,11 @@ public final class TransferController extends WindowController implements Transf
     public void add(final Transfer transfer, final TransferBackgroundAction action) {
         if(collection.size() > preferences.getInteger("queue.size.warn")) {
             final NSAlert alert = NSAlert.alert(
-                    TransferToolbarFactory.TransferToolbarItem.cleanup.label(), //title
-                    LocaleFactory.localizedString("Remove completed transfers from list."), // message
-                    TransferToolbarFactory.TransferToolbarItem.cleanup.label(), // defaultbutton
-                    LocaleFactory.localizedString("Cancel"), // alternate button
-                    null //other button
+                TransferToolbarFactory.TransferToolbarItem.cleanup.label(), //title
+                LocaleFactory.localizedString("Remove completed transfers from list."), // message
+                TransferToolbarFactory.TransferToolbarItem.cleanup.label(), // defaultbutton
+                LocaleFactory.localizedString("Cancel"), // alternate button
+                null //other button
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
@@ -623,9 +623,9 @@ public final class TransferController extends WindowController implements Transf
         final Host source = transfer.getSource();
         final Host destination = transfer.getDestination();
         final TransferBackgroundAction action = new TransferCollectionBackgroundAction(this,
-                null == source ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, source),
-                null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, destination),
-                this, progress, transfer.withCache(cache), options) {
+            null == source ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, source),
+            null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, destination),
+            this, progress, transfer.withCache(cache), options) {
             @Override
             public void init() {
                 super.init();
@@ -684,8 +684,8 @@ public final class TransferController extends WindowController implements Transf
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(download, LocalFactory.get(
-                        new DownloadDirectoryFinder().find(pasteboard.getBookmark()),
-                        download.getName())));
+                    new DownloadDirectoryFinder().find(pasteboard.getBookmark()),
+                    download.getName())));
             }
             this.add(new DownloadTransfer(pasteboard.getBookmark(), downloads));
             pasteboard.clear();
@@ -870,7 +870,7 @@ public final class TransferController extends WindowController implements Transf
                     }
                     else {
                         item.setTitle(MessageFormat.format(LocaleFactory.localizedString("Paste {0}"),
-                                MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(pasteboard.size())) + ")"));
+                            MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(pasteboard.size())) + ")"));
                     }
                 }
             }
@@ -892,6 +892,10 @@ public final class TransferController extends WindowController implements Transf
 
     public AbstractMenuDelegate getBandwidthMenuDelegate() {
         return bandwidthMenuDelegate;
+    }
+
+    private enum TransferColumn {
+        progress,
     }
 
     private class BandwidthMenuDelegate extends AbstractMenuDelegate {
