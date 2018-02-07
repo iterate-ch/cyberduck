@@ -36,46 +36,46 @@
       <HintPath>bonjour\dll\target\Cyberduck.Bonjour.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.Beans.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Charsets">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Charsets.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.Charsets.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Core">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Core.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Jdbc">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Jdbc.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.Jdbc.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Localedata">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Localedata.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.Localedata.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Security">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Security.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.Security.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Text">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Text.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.Text.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.API">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.API.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.XML.API.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Bind">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Bind.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.XML.Bind.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Parse">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Parse.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.XML.Parse.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Transform">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.Transform.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.XML.Transform.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.XML.XPath">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.XML.XPath.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.OpenJDK.XML.XPath.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.Runtime.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime.JNI">
-      <HintPath>bonjour\native\target\ikvm-8.1.5717.0\bin\IKVM.Runtime.JNI.dll</HintPath>
+      <HintPath>bonjour\native\target\ikvm\bin\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />

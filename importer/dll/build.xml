@@ -23,7 +23,7 @@
 
     <import file="../../build.xml"/>
 
-    <property name="ikvm.home" value="${build}/ikvm-8.1.5717.0"/>
+    <property name="ikvm.home" value="${build}/ikvm"/>
 
     <target name="dll" if="platform.windows">
         <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">

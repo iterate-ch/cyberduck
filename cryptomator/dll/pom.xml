@@ -90,10 +90,10 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>net.ikvm</groupId>
+                                            <groupId>ch.iterate</groupId>
                                             <artifactId>ikvm</artifactId>
                                             <type>zip</type>
-                                            <version>8.1.5717.0.patched</version>
+                                            <version>8.3</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
