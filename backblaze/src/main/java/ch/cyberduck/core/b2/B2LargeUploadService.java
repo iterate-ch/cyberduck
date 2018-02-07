@@ -130,6 +130,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                         containerService.getKey(file), status.getMime(), fileinfo).getFileId();
             }
+            // Full size of file
+            final long size = status.getLength() + status.getOffset();
             // Submit file segments for concurrent upload
             final List<Future<B2UploadPartResponse>> parts = new ArrayList<Future<B2UploadPartResponse>>();
             long remaining = status.getLength();
@@ -152,12 +154,11 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                     }
                 }
                 if(!skip) {
-                    final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
+                    final Long length = Math.min(Math.max((size / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                     // Submit to queue
                     parts.add(this.submit(pool, file, local, throttle, listener, status, partNumber, offset, length, callback));
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Part %s submitted with size %d and offset %d",
-                                partNumber, length, offset));
+                        log.debug(String.format("Part %s submitted with size %d and offset %d", partNumber, length, offset));
                     }
                     remaining -= length;
                     offset += length;

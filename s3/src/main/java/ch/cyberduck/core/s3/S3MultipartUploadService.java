@@ -136,6 +136,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
             try {
+                // Full size of file
+                final long size = status.getLength() + status.getOffset();
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
                 long remaining = status.getLength();
                 long offset = 0;
@@ -158,7 +160,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     }
                     if(!skip) {
                         // Last part can be less than 5 MB. Adjust part size.
-                        final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
+                        final Long length = Math.min(Math.max((size / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                         // Submit to queue
                         parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
                         remaining -= length;
