@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
@@ -38,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
-import com.github.sardine.impl.io.ContentLengthInputStream;
 
 public class DAVReadFeature implements Read {
     private static final Logger log = Logger.getLogger(DAVReadFeature.class);
@@ -78,23 +78,15 @@ public class DAVReadFeature implements Read {
                     resource.append("&");
                 }
                 resource.append(URIEncoder.encode(parameter.getKey()))
-                        .append("=")
-                        .append(URIEncoder.encode(parameter.getValue()));
+                    .append("=")
+                    .append(URIEncoder.encode(parameter.getValue()));
 
             }
-            final ContentLengthInputStream stream = session.getClient().get(resource.toString(), headers);
+            final ContentLengthStatusInputStream stream = session.getClient().get(resource.toString(), headers);
             if(status.isAppend()) {
-                if(-1 == status.getLength()) {
-                    if(stream.getLength() == file.attributes().getSize()) {
-                        log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
-                        stream.skip(status.getOffset());
-                    }
-                }
-                else {
-                    if(stream.getLength() != status.getLength()) {
-                        log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
-                        stream.skip(status.getOffset());
-                    }
+                if(stream.getCode() == HttpStatus.SC_OK) {
+                    log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
+                    stream.skip(status.getOffset());
                 }
             }
             return stream;
