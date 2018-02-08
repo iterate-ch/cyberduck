@@ -69,7 +69,7 @@ public class DAVClient extends SardineImpl {
     }
 
     @Override
-    public ContentLengthInputStream get(final String url, final List<Header> headers) throws IOException {
+    public ContentLengthStatusInputStream get(final String url, final List<Header> headers) throws IOException {
         HttpGet get = new HttpGet(url);
         for(Header header : headers) {
             get.addHeader(header);
@@ -81,7 +81,9 @@ public class DAVClient extends SardineImpl {
         try {
             handler.handleResponse(response);
             // Will abort the read when closed before EOF.
-            return new ContentLengthInputStream(new HttpMethodReleaseInputStream(response), response.getEntity().getContentLength());
+            return new ContentLengthStatusInputStream(new HttpMethodReleaseInputStream(response),
+                response.getEntity().getContentLength(),
+                response.getStatusLine().getStatusCode());
         }
         catch(IOException ex) {
             get.abort();
