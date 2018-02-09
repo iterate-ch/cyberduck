@@ -171,6 +171,11 @@ public interface Protocol extends Comparable<Protocol> {
     String getDefaultPath();
 
     /**
+     * @return Default Nickname
+     */
+    String getDefaultNickname();
+
+    /**
      * @return Authentication context path
      */
     String getContext();

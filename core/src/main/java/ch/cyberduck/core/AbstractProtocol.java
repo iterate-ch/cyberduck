@@ -188,6 +188,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getDefaultNickname() {
+        return null;
+    }
+
+    @Override
     public String getContext() {
         return null;
     }

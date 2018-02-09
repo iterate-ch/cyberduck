@@ -180,6 +180,15 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public String getDefaultNickname() {
+        final String v = this.value("Default Nickname");
+        if(StringUtils.isBlank(v)) {
+            return parent.getDefaultNickname();
+        }
+        return v;
+    }
+
+    @Override
     public String getRegion() {
         final String v = this.value("Region");
         if(StringUtils.isBlank(v)) {
