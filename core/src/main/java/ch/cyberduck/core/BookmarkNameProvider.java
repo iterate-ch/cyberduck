@@ -32,7 +32,7 @@ public final class BookmarkNameProvider {
 
     public static String toString(final Host bookmark, final boolean username) {
         if(StringUtils.isEmpty(bookmark.getNickname())) {
-            if (StringUtils.isNotBlank(bookmark.getProtocol().getDefaultNickname())){
+            if(StringUtils.isNotBlank(bookmark.getProtocol().getDefaultNickname())) {
                 return bookmark.getProtocol().getDefaultNickname();
             }
             final String prefix;
