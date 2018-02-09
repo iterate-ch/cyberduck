@@ -19,7 +19,7 @@
 	<key>Password Placeholder</key>
 	<string>Secret Key</string>
 	<key>Authorization</key>
-	<string>AWS4</string>
+	<string>AWS4HMACSHA256</string>
 	<key>Region</key>
 	<string>us-ashburn-1</string>
 	<key>Regions</key>
