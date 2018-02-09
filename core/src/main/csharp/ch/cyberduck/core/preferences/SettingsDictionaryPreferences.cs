@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -30,10 +30,12 @@ using Windows.Storage;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Properties;
+using java.io;
 using java.security;
 using java.util;
 using org.apache.log4j;
 using sun.security.mscapi;
+using File = System.IO.File;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -426,6 +428,26 @@ namespace Ch.Cyberduck.Core.Preferences
             if (Debugger.IsAttached)
             {
                 root.setLevel(Level.DEBUG);
+            }
+            ApplyGlobalConfig();
+        }
+
+        private void ApplyGlobalConfig()
+        {
+            var config = Path.Combine(PreferencesFactory.get().getProperty("application.support.path"),
+                "default.properties");
+            if (File.Exists(config))
+            {
+                try
+                {
+                    var properties = new java.util.Properties();
+                    properties.load(new FileInputStream(config));
+                    defaults.putAll(properties);
+                }
+                catch (Exception e)
+                {
+                    Log.warn($"Failure while reading {config}", e);
+                }
             }
         }
 
