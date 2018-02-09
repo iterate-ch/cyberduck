@@ -44,7 +44,7 @@ public class S3PresignedUrlProvider {
         }
         else {
             // Region is required for AWS4-HMAC-SHA256 signature
-            signature = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(host.getProtocol().getAuthorization());
+            signature = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
         }
         return new RestS3Service(new AWSCredentials(StringUtils.strip(user), StringUtils.strip(secret))) {
             @Override
