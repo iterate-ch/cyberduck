@@ -32,6 +32,6 @@
         <key>Password Placeholder</key>
         <string>Secret Key</string>
         <key>Authorization</key>
-        <string>AWS4</string>
+        <string>AWS4HMACSHA256</string>
     </dict>
 </plist>

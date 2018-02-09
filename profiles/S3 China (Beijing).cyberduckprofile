@@ -36,6 +36,6 @@
         <key>Username Configurable</key>
         <true/>
         <key>Authorization</key>
-        <string>AWS4</string>
+        <string>AWS4HMACSHA256</string>
     </dict>
 </plist>
