@@ -435,7 +435,7 @@ namespace Ch.Cyberduck.Core.Preferences
         private void ApplyGlobalConfig()
         {
             var config = Path.Combine(PreferencesFactory.get().getProperty("application.support.path"),
-                "config.properties");
+                "default.properties");
             if (File.Exists(config))
             {
                 try
