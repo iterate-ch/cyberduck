@@ -32,6 +32,9 @@ public final class BookmarkNameProvider {
 
     public static String toString(final Host bookmark, final boolean username) {
         if(StringUtils.isEmpty(bookmark.getNickname())) {
+            if(StringUtils.isNotBlank(bookmark.getProtocol().getDefaultNickname())) {
+                return bookmark.getProtocol().getDefaultNickname();
+            }
             final String prefix;
             // Return default bookmark name
             if(username && !bookmark.getCredentials().isAnonymousLogin() && StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
