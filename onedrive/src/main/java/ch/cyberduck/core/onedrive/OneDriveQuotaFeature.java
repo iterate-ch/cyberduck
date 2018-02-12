@@ -46,6 +46,8 @@ public class OneDriveQuotaFeature implements Quota {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, home);
         }
-        return new Space(metadata.getUsed(), metadata.getTotal());
+        return new Space(
+            metadata.getUsed() != null ? metadata.getUsed() : 0,
+            metadata.getTotal() != null ? metadata.getTotal() : Long.MAX_VALUE);
     }
 }
