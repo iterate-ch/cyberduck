@@ -36,9 +36,7 @@ public class DriveListService implements ListService {
         if(directory.isRoot()) {
             final AttributedList<Path> list = new AttributedList<>();
             list.add(DriveHomeFinderService.MYDRIVE_FOLDER);
-            listener.chunk(directory, list);
             list.add(DriveHomeFinderService.SHARED_FOLDER_NAME);
-            listener.chunk(directory, list);
             list.add(DriveHomeFinderService.TEAM_DRIVES_NAME);
             listener.chunk(directory, list);
             return list;
