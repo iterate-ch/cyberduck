@@ -30,7 +30,6 @@ import ch.cyberduck.core.sftp.PreferencesHostKeyVerifier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -42,7 +41,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.Security;
 
 import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.common.SSHRuntimeException;
@@ -51,15 +49,6 @@ import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
 public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
     private static final Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
-
-    static {
-        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
-        final BouncyCastleProvider provider = new BouncyCastleProvider();
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Install provider %s at position %d", provider, position));
-        }
-        Security.insertProviderAt(provider, position);
-    }
 
     /**
      * It is a thread safe implementation, therefore, you need only to instantiate one

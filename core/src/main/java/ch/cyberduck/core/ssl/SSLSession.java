@@ -20,27 +20,13 @@ package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.security.Security;
 
 public abstract class SSLSession<C> extends Session<C> {
     private static final Logger log = Logger.getLogger(SSLSession.class);
 
-    static {
-        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
-        final BouncyCastleProvider provider = new BouncyCastleProvider();
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Install provider %s at position %d", provider, position));
-        }
-        Security.insertProviderAt(provider, position);
-    }
-
     protected X509TrustManager trust;
-
     protected X509KeyManager key;
 
     protected SSLSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {

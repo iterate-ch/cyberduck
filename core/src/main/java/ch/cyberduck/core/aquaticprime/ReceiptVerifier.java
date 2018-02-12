@@ -46,7 +46,6 @@ import java.net.NetworkInterface;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
-import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -68,15 +67,6 @@ public class ReceiptVerifier implements LicenseVerifier {
         this.file = file;
         this.application = application;
         this.version = version;
-    }
-
-    static {
-        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
-        final BouncyCastleProvider provider = new BouncyCastleProvider();
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Install provider %s at position %d", provider, position));
-        }
-        Security.insertProviderAt(provider, position);
     }
 
     @Override
