@@ -45,10 +45,8 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.IOException;
-import java.security.Security;
 import java.util.Collections;
 
 import com.joyent.manta.client.MantaClient;
@@ -65,15 +63,6 @@ public class MantaSession extends HttpSession<MantaClient> {
     private static final Logger log = Logger.getLogger(MantaSession.class);
 
     private final AuthAwareConfigContext config;
-
-    static {
-        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
-        final BouncyCastleProvider provider = new BouncyCastleProvider();
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Install provider %s at position %d", provider, position));
-        }
-        Security.insertProviderAt(provider, position);
-    }
 
     public MantaSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), key);

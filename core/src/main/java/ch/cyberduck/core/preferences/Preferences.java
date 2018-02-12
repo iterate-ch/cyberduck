@@ -76,6 +76,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
@@ -101,14 +102,6 @@ public abstract class Preferences {
     protected final Map<String, String> defaults
             = new HashMap<String, String>();
 
-    /*
-      TTL for DNS queries
-     */
-    static {
-        Security.setProperty("networkaddress.cache.ttl", "10");
-        Security.setProperty("networkaddress.cache.negative.ttl", "5");
-    }
-
     /**
      * Called after the defaults have been set.
      */
@@ -117,6 +110,16 @@ public abstract class Preferences {
         if(this.getBoolean("connection.dns.ipv6")) {
             System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
         }
+        // TTL for DNS queries
+        Security.setProperty("networkaddress.cache.ttl", "10");
+        Security.setProperty("networkaddress.cache.negative.ttl", "5");
+        // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
+        final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
+        final BouncyCastleProvider provider = new BouncyCastleProvider();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Install provider %s at position %d", provider, position));
+        }
+        Security.insertProviderAt(provider, position);
     }
 
     /**
