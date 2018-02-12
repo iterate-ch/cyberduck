@@ -48,6 +48,6 @@ public class OneDriveQuotaFeature implements Quota {
         }
         return new Space(
             metadata.getUsed() != null ? metadata.getUsed() : 0,
-            metadata.getTotal() != null ? metadata.getTotal(), Long.MAX_VALUE);
+            metadata.getTotal() != null ? metadata.getTotal() : Long.MAX_VALUE);
     }
 }
