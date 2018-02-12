@@ -34,7 +34,6 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.cryptomator.cryptolib.Cryptors;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -44,7 +43,6 @@ import org.cryptomator.cryptolib.api.KeyFile;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
 import java.nio.charset.StandardCharsets;
-import java.security.Security;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
@@ -60,15 +58,6 @@ public class CryptoVault implements Vault {
     private static final Logger log = Logger.getLogger(CryptoVault.class);
 
     public static final String DIR_PREFIX = "0";
-
-    static {
-        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
-        final BouncyCastleProvider provider = new BouncyCastleProvider();
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Install provider %s at position %d", provider, position));
-        }
-        Security.insertProviderAt(provider, position);
-    }
 
     private static final int VAULT_VERSION = 6;
 
