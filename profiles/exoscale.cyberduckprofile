@@ -11,7 +11,7 @@
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
-        <string>sos.exo.io</string>
+        <string>sos-ch-dk-2.exo.io</string>
         <key>Default Port</key>
         <string>443</string>
         <key>Hostname Configurable</key>
@@ -23,7 +23,7 @@
         <key>Password Placeholder</key>
         <string>Secret Key</string>
         <key>Authorization</key>
-        <string>AWS2</string>
+        <string>AWS4HMACSHA256</string>
         <key>Disk</key>
         <string>
 TU0AKgAQAFIABJAEAAIAAAAUAAAAPqABAAMAAAAB//8AAKACAAQAAAABAAACAKAD
