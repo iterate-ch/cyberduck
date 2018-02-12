@@ -3005,6 +3005,7 @@ public class BrowserController extends WindowController
         if(log.isDebugEnabled()) {
             log.debug(String.format("Mount session for %s", bookmark));
         }
+        transcript.clear();
         this.unmount(new Runnable() {
             @Override
             public void run() {
@@ -3129,7 +3130,6 @@ public class BrowserController extends WindowController
                 setWorkdir(null);
                 window.setTitle(preferences.getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
-                transcript.clear();
                 navigation.clear();
                 disconnected.run();
             }

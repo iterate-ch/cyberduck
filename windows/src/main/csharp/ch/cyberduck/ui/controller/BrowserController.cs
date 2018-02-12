@@ -2627,6 +2627,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Log.debug(string.Format("Mount session for {0}", host));
             }
+            View.ClearTranscript();
             CallbackDelegate callbackDelegate =
                 delegate
                 {
@@ -2743,7 +2744,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 _cache.clear();
                 _navigation.clear();
                 View.WindowTitle = PreferencesFactory.get().getProperty("application.name");
-                View.ClearTranscript();
                 disconnected();
             };
 
