@@ -75,7 +75,9 @@
     <a href="https://trac.cyberduck.io/milestone/6.4.0"><strong>Version 6.4.0</strong></a>
 </p>
 <ul>
-    <li><span class="label label-success">Feature</span> Support for eu-west-3 (Paris) region (S3)</li>
+    <li><span class="label label-success">Feature</span> Support for eu-west-3 (Paris) region (S3) (<a
+        href="https://trac.cyberduck.io/ticket/10207">#10207</a>)
+    </li>
     <li><span class="label label-success">Feature</span> Support for Integrated Windows Authentication (IWA)
         authentication (WebDAV, Windows)
     </li>
@@ -97,6 +99,21 @@
     <li><span class="label label-warning">Bugfix</span> Set modification date on uploaded files (OneDrive) (<a
         href="https://trac.cyberduck.io/ticket/10171">#10171</a>)
     </li>
+    <li><span class="label label-warning">Bugfix</span>Application hangs when selecting a large number of files for
+        upload (Windows)
+    </li>
+    <li><span class="label label-warning">Bugfix</span>Do not save vault passphrase by default (Cryptomator)</li>
+    <li><span class="label label-warning">Bugfix</span>Fix failures when attempting to read attributes of incomplete
+        multipart upload (S3)
+    </li>
+    <li><span class="label label-warning">Bugfix</span>Reloading directory after enabling "Auto detect" in preferences
+        does not ask to unlock vault (Cryptomator) (<a href="https://trac.cyberduck.io/ticket/10214">#10214</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span>Transfer labled incomplete when segment required multiple
+        attempts to finish (S3, OpenStack Swift, Backblaze B2) (<a
+            href="https://trac.cyberduck.io/ticket/9552">#9552</a>)
+    </li>
+
 </ul>
 
 <p>
