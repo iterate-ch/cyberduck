@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.4.1
+- [Bugfix] Cannot edit ACLs and metadata in Info panel (macOS) (#10226)
+
 6.4.0
 - [Feature] Support for eu-west-3 (Paris) region (S3) (#10207)
 - [Feature] Support for Integrated Windows Authentication (IWA) authentication (WebDAV, Windows)
