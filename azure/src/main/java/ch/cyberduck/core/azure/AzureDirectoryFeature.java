@@ -45,7 +45,7 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 public class AzureDirectoryFeature implements Directory<Void> {
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new AzurePathContainerService();
 
     private final AzureSession session;
     private final OperationContext context;
@@ -74,7 +74,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
-                        new PathAttributes(folder.attributes()));
+                    new PathAttributes(folder.attributes()));
                 new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
                 return placeholder;
             }
@@ -91,9 +91,15 @@ public class AzureDirectoryFeature implements Directory<Void> {
     @Override
     public boolean isSupported(final Path workdir, final String name) {
         if(workdir.isRoot()) {
-            if(StringUtils.isNotBlank(name)) {
-                return StringUtils.isAlphanumeric(name);
+            // Container names must be lowercase, between 3-63 characters long and must start with a letter or
+            // number. Container names may contain only letters, numbers, and the dash (-) character.
+            if(StringUtils.length(name) > 63) {
+                return false;
             }
+            if(StringUtils.length(name) < 3) {
+                return false;
+            }
+            return StringUtils.isAlphanumeric(StringUtils.removeAll(name, "-"));
         }
         return true;
     }
