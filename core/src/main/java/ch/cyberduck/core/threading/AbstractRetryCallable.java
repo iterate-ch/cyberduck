@@ -36,14 +36,23 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
     /**
      * The number of times to retry a failed action
      */
-    private int retry =
-            PreferencesFactory.get().getInteger("connection.retry");
+    private int retry;
 
     /**
      * The number of times this action has been run
      */
     private int count = 0;
-    private int backoff = preferences.getInteger("connection.retry.delay");
+    private int backoff;
+
+    public AbstractRetryCallable() {
+        this(PreferencesFactory.get().getInteger("connection.retry"),
+            PreferencesFactory.get().getInteger("connection.retry.delay"));
+    }
+
+    public AbstractRetryCallable(final int retry, final int delay) {
+        this.retry = retry;
+        this.backoff = delay;
+    }
 
     @Override
     public abstract T call() throws BackgroundException;
@@ -89,7 +98,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 @Override
                 public void progress(final Integer seconds) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} ({1} more attempts)", "Status"),
-                            new RemainingPeriodFormatter().format(seconds), retry - count));
+                        new RemainingPeriodFormatter().format(seconds), retry - count));
                 }
             }, delay);
             pause.await();
