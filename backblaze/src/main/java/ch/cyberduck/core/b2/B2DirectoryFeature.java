@@ -45,7 +45,7 @@ import synapticloop.b2.response.BaseB2Response;
 public class B2DirectoryFeature implements Directory<BaseB2Response> {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
     private Write<BaseB2Response> writer;
@@ -64,13 +64,13 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
         try {
             if(containerService.isContainer(folder)) {
                 final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(folder).getName(),
-                        null == region ? BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")) : BucketType.valueOf(region));
+                    null == region ? BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")) : BucketType.valueOf(region));
                 switch(response.getBucketType()) {
                     case allPublic:
                         folder.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
                 }
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                        new PathAttributes(folder.attributes()));
+                    new PathAttributes(folder.attributes()));
             }
             else {
                 if(Checksum.NONE == status.getChecksum()) {
@@ -94,9 +94,19 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     @Override
     public boolean isSupported(final Path workdir, final String name) {
         if(workdir.isRoot()) {
-            if(StringUtils.isNotBlank(name)) {
-                return StringUtils.isAlphanumeric(name);
+            // Bucket names must be a minimum of 6 and a maximum of 50 characters long, and must be globally unique;
+            // two different B2 accounts cannot have buckets with the name name. Bucket names can consist of: letters,
+            // digits, and "-". Bucket names cannot start with "b2-"; these are reserved for internal Backblaze use.
+            if(StringUtils.startsWith(name, "b2-")) {
+                return false;
             }
+            if(StringUtils.length(name) > 50) {
+                return false;
+            }
+            if(StringUtils.length(name) < 6) {
+                return false;
+            }
+            return StringUtils.isAlphanumeric(StringUtils.removeAll(name, "-"));
         }
         return true;
     }
