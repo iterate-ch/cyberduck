@@ -130,7 +130,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
                 protocol = protocols.forScheme(Scheme.ftps);
                 break;
             case "S3":
-                protocol = protocols.forType(Protocol.Type.s3);
+                protocol = protocols.forScheme(Scheme.s3);
                 break;
             case "WebDAV":
                 protocol = protocols.forScheme(Scheme.dav);

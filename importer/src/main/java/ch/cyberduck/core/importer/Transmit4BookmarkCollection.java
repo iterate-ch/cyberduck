@@ -18,7 +18,6 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -113,7 +112,7 @@ public class Transmit4BookmarkCollection extends XmlBookmarkCollection {
                                     current.setProtocol(protocols.forScheme(Scheme.ftp));
                                     break;
                                 case "s3":
-                                    current.setProtocol(protocols.forType(Protocol.Type.s3));
+                                    current.setProtocol(protocols.forScheme(Scheme.s3));
                                     break;
                             }
                             // Reset port to default
