@@ -62,6 +62,21 @@ public class LocalListServiceTest {
     }
 
     @Test
+    public void testDifferentDrive() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        if(!session.isPosixFilesystem()) {
+            assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+            assertTrue(session.isConnected());
+            assertNotNull(session.getClient());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            final Path test = new Path("/D:/", EnumSet.of(Path.Type.volume));
+            final AttributedList<Path> list = new LocalListService(session).list(test, new DisabledListProgressListener());
+            assertNotNull(list);
+        }
+        session.close();
+    }
+
+    @Test
     public void testListSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(session.isPosixFilesystem()) {
