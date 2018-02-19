@@ -70,7 +70,7 @@ public class LocalSession extends Session<FileSystem> {
 
     public java.nio.file.Path toPath(final String path) throws LocalAccessDeniedException {
         try {
-            return client.getPath(path.replaceFirst("^/(.:[/\\\\])", "$1"));
+            return client.getPath(path.replaceFirst("^/(.:(?:/|\\\\)?)", "$1"));
         }
         catch(InvalidPathException e) {
             throw new LocalAccessDeniedException(e.getReason(), e);
