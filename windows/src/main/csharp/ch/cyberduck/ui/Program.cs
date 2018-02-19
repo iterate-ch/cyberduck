@@ -109,9 +109,17 @@ namespace Ch.Cyberduck.Ui
                 {
                     argsTask.Wait();
                 }
-                catch (CommunicationObjectFaultedException)
+                catch (AggregateException aggregateException)
                 {
-                    // silent catch this error.
+                    aggregateException.Handle(x =>
+                    {
+                        if (x is CommunicationObjectFaultedException)
+                        {
+                            // silent catch this error.
+                            return true;
+                        }
+                        return false;
+                    });
                 }
             }
             mutex.Close();
