@@ -19,6 +19,7 @@ package ch.cyberduck.core.serializer;
  */
 
 import java.util.List;
+import java.util.Map;
 
 public interface Deserializer<T> {
 
@@ -39,6 +40,8 @@ public interface Deserializer<T> {
      * @return List values for key
      */
     <L> List<L> listForKey(String key);
+
+    Map<String, String> mapForKey(String key);
 
     /**
      * @param key Key name

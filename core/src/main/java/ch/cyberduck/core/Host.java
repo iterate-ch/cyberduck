@@ -25,6 +25,7 @@ import ch.cyberduck.core.serializer.Serializer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class Host implements Serializable, Comparable<Host> {
@@ -129,6 +130,11 @@ public class Host implements Serializable, Comparable<Host> {
      * Connect with readonly mode
      */
     private Boolean readonly;
+
+    /**
+     * Custom options
+     */
+    private Map<String, String> custom;
 
     /**
      * @param protocol Scheme
@@ -295,6 +301,9 @@ public class Host implements Serializable, Comparable<Host> {
         }
         if(null != readonly) {
             dict.setStringForKey(String.valueOf(readonly), "Readonly");
+        }
+        if(null != custom) {
+            dict.setMapForKey(custom, "Custom");
         }
         return dict.getSerialized();
     }
@@ -624,6 +633,14 @@ public class Host implements Serializable, Comparable<Host> {
 
     public void setReadonly(final Boolean readonly) {
         this.readonly = readonly;
+    }
+
+    public Map<String, String> getCustom() {
+        return custom;
+    }
+
+    public void setCustom(final Map<String, String> custom) {
+        this.custom = custom;
     }
 
     @Override

@@ -21,6 +21,7 @@ package ch.cyberduck.core.serializer;
 import ch.cyberduck.core.Serializable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Serializer {
 
@@ -41,6 +42,8 @@ public interface Serializer {
      * @param key   Identifier for value to serialize
      */
     <T extends Serializable> void setListForKey(List<T> value, String key);
+
+    void setMapForKey(Map<String, String> value, String key);
 
     /**
      * @param <T> Type of native format

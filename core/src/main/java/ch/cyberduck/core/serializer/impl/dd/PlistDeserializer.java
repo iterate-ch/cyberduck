@@ -23,7 +23,9 @@ import ch.cyberduck.core.serializer.Deserializer;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.dd.plist.NSArray;
 import com.dd.plist.NSDictionary;
@@ -96,6 +98,24 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
 
             }
             return list;
+        }
+        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        return null;
+    }
+
+    @Override
+    public Map<String, String> mapForKey(final String key) {
+        final NSObject value = dict.objectForKey(key);
+        if(null == value) {
+            return null;
+        }
+        if(value instanceof NSDictionary) {
+            final NSDictionary dict = (NSDictionary) value;
+            final Map<String, String> map = new HashMap<>();
+            for(String k : dict.allKeys()) {
+                map.put(k, dict.objectForKey(k).toString());
+            }
+            return map;
         }
         log.warn(String.format("Unexpected value type for serialized key %s", key));
         return null;
