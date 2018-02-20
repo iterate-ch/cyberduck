@@ -140,11 +140,15 @@ public class TerminalOptionsInputValidator {
         }
         final Host host = new HostParser(factory).get(uri);
         switch(host.getProtocol().getType()) {
+            case file:
             case b2:
             case s3:
             case googlestorage:
             case swift:
-            case file:
+            case azure:
+            case googledrive:
+            case dropbox:
+            case onedrive:
                 break;
             default:
                 if(StringUtils.isBlank(host.getHostname())) {

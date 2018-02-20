@@ -66,7 +66,7 @@ public final class HostParser {
      */
     public static Host parse(final String url) {
         return parse(ProtocolFactory.get(), ProtocolFactory.get().forName(
-                preferences.getProperty("connection.protocol.default")), url);
+            preferences.getProperty("connection.protocol.default")), url);
     }
 
     public static Host parse(final ProtocolFactory factory, final Protocol scheme, final String url) {
@@ -92,19 +92,19 @@ public final class HostParser {
         }
         if(input.indexOf('@', begin) != -1) {
             if(-1 == input.indexOf(Path.DELIMITER, begin)
-                    || input.indexOf('@', begin) < input.indexOf(Path.DELIMITER, begin)) {
+                || input.indexOf('@', begin) < input.indexOf(Path.DELIMITER, begin)) {
                 cut = input.indexOf('@', begin);
                 // Handle at sign in username
                 while(cut < input.lastIndexOf('@')) {
                     if(input.indexOf(Path.DELIMITER, begin) != -1
-                            && input.indexOf('@', cut + 1) > input.indexOf(Path.DELIMITER, begin)) {
+                        && input.indexOf('@', cut + 1) > input.indexOf(Path.DELIMITER, begin)) {
                         // At sign is part of the path
                         break;
                     }
                     cut = input.indexOf('@', cut + 1);
                 }
                 if(input.indexOf(':', begin) != -1
-                        && cut > input.indexOf(':', begin)) {
+                    && cut > input.indexOf(':', begin)) {
                     // ':' is not for the port number but username:pass separator
                     username = input.substring(begin, input.indexOf(':', begin));
                     begin += username.length() + 1;
@@ -164,7 +164,7 @@ public final class HostParser {
             // Handle DNS name or IPv4
             if(StringUtils.isNotBlank(input)) {
                 if(input.indexOf(':', begin) != -1
-                        && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
+                    && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
                     cut = input.indexOf(':', begin);
                 }
                 else if(input.indexOf(Path.DELIMITER, begin) != -1) {
@@ -178,7 +178,7 @@ public final class HostParser {
             }
         }
         if(input.indexOf(':', begin) != -1
-                && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
+            && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
             begin = input.indexOf(':', begin) + 1;
             String portString;
             if(input.indexOf(Path.DELIMITER, begin) != -1) {
@@ -223,6 +223,7 @@ public final class HostParser {
             case s3:
             case googlestorage:
             case swift:
+            case azure:
                 if(StringUtils.isNotBlank(protocol.getDefaultHostname())) {
                     if(StringUtils.isNotBlank(hostname)) {
                         // Replace with static hostname and prefix path with bucket
@@ -236,13 +237,22 @@ public final class HostParser {
                     }
                 }
         }
+        if(!protocol.isHostnameConfigurable()) {
+            // case file:
+            // case googledrive:
+            // case dropbox:
+            // case onedrive:
+            if(StringUtils.isNotBlank(protocol.getDefaultHostname())) {
+                hostname = protocol.getDefaultHostname();
+            }
+        }
         final Host host = new Host(protocol, hostname, port, path, new Credentials(username, password));
         host.configure();
         return host;
     }
 
     private static final Pattern IPV6_STD_PATTERN = Pattern.compile(
-            "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
+        "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
     );
 
     private static boolean isv6Address(final String address) {

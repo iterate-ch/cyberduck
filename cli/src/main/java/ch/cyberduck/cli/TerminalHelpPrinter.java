@@ -57,10 +57,20 @@ public final class TerminalHelpPrinter {
                 case s3:
                 case googlestorage:
                 case swift:
+                case azure:
                     protocols.append("\t").append(String.format("%s://<container>/<key>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
                     break;
                 default:
-                    protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
+                    if(p.isHostnameConfigurable()) {
+                        protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
+                    }
+                    else {
+                        // case file:
+                        // case googledrive:
+                        // case dropbox:
+                        // case onedrive:
+                        protocols.append("\t").append(String.format("%s://<folder>/<file>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
+                    }
                     break;
             }
             protocols.append(StringUtils.LF);
@@ -68,19 +78,19 @@ public final class TerminalHelpPrinter {
         final StringBuilder header = new StringBuilder(StringUtils.LF);
         header.append("\t");
         header.append("URLs must be fully qualified. Paths can either denote "
-                + "a remote file (ftps://user@example.net/resource) or folder (ftps://user@example.net/directory/) "
-                + "with a trailing slash. You can reference files relative to your home directory with /~ (ftps://user@example.net/~/).");
+            + "a remote file (ftps://user@example.net/resource) or folder (ftps://user@example.net/directory/) "
+            + "with a trailing slash. You can reference files relative to your home directory with /~ (ftps://user@example.net/~/).");
         header.append(protocols.toString());
         final Preferences preferences = PreferencesFactory.get();
         final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
-                PreferencesFactory.get().getProperty("profiles.folder.name"));
+            PreferencesFactory.get().getProperty("profiles.folder.name"));
         header.append(StringUtils.LF);
         header.append(String.format("You can install additional connection profiles in %s",
-                profiles.getAbbreviatedPath()));
+            profiles.getAbbreviatedPath()));
         header.append(StringUtils.LF);
         final StringBuilder footer = new StringBuilder(StringUtils.LF);
         footer.append(String.format("Cyberduck is libre software licenced under the GPL. For general help about using Cyberduck, please refer to %s and the wiki at %s. For bug reports or feature requests open a ticket at %s.",
-                preferences.getProperty("website.cli"), preferences.getProperty("website.help"), MessageFormat.format(preferences.getProperty("website.bug"), preferences.getProperty("application.version"))));
+            preferences.getProperty("website.cli"), preferences.getProperty("website.help"), MessageFormat.format(preferences.getProperty("website.bug"), preferences.getProperty("application.version"))));
         final License l = LicenseFactory.find();
         footer.append(StringUtils.LF);
         if(l.verify(new DisabledLicenseVerifierCallback())) {

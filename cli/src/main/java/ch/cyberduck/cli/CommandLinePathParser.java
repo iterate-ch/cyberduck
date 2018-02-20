@@ -22,7 +22,6 @@ import ch.cyberduck.core.DelimiterPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.ProtocolFactory;
 
@@ -34,9 +33,7 @@ import java.util.EnumSet;
 public class CommandLinePathParser {
 
     private final PathKindDetector detector
-            = new DelimiterPathKindDetector();
-
-    private final CommandLine input;
+        = new DelimiterPathKindDetector();
 
     private final ProtocolFactory factory;
 
@@ -45,21 +42,11 @@ public class CommandLinePathParser {
     }
 
     public CommandLinePathParser(final CommandLine input, final ProtocolFactory factory) {
-        this.input = input;
         this.factory = factory;
     }
 
     public Path parse(final String uri) {
         final Host host = new HostParser(factory).get(uri);
-        switch(host.getProtocol().getType()) {
-            case s3:
-            case googlestorage:
-            case swift:
-                final PathAttributes attributes = new PathAttributes();
-                if(input.hasOption(TerminalOptionsBuilder.Params.region.name())) {
-                    attributes.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
-                }
-        }
         if(StringUtils.isBlank(host.getDefaultPath())) {
             return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(detector.detect(host.getDefaultPath())));
         }

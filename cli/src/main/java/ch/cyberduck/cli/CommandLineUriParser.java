@@ -28,7 +28,6 @@ import org.apache.commons.cli.CommandLine;
 public class CommandLineUriParser {
 
     private final CommandLine input;
-
     private final ProtocolFactory factory;
 
     public CommandLineUriParser(final CommandLine input) {
@@ -42,13 +41,8 @@ public class CommandLineUriParser {
 
     public Host parse(final String uri) {
         final Host host = new HostParser(factory).get(uri);
-        switch(host.getProtocol().getType()) {
-            case s3:
-            case googlestorage:
-            case swift:
-                if(input.hasOption(TerminalOptionsBuilder.Params.region.name())) {
-                    host.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
-                }
+        if(input.hasOption(TerminalOptionsBuilder.Params.region.name())) {
+            host.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
         }
         final Path directory = new CommandLinePathParser(input, factory).parse(uri);
         if(directory.isDirectory()) {
