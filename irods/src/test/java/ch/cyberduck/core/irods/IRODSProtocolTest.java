@@ -21,6 +21,7 @@ import ch.cyberduck.core.serializer.Deserializer;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,6 +47,11 @@ public class IRODSProtocolTest {
 
             @Override
             public <L> List<L> listForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public Map<String, String> mapForKey(final String key) {
                 return null;
             }
 
@@ -76,6 +82,11 @@ public class IRODSProtocolTest {
 
             @Override
             public <L> List<L> listForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public Map<String, String> mapForKey(final String key) {
                 return null;
             }
 

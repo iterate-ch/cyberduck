@@ -23,6 +23,7 @@ import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dd.plist.NSArray;
 import com.dd.plist.NSDictionary;
@@ -56,6 +57,15 @@ public class PlistSerializer implements Serializer {
         for(Serializable serializable : value) {
             list.setValue(i, serializable.<NSDictionary>serialize(SerializerFactory.get()));
             i++;
+        }
+        dict.put(key, list);
+    }
+
+    @Override
+    public void setMapForKey(final Map<String, String> value, final String key) {
+        final NSDictionary list = new NSDictionary();
+        for(Map.Entry<String, String> entry : value.entrySet()) {
+            list.put(entry.getKey(), entry.getValue());
         }
         dict.put(key, list);
     }

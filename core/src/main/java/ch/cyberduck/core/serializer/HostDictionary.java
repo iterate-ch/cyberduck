@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class HostDictionary {
@@ -184,6 +185,10 @@ public class HostDictionary {
             final Object readonlyObj = dict.stringForKey("Readonly");
             if(readonlyObj != null) {
                 bookmark.setReadonly(Boolean.valueOf(readonlyObj.toString()));
+            }
+            final Map customObj = dict.mapForKey("Custom");
+            if(customObj != null) {
+                bookmark.setCustom(customObj);
             }
             return bookmark;
         }

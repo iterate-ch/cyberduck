@@ -29,7 +29,9 @@ import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PlistDeserializer implements Deserializer<NSDictionary> {
     private static final Logger log = Logger.getLogger(PlistDeserializer.class);
@@ -93,6 +95,27 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
                 if(next.isKindOfClass(Rococoa.createClass("NSString", NSString._Class.class))) {
                     list.add((T) Rococoa.cast(next, NSString.class).toString());
                 }
+            }
+            return list;
+        }
+        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        return null;
+    }
+
+    @Override
+    public Map<String, String> mapForKey(final String key) {
+        final NSObject value = dict.objectForKey(key);
+        if(null == value) {
+            return null;
+        }
+        if(value.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+            final NSDictionary dict = Rococoa.cast(value, NSDictionary.class);
+            final NSEnumerator enumerator = dict.allKeys().objectEnumerator();
+            NSObject next;
+            final Map<String, String> list = new HashMap<>();
+            while((next = enumerator.nextObject()) != null) {
+                final String k = Rococoa.cast(next, NSString.class).toString();
+                list.put(k, Rococoa.cast(dict.objectForKey(k), NSString.class).toString());
             }
             return list;
         }
