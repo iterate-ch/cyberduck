@@ -70,7 +70,33 @@ public class LocalSession extends Session<FileSystem> {
 
     public java.nio.file.Path toPath(final String path) throws LocalAccessDeniedException {
         try {
-            return client.getPath(path.replaceFirst("^/(.:[/\\\\])", "$1"));
+            /*
+            This matches:
+            ^ - Start of string
+            / - Slash
+            ( - Capture group which replaces this regex
+                . - Any character (i.e. drive letter)
+                : - A colon
+                (?: - non-capture group for easier usage of following pattern
+                    / - Slash
+                    | - or
+                    \ - Backspace (escaped escaping characters)
+                )? - Zero or one of the above non-capture group
+            )
+            Following are matches:
+            - /X:
+            - /X:/
+            - /X:\
+            and get replaced by
+            - X:
+            - X:/
+            - X:\
+            respectively.
+            This does not affect paths after the drive letter.
+            - /X:/Test -> X:/Test
+            - /X:\Test\Test -> X:\Test\Test
+             */
+            return client.getPath(path.replaceFirst("^/(.:(?:/|\\\\)?)", "$1"));
         }
         catch(InvalidPathException e) {
             throw new LocalAccessDeniedException(e.getReason(), e);
