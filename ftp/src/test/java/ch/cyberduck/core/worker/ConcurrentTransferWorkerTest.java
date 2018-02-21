@@ -167,5 +167,6 @@ public class ConcurrentTransferWorkerTest {
         worker.release(session, ConcurrentTransferWorker.Connection.source);
         worker.release(s, ConcurrentTransferWorker.Connection.source);
         assertEquals(0L, transfer.getTransferred(), 0L);
+        worker.cleanup(true);
     }
 }

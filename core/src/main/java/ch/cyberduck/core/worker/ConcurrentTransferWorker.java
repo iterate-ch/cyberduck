@@ -55,6 +55,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private final CompletionService<TransferStatus> completion;
     // Keep number of submited tasks
     private final AtomicInteger size = new AtomicInteger();
+    private final ThreadPool pool;
 
     public ConcurrentTransferWorker(final SessionPool source,
                                     final SessionPool destination,
@@ -70,9 +71,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback, passwordCallback);
         this.source = source;
         this.destination = destination;
-        final ThreadPool pool = ThreadPoolFactory.get("transfer",
-                transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
-                        1 : PreferencesFactory.get().getInteger("queue.connections.limit"));
+        this.pool = ThreadPoolFactory.get("transfer",
+            transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
+                1 : PreferencesFactory.get().getInteger("queue.connections.limit"));
         this.completion = new ExecutorCompletionService<TransferStatus>(pool.executor());
     }
 
@@ -161,6 +162,11 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                 size.decrementAndGet();
             }
         }
+    }
+
+    @Override
+    public void cleanup(final Boolean result) {
+        pool.shutdown(result);
     }
 
     @Override

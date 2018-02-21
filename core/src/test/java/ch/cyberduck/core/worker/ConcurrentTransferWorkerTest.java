@@ -91,6 +91,7 @@ public class ConcurrentTransferWorkerTest {
                 new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
         assertNotSame(worker.borrow(ConcurrentTransferWorker.Connection.source), worker.borrow(ConcurrentTransferWorker.Connection.source));
+        worker.cleanup(true);
     }
 
     @Test
@@ -134,6 +135,7 @@ public class ConcurrentTransferWorkerTest {
         }).start();
         worker.release(reuse, ConcurrentTransferWorker.Connection.source);
         lock.await(1, TimeUnit.MINUTES);
+        worker.cleanup(true);
     }
 
     @Test
@@ -207,6 +209,7 @@ public class ConcurrentTransferWorkerTest {
         for(int i = 1; i <= files; i++) {
             assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));
         }
+        worker.cleanup(true);
     }
 
     @Test
@@ -272,7 +275,6 @@ public class ConcurrentTransferWorkerTest {
         }
         worker.await();
         assertTrue(entry.getCount() == 0);
-
+        worker.cleanup(true);
     }
-
 }
