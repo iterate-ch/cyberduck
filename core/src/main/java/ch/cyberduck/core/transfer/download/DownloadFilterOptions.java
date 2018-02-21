@@ -26,12 +26,12 @@ public final class DownloadFilterOptions {
     /**
      * Split download into segments
      */
-    public final boolean segments;
-    public final boolean permissions;
-    public final boolean timestamp;
-    public final boolean wherefrom;
+    public boolean segments;
+    public boolean permissions;
+    public boolean timestamp;
+    public boolean wherefrom;
     public boolean icon;
-    public final boolean checksum;
+    public boolean checksum;
 
     public DownloadFilterOptions() {
         final Preferences preferences = PreferencesFactory.get();
