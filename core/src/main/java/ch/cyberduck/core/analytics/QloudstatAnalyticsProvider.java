@@ -26,6 +26,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
@@ -38,7 +39,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     private final String target;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     public QloudstatAnalyticsProvider() {
         this(PreferencesFactory.get().getProperty("analytics.provider.qloudstat.setup"));
@@ -56,11 +57,11 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     @Override
     public DescriptiveUrl getSetup(final String hostname, final Scheme method, final Path container, final Credentials credentials) {
         final String setup = String.format("provider=%s,protocol=%s,endpoint=%s,key=%s,secret=%s",
-                hostname,
-                method.name(),
-                containerService.getContainer(container).getName(),
-                credentials.getUsername(),
-                credentials.getPassword());
+            hostname,
+            method.name(),
+            containerService.getContainer(container).getName(),
+            credentials.getUsername(),
+            credentials.getPassword());
         final String encoded;
         try {
             encoded = this.encode(new String(Base64.encodeBase64(setup.getBytes("UTF-8")), "UTF-8"));
@@ -81,7 +82,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
             b.append(URLEncoder.encode(p, "UTF-8"));
             // Becuase URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
             // for proper URI percented encoding.
-            return b.toString().replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
+            return StringUtils.replaceEach(b.toString(), new String[]{"+", "*", "%7E"}, new String[]{"%20", "%2A", "~"});
         }
         catch(UnsupportedEncodingException e) {
             return null;
