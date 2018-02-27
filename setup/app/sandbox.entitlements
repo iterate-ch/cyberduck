@@ -9,17 +9,14 @@
         <key>com.apple.security.files.bookmarks.document-scope</key>
         <true/>
         <key>com.apple.security.network.server</key>
-        <!-- The ability to open a socket for listening. Used for Active (PORT) FTP data connections -->
         <true/>
         <key>com.apple.security.network.client</key>
-        <!-- The ability to open an outgoing connection to another machine -->
         <true/>
         <key>com.apple.security.files.downloads.read-write</key>
         <true/>
         <key>com.apple.security.files.user-selected.read-write</key>
         <true/>
         <key>com.apple.security.print</key>
-        <!-- The ability to print -->
         <true/>
         <key>com.apple.security.application-groups</key>
         <array>
