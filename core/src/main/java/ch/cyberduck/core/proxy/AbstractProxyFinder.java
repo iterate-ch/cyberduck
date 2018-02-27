@@ -19,6 +19,7 @@ package ch.cyberduck.core.proxy;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.regex.PatternSyntaxException;
@@ -32,7 +33,7 @@ public abstract class AbstractProxyFinder implements ProxyFinder {
      * @return True if hostname matches wildcard
      */
     protected boolean matches(final String wildcard, final String hostname) {
-        final String host = wildcard.replace("*", ".*").replace("?", ".");
+        final String host = StringUtils.replaceEach(wildcard, new String[]{"*", "?"}, new String[]{".*", "."});
         final String regex = String.format("^%s$", host);
         try {
             return hostname.matches(regex);

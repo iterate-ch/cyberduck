@@ -23,6 +23,8 @@ import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 
 public class PathDictionary {
@@ -42,7 +44,8 @@ public class PathDictionary {
         final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
         final String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
-            for(String t : typeObj.replace("[", "").replace("]", "").split(", ")) {
+            for(String t : StringUtils.splitByWholeSeparator(StringUtils.replaceEach(typeObj,
+                new String[]{"[", "]"}, new String[]{"", ""}), ", ")) {
                 type.add(AbstractPath.Type.valueOf(t));
             }
         }
