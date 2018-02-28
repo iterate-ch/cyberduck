@@ -34,6 +34,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     public static final String KEY_CNT_DOWNLOADSHARES = "count_downloadshares";
     public static final String KEY_CNT_UPLOADSHARES = "count_uploadshares";
+    public static final String KEY_BRANCHVERSION = "branch_version";
 
     private final SDSSession session;
 
