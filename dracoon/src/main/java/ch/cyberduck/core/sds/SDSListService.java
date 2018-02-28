@@ -88,6 +88,9 @@ public class SDSListService implements ListService {
                     if(null != node.getCntUploadShares()) {
                         custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
                     }
+                    if(null != node.getBranchVersion()) {
+                        custom.put(SDSAttributesFinderFeature.KEY_BRANCHVERSION, String.valueOf(node.getBranchVersion()));
+                    }
                     attributes.setCustom(custom);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);
