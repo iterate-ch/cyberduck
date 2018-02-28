@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@ using System.IO;
 using System.Text;
 using ch.cyberduck.core;
 using org.apache.commons.io;
+using org.apache.commons.lang3;
 using org.apache.log4j;
 using Path = System.IO.Path;
 
@@ -69,11 +70,13 @@ namespace Ch.Cyberduck.Core.Local
             {
                 return true;
             }
+
             bool directory = Directory.Exists(path);
             if (directory)
             {
                 return true;
             }
+
             Log.warn(path + " is a non-existing file");
             return false;
         }
@@ -93,30 +96,38 @@ namespace Ch.Cyberduck.Core.Local
                 {
                     path = path + Path.DirectorySeparatorChar;
                 }
-                path = FilenameUtils.getPath(path);
 
+                path = FilenameUtils.getPath(path);
                 StringBuilder sb = new StringBuilder();
                 if (Utils.IsNotBlank(prefix))
                 {
                     sb.Append(prefix);
                 }
+
                 path = FilenameUtils.separatorsToSystem(path);
                 string[] parts = path.Split(Path.DirectorySeparatorChar);
                 foreach (string part in parts)
                 {
-                    string cleanpart = part;
-                    foreach (char c in Path.GetInvalidFileNameChars())
+                    string cleanpart = part.Trim();
+                    char[] invalidChars = Path.GetInvalidFileNameChars();
+                    if (StringUtils.containsAny(cleanpart, invalidChars))
                     {
-                        cleanpart = cleanpart.Replace(c.ToString(), URIEncoder.encode(c.ToString())).Trim();
+                        foreach (char c in invalidChars)
+                        {
+                            cleanpart = cleanpart.Replace(c.ToString(), URIEncoder.encode(c.ToString()));
+                        }
                     }
+
                     sb.Append(cleanpart);
                     if (!parts[parts.Length - 1].Equals(part))
                     {
                         sb.Append(Path.DirectorySeparatorChar);
                     }
                 }
+
                 return sb.ToString();
             }
+
             return path;
         }
 
@@ -129,6 +140,7 @@ namespace Ch.Cyberduck.Core.Local
                     name = name.Replace(c.ToString(), "_");
                 }
             }
+
             return name.Trim();
         }
     }
