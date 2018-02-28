@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
 /**
@@ -30,7 +31,7 @@ public class DefaultPathPredicate implements CacheReference<Path> {
     private final Path file;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     public DefaultPathPredicate(final Path file) {
         this.file = file;
@@ -53,12 +54,14 @@ public class DefaultPathPredicate implements CacheReference<Path> {
 
     protected String type() {
         final EnumSet<Path.Type> types = EnumSet.copyOf(file.getType());
-        types.remove(Path.Type.placeholder);
-        types.remove(Path.Type.volume);
-        types.remove(Path.Type.encrypted);
-        types.remove(Path.Type.decrypted);
-        types.remove(Path.Type.vault);
-        types.remove(Path.Type.upload);
+        types.removeAll(Arrays.asList(
+            Path.Type.placeholder,
+            Path.Type.volume,
+            Path.Type.encrypted,
+            Path.Type.decrypted,
+            Path.Type.vault,
+            Path.Type.upload
+        ));
         return String.valueOf(types);
     }
 
