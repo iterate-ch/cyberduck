@@ -58,6 +58,11 @@
 
 
 
+
+
+
+
+
     </style>
 </head>
 
@@ -73,6 +78,23 @@
     href="https://trac.cyberduck.io/milestone/6.0">6.0</a>
     supports transparent <strong>client-side encryption</strong> using Cryptomator interoperable vaults.
 </p>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/6.4.3"><strong>Version 6.4.3</strong></a>
+</p>
+<ul>
+    <li><span class="label label-warning">Bugfix</span> Workaround error parsing codesigning entitlement by
+        signing process in Mac App Store causing connect error due to missing entitlement key (Mac App Store) (<a
+            href="https://trac.cyberduck.io/ticket/10237">#10237</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/6.4.2"><strong>Version 6.4.2</strong></a>
+</p>
+<ul>
+    <li><span class="label label-warning">Bugfix</span> Ignore 550 error replies for STAT (FTP)</li>
+</ul>
 
 <p>
     <a href="https://trac.cyberduck.io/milestone/6.4.1"><strong>Version 6.4.1</strong></a>
@@ -111,17 +133,17 @@
     <li><span class="label label-warning">Bugfix</span> Set modification date on uploaded files (OneDrive) (<a
         href="https://trac.cyberduck.io/ticket/10171">#10171</a>)
     </li>
-    <li><span class="label label-warning">Bugfix</span>Application hangs when selecting a large number of files for
+    <li><span class="label label-warning">Bugfix</span> Application hangs when selecting a large number of files for
         upload (Windows)
     </li>
-    <li><span class="label label-warning">Bugfix</span>Do not save vault passphrase by default (Cryptomator)</li>
-    <li><span class="label label-warning">Bugfix</span>Fix failures when attempting to read attributes of incomplete
+    <li><span class="label label-warning">Bugfix</span> Do not save vault passphrase by default (Cryptomator)</li>
+    <li><span class="label label-warning">Bugfix</span> Fix failures when attempting to read attributes of incomplete
         multipart upload (S3)
     </li>
-    <li><span class="label label-warning">Bugfix</span>Reloading directory after enabling "Auto detect" in preferences
+    <li><span class="label label-warning">Bugfix</span> Reloading directory after enabling "Auto detect" in preferences
         does not ask to unlock vault (Cryptomator) (<a href="https://trac.cyberduck.io/ticket/10214">#10214</a>)
     </li>
-    <li><span class="label label-warning">Bugfix</span>Transfer labled incomplete when segment required multiple
+    <li><span class="label label-warning">Bugfix</span> Transfer labled incomplete when segment required multiple
         attempts to finish (S3, OpenStack Swift, Backblaze B2) (<a
             href="https://trac.cyberduck.io/ticket/9552">#9552</a>)
     </li>

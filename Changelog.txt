@@ -1,6 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
+6.4.3
+- [Bugfix] Workaround error parsing codesigning entitlement by signing process in Mac App Store causing connect error due to missing entitlement key (Mac App Store) (#10237)
+
+6.4.2
+- [Bugfix] Ignore 550 error replies for STAT (FTP)
+
 6.4.1
 - [Bugfix] Cannot edit ACLs and metadata in Info panel (macOS) (#10226)
 
