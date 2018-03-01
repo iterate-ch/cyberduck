@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.ftp.FTPExceptionMappingService;
 import ch.cyberduck.core.ftp.FTPParserSelector;
 import ch.cyberduck.core.ftp.FTPSession;
@@ -148,7 +149,7 @@ public class FTPListService implements ListService {
                 try {
                     return this.post(directory, implementations.get(Command.stat).list(directory, listener), listener);
                 }
-                catch(FTPInvalidListException | InteroperabilityException | AccessDeniedException e) {
+                catch(FTPInvalidListException | InteroperabilityException | AccessDeniedException | NotfoundException e) {
                     this.remove(Command.stat);
                 }
             }
