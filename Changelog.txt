@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.4.4
+- [Bugfix] Skip failures saving or finding passwords in credential manager (Windows)
+
 6.4.3
 - [Bugfix] Workaround error parsing codesigning entitlement by signing process in Mac App Store causing connect error due to missing entitlement key (Mac App Store) (#10237)
 
