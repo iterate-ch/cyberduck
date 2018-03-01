@@ -161,7 +161,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
             // Only for AWS
-            configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
+            configuration.setProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default"));
             configuration.setProperty("s3service.disable-dns-buckets",
                 String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
         }
