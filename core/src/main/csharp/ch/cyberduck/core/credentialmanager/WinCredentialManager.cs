@@ -16,6 +16,7 @@
 // feedback@cyberduck.io
 // 
 
+using org.apache.log4j;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -29,6 +30,8 @@ namespace Ch.Cyberduck.Core.CredentialManager
 
     public static class WinCredentialManager
     {
+        private static readonly Logger log = Logger.getLogger(typeof(WinCredentialManager).AssemblyQualifiedName);
+
         /// <summary>
         /// Opens OS Version specific Window prompting for credentials
         /// </summary>
@@ -239,7 +242,15 @@ namespace Ch.Cyberduck.Core.CredentialManager
             cred.Persist = NativeCode.Persistance.Entrprise;
             NativeCode.NativeCredential ncred = cred.GetNativeCredential();
             // Write the info into the CredMan storage.
-            return NativeCode.CredWrite(ref ncred, 0);
+            try
+            {
+                return NativeCode.CredWrite(ref ncred, 0);
+            }
+            catch (Exception e)
+            {
+                log.error($"Failed saving credentials for {Target}", e);
+                return false;
+            }
         }
 
 
@@ -254,29 +265,35 @@ namespace Ch.Cyberduck.Core.CredentialManager
             var username = String.Empty;
             var passwd = String.Empty;
             var domain = String.Empty;
-
-            // Make the API call using the P/Invoke signature
-            bool ret = NativeCode.CredRead(Target, NativeCode.CredentialType.Generic, 0, out nCredPtr);
-            // If the API was successful then...
-            if (ret)
+            try
             {
-                using (CriticalCredentialHandle critCred = new CriticalCredentialHandle(nCredPtr))
+                // Make the API call using the P/Invoke signature
+                bool ret = NativeCode.CredRead(Target, NativeCode.CredentialType.Generic, 0, out nCredPtr);
+                // If the API was successful then...
+                if (ret)
                 {
-                    Credential cred = critCred.GetCredential();
-                    passwd = cred.CredentialBlob;
-                    var user = cred.UserName;
-                    StringBuilder userBuilder = new StringBuilder();
-                    StringBuilder domainBuilder = new StringBuilder();
-                    var code = NativeCode.CredUIParseUserName(user, userBuilder, int.MaxValue, domainBuilder, int.MaxValue);
-                    //assuming invalid account name to be not meeting condition for CredUIParseUserName
-                    //"The name must be in UPN or down-level format, or a certificate"
-                    if (code == NativeCode.CredentialUIReturnCodes.InvalidAccountName)
+                    using (CriticalCredentialHandle critCred = new CriticalCredentialHandle(nCredPtr))
                     {
-                        userBuilder.Append(user);
+                        Credential cred = critCred.GetCredential();
+                        passwd = cred.CredentialBlob;
+                        var user = cred.UserName;
+                        StringBuilder userBuilder = new StringBuilder();
+                        StringBuilder domainBuilder = new StringBuilder();
+                        var code = NativeCode.CredUIParseUserName(user, userBuilder, int.MaxValue, domainBuilder, int.MaxValue);
+                        //assuming invalid account name to be not meeting condition for CredUIParseUserName
+                        //"The name must be in UPN or down-level format, or a certificate"
+                        if (code == NativeCode.CredentialUIReturnCodes.InvalidAccountName)
+                        {
+                            userBuilder.Append(user);
+                        }
+                        username = userBuilder.ToString();
+                        domain = domainBuilder.ToString();
                     }
-                    username = userBuilder.ToString();
-                    domain = domainBuilder.ToString();
                 }
+            }
+            catch (Exception e)
+            {
+                log.error($"Could not get credentials for {Target}", e);
             }
             return new NetworkCredential(username, passwd, domain);
         }
@@ -289,8 +306,16 @@ namespace Ch.Cyberduck.Core.CredentialManager
         /// <returns>True: Success, False: Failure</returns>
         public static bool RemoveCredentials(string Target)
         {
-            // Make the API call using the P/Invoke signature
-            return NativeCode.CredDelete(Target, NativeCode.CredentialType.Generic, 0);
+            try
+            {
+                // Make the API call using the P/Invoke signature
+                return NativeCode.CredDelete(Target, NativeCode.CredentialType.Generic, 0);
+            }
+            catch (Exception e)
+            {
+                log.error($"Could not remove credentials {Target}", e);
+                return false;
+            }
         }
 
         /// <summary>
