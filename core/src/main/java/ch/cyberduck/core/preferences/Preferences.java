@@ -708,7 +708,7 @@ public abstract class Preferences {
         // Maximum number of parts is 10'000. With 10MB segements this gives a maximum object size of 100GB
         // Must be a multiple of org.cryptomator.cryptolib.v1.Constants.PAYLOAD_SIZE when using Cryptomator Vaults
         defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
-        defaults.put("s3.copy.multipart.size", String.valueOf(5368709120L)); // 5GB
+        defaults.put("s3.copy.multipart.size", String.valueOf(100L * 1024L * 1024L)); // 100MB
 
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
 
