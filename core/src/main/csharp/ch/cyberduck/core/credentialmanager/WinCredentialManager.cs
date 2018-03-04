@@ -264,7 +264,6 @@ namespace Ch.Cyberduck.Core.CredentialManager
             IntPtr nCredPtr;
             var username = String.Empty;
             var passwd = String.Empty;
-            var domain = String.Empty;
             try
             {
                 // Make the API call using the P/Invoke signature
@@ -276,18 +275,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     {
                         Credential cred = critCred.GetCredential();
                         passwd = cred.CredentialBlob;
-                        var user = cred.UserName;
-                        StringBuilder userBuilder = new StringBuilder();
-                        StringBuilder domainBuilder = new StringBuilder();
-                        var code = NativeCode.CredUIParseUserName(user, userBuilder, int.MaxValue, domainBuilder, int.MaxValue);
-                        //assuming invalid account name to be not meeting condition for CredUIParseUserName
-                        //"The name must be in UPN or down-level format, or a certificate"
-                        if (code == NativeCode.CredentialUIReturnCodes.InvalidAccountName)
-                        {
-                            userBuilder.Append(user);
-                        }
-                        username = userBuilder.ToString();
-                        domain = domainBuilder.ToString();
+                        username = cred.UserName;
                     }
                 }
             }
@@ -295,7 +283,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
             {
                 log.error($"Could not get credentials for {Target}", e);
             }
-            return new NetworkCredential(username, passwd, domain);
+            return new NetworkCredential(username, passwd, string.Empty);
         }
 
 
