@@ -15,11 +15,16 @@ namespace Ch.Cyberduck.Core.credentialmanager
                 return new string[]
                 {
                     "user",
+                    "user@short.tld",
                     "user@service.domain.tld",
                     "cdid1.credential.cd1..dywpmxvbnncbzmlappwofuzndjoqqonyenswravjbvuyckeihqcoirpumtxj",
                     "svimjbjpojbxgvhgqivytxodldswkvzkoqeqgwcjciwueewpsrvsnygloehmveuvakwvqtsddmioyvawgl",
                     "separated.user",
-                    "dash-user"
+                    "dash-user",
+                    "EsocwbpPZdIwo",
+                    "ZSwkeCVQXDOtuCBu",
+                    "ZSwkeCVQXDOtuCBupwUoozsI",
+                    "llaZivuuLhpguktsjGfGKedsdxwntvBH"
                 };
             }
         }
