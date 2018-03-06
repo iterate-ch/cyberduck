@@ -16,12 +16,12 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
@@ -41,9 +41,9 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        for(Path file : files.keySet()) {
-            return (R) registry.find(session, file).getFeature(session, Bulk.class, proxy).pre(type, files, callback);
+    public R pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        for(TransferItem file : files.keySet()) {
+            return (R) registry.find(session, file.remote).getFeature(session, Bulk.class, proxy).pre(type, files, callback);
         }
         return proxy.pre(type, files, callback);
     }
@@ -55,9 +55,9 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        for(Path file : files.keySet()) {
-            registry.find(session, file).getFeature(session, Bulk.class, proxy).post(type, files, callback);
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        for(TransferItem file : files.keySet()) {
+            registry.find(session, file.remote).getFeature(session, Bulk.class, proxy).post(type, files, callback);
         }
     }
 

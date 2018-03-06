@@ -303,13 +303,14 @@ public abstract class Transfer implements Serializable {
     /**
      * @param source      Connection to source server of transfer. May be null.
      * @param destination Connection to target server of transfer
+     * @param files
      * @param callback    Prompt
      */
-    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         //
     }
 
-    public void post(Session<?> source, Session<?> destination, Map<Path, TransferStatus> files, ConnectionCallback callback) throws BackgroundException {
+    public void post(Session<?> source, Session<?> destination, Map<TransferItem, TransferStatus> files, ConnectionCallback callback) throws BackgroundException {
         //
     }
 
