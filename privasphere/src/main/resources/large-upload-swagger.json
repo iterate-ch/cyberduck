@@ -1,0 +1,78 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Certificate service for large uploads",
+    "version": "1.0.0",
+    "title": "Large Upload Certificate Service",
+    "contact": {
+      "email": "info@privasphere.com"
+    },
+    "license": {
+      "name": "GNU General Public License v3",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.en.html"
+    }
+  },
+  "host": "www.privasphere.com",
+  "basePath": "/rest_e2eCerts",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/uploads/{token}/certificates": {
+      "get": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Find certificates by token",
+        "description": "Returns an array of certificates",
+        "operationId": "getCertificatesByToken",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "Upload token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Certificates"
+              }
+            }
+          },
+          "404": {
+            "description": "Upload not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Certificates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Certificate"
+      }
+    },
+    "Certificate": {
+      "type": "object",
+      "properties": {
+        "dn": {
+          "type": "string"
+        },
+        "pem": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    }
+  }
+}

@@ -46,6 +46,7 @@
         <module>onedrive</module>
         <module>dracoon</module>
         <module>manta</module>
+        <module>privasphere</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
