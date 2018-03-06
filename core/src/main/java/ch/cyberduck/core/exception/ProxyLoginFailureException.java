@@ -15,14 +15,12 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
-import java.time.Duration;
-
-public class ProxyLoginFailureException extends RetriableAccessDeniedException {
+public class ProxyLoginFailureException extends AccessDeniedException {
     public ProxyLoginFailureException(final String detail) {
-        super(detail, Duration.ZERO);
+        super(detail);
     }
 
     public ProxyLoginFailureException(final String detail, final Throwable cause) {
-        super(detail, Duration.ZERO, cause);
+        super(detail, cause);
     }
 }
