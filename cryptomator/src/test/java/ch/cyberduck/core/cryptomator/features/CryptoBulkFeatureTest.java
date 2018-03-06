@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 
@@ -77,19 +79,19 @@ public class CryptoBulkFeatureTest {
         };
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
-        final CryptoBulkFeature<Map<Path, TransferStatus>> bulk = new CryptoBulkFeature<Map<Path, TransferStatus>>(session, new Bulk<Map<Path, TransferStatus>>() {
+        final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override
-            public Map<Path, TransferStatus> pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+            public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
                 return files;
             }
 
             @Override
-            public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+            public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
                 //
             }
 
             @Override
-            public Bulk<Map<Path, TransferStatus>> withDelete(final Delete delete) {
+            public Bulk<Map<TransferItem, TransferStatus>> withDelete(final Delete delete) {
                 return this;
             }
         }, new Delete() {
@@ -108,29 +110,29 @@ public class CryptoBulkFeatureTest {
                 throw new UnsupportedOperationException();
             }
         }, cryptomator);
-        final HashMap<Path, TransferStatus> files = new HashMap<>();
+        final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         final Path directory = new Path("/vault/directory", EnumSet.of(Path.Type.directory));
-        files.put(directory, new TransferStatus().exists(false));
-        files.put(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new TransferStatus().exists(false));
-        files.put(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new TransferStatus().exists(false));
-        final Map<Path, TransferStatus> pre = bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
+        files.put(new TransferItem(directory, new NullLocal("vault", "directory")), new TransferStatus().exists(false));
+        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new NullLocal(directory.getAbsolute(), "file1")), new TransferStatus().exists(false));
+        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new NullLocal(directory.getAbsolute(), "file2")), new TransferStatus().exists(false));
+        final Map<TransferItem, TransferStatus> pre = bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertEquals(3, pre.size());
-        final Path encryptedDirectory = pre.keySet().stream().filter(new Predicate<Path>() {
+        final TransferItem encryptedDirectory = pre.keySet().stream().filter(new Predicate<TransferItem>() {
             @Override
-            public boolean test(final Path path) {
-                return path.isDirectory();
+            public boolean test(final TransferItem path) {
+                return path.remote.isDirectory();
             }
         }).findFirst().get();
-        final String directoryId = encryptedDirectory.attributes().getDirectoryId();
+        final String directoryId = encryptedDirectory.remote.attributes().getDirectoryId();
         assertNotNull(directoryId);
-        for(Path file : pre.keySet().stream().filter(new Predicate<Path>() {
+        for(TransferItem file : pre.keySet().stream().filter(new Predicate<TransferItem>() {
             @Override
-            public boolean test(final Path path) {
-                return path.isFile();
+            public boolean test(final TransferItem path) {
+                return path.remote.isFile();
             }
         }).collect(Collectors.toSet())) {
             assertEquals(encryptedDirectory, file.getParent());
-            assertEquals(directoryId, file.getParent().attributes().getDirectoryId());
+            assertEquals(directoryId, file.getParent().remote.attributes().getDirectoryId());
         }
     }
 
@@ -164,19 +166,19 @@ public class CryptoBulkFeatureTest {
         };
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
-        final CryptoBulkFeature<Map<Path, TransferStatus>> bulk = new CryptoBulkFeature<Map<Path, TransferStatus>>(session, new Bulk<Map<Path, TransferStatus>>() {
+        final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override
-            public Map<Path, TransferStatus> pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+            public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
                 return files;
             }
 
             @Override
-            public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+            public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
                 //
             }
 
             @Override
-            public Bulk<Map<Path, TransferStatus>> withDelete(final Delete delete) {
+            public Bulk<Map<TransferItem, TransferStatus>> withDelete(final Delete delete) {
                 return this;
             }
         }, new Delete() {
@@ -195,11 +197,11 @@ public class CryptoBulkFeatureTest {
                 throw new UnsupportedOperationException();
             }
         }, cryptomator);
-        final HashMap<Path, TransferStatus> files = new HashMap<>();
+        final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         final Path directory = new Path("/vault/directory", EnumSet.of(Path.Type.directory));
-        files.put(directory, new TransferStatus().exists(false));
-        files.put(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new TransferStatus().exists(false));
-        files.put(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new TransferStatus().exists(false));
+        files.put(new TransferItem(directory, new NullLocal("vault", "directory")), new TransferStatus().exists(false));
+        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new NullLocal(directory.getAbsolute(), "file1")), new TransferStatus().exists(false));
+        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new NullLocal(directory.getAbsolute(), "file2")), new TransferStatus().exists(false));
         bulk.post(Transfer.Type.upload, files, new DisabledConnectionCallback());
     }
 }

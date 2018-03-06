@@ -26,6 +26,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.ByteArrayOutputStream;
@@ -48,15 +49,15 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
     }
 
     @Override
-    public Void pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public Void pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         try {
             switch(type) {
                 case download:
                     break;
                 default:
                     if(session.userAccount().isEncryptionEnabled()) {
-                        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-                            if(containerService.getContainer(entry.getKey()).getType().contains(Path.Type.vault)) {
+                        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+                            if(containerService.getContainer(entry.getKey().remote).getType().contains(Path.Type.vault)) {
                                 final TransferStatus status = entry.getValue();
                                 final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                                 final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
@@ -75,7 +76,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         switch(type) {
             case download:
                 break;
@@ -83,9 +84,9 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 if(PreferencesFactory.get().getBoolean("sds.encryption.missingkeys.upload")) {
                     if(session.userAccount().isEncryptionEnabled()) {
                         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
-                        for(Path file : files.keySet()) {
-                            if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
-                                background.operate(callback, file);
+                        for(TransferItem file : files.keySet()) {
+                            if(containerService.getContainer(file.remote).getType().contains(Path.Type.vault)) {
+                                background.operate(callback, file.remote);
                             }
                         }
                     }
