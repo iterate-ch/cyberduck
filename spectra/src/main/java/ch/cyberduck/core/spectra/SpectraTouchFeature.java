@@ -20,6 +20,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
@@ -36,7 +37,7 @@ public class SpectraTouchFeature implements Touch {
     public Path touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final TransferStatus status = new TransferStatus();
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(file, status.length(0L)), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), status.length(0L)), new DisabledConnectionCallback());
         return file;
     }
 

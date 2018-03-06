@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -112,9 +111,9 @@ public class CryptoBulkFeatureTest {
         }, cryptomator);
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         final Path directory = new Path("/vault/directory", EnumSet.of(Path.Type.directory));
-        files.put(new TransferItem(directory, new NullLocal("vault", "directory")), new TransferStatus().exists(false));
-        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new NullLocal(directory.getAbsolute(), "file1")), new TransferStatus().exists(false));
-        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new NullLocal(directory.getAbsolute(), "file2")), new TransferStatus().exists(false));
+        files.put(new TransferItem(directory), new TransferStatus().exists(false));
+        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file))), new TransferStatus().exists(false));
+        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file))), new TransferStatus().exists(false));
         final Map<TransferItem, TransferStatus> pre = bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertEquals(3, pre.size());
         final TransferItem encryptedDirectory = pre.keySet().stream().filter(new Predicate<TransferItem>() {
@@ -199,9 +198,9 @@ public class CryptoBulkFeatureTest {
         }, cryptomator);
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         final Path directory = new Path("/vault/directory", EnumSet.of(Path.Type.directory));
-        files.put(new TransferItem(directory, new NullLocal("vault", "directory")), new TransferStatus().exists(false));
-        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new NullLocal(directory.getAbsolute(), "file1")), new TransferStatus().exists(false));
-        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new NullLocal(directory.getAbsolute(), "file2")), new TransferStatus().exists(false));
+        files.put(new TransferItem(directory), new TransferStatus().exists(false));
+        files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file))), new TransferStatus().exists(false));
+        files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file))), new TransferStatus().exists(false));
         bulk.post(Transfer.Type.upload, files, new DisabledConnectionCallback());
     }
 }
