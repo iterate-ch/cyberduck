@@ -29,9 +29,10 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
-import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.DefaultCharsetProvider;
+import ch.cyberduck.core.FolderBookmarkCollection;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -60,8 +61,8 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
 
     private final ProxyController quickConnectPopupModel = new QuickConnectModel();
 
-    private final BookmarkCollection bookmarks
-            = BookmarkCollection.defaultCollection();
+    private final AbstractHostCollection bookmarks
+        = FolderBookmarkCollection.favoritesCollection();
 
     private final class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
         @Override

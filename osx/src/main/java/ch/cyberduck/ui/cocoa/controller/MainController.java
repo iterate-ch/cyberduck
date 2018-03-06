@@ -524,7 +524,7 @@ public class MainController extends BundleController implements NSApplication.De
             log.info("No default bookmark configured");
             return; //No default bookmark given
         }
-        final Host bookmark = BookmarkCollection.defaultCollection().lookup(defaultBookmark);
+        final Host bookmark = FolderBookmarkCollection.favoritesCollection().lookup(defaultBookmark);
         if(null == bookmark) {
             log.info("Default bookmark no more available");
             return;
@@ -706,13 +706,14 @@ public class MainController extends BundleController implements NSApplication.De
                 break;
             }
         }
-        if(BookmarkCollection.defaultCollection().isEmpty()) {
+        final FolderBookmarkCollection bookmarks = FolderBookmarkCollection.favoritesCollection();
+        if(bookmarks.isEmpty()) {
             log.warn("No bookmark for upload");
             return false;
         }
         final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
         bookmarksPopup.setToolTip(LocaleFactory.localizedString("Bookmarks"));
-        for(Host b : BookmarkCollection.defaultCollection()) {
+        for(Host b : bookmarks) {
             String title = BookmarkNameProvider.toString(b);
             int i = 1;
             while(bookmarksPopup.itemWithTitle(title) != null) {
@@ -728,7 +729,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         if(null == open) {
             int i = 0;
-            for(Host bookmark : BookmarkCollection.defaultCollection()) {
+            for(Host bookmark : bookmarks) {
                 boolean found = false;
                 // Pick the bookmark with the same download location
                 for(Local file : files) {
@@ -775,7 +776,7 @@ public class MainController extends BundleController implements NSApplication.De
             public void callback(int returncode) {
                 if(DEFAULT_OPTION == returncode) {
                     final String selected = bookmarksPopup.selectedItem().representedObject();
-                    for(Host bookmark : BookmarkCollection.defaultCollection()) {
+                    for(Host bookmark : bookmarks) {
                         // Determine selected bookmark
                         if(bookmark.getUuid().equals(selected)) {
                             if(bookmark.equals(mount)) {
@@ -948,7 +949,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             });
         }
-        final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
+        final AbstractHostCollection bookmarks = FolderBookmarkCollection.favoritesCollection();
         // Load all bookmarks in background
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
@@ -1333,18 +1334,18 @@ public class MainController extends BundleController implements NSApplication.De
     private static final class ImporterBackgroundAction extends AbstractBackgroundAction<Void> {
         private final Preferences preferences = PreferencesFactory.get();
 
-        private final BookmarkCollection bookmarks;
+        private final AbstractHostCollection bookmarks;
         private final List<ThirdpartyBookmarkCollection> collections;
         private final CountDownLatch lock;
 
-        public ImporterBackgroundAction(final BookmarkCollection bookmarks, final CountDownLatch lock) {
+        public ImporterBackgroundAction(final AbstractHostCollection bookmarks, final CountDownLatch lock) {
             this(bookmarks, lock, Arrays.asList(
                 new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
                 new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
                 new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection(), new Expandrive6BookmarkCollection()));
         }
 
-        public ImporterBackgroundAction(final BookmarkCollection bookmarks, final CountDownLatch lock, final List<ThirdpartyBookmarkCollection> collections) {
+        public ImporterBackgroundAction(final AbstractHostCollection bookmarks, final CountDownLatch lock, final List<ThirdpartyBookmarkCollection> collections) {
             this.bookmarks = bookmarks;
             this.lock = lock;
             this.collections = collections;

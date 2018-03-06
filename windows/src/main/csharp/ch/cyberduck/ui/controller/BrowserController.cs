@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static readonly Logger Log = Logger.getLogger(typeof(BrowserController).FullName);
         protected static string DEFAULT = LocaleFactory.localizedString("Default");
-        private readonly BookmarkCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
+        private readonly BookmarkCollection _bookmarkCollection = FolderBookmarkCollection.favoritesCollection();
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
         private readonly PathCache _cache = new PathCache(PreferencesFactory.get().getInteger("browser.cache.size"));
@@ -487,19 +487,19 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_SortBookmarksByProtocol()
         {
-            BookmarkCollection.defaultCollection().sortByProtocol();
+            FolderBookmarkCollection.favoritesCollection().sortByProtocol();
             ReloadBookmarks();
         }
 
         private void View_SortBookmarksByNickname()
         {
-            BookmarkCollection.defaultCollection().sortByNickname();
+            FolderBookmarkCollection.favoritesCollection().sortByNickname();
             ReloadBookmarks();
         }
 
         private void View_SortBookmarksByHostname()
         {
-            BookmarkCollection.defaultCollection().sortByHostname();
+            FolderBookmarkCollection.favoritesCollection().sortByHostname();
             ReloadBookmarks();
         }
 
@@ -1139,7 +1139,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private List<Host> View_GetBookmarks()
         {
             List<Host> b = new List<Host>();
-            foreach (Host h in BookmarkCollection.defaultCollection())
+            foreach (Host h in FolderBookmarkCollection.favoritesCollection())
             {
                 b.Add(h);
             }
@@ -2314,7 +2314,7 @@ namespace Ch.Cyberduck.Ui.Controller
             string input = View.QuickConnectValue.Trim();
 
             // First look for equivalent bookmarks
-            BookmarkCollection bookmarkCollection = BookmarkCollection.defaultCollection();
+            BookmarkCollection bookmarkCollection = FolderBookmarkCollection.favoritesCollection();
             foreach (Host host in bookmarkCollection)
             {
                 if (BookmarkNameProvider.toString(host).Equals(input))
@@ -3047,7 +3047,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     break;
                 case BrowserView.Bookmark:
                     View.CurrentView = BrowserView.Bookmark;
-                    _bookmarkModel.Source = BookmarkCollection.defaultCollection();
+                    _bookmarkModel.Source = FolderBookmarkCollection.favoritesCollection();
                     ReloadBookmarks();
                     SelectHost();
                     break;

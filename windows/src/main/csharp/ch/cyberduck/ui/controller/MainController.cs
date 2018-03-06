@@ -281,7 +281,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return; //No default bookmark given
             }
-            Host bookmark = BookmarkCollection.defaultCollection().lookup(defaultBookmark);
+            Host bookmark = FolderBookmarkCollection.favoritesCollection().lookup(defaultBookmark);
             if (null == bookmark)
             {
                 Logger.info("Default bookmark no more available");
@@ -688,7 +688,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
                 {
-                    BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
+                    BookmarkCollection bookmarks = FolderBookmarkCollection.favoritesCollection();
                     c.filter(bookmarks);
                     if (!c.isEmpty())
                     {
@@ -712,7 +712,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 switch (option)
                                 {
                                     case 0:
-                                        BookmarkCollection.defaultCollection().addAll(c1);
+                                        FolderBookmarkCollection.favoritesCollection().addAll(c1);
                                         // Flag as imported
                                         PreferencesFactory.get().setProperty(c1.getConfiguration(), true);
                                         break;
@@ -733,7 +733,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Load all bookmarks in background
             _controller.Background(() =>
             {
-                BookmarkCollection c = BookmarkCollection.defaultCollection();
+                BookmarkCollection c = FolderBookmarkCollection.favoritesCollection();
                 c.load();
                 bookmarksSemaphore.Signal();
             }, () =>
