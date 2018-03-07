@@ -845,10 +845,7 @@ namespace Ch.Cyberduck.Ui.Controller
             CountdownEvent bookmarksSemaphore = new CountdownEvent(1);
             CountdownEvent thirdpartySemaphore = new CountdownEvent(1);
             InitializeBookmarks(bookmarksSemaphore);
-            if (!Utils.IsRunningAsUWP)
-            {
-                InitializeBonjour();
-            }
+            InitializeBonjour();
             InitializeProtocolHandler();
             ImportBookmarks(bookmarksSemaphore, thirdpartySemaphore);
             SetupServiceHost();
