@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static readonly Logger Log = Logger.getLogger(typeof(BrowserController).FullName);
         protected static string DEFAULT = LocaleFactory.localizedString("Default");
-        private readonly BookmarkCollection _bookmarkCollection = FolderBookmarkCollection.favoritesCollection();
+        private readonly AbstractHostCollection _bookmarkCollection = FolderBookmarkCollection.favoritesCollection();
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
         private readonly PathCache _cache = new PathCache(PreferencesFactory.get().getInteger("browser.cache.size"));
@@ -2314,7 +2314,7 @@ namespace Ch.Cyberduck.Ui.Controller
             string input = View.QuickConnectValue.Trim();
 
             // First look for equivalent bookmarks
-            BookmarkCollection bookmarkCollection = FolderBookmarkCollection.favoritesCollection();
+            AbstractHostCollection bookmarkCollection = FolderBookmarkCollection.favoritesCollection();
             foreach (Host host in bookmarkCollection)
             {
                 if (BookmarkNameProvider.toString(host).Equals(input))

@@ -688,7 +688,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
                 {
-                    BookmarkCollection bookmarks = FolderBookmarkCollection.favoritesCollection();
+                    AbstractHostCollection bookmarks = FolderBookmarkCollection.favoritesCollection();
                     c.filter(bookmarks);
                     if (!c.isEmpty())
                     {
@@ -733,7 +733,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Load all bookmarks in background
             _controller.Background(() =>
             {
-                BookmarkCollection c = FolderBookmarkCollection.favoritesCollection();
+                AbstractHostCollection c = FolderBookmarkCollection.favoritesCollection();
                 c.load();
                 bookmarksSemaphore.Signal();
             }, () =>
