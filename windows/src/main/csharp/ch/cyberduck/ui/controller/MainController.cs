@@ -510,6 +510,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Logger.warn("No Bonjour support available");
                 }
+                catch (System.IO.FileNotFoundException)
+                {
+                    Logger.warn("No Bonjour support available");
+                }
             };
             Thread thread = new Thread(start);
             thread.SetApartmentState(ApartmentState.STA);
@@ -845,7 +849,10 @@ namespace Ch.Cyberduck.Ui.Controller
             CountdownEvent bookmarksSemaphore = new CountdownEvent(1);
             CountdownEvent thirdpartySemaphore = new CountdownEvent(1);
             InitializeBookmarks(bookmarksSemaphore);
-            InitializeBonjour();
+            if (!Utils.IsRunningAsUWP)
+            {
+                InitializeBonjour();
+            }
             InitializeProtocolHandler();
             ImportBookmarks(bookmarksSemaphore, thirdpartySemaphore);
             SetupServiceHost();
