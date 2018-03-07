@@ -506,11 +506,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     RendezvousFactory.instance().init();
                 }
-                catch (COMException)
-                {
-                    Logger.warn("No Bonjour support available");
-                }
-                catch (System.IO.FileNotFoundException)
+                catch
                 {
                     Logger.warn("No Bonjour support available");
                 }
