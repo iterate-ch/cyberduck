@@ -1,6 +1,7 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.junit.Test;
 
@@ -18,6 +19,13 @@ public class WorkspaceTrashFeatureTest {
         assertTrue(l.exists());
         new WorkspaceTrashFeature().trash(l);
         assertFalse(l.exists());
+    }
+
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testTrashNotfound() throws Exception {
+        Local l = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        assertFalse(l.exists());
+        new WorkspaceTrashFeature().trash(l);
     }
 
     @Test

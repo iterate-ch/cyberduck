@@ -34,20 +34,18 @@ public class WorkspaceTrashFeature implements Trash {
      */
     @Override
     public void trash(final Local file) throws LocalAccessDeniedException {
-        if(file.exists()) {
-            synchronized(NSWorkspace.class) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Move %s to Trash", file));
-                }
-                final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-                // Asynchronous operation. 0 if the operation is performed synchronously and succeeds, and a positive
-                // integer if the operation is performed asynchronously and succeeds
-                if(!workspace.performFileOperation(
-                        NSWorkspace.RecycleOperation,
-                        file.getParent().getAbsolute(), StringUtils.EMPTY,
-                        NSArray.arrayWithObject(file.getName()))) {
-                    throw new LocalAccessDeniedException(String.format("Failed to move %s to Trash", file.getName()));
-                }
+        synchronized(NSWorkspace.class) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Move %s to Trash", file));
+            }
+            final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+            // Asynchronous operation. 0 if the operation is performed synchronously and succeeds, and a positive
+            // integer if the operation is performed asynchronously and succeeds
+            if(!workspace.performFileOperation(
+                NSWorkspace.RecycleOperation,
+                file.getParent().getAbsolute(), StringUtils.EMPTY,
+                NSArray.arrayWithObject(file.getName()))) {
+                throw new LocalAccessDeniedException(String.format("Failed to move %s to Trash", file.getName()));
             }
         }
     }
