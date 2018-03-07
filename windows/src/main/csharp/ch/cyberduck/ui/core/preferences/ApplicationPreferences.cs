@@ -16,6 +16,7 @@
 // feedback@cyberduck.io
 // 
 
+using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.core.cryptomator.random;
 using ch.cyberduck.core.local;
@@ -35,6 +36,7 @@ using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using org.apache.log4j;
+using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
@@ -73,7 +75,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 typeof(SyncPromptController).AssemblyQualifiedName);
             defaults.put("factory.proxy.class", typeof(SystemProxy).AssemblyQualifiedName);
             defaults.put("factory.reachability.class", typeof(TcpReachability).AssemblyQualifiedName);
-            defaults.put("factory.rendezvous.class", typeof(Rendezvous).AssemblyQualifiedName);
 
             defaults.put("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
             defaults.put("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
@@ -94,10 +95,12 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
             if (Cyberduck.Core.Utils.IsRunningAsUWP)
             {
+                defaults.put("factory.rendezvous.class", typeof(DisabledRendezvous).AssemblyQualifiedName);
                 defaults.put("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);
             }
             else
             {
+                defaults.put("factory.rendezvous.class", typeof(Rendezvous).AssemblyQualifiedName);
                 defaults.put("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
             }
             defaults.put("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
