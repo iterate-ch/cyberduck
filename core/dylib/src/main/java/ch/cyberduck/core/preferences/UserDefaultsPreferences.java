@@ -54,6 +54,8 @@ public class UserDefaultsPreferences extends Preferences {
     private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty,
         PreferencesFactory.get().getLong("browser.cache.size"));
 
+    private static final String MISSING_PROPERTY = String.valueOf(StringUtils.INDEX_NOT_FOUND);
+
     private NSUserDefaults store;
 
     /**
@@ -82,14 +84,14 @@ public class UserDefaultsPreferences extends Preferences {
     @Override
     public String getProperty(final String property) {
         final String value = cache.get(property);
-        return StringUtils.isBlank(value) ? null : value;
+        return StringUtils.equals(MISSING_PROPERTY, value) ? null : value;
     }
 
     private String loadProperty(final String property) {
         final NSObject value = store.objectForKey(property);
         if(null == value) {
             final String d = this.getDefault(property);
-            return null == d ? StringUtils.EMPTY : d;
+            return null == d ? MISSING_PROPERTY : d;
         }
         // Customized property found
         return value.toString();
