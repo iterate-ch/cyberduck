@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
@@ -83,7 +84,7 @@ public class SingleTransferWorkerTest {
         }
         final Path dir1 = new Path(vault, directoryname.toString(), EnumSet.of(Path.Type.directory));
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), directoryname.toString());
-        localDirectory1.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(localDirectory1);
         final byte[] content = RandomUtils.nextBytes(62768);
         final Path file1 = new Path(dir1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile1 = new Local(localDirectory1, file1.getName());

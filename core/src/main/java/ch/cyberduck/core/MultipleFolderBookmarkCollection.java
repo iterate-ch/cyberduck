@@ -20,6 +20,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -68,7 +69,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
         this.lock();
         try {
             if(!folder.exists()) {
-                folder.mkdir();
+                new DefaultLocalDirectoryFeature().mkdir(folder);
             }
             final AttributedList<Local> groups = folder.list().filter(
                     new NullFilter<Local>() {

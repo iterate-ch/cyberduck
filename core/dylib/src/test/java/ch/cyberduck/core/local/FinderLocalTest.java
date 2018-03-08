@@ -106,9 +106,9 @@ public class FinderLocalTest {
     @Test
     public void testMkdir() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        l.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(l);
         assertTrue(l.exists());
-        l.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(l);
         assertTrue(l.exists());
         l.delete();
     }

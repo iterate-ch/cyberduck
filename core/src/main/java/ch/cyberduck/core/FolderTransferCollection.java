@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Reader;
@@ -139,7 +140,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
             this.lock();
             try {
                 if(!folder.exists()) {
-                    folder.mkdir();
+                    new DefaultLocalDirectoryFeature().mkdir(folder);
                 }
                 final Local f = this.getFile(transfer);
                 if(log.isInfoEnabled()) {
@@ -164,7 +165,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
         this.lock();
         try {
             if(!folder.exists()) {
-                folder.mkdir();
+                new DefaultLocalDirectoryFeature().mkdir(folder);
             }
             final AttributedList<Local> transfers = folder.list().filter(
                 new Filter<Local>() {

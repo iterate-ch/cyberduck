@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.features.Symlink;
@@ -67,7 +68,7 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
                     // the directory itself is not created automatically.
                     if(!folder.exists()) {
                         log.info(String.format("Create shared security application group folder %s", folder));
-                        folder.mkdir();
+                        new DefaultLocalDirectoryFeature().mkdir(folder);
                     }
                     log.info(String.format("Shared security application group folder %s is empty. Attempt to migrate support directory.", folder));
                     final Local previous = new ApplicationSupportDirectoryFinder().find();

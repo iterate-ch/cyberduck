@@ -49,6 +49,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
@@ -639,7 +640,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final Local file = downloads.iterator().next().local;
                     if(!file.exists()) {
                         try {
-                            file.mkdir();
+                            new DefaultLocalDirectoryFeature().mkdir(file);
                         }
                         catch(AccessDeniedException e) {
                             log.warn(e.getMessage());

@@ -40,7 +40,7 @@ public class WorkspaceIconServiceTest {
         final WorkspaceIconService s = new WorkspaceIconService();
         final Local file = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
-        file.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(file);
         assertTrue(s.update(file, NSImage.imageWithContentsOfFile("../../img/download0.icns")));
     }
 

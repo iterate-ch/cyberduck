@@ -110,7 +110,7 @@ public class FinderSidebarServiceTest {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
-        l.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(l);
         FinderLocal t = new FinderLocal(l, name);
         new DefaultLocalTouchFeature().touch(t);
         f.add(l);

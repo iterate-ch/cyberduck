@@ -140,7 +140,7 @@ public class LocalTest {
     public void testRenameExistingDirectory() throws Exception {
         final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        l.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(l);
         n.rename(l);
     }
 
@@ -148,7 +148,7 @@ public class LocalTest {
     public void testRenameDirectory() throws Exception {
         final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        n.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(n);
         n.rename(l);
         assertTrue(n.exists());
         assertTrue(l.exists());

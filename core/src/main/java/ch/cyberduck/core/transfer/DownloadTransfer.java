@@ -25,6 +25,7 @@ import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -256,7 +257,7 @@ public class DownloadTransfer extends Transfer {
                     file.getName()));
             final Local folder = local.getParent();
             if(!folder.exists()) {
-                folder.mkdir();
+                new DefaultLocalDirectoryFeature().mkdir(folder);
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
@@ -272,7 +273,7 @@ public class DownloadTransfer extends Transfer {
             if(!status.isExists()) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         local.getName()));
-                local.mkdir();
+                new DefaultLocalDirectoryFeature().mkdir(local);
                 status.setComplete();
             }
         }

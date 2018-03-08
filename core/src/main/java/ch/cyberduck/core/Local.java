@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.TildeExpander;
 import ch.cyberduck.core.local.WorkdirPrefixer;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -48,7 +49,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -188,13 +188,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public void mkdir() throws AccessDeniedException {
-        try {
-            Files.createDirectories(Paths.get(path));
-        }
-        catch(IOException e) {
-            throw new LocalAccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
-                "Cannot create folder {0}", "Error"), path), e);
-        }
+        new DefaultLocalDirectoryFeature().mkdir(this);
     }
 
     /**

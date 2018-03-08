@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 
@@ -101,7 +102,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             this.lock();
             try {
                 if(!folder.exists()) {
-                    folder.mkdir();
+                    new DefaultLocalDirectoryFeature().mkdir(folder);
                 }
                 final Local f = this.getFile(bookmark);
                 if(log.isInfoEnabled()) {
@@ -126,7 +127,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         this.lock();
         try {
             if(!folder.exists()) {
-                folder.mkdir();
+                new DefaultLocalDirectoryFeature().mkdir(folder);
             }
             final AttributedList<Local> bookmarks = folder.list().filter(
                 new Filter<Local>() {

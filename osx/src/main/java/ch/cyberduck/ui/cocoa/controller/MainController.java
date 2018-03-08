@@ -55,6 +55,7 @@ import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
 import ch.cyberduck.core.importer.Transmit4BookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
@@ -645,7 +646,7 @@ public class MainController extends BundleController implements NSApplication.De
                         final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
                             PreferencesFactory.get().getProperty("profiles.folder.name"));
                         if(!profiles.exists()) {
-                            profiles.mkdir();
+                            new DefaultLocalDirectoryFeature().mkdir(profiles);
                         }
                         f.copy(LocalFactory.get(profiles, f.getName()));
                     }

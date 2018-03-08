@@ -30,6 +30,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.synchronization.Comparison;
 
 import org.junit.Test;
@@ -180,7 +181,7 @@ public class SyncTransferTest {
                 return list;
             }
         };
-        directory.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(directory);
         Transfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(root, directory));
         final List<TransferItem> list = t.list(session, null, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
@@ -208,7 +209,7 @@ public class SyncTransferTest {
                 return list;
             }
         };
-        directory.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(directory);
         Transfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(root, directory));
         final List<TransferItem> list = t.list(session, null, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
@@ -233,7 +234,7 @@ public class SyncTransferTest {
                 return new AttributedList<Local>();
             }
         };
-        directory.mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(directory);
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
