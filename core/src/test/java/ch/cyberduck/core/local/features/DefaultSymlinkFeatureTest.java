@@ -19,6 +19,7 @@ package ch.cyberduck.core.local.features;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.core.local.DefaultSymlinkFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
