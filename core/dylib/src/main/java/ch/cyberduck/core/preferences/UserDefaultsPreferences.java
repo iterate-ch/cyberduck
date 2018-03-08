@@ -30,6 +30,7 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.sparkle.Updater;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +50,9 @@ public class UserDefaultsPreferences extends Preferences {
     private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
 
     public final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
+
+    private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty,
+        PreferencesFactory.get().getLong("browser.cache.size"));
 
     private NSUserDefaults store;
 
@@ -77,9 +81,15 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public String getProperty(final String property) {
+        final String value = cache.get(property);
+        return StringUtils.isBlank(value) ? null : value;
+    }
+
+    private String loadProperty(final String property) {
         final NSObject value = store.objectForKey(property);
         if(null == value) {
-            return this.getDefault(property);
+            final String d = this.getDefault(property);
+            return null == d ? StringUtils.EMPTY : d;
         }
         // Customized property found
         return value.toString();
@@ -95,6 +105,7 @@ public class UserDefaultsPreferences extends Preferences {
             // Setting a default has no effect on the value returned by the objectForKey method if
             // the same key exists in a domain that precedes the application domain in the search list.
             store.setObjectForKey(NSString.stringWithString(value), property);
+            cache.put(property, value);
         }
         else {
             this.deleteProperty(property);
@@ -115,6 +126,7 @@ public class UserDefaultsPreferences extends Preferences {
             log.debug(String.format("Delete property %s", property));
         }
         store.removeObjectForKey(property);
+        cache.remove(property);
     }
 
     /**
