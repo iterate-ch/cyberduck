@@ -91,6 +91,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import com.google.common.collect.ImmutableMap;
+
 /**
  * Holding all application preferences. Default values get overwritten when loading
  * the <code>PREFERENCES_FILE</code>.
@@ -1059,8 +1061,17 @@ public abstract class Preferences {
     }
 
     protected void setLogging() {
-        // Enable all logging levels to pass through bridge
-        java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.ALL);
+        // Map logging level to pass through bridge
+        java.util.logging.Logger.getLogger("").setLevel(new ImmutableMap.Builder<Level, java.util.logging.Level>()
+            .put(Level.ALL, java.util.logging.Level.ALL)
+            .put(Level.DEBUG, java.util.logging.Level.FINE)
+            .put(Level.ERROR, java.util.logging.Level.SEVERE)
+            .put(Level.FATAL, java.util.logging.Level.SEVERE)
+            .put(Level.INFO, java.util.logging.Level.INFO)
+            .put(Level.OFF, java.util.logging.Level.OFF)
+            .put(Level.TRACE, java.util.logging.Level.FINEST)
+            .put(Level.WARN, java.util.logging.Level.WARNING)
+            .build().get(Logger.getRootLogger().getLevel()));
         // Call only once during initialization time of your application
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
