@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.serializer.impl.dd.PlistDeserializer;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,7 +45,7 @@ public class HostDictionaryTest {
         final Path container = new Path("/container", EnumSet.of(Path.Type.directory));
         container.attributes().setRegion("r");
         h.setWorkdir(container);
-        final Host deserialized = new HostDictionary(new DeserializerFactory(PlistDeserializer.class.getName())).deserialize(h.serialize(SerializerFactory.get()));
+        final Host deserialized = new HostDictionary(new DeserializerFactory()).deserialize(h.serialize(SerializerFactory.get()));
         assertEquals(h, deserialized);
         assertEquals("r", deserialized.getWorkdir().attributes().getRegion());
     }
@@ -57,7 +56,7 @@ public class HostDictionaryTest {
         dict.setStringForKey("test", "Protocol");
         dict.setStringForKey("unknown provider", "Provider");
         dict.setStringForKey("h", "Hostname");
-        final Host host = new HostDictionary(new DeserializerFactory(PlistDeserializer.class.getName())).deserialize(dict.getSerialized());
+        final Host host = new HostDictionary(new DeserializerFactory()).deserialize(dict.getSerialized());
         assertEquals(new TestProtocol(), host.getProtocol());
     }
 
