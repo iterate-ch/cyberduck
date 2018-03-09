@@ -23,7 +23,6 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
@@ -37,17 +36,12 @@ public class FilesystemFactory extends Factory<Filesystem> {
     }
 
     public Filesystem create(final Controller controller, final Host bookmark, final Cache<Path> cache) {
-        final String clazz = PreferencesFactory.get().getProperty("factory.filesystem.class");
-        if(null == clazz) {
-            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
-        }
         try {
-            final Class<Filesystem> name = (Class<Filesystem>) Class.forName(clazz);
-            final Constructor<Filesystem> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
-                    controller.getClass(), bookmark.getClass(), cache.getClass());
+            final Constructor<Filesystem> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
+                controller.getClass(), bookmark.getClass(), cache.getClass());
             return constructor.newInstance(controller, bookmark, cache);
         }
-        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }

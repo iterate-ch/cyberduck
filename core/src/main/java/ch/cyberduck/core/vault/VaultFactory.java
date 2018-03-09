@@ -16,10 +16,8 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.log4j.Logger;
@@ -39,22 +37,17 @@ public class VaultFactory extends Factory<Vault> {
     }
 
     private Vault create(final Path directory, final String masterkey, final byte[] pepper) {
-        final String clazz = PreferencesFactory.get().getProperty("factory.vault.class");
-        if(null == clazz) {
-            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
-        }
         try {
-            final Class<Vault> name = (Class<Vault>) Class.forName(clazz);
-            final Constructor<Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
+            final Constructor<Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
                 directory.getClass(), masterkey.getClass(), pepper.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", directory.getClass()));
                 // Call default constructor for disabled implementations
-                return name.newInstance();
+                return clazz.newInstance();
             }
             return constructor.newInstance(directory, masterkey, pepper);
         }
-        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return Vault.DISABLED;
         }

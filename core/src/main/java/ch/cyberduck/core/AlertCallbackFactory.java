@@ -15,7 +15,6 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DisabledAlertCallback;
 
@@ -28,26 +27,23 @@ import java.lang.reflect.InvocationTargetException;
 public class AlertCallbackFactory extends Factory<AlertCallback> {
     private static final Logger log = Logger.getLogger(AlertCallbackFactory.class);
 
+    private static final AlertCallbackFactory factory = new AlertCallbackFactory();
+
     protected AlertCallbackFactory() {
         super("factory.alertcallback.class");
     }
 
     public AlertCallback create(final Controller controller) {
-        final String clazz = PreferencesFactory.get().getProperty("factory.alertcallback.class");
-        if(null == clazz) {
-            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
-        }
         try {
-            final Class<AlertCallback> name = (Class<AlertCallback>) Class.forName(clazz);
-            final Constructor<AlertCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, controller.getClass());
+            final Constructor<AlertCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                 // Call default constructor for disabled implementations
-                return name.newInstance();
+                return clazz.newInstance();
             }
             return constructor.newInstance(controller);
         }
-        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return new DisabledAlertCallback();
         }
@@ -58,6 +54,6 @@ public class AlertCallbackFactory extends Factory<AlertCallback> {
      * @return Login controller instance for the current platform.
      */
     public static AlertCallback get(final Controller c) {
-        return new AlertCallbackFactory().create(c);
+        return factory.create(c);
     }
 }

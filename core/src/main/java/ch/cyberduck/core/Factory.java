@@ -22,7 +22,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public abstract class Factory<T> {
 
-    private final Class<T> clazz;
+    protected final Class<T> clazz;
 
     protected Factory() {
         this.clazz = null;

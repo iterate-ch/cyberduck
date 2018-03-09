@@ -17,8 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.log4j.Logger;
 
@@ -28,35 +26,32 @@ import java.lang.reflect.InvocationTargetException;
 public class CertificateStoreFactory extends Factory<CertificateStore> {
     private static final Logger log = Logger.getLogger(CertificateStoreFactory.class);
 
+    private static final CertificateStoreFactory factory = new CertificateStoreFactory();
+
     protected CertificateStoreFactory() {
         super("factory.certificatestore.class");
     }
 
     public CertificateStore create(final Controller c) {
-        final String clazz = PreferencesFactory.get().getProperty("factory.certificatestore.class");
-        if(null == clazz) {
-            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
-        }
         try {
-            final Class<CertificateStore> name = (Class<CertificateStore>) Class.forName(clazz);
-            final Constructor<CertificateStore> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
+            final Constructor<CertificateStore> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations
-                return name.newInstance();
+                return clazz.newInstance();
             }
             return constructor.newInstance(c);
         }
-        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
 
     public static CertificateStore get() {
-        return new CertificateStoreFactory().create();
+        return factory.create();
     }
 
     public static CertificateStore get(final Controller c) {
-        return new CertificateStoreFactory().create(c);
+        return factory.create(c);
     }
 }
