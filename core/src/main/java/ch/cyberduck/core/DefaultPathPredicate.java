@@ -35,7 +35,7 @@ public class DefaultPathPredicate implements CacheReference<Path> {
         = new PathContainerService();
 
     public DefaultPathPredicate(final Path file) {
-        this.type = file.isFile() ? Path.Type.file : Path.Type.directory;
+        this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
         this.attributes = this.attributes(file);
         this.path = file.getAbsolute();
     }

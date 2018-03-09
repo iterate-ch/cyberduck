@@ -34,6 +34,13 @@ public class DefaultPathPredicateTest {
     }
 
     @Test
+    public void testUniqueSymbolicLInk() throws Exception {
+        final Path s = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
+        final Path t = new Path("/", EnumSet.of(Path.Type.directory));
+        assertNotEquals(new DefaultPathPredicate(s), new DefaultPathPredicate(t));
+    }
+
+    @Test
     public void testtoStringContainer() throws Exception {
         final Path t_noregion = new Path("/container", EnumSet.of(Path.Type.directory));
         final Path t_region = new Path("/container", EnumSet.of(Path.Type.directory));
