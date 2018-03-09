@@ -229,159 +229,159 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             base.setDefaults();
 
-            defaults.put("application.name", Application.ProductName);
-            defaults.put("application.container.name", Application.ProductName);
+            this.setDefault("application.name", Application.ProductName);
+            this.setDefault("application.container.name", Application.ProductName);
             String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
-            defaults.put("application.support.path", support);
-            defaults.put("application.receipt.path", support);
+            this.setDefault("application.support.path", support);
+            this.setDefault("application.receipt.path", support);
 
-            defaults.put("application.version", ApplicationVersion);
-            defaults.put("application.revision", ApplicationRevision);
-            defaults.put("application.language", GetDefaultLanguage());
-            defaults.put("application.language.custom", false.ToString());
-            defaults.put("application.localization.enable", true.ToString());
+            this.setDefault("application.version", ApplicationVersion);
+            this.setDefault("application.revision", ApplicationRevision);
+            this.setDefault("application.language", GetDefaultLanguage());
+            this.setDefault("application.language.custom", false.ToString());
+            this.setDefault("application.localization.enable", true.ToString());
 
-            defaults.put("update.feed.release", "https://version.cyberduck.io/windows/changelog.rss");
-            defaults.put("update.feed.beta", "https://version.cyberduck.io/windows/beta/changelog.rss");
-            defaults.put("update.feed.nightly", "https://version.cyberduck.io/windows/nightly/changelog.rss");
+            this.setDefault("update.feed.release", "https://version.cyberduck.io/windows/changelog.rss");
+            this.setDefault("update.feed.beta", "https://version.cyberduck.io/windows/beta/changelog.rss");
+            this.setDefault("update.feed.nightly", "https://version.cyberduck.io/windows/nightly/changelog.rss");
 
-            defaults.put("update.feed", "release");
+            this.setDefault("update.feed", "release");
 
             // Importers
-            defaults.put("bookmark.import.winscp.location",
+            this.setDefault("bookmark.import.winscp.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WinSCP.ini"));
-            defaults.put("bookmark.import.filezilla.location",
+            this.setDefault("bookmark.import.filezilla.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FileZilla",
                     "sitemanager.xml"));
-            defaults.put("bookmark.import.smartftp.location",
+            this.setDefault("bookmark.import.smartftp.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SmartFTP",
                     "Client 2.0", "Favorites"));
-            defaults.put("bookmark.import.totalcommander.location",
+            this.setDefault("bookmark.import.totalcommander.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GHISLER",
                     "wcx_ftp.ini"));
-            defaults.put("bookmark.import.flashfxp3.location",
+            this.setDefault("bookmark.import.flashfxp3.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlashFXP", "3",
                     "Sites.dat"));
-            defaults.put("bookmark.import.flashfxp4.location",
+            this.setDefault("bookmark.import.flashfxp4.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlashFXP", "4",
                     "Sites.dat"));
-            defaults.put("bookmark.import.flashfxp4.common.location",
+            this.setDefault("bookmark.import.flashfxp4.common.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "FlashFXP",
                     "4",
                     "Sites.dat"));
-            defaults.put("bookmark.import.wsftp.location",
+            this.setDefault("bookmark.import.wsftp.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Ipswitch", "WS_FTP",
                     "Sites"));
-            defaults.put("bookmark.import.fireftp.location",
+            this.setDefault("bookmark.import.fireftp.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Mozilla", "Firefox",
                     "Profiles"));
-            defaults.put("bookmark.import.s3browser.location",
+            this.setDefault("bookmark.import.s3browser.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "S3Browser",
                     "settings.ini"));
-            defaults.put("bookmark.import.crossftp.location", Path.Combine(HomeFolder, ".crossftp", "sites.xml"));
-            defaults.put("bookmark.import.cloudberry.s3.location",
+            this.setDefault("bookmark.import.crossftp.location", Path.Combine(HomeFolder, ".crossftp", "sites.xml"));
+            this.setDefault("bookmark.import.cloudberry.s3.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "CloudBerry S3 Explorer for Amazon S3", "settings.list"));
-            defaults.put("bookmark.import.cloudberry.google.location",
+            this.setDefault("bookmark.import.cloudberry.google.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "CloudBerry Explorer for Google Storage", "settings.list"));
-            defaults.put("bookmark.import.cloudberry.azure.location",
+            this.setDefault("bookmark.import.cloudberry.azure.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "CloudBerry Explorer for Azure Blob Storage", "settings.list"));
-            defaults.put("bookmark.import.expandrive3.location",
+            this.setDefault("bookmark.import.expandrive3.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "ExpanDrive", "favorites.js"));
-            defaults.put("bookmark.import.expandrive4.location",
+            this.setDefault("bookmark.import.expandrive4.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "ExpanDrive", "expandrive4.favorites.js"));
-            defaults.put("bookmark.import.expandrive5.location",
+            this.setDefault("bookmark.import.expandrive5.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "ExpanDrive", "expandrive5.favorites.js"));
-            defaults.put("bookmark.import.expandrive6.location",
+            this.setDefault("bookmark.import.expandrive6.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "ExpanDrive", "expandrive6.favorites.js"));
-            defaults.put("bookmark.import.netdrive2.location",
+            this.setDefault("bookmark.import.netdrive2.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     "NetDrive2", "drives.dat"));
 
             //disable reminder for protocol handler registration
-            defaults.put("defaulthandler.reminder", false.ToString());
+            this.setDefault("defaulthandler.reminder", false.ToString());
 
-            defaults.put("update.check.last", "0");
-            defaults.put("update.check.privilege", true.ToString());
+            this.setDefault("update.check.last", "0");
+            this.setDefault("update.check.privilege", true.ToString());
 
-            defaults.put("queue.download.folder", DefaultDownloadPath);
-            defaults.put("queue.upload.permissions.default", true.ToString());
-            defaults.put("queue.upload.permissions.change", true.ToString());
+            this.setDefault("queue.download.folder", DefaultDownloadPath);
+            this.setDefault("queue.upload.permissions.default", true.ToString());
+            this.setDefault("queue.upload.permissions.change", true.ToString());
 
-            defaults.put("queue.dock.badge", true.ToString());
+            this.setDefault("queue.dock.badge", true.ToString());
 
-            defaults.put("ssh.knownhosts",
+            this.setDefault("ssh.knownhosts",
                 Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(), "known_hosts"));
-            defaults.put("browser.enterkey.rename", false.ToString());
-            defaults.put("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
-            defaults.put("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
+            this.setDefault("browser.enterkey.rename", false.ToString());
+            this.setDefault("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
+            this.setDefault("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
 
-            defaults.put("editor.bundleIdentifier", new SystemWatchEditorFactory.Notepad().getIdentifier());
+            this.setDefault("editor.bundleIdentifier", new SystemWatchEditorFactory.Notepad().getIdentifier());
 
-            defaults.put("notifications.timeout.milliseconds", "300");
+            this.setDefault("notifications.timeout.milliseconds", "300");
 
             //default browser toolbar set
-            defaults.put("browser.toolbar", true.ToString());
-            defaults.put("browser.toolbar.openconnection", true.ToString());
-            defaults.put("browser.toolbar.quickconnect", true.ToString());
-            defaults.put("browser.toolbar.action", true.ToString());
-            defaults.put("browser.toolbar.info", true.ToString());
-            defaults.put("browser.toolbar.refresh", true.ToString());
-            defaults.put("browser.toolbar.edit", true.ToString());
-            defaults.put("browser.toolbar.openinbrowser", false.ToString());
-            defaults.put("browser.toolbar.openinterminal", false.ToString());
-            defaults.put("browser.toolbar.newfolder", false.ToString());
-            defaults.put("browser.toolbar.delete", false.ToString());
-            defaults.put("browser.toolbar.download", false.ToString());
-            defaults.put("browser.toolbar.upload", true.ToString());
-            defaults.put("browser.toolbar.transfers", true.ToString());
+            this.setDefault("browser.toolbar", true.ToString());
+            this.setDefault("browser.toolbar.openconnection", true.ToString());
+            this.setDefault("browser.toolbar.quickconnect", true.ToString());
+            this.setDefault("browser.toolbar.action", true.ToString());
+            this.setDefault("browser.toolbar.info", true.ToString());
+            this.setDefault("browser.toolbar.refresh", true.ToString());
+            this.setDefault("browser.toolbar.edit", true.ToString());
+            this.setDefault("browser.toolbar.openinbrowser", false.ToString());
+            this.setDefault("browser.toolbar.openinterminal", false.ToString());
+            this.setDefault("browser.toolbar.newfolder", false.ToString());
+            this.setDefault("browser.toolbar.delete", false.ToString());
+            this.setDefault("browser.toolbar.download", false.ToString());
+            this.setDefault("browser.toolbar.upload", true.ToString());
+            this.setDefault("browser.toolbar.transfers", true.ToString());
 
             //default transfer toolbar set
-            defaults.put("transfer.toolbar.resume", true.ToString());
-            defaults.put("transfer.toolbar.reload", true.ToString());
-            defaults.put("transfer.toolbar.stop", true.ToString());
-            defaults.put("transfer.toolbar.remove", true.ToString());
-            defaults.put("transfer.toolbar.cleanup", false.ToString());
-            defaults.put("transfer.toolbar.log", false.ToString());
-            defaults.put("transfer.toolbar.open", true.ToString());
-            defaults.put("transfer.toolbar.show", true.ToString());
+            this.setDefault("transfer.toolbar.resume", true.ToString());
+            this.setDefault("transfer.toolbar.reload", true.ToString());
+            this.setDefault("transfer.toolbar.stop", true.ToString());
+            this.setDefault("transfer.toolbar.remove", true.ToString());
+            this.setDefault("transfer.toolbar.cleanup", false.ToString());
+            this.setDefault("transfer.toolbar.log", false.ToString());
+            this.setDefault("transfer.toolbar.open", true.ToString());
+            this.setDefault("transfer.toolbar.show", true.ToString());
 
             // Resolve symbolic links downloading target file instead. Cannot create symbolic links on FAT.
-            defaults.put("path.symboliclink.resolve", true.ToString());
+            this.setDefault("path.symboliclink.resolve", true.ToString());
             // Resolve local links uploading target file instead. Currently not supporting shortcuts on Windows.
-            defaults.put("local.symboliclink.resolve", true.ToString());
+            this.setDefault("local.symboliclink.resolve", true.ToString());
 
-            defaults.put("local.user.home", HomeFolder);
-            defaults.put("local.delimiter", "\\");
-            defaults.put("local.normalize.tilde", false.ToString());
+            this.setDefault("local.user.home", HomeFolder);
+            this.setDefault("local.delimiter", "\\");
+            this.setDefault("local.normalize.tilde", false.ToString());
 
             // SSL Keystore
             // Add mscapi security provider
             Security.addProvider(new SunMSCAPI());
-            defaults.put("connection.ssl.keystore.type", "Windows-MY");
-            defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+            this.setDefault("connection.ssl.keystore.type", "Windows-MY");
+            this.setDefault("connection.ssl.keystore.provider", "SunMSCAPI");
 
             // Override secure random strong algorithm. Outputs bytes from the Windows CryptGenRandom() API
-            defaults.put("connection.ssl.securerandom.algorithm", "Windows-PRNG");
-            defaults.put("connection.ssl.securerandom.provider", "SunMSCAPI");
+            this.setDefault("connection.ssl.securerandom.algorithm", "Windows-PRNG");
+            this.setDefault("connection.ssl.securerandom.provider", "SunMSCAPI");
 
             // Enable Integrated Windows Authentication
-            defaults.put("connection.proxy.windows.authentication.enable", true.ToString());
+            this.setDefault("connection.proxy.windows.authentication.enable", true.ToString());
 
-            defaults.put("webdav.ntlm.environment", false.ToString());
+            this.setDefault("webdav.ntlm.environment", false.ToString());
             if (getBoolean("webdav.ntlm.environment"))
             {
                 // NTLM Windows Domain
                 try
                 {
                     // Gets the network domain name associated with the current user
-                    defaults.put("webdav.ntlm.domain", Environment.UserDomainName);
+                    this.setDefault("webdav.ntlm.domain", Environment.UserDomainName);
                 }
                 catch (PlatformNotSupportedException e)
                 {
@@ -393,7 +393,7 @@ namespace Ch.Cyberduck.Core.Preferences
                 }
                 try
                 {
-                    defaults.put("webdav.ntlm.workstation", Environment.MachineName);
+                    this.setDefault("webdav.ntlm.workstation", Environment.MachineName);
                 }
                 catch (InvalidOperationException e)
                 {
@@ -402,15 +402,15 @@ namespace Ch.Cyberduck.Core.Preferences
             }
             if (Utils.IsRunningAsUWP)
             {
-                SetUWPDefaults(defaults);
+                SetUWPDefaults();
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void SetUWPDefaults(Map defaults)
+        private void SetUWPDefaults()
         {
-            defaults.put("update.check", $"{false}");
-            defaults.put("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
+            this.setDefault("update.check", $"{false}");
+            this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
         }
 
         protected override void post()
@@ -442,7 +442,7 @@ namespace Ch.Cyberduck.Core.Preferences
                 {
                     var properties = new java.util.Properties();
                     properties.load(new FileInputStream(config));
-                    defaults.putAll(properties);
+                    this.setDefaults(properties);
                 }
                 catch (Exception e)
                 {

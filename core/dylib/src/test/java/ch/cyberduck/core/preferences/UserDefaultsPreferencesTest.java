@@ -15,6 +15,8 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+
 import org.junit.Test;
 
 import java.util.List;
@@ -87,5 +89,29 @@ public class UserDefaultsPreferencesTest {
         p.load();
         p.setDefaults();
         assertTrue(p.getList("network.interface.blacklist").contains("awdl0"));
+    }
+
+    @Test
+    public void testDefault() {
+        UserDefaultsPreferences p = new UserDefaultsPreferences();
+        p.load();
+        p.setDefaults();
+        final String property = new AlphanumericRandomStringService().random();
+        p.setDefault(property, "test.value");
+        assertEquals("test.value", p.getProperty(property));
+        p.setDefault(property, "test.value2");
+        assertEquals("test.value2", p.getProperty(property));
+    }
+
+    @Test
+    public void testOverrideDefault() {
+        UserDefaultsPreferences p = new UserDefaultsPreferences();
+        p.load();
+        p.setDefaults();
+        final String property = new AlphanumericRandomStringService().random();
+        p.setDefault(property, "test.value");
+        assertEquals("test.value", p.getProperty(property));
+        p.setProperty(property, "test.value2");
+        assertEquals("test.value2", p.getProperty(property));
     }
 }

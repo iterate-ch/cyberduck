@@ -45,7 +45,7 @@ public class MemoryPreferences extends Preferences {
         if(store.containsKey(property)) {
             return store.get(property);
         }
-        return defaults.get(property);
+        return super.getDefault(property);
     }
 
     @Override

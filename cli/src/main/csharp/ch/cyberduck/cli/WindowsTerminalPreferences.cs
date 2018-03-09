@@ -36,40 +36,40 @@ namespace Ch.Cyberduck.Cli
         {
             base.setFactories();
 
-            defaults.put("factory.locale.class", typeof(DictionaryLocale).AssemblyQualifiedName);
-            defaults.put("factory.supportdirectoryfinder.class",
+            this.setDefault("factory.locale.class", typeof(DictionaryLocale).AssemblyQualifiedName);
+            this.setDefault("factory.supportdirectoryfinder.class",
                 typeof(RoamingSupportDirectoryFinder).AssemblyQualifiedName);
-            defaults.put("factory.applicationresourcesfinder.class",
+            this.setDefault("factory.applicationresourcesfinder.class",
                 typeof(AssemblyApplicationResourcesFinder).AssemblyQualifiedName);
-            defaults.put("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
-            defaults.put("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
-            defaults.put("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
-            defaults.put("factory.local.class", typeof(SystemLocal).AssemblyQualifiedName);
-            defaults.put("factory.passwordstore.class", typeof(DataProtectorPasswordStore).AssemblyQualifiedName);
-            defaults.put("factory.proxycredentialsstore.class",
+            this.setDefault("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
+            this.setDefault("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
+            this.setDefault("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
+            this.setDefault("factory.local.class", typeof(SystemLocal).AssemblyQualifiedName);
+            this.setDefault("factory.passwordstore.class", typeof(DataProtectorPasswordStore).AssemblyQualifiedName);
+            this.setDefault("factory.proxycredentialsstore.class",
                 typeof(CredentialManagerProxyCredentialsStore).AssemblyQualifiedName);
-            defaults.put("factory.proxy.class", typeof(SystemProxy).AssemblyQualifiedName);
-            defaults.put("factory.reachability.class", typeof(TcpReachability).AssemblyQualifiedName);
-            defaults.put("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
-            defaults.put("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
+            this.setDefault("factory.proxy.class", typeof(SystemProxy).AssemblyQualifiedName);
+            this.setDefault("factory.reachability.class", typeof(TcpReachability).AssemblyQualifiedName);
+            this.setDefault("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
+            this.setDefault("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
         }
 
         protected override void setDefaults()
         {
             base.setDefaults();
 
-            defaults.put("application.container.name", "Cyberduck");
+            this.setDefault("application.container.name", "Cyberduck");
             string support = SupportDirectoryFinderFactory.get().find().getAbsolute();
-            defaults.put("application.support.path", support);
-            defaults.put("application.receipt.path", support);
+            this.setDefault("application.support.path", support);
+            this.setDefault("application.receipt.path", support);
 
             Security.addProvider(new SunMSCAPI());
-            defaults.put("connection.ssl.keystore.type", "Windows-MY");
-            defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+            this.setDefault("connection.ssl.keystore.type", "Windows-MY");
+            this.setDefault("connection.ssl.keystore.provider", "SunMSCAPI");
 
             // Override secure random strong algorithm. Outputs bytes from the Windows CryptGenRandom() API
-            defaults.put("connection.ssl.securerandom.algorithm", "Windows-PRNG");
-            defaults.put("connection.ssl.securerandom.provider", "SunMSCAPI");
+            this.setDefault("connection.ssl.securerandom.algorithm", "Windows-PRNG");
+            this.setDefault("connection.ssl.securerandom.provider", "SunMSCAPI");
         }
     }
 }

@@ -30,6 +30,7 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.sparkle.Updater;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +50,11 @@ public class UserDefaultsPreferences extends Preferences {
     private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
 
     public final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
+
+    private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty,
+        PreferencesFactory.get().getLong("browser.cache.size"));
+
+    private static final String MISSING_PROPERTY = String.valueOf(StringUtils.INDEX_NOT_FOUND);
 
     private NSUserDefaults store;
 
@@ -77,9 +83,15 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public String getProperty(final String property) {
+        final String value = cache.get(property);
+        return StringUtils.equals(MISSING_PROPERTY, value) ? null : value;
+    }
+
+    private String loadProperty(final String property) {
         final NSObject value = store.objectForKey(property);
         if(null == value) {
-            return this.getDefault(property);
+            final String d = this.getDefault(property);
+            return null == d ? MISSING_PROPERTY : d;
         }
         // Customized property found
         return value.toString();
@@ -95,10 +107,17 @@ public class UserDefaultsPreferences extends Preferences {
             // Setting a default has no effect on the value returned by the objectForKey method if
             // the same key exists in a domain that precedes the application domain in the search list.
             store.setObjectForKey(NSString.stringWithString(value), property);
+            cache.put(property, value);
         }
         else {
             this.deleteProperty(property);
         }
+    }
+
+    @Override
+    public void setDefault(final String property, final String value) {
+        super.setDefault(property, value);
+        cache.remove(property);
     }
 
     @Override
@@ -115,6 +134,7 @@ public class UserDefaultsPreferences extends Preferences {
             log.debug(String.format("Delete property %s", property));
         }
         store.removeObjectForKey(property);
+        cache.remove(property);
     }
 
     /**
@@ -147,70 +167,70 @@ public class UserDefaultsPreferences extends Preferences {
         // Parent defaults
         super.setDefaults();
 
-        defaults.put("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
+        this.setDefault("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
 
         final NSBundle bundle = this.bundle;
         if(null != bundle) {
             if(bundle.objectForInfoDictionaryKey("CFBundleName") != null) {
-                defaults.put("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
+                this.setDefault("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
             }
             if(bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright") != null) {
-                defaults.put("application.copyright", bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright").toString());
+                this.setDefault("application.copyright", bundle.objectForInfoDictionaryKey("NSHumanReadableCopyright").toString());
             }
             if(bundle.objectForInfoDictionaryKey("CFBundleIdentifier") != null) {
-                defaults.put("application.identifier", bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
+                this.setDefault("application.identifier", bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
             }
             if(bundle.objectForInfoDictionaryKey("CFBundleShortVersionString") != null) {
-                defaults.put("application.version", bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
+                this.setDefault("application.version", bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
             }
             if(bundle.objectForInfoDictionaryKey("CFBundleVersion") != null) {
-                defaults.put("application.revision", bundle.objectForInfoDictionaryKey("CFBundleVersion").toString());
+                this.setDefault("application.revision", bundle.objectForInfoDictionaryKey("CFBundleVersion").toString());
             }
-            defaults.put("application.receipt.path", String.format("%s/Contents/_MASReceipt", bundle.bundlePath()));
+            this.setDefault("application.receipt.path", String.format("%s/Contents/_MASReceipt", bundle.bundlePath()));
         }
         final Local resources = ApplicationResourcesFinderFactory.get().find();
-        defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
-        defaults.put("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
+        this.setDefault("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
+        this.setDefault("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
 
-        defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.rss");
-        defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
-        defaults.put("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.rss");
+        this.setDefault("update.feed.release", "https://version.cyberduck.io/changelog.rss");
+        this.setDefault("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
+        this.setDefault("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.rss");
         // Fix #9395
         if(!StringUtils.startsWith(this.getProperty(Updater.PROPERTY_FEED_URL), Scheme.https.name())) {
             this.deleteProperty(Updater.PROPERTY_FEED_URL);
             this.save();
         }
 
-        defaults.put("bookmark.import.filezilla.location", "~/.config/filezilla/sitemanager.xml");
-        defaults.put("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
-        defaults.put("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
-        defaults.put("bookmark.import.interarchy.location", "~/Library/Application Support/Interarchy/Bookmarks.plist");
-        defaults.put("bookmark.import.transmit.location", "~/Library/Preferences/com.panic.Transmit.plist");
-        defaults.put("bookmark.import.transmit4.location", "~/Library/Application Support/Transmit/Favorites/Favorites.xml");
-        defaults.put("bookmark.import.crossftp.location", "~/.crossftp/sites.xml");
-        defaults.put("bookmark.import.fireftp.location", "~/Library/Application Support/Firefox/Profiles");
-        defaults.put("bookmark.import.expandrive3.location", "~/Library/Application Support/ExpanDrive/favorites.js");
-        defaults.put("bookmark.import.expandrive4.location", "~/Library/Application Support/ExpanDrive/expandrive4.favorites.js");
-        defaults.put("bookmark.import.expandrive5.location", "~/Library/Application Support/ExpanDrive/expandrive5.favorites.js");
-        defaults.put("bookmark.import.expandrive6.location", "~/Library/Application Support/ExpanDrive/expandrive6.favorites.js");
+        this.setDefault("bookmark.import.filezilla.location", "~/.config/filezilla/sitemanager.xml");
+        this.setDefault("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
+        this.setDefault("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
+        this.setDefault("bookmark.import.interarchy.location", "~/Library/Application Support/Interarchy/Bookmarks.plist");
+        this.setDefault("bookmark.import.transmit.location", "~/Library/Preferences/com.panic.Transmit.plist");
+        this.setDefault("bookmark.import.transmit4.location", "~/Library/Application Support/Transmit/Favorites/Favorites.xml");
+        this.setDefault("bookmark.import.crossftp.location", "~/.crossftp/sites.xml");
+        this.setDefault("bookmark.import.fireftp.location", "~/Library/Application Support/Firefox/Profiles");
+        this.setDefault("bookmark.import.expandrive3.location", "~/Library/Application Support/ExpanDrive/favorites.js");
+        this.setDefault("bookmark.import.expandrive4.location", "~/Library/Application Support/ExpanDrive/expandrive4.favorites.js");
+        this.setDefault("bookmark.import.expandrive5.location", "~/Library/Application Support/ExpanDrive/expandrive5.favorites.js");
+        this.setDefault("bookmark.import.expandrive6.location", "~/Library/Application Support/ExpanDrive/expandrive6.favorites.js");
         if(LocalFactory.get("~/Downloads").exists()) {
             // For 10.5+ this usually exists and should be preferrred
-            defaults.put("queue.download.folder", "~/Downloads");
+            this.setDefault("queue.download.folder", "~/Downloads");
         }
         else {
-            defaults.put("queue.download.folder", "~/Desktop");
+            this.setDefault("queue.download.folder", "~/Desktop");
         }
-        defaults.put("browser.filesize.decimal", String.valueOf(!Factory.Platform.osversion.matches("10\\.5.*")));
+        this.setDefault("browser.filesize.decimal", String.valueOf(!Factory.Platform.osversion.matches("10\\.5.*")));
 
         // SSL Keystore
-        defaults.put("connection.ssl.keystore.type", "KeychainStore");
-        defaults.put("connection.ssl.keystore.provider", "Apple");
+        this.setDefault("connection.ssl.keystore.type", "KeychainStore");
+        this.setDefault("connection.ssl.keystore.provider", "Apple");
 
-        defaults.put("network.interface.blacklist", "awdl0 utun0");
+        this.setDefault("network.interface.blacklist", "awdl0 utun0");
 
-        defaults.put("browser.window.tabbing.identifier", "browser.window.tabbing.identifier");
+        this.setDefault("browser.window.tabbing.identifier", "browser.window.tabbing.identifier");
         // Allow to show transfers in browser window as tab
-        defaults.put("queue.window.tabbing.identifier", "browser.window.tabbing.identifier");
+        this.setDefault("queue.window.tabbing.identifier", "browser.window.tabbing.identifier");
     }
 
     /**
