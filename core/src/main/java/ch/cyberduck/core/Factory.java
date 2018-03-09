@@ -33,7 +33,11 @@ public abstract class Factory<T> {
      */
     protected Factory(final String name) {
         try {
-            this.clazz = (Class<T>) Class.forName(PreferencesFactory.get().getProperty(name));
+            final String c = PreferencesFactory.get().getProperty(name);
+            if(null == c) {
+                throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
+            }
+            this.clazz = (Class<T>) Class.forName(c);
         }
         catch(ClassNotFoundException e) {
             throw new FactoryException(e.getMessage(), e);
