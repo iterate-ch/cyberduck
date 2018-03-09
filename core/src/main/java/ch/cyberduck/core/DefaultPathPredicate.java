@@ -20,30 +20,18 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Objects;
-
 /**
  * Path predicate that takes the region and version id of the path into account for comparisons.
  */
 public class DefaultPathPredicate implements CacheReference<Path> {
 
-    private final Path.Type type;
-    private final String attributes;
-    private final String path;
-
-    private final PathContainerService containerService
-        = new PathContainerService();
+    private final String reference;
 
     public DefaultPathPredicate(final Path file) {
-        this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
-        this.attributes = this.attributes(file);
-        this.path = file.getAbsolute();
-    }
-
-    private String attributes(final Path file) {
+        final Path.Type type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
         String qualifier = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(file.attributes().getRegion())) {
-            if(containerService.isContainer(file)) {
+            if(new PathContainerService().isContainer(file)) {
                 qualifier += file.attributes().getRegion();
             }
         }
@@ -52,7 +40,18 @@ public class DefaultPathPredicate implements CacheReference<Path> {
                 qualifier += file.attributes().getVersionId();
             }
         }
-        return qualifier;
+        final String path = file.getAbsolute();
+        reference = "[" + type + "]" + "-" + qualifier + path;
+    }
+
+    /**
+     * Obtain a string representation of the path that is unique for versioned files.
+     *
+     * @return The absolute path with version ID and checksum if any.
+     */
+    @Override
+    public String toString() {
+        return reference;
     }
 
     @Override
@@ -68,7 +67,7 @@ public class DefaultPathPredicate implements CacheReference<Path> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, attributes, path);
+        return reference.hashCode();
     }
 
     @Override

@@ -28,8 +28,10 @@ public class DefaultPathPredicateTest {
     @Test
     public void testUnique() throws Exception {
         final Path t_noregion = new Path("/", EnumSet.of(Path.Type.directory));
+        assertEquals("[directory]-/", new DefaultPathPredicate(t_noregion).toString());
         final Path t_region = new Path("/", EnumSet.of(Path.Type.directory));
         t_region.attributes().setRegion("r");
+        assertEquals("[directory]-/", new DefaultPathPredicate(t_region).toString());
         assertEquals(new DefaultPathPredicate(t_noregion), new DefaultPathPredicate(t_region));
     }
 
