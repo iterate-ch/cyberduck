@@ -52,10 +52,12 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
     NSDictionary *proxyConfiguration;
     while((proxyConfiguration = [enumerator nextObject]) != nil) {
         if(![proxyConfiguration respondsToSelector:@selector(objectForKey:)]) {
+            NSLog(@"Invalid proxy configuration");
             continue;
         }
         // Every proxy dictionary has an entry for kCFProxyTypeKey
         if([[proxyConfiguration objectForKey:(NSString *)kCFProxyTypeKey] isEqualToString:(NSString *)kCFProxyTypeNone]) {
+            NSLog(@"Missing proxy type key in configuration");
             return nil;
         }
         // Look for PAC configuration
@@ -63,6 +65,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             // If the type is kCFProxyTypeAutoConfigurationURL, it has an entry for kCFProxyAutoConfigurationURLKey
             NSString *pacLocation = [proxyConfiguration objectForKey:(NSString *)kCFProxyAutoConfigurationURLKey];
             if(!pacLocation) {
+        		NSLog(@"Failure retrieving auto configuration script location from configuration");
                 CFRelease(proxyConfigurations);
                 continue;
             }
@@ -70,6 +73,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             // Obtain from URL for automatic proxy configuration
             NSString *pacScript = [NSString stringWithContentsOfURL:[NSURL URLWithString:pacLocation] encoding:NSUTF8StringEncoding error:&error];
             if(error) {
+        		NSLog(@"Failure retrieving auto configuration script from %@: %@", pacLocation, error);
                 CFRelease(error);
                 CFRelease(proxyConfigurations);
                 continue;
@@ -78,6 +82,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             // Executes a proxy auto configuration script to determine the best proxy to use to retrieve a specified URL
             NSArray *pacProxies = (NSArray*)CFNetworkCopyProxiesForAutoConfigurationScript((CFStringRef)pacScript, (CFURLRef)[NSURL URLWithString:targetURL], &err);
             if(error) {
+        		NSLog(@"Failure retrieving proxies from auto configuration script: %@", error);
                 CFRelease(error);
                 CFRelease(proxyConfigurations);
                 continue;
@@ -115,12 +120,15 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
         return nil;
     }
     if(nil == [dict objectForKey:(NSString *)kCFProxyTypeKey]) {
+        NSLog(@"Missing kCFProxyTypeKey in proxy configuration");
         return nil;
     }
     if(nil == [dict objectForKey:(NSString *)kCFProxyHostNameKey]) {
+        NSLog(@"Missing kCFProxyHostNameKey in proxy configuration");
         return nil;
     }
     if(nil == [dict objectForKey:(NSString *)kCFProxyPortNumberKey]) {
+        NSLog(@"Missing kCFProxyPortNumberKey in proxy configuration");
         return nil;
     }
     NSString *type = [dict objectForKey:(NSString *)kCFProxyTypeKey];
