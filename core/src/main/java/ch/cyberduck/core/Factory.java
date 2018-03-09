@@ -22,17 +22,22 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public abstract class Factory<T> {
 
-    private final String clazz;
+    private final Class<T> clazz;
 
     protected Factory() {
         this.clazz = null;
     }
 
     /**
-     * @param clazz Implementation class name
+     * @param name Implementation class name
      */
-    protected Factory(final String clazz) {
-        this.clazz = PreferencesFactory.get().getProperty(clazz);
+    protected Factory(final String name) {
+        try {
+            this.clazz = (Class<T>) Class.forName(PreferencesFactory.get().getProperty(name));
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -44,10 +49,9 @@ public abstract class Factory<T> {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
-            final Class<T> name = (Class<T>) Class.forName(clazz);
-            return name.newInstance();
+            return clazz.newInstance();
         }
-        catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
