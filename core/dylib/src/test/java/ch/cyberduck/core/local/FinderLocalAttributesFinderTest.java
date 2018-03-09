@@ -106,12 +106,6 @@ public class FinderLocalAttributesFinderTest {
     }
 
     @Test
-    public void testIsSymbolicLink() throws Exception {
-        Assert.assertFalse(new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).isSymbolicLink());
-        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal("/tmp")).isSymbolicLink());
-    }
-
-    @Test
     public void testPermission() throws Exception {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
