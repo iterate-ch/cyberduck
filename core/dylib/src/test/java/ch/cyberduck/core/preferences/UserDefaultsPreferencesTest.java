@@ -99,4 +99,15 @@ public class UserDefaultsPreferencesTest {
         p.setDefault("test.key", "test.value2");
         assertEquals("test.value2", p.getProperty("test.key"));
     }
+
+    @Test
+    public void testOverrideDefault() {
+        UserDefaultsPreferences p = new UserDefaultsPreferences();
+        p.load();
+        p.setDefaults();
+        p.setDefault("test.key", "test.value");
+        assertEquals("test.value", p.getProperty("test.key"));
+        p.setProperty("test.key", "test.value2");
+        assertEquals("test.value2", p.getProperty("test.key"));
+    }
 }
