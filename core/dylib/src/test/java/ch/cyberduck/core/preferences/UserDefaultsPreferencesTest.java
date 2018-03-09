@@ -15,6 +15,8 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+
 import org.junit.Test;
 
 import java.util.List;
@@ -94,10 +96,11 @@ public class UserDefaultsPreferencesTest {
         UserDefaultsPreferences p = new UserDefaultsPreferences();
         p.load();
         p.setDefaults();
-        p.setDefault("test.key", "test.value");
-        assertEquals("test.value", p.getProperty("test.key"));
-        p.setDefault("test.key", "test.value2");
-        assertEquals("test.value2", p.getProperty("test.key"));
+        final String property = new AlphanumericRandomStringService().random();
+        p.setDefault(property, "test.value");
+        assertEquals("test.value", p.getProperty(property));
+        p.setDefault(property, "test.value2");
+        assertEquals("test.value2", p.getProperty(property));
     }
 
     @Test
@@ -105,9 +108,10 @@ public class UserDefaultsPreferencesTest {
         UserDefaultsPreferences p = new UserDefaultsPreferences();
         p.load();
         p.setDefaults();
-        p.setDefault("test.key", "test.value");
-        assertEquals("test.value", p.getProperty("test.key"));
-        p.setProperty("test.key", "test.value2");
-        assertEquals("test.value2", p.getProperty("test.key"));
+        final String property = new AlphanumericRandomStringService().random();
+        p.setDefault(property, "test.value");
+        assertEquals("test.value", p.getProperty(property));
+        p.setProperty(property, "test.value2");
+        assertEquals("test.value2", p.getProperty(property));
     }
 }
