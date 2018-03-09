@@ -20,24 +20,27 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
-import java.util.EnumSet;
+import java.util.Objects;
 
 /**
  * Path predicate that takes the region and version id of the path into account for comparisons.
  */
 public class DefaultPathPredicate implements CacheReference<Path> {
 
-    private final Path file;
+    private final Path.Type type;
+    private final String attributes;
+    private final String path;
 
     private final PathContainerService containerService
         = new PathContainerService();
 
     public DefaultPathPredicate(final Path file) {
-        this.file = file;
+        this.type = file.isFile() ? Path.Type.file : Path.Type.directory;
+        this.attributes = this.attributes(file);
+        this.path = file.getAbsolute();
     }
 
-    public String attributes() {
+    private String attributes(final Path file) {
         String qualifier = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(file.attributes().getRegion())) {
             if(containerService.isContainer(file)) {
@@ -52,48 +55,20 @@ public class DefaultPathPredicate implements CacheReference<Path> {
         return qualifier;
     }
 
-    protected String type() {
-        final EnumSet<Path.Type> types = EnumSet.copyOf(file.getType());
-        types.removeAll(Arrays.asList(
-            Path.Type.placeholder,
-            Path.Type.volume,
-            Path.Type.encrypted,
-            Path.Type.decrypted,
-            Path.Type.vault,
-            Path.Type.upload
-        ));
-        return String.valueOf(types);
+    @Override
+    public boolean equals(Object o) {
+        if(null == o) {
+            return false;
+        }
+        if(o instanceof CacheReference) {
+            return this.hashCode() == o.hashCode();
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return this.toString().hashCode();
-    }
-
-    /**
-     * Obtain a string representation of the path that is unique for versioned files.
-     *
-     * @return The absolute path with version ID and checksum if any.
-     */
-    @Override
-    public String toString() {
-        return this.type() + "-" + this.attributes() + file.getAbsolute();
-    }
-
-    /**
-     * Comparing the hashcode.
-     *
-     * @see #hashCode()
-     */
-    @Override
-    public boolean equals(Object other) {
-        if(null == other) {
-            return false;
-        }
-        if(other instanceof CacheReference) {
-            return this.hashCode() == other.hashCode();
-        }
-        return false;
+        return Objects.hash(type, attributes, path);
     }
 
     @Override

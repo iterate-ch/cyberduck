@@ -18,14 +18,15 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -60,7 +61,17 @@ public class DefaultTemporaryFileService extends AbstractTemporaryFileService im
         final String pathFormat = "%2$s%1$s%3$s%1$s%4$s";
         final String normalizedPathFormat = pathFormat + "%1$s%5$s";
 
-        final String attributes = new DefaultPathPredicate(file).attributes();
+        String attributes = StringUtils.EMPTY;
+        if(StringUtils.isNotBlank(file.attributes().getRegion())) {
+            if(new PathContainerService().isContainer(file)) {
+                attributes += file.attributes().getRegion();
+            }
+        }
+        if(file.isFile()) {
+            if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+                attributes += file.attributes().getVersionId();
+            }
+        }
         final String normalizedFileName = PathNormalizer.name(file.getAbsolute());
 
         final File shortenTestPath = new File(PreferencesFactory.get().getProperty("tmp.dir"), String.format(normalizedPathFormat, delimiter, uid, "", attributes, normalizedFileName));

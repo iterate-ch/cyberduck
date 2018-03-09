@@ -8,8 +8,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import java.util.function.Predicate;
-
 public class NullSession extends Session<Void> {
 
     public NullSession(Host h) {
@@ -46,11 +44,6 @@ public class NullSession extends Session<Void> {
             @Override
             public boolean contains(final Path file) {
                 return true;
-            }
-
-            @Override
-            public Path find(final Predicate<Path> predicate) {
-                return ((SimplePathPredicate) predicate).file;
             }
 
             @Override
