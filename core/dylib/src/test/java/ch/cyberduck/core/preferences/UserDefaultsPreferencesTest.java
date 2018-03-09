@@ -88,4 +88,15 @@ public class UserDefaultsPreferencesTest {
         p.setDefaults();
         assertTrue(p.getList("network.interface.blacklist").contains("awdl0"));
     }
+
+    @Test
+    public void testDefault() {
+        UserDefaultsPreferences p = new UserDefaultsPreferences();
+        p.load();
+        p.setDefaults();
+        p.setDefault("test.key", "test.value");
+        assertEquals("test.value", p.getProperty("test.key"));
+        p.setDefault("test.key", "test.value2");
+        assertEquals("test.value2", p.getProperty("test.key"));
+    }
 }
