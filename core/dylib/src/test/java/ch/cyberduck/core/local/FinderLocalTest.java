@@ -78,7 +78,6 @@ public class FinderLocalTest {
             l.list();
         }
         catch(LocalAccessDeniedException e) {
-            assertEquals("The folder “" + name + "” doesn’t exist. Please verify disk permissions.", e.getDetail());
             throw e;
         }
     }
