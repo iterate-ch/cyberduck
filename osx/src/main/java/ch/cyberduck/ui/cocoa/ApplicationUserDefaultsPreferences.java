@@ -45,51 +45,51 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         // Parent defaults
         super.setDefaults();
 
-        defaults.put(String.format("browser.column.%s", BrowserColumn.icon.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.icon.name()), String.valueOf(20));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.filename.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.filename.name()), String.valueOf(250));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.kind.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.kind.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.extension.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.extension.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.size.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.size.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.modified.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.modified.name()), String.valueOf(150));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.owner.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.owner.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.group.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.group.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.permission.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.permission.name()), String.valueOf(100));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.region.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.region.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserColumn.version.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserColumn.version.name()), String.valueOf(80));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.icon.name()), String.valueOf(true));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.icon.name()), String.valueOf(20));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.filename.name()), String.valueOf(true));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.filename.name()), String.valueOf(250));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.kind.name()), String.valueOf(false));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.kind.name()), String.valueOf(80));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.extension.name()), String.valueOf(false));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.extension.name()), String.valueOf(80));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.size.name()), String.valueOf(true));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.size.name()), String.valueOf(80));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.modified.name()), String.valueOf(true));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.modified.name()), String.valueOf(150));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.owner.name()), String.valueOf(false));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.owner.name()), String.valueOf(80));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.group.name()), String.valueOf(false));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.group.name()), String.valueOf(80));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.permission.name()), String.valueOf(false));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.permission.name()), String.valueOf(100));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.region.name()), String.valueOf(false));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.region.name()), String.valueOf(80));
+        this.setDefault(String.format("browser.column.%s", BrowserColumn.version.name()), String.valueOf(false));
+        this.setDefault(String.format("browser.column.%s.width", BrowserColumn.version.name()), String.valueOf(80));
 
-        defaults.put("browser.sort.column", BrowserColumn.filename.name());
-        defaults.put("website.store", "macappstore://itunes.apple.com/app/id409222199?mt=12");
+        this.setDefault("browser.sort.column", BrowserColumn.filename.name());
+        this.setDefault("website.store", "macappstore://itunes.apple.com/app/id409222199?mt=12");
     }
 
     @Override
     protected void setFactories() {
         super.setFactories();
 
-        defaults.put("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
-        defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
-        defaults.put("factory.hostkeycallback.class", PromptHostKeyCallback.class.getName());
-        defaults.put("factory.logincallback.class", PromptLoginCallback.class.getName());
-        defaults.put("factory.passwordcallback.class", PromptPasswordCallback.class.getName());
-        defaults.put("factory.alertcallback.class", PromptAlertCallback.class.getName());
-        defaults.put("factory.transfererrorcallback.class", PromptTransferErrorCallback.class.getName());
-        defaults.put("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
-        defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
-        defaults.put("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
-        defaults.put("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
-        defaults.put("factory.rendezvous.class", RendezvousResponder.class.getName());
-        defaults.put("factory.vault.class", CryptoVault.class.getName());
-        defaults.put("factory.securerandom.class", FastSecureRandomProvider.class.getName());
+        this.setDefault("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
+        this.setDefault("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
+        this.setDefault("factory.hostkeycallback.class", PromptHostKeyCallback.class.getName());
+        this.setDefault("factory.logincallback.class", PromptLoginCallback.class.getName());
+        this.setDefault("factory.passwordcallback.class", PromptPasswordCallback.class.getName());
+        this.setDefault("factory.alertcallback.class", PromptAlertCallback.class.getName());
+        this.setDefault("factory.transfererrorcallback.class", PromptTransferErrorCallback.class.getName());
+        this.setDefault("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
+        this.setDefault("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
+        this.setDefault("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
+        this.setDefault("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
+        this.setDefault("factory.rendezvous.class", RendezvousResponder.class.getName());
+        this.setDefault("factory.vault.class", CryptoVault.class.getName());
+        this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
     }
 
     @Override

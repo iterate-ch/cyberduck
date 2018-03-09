@@ -99,8 +99,8 @@ import java.util.TimeZone;
 public abstract class Preferences {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
-    protected final Map<String, String> defaults
-            = new HashMap<String, String>();
+    private final Map<String, String> defaults
+        = new HashMap<String, String>();
 
     /**
      * Called after the defaults have been set.
@@ -223,7 +223,7 @@ public abstract class Preferences {
 
     protected void setDefaults(final Properties properties) {
         for(Map.Entry<Object, Object> property : properties.entrySet()) {
-            defaults.put(property.getKey().toString(), property.getValue().toString());
+            this.setDefault(property.getKey().toString(), property.getValue().toString());
         }
     }
 
@@ -231,312 +231,312 @@ public abstract class Preferences {
      * setting the default prefs values
      */
     protected void setDefaults() {
-        defaults.put("application.version", Version.getSpecification());
-        defaults.put("application.revision", Version.getImplementation());
+        this.setDefault("application.version", Version.getSpecification());
+        this.setDefault("application.revision", Version.getImplementation());
 
-        defaults.put("tmp.dir", System.getProperty("java.io.tmpdir"));
+        this.setDefault("tmp.dir", System.getProperty("java.io.tmpdir"));
 
         /*
           How many times the application was launched
          */
-        defaults.put("uses", "0");
+        this.setDefault("uses", "0");
         /*
           True if donation dialog will be displayed before quit
          */
-        defaults.put("donate.reminder", String.valueOf(-1));
-        defaults.put("donate.reminder.interval", String.valueOf(20)); // in days
-        defaults.put("donate.reminder.date", String.valueOf(new Date(0).getTime()));
+        this.setDefault("donate.reminder", String.valueOf(-1));
+        this.setDefault("donate.reminder.interval", String.valueOf(20)); // in days
+        this.setDefault("donate.reminder.date", String.valueOf(new Date(0).getTime()));
 
-        defaults.put("defaulthandler.reminder", String.valueOf(true));
+        this.setDefault("defaulthandler.reminder", String.valueOf(true));
 
-        defaults.put("mail.feedback", "mailto:support@cyberduck.io");
+        this.setDefault("mail.feedback", "mailto:support@cyberduck.io");
 
-        defaults.put("website.donate", "https://cyberduck.io/donate/");
-        defaults.put("website.home", "https://cyberduck.io/");
-        defaults.put("website.help", "https://help.cyberduck.io/" + this.locale());
-        defaults.put("website.bug", "https://trac.cyberduck.io/newticket?version={0}");
-        defaults.put("website.crash", "https://crash.cyberduck.io/report");
-        defaults.put("website.cli", "https://duck.sh/");
-        defaults.put("website.license", "https://cyberduck.io/license");
-        defaults.put("website.acknowledgments", "https://cyberduck.io/acknowledgments");
+        this.setDefault("website.donate", "https://cyberduck.io/donate/");
+        this.setDefault("website.home", "https://cyberduck.io/");
+        this.setDefault("website.help", "https://help.cyberduck.io/" + this.locale());
+        this.setDefault("website.bug", "https://trac.cyberduck.io/newticket?version={0}");
+        this.setDefault("website.crash", "https://crash.cyberduck.io/report");
+        this.setDefault("website.cli", "https://duck.sh/");
+        this.setDefault("website.license", "https://cyberduck.io/license");
+        this.setDefault("website.acknowledgments", "https://cyberduck.io/acknowledgments");
 
-        defaults.put("rendezvous.enable", String.valueOf(true));
-        defaults.put("rendezvous.loopback.suppress", String.valueOf(true));
-        defaults.put("rendezvous.notification.limit", String.valueOf(0));
+        this.setDefault("rendezvous.enable", String.valueOf(true));
+        this.setDefault("rendezvous.loopback.suppress", String.valueOf(true));
+        this.setDefault("rendezvous.notification.limit", String.valueOf(0));
 
-        defaults.put("growl.enable", String.valueOf(true));
+        this.setDefault("growl.enable", String.valueOf(true));
 
-        defaults.put("path.symboliclink.resolve", String.valueOf(false));
+        this.setDefault("path.symboliclink.resolve", String.valueOf(false));
         /*
           Normalize path names
          */
-        defaults.put("path.normalize", String.valueOf(true));
-        defaults.put("path.normalize.unicode", String.valueOf(false));
+        this.setDefault("path.normalize", String.valueOf(true));
+        this.setDefault("path.normalize.unicode", String.valueOf(false));
 
-        defaults.put("local.user.home", System.getProperty("user.home"));
-        defaults.put("local.alias.resolve", String.valueOf(true));
-        defaults.put("local.symboliclink.resolve", String.valueOf(false));
-        defaults.put("local.normalize.prefix", String.valueOf(false));
-        defaults.put("local.normalize.unicode", String.valueOf(true));
-        defaults.put("local.normalize.tilde", String.valueOf(true));
-        defaults.put("local.list.native", String.valueOf(true));
-        defaults.put("local.delimiter", File.separator);
-        defaults.put("local.temporaryfiles.shortening.threshold", String.valueOf(240));
+        this.setDefault("local.user.home", System.getProperty("user.home"));
+        this.setDefault("local.alias.resolve", String.valueOf(true));
+        this.setDefault("local.symboliclink.resolve", String.valueOf(false));
+        this.setDefault("local.normalize.prefix", String.valueOf(false));
+        this.setDefault("local.normalize.unicode", String.valueOf(true));
+        this.setDefault("local.normalize.tilde", String.valueOf(true));
+        this.setDefault("local.list.native", String.valueOf(true));
+        this.setDefault("local.delimiter", File.separator);
+        this.setDefault("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
-        defaults.put("application.name", "Cyberduck");
-        defaults.put("application.container.name", "duck");
+        this.setDefault("application.name", "Cyberduck");
+        this.setDefault("application.container.name", "duck");
         final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
-        defaults.put("application.support.path", support);
-        defaults.put("application.receipt.path", support);
+        this.setDefault("application.support.path", support);
+        this.setDefault("application.receipt.path", support);
 
         // Default bundled profiles location
         final Local resources = ApplicationResourcesFinderFactory.get().find();
-        defaults.put("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
-        defaults.put("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
+        this.setDefault("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
+        this.setDefault("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
 
         /*
           Lowercase folder name to use when looking for bookmarks in user support directory
          */
-        defaults.put("bookmarks.folder.name", "Bookmarks");
+        this.setDefault("bookmarks.folder.name", "Bookmarks");
         /*
           Lowercase folder name to use when looking for profiles in user support directory
          */
-        defaults.put("profiles.folder.name", "Profiles");
+        this.setDefault("profiles.folder.name", "Profiles");
 
         /*
           Maximum number of directory listings to cache using a most recently used implementation
          */
-        defaults.put("browser.cache.size", String.valueOf(1000));
-        defaults.put("transfer.cache.size", String.valueOf(100));
-        defaults.put("icon.cache.size", String.valueOf(200));
+        this.setDefault("browser.cache.size", String.valueOf(1000));
+        this.setDefault("transfer.cache.size", String.valueOf(100));
+        this.setDefault("icon.cache.size", String.valueOf(200));
 
         /*
           Caching NS* proxy instances.
          */
-        defaults.put("browser.model.cache.size", String.valueOf(10000));
+        this.setDefault("browser.model.cache.size", String.valueOf(10000));
 
         /*
           Callback threshold
          */
-        defaults.put("browser.list.limit.directory", String.valueOf(5000));
-        defaults.put("browser.list.limit.container", String.valueOf(100));
+        this.setDefault("browser.list.limit.directory", String.valueOf(5000));
+        this.setDefault("browser.list.limit.container", String.valueOf(100));
 
-        defaults.put("info.toolbar.selected", String.valueOf(0));
-        defaults.put("preferences.toolbar.selected", String.valueOf(0));
+        this.setDefault("info.toolbar.selected", String.valueOf(0));
+        this.setDefault("preferences.toolbar.selected", String.valueOf(0));
 
         /*
           Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
          */
-        defaults.put("browser.view", "1");
+        this.setDefault("browser.view", "1");
         /*
           Save browser sessions when quitting and restore upon relaunch
          */
-        defaults.put("browser.serialize", String.valueOf(true));
+        this.setDefault("browser.serialize", String.valueOf(true));
 
-        defaults.put("browser.font.size", String.valueOf(12f));
+        this.setDefault("browser.font.size", String.valueOf(12f));
 
-        defaults.put("browser.view.autoexpand", String.valueOf(true));
-        defaults.put("browser.view.autoexpand.useDelay", String.valueOf(true));
-        defaults.put("browser.view.autoexpand.delay", "1.0"); // in seconds
+        this.setDefault("browser.view.autoexpand", String.valueOf(true));
+        this.setDefault("browser.view.autoexpand.useDelay", String.valueOf(true));
+        this.setDefault("browser.view.autoexpand.delay", "1.0"); // in seconds
 
-        defaults.put("browser.hidden.regex", "\\..*");
+        this.setDefault("browser.hidden.regex", "\\..*");
 
-        defaults.put("browser.open.untitled", String.valueOf(true));
-        defaults.put("browser.open.bookmark.default", null);
+        this.setDefault("browser.open.untitled", String.valueOf(true));
+        this.setDefault("browser.open.bookmark.default", null);
 
         /*
           Confirm closing the browsing connection
          */
-        defaults.put("browser.disconnect.confirm", String.valueOf(false));
-        defaults.put("browser.disconnect.bookmarks.show", String.valueOf(false));
+        this.setDefault("browser.disconnect.confirm", String.valueOf(false));
+        this.setDefault("browser.disconnect.bookmarks.show", String.valueOf(false));
 
         /*
           Display only one info panel and change information according to selection in browser
          */
-        defaults.put("browser.info.inspector", String.valueOf(true));
+        this.setDefault("browser.info.inspector", String.valueOf(true));
 
-        defaults.put("browser.sort.ascending", String.valueOf(true));
+        this.setDefault("browser.sort.ascending", String.valueOf(true));
 
-        defaults.put("browser.alternatingRows", String.valueOf(false));
-        defaults.put("browser.verticalLines", String.valueOf(false));
-        defaults.put("browser.horizontalLines", String.valueOf(true));
+        this.setDefault("browser.alternatingRows", String.valueOf(false));
+        this.setDefault("browser.verticalLines", String.valueOf(false));
+        this.setDefault("browser.horizontalLines", String.valueOf(true));
         /*
           Show hidden files in browser by default
          */
-        defaults.put("browser.showHidden", String.valueOf(false));
-        defaults.put("browser.charset.encoding", "UTF-8");
+        this.setDefault("browser.showHidden", String.valueOf(false));
+        this.setDefault("browser.charset.encoding", "UTF-8");
         /*
           Edit double clicked files instead of downloading
          */
-        defaults.put("browser.doubleclick.edit", String.valueOf(false));
+        this.setDefault("browser.doubleclick.edit", String.valueOf(false));
         /*
           Rename files when return or enter key is pressed
          */
-        defaults.put("browser.enterkey.rename", String.valueOf(true));
+        this.setDefault("browser.enterkey.rename", String.valueOf(true));
 
         /*
           Enable inline editing in browser
          */
-        defaults.put("browser.editable", String.valueOf(true));
+        this.setDefault("browser.editable", String.valueOf(true));
 
         /*
           Warn before renaming files
          */
-        defaults.put("browser.move.confirm", String.valueOf(true));
-        defaults.put("browser.copy.confirm", String.valueOf(false));
+        this.setDefault("browser.move.confirm", String.valueOf(true));
+        this.setDefault("browser.copy.confirm", String.valueOf(false));
 
 
-        defaults.put("browser.transcript.open", String.valueOf(false));
-        defaults.put("browser.transcript.size.height", String.valueOf(200));
+        this.setDefault("browser.transcript.open", String.valueOf(false));
+        this.setDefault("browser.transcript.size.height", String.valueOf(200));
 
         /*
           Filename (Short Date Format)Extension
          */
-        defaults.put("browser.duplicate.format", "{0} ({1}){2}");
+        this.setDefault("browser.duplicate.format", "{0} ({1}){2}");
 
         /*
           Use octal or decimal file sizes
          */
-        defaults.put("browser.filesize.decimal", String.valueOf(false));
-        defaults.put("browser.date.natural", String.valueOf(true));
+        this.setDefault("browser.filesize.decimal", String.valueOf(false));
+        this.setDefault("browser.date.natural", String.valueOf(true));
 
-        defaults.put("browser.delete.concurrency", String.valueOf(10));
+        this.setDefault("browser.delete.concurrency", String.valueOf(10));
 
 
-        defaults.put("info.toggle.permission", String.valueOf(1));
-        defaults.put("info.toggle.distribution", String.valueOf(0));
-        defaults.put("info.toggle.s3", String.valueOf(0));
+        this.setDefault("info.toggle.permission", String.valueOf(1));
+        this.setDefault("info.toggle.distribution", String.valueOf(0));
+        this.setDefault("info.toggle.s3", String.valueOf(0));
 
-        defaults.put("connection.toggle.options", String.valueOf(0));
-        defaults.put("bookmark.toggle.options", String.valueOf(0));
+        this.setDefault("connection.toggle.options", String.valueOf(0));
+        this.setDefault("bookmark.toggle.options", String.valueOf(0));
 
-        defaults.put("alert.toggle.transcript", String.valueOf(0));
+        this.setDefault("alert.toggle.transcript", String.valueOf(0));
 
-        defaults.put("transfer.toggle.details", String.valueOf(1));
+        this.setDefault("transfer.toggle.details", String.valueOf(1));
 
         /*
           Default editor
          */
-        defaults.put("editor.bundleIdentifier", "com.apple.TextEdit");
-        defaults.put("editor.alwaysUseDefault", String.valueOf(false));
+        this.setDefault("editor.bundleIdentifier", "com.apple.TextEdit");
+        this.setDefault("editor.alwaysUseDefault", String.valueOf(false));
 
-        defaults.put("editor.upload.permissions.change", String.valueOf(true));
-        defaults.put("editor.upload.symboliclink.resolve", String.valueOf(true));
+        this.setDefault("editor.upload.permissions.change", String.valueOf(true));
+        this.setDefault("editor.upload.symboliclink.resolve", String.valueOf(true));
 
         /*
           Save bookmarks in ~/Library
          */
-        defaults.put("favorites.save", String.valueOf(true));
+        this.setDefault("favorites.save", String.valueOf(true));
 
-        defaults.put("queue.removeItemWhenComplete", String.valueOf(false));
+        this.setDefault("queue.removeItemWhenComplete", String.valueOf(false));
         /*
           The maximum number of concurrent transfers in transfer list
          */
-        defaults.put("queue.maxtransfers", String.valueOf(2));
+        this.setDefault("queue.maxtransfers", String.valueOf(2));
         /*
           Default transfer connection handling
          */
-        defaults.put("queue.transfer.type.enabled", String.format("%s %s %s",
-                String.valueOf(Host.TransferType.browser.name()),
-                String.valueOf(Host.TransferType.newconnection.name()),
-                String.valueOf(Host.TransferType.concurrent.name())
+        this.setDefault("queue.transfer.type.enabled", String.format("%s %s %s",
+            String.valueOf(Host.TransferType.browser.name()),
+            String.valueOf(Host.TransferType.newconnection.name()),
+            String.valueOf(Host.TransferType.concurrent.name())
         ));
-        defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.concurrent.name()));
+        this.setDefault("queue.transfer.type", String.valueOf(Host.TransferType.concurrent.name()));
         /*
           Warning when number of transfers in queue exceeds limit
          */
-        defaults.put("queue.size.warn", String.valueOf(20));
+        this.setDefault("queue.size.warn", String.valueOf(20));
         /*
           Bring transfer window to front
          */
-        defaults.put("queue.window.open.default", String.valueOf(false));
-        defaults.put("queue.window.open.transfer.start", String.valueOf(true));
-        defaults.put("queue.window.open.transfer.stop", String.valueOf(false));
+        this.setDefault("queue.window.open.default", String.valueOf(false));
+        this.setDefault("queue.window.open.transfer.start", String.valueOf(true));
+        this.setDefault("queue.window.open.transfer.stop", String.valueOf(false));
 
         /*
           Action when duplicate file exists
          */
-        defaults.put("queue.download.action", TransferAction.callback.name());
-        defaults.put("queue.upload.action", TransferAction.callback.name());
-        defaults.put("queue.copy.action", TransferAction.callback.name());
+        this.setDefault("queue.download.action", TransferAction.callback.name());
+        this.setDefault("queue.upload.action", TransferAction.callback.name());
+        this.setDefault("queue.copy.action", TransferAction.callback.name());
         /*
           When triggered manually using 'Reload' in the Transfer window
          */
-        defaults.put("queue.download.reload.action", TransferAction.callback.name());
-        defaults.put("queue.upload.reload.action", TransferAction.callback.name());
-        defaults.put("queue.copy.reload.action", TransferAction.callback.name());
+        this.setDefault("queue.download.reload.action", TransferAction.callback.name());
+        this.setDefault("queue.upload.reload.action", TransferAction.callback.name());
+        this.setDefault("queue.copy.reload.action", TransferAction.callback.name());
 
-        defaults.put("queue.upload.permissions.change", String.valueOf(false));
-        defaults.put("queue.upload.permissions.default", String.valueOf(false));
-        defaults.put("queue.upload.permissions.file.default", String.valueOf(644));
-        defaults.put("queue.upload.permissions.folder.default", String.valueOf(755));
+        this.setDefault("queue.upload.permissions.change", String.valueOf(false));
+        this.setDefault("queue.upload.permissions.default", String.valueOf(false));
+        this.setDefault("queue.upload.permissions.file.default", String.valueOf(644));
+        this.setDefault("queue.upload.permissions.folder.default", String.valueOf(755));
 
-        defaults.put("queue.upload.timestamp.change", String.valueOf(false));
+        this.setDefault("queue.upload.timestamp.change", String.valueOf(false));
         /*
           Keep existing headers
          */
-        defaults.put("queue.upload.file.metadata.change", String.valueOf(true));
-        defaults.put("queue.upload.file.encryption.change", String.valueOf(true));
-        defaults.put("queue.upload.file.redundancy.change", String.valueOf(true));
+        this.setDefault("queue.upload.file.metadata.change", String.valueOf(true));
+        this.setDefault("queue.upload.file.encryption.change", String.valueOf(true));
+        this.setDefault("queue.upload.file.redundancy.change", String.valueOf(true));
 
-        defaults.put("queue.upload.checksum.calculate", String.valueOf(true));
+        this.setDefault("queue.upload.checksum.calculate", String.valueOf(true));
 
-        defaults.put("queue.upload.skip.enable", String.valueOf(true));
-        defaults.put("queue.upload.skip.regex.default",
-                ".*~\\..*|\\.DS_Store|\\.svn|CVS");
-        defaults.put("queue.upload.skip.regex",
-                ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+        this.setDefault("queue.upload.skip.enable", String.valueOf(true));
+        this.setDefault("queue.upload.skip.regex.default",
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+        this.setDefault("queue.upload.skip.regex",
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS");
 
-        defaults.put("queue.upload.priority.regex", "");
+        this.setDefault("queue.upload.priority.regex", "");
 
         /*
           Create temporary filename with an UUID and rename when upload is complete
          */
-        defaults.put("queue.upload.file.temporary", String.valueOf(false));
+        this.setDefault("queue.upload.file.temporary", String.valueOf(false));
         /*
           Format string for temporary filename. Default to filename-uuid
          */
-        defaults.put("queue.upload.file.temporary.format", "{0}-{1}");
+        this.setDefault("queue.upload.file.temporary.format", "{0}-{1}");
 
-        defaults.put("queue.upload.file.rename.format", "{0} ({1}){2}");
-        defaults.put("queue.download.file.rename.format", "{0} ({1}){2}");
+        this.setDefault("queue.upload.file.rename.format", "{0} ({1}){2}");
+        this.setDefault("queue.download.file.rename.format", "{0} ({1}){2}");
 
-        defaults.put("queue.download.permissions.change", String.valueOf(true));
-        defaults.put("queue.download.permissions.default", String.valueOf(false));
-        defaults.put("queue.download.permissions.file.default", String.valueOf(644));
-        defaults.put("queue.download.permissions.folder.default", String.valueOf(755));
+        this.setDefault("queue.download.permissions.change", String.valueOf(true));
+        this.setDefault("queue.download.permissions.default", String.valueOf(false));
+        this.setDefault("queue.download.permissions.file.default", String.valueOf(644));
+        this.setDefault("queue.download.permissions.folder.default", String.valueOf(755));
 
-        defaults.put("queue.download.timestamp.change", String.valueOf(true));
-        defaults.put("queue.download.checksum", String.valueOf(true));
+        this.setDefault("queue.download.timestamp.change", String.valueOf(true));
+        this.setDefault("queue.download.checksum", String.valueOf(true));
 
-        defaults.put("queue.download.skip.enable", String.valueOf(true));
-        defaults.put("queue.download.skip.regex.default",
-                ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
-        defaults.put("queue.download.skip.regex",
-                ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
+        this.setDefault("queue.download.skip.enable", String.valueOf(true));
+        this.setDefault("queue.download.skip.regex.default",
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
+        this.setDefault("queue.download.skip.regex",
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
 
-        defaults.put("queue.download.priority.regex", "");
+        this.setDefault("queue.download.priority.regex", "");
 
-        defaults.put("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
+        this.setDefault("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
         // Security scoped bookmark
-        defaults.put("queue.download.folder.bookmark", null);
+        this.setDefault("queue.download.folder.bookmark", null);
 
-        defaults.put("queue.download.quarantine", String.valueOf(true));
-        defaults.put("queue.download.wherefrom", String.valueOf(true));
+        this.setDefault("queue.download.quarantine", String.valueOf(true));
+        this.setDefault("queue.download.wherefrom", String.valueOf(true));
 
         // Segmented concurrent downloads
-        defaults.put("queue.download.segments", String.valueOf(false));
-        defaults.put("queue.download.segments.threshold", String.valueOf(100L * 1024L * 1024L));
-        defaults.put("queue.download.segments.size", String.valueOf(50L * 1024L * 1024L));
+        this.setDefault("queue.download.segments", String.valueOf(false));
+        this.setDefault("queue.download.segments.threshold", String.valueOf(100L * 1024L * 1024L));
+        this.setDefault("queue.download.segments.size", String.valueOf(50L * 1024L * 1024L));
 
         /*
           Open completed downloads
          */
-        defaults.put("queue.download.complete.open", String.valueOf(false));
+        this.setDefault("queue.download.complete.open", String.valueOf(false));
 
-        defaults.put("queue.dock.badge", String.valueOf(false));
+        this.setDefault("queue.dock.badge", String.valueOf(false));
 
-        defaults.put("queue.sleep.prevent", String.valueOf(true));
+        this.setDefault("queue.sleep.prevent", String.valueOf(true));
 
         /*
           Bandwidth throttle options
@@ -559,21 +559,21 @@ public abstract class Preferences {
             options.append(20 * DecimalSizeFormatter.MEGA.multiple()).append(",");
             options.append(50 * DecimalSizeFormatter.MEGA.multiple()).append(",");
             options.append(100 * DecimalSizeFormatter.MEGA.multiple()).append(",");
-            defaults.put("queue.bandwidth.options", options.toString());
+            this.setDefault("queue.bandwidth.options", options.toString());
         }
         /*
           Bandwidth throttle upload stream
          */
-        defaults.put("queue.upload.bandwidth.bytes", String.valueOf(-1));
+        this.setDefault("queue.upload.bandwidth.bytes", String.valueOf(-1));
         /*
           Bandwidth throttle download stream
          */
-        defaults.put("queue.download.bandwidth.bytes", String.valueOf(-1));
+        this.setDefault("queue.download.bandwidth.bytes", String.valueOf(-1));
 
         /*
          * Concurrent connections
          */
-        defaults.put("queue.connections.limit", String.valueOf(2));
+        this.setDefault("queue.connections.limit", String.valueOf(2));
         {
             final StringBuilder options = new StringBuilder();
             options.append(1).append(",");
@@ -584,478 +584,478 @@ public abstract class Preferences {
             options.append(10).append(",");
             options.append(15).append(",");
             options.append(20).append(",");
-            defaults.put("queue.connections.options", options.toString());
+            this.setDefault("queue.connections.options", options.toString());
         }
 
         /*
           While downloading, update the icon of the downloaded file as a progress indicator
          */
-        defaults.put("queue.download.icon.update", String.valueOf(true));
-        defaults.put("queue.download.icon.threshold", String.valueOf(TransferStatus.MEGA * 5));
+        this.setDefault("queue.download.icon.update", String.valueOf(true));
+        this.setDefault("queue.download.icon.threshold", String.valueOf(TransferStatus.MEGA * 5));
 
         /*
           Default synchronize action selected in the sync dialog
          */
-        defaults.put("queue.prompt.sync.action.default", TransferAction.mirror.name());
-        defaults.put("queue.prompt.download.action.default", TransferAction.overwrite.name());
-        defaults.put("queue.prompt.upload.action.default", TransferAction.overwrite.name());
-        defaults.put("queue.prompt.copy.action.default", TransferAction.overwrite.name());
-        defaults.put("queue.prompt.move.action.default", TransferAction.overwrite.name());
+        this.setDefault("queue.prompt.sync.action.default", TransferAction.mirror.name());
+        this.setDefault("queue.prompt.download.action.default", TransferAction.overwrite.name());
+        this.setDefault("queue.prompt.upload.action.default", TransferAction.overwrite.name());
+        this.setDefault("queue.prompt.copy.action.default", TransferAction.overwrite.name());
+        this.setDefault("queue.prompt.move.action.default", TransferAction.overwrite.name());
 
-        defaults.put("queue.transcript.open", String.valueOf(false));
-        defaults.put("queue.transcript.size.height", String.valueOf(200));
+        this.setDefault("queue.transcript.open", String.valueOf(false));
+        this.setDefault("queue.transcript.size.height", String.valueOf(200));
 
-        defaults.put("http.compression.enable", String.valueOf(true));
+        this.setDefault("http.compression.enable", String.valueOf(true));
 
         /*
           HTTP routes to maximum number of connections allowed for those routes
          */
-        defaults.put("http.connections.route", String.valueOf(10));
-        defaults.put("http.connections.reuse", String.valueOf(true));
+        this.setDefault("http.connections.route", String.valueOf(10));
+        this.setDefault("http.connections.reuse", String.valueOf(true));
         /*
           Total number of connections in the pool
          */
-        defaults.put("http.connections.total", String.valueOf(Integer.MAX_VALUE));
-        defaults.put("http.connections.retry", String.valueOf(1));
+        this.setDefault("http.connections.total", String.valueOf(Integer.MAX_VALUE));
+        this.setDefault("http.connections.retry", String.valueOf(1));
 
-        defaults.put("http.manager.timeout", String.valueOf(0)); // Infinite
-        defaults.put("http.socket.buffer", String.valueOf(8192));
-        defaults.put("http.credentials.charset", "ISO-8859-1");
+        this.setDefault("http.manager.timeout", String.valueOf(0)); // Infinite
+        this.setDefault("http.socket.buffer", String.valueOf(8192));
+        this.setDefault("http.credentials.charset", "ISO-8859-1");
 
         /*
           Enable or disable verification that the remote host taking part
           of a data connection is the same as the host to which the control
           connection is attached.
          */
-        defaults.put("ftp.datachannel.verify", String.valueOf(false));
-        defaults.put("ftp.socket.buffer", String.valueOf(0));
+        this.setDefault("ftp.datachannel.verify", String.valueOf(false));
+        this.setDefault("ftp.socket.buffer", String.valueOf(0));
 
-        defaults.put("ftp.parser.multiline.strict", String.valueOf(false));
-        defaults.put("ftp.parser.reply.strict", String.valueOf(false));
+        this.setDefault("ftp.parser.multiline.strict", String.valueOf(false));
+        this.setDefault("ftp.parser.reply.strict", String.valueOf(false));
 
         /*
           Send LIST -a
          */
-        defaults.put("ftp.command.lista", String.valueOf(true));
-        defaults.put("ftp.command.stat", String.valueOf(true));
-        defaults.put("ftp.command.mlsd", String.valueOf(true));
+        this.setDefault("ftp.command.lista", String.valueOf(true));
+        this.setDefault("ftp.command.stat", String.valueOf(true));
+        this.setDefault("ftp.command.mlsd", String.valueOf(true));
 
         /*
           Fallback to active or passive mode respectively
          */
-        defaults.put("ftp.connectmode.fallback", String.valueOf(false));
+        this.setDefault("ftp.connectmode.fallback", String.valueOf(false));
         /*
           Protect the data channel by default. For TLS, the data connection
           can have one of two security levels.
          1) Clear (requested by 'PROT C')
          2) Private (requested by 'PROT P')
          */
-        defaults.put("ftp.tls.datachannel", "P"); //C
-        defaults.put("ftp.tls.session.requirereuse", String.valueOf(true));
-        defaults.put("ftp.ssl.session.cache.size", String.valueOf(100));
+        this.setDefault("ftp.tls.datachannel", "P"); //C
+        this.setDefault("ftp.tls.session.requirereuse", String.valueOf(true));
+        this.setDefault("ftp.ssl.session.cache.size", String.valueOf(100));
 
         /*
           Try to determine the timezone automatically using timestamp comparison from MLST and LIST
          */
-        defaults.put("ftp.timezone.auto", String.valueOf(false));
-        defaults.put("ftp.timezone.default", TimeZone.getDefault().getID());
+        this.setDefault("ftp.timezone.auto", String.valueOf(false));
+        this.setDefault("ftp.timezone.default", TimeZone.getDefault().getID());
 
-        defaults.put("ftp.symlink.absolute", String.valueOf(false));
+        this.setDefault("ftp.symlink.absolute", String.valueOf(false));
 
         /*
           Authentication header version
          */
-        //defaults.put("s3.signature.version", "AWS2");
-        defaults.put("s3.signature.version", "AWS4HMACSHA256");
+        //this.setDefault("s3.signature.version", "AWS2");
+        this.setDefault("s3.signature.version", "AWS4HMACSHA256");
         /*
           Default bucket location
          */
-        defaults.put("s3.location", "us-east-1");
-        defaults.put("s3.bucket.virtualhost.disable", String.valueOf(false));
-        defaults.put("s3.bucket.requesterpays", String.valueOf(true));
-        defaults.put("s3.domain", "amazonaws.com");
-        defaults.put("s3.hostname.default", "s3.amazonaws.com");
+        this.setDefault("s3.location", "us-east-1");
+        this.setDefault("s3.bucket.virtualhost.disable", String.valueOf(false));
+        this.setDefault("s3.bucket.requesterpays", String.valueOf(true));
+        this.setDefault("s3.domain", "amazonaws.com");
+        this.setDefault("s3.hostname.default", "s3.amazonaws.com");
 
-        //defaults.put("s3.bucket.acl.default", "public-read");
-        defaults.put("s3.bucket.acl.default", "private");
+        //this.setDefault("s3.bucket.acl.default", "public-read");
+        this.setDefault("s3.bucket.acl.default", "private");
 
         /*
           Default redundancy level
          */
-        defaults.put("s3.storage.class", "STANDARD");
-        //defaults.put("s3.encryption.algorithm", "AES256");
-        defaults.put("s3.encryption.algorithm", StringUtils.EMPTY);
+        this.setDefault("s3.storage.class", "STANDARD");
+        //this.setDefault("s3.encryption.algorithm", "AES256");
+        this.setDefault("s3.encryption.algorithm", StringUtils.EMPTY);
 
         /*
           Validity for public S3 URLs
          */
-        defaults.put("s3.url.expire.seconds", String.valueOf(24 * 60 * 60));
+        this.setDefault("s3.url.expire.seconds", String.valueOf(24 * 60 * 60));
 
-        defaults.put("s3.mfa.serialnumber", StringUtils.EMPTY);
+        this.setDefault("s3.mfa.serialnumber", StringUtils.EMPTY);
 
-        defaults.put("s3.listing.chunksize", String.valueOf(1000));
+        this.setDefault("s3.listing.chunksize", String.valueOf(1000));
 
-        defaults.put("s3.upload.md5", String.valueOf(true));
+        this.setDefault("s3.upload.md5", String.valueOf(true));
 
-        defaults.put("s3.upload.multipart", String.valueOf(true));
-        defaults.put("s3.upload.multipart.concurrency", String.valueOf(10));
-        defaults.put("s3.upload.multipart.partsize.minimum", String.valueOf(5L * 1024L * 1024L));
+        this.setDefault("s3.upload.multipart", String.valueOf(true));
+        this.setDefault("s3.upload.multipart.concurrency", String.valueOf(10));
+        this.setDefault("s3.upload.multipart.partsize.minimum", String.valueOf(5L * 1024L * 1024L));
         /*
           Threshold in bytes. Only use multipart uploads for files more than 100MB
          */
-        defaults.put("s3.upload.multipart.threshold", String.valueOf(100L * 1024L * 1024L));
-        defaults.put("s3.upload.multipart.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
+        this.setDefault("s3.upload.multipart.threshold", String.valueOf(100L * 1024L * 1024L));
+        this.setDefault("s3.upload.multipart.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
         // Maximum number of parts is 10'000. With 10MB segements this gives a maximum object size of 100GB
         // Must be a multiple of org.cryptomator.cryptolib.v1.Constants.PAYLOAD_SIZE when using Cryptomator Vaults
-        defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
-        defaults.put("s3.copy.multipart.size", String.valueOf(100L * 1024L * 1024L)); // 100MB
+        this.setDefault("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
+        this.setDefault("s3.copy.multipart.size", String.valueOf(100L * 1024L * 1024L)); // 100MB
 
-        defaults.put("s3.upload.expect-continue", String.valueOf(true));
+        this.setDefault("s3.upload.expect-continue", String.valueOf(true));
 
         /*
           Transfer thresholds for qloudsonic.io
          */
-        defaults.put("s3.download.udt.threshold", String.valueOf(Long.MAX_VALUE));
-        defaults.put("s3.upload.udt.threshold", String.valueOf(Long.MAX_VALUE));
+        this.setDefault("s3.download.udt.threshold", String.valueOf(Long.MAX_VALUE));
+        this.setDefault("s3.upload.udt.threshold", String.valueOf(Long.MAX_VALUE));
 
-        defaults.put("s3.accelerate.prompt", String.valueOf(false));
+        this.setDefault("s3.accelerate.prompt", String.valueOf(false));
 
         /*
           A prefix to apply to log file names
          */
-        defaults.put("s3.logging.prefix", "logs/");
-        defaults.put("google.logging.prefix", "log");
-        defaults.put("cloudfront.logging.prefix", "logs/");
+        this.setDefault("s3.logging.prefix", "logs/");
+        this.setDefault("google.logging.prefix", "log");
+        this.setDefault("cloudfront.logging.prefix", "logs/");
 
-        defaults.put("onedrive.listing.chunksize", String.valueOf(1000));
-        defaults.put("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
+        this.setDefault("onedrive.listing.chunksize", String.valueOf(1000));
+        this.setDefault("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
 
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
-        defaults.put("s3.cache.seconds", String.valueOf(month));
+        this.setDefault("s3.cache.seconds", String.valueOf(month));
 
         /*
           Default metadata for uploads. Format must be "key1=value1 key2=value2"
          */
-        defaults.put("s3.metadata.default", StringUtils.EMPTY);
+        this.setDefault("s3.metadata.default", StringUtils.EMPTY);
 
-        defaults.put("s3.lifecycle.transition.options", "1 7 10 30 60 180 360 720");
-        defaults.put("s3.lifecycle.delete.options", "1 7 10 30 60 180 360 720");
+        this.setDefault("s3.lifecycle.transition.options", "1 7 10 30 60 180 360 720");
+        this.setDefault("s3.lifecycle.delete.options", "1 7 10 30 60 180 360 720");
 
-        defaults.put("s3.delete.multiple.partition", String.valueOf(1000));
+        this.setDefault("s3.delete.multiple.partition", String.valueOf(1000));
 
-        defaults.put("azure.metadata.default", StringUtils.EMPTY);
-        defaults.put("azure.listing.chunksize", String.valueOf(1000));
-        defaults.put("azure.upload.md5", String.valueOf(false));
+        this.setDefault("azure.metadata.default", StringUtils.EMPTY);
+        this.setDefault("azure.listing.chunksize", String.valueOf(1000));
+        this.setDefault("azure.upload.md5", String.valueOf(false));
 
         // Legacy authentication
-//        defaults.put("openstack.authentication.context", "/v1.0");
+//        this.setDefault("openstack.authentication.context", "/v1.0");
         // Keystone authentication
-        defaults.put("openstack.authentication.context", "/v2.0/tokens");
-        defaults.put("openstack.upload.metadata.md5", String.valueOf(false));
-        defaults.put("openstack.metadata.default", StringUtils.EMPTY);
-        defaults.put("openstack.list.container.limit", String.valueOf(100));
-        defaults.put("openstack.list.object.limit", String.valueOf(10000));
-        defaults.put("openstack.account.preload", String.valueOf(true));
-        defaults.put("openstack.cdn.preload", String.valueOf(true));
-        defaults.put("openstack.container.size.preload", String.valueOf(true));
+        this.setDefault("openstack.authentication.context", "/v2.0/tokens");
+        this.setDefault("openstack.upload.metadata.md5", String.valueOf(false));
+        this.setDefault("openstack.metadata.default", StringUtils.EMPTY);
+        this.setDefault("openstack.list.container.limit", String.valueOf(100));
+        this.setDefault("openstack.list.object.limit", String.valueOf(10000));
+        this.setDefault("openstack.account.preload", String.valueOf(true));
+        this.setDefault("openstack.cdn.preload", String.valueOf(true));
+        this.setDefault("openstack.container.size.preload", String.valueOf(true));
 
-        defaults.put("openstack.upload.md5", String.valueOf(true));
+        this.setDefault("openstack.upload.md5", String.valueOf(true));
 
-        defaults.put("openstack.upload.largeobject", String.valueOf(true));
-        defaults.put("openstack.upload.largeobject.concurrency", String.valueOf(5));
-        defaults.put("openstack.upload.largeobject.segments.prefix", ".file-segments/");
-        defaults.put("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L)); // 2GB
-        defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
-        defaults.put("openstack.upload.largeobject.size", String.valueOf(1000L * 1024L * 1024L)); // 1GB
+        this.setDefault("openstack.upload.largeobject", String.valueOf(true));
+        this.setDefault("openstack.upload.largeobject.concurrency", String.valueOf(5));
+        this.setDefault("openstack.upload.largeobject.segments.prefix", ".file-segments/");
+        this.setDefault("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L)); // 2GB
+        this.setDefault("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
+        this.setDefault("openstack.upload.largeobject.size", String.valueOf(1000L * 1024L * 1024L)); // 1GB
         // Each segment, except for the final one, must be at least 1 megabyte
-        defaults.put("openstack.upload.largeobject.size.minimum", String.valueOf(1 * 1024L * 1024L)); // 1MB
+        this.setDefault("openstack.upload.largeobject.size.minimum", String.valueOf(1 * 1024L * 1024L)); // 1MB
         // Remove segments when deleting large object manifest
-        defaults.put("openstack.upload.largeobject.cleanup", String.valueOf(true));
+        this.setDefault("openstack.upload.largeobject.cleanup", String.valueOf(true));
 
-        defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
+        this.setDefault("openstack.delete.multiple.partition", String.valueOf(10000));
 
-        defaults.put("googledrive.list.limit", String.valueOf(1000));
-        defaults.put("googledrive.teamdrive.enable", String.valueOf(true));
+        this.setDefault("googledrive.list.limit", String.valueOf(1000));
+        this.setDefault("googledrive.teamdrive.enable", String.valueOf(true));
 
-        defaults.put("b2.bucket.acl.default", "allPrivate");
-        defaults.put("b2.listing.chunksize", String.valueOf(100));
-        defaults.put("b2.upload.checksum.verify", String.valueOf(true));
+        this.setDefault("b2.bucket.acl.default", "allPrivate");
+        this.setDefault("b2.listing.chunksize", String.valueOf(100));
+        this.setDefault("b2.upload.checksum.verify", String.valueOf(true));
 
-        defaults.put("b2.upload.largeobject", String.valueOf(true));
-        defaults.put("b2.upload.largeobject.concurrency", String.valueOf(5));
-        defaults.put("b2.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
+        this.setDefault("b2.upload.largeobject", String.valueOf(true));
+        this.setDefault("b2.upload.largeobject.concurrency", String.valueOf(5));
+        this.setDefault("b2.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
         // When uploading files larger than 200MB, use the large files support to break up the files into parts and upload the parts in parallel.
-        defaults.put("b2.upload.largeobject.threshold", String.valueOf(200 * 1024L * 1024L)); // 200MB
+        this.setDefault("b2.upload.largeobject.threshold", String.valueOf(200 * 1024L * 1024L)); // 200MB
         // Each part can be anywhere from 100MB to 5GB in size
-        defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
-        defaults.put("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
+        this.setDefault("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
+        this.setDefault("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
 
-        defaults.put("b2.metadata.default", StringUtils.EMPTY);
+        this.setDefault("b2.metadata.default", StringUtils.EMPTY);
 
-        defaults.put("sds.listing.chunksize", String.valueOf(500));
-        defaults.put("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
+        this.setDefault("sds.listing.chunksize", String.valueOf(500));
+        this.setDefault("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
         // Run missing file keys in bulk feature after upload
-        defaults.put("sds.encryption.missingkeys.upload", String.valueOf(true));
-        defaults.put("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
-        defaults.put("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
+        this.setDefault("sds.encryption.missingkeys.upload", String.valueOf(true));
+        this.setDefault("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
+        this.setDefault("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
 
         /*
           NTLM Windows Domain
          */
-        defaults.put("webdav.ntlm.domain", StringUtils.EMPTY);
-        defaults.put("webdav.ntlm.workstation", StringUtils.EMPTY);
+        this.setDefault("webdav.ntlm.domain", StringUtils.EMPTY);
+        this.setDefault("webdav.ntlm.workstation", StringUtils.EMPTY);
 
         /*
           Enable preemptive authentication if valid credentials are found
          */
-        defaults.put("webdav.basic.preemptive", String.valueOf(true));
+        this.setDefault("webdav.basic.preemptive", String.valueOf(true));
 
         /*
           Enable Expect-Continue handshake
          */
-        defaults.put("webdav.expect-continue", String.valueOf(true));
-        defaults.put("webdav.redirect.GET.follow", String.valueOf(true));
-        defaults.put("webdav.redirect.HEAD.follow", String.valueOf(true));
-        defaults.put("webdav.redirect.PUT.follow", String.valueOf(false));
-        defaults.put("webdav.redirect.PROPFIND.follow", String.valueOf(true));
+        this.setDefault("webdav.expect-continue", String.valueOf(true));
+        this.setDefault("webdav.redirect.GET.follow", String.valueOf(true));
+        this.setDefault("webdav.redirect.HEAD.follow", String.valueOf(true));
+        this.setDefault("webdav.redirect.PUT.follow", String.valueOf(false));
+        this.setDefault("webdav.redirect.PROPFIND.follow", String.valueOf(true));
 
-        defaults.put("webdav.upload.md5", String.valueOf(false));
-        defaults.put("webdav.metadata.default", StringUtils.EMPTY);
+        this.setDefault("webdav.upload.md5", String.valueOf(false));
+        this.setDefault("webdav.metadata.default", StringUtils.EMPTY);
 
-        defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
-        defaults.put("analytics.provider.qloudstat.iam.policy",
-                "{\n" +
-                        "    \"Statement\": [\n" +
-                        "        {\n" +
-                        "            \"Action\": [\n" +
-                        "                \"s3:GetObject\", \n" +
-                        "                \"s3:ListBucket\"\n" +
-                        "            ], \n" +
-                        "            \"Condition\": {\n" +
-                        "                \"Bool\": {\n" +
-                        "                    \"aws:SecureTransport\": \"true\"\n" +
-                        "                }\n" +
-                        "            }, \n" +
-                        "            \"Effect\": \"Allow\", \n" +
-                        "            \"Resource\": \"arn:aws:s3:::%s/*\"\n" +
-                        "        }, \n" +
-                        "        {\n" +
-                        "            \"Action\": [\n" +
-                        "                \"s3:ListAllMyBuckets\", \n" +
-                        "                \"s3:GetBucketLogging\", \n" +
-                        "                \"s3:GetBucketLocation\"\n" +
-                        "            ], \n" +
-                        "            \"Effect\": \"Allow\", \n" +
-                        "            \"Resource\": \"arn:aws:s3:::*\"\n" +
-                        "        }, \n" +
-                        "        {\n" +
-                        "            \"Action\": [\n" +
-                        "                \"cloudfront:GetDistribution\", \n" +
-                        "                \"cloudfront:GetDistributionConfig\", \n" +
-                        "                \"cloudfront:ListDistributions\", \n" +
-                        "                \"cloudfront:GetStreamingDistribution\", \n" +
-                        "                \"cloudfront:GetStreamingDistributionConfig\", \n" +
-                        "                \"cloudfront:ListStreamingDistributions\"\n" +
-                        "            ], \n" +
-                        "            \"Condition\": {\n" +
-                        "                \"Bool\": {\n" +
-                        "                    \"aws:SecureTransport\": \"true\"\n" +
-                        "                }\n" +
-                        "            }, \n" +
-                        "            \"Effect\": \"Allow\", \n" +
-                        "            \"Resource\": \"*\"\n" +
-                        "        }\n" +
-                        "    ]\n" +
-                        "}\n"
+        this.setDefault("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
+        this.setDefault("analytics.provider.qloudstat.iam.policy",
+            "{\n" +
+                "    \"Statement\": [\n" +
+                "        {\n" +
+                "            \"Action\": [\n" +
+                "                \"s3:GetObject\", \n" +
+                "                \"s3:ListBucket\"\n" +
+                "            ], \n" +
+                "            \"Condition\": {\n" +
+                "                \"Bool\": {\n" +
+                "                    \"aws:SecureTransport\": \"true\"\n" +
+                "                }\n" +
+                "            }, \n" +
+                "            \"Effect\": \"Allow\", \n" +
+                "            \"Resource\": \"arn:aws:s3:::%s/*\"\n" +
+                "        }, \n" +
+                "        {\n" +
+                "            \"Action\": [\n" +
+                "                \"s3:ListAllMyBuckets\", \n" +
+                "                \"s3:GetBucketLogging\", \n" +
+                "                \"s3:GetBucketLocation\"\n" +
+                "            ], \n" +
+                "            \"Effect\": \"Allow\", \n" +
+                "            \"Resource\": \"arn:aws:s3:::*\"\n" +
+                "        }, \n" +
+                "        {\n" +
+                "            \"Action\": [\n" +
+                "                \"cloudfront:GetDistribution\", \n" +
+                "                \"cloudfront:GetDistributionConfig\", \n" +
+                "                \"cloudfront:ListDistributions\", \n" +
+                "                \"cloudfront:GetStreamingDistribution\", \n" +
+                "                \"cloudfront:GetStreamingDistributionConfig\", \n" +
+                "                \"cloudfront:ListStreamingDistributions\"\n" +
+                "            ], \n" +
+                "            \"Condition\": {\n" +
+                "                \"Bool\": {\n" +
+                "                    \"aws:SecureTransport\": \"true\"\n" +
+                "                }\n" +
+                "            }, \n" +
+                "            \"Effect\": \"Allow\", \n" +
+                "            \"Resource\": \"*\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}\n"
         );
 
         /*
          * Session pool
          */
-        defaults.put("connection.pool.minidle", String.valueOf(1));
-        defaults.put("connection.pool.maxidle", String.valueOf(5));
-        defaults.put("connection.pool.maxtotal", String.valueOf(Integer.MAX_VALUE));
+        this.setDefault("connection.pool.minidle", String.valueOf(1));
+        this.setDefault("connection.pool.maxidle", String.valueOf(5));
+        this.setDefault("connection.pool.maxtotal", String.valueOf(Integer.MAX_VALUE));
 
         /*
           Default login name
          */
-        defaults.put("connection.login.name", StringUtils.EMPTY);
-        defaults.put("connection.login.anon.name", "anonymous");
-        defaults.put("connection.login.anon.pass", "cyberduck@example.net");
+        this.setDefault("connection.login.name", StringUtils.EMPTY);
+        this.setDefault("connection.login.anon.name", "anonymous");
+        this.setDefault("connection.login.anon.pass", "cyberduck@example.net");
         /*
           Search for passphrases in Keychain
          */
-        defaults.put("connection.login.keychain", String.valueOf(true));
+        this.setDefault("connection.login.keychain", String.valueOf(true));
         /*
          * Save passwords for vaults in Keychain
          */
-        defaults.put("vault.keychain", String.valueOf(false));
+        this.setDefault("vault.keychain", String.valueOf(false));
 
-        defaults.put("connection.port.default", String.valueOf(21));
-        defaults.put("connection.protocol.default", Scheme.ftp.name());
+        this.setDefault("connection.port.default", String.valueOf(21));
+        this.setDefault("connection.protocol.default", Scheme.ftp.name());
 
         /*
           SO_KEEPALIVE
          */
-        defaults.put("connection.socket.keepalive", String.valueOf(true));
+        this.setDefault("connection.socket.keepalive", String.valueOf(true));
         /*
           SO_LINGER
          */
-        defaults.put("connection.socket.linger", String.valueOf(false));
+        this.setDefault("connection.socket.linger", String.valueOf(false));
         /*
           Socket timeout
          */
-        defaults.put("connection.timeout.seconds", String.valueOf(30));
+        this.setDefault("connection.timeout.seconds", String.valueOf(30));
         /*
           Retry to connect after a I/O failure automatically
          */
-        defaults.put("connection.retry", String.valueOf(1));
+        this.setDefault("connection.retry", String.valueOf(1));
         /*
           In seconds
          */
-        defaults.put("connection.retry.delay", String.valueOf(0));
-        defaults.put("connection.retry.backoff.enable", String.valueOf(false));
+        this.setDefault("connection.retry.delay", String.valueOf(0));
+        this.setDefault("connection.retry.backoff.enable", String.valueOf(false));
 
-        defaults.put("connection.hostname.default", StringUtils.EMPTY);
+        this.setDefault("connection.hostname.default", StringUtils.EMPTY);
         /*
           Convert hostname to Punycode
          */
-        defaults.put("connection.hostname.idn", String.valueOf(true));
+        this.setDefault("connection.hostname.idn", String.valueOf(true));
 
         /*
           java.net.preferIPv6Addresses
          */
-        defaults.put("connection.dns.ipv6", String.valueOf(false));
+        this.setDefault("connection.dns.ipv6", String.valueOf(false));
 
         /*
           Read proxy settings from system preferences
          */
-        defaults.put("connection.proxy.enable", String.valueOf(true));
-        defaults.put("connection.proxy.ntlm.domain", StringUtils.EMPTY);
+        this.setDefault("connection.proxy.enable", String.valueOf(true));
+        this.setDefault("connection.proxy.ntlm.domain", StringUtils.EMPTY);
         /*
           Integrated Windows Authentication
          */
-        defaults.put("connection.proxy.windows.authentication.enable", String.valueOf(false));
+        this.setDefault("connection.proxy.windows.authentication.enable", String.valueOf(false));
 
         /*
           Warning when opening connections sending credentials in plaintext
          */
-        defaults.put(String.format("connection.unsecure.warning.%s", Scheme.ftp), String.valueOf(true));
-        defaults.put(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
+        this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.ftp), String.valueOf(true));
+        this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
 
-        defaults.put("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
-        defaults.put("connection.ssl.protocols", "TLSv1.2,TLSv1.1,TLSv1");
-        defaults.put("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
+        this.setDefault("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
+        this.setDefault("connection.ssl.protocols", "TLSv1.2,TLSv1.1,TLSv1");
+        this.setDefault("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
 
-        defaults.put("connection.ssl.x509.revocation.online", String.valueOf(false));
+        this.setDefault("connection.ssl.x509.revocation.online", String.valueOf(false));
 
-        defaults.put("connection.ssl.keystore.type", null);
-        defaults.put("connection.ssl.keystore.provider", null);
+        this.setDefault("connection.ssl.keystore.type", null);
+        this.setDefault("connection.ssl.keystore.provider", null);
 
         // Default secure random strong algorithm
-        defaults.put("connection.ssl.securerandom.algorithm", "NativePRNG");
-        defaults.put("connection.ssl.securerandom.provider", "SUN");
+        this.setDefault("connection.ssl.securerandom.algorithm", "NativePRNG");
+        this.setDefault("connection.ssl.securerandom.provider", "SUN");
 
         /*
           Transfer read buffer size
          */
-        defaults.put("connection.chunksize", String.valueOf(32768));
+        this.setDefault("connection.chunksize", String.valueOf(32768));
         /*
           Buffer size for wrapped buffered streams
          */
-        defaults.put("connection.buffer", String.valueOf(8192));
+        this.setDefault("connection.buffer", String.valueOf(8192));
         /*
           SO_SNDBUF
          */
-        defaults.put("connection.buffer.send", String.valueOf(0));
+        this.setDefault("connection.buffer.send", String.valueOf(0));
         /*
           SO_RCVBUF
          */
-        defaults.put("connection.buffer.receive", String.valueOf(0));
+        this.setDefault("connection.buffer.receive", String.valueOf(0));
 
-        defaults.put("disk.unmount.timeout", String.valueOf(2));
+        this.setDefault("disk.unmount.timeout", String.valueOf(2));
 
         /*
           Read favicon from Web URL
          */
-        defaults.put("bookmark.favicon.download", String.valueOf(true));
+        this.setDefault("bookmark.favicon.download", String.valueOf(true));
 
         /*
           Default to large icon size
          */
-        defaults.put("bookmark.icon.size", String.valueOf(64));
-        defaults.put("bookmark.menu.icon.size", String.valueOf(16));
+        this.setDefault("bookmark.icon.size", String.valueOf(64));
+        this.setDefault("bookmark.menu.icon.size", String.valueOf(16));
 
         /*
           Location of the openssh known_hosts file
          */
-        defaults.put("ssh.knownhosts", "~/.ssh/known_hosts");
-        defaults.put("ssh.knownhosts.hostname.hash", String.valueOf(false));
-        defaults.put("ssh.knownhosts.bookmark", StringUtils.EMPTY);
+        this.setDefault("ssh.knownhosts", "~/.ssh/known_hosts");
+        this.setDefault("ssh.knownhosts.hostname.hash", String.valueOf(false));
+        this.setDefault("ssh.knownhosts.bookmark", StringUtils.EMPTY);
 
-        defaults.put("ssh.authentication.publickey.default.enable", String.valueOf(false));
-        defaults.put("ssh.authentication.publickey.default.rsa", "~/.ssh/id_rsa");
-        defaults.put("ssh.authentication.publickey.default.dsa", "~/.ssh/id_dsa");
+        this.setDefault("ssh.authentication.publickey.default.enable", String.valueOf(false));
+        this.setDefault("ssh.authentication.publickey.default.rsa", "~/.ssh/id_rsa");
+        this.setDefault("ssh.authentication.publickey.default.dsa", "~/.ssh/id_dsa");
 
-        defaults.put("ssh.authentication.agent.enable", String.valueOf(true));
+        this.setDefault("ssh.authentication.agent.enable", String.valueOf(true));
 
-        defaults.put("ssh.heartbeat.provider", "keep-alive");
-        defaults.put("ssh.heartbeat.seconds", String.valueOf(60));
+        this.setDefault("ssh.heartbeat.provider", "keep-alive");
+        this.setDefault("ssh.heartbeat.seconds", String.valueOf(60));
 
         /*
           Enable ZLIB compression
          */
-        defaults.put("ssh.compression", "zlib");
+        this.setDefault("ssh.compression", "zlib");
 
-        defaults.put("ssh.algorithm.cipher.blacklist", StringUtils.EMPTY);
-        defaults.put("ssh.algorithm.mac.blacklist", StringUtils.EMPTY);
-        defaults.put("ssh.algorithm.kex.blacklist", StringUtils.EMPTY);
-        defaults.put("ssh.algorithm.signature.blacklist", StringUtils.EMPTY);
+        this.setDefault("ssh.algorithm.cipher.blacklist", StringUtils.EMPTY);
+        this.setDefault("ssh.algorithm.mac.blacklist", StringUtils.EMPTY);
+        this.setDefault("ssh.algorithm.kex.blacklist", StringUtils.EMPTY);
+        this.setDefault("ssh.algorithm.signature.blacklist", StringUtils.EMPTY);
 
-        defaults.put("sftp.symlink.absolute", String.valueOf(false));
+        this.setDefault("sftp.symlink.absolute", String.valueOf(false));
 
-        defaults.put("sftp.read.maxunconfirmed", String.valueOf(64));
-        defaults.put("sftp.write.maxunconfirmed", String.valueOf(64));
+        this.setDefault("sftp.read.maxunconfirmed", String.valueOf(64));
+        this.setDefault("sftp.write.maxunconfirmed", String.valueOf(64));
 
-        defaults.put("archive.default", "tar.gz");
+        this.setDefault("archive.default", "tar.gz");
 
         /*
           Archiver
          */
-        defaults.put("archive.command.create.tar", "cd {2}; tar -cpPf {0}.tar {1}");
-        defaults.put("archive.command.create.tar.gz", "cd {2}; tar -czpPf {0}.tar.gz {1}");
-        defaults.put("archive.command.create.tar.bz2", "cd {2}; tar -cjpPf {0}.tar.bz2 {1}");
-        defaults.put("archive.command.create.zip", "cd {2}; zip -qr {0}.zip {1}");
-        defaults.put("archive.command.create.gz", "gzip -qr {1}");
-        defaults.put("archive.command.create.bz2", "bzip2 -zk {1}");
+        this.setDefault("archive.command.create.tar", "cd {2}; tar -cpPf {0}.tar {1}");
+        this.setDefault("archive.command.create.tar.gz", "cd {2}; tar -czpPf {0}.tar.gz {1}");
+        this.setDefault("archive.command.create.tar.bz2", "cd {2}; tar -cjpPf {0}.tar.bz2 {1}");
+        this.setDefault("archive.command.create.zip", "cd {2}; zip -qr {0}.zip {1}");
+        this.setDefault("archive.command.create.gz", "gzip -qr {1}");
+        this.setDefault("archive.command.create.bz2", "bzip2 -zk {1}");
 
         /*
           Unarchiver
          */
-        defaults.put("archive.command.expand.tar", "tar -xpPf {0} -C {1}");
-        defaults.put("archive.command.expand.tar.gz", "tar -xzpPf {0} -C {1}");
-        defaults.put("archive.command.expand.tar.bz2", "tar -xjpPf {0} -C {1}");
-        defaults.put("archive.command.expand.zip", "unzip -qn {0} -d {1}");
-        defaults.put("archive.command.expand.gz", "gzip -d {0}");
-        defaults.put("archive.command.expand.bz2", "bzip2 -dk {0}");
+        this.setDefault("archive.command.expand.tar", "tar -xpPf {0} -C {1}");
+        this.setDefault("archive.command.expand.tar.gz", "tar -xzpPf {0} -C {1}");
+        this.setDefault("archive.command.expand.tar.bz2", "tar -xjpPf {0} -C {1}");
+        this.setDefault("archive.command.expand.zip", "unzip -qn {0} -d {1}");
+        this.setDefault("archive.command.expand.gz", "gzip -d {0}");
+        this.setDefault("archive.command.expand.bz2", "bzip2 -dk {0}");
 
-        defaults.put("update.check", String.valueOf(true));
+        this.setDefault("update.check", String.valueOf(true));
         final int day = 60 * 60 * 24;
-        defaults.put("update.check.interval", String.valueOf(day)); // periodic update check in seconds
+        this.setDefault("update.check.interval", String.valueOf(day)); // periodic update check in seconds
         // Last update check in milliseconds
-        defaults.put("update.check.timestamp", String.valueOf(0));
+        this.setDefault("update.check.timestamp", String.valueOf(0));
 
-        defaults.put("terminal.bundle.identifier", "com.apple.Terminal");
-        defaults.put("terminal.command", "do script \"{0}\"");
-        defaults.put("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL\"");
+        this.setDefault("terminal.bundle.identifier", "com.apple.Terminal");
+        this.setDefault("terminal.command", "do script \"{0}\"");
+        this.setDefault("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL\"");
 
-        defaults.put("network.interface.blacklist", StringUtils.EMPTY);
+        this.setDefault("network.interface.blacklist", StringUtils.EMPTY);
 
-        defaults.put("threading.pool.size.max", String.valueOf(20));
-        defaults.put("threading.pool.keepalive.seconds", String.valueOf(60L));
+        this.setDefault("threading.pool.size.max", String.valueOf(20));
+        this.setDefault("threading.pool.keepalive.seconds", String.valueOf(60L));
 
-        defaults.put("cryptomator.enable", String.valueOf(true));
-        defaults.put("cryptomator.vault.autodetect", String.valueOf(true));
+        this.setDefault("cryptomator.enable", String.valueOf(true));
+        this.setDefault("cryptomator.vault.autodetect", String.valueOf(true));
     }
 
     protected void setLogging() {
@@ -1100,6 +1100,10 @@ public abstract class Preferences {
             log.warn(String.format("No property with key '%s'", property));
         }
         return value;
+    }
+
+    public void setDefault(final String property, final String value) {
+        defaults.put(property, value);
     }
 
     /**
@@ -1222,59 +1226,59 @@ public abstract class Preferences {
     }
 
     protected void setFactories() {
-        defaults.put("factory.serializer.class", PlistSerializer.class.getName());
-        defaults.put("factory.deserializer.class", PlistDeserializer.class.getName());
-        defaults.put("factory.reader.profile.class", ProfilePlistReader.class.getName());
-        defaults.put("factory.writer.profile.class", PlistWriter.class.getName());
-        defaults.put("factory.reader.transfer.class", TransferPlistReader.class.getName());
-        defaults.put("factory.writer.transfer.class", PlistWriter.class.getName());
-        defaults.put("factory.reader.host.class", HostPlistReader.class.getName());
-        defaults.put("factory.writer.host.class", PlistWriter.class.getName());
+        this.setDefault("factory.serializer.class", PlistSerializer.class.getName());
+        this.setDefault("factory.deserializer.class", PlistDeserializer.class.getName());
+        this.setDefault("factory.reader.profile.class", ProfilePlistReader.class.getName());
+        this.setDefault("factory.writer.profile.class", PlistWriter.class.getName());
+        this.setDefault("factory.reader.transfer.class", TransferPlistReader.class.getName());
+        this.setDefault("factory.writer.transfer.class", PlistWriter.class.getName());
+        this.setDefault("factory.reader.host.class", HostPlistReader.class.getName());
+        this.setDefault("factory.writer.host.class", PlistWriter.class.getName());
 
-        defaults.put("factory.locale.class", DisabledLocale.class.getName());
-        defaults.put("factory.local.class", Local.class.getName());
-        defaults.put("factory.certificatestore.class", DisabledCertificateStore.class.getName());
-        defaults.put("factory.logincallback.class", DisabledLoginCallback.class.getName());
-        defaults.put("factory.passwordcallback.class", DisabledPasswordCallback.class.getName());
-        defaults.put("factory.alertcallback.class", DisabledAlertCallback.class.getName());
-        defaults.put("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());
-        defaults.put("factory.transfererrorcallback.class", DisabledTransferErrorCallback.class.getName());
-        defaults.put("factory.temporaryfiles.class", DefaultTemporaryFileService.class.getName());
-        defaults.put("factory.touch.class", DefaultLocalTouchFeature.class.getName());
-        defaults.put("factory.autorelease.class", DisabledActionOperationBatcher.class.getName());
-        defaults.put("factory.schemehandler.class", DisabledSchemeHandler.class.getName());
-        defaults.put("factory.iconservice.class", DisabledIconService.class.getName());
-        defaults.put("factory.iconcache.class", DisabledIconCache.class.getName());
-        defaults.put("factory.notification.class", DisabledNotificationService.class.getName());
-        defaults.put("factory.sleeppreventer.class", DisabledSleepPreventer.class.getName());
-        defaults.put("factory.quarantine.class", DisabledQuarantineService.class.getName());
+        this.setDefault("factory.locale.class", DisabledLocale.class.getName());
+        this.setDefault("factory.local.class", Local.class.getName());
+        this.setDefault("factory.certificatestore.class", DisabledCertificateStore.class.getName());
+        this.setDefault("factory.logincallback.class", DisabledLoginCallback.class.getName());
+        this.setDefault("factory.passwordcallback.class", DisabledPasswordCallback.class.getName());
+        this.setDefault("factory.alertcallback.class", DisabledAlertCallback.class.getName());
+        this.setDefault("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());
+        this.setDefault("factory.transfererrorcallback.class", DisabledTransferErrorCallback.class.getName());
+        this.setDefault("factory.temporaryfiles.class", DefaultTemporaryFileService.class.getName());
+        this.setDefault("factory.touch.class", DefaultLocalTouchFeature.class.getName());
+        this.setDefault("factory.autorelease.class", DisabledActionOperationBatcher.class.getName());
+        this.setDefault("factory.schemehandler.class", DisabledSchemeHandler.class.getName());
+        this.setDefault("factory.iconservice.class", DisabledIconService.class.getName());
+        this.setDefault("factory.iconcache.class", DisabledIconCache.class.getName());
+        this.setDefault("factory.notification.class", DisabledNotificationService.class.getName());
+        this.setDefault("factory.sleeppreventer.class", DisabledSleepPreventer.class.getName());
+        this.setDefault("factory.quarantine.class", DisabledQuarantineService.class.getName());
         for(Transfer.Type t : Transfer.Type.values()) {
-            defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), DisabledTransferPrompt.class.getName());
+            this.setDefault(String.format("factory.transferpromptcallback.%s.class", t.name()), DisabledTransferPrompt.class.getName());
         }
-        defaults.put("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
-        defaults.put("factory.applicationresourcesfinder.class", TemporaryApplicationResourcesFinder.class.getName());
-        defaults.put("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
-        defaults.put("factory.watchservice.class", NIOEventWatchService.class.getName());
-        defaults.put("factory.proxy.class", DisabledProxyFinder.class.getName());
-        defaults.put("factory.passwordstore.class", DisabledPasswordStore.class.getName());
-        defaults.put("factory.proxycredentialsstore.class", PreferencesProxyCredentialsStore.class.getName());
-        defaults.put("factory.dateformatter.class", DefaultUserDateFormatter.class.getName());
-        defaults.put("factory.trash.class", NativeLocalTrashFeature.class.getName());
-        defaults.put("factory.symlink.class", NullLocalSymlinkFeature.class.getName());
-        defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
-        defaults.put("factory.badgelabeler.class", DisabledApplicationBadgeLabeler.class.getName());
-        defaults.put("factory.filedescriptor.class", NullFileDescriptor.class.getName());
-        defaults.put("factory.terminalservice.class", DisabledTerminalService.class.getName());
-        defaults.put("factory.applicationfinder.class", DisabledApplicationFinder.class.getName());
-        defaults.put("factory.applicationlauncher.class", DisabledApplicationLauncher.class.getName());
-        defaults.put("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
-        defaults.put("factory.reachability.class", DefaultInetAddressReachability.class.getName());
-        defaults.put("factory.updater.class", DisabledPeriodicUpdater.class.getName());
-        defaults.put("factory.threadpool.class", DefaultThreadPool.class.getName());
-        defaults.put("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
-        defaults.put("factory.vault.class", DisabledVault.class.getName());
-        defaults.put("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
-        defaults.put("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
+        this.setDefault("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
+        this.setDefault("factory.applicationresourcesfinder.class", TemporaryApplicationResourcesFinder.class.getName());
+        this.setDefault("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
+        this.setDefault("factory.watchservice.class", NIOEventWatchService.class.getName());
+        this.setDefault("factory.proxy.class", DisabledProxyFinder.class.getName());
+        this.setDefault("factory.passwordstore.class", DisabledPasswordStore.class.getName());
+        this.setDefault("factory.proxycredentialsstore.class", PreferencesProxyCredentialsStore.class.getName());
+        this.setDefault("factory.dateformatter.class", DefaultUserDateFormatter.class.getName());
+        this.setDefault("factory.trash.class", NativeLocalTrashFeature.class.getName());
+        this.setDefault("factory.symlink.class", NullLocalSymlinkFeature.class.getName());
+        this.setDefault("factory.licensefactory.class", DonationKeyFactory.class.getName());
+        this.setDefault("factory.badgelabeler.class", DisabledApplicationBadgeLabeler.class.getName());
+        this.setDefault("factory.filedescriptor.class", NullFileDescriptor.class.getName());
+        this.setDefault("factory.terminalservice.class", DisabledTerminalService.class.getName());
+        this.setDefault("factory.applicationfinder.class", DisabledApplicationFinder.class.getName());
+        this.setDefault("factory.applicationlauncher.class", DisabledApplicationLauncher.class.getName());
+        this.setDefault("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
+        this.setDefault("factory.reachability.class", DefaultInetAddressReachability.class.getName());
+        this.setDefault("factory.updater.class", DisabledPeriodicUpdater.class.getName());
+        this.setDefault("factory.threadpool.class", DefaultThreadPool.class.getName());
+        this.setDefault("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
+        this.setDefault("factory.vault.class", DisabledVault.class.getName());
+        this.setDefault("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
+        this.setDefault("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
     }
 
     /**

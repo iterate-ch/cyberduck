@@ -16,7 +16,6 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.ApplescriptTerminalService;
-import ch.cyberduck.core.DisabledProxyCredentialsStore;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
@@ -52,45 +51,45 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
     protected void setFactories() {
         super.setFactories();
 
-        defaults.put("factory.supportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
-        defaults.put("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
-        defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
-        defaults.put("factory.local.class", FinderLocal.class.getName());
-        defaults.put("factory.locale.class", BundleLocale.class.getName());
-        defaults.put("factory.passwordstore.class", Keychain.class.getName());
-        defaults.put("factory.certificatestore.class", Keychain.class.getName());
-        defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
-        defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
-        defaults.put("factory.reachability.class", SystemConfigurationReachability.class.getName());
+        this.setDefault("factory.supportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
+        this.setDefault("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
+        this.setDefault("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
+        this.setDefault("factory.local.class", FinderLocal.class.getName());
+        this.setDefault("factory.locale.class", BundleLocale.class.getName());
+        this.setDefault("factory.passwordstore.class", Keychain.class.getName());
+        this.setDefault("factory.certificatestore.class", Keychain.class.getName());
+        this.setDefault("factory.proxy.class", SystemConfigurationProxy.class.getName());
+        this.setDefault("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
+        this.setDefault("factory.reachability.class", SystemConfigurationReachability.class.getName());
 
-        defaults.put("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
-        defaults.put("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
-        defaults.put("factory.browserlauncher.class", WorkspaceBrowserLauncher.class.getName());
-        defaults.put("factory.reveal.class", WorkspaceRevealService.class.getName());
-        defaults.put("factory.trash.class", NativeLocalTrashFeature.class.getName());
-        defaults.put("factory.quarantine.class", LaunchServicesQuarantineService.class.getName());
-        defaults.put("factory.symlink.class", WorkspaceSymlinkFeature.class.getName());
-        defaults.put("factory.terminalservice.class", ApplescriptTerminalService.class.getName());
-        defaults.put("factory.badgelabeler.class", WorkspaceApplicationBadgeLabeler.class.getName());
-        defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
+        this.setDefault("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
+        this.setDefault("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
+        this.setDefault("factory.browserlauncher.class", WorkspaceBrowserLauncher.class.getName());
+        this.setDefault("factory.reveal.class", WorkspaceRevealService.class.getName());
+        this.setDefault("factory.trash.class", NativeLocalTrashFeature.class.getName());
+        this.setDefault("factory.quarantine.class", LaunchServicesQuarantineService.class.getName());
+        this.setDefault("factory.symlink.class", WorkspaceSymlinkFeature.class.getName());
+        this.setDefault("factory.terminalservice.class", ApplescriptTerminalService.class.getName());
+        this.setDefault("factory.badgelabeler.class", WorkspaceApplicationBadgeLabeler.class.getName());
+        this.setDefault("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
         if(null == Updater.getFeed()) {
-            defaults.put("factory.licensefactory.class", ReceiptFactory.class.getName());
+            this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
         }
         if(!Factory.Platform.osversion.matches("10\\.(5|6|7).*")) {
-            defaults.put("factory.notification.class", NotificationCenter.class.getName());
+            this.setDefault("factory.notification.class", NotificationCenter.class.getName());
         }
-        defaults.put("factory.iconservice.class", WorkspaceIconService.class.getName());
-        defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
-        defaults.put("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
-        defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
-        defaults.put("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
+        this.setDefault("factory.iconservice.class", WorkspaceIconService.class.getName());
+        this.setDefault("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
+        this.setDefault("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
+        this.setDefault("factory.iconcache.class", NSImageIconCache.class.getName());
+        this.setDefault("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
         if(null == Updater.getFeed()) {
             // Only enable security bookmarks for Mac App Store when running in sandboxed environment
-            defaults.put("factory.bookmarkresolver.class", SecurityScopedFilesystemBookmarkResolver.class.getName());
+            this.setDefault("factory.bookmarkresolver.class", SecurityScopedFilesystemBookmarkResolver.class.getName());
         }
         else {
-            defaults.put("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
+            this.setDefault("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
         }
-        defaults.put("factory.urlfilewriter.class", WeblocFileWriter.class.getName());
+        this.setDefault("factory.urlfilewriter.class", WeblocFileWriter.class.getName());
     }
 }

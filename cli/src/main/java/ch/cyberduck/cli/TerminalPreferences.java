@@ -47,15 +47,15 @@ public class TerminalPreferences extends MemoryPreferences {
     protected void setFactories() {
         super.setFactories();
 
-        defaults.put("factory.certificatestore.class", TerminalCertificateStore.class.getName());
-        defaults.put("factory.logincallback.class", TerminalLoginCallback.class.getName());
-        defaults.put("factory.passwordcallback.class", TerminalPasswordCallback.class.getName());
-        defaults.put("factory.alertcallback.class", TerminalAlertCallback.class.getName());
-        defaults.put("factory.hostkeycallback.class", TerminalHostKeyVerifier.class.getName());
-        defaults.put("factory.transfererrorcallback.class", TerminalTransferErrorCallback.class.getName());
-        defaults.put("factory.notification.class", TerminalNotification.class.getName());
+        this.setDefault("factory.certificatestore.class", TerminalCertificateStore.class.getName());
+        this.setDefault("factory.logincallback.class", TerminalLoginCallback.class.getName());
+        this.setDefault("factory.passwordcallback.class", TerminalPasswordCallback.class.getName());
+        this.setDefault("factory.alertcallback.class", TerminalAlertCallback.class.getName());
+        this.setDefault("factory.hostkeycallback.class", TerminalHostKeyVerifier.class.getName());
+        this.setDefault("factory.transfererrorcallback.class", TerminalTransferErrorCallback.class.getName());
+        this.setDefault("factory.notification.class", TerminalNotification.class.getName());
         for(Transfer.Type t : Transfer.Type.values()) {
-            defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
+            this.setDefault(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
         }
         switch(Factory.Platform.getDefault()) {
             case mac:
@@ -64,28 +64,28 @@ public class TerminalPreferences extends MemoryPreferences {
                 break;
             case linux:
                 if(Desktop.isDesktopSupported()) {
-                    defaults.put("factory.browserlauncher.class", DesktopBrowserLauncher.class.getName());
+                    this.setDefault("factory.browserlauncher.class", DesktopBrowserLauncher.class.getName());
                 }
                 else {
-                    defaults.put("factory.browserlauncher.class", TerminalBrowserLauncher.class.getName());
+                    this.setDefault("factory.browserlauncher.class", TerminalBrowserLauncher.class.getName());
                 }
-                defaults.put("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
-                defaults.put("factory.applicationresourcesfinder.class", StaticApplicationResourcesFinder.class.getName());
-                defaults.put("factory.locale.class", RegexLocale.class.getName());
-                defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
-                defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
-                defaults.put("factory.proxy.class", EnvironmentVariableProxyFinder.class.getName());
-                defaults.put("factory.symlink.class", DefaultSymlinkFeature.class.getName());
-                defaults.put("factory.passwordstore.class", UnsecureHostPasswordStore.class.getName());
+                this.setDefault("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
+                this.setDefault("factory.applicationresourcesfinder.class", StaticApplicationResourcesFinder.class.getName());
+                this.setDefault("factory.locale.class", RegexLocale.class.getName());
+                this.setDefault("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
+                this.setDefault("factory.editorfactory.class", DefaultEditorFactory.class.getName());
+                this.setDefault("factory.proxy.class", EnvironmentVariableProxyFinder.class.getName());
+                this.setDefault("factory.symlink.class", DefaultSymlinkFeature.class.getName());
+                this.setDefault("factory.passwordstore.class", UnsecureHostPasswordStore.class.getName());
                 break;
         }
-        defaults.put("factory.vault.class", CryptoVault.class.getName());
-        defaults.put("factory.securerandom.class", FastSecureRandomProvider.class.getName());
+        this.setDefault("factory.vault.class", CryptoVault.class.getName());
+        this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
     }
 
     @Override
     protected void setLogging() {
-        defaults.put("logging", "fatal");
+        this.setDefault("logging", "fatal");
 
         super.setLogging();
     }
@@ -94,8 +94,8 @@ public class TerminalPreferences extends MemoryPreferences {
     protected void setDefaults() {
         super.setDefaults();
 
-        defaults.put("website.home", "http://duck.sh/");
-        defaults.put("website.help", "http://help.duck.sh/");
+        this.setDefault("website.home", "http://duck.sh/");
+        this.setDefault("website.help", "http://help.duck.sh/");
 
         System.setProperty("jna.library.path", this.getProperty("java.library.path"));
 
@@ -109,37 +109,37 @@ public class TerminalPreferences extends MemoryPreferences {
             case linux: {
                 try {
                     final Process echo = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", "echo ~"});
-                    defaults.put("local.user.home", StringUtils.strip(IOUtils.toString(echo.getInputStream(), Charset.defaultCharset())));
+                    this.setDefault("local.user.home", StringUtils.strip(IOUtils.toString(echo.getInputStream(), Charset.defaultCharset())));
                 }
                 catch(IOException e) {
                     log.warn("Failure determining user home with `echo ~`");
                 }
-                defaults.put("ssh.authentication.agent.enable", String.valueOf(false));
+                this.setDefault("ssh.authentication.agent.enable", String.valueOf(false));
                 // Lowercase folder names to use when looking for profiles and bookmarks in user support directory
-                defaults.put("bookmarks.folder.name", "bookmarks");
-                defaults.put("profiles.folder.name", "profiles");
-                defaults.put("connection.ssl.securerandom", "NativePRNGNonBlocking");
+                this.setDefault("bookmarks.folder.name", "bookmarks");
+                this.setDefault("profiles.folder.name", "profiles");
+                this.setDefault("connection.ssl.securerandom", "NativePRNGNonBlocking");
 
                 break;
             }
         }
-        defaults.put("local.normalize.prefix", String.valueOf(true));
-        defaults.put("connection.login.name", System.getProperty("user.name"));
+        this.setDefault("local.normalize.prefix", String.valueOf(true));
+        this.setDefault("connection.login.name", System.getProperty("user.name"));
 
         // Disable transfer filters
-        defaults.put("queue.download.skip.enable", "false");
-        defaults.put("queue.upload.skip.enable", "false");
+        this.setDefault("queue.download.skip.enable", "false");
+        this.setDefault("queue.upload.skip.enable", "false");
 
-        defaults.put("queue.copy.action", TransferAction.comparison.name());
-        defaults.put("queue.copy.reload.action", TransferAction.comparison.name());
+        this.setDefault("queue.copy.action", TransferAction.comparison.name());
+        this.setDefault("queue.copy.reload.action", TransferAction.comparison.name());
     }
 
     public TerminalPreferences withDefaults(final CommandLine input) {
         if(input.hasOption(TerminalOptionsBuilder.Params.chmod.name())) {
             final Permission permission = new Permission(input.getOptionValue(TerminalOptionsBuilder.Params.chmod.name()));
-            defaults.put("queue.upload.permissions.change", String.valueOf(true));
-            defaults.put("queue.upload.permissions.default", String.valueOf(true));
-            defaults.put("queue.upload.permissions.file.default", permission.getMode());
+            this.setDefault("queue.upload.permissions.change", String.valueOf(true));
+            this.setDefault("queue.upload.permissions.default", String.valueOf(true));
+            this.setDefault("queue.upload.permissions.file.default", permission.getMode());
         }
         return this;
     }

@@ -48,72 +48,72 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
         {
             base.setFactories();
 
-            defaults.put("factory.supportdirectoryfinder.class",
+            this.setDefault("factory.supportdirectoryfinder.class",
                 typeof(RoamingSupportDirectoryFinder).AssemblyQualifiedName);
-            defaults.put("factory.applicationresourcesfinder.class",
+            this.setDefault("factory.applicationresourcesfinder.class",
                 typeof(AssemblyApplicationResourcesFinder).AssemblyQualifiedName);
-            defaults.put("factory.local.class", typeof(SystemLocal).AssemblyQualifiedName);
-            defaults.put("factory.locale.class", typeof(DictionaryLocale).AssemblyQualifiedName);
-            defaults.put("factory.dateformatter.class", typeof(UserDefaultsDateFormatter).AssemblyQualifiedName);
-            defaults.put("factory.passwordstore.class", typeof(PasswordStoreFacade).AssemblyQualifiedName);
-            defaults.put("factory.proxycredentialsstore.class",
+            this.setDefault("factory.local.class", typeof(SystemLocal).AssemblyQualifiedName);
+            this.setDefault("factory.locale.class", typeof(DictionaryLocale).AssemblyQualifiedName);
+            this.setDefault("factory.dateformatter.class", typeof(UserDefaultsDateFormatter).AssemblyQualifiedName);
+            this.setDefault("factory.passwordstore.class", typeof(PasswordStoreFacade).AssemblyQualifiedName);
+            this.setDefault("factory.proxycredentialsstore.class",
                 typeof(CredentialManagerProxyCredentialsStore).AssemblyQualifiedName);
-            defaults.put("factory.alertcallback.class", typeof(DialogAlertCallback).AssemblyQualifiedName);
-            defaults.put("factory.certificatestore.class", typeof(SystemCertificateStore).AssemblyQualifiedName);
-            defaults.put("factory.hostkeycallback.class", typeof(HostKeyController).AssemblyQualifiedName);
-            defaults.put("factory.logincallback.class", typeof(PromptLoginController).AssemblyQualifiedName);
-            defaults.put("factory.passwordcallback.class", typeof(PromptPasswordController).AssemblyQualifiedName);
-            defaults.put("factory.transfererrorcallback.class",
+            this.setDefault("factory.alertcallback.class", typeof(DialogAlertCallback).AssemblyQualifiedName);
+            this.setDefault("factory.certificatestore.class", typeof(SystemCertificateStore).AssemblyQualifiedName);
+            this.setDefault("factory.hostkeycallback.class", typeof(HostKeyController).AssemblyQualifiedName);
+            this.setDefault("factory.logincallback.class", typeof(PromptLoginController).AssemblyQualifiedName);
+            this.setDefault("factory.passwordcallback.class", typeof(PromptPasswordController).AssemblyQualifiedName);
+            this.setDefault("factory.transfererrorcallback.class",
                 typeof(DialogTransferErrorCallback).AssemblyQualifiedName);
-            defaults.put("factory.transferpromptcallback.download.class",
+            this.setDefault("factory.transferpromptcallback.download.class",
                 typeof(DownloadPromptController).AssemblyQualifiedName);
-            defaults.put("factory.transferpromptcallback.upload.class",
+            this.setDefault("factory.transferpromptcallback.upload.class",
                 typeof(UploadPromptController).AssemblyQualifiedName);
-            defaults.put("factory.transferpromptcallback.copy.class",
+            this.setDefault("factory.transferpromptcallback.copy.class",
                 typeof(UploadPromptController).AssemblyQualifiedName);
-            defaults.put("factory.transferpromptcallback.sync.class",
+            this.setDefault("factory.transferpromptcallback.sync.class",
                 typeof(SyncPromptController).AssemblyQualifiedName);
-            defaults.put("factory.proxy.class", typeof(SystemProxy).AssemblyQualifiedName);
-            defaults.put("factory.reachability.class", typeof(TcpReachability).AssemblyQualifiedName);
+            this.setDefault("factory.proxy.class", typeof(SystemProxy).AssemblyQualifiedName);
+            this.setDefault("factory.reachability.class", typeof(TcpReachability).AssemblyQualifiedName);
 
-            defaults.put("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
-            defaults.put("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
-            defaults.put("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
-            defaults.put("factory.reveal.class", typeof(ExplorerRevealService).AssemblyQualifiedName);
-            defaults.put("factory.trash.class", typeof(RecycleLocalTrashFeature).AssemblyQualifiedName);
-            defaults.put("factory.symlink.class", typeof(NullLocalSymlinkFeature).AssemblyQualifiedName);
-            defaults.put("factory.terminalservice.class", typeof(SshTerminalService).AssemblyQualifiedName);
-            defaults.put("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
-            defaults.put("factory.notification.class", typeof(ToolstripNotificationService).AssemblyQualifiedName);
+            this.setDefault("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
+            this.setDefault("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
+            this.setDefault("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
+            this.setDefault("factory.reveal.class", typeof(ExplorerRevealService).AssemblyQualifiedName);
+            this.setDefault("factory.trash.class", typeof(RecycleLocalTrashFeature).AssemblyQualifiedName);
+            this.setDefault("factory.symlink.class", typeof(NullLocalSymlinkFeature).AssemblyQualifiedName);
+            this.setDefault("factory.terminalservice.class", typeof(SshTerminalService).AssemblyQualifiedName);
+            this.setDefault("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
+            this.setDefault("factory.notification.class", typeof(ToolstripNotificationService).AssemblyQualifiedName);
             if (Cyberduck.Core.Utils.IsWin7OrLater)
             {
-                defaults.put("factory.badgelabeler.class",
+                this.setDefault("factory.badgelabeler.class",
                     typeof(TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
             }
-            defaults.put("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
-            defaults.put("factory.schemehandler.class", typeof(URLSchemeHandlerConfiguration).AssemblyQualifiedName);
+            this.setDefault("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
+            this.setDefault("factory.schemehandler.class", typeof(URLSchemeHandlerConfiguration).AssemblyQualifiedName);
 
             if (Cyberduck.Core.Utils.IsRunningAsUWP)
             {
-                defaults.put("factory.rendezvous.class", typeof(DisabledRendezvous).AssemblyQualifiedName);
-                defaults.put("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);
+                this.setDefault("factory.rendezvous.class", typeof(DisabledRendezvous).AssemblyQualifiedName);
+                this.setDefault("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);
             }
             else
             {
-                defaults.put("factory.rendezvous.class", typeof(Rendezvous).AssemblyQualifiedName);
-                defaults.put("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
+                this.setDefault("factory.rendezvous.class", typeof(Rendezvous).AssemblyQualifiedName);
+                this.setDefault("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
             }
-            defaults.put("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
-            defaults.put("factory.securerandom.class", typeof(FastSecureRandomProvider).AssemblyQualifiedName);
+            this.setDefault("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
+            this.setDefault("factory.securerandom.class", typeof(FastSecureRandomProvider).AssemblyQualifiedName);
         }
 
         protected override void setDefaults()
         {
             base.setDefaults();
 
-            defaults.put("website.store", "ms-windows-store://pdp/?ProductId=9NBLGGH43HTB");
+            this.setDefault("website.store", "ms-windows-store://pdp/?ProductId=9NBLGGH43HTB");
 
-            defaults.put("update.check.privilege", false.ToString());
+            this.setDefault("update.check.privilege", false.ToString());
         }
     }
 }
