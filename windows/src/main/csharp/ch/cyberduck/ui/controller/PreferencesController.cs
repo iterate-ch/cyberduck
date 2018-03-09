@@ -797,7 +797,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void SelectDefaultBookmark(Host host)
         {
-            if (BookmarkCollection.defaultCollection().contains(host))
+            if (FolderBookmarkCollection.favoritesCollection().contains(host))
             {
                 View.DefaultBookmark = host;
             }
@@ -816,7 +816,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 bool bookmarkFound = false;
-                foreach (Host host in BookmarkCollection.defaultCollection())
+                foreach (Host host in FolderBookmarkCollection.favoritesCollection())
                 {
                     if (nickname.Equals(host.getUuid()))
                     {
@@ -849,8 +849,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SaveWorkspace = PreferencesFactory.get().getBoolean("browser.serialize");
             View.NewBrowserOnStartup = PreferencesFactory.get().getBoolean("browser.openUntitled");
             PopulateBookmarks();
-            BookmarkCollection.defaultCollection().addListener(this);
-            View.ViewClosedEvent += delegate { BookmarkCollection.defaultCollection().removeListener(this); };
+            FolderBookmarkCollection.favoritesCollection().addListener(this);
+            View.ViewClosedEvent += delegate { FolderBookmarkCollection.favoritesCollection().removeListener(this); };
             SelectDefaultBookmark(PreferencesFactory.get().getProperty("browser.open.bookmark.default"));
             View.ConfirmDisconnect = PreferencesFactory.get().getBoolean("browser.confirmDisconnect");
             View.UseKeychain = PreferencesFactory.get().getBoolean("connection.login.keychain");
@@ -1211,7 +1211,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             List<KeyValueIconTriple<Host, string>> bookmarks = new List<KeyValueIconTriple<Host, string>>();
             bookmarks.Add(NoneBookmark);
-            foreach (Host host in BookmarkCollection.defaultCollection())
+            foreach (Host host in FolderBookmarkCollection.favoritesCollection())
             {
                 bookmarks.Add(new KeyValueIconTriple<Host, string>(host, BookmarkNameProvider.toString(host),
                     host.getProtocol().disk()));

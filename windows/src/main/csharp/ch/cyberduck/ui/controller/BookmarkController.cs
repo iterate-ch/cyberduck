@@ -135,7 +135,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _ticklerReachability.Change(Timeout.Infinite, Timeout.Infinite);
             _ticklerFavicon.Change(Timeout.Infinite, Timeout.Infinite);
             PreferencesFactory.get().setProperty(ToggleProperty, View.OptionsVisible);
-            BookmarkCollection.defaultCollection().removeListener(_bookmarkCollectionListener);
+            FolderBookmarkCollection.favoritesCollection().removeListener(_bookmarkCollectionListener);
             base.Invalidate();
         }
 
@@ -346,7 +346,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected virtual void ItemChanged()
         {
-            BookmarkCollection.defaultCollection().collectionItemChanged(_host);
+            FolderBookmarkCollection.favoritesCollection().collectionItemChanged(_host);
         }
 
         private void Reachable()

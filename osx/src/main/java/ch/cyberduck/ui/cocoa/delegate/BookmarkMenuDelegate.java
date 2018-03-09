@@ -24,8 +24,8 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.core.AbstractHostCollection;
-import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.FolderBookmarkCollection;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -72,7 +72,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         this(new MenuCallback() {
             @Override
             public void selected(final NSMenuItem sender) {
-                MainController.newDocument().mount(BookmarkCollection.defaultCollection().lookup(sender.representedObject()));
+                MainController.newDocument().mount(FolderBookmarkCollection.favoritesCollection().lookup(sender.representedObject()));
             }
         }, history, rendezvous);
     }
@@ -82,7 +82,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     public BookmarkMenuDelegate(final MenuCallback callback, final HistoryMenuDelegate history, final RendezvousMenuDelegate rendezvous) {
-        this(BookmarkCollection.defaultCollection(), BOOKMARKS_INDEX, callback, history, rendezvous);
+        this(FolderBookmarkCollection.favoritesCollection(), BOOKMARKS_INDEX, callback, history, rendezvous);
     }
 
     public BookmarkMenuDelegate(final AbstractHostCollection collection, final int index,

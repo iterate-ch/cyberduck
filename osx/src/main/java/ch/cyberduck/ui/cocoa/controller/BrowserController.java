@@ -168,8 +168,8 @@ public class BrowserController extends WindowController
     public final BrowserToolbarValidator browserToolbarValidator
         = new BrowserToolbarValidator(this);
 
-    private final BookmarkCollection bookmarks
-        = BookmarkCollection.defaultCollection();
+    private final AbstractHostCollection bookmarks
+        = FolderBookmarkCollection.favoritesCollection();
 
     private final BrowserToolbarFactory browserToolbarFactory
         = new BrowserToolbarFactory(this);

@@ -25,7 +25,7 @@ public class BookmarkCollectionTest {
 
     @Test
     public void testDefault() throws Exception {
-        assertEquals(BookmarkCollection.defaultCollection(), BookmarkCollection.defaultCollection());
-        assertEquals("Favorites", BookmarkCollection.defaultCollection().getName());
+        assertEquals(FolderBookmarkCollection.favoritesCollection(), FolderBookmarkCollection.favoritesCollection());
+        assertEquals("Bookmarks", FolderBookmarkCollection.favoritesCollection().getName());
     }
 }
