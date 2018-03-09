@@ -431,7 +431,7 @@ namespace Ch.Cyberduck.Core.Preferences
 
         private void ApplyGlobalConfig()
         {
-            var config = Path.Combine(SupportDirectoryFinderFactory.get().find(),
+            var config = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
                 "default.properties");
             if (File.Exists(config))
             {
