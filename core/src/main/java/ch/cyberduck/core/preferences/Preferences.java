@@ -510,6 +510,7 @@ public abstract class Preferences {
 
         this.setDefault("queue.download.priority.regex", "");
 
+        this.setDefault("queue.download.folder", System.getProperty("user.dir"));
         // Security scoped bookmark
         this.setDefault("queue.download.folder.bookmark", null);
 
