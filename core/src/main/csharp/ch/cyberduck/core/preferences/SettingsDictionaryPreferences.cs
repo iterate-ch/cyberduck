@@ -402,12 +402,12 @@ namespace Ch.Cyberduck.Core.Preferences
             }
             if (Utils.IsRunningAsUWP)
             {
-                SetUWPDefaults(defaults);
+                SetUWPDefaults();
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void SetUWPDefaults(Map defaults)
+        private void SetUWPDefaults()
         {
             this.setDefault("update.check", $"{false}");
             this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
