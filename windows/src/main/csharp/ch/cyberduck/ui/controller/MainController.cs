@@ -96,7 +96,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private readonly AbstractHostCollection _sessions =
             new FolderBookmarkCollection(
-                LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Sessions"),
+                LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Sessions"),
                 "session");
 
         private readonly CountdownEvent transfersSemaphore = new CountdownEvent(1);
@@ -452,7 +452,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 NewBrowser().AddBookmark(host);
                 // Register in application support
                 Local profiles =
-                    LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
+                    LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
                         PreferencesFactory.get().getProperty("profiles.folder.name"));
                 profiles.mkdir();
                 f.copy(LocalFactory.get(profiles, f.getName()));
@@ -465,7 +465,7 @@ namespace Ch.Cyberduck.Ui.Controller
             License license = LicenseFactory.get(f);
             if (license.verify(new DisabledLicenseVerifierCallback()))
             {
-                f.copy(LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
+                f.copy(LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
                     f.getName()));
                 _bc.InfoBox(license.ToString(),
                     LocaleFactory.localizedString(

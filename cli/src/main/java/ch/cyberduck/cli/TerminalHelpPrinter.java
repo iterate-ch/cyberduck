@@ -27,6 +27,7 @@ import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -82,7 +83,7 @@ public final class TerminalHelpPrinter {
             + "with a trailing slash. You can reference files relative to your home directory with /~ (ftps://user@example.net/~/).");
         header.append(protocols.toString());
         final Preferences preferences = PreferencesFactory.get();
-        final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
+        final Local profiles = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
             PreferencesFactory.get().getProperty("profiles.folder.name"));
         header.append(StringUtils.LF);
         header.append(String.format("You can install additional connection profiles in %s",

@@ -27,7 +27,6 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSUserDefaults;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cache.LRUCache;
@@ -188,9 +187,6 @@ public class UserDefaultsPreferences extends Preferences {
             }
             this.setDefault("application.receipt.path", String.format("%s/Contents/_MASReceipt", bundle.bundlePath()));
         }
-        final Local resources = ApplicationResourcesFinderFactory.get().find();
-        this.setDefault("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
-        this.setDefault("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
 
         this.setDefault("update.feed.release", "https://version.cyberduck.io/changelog.rss");
         this.setDefault("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");

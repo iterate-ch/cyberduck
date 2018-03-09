@@ -23,11 +23,11 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -40,7 +40,7 @@ public abstract class LicenseFactory extends Factory<License> {
     private static final Logger log = Logger.getLogger(LicenseFactory.class);
 
     private static final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     /**
      * Delegate returning the first key found.
@@ -73,7 +73,7 @@ public abstract class LicenseFactory extends Factory<License> {
     private final Filter<Local> filter;
 
     protected LicenseFactory() {
-        this(LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path")));
+        this(SupportDirectoryFinderFactory.get().find());
     }
 
     protected LicenseFactory(final Local folder) {
