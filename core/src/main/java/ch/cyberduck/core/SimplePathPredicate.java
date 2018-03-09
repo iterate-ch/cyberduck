@@ -19,10 +19,13 @@ import java.util.Objects;
 
 public class SimplePathPredicate implements CacheReference<Path> {
 
+    protected final Path file;
+
     private final Path.Type type;
     private final String path;
 
     public SimplePathPredicate(final Path file) {
+        this.file = file;
         this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
         this.path = file.getAbsolute();
     }
