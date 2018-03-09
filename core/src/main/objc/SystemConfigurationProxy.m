@@ -57,7 +57,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
         }
         // Every proxy dictionary has an entry for kCFProxyTypeKey
         if([[proxyConfiguration objectForKey:(NSString *)kCFProxyTypeKey] isEqualToString:(NSString *)kCFProxyTypeNone]) {
-            NSLog(@"Missing proxy type key in configuration");
             return nil;
         }
         // Look for PAC configuration
