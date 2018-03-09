@@ -442,7 +442,7 @@ namespace Ch.Cyberduck.Core.Preferences
                 {
                     var properties = new java.util.Properties();
                     properties.load(new FileInputStream(config));
-                    this.setDefaultAll(properties);
+                    this.setDefaults(properties);
                 }
                 catch (Exception e)
                 {
