@@ -21,11 +21,13 @@ import ch.cyberduck.core.date.AbstractUserDateFormatter;
 
 public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter> {
 
+    private static final UserDateFormatterFactory factory = new UserDateFormatterFactory();
+
     protected UserDateFormatterFactory() {
         super("factory.dateformatter.class");
     }
 
     public static AbstractUserDateFormatter get() {
-        return new UserDateFormatterFactory().create();
+        return factory.create();
     }
 }
