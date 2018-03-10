@@ -16,6 +16,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
@@ -48,7 +49,7 @@ public final class ProtocolFactory {
     }
 
     public ProtocolFactory(final Set<Protocol> protocols) {
-        this(LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+        this(LocalFactory.get(ApplicationResourcesFinderFactory.get().find(),
             PreferencesFactory.get().getProperty("profiles.folder.name")), protocols);
     }
 
