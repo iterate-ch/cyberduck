@@ -117,11 +117,11 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         if(this.isFile()) {
             set.add(Type.file);
         }
-        if(this.isDirectory()) {
+        else {
             set.add(Type.directory);
-        }
-        if(this.isVolume()) {
-            set.add(Type.volume);
+            if(this.isVolume()) {
+                set.add(Type.volume);
+            }
         }
         if(this.isSymbolicLink()) {
             set.add(Type.symboliclink);
@@ -139,10 +139,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isDirectory() {
-        if(this.exists()) {
-            return Files.isDirectory(Paths.get(path));
-        }
-        return false;
+        return Files.isDirectory(Paths.get(path));
     }
 
     /**
@@ -151,10 +148,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isFile() {
-        if(this.exists()) {
-            return Files.isRegularFile(Paths.get(path));
-        }
-        return false;
+        return Files.isRegularFile(Paths.get(path));
     }
 
     /**
@@ -171,7 +165,13 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             // For a link that actually points to something (either a file or a directory),
             // the absolute path is the path through the link, whereas the canonical path
             // is the path the link references.
-            return LocalFactory.get(Files.readSymbolicLink(Paths.get(path)).toAbsolutePath().toString());
+            final Path target = Files.readSymbolicLink(Paths.get(this.path));
+            if(target.isAbsolute()) {
+                return LocalFactory.get(target.toString());
+            }
+            else {
+                return LocalFactory.get(this.getParent(), target.toString());
+            }
         }
         catch(InvalidPathException | IOException e) {
             throw new LocalNotfoundException(String.format("Resolving symlink target for %s failed", path), e);

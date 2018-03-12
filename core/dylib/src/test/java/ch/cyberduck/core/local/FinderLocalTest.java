@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -77,7 +78,6 @@ public class FinderLocalTest {
             l.list();
         }
         catch(LocalAccessDeniedException e) {
-            assertEquals("The folder “" + name + "” doesn’t exist. Please verify disk permissions.", e.getDetail());
             throw e;
         }
     }
@@ -215,5 +215,11 @@ public class FinderLocalTest {
     @Test
     public void testFollowLinks() throws Exception {
         assertTrue(new Local("/tmp").exists());
+    }
+
+    @Test
+    public void testIsSymbolicLink() throws Exception {
+        Assert.assertFalse(new FinderLocal(UUID.randomUUID().toString()).isSymbolicLink());
+        Assert.assertTrue(new FinderLocal("/tmp").isSymbolicLink());
     }
 }

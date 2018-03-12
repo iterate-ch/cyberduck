@@ -60,6 +60,20 @@ public class LocalTest {
     }
 
     @Test
+    public void testIsDirectory() throws Exception {
+        assertTrue(new TestLocal("../profiles").isDirectory());
+        TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID().toString());
+        assertFalse(l.isDirectory());
+    }
+
+    @Test
+    public void testIsFile() throws Exception {
+        assertTrue(new Local("../profiles/pom.xml").isFile());
+        TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID().toString());
+        assertFalse(l.isFile());
+    }
+
+    @Test
     public void testDelimiter() throws Exception {
         Local l = new WindowsLocal("G:\\");
         assertEquals("G:\\", l.getAbsolute());
@@ -171,7 +185,7 @@ public class LocalTest {
     @Test
     public void testNormalize() throws Exception {
         assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"),
-                PreferencesFactory.get().getProperty("local.delimiter")), new Local(System.getProperty("java.io.tmpdir")).getAbsolute());
+            PreferencesFactory.get().getProperty("local.delimiter")), new Local(System.getProperty("java.io.tmpdir")).getAbsolute());
     }
 
     private static class WindowsLocal extends Local {

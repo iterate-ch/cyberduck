@@ -18,30 +18,21 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSFileManager;
-import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.exception.LocalNotfoundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
-import org.rococoa.ObjCObjectByReference;
-import org.rococoa.cocoa.foundation.NSError;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -122,11 +113,6 @@ public class FinderLocal extends Local {
             }
         }
         return super.getVolume();
-    }
-
-    @Override
-    public boolean isSymbolicLink() {
-        return attributes.isSymbolicLink();
     }
 
     @Override
@@ -226,31 +212,6 @@ public class FinderLocal extends Local {
         }
     }
 
-    @Override
-    public AttributedList<Local> list() throws AccessDeniedException {
-        if(PreferencesFactory.get().getBoolean("local.list.native")) {
-            final AttributedList<Local> children = new AttributedList<Local>();
-            final ObjCObjectByReference error = new ObjCObjectByReference();
-            final NSArray files = manager.contentsOfDirectoryAtPath_error(this.getAbsolute(), error);
-            if(null == files) {
-                final NSError f = error.getValueAs(NSError.class);
-                if(null == f) {
-                    throw new LocalAccessDeniedException(this.getAbsolute());
-                }
-                throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
-            }
-            final NSEnumerator i = files.objectEnumerator();
-            NSObject next;
-            while((next = i.nextObject()) != null) {
-                children.add(new FinderLocal(this, next.toString()));
-            }
-            return children;
-        }
-        else {
-            return super.list();
-        }
-    }
-
     private static String resolveAlias(final String absolute) {
         if(PreferencesFactory.get().getBoolean("local.alias.resolve")) {
             return resolveAliasNative(absolute);
@@ -267,25 +228,5 @@ public class FinderLocal extends Local {
     @Override
     public FinderLocalAttributes attributes() {
         return attributes;
-    }
-
-    @Override
-    public Local getSymlinkTarget() throws NotfoundException, LocalAccessDeniedException {
-        final ObjCObjectByReference error = new ObjCObjectByReference();
-        final String destination = manager.destinationOfSymbolicLinkAtPath_error(
-            this.getAbsolute(), error);
-        if(null == destination) {
-            final NSError f = error.getValueAs(NSError.class);
-            if(null == f) {
-                throw new LocalNotfoundException(this.getAbsolute());
-            }
-            throw new LocalNotfoundException(String.format("%s", f.localizedDescription()));
-        }
-        if(FilenameUtils.getPrefixLength(destination) != 0) {
-            // Absolute path
-            return new FinderLocal(destination);
-        }
-        // Relative path
-        return new FinderLocal(this.getParent(), destination);
     }
 }

@@ -281,7 +281,6 @@ public abstract class Preferences {
         this.setDefault("local.normalize.prefix", String.valueOf(false));
         this.setDefault("local.normalize.unicode", String.valueOf(true));
         this.setDefault("local.normalize.tilde", String.valueOf(true));
-        this.setDefault("local.list.native", String.valueOf(true));
         this.setDefault("local.delimiter", File.separator);
         this.setDefault("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
