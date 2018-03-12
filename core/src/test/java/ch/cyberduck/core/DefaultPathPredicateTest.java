@@ -27,33 +27,27 @@ public class DefaultPathPredicateTest {
 
     @Test
     public void testUnique() throws Exception {
-        final Path t = new Path("/", EnumSet.of(Path.Type.directory));
-        assertEquals("[directory]-/", new DefaultPathPredicate(t).toString());
-        t.attributes().setRegion("r");
-        assertEquals("[directory]-/", new DefaultPathPredicate(t).toString());
+        final Path t_noregion = new Path("/", EnumSet.of(Path.Type.directory));
+        assertEquals("[directory]-/", new DefaultPathPredicate(t_noregion).toString());
+        final Path t_region = new Path("/", EnumSet.of(Path.Type.directory));
+        t_region.attributes().setRegion("r");
+        assertEquals("[directory]-/", new DefaultPathPredicate(t_region).toString());
+        assertEquals(new DefaultPathPredicate(t_noregion), new DefaultPathPredicate(t_region));
     }
 
     @Test
     public void testUniqueSymbolicLInk() throws Exception {
-        final Path t = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
-        assertEquals("[directory, symboliclink]-/", new DefaultPathPredicate(t).toString());
+        final Path s = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
+        final Path t = new Path("/", EnumSet.of(Path.Type.directory));
+        assertNotEquals(new DefaultPathPredicate(s), new DefaultPathPredicate(t));
     }
 
     @Test
     public void testtoStringContainer() throws Exception {
-        final Path t = new Path("/container", EnumSet.of(Path.Type.directory));
-        assertEquals("[directory]-/container", new DefaultPathPredicate(t).toString());
-        t.attributes().setRegion("r");
-        assertEquals("[directory]-r/container", new DefaultPathPredicate(t).toString());
-    }
-
-    @Test
-    public void testAttributes() throws Exception {
-        final Path t = new Path("/f", EnumSet.of(Path.Type.file));
-        t.attributes().setRegion("r");
-        assertEquals("r", new DefaultPathPredicate(t).attributes());
-        t.attributes().setVersionId("1");
-        assertEquals("r1", new DefaultPathPredicate(t).attributes());
+        final Path t_noregion = new Path("/container", EnumSet.of(Path.Type.directory));
+        final Path t_region = new Path("/container", EnumSet.of(Path.Type.directory));
+        t_region.attributes().setRegion("r");
+        assertNotEquals(new DefaultPathPredicate(t_noregion), new DefaultPathPredicate(t_region));
     }
 
     @Test

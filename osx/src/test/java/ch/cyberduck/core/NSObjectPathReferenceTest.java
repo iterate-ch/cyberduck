@@ -25,7 +25,7 @@ public class NSObjectPathReferenceTest {
         assertEquals(new NSObjectPathReference(NSString.stringWithString("[file]-/b")).hashCode(),
                 NSObjectPathReference.get(new Path("/b", EnumSet.of(Path.Type.file))).hashCode()
         );
-        assertEquals(new NSObjectPathReference(NSString.stringWithString("[directory, symboliclink]-/d")).hashCode(),
+        assertEquals(new NSObjectPathReference(NSString.stringWithString("[symboliclink]-/d")).hashCode(),
                 NSObjectPathReference.get(new Path("/d", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))).hashCode()
         );
     }

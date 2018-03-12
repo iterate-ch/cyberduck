@@ -17,14 +17,32 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-public final class CaseInsensitivePathPredicate extends SimplePathPredicate {
+import java.util.Objects;
+
+public final class CaseInsensitivePathPredicate implements CacheReference<Path> {
+
+    private final Path.Type type;
+    private final String path;
+
     public CaseInsensitivePathPredicate(final Path file) {
-        super(file);
+        this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
+        this.path = StringUtils.lowerCase(file.getAbsolute());
     }
 
     @Override
-    public String toString() {
-        return this.type() + "-" + StringUtils.lowerCase(file.getAbsolute());
+    public boolean equals(final Object o) {
+        if(null == o) {
+            return false;
+        }
+        if(o instanceof CacheReference) {
+            return this.hashCode() == o.hashCode();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, path);
     }
 
     @Override

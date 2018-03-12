@@ -30,6 +30,5 @@ public class SimplePathPredicateTest {
         assertTrue(new SimplePathPredicate(t).test(t));
         assertFalse(new SimplePathPredicate(t).test(new Path("/f/a", EnumSet.of(Path.Type.file))));
         assertFalse(new SimplePathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory))));
-
     }
 }

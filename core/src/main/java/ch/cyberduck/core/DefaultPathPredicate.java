@@ -20,27 +20,18 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-
 /**
  * Path predicate that takes the region and version id of the path into account for comparisons.
  */
 public class DefaultPathPredicate implements CacheReference<Path> {
 
-    private final Path file;
-
-    private final PathContainerService containerService
-        = new PathContainerService();
+    private final String reference;
 
     public DefaultPathPredicate(final Path file) {
-        this.file = file;
-    }
-
-    public String attributes() {
+        final Path.Type type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
         String qualifier = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(file.attributes().getRegion())) {
-            if(containerService.isContainer(file)) {
+            if(new PathContainerService().isContainer(file)) {
                 qualifier += file.attributes().getRegion();
             }
         }
@@ -49,25 +40,8 @@ public class DefaultPathPredicate implements CacheReference<Path> {
                 qualifier += file.attributes().getVersionId();
             }
         }
-        return qualifier;
-    }
-
-    protected String type() {
-        final EnumSet<Path.Type> types = EnumSet.copyOf(file.getType());
-        types.removeAll(Arrays.asList(
-            Path.Type.placeholder,
-            Path.Type.volume,
-            Path.Type.encrypted,
-            Path.Type.decrypted,
-            Path.Type.vault,
-            Path.Type.upload
-        ));
-        return String.valueOf(types);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.toString().hashCode();
+        final String path = file.getAbsolute();
+        reference = "[" + type + "]" + "-" + qualifier + path;
     }
 
     /**
@@ -77,23 +51,23 @@ public class DefaultPathPredicate implements CacheReference<Path> {
      */
     @Override
     public String toString() {
-        return this.type() + "-" + this.attributes() + file.getAbsolute();
+        return reference;
     }
 
-    /**
-     * Comparing the hashcode.
-     *
-     * @see #hashCode()
-     */
     @Override
-    public boolean equals(Object other) {
-        if(null == other) {
+    public boolean equals(Object o) {
+        if(null == o) {
             return false;
         }
-        if(other instanceof CacheReference) {
-            return this.hashCode() == other.hashCode();
+        if(o instanceof CacheReference) {
+            return this.hashCode() == o.hashCode();
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return reference.hashCode();
     }
 
     @Override

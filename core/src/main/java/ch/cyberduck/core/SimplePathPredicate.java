@@ -15,18 +15,35 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-public class SimplePathPredicate extends DefaultPathPredicate {
+import java.util.Objects;
+
+public class SimplePathPredicate implements CacheReference<Path> {
 
     protected final Path file;
 
+    private final Path.Type type;
+    private final String path;
+
     public SimplePathPredicate(final Path file) {
-        super(file);
         this.file = file;
+        this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
+        this.path = file.getAbsolute();
     }
 
     @Override
-    public String toString() {
-        return this.type() + "-" + file.getAbsolute();
+    public boolean equals(final Object o) {
+        if(null == o) {
+            return false;
+        }
+        if(o instanceof CacheReference) {
+            return this.hashCode() == o.hashCode();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, path);
     }
 
     @Override
