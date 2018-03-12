@@ -61,7 +61,7 @@ public class LocalTest {
 
     @Test
     public void testIsDirectory() throws Exception {
-        assertTrue(new TestLocal("/tmp").isDirectory());
+        assertTrue(new TestLocal("../profiles").isDirectory());
         TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID().toString());
         assertFalse(l.isDirectory());
     }
