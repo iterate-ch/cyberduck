@@ -39,7 +39,7 @@ public class SDSNodeIdProvider implements IdProvider {
     private final SDSSession session;
 
     private final PathContainerService containerService
-            = new SDSPathContainerService();
+        = new SDSPathContainerService();
 
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
@@ -59,21 +59,16 @@ public class SDSNodeIdProvider implements IdProvider {
         try {
             final String type;
             if(file.isDirectory()) {
-                if(containerService.isContainer(file)) {
-                    type = "room";
-                }
-                else {
-                    type = "folder";
-                }
+                type = "room:folder";
             }
             else {
                 type = "file";
             }
             // Top-level nodes only
             final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, 0,
-                    Long.parseLong(this.getFileid(file.getParent(), new DisabledListProgressListener())),
-                    null, String.format("type:eq:%s|name:cn:%s", type, file.getName()),
-                    null, null, null);
+                Long.parseLong(this.getFileid(file.getParent(), new DisabledListProgressListener())),
+                null, String.format("type:eq:%s|name:cn:%s", type, file.getName()),
+                null, null, null);
             for(Node node : nodes.getItems()) {
                 if(node.getName().equals(file.getName())) {
                     if(log.isInfoEnabled()) {
