@@ -145,4 +145,28 @@ public class SDSNodeIdProviderTest {
         new SDSDeleteFeature(session).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
+
+    @Test
+    public void getFileIdRoom() throws Exception {
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(), new DisabledProgressListener());
+        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final String name = new AlphanumericRandomStringService().random();
+        final Path subroom = new SDSDirectoryFeature(session).mkdir(new Path(room, name, EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        assertNotNull(new SDSNodeIdProvider(session).getFileid(new Path(room, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+        try {
+            assertNull(new SDSNodeIdProvider(session).getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+            fail();
+        }
+        catch(NotfoundException e) {
+            //
+        }
+        new SDSDeleteFeature(session).delete(Arrays.asList(subroom, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
 }
