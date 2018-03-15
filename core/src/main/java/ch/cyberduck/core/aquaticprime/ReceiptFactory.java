@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.log4j.Logger;
 
@@ -39,7 +40,7 @@ public class ReceiptFactory extends LicenseFactory {
 
     public ReceiptFactory() {
         super(LocalFactory.get(PreferencesFactory.get().getProperty("application.receipt.path")),
-                new ReceiptFilter());
+            new ReceiptFilter());
     }
 
     public ReceiptFactory(final Local folder) {
@@ -62,8 +63,7 @@ public class ReceiptFactory extends LicenseFactory {
                 log.info(String.format("Valid receipt %s in %s", receipt, file));
             }
             // Copy to Application Support for users switching versions
-            final Local support = LocalFactory.get(
-                    PreferencesFactory.get().getProperty("application.support.path"));
+            final Local support = SupportDirectoryFinderFactory.get().find();
             try {
                 file.copy(LocalFactory.get(support, String.format("%s.cyberduckreceipt", receipt.getName())));
             }

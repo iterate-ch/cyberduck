@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.log4j.Logger;
 
@@ -36,7 +37,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
             = PreferencesFactory.get();
 
     private static final FolderBookmarkCollection FAVORITES_COLLECTION = new FolderBookmarkCollection(
-            LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Bookmarks")
+        LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Bookmarks")
     ) {
         private static final long serialVersionUID = 6302021296403107371L;
 

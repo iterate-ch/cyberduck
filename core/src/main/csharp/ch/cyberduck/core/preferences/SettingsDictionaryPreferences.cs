@@ -231,9 +231,6 @@ namespace Ch.Cyberduck.Core.Preferences
 
             this.setDefault("application.name", Application.ProductName);
             this.setDefault("application.container.name", Application.ProductName);
-            String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
-            this.setDefault("application.support.path", support);
-            this.setDefault("application.receipt.path", support);
 
             this.setDefault("application.version", ApplicationVersion);
             this.setDefault("application.revision", ApplicationRevision);
@@ -434,7 +431,7 @@ namespace Ch.Cyberduck.Core.Preferences
 
         private void ApplyGlobalConfig()
         {
-            var config = Path.Combine(PreferencesFactory.get().getProperty("application.support.path"),
+            var config = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
                 "default.properties");
             if (File.Exists(config))
             {

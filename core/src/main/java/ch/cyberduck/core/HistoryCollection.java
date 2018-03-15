@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,7 +30,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     private static final long serialVersionUID = 2270155702956300755L;
 
     private static final HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
-            LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "History")
+        LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "History")
     );
 
     public HistoryCollection(final Local f) {

@@ -48,7 +48,6 @@ import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NativeLocalTrashFeature;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
-import ch.cyberduck.core.local.WorkingDirectoryFinderFactory;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.random.DefaultSecureRandomProvider;
@@ -286,14 +285,6 @@ public abstract class Preferences {
 
         this.setDefault("application.name", "Cyberduck");
         this.setDefault("application.container.name", "duck");
-        final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
-        this.setDefault("application.support.path", support);
-        this.setDefault("application.receipt.path", support);
-
-        // Default bundled profiles location
-        final Local resources = ApplicationResourcesFinderFactory.get().find();
-        this.setDefault("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
-        this.setDefault("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
 
         /*
           Lowercase folder name to use when looking for bookmarks in user support directory
@@ -518,7 +509,7 @@ public abstract class Preferences {
 
         this.setDefault("queue.download.priority.regex", "");
 
-        this.setDefault("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
+        this.setDefault("queue.download.folder", System.getProperty("user.dir"));
         // Security scoped bookmark
         this.setDefault("queue.download.folder.bookmark", null);
 

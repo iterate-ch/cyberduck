@@ -20,9 +20,8 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -52,7 +51,7 @@ public class DonationKeyFactory extends LicenseFactory {
                 log.info("No donation key found");
             }
             // No key found. Look for receipt in sandboxed application container
-            for(Local file : LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path")).list().filter(new Filter<Local>() {
+            for(Local file : SupportDirectoryFinderFactory.get().find().list().filter(new Filter<Local>() {
                 @Override
                 public boolean accept(final Local file) {
                     return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));

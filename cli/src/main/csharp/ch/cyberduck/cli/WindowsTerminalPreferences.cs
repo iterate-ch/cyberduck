@@ -59,9 +59,6 @@ namespace Ch.Cyberduck.Cli
             base.setDefaults();
 
             this.setDefault("application.container.name", "Cyberduck");
-            string support = SupportDirectoryFinderFactory.get().find().getAbsolute();
-            this.setDefault("application.support.path", support);
-            this.setDefault("application.receipt.path", support);
 
             Security.addProvider(new SunMSCAPI());
             this.setDefault("connection.ssl.keystore.type", "Windows-MY");
