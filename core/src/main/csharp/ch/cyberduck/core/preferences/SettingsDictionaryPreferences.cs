@@ -414,7 +414,7 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             base.post();
             Logger root = Logger.getRootLogger();
-            var fileName = Path.Combine(getProperty("application.support.path"),
+            var fileName = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
                 getProperty("application.name").ToLower().Replace(" ", "") + ".log");
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
                 fileName, true);
