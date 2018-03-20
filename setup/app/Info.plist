@@ -267,6 +267,12 @@
         </dict>
         <key>NSAppleScriptEnabled</key>
         <false/>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <!-- Add support for http requests, e.g. PAC files in a corporate environment -->
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+        </dict>
         <key>${SPARKLE_KEY_PREFIX}FeedURL</key>
         <string>${SPARKLEFEED}</string>
         <key>${SPARKLE_KEY_PREFIX}CheckAtStartup</key>
