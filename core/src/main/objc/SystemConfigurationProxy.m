@@ -60,9 +60,9 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             return nil;
         }
         // Look for PAC configuration
-        if([[proxyConfiguration objectForKey:(NSString *)kCFProxyTypeAutoConfigurationURL] boolValue]) {
+        if([[proxyConfiguration objectForKey:(NSString *)kCFProxyTypeKey] isEqualToString:(NSString *)kCFProxyTypeAutoConfigurationURL]) {
             // If the type is kCFProxyTypeAutoConfigurationURL, it has an entry for kCFProxyAutoConfigurationURLKey
-            NSString *pacLocation = [proxyConfiguration objectForKey:(NSString *)kCFProxyAutoConfigurationURLKey];
+            NSURL *pacLocation = [proxyConfiguration objectForKey:(NSURL *)kCFProxyAutoConfigurationURLKey];
             if(!pacLocation) {
         		NSLog(@"Failure retrieving auto configuration script location from configuration");
                 CFRelease(proxyConfigurations);
@@ -70,8 +70,8 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             }
             NSError* error;
             // Obtain from URL for automatic proxy configuration
-            NSString *pacScript = [NSString stringWithContentsOfURL:[NSURL URLWithString:pacLocation] encoding:NSUTF8StringEncoding error:&error];
-            if(error) {
+            NSString *pacScript = [NSString stringWithContentsOfURL:pacLocation encoding:NSUTF8StringEncoding error:&error];
+            if(!pacScript) {
         		NSLog(@"Failure retrieving auto configuration script from %@: %@", pacLocation, error);
                 CFRelease(error);
                 CFRelease(proxyConfigurations);
@@ -80,9 +80,9 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             CFErrorRef err = NULL;
             // Executes a proxy auto configuration script to determine the best proxy to use to retrieve a specified URL
             NSArray *pacProxies = (NSArray*)CFNetworkCopyProxiesForAutoConfigurationScript((CFStringRef)pacScript, (CFURLRef)[NSURL URLWithString:targetURL], &err);
-            if(error) {
-        		NSLog(@"Failure retrieving proxies from auto configuration script: %@", error);
-                CFRelease(error);
+            if(err) {
+        		NSLog(@"Failure retrieving proxies from auto configuration script: %@", err);
+                CFRelease(err);
                 CFRelease(proxyConfigurations);
                 continue;
             }
