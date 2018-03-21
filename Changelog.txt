@@ -3,7 +3,7 @@ https://cyberduck.io/
 
 6.4.5
 - [Bugfix] Fix proxy PAC file handling (macOS)
-- [Bugifx] Disable extended master secret extension to allow session reuse for data connections (FTP-SSL) (#10276)
+- [Bugfix] Disable extended master secret extension to allow session reuse for data connections (FTP-SSL) (#10276)
 
 6.4.4
 - [Bugfix] Skip failures saving or finding passwords in credential manager (Windows)
