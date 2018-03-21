@@ -57,6 +57,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
         }
         // Every proxy dictionary has an entry for kCFProxyTypeKey
         if([[proxyConfiguration objectForKey:(NSString *)kCFProxyTypeKey] isEqualToString:(NSString *)kCFProxyTypeNone]) {
+            CFRelease(proxyConfigurations);
             return nil;
         }
         // Look for PAC configuration
@@ -65,7 +66,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             NSURL *pacLocation = [proxyConfiguration objectForKey:(NSURL *)kCFProxyAutoConfigurationURLKey];
             if(!pacLocation) {
         		NSLog(@"Failure retrieving auto configuration script location from configuration");
-                CFRelease(proxyConfigurations);
                 continue;
             }
             NSError* error;
@@ -73,8 +73,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             NSString *pacScript = [NSString stringWithContentsOfURL:pacLocation encoding:NSUTF8StringEncoding error:&error];
             if(!pacScript) {
         		NSLog(@"Failure retrieving auto configuration script from %@: %@", pacLocation, error);
-                CFRelease(error);
-                CFRelease(proxyConfigurations);
                 continue;
             }
             CFErrorRef err = NULL;
@@ -82,8 +80,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             NSArray *pacProxies = (NSArray*)CFNetworkCopyProxiesForAutoConfigurationScript((CFStringRef)pacScript, (CFURLRef)[NSURL URLWithString:targetURL], &err);
             if(err) {
         		NSLog(@"Failure retrieving proxies from auto configuration script: %@", err);
-                CFRelease(err);
-                CFRelease(proxyConfigurations);
                 continue;
             }
             NSEnumerator *enumerator = [pacProxies objectEnumerator];
@@ -96,8 +92,8 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
                     break;
                 }
             }
-            CFRelease(proxyConfigurations);
             CFRelease(pacProxies);
+            CFRelease(proxyConfigurations);
             return proxyUrl;
         }
         else {
@@ -106,6 +102,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_
             return proxyUrl;
         }
     }
+    CFRelease(proxyConfigurations);
     // Empty list
     return nil;
 }
