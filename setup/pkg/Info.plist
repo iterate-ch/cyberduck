@@ -37,6 +37,12 @@
         <string>${MACOSX_DEPLOYMENT_TARGET}</string>
 		<key>NSHumanReadableCopyright</key>
 		<string>${COPYRIGHT}</string>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <!-- Add support for http requests, e.g. PAC files in a corporate environment -->
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+        </dict>
         <key>UTExportedTypeDeclarations</key>
         <array>
             <dict>
