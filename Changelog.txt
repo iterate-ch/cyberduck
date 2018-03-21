@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.4.5
+- [Bugfix] Fix proxy PAC file handling (macOS)
+
 6.4.4
 - [Bugfix] Skip failures saving or finding passwords in credential manager (Windows)
 - [Bugfix] Ignore 550 error replies for STAT (FTP) (#10240)
