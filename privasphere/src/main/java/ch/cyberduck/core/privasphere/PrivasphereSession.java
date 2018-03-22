@@ -18,7 +18,7 @@ package ch.cyberduck.core.privasphere;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -53,8 +53,8 @@ public class PrivasphereSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(type == Upload.class) {
-            return (T) new PrivasphereUploadFeature(this);
+        if(type == Write.class) {
+            return (T) new PrivasphereWriteFeature(this, super._getFeature(Write.class));
         }
         if(type == Bulk.class) {
             return (T) new PrivasphereBulkFeature();
