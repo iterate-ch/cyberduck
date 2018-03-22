@@ -16,29 +16,28 @@ package ch.cyberduck.core.privasphere;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
 public class PrivasphereBulkFeature implements Bulk<Object> {
 
-
     /**
      * Prepare upload, i.e. generate session key with associated encryption parameters, sha checksums, mime type, etc
      */
     @Override
-    public Object pre(final Transfer.Type type, final Map<Path, TransferStatus> map, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Object pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         return null;
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<Path, TransferStatus> map, final ConnectionCallback connectionCallback) throws BackgroundException {
-        //
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+
     }
 
     @Override
