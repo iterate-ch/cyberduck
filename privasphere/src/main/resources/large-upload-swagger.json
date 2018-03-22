@@ -44,7 +44,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/Certificates"
+                "$ref": "#/definitions/Certificate"
               }
             }
           },
@@ -56,12 +56,6 @@
     }
   },
   "definitions": {
-    "Certificates": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/Certificate"
-      }
-    },
     "Certificate": {
       "type": "object",
       "properties": {
@@ -69,8 +63,7 @@
           "type": "string"
         },
         "pem": {
-          "type": "string",
-          "format": "byte"
+          "type": "string"
         }
       }
     }
