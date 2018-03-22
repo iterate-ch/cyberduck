@@ -46,6 +46,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -74,9 +75,9 @@ public class B2LargeUploadServiceTest {
     public void testWrite() throws Exception {
         // 5L * 1024L * 1024L
         final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                ));
+            new Credentials(
+                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+            ));
         final B2Session session = new B2Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -86,8 +87,8 @@ public class B2LargeUploadServiceTest {
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-                new B2LargeUploadService(session, new B2WriteFeature(session), 5242880L, 5),
-                new B2WriteFeature(session), cryptomator);
+            new B2LargeUploadService(session, new B2WriteFeature(session), 5242880L, 5),
+            new B2WriteFeature(session), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(5242885);
         IOUtils.write(content, local.getOutputStream(false));
@@ -116,9 +117,9 @@ public class B2LargeUploadServiceTest {
     public void testUploadWithBulk() throws Exception {
         // 5L * 1024L * 1024L
         final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                ));
+            new Credentials(
+                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+            ));
         final B2Session session = new B2Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -133,10 +134,10 @@ public class B2LargeUploadServiceTest {
         final byte[] content = RandomUtils.nextBytes(length);
         writeStatus.setLength(content.length);
         final CryptoBulkFeature<Void> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new B2DeleteFeature(session), cryptomator);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-                new B2LargeUploadService(session, new B2WriteFeature(session), 5242880L, 5),
-                new B2WriteFeature(session), cryptomator);
+            new B2LargeUploadService(session, new B2WriteFeature(session), 5242880L, 5),
+            new B2WriteFeature(session), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         IOUtils.write(content, local.getOutputStream(false));
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);

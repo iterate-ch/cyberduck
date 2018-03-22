@@ -30,6 +30,7 @@ import ch.cyberduck.core.sds.triplecrypt.CryptoWriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.worker.MoveWorker;
@@ -116,7 +117,7 @@ public class SDSDelegatingMoveFeatureTest {
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -218,7 +219,7 @@ public class SDSDelegatingMoveFeatureTest {
 
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, null), status), new DisabledConnectionCallback());
         final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);

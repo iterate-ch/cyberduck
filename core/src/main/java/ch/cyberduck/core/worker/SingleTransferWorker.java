@@ -70,7 +70,7 @@ public class SingleTransferWorker extends AbstractTransferWorker {
                                 final TransferErrorCallback error,
                                 final ProgressListener progress, final StreamListener stream,
                                 final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
-                                final Cache<TransferItem> cache, final Map<Path, TransferStatus> table) {
+                                final Cache<TransferItem> cache, final Map<TransferItem, TransferStatus> table) {
         super(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, cache, table);
         this.source = source;
         this.destination = destination;

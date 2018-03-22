@@ -31,6 +31,7 @@ import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -78,7 +79,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private Delete delete;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private static final String REQUEST_PARAMETER_JOBID_IDENTIFIER = "job";
     private static final String REQUEST_PARAMETER_OFFSET = "offset";
@@ -95,7 +96,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         //
     }
 
@@ -109,11 +110,11 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      * @return Job status identifier list
      */
     @Override
-    public Set<UUID> pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public Set<UUID> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session.getClient(), session.getHost()));
         final Map<Path, List<Ds3Object>> objects = new HashMap<Path, List<Ds3Object>>();
-        for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
-            final Path file = item.getKey();
+        for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
+            final Path file = item.getKey().remote;
             final Path container = containerService.getContainer(file);
             if(!objects.containsKey(container)) {
                 objects.put(container, new ArrayList<Ds3Object>());
@@ -149,20 +150,20 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 switch(type) {
                     case download:
                         job = helper.startReadJob(
-                                container.getKey().getName(), container.getValue(), ReadJobOptions.create());
+                            container.getKey().getName(), container.getValue(), ReadJobOptions.create());
                         break;
                     case upload:
                         job = helper.startWriteJob(
-                                container.getKey().getName(), container.getValue(), WriteJobOptions.create()
-                                        .withMaxUploadSize(Integer.MAX_VALUE)
-                                        .withChecksumType(Checksum.Type.CRC32));
+                            container.getKey().getName(), container.getValue(), WriteJobOptions.create()
+                                .withMaxUploadSize(Integer.MAX_VALUE)
+                                .withChecksumType(Checksum.Type.CRC32));
                         break;
                     default:
                         throw new NotfoundException(String.format("Unsupported transfer type %s", type));
                 }
                 jobs.add(job.getJobId());
-                for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
-                    if(container.getKey().equals(containerService.getContainer(item.getKey()))) {
+                for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
+                    if(container.getKey().equals(containerService.getContainer(item.getKey().remote))) {
                         final TransferStatus status = item.getValue();
                         final Map<String, String> parameters = new HashMap<>(status.getParameters());
                         parameters.put(REQUEST_PARAMETER_JOBID_IDENTIFIER, job.getJobId().toString());
@@ -219,9 +220,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 // the job chunks that the client can upload. The client should PUT all of the object parts
                 // from the list of job chunks returned and repeat this process until all chunks are transferred
                 final GetAvailableJobChunksResponse response =
-                        // GetJobChunksReadyForClientProcessing
-                        client.getAvailableJobChunks(new GetAvailableJobChunksRequest(UUID.fromString(job))
-                                .withPreferredNumberOfChunks(Integer.MAX_VALUE));
+                    // GetJobChunksReadyForClientProcessing
+                    client.getAvailableJobChunks(new GetAvailableJobChunksRequest(UUID.fromString(job))
+                        .withPreferredNumberOfChunks(Integer.MAX_VALUE));
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Job status %s for job %s", response.getStatus(), job));
                 }
@@ -286,7 +287,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         break;
                     }
                     if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname(),
-                            new DisabledCancelCallback()).getHostAddress())) {
+                        new DisabledCancelCallback()).getHostAddress())) {
                         break;
                     }
                     log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));
@@ -304,9 +305,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         log.info(String.format("Found chunk %s matching file %s", object, file));
                     }
                     final TransferStatus chunk = new TransferStatus()
-                            .exists(status.isExists())
-                            .withMetadata(status.getMetadata())
-                            .withParameters(status.getParameters());
+                        .exists(status.isExists())
+                        .withMetadata(status.getMetadata())
+                        .withParameters(status.getParameters());
                     // Server sends multiple chunks with offsets
                     if(object.getOffset() > 0L) {
                         chunk.setAppend(true);

@@ -31,6 +31,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -60,10 +61,10 @@ public class SpectraUploadFeatureTest {
                 return Scheme.http;
             }
         }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
+            new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -76,13 +77,13 @@ public class SpectraUploadFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus writeStatus = new TransferStatus().length(content.length);
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final SpectraUploadFeature upload = new SpectraUploadFeature(new SpectraWriteFeature(session), new SpectraBulkService(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                writeStatus, new DisabledConnectionCallback());
+            writeStatus, new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        bulk.pre(Transfer.Type.download, Collections.singletonMap(test, readStatus), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), readStatus), new DisabledConnectionCallback());
         final InputStream in = new SpectraReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
@@ -100,10 +101,10 @@ public class SpectraUploadFeatureTest {
                 return Scheme.http;
             }
         }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
+            new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Local local1 = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -130,15 +131,15 @@ public class SpectraUploadFeatureTest {
         final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path test2 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        final HashMap<Path, TransferStatus> files = new HashMap<>();
-        files.put(test1, status1);
-        files.put(test2, status2);
+        final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
+        files.put(new TransferItem(test1), status1);
+        files.put(new TransferItem(test2), status2);
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         final SpectraUploadFeature upload = new SpectraUploadFeature(new SpectraWriteFeature(session), new SpectraBulkService(session));
         upload.upload(test1, local1, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status1, new DisabledConnectionCallback());
+            status1, new DisabledConnectionCallback());
         upload.upload(test2, local2, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status2, new DisabledConnectionCallback());
+            status2, new DisabledConnectionCallback());
         new SpectraDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local1.delete();
         local2.delete();

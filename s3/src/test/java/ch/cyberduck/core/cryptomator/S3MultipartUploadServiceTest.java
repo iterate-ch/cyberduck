@@ -46,6 +46,7 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -74,10 +75,10 @@ public class S3MultipartUploadServiceTest {
     public void testUploadSinglePart() throws Exception {
         // 5L * 1024L * 1024L
         final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        ))) {
+            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                ))) {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -88,8 +89,8 @@ public class S3MultipartUploadServiceTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-                new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
-                new S3WriteFeature(session), cryptomator);
+            new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
+            new S3WriteFeature(session), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 5242880;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -118,10 +119,10 @@ public class S3MultipartUploadServiceTest {
     public void testUpload() throws Exception {
         // 5L * 1024L * 1024L
         final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        ))) {
+            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                ))) {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -132,8 +133,8 @@ public class S3MultipartUploadServiceTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-                new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
-                new S3WriteFeature(session), cryptomator);
+            new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
+            new S3WriteFeature(session), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         IOUtils.write(content, local.getOutputStream(false));
@@ -161,10 +162,10 @@ public class S3MultipartUploadServiceTest {
     public void testUploadWithBulk() throws Exception {
         // 5L * 1024L * 1024L
         final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        ))) {
+            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                ))) {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -178,10 +179,10 @@ public class S3MultipartUploadServiceTest {
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         writeStatus.setLength(content.length);
         final CryptoBulkFeature<Void> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new S3DefaultDeleteFeature(session), cryptomator);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-                new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
-                new S3WriteFeature(session), cryptomator);
+            new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
+            new S3WriteFeature(session), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         IOUtils.write(content, local.getOutputStream(false));
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);

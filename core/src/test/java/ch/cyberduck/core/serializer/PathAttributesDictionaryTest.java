@@ -21,6 +21,8 @@ import ch.cyberduck.core.SerializerFactory;
 
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableMap;
+
 import static org.junit.Assert.assertEquals;
 
 public class PathAttributesDictionaryTest {
@@ -39,7 +41,20 @@ public class PathAttributesDictionaryTest {
         PathAttributes attributes = new PathAttributes();
         attributes.setSize(3L);
         attributes.setModificationDate(5343L);
+        attributes.setCustom(ImmutableMap.of("k1", "v2"));
         assertEquals(attributes, new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())));
+        assertEquals(attributes.hashCode(), new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
+    }
+
+    @Test
+    public void testCustom() throws Exception {
+        PathAttributes attributes = new PathAttributes();
+        attributes.setCustom(ImmutableMap.of("k1", "v1", "k2", "v2"));
+        final PathAttributes clone = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
+        assertEquals(2, clone.getCustom().size());
+        assertEquals("v1", clone.getCustom().get("k1"));
+        assertEquals("v2", clone.getCustom().get("k2"));
+        assertEquals(attributes, clone);
         assertEquals(attributes.hashCode(), new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
     }
 

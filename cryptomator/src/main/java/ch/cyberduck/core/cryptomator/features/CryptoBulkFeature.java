@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.download.PathPriorityComparator;
 
@@ -53,18 +54,18 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     }
 
     @Override
-    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Map<Path, TransferStatus> encrypted = new HashMap<>(files.size());
-        final ArrayList<Map.Entry<Path, TransferStatus>> sorted = new ArrayList<>(files.entrySet());
+    public R pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        final Map<TransferItem, TransferStatus> encrypted = new HashMap<>(files.size());
+        final ArrayList<Map.Entry<TransferItem, TransferStatus>> sorted = new ArrayList<>(files.entrySet());
         // Sort with folder first in list
-        sorted.sort(new Comparator<Map.Entry<Path, TransferStatus>>() {
+        sorted.sort(new Comparator<Map.Entry<TransferItem, TransferStatus>>() {
             @Override
-            public int compare(final Map.Entry<Path, TransferStatus> o1, final Map.Entry<Path, TransferStatus> o2) {
-                return new PathPriorityComparator().compare(o1.getKey(), o2.getKey());
+            public int compare(final Map.Entry<TransferItem, TransferStatus> o1, final Map.Entry<TransferItem, TransferStatus> o2) {
+                return new PathPriorityComparator().compare(o1.getKey().remote, o2.getKey().remote);
             }
         });
-        for(Map.Entry<Path, TransferStatus> entry : sorted) {
-            final Path file = entry.getKey();
+        for(Map.Entry<TransferItem, TransferStatus> entry : sorted) {
+            final Path file = entry.getKey().remote;
             final TransferStatus status = entry.getValue();
             if(null == status.getHeader()) {
                 // Write header to be reused in writer
@@ -81,19 +82,19 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                         case upload:
                             // Preset directory ID for new folders to avert lookup with not found failure in directory ID provider
                             final String directoryId = random.random();
-                            encrypted.put(cryptomator.encrypt(session, file, directoryId, false), status);
+                            encrypted.put(new TransferItem(cryptomator.encrypt(session, file, directoryId, false), entry.getKey().local), status);
                             break;
                         default:
-                            encrypted.put(cryptomator.encrypt(session, file), status);
+                            encrypted.put(new TransferItem(cryptomator.encrypt(session, file), entry.getKey().local), status);
                             break;
                     }
                 }
                 else {
-                    encrypted.put(cryptomator.encrypt(session, file), status);
+                    encrypted.put(new TransferItem(cryptomator.encrypt(session, file), entry.getKey().local), status);
                 }
             }
             else {
-                encrypted.put(cryptomator.encrypt(session, file), status);
+                encrypted.put(new TransferItem(cryptomator.encrypt(session, file), entry.getKey().local), status);
             }
         }
         return delegate.pre(type, encrypted, callback);
@@ -105,12 +106,12 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Map<Path, TransferStatus> encrypted = new HashMap<>(files.size());
-        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-            final Path file = entry.getKey();
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        final Map<TransferItem, TransferStatus> encrypted = new HashMap<>(files.size());
+        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+            final Path file = entry.getKey().remote;
             final TransferStatus status = entry.getValue();
-            encrypted.put(cryptomator.encrypt(session, file), status);
+            encrypted.put(new TransferItem(cryptomator.encrypt(session, file), entry.getKey().local), status);
         }
         delegate.post(type, encrypted, callback);
     }
