@@ -237,12 +237,13 @@ public class UploadTransferTest {
                 return new AttributedList<>(Collections.singletonList(f));
             }
         };
-        final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
+        final Path testDirectory = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = UUID.randomUUID().toString();
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), "transfer");
-        LocalTouchFactory.get().touch(local);
-        LocalTouchFactory.get().touch(new Local(local, name));
-        final Transfer transfer = new UploadTransfer(host, test, local);
+        final Local testLocalDirectory = new Local(System.getProperty("java.io.tmpdir"), "transfer");
+        LocalTouchFactory.get().touch(testLocalDirectory);
+        final Local testLocalFile = new Local(testLocalDirectory, name);
+        LocalTouchFactory.get().touch(testLocalFile);
+        final Transfer transfer = new UploadTransfer(host, testDirectory, testLocalDirectory);
         Map<TransferItem, TransferStatus> table
             = new HashMap<TransferItem, TransferStatus>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
@@ -254,11 +255,11 @@ public class UploadTransferTest {
             }
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty(), table);
-        worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
+        worker.prepare(testDirectory, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
             TransferAction.overwrite);
-        assertEquals(new TransferStatus().exists(true), table.get(new TransferItem(test, local)));
+        assertEquals(new TransferStatus().exists(true), table.get(new TransferItem(testDirectory, testLocalDirectory)));
         final TransferStatus expected = new TransferStatus();
-        assertEquals(expected, table.get(new TransferItem(new Path("/transfer/" + name, EnumSet.of(Path.Type.file)), local)));
+        assertEquals(expected, table.get(new TransferItem(new Path("/transfer/" + name, EnumSet.of(Path.Type.file)), testLocalFile)));
     }
 
     @Test
@@ -275,9 +276,10 @@ public class UploadTransferTest {
                 return new AttributedList<>(Collections.singletonList(f));
             }
         };
-        final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
+        final Path testDirectory = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = "test";
-        final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer", name);
+        final Local testLocalDirectory = new Local(System.getProperty("java.io.tmpdir"), "/transfer");
+        final Local local = new Local(testLocalDirectory, name);
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
         final byte[] bytes = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
@@ -289,7 +291,7 @@ public class UploadTransferTest {
                 return new AttributedList<Local>(Collections.<Local>singletonList(local));
             }
         };
-        final Transfer transfer = new UploadTransfer(host, test, directory);
+        final Transfer transfer = new UploadTransfer(host, testDirectory, directory);
         final Map<TransferItem, TransferStatus> table
             = new HashMap<TransferItem, TransferStatus>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
@@ -301,9 +303,9 @@ public class UploadTransferTest {
             }
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty(), table);
-        worker.prepare(test, directory, new TransferStatus().exists(true),
+        worker.prepare(testDirectory, directory, new TransferStatus().exists(true),
             TransferAction.resume);
-        assertEquals(new TransferStatus().exists(true), table.get(new TransferItem(test, local)));
+        assertEquals(new TransferStatus().exists(true), table.get(new TransferItem(testDirectory, testLocalDirectory)));
         final TransferStatus expected = new TransferStatus().exists(true);
         expected.setAppend(true);
         // Remote size
