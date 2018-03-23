@@ -336,6 +336,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Prefill with default hostname
                 _host.setHostname(selected.getDefaultHostname());
             }
+            if (Objects.equals(_host.getDefaultPath(), _host.getProtocol().getDefaultPath()) ||
+                !selected.isPathConfigurable())
+            {
+                _host.setDefaultPath(selected.getDefaultPath());
+            }
             _host.setProtocol(selected);
             _options.configure(selected);
             _validator.configure(selected);
