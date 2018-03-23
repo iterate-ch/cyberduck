@@ -62,13 +62,11 @@ public class CopyTransfer extends Transfer {
      */
     private final Host destination;
 
-    public CopyTransfer(final Host source, final Host destination,
-                        final Map<Path, Path> selected) {
+    public CopyTransfer(final Host source, final Host destination, final Map<Path, Path> selected) {
         this(source, destination, selected, new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.download.bandwidth.bytes")));
     }
 
-    public CopyTransfer(final Host source, final Host destination,
-                        final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
+    public CopyTransfer(final Host source, final Host destination, final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
         super(source, new ArrayList<TransferItem>(), bandwidth);
         this.destination = destination;
         this.selected = selected;
@@ -203,9 +201,9 @@ public class CopyTransfer extends Transfer {
         }
         final Bulk upload = destination.getFeature(Bulk.class);
         {
-            final Map<Path, TransferStatus> targets = new HashMap<>();
+            final Map<TransferItem, TransferStatus> targets = new HashMap<>();
             for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                targets.put(this.mapping.get(entry.getKey().remote), entry.getValue());
+                targets.put(new TransferItem(mapping.get(entry.getKey().remote)), entry.getValue());
             }
             final Object id = upload.pre(Type.upload, targets, callback);
             if(log.isDebugEnabled()) {
@@ -222,9 +220,9 @@ public class CopyTransfer extends Transfer {
         }
         final Bulk upload = destination.getFeature(Bulk.class);
         {
-            final Map<Path, TransferStatus> targets = new HashMap<>();
+            final Map<TransferItem, TransferStatus> targets = new HashMap<>();
             for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                targets.put(this.mapping.get(entry.getKey().remote), entry.getValue());
+                targets.put(new TransferItem(mapping.get(entry.getKey().remote)), entry.getValue());
             }
             upload.post(Type.upload, targets, callback);
         }
