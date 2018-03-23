@@ -141,9 +141,9 @@ public class DownloadTransferTest {
                 return new AttributedList<>(Collections.singletonList(f));
             }
         };
-        final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
-        final NullLocal local = new NullLocal(UUID.randomUUID().toString(), UUID.randomUUID().toString());
-        final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, local);
+        final Path testDirectory = new Path("/transfer", EnumSet.of(Path.Type.directory));
+        final NullLocal localDirectory = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), testDirectory, localDirectory);
         final Map<TransferItem, TransferStatus> table
             = new HashMap<TransferItem, TransferStatus>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
@@ -155,18 +155,18 @@ public class DownloadTransferTest {
             }
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty(), table);
-        worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()), new TransferStatus().exists(true),
+        worker.prepare(testDirectory, localDirectory, new TransferStatus().exists(true),
             TransferAction.overwrite
         );
         final TransferStatus status = new TransferStatus();
         status.setExists(false);
-        assertEquals(status, table.get(new TransferItem(test, local)));
+        assertEquals(status, table.get(new TransferItem(testDirectory, localDirectory)));
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(false);
         expected.setLength(5L);
         expected.setOffset(0L);
         expected.setExists(false);
-        assertEquals(expected, table.get(new TransferItem(new Path("/transfer/test", EnumSet.of(Path.Type.file)), local)));
+        assertEquals(expected, table.get(new TransferItem(new Path("/transfer/test", EnumSet.of(Path.Type.file)), new Local(localDirectory, "test"))));
     }
 
     @Test
