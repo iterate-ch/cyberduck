@@ -275,11 +275,11 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     file.getName(), action.getTitle()));
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent, progress);
+                            table.put(new TransferItem(file, local), status);
                             final TransferItem item = new TransferItem(
                                 status.getRename().remote != null ? status.getRename().remote : file,
                                 status.getRename().local != null ? status.getRename().local : local
                             );
-                            table.put(item, status);
                             // Apply filter
                             filter.apply(item.remote, item.local, status, progress);
                             // Add transfer length to total bytes
