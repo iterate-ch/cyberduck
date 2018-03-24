@@ -38,6 +38,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.manta.MantaProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.onedrive.OneDriveProtocol;
@@ -184,6 +185,10 @@ public class Terminal {
         catch(Throwable error) {
             error.printStackTrace(System.err);
             System.exit(1);
+        }
+        finally {
+            // Clear temporary files
+            TemporaryFileServiceFactory.get().shutdown();
         }
     }
 
