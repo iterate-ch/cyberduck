@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -45,13 +47,19 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveDrive;
+import org.nuxeo.onedrive.client.OneDriveDrivesIterator;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDrivePackageItem;
+import org.nuxeo.onedrive.client.OneDriveResource;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.Set;
+import java.util.Stack;
 
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
@@ -62,6 +70,122 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+    }
+
+    /**
+     * Resolves given path to OneDriveResource
+     */
+    public OneDriveItem toItem(final Path currentPath) throws BackgroundException {
+        final Stack<String> parts = new Stack<String>();
+        Path traverse = currentPath;
+        while(!traverse.isRoot()) {
+            parts.add(traverse.getName());
+
+            traverse = traverse.getParent();
+        }
+
+        OneDriveDrive drive = null;
+        OneDriveDrive.Metadata driveMetadata = null;
+        OneDriveItem item = null;
+        OneDriveItem.Metadata itemMetadata = null;
+
+        while(!parts.empty()) {
+            final String part = parts.pop();
+
+            if(null == driveMetadata) {
+                // external tracker for if a drive is found
+                boolean foundDrive = false;
+                // keeps track of latest known metadata (null if none or duplicate)
+                OneDriveDrive.Metadata temporaryMetadata = null;
+
+                final OneDriveDrivesIterator drivesIterator = new OneDriveDrivesIterator(getClient());
+                // iterate through all drives
+                while(drivesIterator.hasNext()) {
+                    final OneDriveDrive.Metadata drivesIteratorMetadata = drivesIterator.next();
+
+                    // compare ID, does not take Name into account (not applicable currently)
+                    if(part.equals(driveMetadata.getId())) {
+                        // checks for first encounter
+                        if(!foundDrive && null == temporaryMetadata) {
+                            driveMetadata = drivesIteratorMetadata;
+                            drive = (OneDriveDrive) driveMetadata.getResource();
+                            item = drive.getRoot();
+                            foundDrive = true;
+                        }
+                        else {
+                            // resets temporaryMetadata to null for further usage
+                            temporaryMetadata = null;
+                        }
+                    }
+                }
+
+                // temporaryMetadata may be null if there is no drive or a duplicate is found
+                if(null == temporaryMetadata) {
+                    if(foundDrive) {
+                        return null;
+                    }
+                    else {
+                        return null;
+                    }
+                }
+                else {
+                    // store drive
+                    driveMetadata = temporaryMetadata;
+                    drive = (OneDriveDrive) temporaryMetadata.getResource();
+                    // continue on drive root
+                    item = drive.getRoot();
+                    itemMetadata = null;
+                }
+            }
+            else {
+                if(item instanceof OneDriveFolder) {
+                    // external track for found child
+                    boolean foundChild = false;
+                    // temporary storage for found child (null if none or duplicate)
+                    OneDriveItem.Metadata temporaryChild = null;
+
+                    final OneDriveFolder folder = (OneDriveFolder) item;
+                    // iterate over all children
+                    for(final OneDriveItem.Metadata childMetadata : folder.getChildren()) {
+                        // check name, do not take ID or anything else into account (not applicable)
+                        // paths given here are always human readable
+                        if(part.equals(childMetadata.getName())) {
+                            if(!foundChild && null == temporaryChild) {
+                                temporaryChild = childMetadata;
+                                foundChild = true;
+                            }
+                            else {
+                                temporaryChild = null;
+                            }
+                        }
+                    }
+
+                    if(null == temporaryChild) {
+                        if(foundChild) {
+                            return null;
+                        }
+                        else {
+                            return null;
+                        }
+                    }
+                    else {
+                        itemMetadata = temporaryChild;
+                        item = (OneDriveItem) temporaryChild.getResource();
+                    }
+                }
+                else if(item instanceof OneDriveFile) {
+                    return null; // cannot enumerate file
+                }
+                else if(item instanceof OneDrivePackageItem) {
+                    return null; // Package Item not handled.
+                }
+                else {
+                    return null; // unknown return
+                }
+            }
+        }
+
+        return item;
     }
 
     public OneDriveFile toFile(final Path file) {
