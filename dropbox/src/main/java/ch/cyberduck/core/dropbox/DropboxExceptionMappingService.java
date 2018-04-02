@@ -94,8 +94,6 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final LookupError lookup = error.getPathValue();
             this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
-                case INVALID_PATH_ROOT:
-                    return new NotfoundException(buffer.toString(), failure);
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:
@@ -128,7 +126,6 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final LookupError lookup = error.getPathValue();
             this.parse(buffer, lookup.toString());
             switch(lookup.tag()) {
-                case INVALID_PATH_ROOT:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:

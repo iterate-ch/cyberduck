@@ -85,7 +85,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         final CloseableHttpClient client = configuration.build();
         return new DbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
             .withAutoRetryDisabled()
-            .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(), DbxHost.DEFAULT) {
+            .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(), DbxHost.DEFAULT, null) {
             @Override
             protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
                 // OAuth Bearer added in interceptor
