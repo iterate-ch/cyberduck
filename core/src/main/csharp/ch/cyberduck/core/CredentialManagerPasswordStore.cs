@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Core
             var hostUrl = $"{serviceName} - {user}";
             if (!WinCredentialManager.SaveCredentials(hostUrl, new NetworkCredential(user, password)))
             {
-                logger.error($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
+                throw new Exception($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
             }
         }
 
@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Core
             var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
             if (!WinCredentialManager.SaveCredentials(hostUrl, new NetworkCredential(user, password)))
             {
-                logger.error($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
+                throw new Exception($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
             }
         }
 
