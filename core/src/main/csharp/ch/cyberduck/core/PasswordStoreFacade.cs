@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.core;
+using org.apache.log4j;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,17 +28,34 @@ namespace Ch.Cyberduck.Core
 {
     public class PasswordStoreFacade : HostPasswordStore
     {
+        private readonly Logger logger = Logger.getLogger(typeof(PasswordStoreFacade).AssemblyQualifiedName);
         private readonly CredentialManagerPasswordStore credentialManagerPasswordStore = new CredentialManagerPasswordStore();
         private readonly DataProtectorPasswordStore dataProtectorPasswordStore = new DataProtectorPasswordStore();
 
         public override void addPassword(string serviceName, string user, string password)
         {
-            credentialManagerPasswordStore.addPassword(serviceName, user, password);
+            try
+            {
+                credentialManagerPasswordStore.addPassword(serviceName, user, password);
+            }
+            catch (Exception e)
+            {
+                logger.error(e);
+                dataProtectorPasswordStore.addPassword(serviceName, user, password);
+            }
         }
 
         public override void addPassword(Scheme scheme, int port, string hostName, string user, string password)
         {
-            credentialManagerPasswordStore.addPassword(scheme, port, hostName, user, password);
+            try
+            {
+                credentialManagerPasswordStore.addPassword(scheme, port, hostName, user, password);
+            }
+            catch (Exception e)
+            {
+                logger.error(e);
+                dataProtectorPasswordStore.addPassword(scheme, port, hostName, user, password);
+            }
         }
 
         public override string getPassword(Scheme scheme, int port, string hostName, string user)
