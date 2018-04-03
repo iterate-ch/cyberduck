@@ -22,15 +22,18 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
+import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDriveResource;
 
 import java.io.IOException;
 import java.util.List;
 
 public class OneDriveDeleteFeature implements Delete {
-
+    private static final Logger logger = Logger.getLogger(OneDriveDeleteFeature.class);
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final OneDriveSession session;
 
@@ -45,8 +48,13 @@ public class OneDriveDeleteFeature implements Delete {
                 continue;
             }
             callback.delete(file);
+            final OneDriveItem item = session.toItem(file);
+            if(null == item) {
+                logger.warn(String.format("Cannot delete %s. Not found.", file));
+                continue;
+            }
             try {
-                session.toFile(file).delete();
+                item.delete();
             }
             catch(OneDriveAPIException e) {
                 throw new OneDriveExceptionMappingService().map("Cannot delete {0}", e, file);

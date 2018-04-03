@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -51,15 +52,12 @@ public class OneDriveItemListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<>();
+        final OneDriveItem local = session.toItem(directory);
+        if (!(local instanceof OneDriveFolder)) {
+            throw new NotfoundException(String.format("Did not find directory %s", directory));
+        }
+        final OneDriveFolder folder = (OneDriveFolder) local;
         try {
-            final OneDriveDrive drive = new OneDriveDrive(session.getClient(), containerService.getContainer(directory).getName());
-            final OneDriveFolder folder;
-            if(containerService.isContainer(directory)) {
-                folder = drive.getRoot();
-            }
-            else {
-                folder = session.toFolder(directory);
-            }
             final Iterator<OneDriveItem.Metadata> iterator = folder.iterator(PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
             while(iterator.hasNext()) {
                 final OneDriveItem.Metadata metadata;

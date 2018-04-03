@@ -20,12 +20,15 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePatchOperation;
 
 import java.io.IOException;
@@ -37,7 +40,7 @@ public class OneDriveMoveFeature implements Move {
     private Delete delete;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     public OneDriveMoveFeature(OneDriveSession session) {
         this.session = session;
@@ -54,10 +57,21 @@ public class OneDriveMoveFeature implements Move {
             patchOperation.rename(renamed.getName());
         }
         if(!file.getParent().equals(renamed.getParent())) {
-            patchOperation.move(session.toFolder(renamed.getParent()));
+            final OneDriveItem moveTarget = session.toItem(renamed.getParent());
+            if(null == moveTarget) {
+                throw new NotfoundException(String.format("Did not find move target parent directory %s", renamed.getParent()));
+            }
+            if(!(moveTarget instanceof OneDriveFolder)) {
+                throw new NotfoundException(String.format("Move target parent directory %s is no folder", renamed.getParent()));
+            }
+            patchOperation.move((OneDriveFolder) moveTarget);
+        }
+        final OneDriveItem item = session.toItem(file);
+        if (null == item) {
+            throw new NotfoundException(String.format("Did not find source file", file));
         }
         try {
-            session.toFile(file).patch(patchOperation);
+            item.patch(patchOperation);
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot rename {0}", e, file);

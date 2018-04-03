@@ -18,11 +18,14 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
 
@@ -36,8 +39,16 @@ public class OneDriveDirectoryFeature implements Directory<Void> {
 
     @Override
     public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
+        final OneDriveItem item = session.toItem(directory.getParent());
+        if(item == null) {
+            throw new NotfoundException(String.format("Cannot create folder %s. %s not found.", directory, directory.getParent()));
+        }
+        if (!(item instanceof OneDriveFolder)){
+            throw new NotfoundException(String.format("Cannot create folder %s. %s is no directory.", directory, directory.getParent()));
+        }
+        final OneDriveFolder folder = (OneDriveFolder) item;
         try {
-            session.toFolder(directory.getParent()).create(directory.getName());
+            folder.create(directory.getName());
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot create folder {0}", e, directory);

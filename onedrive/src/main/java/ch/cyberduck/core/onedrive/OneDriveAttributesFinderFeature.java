@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import org.apache.log4j.Logger;
@@ -29,6 +30,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDriveResource;
 
 import java.io.IOException;
 import java.net.URI;
@@ -51,12 +53,12 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
+        final OneDriveItem item = session.toItem(file);
+        if(item == null) {
+            throw new NotfoundException(String.format("File not found: %s", file));
+        }
         try {
-            if(containerService.isContainer(file)) {
-                final OneDriveFolder.Metadata metadata = session.toFolder(file).getMetadata();
-                return this.convert(metadata);
-            }
-            final OneDriveFile.Metadata metadata = session.toFile(file).getMetadata();
+            final OneDriveItem.Metadata metadata = item.getMetadata();
             return this.convert(metadata);
         }
         catch(OneDriveAPIException e) {

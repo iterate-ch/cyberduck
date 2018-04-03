@@ -190,18 +190,18 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     public OneDriveFile toFile(final Path file) {
         return new OneDriveFile(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
-            URIEncoder.encode(containerService.getKey(file)));
+            URIEncoder.encode(containerService.getKey(file)), OneDriveItem.ItemIdentifierType.Path);
     }
 
     public OneDriveFolder toFolder(final Path file) {
         if(file.isRoot()) {
-            return OneDriveFolder.getRoot(client);
+            return OneDriveDrive.getDefaultDrive(client).getRoot();
         }
         if(containerService.isContainer(file)) {
             return new OneDriveDrive(client, containerService.getContainer(file).getName()).getRoot();
         }
         return new OneDriveFolder(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
-            URIEncoder.encode(containerService.getKey(file)));
+            URIEncoder.encode(containerService.getKey(file)), OneDriveItem.ItemIdentifierType.Path);
     }
 
     @Override

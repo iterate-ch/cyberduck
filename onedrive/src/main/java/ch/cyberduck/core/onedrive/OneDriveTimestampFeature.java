@@ -18,9 +18,11 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePatchOperation;
 import org.nuxeo.onedrive.client.facets.FileSystemInfoFacet;
 
@@ -41,8 +43,14 @@ public class OneDriveTimestampFeature extends DefaultTimestampFeature {
         final FileSystemInfoFacet info = new FileSystemInfoFacet();
         info.setLastModifiedDateTime(Instant.ofEpochMilli(modified).atOffset(ZoneOffset.UTC));
         patch.facet("fileSystemInfo", info);
+
+        final OneDriveItem item = session.toItem(file);
+        if(null == item) {
+            throw new NotfoundException(String.format("Did not find %s", file));
+        }
+
         try {
-            session.toFile(file).patch(patch);
+            item.patch(patch);
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);

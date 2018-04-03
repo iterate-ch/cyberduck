@@ -19,12 +19,17 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveDrive;
+import org.nuxeo.onedrive.client.OneDriveFile;
+import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
 
@@ -39,7 +44,16 @@ public class OneDriveTouchFeature implements Touch<Void> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            session.toFile(file).create(StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
+            final OneDriveItem foundItem = session.toItem(file.getParent());
+            if(null == foundItem) {
+                throw new NotfoundException(String.format("Did not find parent for %s", file));
+            }
+            if(!(foundItem instanceof OneDriveFolder)) {
+                throw new NotfoundException(String.format("Did not find directory %s for file %s", file.getParent(), file));
+            }
+            final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), (OneDriveFolder) foundItem,
+                file.getName(), OneDriveItem.ItemIdentifierType.Path);
+            oneDriveFile.create(StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot create file {0}", e, file);

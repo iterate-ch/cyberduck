@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -29,6 +30,9 @@ import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveCopyOperation;
+import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDriveResource;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -53,13 +57,23 @@ public class OneDriveCopyFeature implements Copy {
         if(status.isExists()) {
             new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
         }
-        copyOperation.copy(session.toFolder(target.getParent()));
+        final OneDriveItem targetItem = session.toItem(target.getParent());
+        if(null == targetItem) {
+            throw new NotfoundException(String.format("Target parent %s not found", target.getParent()));
+        }
+        if(!(targetItem instanceof OneDriveFolder)) {
+            throw new NotfoundException(String.format("Target parent %s is no directory", target.getParent()));
+        }
+        copyOperation.copy((OneDriveFolder) targetItem);
+        final OneDriveItem item = session.toItem(source);
+        if(null == item) {
+            throw new NotfoundException(String.format("Source %s not found", source));
+        }
         try {
-            session.toFile(source).copy(copyOperation).await(statusObject -> logger.info(
-                String.format("Copy Progress Operation %s progress %f status %s",
-                    statusObject.getOperation(),
-                    statusObject.getPercentage(),
-                    statusObject.getStatus())));
+            item.copy(copyOperation).await(statusObject -> logger.info(String.format("Copy Progress Operation %s progress %f status %s",
+                statusObject.getOperation(),
+                statusObject.getPercentage(),
+                statusObject.getStatus())));
             return target;
         }
         catch(OneDriveAPIException e) {

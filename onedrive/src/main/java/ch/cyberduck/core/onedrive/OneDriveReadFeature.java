@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -29,6 +30,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveFile;
+import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +60,15 @@ public class OneDriveReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
+                final OneDriveItem item = session.toItem(file);
+                if(null == item) {
+                    throw new NotfoundException(String.format("Did not find %s", file));
+                }
+                if(!(item instanceof OneDriveFile)) {
+                    throw new NotfoundException(String.format("%s is no file", file));
+                }
+                final OneDriveFile target = (OneDriveFile) item;
+
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
                     final String header;
@@ -68,9 +81,9 @@ public class OneDriveReadFeature implements Read {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Add range header %s for file %s", header, file));
                     }
-                    return session.toFile(file).download(header);
+                    return target.download(header);
                 }
-                return session.toFile(file).download();
+                return target.download();
             }
         }
         catch(OneDriveAPIException e) {
