@@ -2,7 +2,7 @@ Cyberduck
 https://cyberduck.io/
 
 6.4.5
-- [Bugfix] Fix proxy PAC file handling (macOS)
+- [Bugfix] Fix use proxy configuration using PAC file (macOS)
 - [Bugfix] Disable extended master secret extension to allow session reuse for data connections (FTP-SSL) (#10276)
 
 6.4.4
