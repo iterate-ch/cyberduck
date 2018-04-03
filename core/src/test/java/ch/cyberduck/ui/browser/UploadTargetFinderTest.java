@@ -49,7 +49,7 @@ public class UploadTargetFinderTest {
     @Test
     public void testFindContainerSelected() throws Exception {
         final Path container = new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertEquals(container,
+        assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
                 new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory)))
                         .find(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
