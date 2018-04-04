@@ -39,6 +39,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -97,9 +98,9 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         this.commentField = field;
         this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
         this.notificationCenter.addObserver(this.id(),
-                Foundation.selector("commentInputDidChange:"),
-                NSText.TextDidChangeNotification,
-                this.commentField);
+            Foundation.selector("commentInputDidChange:"),
+            NSText.TextDidChangeNotification,
+            this.commentField);
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(Host bookmark) {
@@ -214,7 +215,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
             downloadFolderOpenPanel.setAllowsMultipleSelection(false);
             downloadFolderOpenPanel.setCanCreateDirectories(true);
             downloadFolderOpenPanel.beginSheetForDirectory(null, null, this.window, this.id(),
-                    Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
+                Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
             final Local folder = LocalFactory.get(sender.selectedItem().representedObject());
@@ -245,15 +246,15 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     public void setWebURLField(final NSTextField field) {
         this.webURLField = field;
         final NSTextFieldCell cell = this.webURLField.cell();
-        cell.setPlaceholderString(bookmark.getDefaultWebURL());
+        cell.setPlaceholderString(new WebUrlProvider(bookmark).toUrl().getUrl());
         notificationCenter.addObserver(this.id(),
-                Foundation.selector("webURLInputDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
-                this.webURLField);
+            Foundation.selector("webURLInputDidChange:"),
+            NSControl.NSControlTextDidChangeNotification,
+            this.webURLField);
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(Host bookmark) {
-                updateField(webURLField, bookmark.getDefaultWebURL().equals(bookmark.getWebURL()) ? null : bookmark.getWebURL());
+                updateField(webURLField, bookmark.getWebURL());
             }
         });
     }
@@ -281,7 +282,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                                 favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
                             }
                             else {
-                                String url = bookmark.getWebURL() + "/favicon.ico";
+                                String url = String.format("%sfavicon.ico", new WebUrlProvider(bookmark).toUrl().getUrl());
                                 // Default favicon location
                                 final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
                                 if(null == data) {
@@ -303,14 +304,14 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                         }
                     });
                 }
-                webUrlImage.setToolTip(bookmark.getWebURL());
+                webUrlImage.setToolTip(new WebUrlProvider(bookmark).toUrl().getUrl());
             }
         });
     }
 
     @Action
     public void webUrlButtonClicked(final NSButton sender) {
-        BrowserLauncherFactory.get().open(bookmark.getWebURL());
+        BrowserLauncherFactory.get().open(new WebUrlProvider(bookmark).toUrl().getUrl());
     }
 
     @Override

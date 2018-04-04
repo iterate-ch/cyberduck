@@ -290,8 +290,8 @@ public class Host implements Serializable, Comparable<Host> {
         if(StringUtils.isNotBlank(comment)) {
             dict.setStringForKey(comment, "Comment");
         }
-        if(!this.isDefaultWebURL()) {
-            dict.setStringForKey(this.getWebURL(), "Web URL");
+        if(null != webURL) {
+            dict.setStringForKey(webURL, "Web URL");
         }
         if(null != timestamp) {
             dict.setStringForKey(String.valueOf(timestamp.getTime()), "Access Timestamp");
@@ -570,37 +570,11 @@ public class Host implements Serializable, Comparable<Host> {
      * @return HTTP accessible URL
      */
     public String getWebURL() {
-        if(StringUtils.isBlank(webURL)) {
-            return this.getDefaultWebURL();
-        }
-        final String regex = "^http(s)?://.*$";
-        if(!webURL.matches(regex)) {
-            webURL = String.format("http://%s", webURL);
-        }
         return webURL;
     }
 
     public void setWebURL(final String url) {
-        if(this.getDefaultWebURL().equals(url)) {
-            webURL = null;
-        }
-        else {
-            webURL = url;
-        }
-    }
-
-    /**
-     * @return True if no custom web URL has been set
-     */
-    public boolean isDefaultWebURL() {
-        return this.getWebURL().equals(this.getDefaultWebURL());
-    }
-
-    /**
-     * @return HTTP accessible URL with the same hostname as the server
-     */
-    public String getDefaultWebURL() {
-        return String.format("http://%s", StringUtils.strip(hostname));
+        webURL = url;
     }
 
     /**

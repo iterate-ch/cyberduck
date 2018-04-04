@@ -27,7 +27,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -95,9 +94,6 @@ public class SwiftUrlProvider implements UrlProvider {
                 list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
             }
             else {
-                if(!session.getHost().isDefaultWebURL()) {
-                    list.addAll(new WebUrlProvider(session.getHost()).toUrl(file));
-                }
                 list.add(new DescriptiveUrl(
                         URI.create(region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).toString()),
                         DescriptiveUrl.Type.provider,
