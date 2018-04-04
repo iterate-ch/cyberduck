@@ -73,6 +73,7 @@ import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -84,6 +85,7 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1076,7 +1078,7 @@ public abstract class Preferences {
             root.setLevel(Level.toLevel(this.getProperty("logging"), Level.ERROR));
         }
         // Map logging level to pass through bridge
-        java.util.logging.Logger.getLogger("").setLevel(new ImmutableMap.Builder<Level, java.util.logging.Level>()
+        final ImmutableMap<Level, java.util.logging.Level> map = new ImmutableMap.Builder<Level, java.util.logging.Level>()
             .put(Level.ALL, java.util.logging.Level.ALL)
             .put(Level.DEBUG, java.util.logging.Level.FINE)
             .put(Level.ERROR, java.util.logging.Level.SEVERE)
@@ -1085,7 +1087,15 @@ public abstract class Preferences {
             .put(Level.OFF, java.util.logging.Level.OFF)
             .put(Level.TRACE, java.util.logging.Level.FINEST)
             .put(Level.WARN, java.util.logging.Level.WARNING)
-            .build().get(root.getLevel()));
+            .build();
+        java.util.logging.Logger.getLogger("").setLevel(map.get(root.getLevel()));
+        final Enumeration loggers = LogManager.getCurrentLoggers();
+        while(loggers.hasMoreElements()) {
+            final Logger logger = (Logger) loggers.nextElement();
+            if(logger.getLevel() != null) {
+                java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
+            }
+        }
     }
 
     /**
