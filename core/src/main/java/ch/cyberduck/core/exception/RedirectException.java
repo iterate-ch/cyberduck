@@ -23,7 +23,7 @@ public class RedirectException extends AccessDeniedException {
     private final Host target;
 
     public RedirectException(final Host target) {
-        super(String.format("Redirect to %s", new HostUrlProvider().get(target)));
+        super(String.format("Redirect to %s", new HostUrlProvider().withUsername(false).get(target)));
         this.target = target;
     }
 

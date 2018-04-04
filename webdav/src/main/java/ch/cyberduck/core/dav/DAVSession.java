@@ -115,7 +115,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         pool.setRedirectStrategy(new DAVRedirectStrategy(redirect));
-        return new DAVClient(new HostUrlProvider(false).get(host), pool);
+        return new DAVClient(new HostUrlProvider().withUsername(false).get(host), pool);
     }
 
     @Override

@@ -23,8 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class HostUrlProvider {
 
-    private final boolean includeUsername;
-    private final boolean includePath;
+    private boolean includeUsername;
+    private boolean includePath;
 
     public HostUrlProvider() {
         this(true, false);
@@ -37,6 +37,16 @@ public class HostUrlProvider {
     public HostUrlProvider(final boolean includeUsername, final boolean includePath) {
         this.includeUsername = includeUsername;
         this.includePath = includePath;
+    }
+
+    public HostUrlProvider withUsername(final boolean include) {
+        this.includeUsername = include;
+        return this;
+    }
+
+    public HostUrlProvider withPath(final boolean include) {
+        this.includePath = include;
+        return this;
     }
 
     /**
@@ -53,10 +63,10 @@ public class HostUrlProvider {
 
     public String get(final Scheme scheme, final int port, final String username, final String hostname, final String path) {
         final String base = String.format("%s://%s%s%s",
-                scheme,
-                includeUsername && StringUtils.isNotEmpty(username) ? String.format("%s@", username) : "",
-                new PunycodeConverter().convert(hostname),
-                port != scheme.getPort() ? String.format(":%d", port) : "");
+            scheme,
+            includeUsername && StringUtils.isNotEmpty(username) ? String.format("%s@", URIEncoder.encode(username)) : "",
+            new PunycodeConverter().convert(hostname),
+            port != scheme.getPort() ? String.format(":%d", port) : "");
         if(includePath) {
             if(StringUtils.isNotBlank(path)) {
                 return String.format("%s%s", base, PathNormalizer.normalize(path));

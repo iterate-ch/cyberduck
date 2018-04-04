@@ -43,7 +43,7 @@ public class SDSUrlProvider implements UrlProvider {
         try {
             return new DescriptiveUrlBag(Collections.singletonList(
                 new DescriptiveUrl(URI.create(String.format("%s/#/node/%s",
-                    new HostUrlProvider(false).get(session.getHost()), URIEncoder.encode(
+                    new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(
                         new SDSNodeIdProvider(session).getFileid(file.isDirectory() ? file : file.getParent(), new DisabledListProgressListener())
                     ))),
                     DescriptiveUrl.Type.http,
