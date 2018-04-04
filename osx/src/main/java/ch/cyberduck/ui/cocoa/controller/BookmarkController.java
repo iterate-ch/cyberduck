@@ -327,7 +327,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new HostUrlProvider(true, true).get(bookmark)));
+                urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new HostUrlProvider().withUsername(true).withPath(true).get(bookmark)));
             }
         });
     }

@@ -44,9 +44,9 @@ public class DefaultUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         list.add(new DescriptiveUrl(URI.create(String.format("%s%s",
-                new HostUrlProvider(false).get(host), URIEncoder.encode(file.getAbsolute()))),
-                DescriptiveUrl.Type.provider,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
+            new HostUrlProvider().withUsername(false).get(host), URIEncoder.encode(file.getAbsolute()))),
+            DescriptiveUrl.Type.provider,
+            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
         list.addAll(new WebUrlProvider(host).toUrl(file));
         return list;
     }
