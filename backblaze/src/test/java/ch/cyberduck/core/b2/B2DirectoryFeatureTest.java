@@ -123,6 +123,7 @@ public class B2DirectoryFeatureTest {
     }
 
     @Test
+    @Ignore
     public void testModificationDate() throws Exception {
         final B2Session session = new B2Session(
             new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
