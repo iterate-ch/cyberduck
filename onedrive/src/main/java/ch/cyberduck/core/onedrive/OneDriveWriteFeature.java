@@ -20,7 +20,9 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -38,6 +40,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFile;
+import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveUploadSession;
 
 import java.io.IOException;
@@ -68,7 +72,16 @@ public class OneDriveWriteFeature implements Write<Void> {
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final OneDriveUploadSession upload = session.toFile(file).createUploadSession();
+            final OneDriveItem foundItem = session.toItem(file.getParent());
+            if(null == foundItem) {
+                throw new NotfoundException(String.format("Did not find parent for %s", file));
+            }
+            if(!(foundItem instanceof OneDriveFolder)) {
+                throw new NotfoundException(String.format("Did not find directory %s for file %s", file.getParent(), file));
+            }
+            final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), (OneDriveFolder) foundItem,
+                URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
+            final OneDriveUploadSession upload = oneDriveFile.createUploadSession();
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, new TransferStatus(status));
             return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy,
                 preferences.getInteger("onedrive.upload.multipart.partsize.minimum"))) {
