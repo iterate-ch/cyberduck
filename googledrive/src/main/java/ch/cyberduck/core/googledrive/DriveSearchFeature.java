@@ -26,15 +26,9 @@ import ch.cyberduck.core.features.Search;
 
 public class DriveSearchFeature implements Search {
     private DriveSession session;
-    private DriveFileidProvider fileid;
 
     public DriveSearchFeature(final DriveSession session) {
-        this(session, new DriveFileidProvider(session));
-    }
-
-    public DriveSearchFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
-        this.fileid = fileid;
     }
 
     @Override
@@ -54,7 +48,6 @@ public class DriveSearchFeature implements Search {
 
     @Override
     public Search withCache(final Cache<Path> cache) {
-        fileid.withCache(cache);
         return this;
     }
 }
