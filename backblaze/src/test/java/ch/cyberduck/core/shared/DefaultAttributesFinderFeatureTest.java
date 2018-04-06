@@ -57,10 +57,11 @@ public class DefaultAttributesFinderFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(file, new TransferStatus());
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         // Find without version id set in attributes
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 

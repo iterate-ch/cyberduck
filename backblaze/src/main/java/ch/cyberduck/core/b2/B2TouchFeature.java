@@ -35,8 +35,8 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
 
     private Write<BaseB2Response> writer;
 
-    public B2TouchFeature(final B2Session session) {
-        this.writer = new B2WriteFeature(session);
+    public B2TouchFeature(final B2Session session, final B2FileidProvider fileid) {
+        this.writer = new B2WriteFeature(session, fileid);
     }
 
     @Override

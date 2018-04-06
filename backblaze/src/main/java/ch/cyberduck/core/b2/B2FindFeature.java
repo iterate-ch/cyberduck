@@ -39,11 +39,13 @@ public class B2FindFeature implements Find {
             = new B2PathContainerService();
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
 
     private Cache<Path> cache = PathCache.empty();
 
-    public B2FindFeature(final B2Session session) {
+    public B2FindFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class B2FindFeature implements Find {
             }
             else {
                 try {
-                    return null != new B2FileidProvider(session).withCache(cache).getFileid(file, new DisabledListProgressListener());
+                    return null != fileid.withCache(cache).getFileid(file, new DisabledListProgressListener());
                 }
                 catch(NotfoundException e) {
                     return false;

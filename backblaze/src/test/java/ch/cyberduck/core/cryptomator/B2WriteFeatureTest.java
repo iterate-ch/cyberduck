@@ -28,6 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
+import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2FindFeature;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2ReadFeature;
@@ -85,7 +86,8 @@ public class B2WriteFeatureTest {
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final CryptoWriteFeature<BaseB2Response> writer = new CryptoWriteFeature<BaseB2Response>(session, new B2WriteFeature(session), cryptomator);
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final CryptoWriteFeature<BaseB2Response> writer = new CryptoWriteFeature<BaseB2Response>(session, new B2WriteFeature(session, fileid), cryptomator);
         final Cryptor cryptor = cryptomator.getCryptor();
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
@@ -95,14 +97,14 @@ public class B2WriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session), cryptomator).find(test).getSize());
+        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test).getSize());
         assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new B2DeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

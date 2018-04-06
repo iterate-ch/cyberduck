@@ -63,6 +63,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
             = new B2PathContainerService();
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
     private final Find finder;
     private final AttributesFinder attributes;
 
@@ -71,13 +72,14 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    public B2WriteFeature(final B2Session session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public B2WriteFeature(final B2Session session, final B2FileidProvider fileid) {
+        this(session, fileid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public B2WriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes) {
+    public B2WriteFeature(final B2Session session, final B2FileidProvider fileid, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
+        this.fileid = fileid;
         this.finder = finder;
         this.attributes = attributes;
     }
@@ -95,13 +97,13 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     final Checksum checksum = status.getChecksum();
                     if(status.isSegment()) {
                         final B2GetUploadPartUrlResponse uploadUrl
-                                = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
+                            = session.getClient().getUploadPartUrl(fileid.getFileid(file, new DisabledListProgressListener()));
                         return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
                     }
                     else {
                         final B2GetUploadUrlResponse uploadUrl;
                         if(null == urls.get()) {
-                            uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
+                            uploadUrl = session.getClient().getUploadUrl(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Obtained upload URL %s for file %s", uploadUrl, file));
                             }
@@ -165,7 +167,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(length >= preferences.getLong("b2.upload.largeobject.threshold")) {
             if(preferences.getBoolean("b2.upload.largeobject")) {
-                final B2LargeUploadPartService partService = new B2LargeUploadPartService(session);
+                final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
                 final List<B2FileInfoResponse> upload = partService.find(file);
                 if(!upload.isEmpty()) {
                     Long size = 0L;

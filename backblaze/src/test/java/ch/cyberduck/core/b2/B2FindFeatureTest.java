@@ -57,10 +57,11 @@ public class B2FindFeatureTest {
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(file, new TransferStatus());
-        assertTrue(new B2FindFeature(session).find(file));
-        assertFalse(new B2FindFeature(session).find(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
+        assertTrue(new B2FindFeature(session, fileid).find(file));
+        assertFalse(new B2FindFeature(session, fileid).find(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -77,7 +78,7 @@ public class B2FindFeatureTest {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        assertTrue(new B2FindFeature(session).find(file));
+        assertTrue(new B2FindFeature(session, new B2FileidProvider(session)).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
         session.close();
     }

@@ -59,15 +59,16 @@ public class B2SearchFeatureTest {
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new B2TouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        final B2SearchFeature feature = new B2SearchFeature(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final Path file = new B2TouchFeature(session, fileid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final B2SearchFeature feature = new B2SearchFeature(session, fileid);
         assertNotNull(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         // Supports prefix matching only
         assertNull(feature.search(bucket, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         assertNotNull(feature.search(bucket, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         final Path subdir = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -83,13 +84,14 @@ public class B2SearchFeatureTest {
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new B2TouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        final B2SearchFeature feature = new B2SearchFeature(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final Path file = new B2TouchFeature(session, fileid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final B2SearchFeature feature = new B2SearchFeature(session, fileid);
         assertNotNull(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         // Supports prefix matching only
         assertNull(feature.search(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         assertNotNull(feature.search(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -105,9 +107,10 @@ public class B2SearchFeatureTest {
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path workdir = new B2DirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path file = new B2TouchFeature(session).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        final B2SearchFeature feature = new B2SearchFeature(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final Path workdir = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path file = new B2TouchFeature(session, fileid).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final B2SearchFeature feature = new B2SearchFeature(session, fileid);
         assertNotNull(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         // Supports prefix matching only
         assertNull(feature.search(workdir, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
@@ -116,15 +119,15 @@ public class B2SearchFeatureTest {
             assertNotNull(result.find(new SimplePathPredicate(file)));
             assertEquals(workdir, result.get(result.indexOf(file)).getParent());
         }
-        final Path subdir = new B2DirectoryFeature(session).mkdir(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path subdir = new B2DirectoryFeature(session, fileid).mkdir(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
-        final Path filesubdir = new B2TouchFeature(session).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path filesubdir = new B2TouchFeature(session, fileid).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final AttributedList<Path> result = feature.search(workdir, new SearchFilter(filesubdir.getName()), new DisabledListProgressListener());
             assertNotNull(result.find(new SimplePathPredicate(filesubdir)));
             assertEquals(subdir, result.find(new SimplePathPredicate(filesubdir)).getParent());
         }
-        new B2DeleteFeature(session).delete(Arrays.asList(file, filesubdir, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(file, filesubdir, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

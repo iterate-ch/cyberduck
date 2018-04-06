@@ -35,29 +35,31 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     private static final Logger log = Logger.getLogger(B2ThresholdUploadService.class);
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
     private Write<BaseB2Response> writer;
     private final Long threshold;
 
-    public B2ThresholdUploadService(final B2Session session) {
-        this(session, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
+    public B2ThresholdUploadService(final B2Session session, final B2FileidProvider fileid) {
+        this(session, fileid, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
     }
 
-    public B2ThresholdUploadService(final B2Session session, final Long threshold) {
+    public B2ThresholdUploadService(final B2Session session, final B2FileidProvider fileid, final Long threshold) {
         this.session = session;
-        this.writer = new B2WriteFeature(session);
+        this.fileid = fileid;
+        this.writer = new B2WriteFeature(session, fileid);
         this.threshold = threshold;
     }
 
     @Override
     public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return new B2WriteFeature(session).append(file, length, cache);
+        return new B2WriteFeature(session, fileid).append(file, length, cache);
     }
 
     @Override
     public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                  final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status.getLength())) {
-            return new B2LargeUploadService(session, writer, PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
+            return new B2LargeUploadService(session, fileid, writer, PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
                     PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")).upload(file, local, throttle, listener, status, callback);
         }
         else {

@@ -51,12 +51,13 @@ public class B2UrlProviderTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(test, new TransferStatus());
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
         final B2UrlProvider provider = new B2UrlProvider(session);
         assertEquals(0, provider.toUrl(bucket).size());
         assertEquals(1, provider.toUrl(test).size());
         assertNotNull(provider.toUrl(test).find(DescriptiveUrl.Type.http).getUrl());
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

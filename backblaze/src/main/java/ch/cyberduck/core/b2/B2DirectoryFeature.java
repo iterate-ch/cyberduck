@@ -50,11 +50,11 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     private final B2Session session;
     private Write<BaseB2Response> writer;
 
-    public B2DirectoryFeature(final B2Session session) {
-        this(session, new B2WriteFeature(session));
+    public B2DirectoryFeature(final B2Session session, final B2FileidProvider fileid) {
+        this(session, fileid, new B2WriteFeature(session, fileid));
     }
 
-    public B2DirectoryFeature(final B2Session session, final B2WriteFeature writer) {
+    public B2DirectoryFeature(final B2Session session, final B2FileidProvider fileid, final B2WriteFeature writer) {
         this.session = session;
         this.writer = writer;
     }

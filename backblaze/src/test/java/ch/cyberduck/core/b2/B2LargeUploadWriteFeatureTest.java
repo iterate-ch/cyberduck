@@ -58,7 +58,8 @@ public class B2LargeUploadWriteFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session, fileid);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -70,14 +71,14 @@ public class B2LargeUploadWriteFeatureTest {
         assertEquals(content.length, IOUtils.copy(in, out));
         in.close();
         out.close();
-        assertTrue(new B2FindFeature(session).find(file));
+        assertTrue(new B2FindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        assertEquals(1503654614004L, new B2AttributesFinderFeature(session).find(file).getModificationDate());
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(file).getModificationDate());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -90,7 +91,8 @@ public class B2LargeUploadWriteFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session, fileid);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -101,13 +103,13 @@ public class B2LargeUploadWriteFeatureTest {
         assertEquals(content.length, IOUtils.copy(in, out));
         in.close();
         out.close();
-        assertTrue(new B2FindFeature(session).find(file));
+        assertTrue(new B2FindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -120,7 +122,8 @@ public class B2LargeUploadWriteFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2LargeUploadWriteFeature feature = new B2LargeUploadWriteFeature(session, fileid);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
@@ -134,10 +137,10 @@ public class B2LargeUploadWriteFeatureTest {
         assertNotNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

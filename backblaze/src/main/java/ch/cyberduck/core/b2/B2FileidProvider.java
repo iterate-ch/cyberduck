@@ -40,7 +40,7 @@ import synapticloop.b2.response.B2ListFilesResponse;
 public class B2FileidProvider implements IdProvider {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
 
@@ -72,8 +72,8 @@ public class B2FileidProvider implements IdProvider {
         }
         try {
             final B2ListFilesResponse response = session.getClient().listFileNames(
-                    this.getFileid(containerService.getContainer(file), listener),
-                    containerService.getKey(file), 2);
+                this.getFileid(containerService.getContainer(file), listener),
+                containerService.getKey(file), 2);
             for(B2FileInfoResponse info : response.getFiles()) {
                 if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
                     return info.getFileId();
@@ -94,5 +94,4 @@ public class B2FileidProvider implements IdProvider {
         this.cache = cache;
         return this;
     }
-
 }

@@ -52,7 +52,7 @@ public class B2DeleteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new B2HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, new B2FileidProvider(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -67,10 +67,11 @@ public class B2DeleteFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        new B2DirectoryFeature(session, fileid).mkdir(bucket, null, new TransferStatus());
         final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(file, new TransferStatus());
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -84,9 +85,10 @@ public class B2DeleteFeatureTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path bucket = new B2DirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path directory = new B2DirectoryFeature(session).mkdir(new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

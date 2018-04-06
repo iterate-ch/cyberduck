@@ -55,7 +55,7 @@ public class B2LargeUploadPartServiceTest {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        assertEquals(1, new B2LargeUploadPartService(session).find(file).size());
+        assertEquals(1, new B2LargeUploadPartService(session, new B2FileidProvider(session)).find(file).size());
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
         session.close();
     }
@@ -77,7 +77,7 @@ public class B2LargeUploadPartServiceTest {
         final B2StartLargeFileResponse start2Response = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        final List<B2FileInfoResponse> list = new B2LargeUploadPartService(session).find(file);
+        final List<B2FileInfoResponse> list = new B2LargeUploadPartService(session, new B2FileidProvider(session)).find(file);
         assertFalse(list.isEmpty());
         assertEquals(start2Response.getFileId(), list.get(0).getFileId());
         assertEquals(start1Response.getFileId(), list.get(1).getFileId());
@@ -100,7 +100,7 @@ public class B2LargeUploadPartServiceTest {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        assertTrue(new B2LargeUploadPartService(session).list(startResponse.getFileId()).isEmpty());
+        assertTrue(new B2LargeUploadPartService(session, new B2FileidProvider(session)).list(startResponse.getFileId()).isEmpty());
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
         session.close();
     }
@@ -120,7 +120,7 @@ public class B2LargeUploadPartServiceTest {
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
         final String fileid = startResponse.getFileId();
-        new B2LargeUploadPartService(session).delete(startResponse.getFileId());
+        new B2LargeUploadPartService(session, new B2FileidProvider(session)).delete(startResponse.getFileId());
         session.close();
     }
 }

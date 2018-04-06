@@ -51,12 +51,13 @@ public class B2BucketListServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path bucket = new B2DirectoryFeature(session).mkdir(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final AttributedList<Path> list = new B2BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertNotNull(list.find(new SimplePathPredicate(bucket)));
-        new B2DeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

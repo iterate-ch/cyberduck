@@ -53,7 +53,7 @@ public class B2AttributesFinderFeatureTest {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        assertNotNull(new B2AttributesFinderFeature(session).find(file));
+        assertNotNull(new B2AttributesFinderFeature(session, new B2FileidProvider(session)).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
         session.close();
     }

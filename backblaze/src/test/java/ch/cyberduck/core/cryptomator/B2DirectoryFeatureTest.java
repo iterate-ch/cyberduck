@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2DirectoryFeature;
+import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2Session;
 import ch.cyberduck.core.b2.B2WriteFeature;
@@ -67,11 +68,12 @@ public class B2DirectoryFeatureTest {
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoDirectoryFeature<BaseB2Response>(session, new B2DirectoryFeature(session), new B2WriteFeature(session), cryptomator).mkdir(
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final Path test = new CryptoDirectoryFeature<BaseB2Response>(session, new B2DirectoryFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).mkdir(
                 new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new B2DeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

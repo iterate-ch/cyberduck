@@ -41,11 +41,13 @@ import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED
 public class B2AttributesFinderFeature implements AttributesFinder {
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
 
     private Cache<Path> cache = PathCache.empty();
 
-    public B2AttributesFinderFeature(final B2Session session) {
+    public B2AttributesFinderFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -54,7 +56,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try {
-            final B2FileResponse info = session.getClient().getFileInfo(new B2FileidProvider(session).withCache(cache).getFileid(file, new DisabledListProgressListener()));
+            final B2FileResponse info = session.getClient().getFileInfo(fileid.withCache(cache).getFileid(file, new DisabledListProgressListener()));
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {

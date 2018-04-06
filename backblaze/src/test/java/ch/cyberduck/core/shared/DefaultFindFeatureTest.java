@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.b2.B2DeleteFeature;
+import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2LargeUploadWriteFeature;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2Session;
@@ -60,10 +61,11 @@ public class DefaultFindFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(file, new TransferStatus());
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         // Find without version id set in attributes
         new DefaultFindFeature(session).find(file);
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -78,7 +80,7 @@ public class DefaultFindFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<VersionId> out = new B2LargeUploadWriteFeature(session).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        final StatusOutputStream<VersionId> out = new B2LargeUploadWriteFeature(session, new B2FileidProvider(session)).write(file, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.copyLarge(new ByteArrayInputStream(RandomUtils.nextBytes(100)), out);
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));

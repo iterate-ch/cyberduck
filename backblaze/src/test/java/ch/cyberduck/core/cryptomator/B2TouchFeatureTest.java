@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.B2DeleteFeature;
+import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2FindFeature;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2Session;
@@ -70,11 +71,12 @@ public class B2TouchFeatureTest {
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<BaseB2Response>(session, new B2TouchFeature(session), new B2WriteFeature(session), cryptomator).touch(
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final Path test = new CryptoTouchFeature<BaseB2Response>(session, new B2TouchFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).touch(
                 new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
-        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session), cryptomator).find(test));
-        new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
+        new CryptoDeleteFeature(session, new B2DeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -92,11 +94,12 @@ public class B2TouchFeatureTest {
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new B2SingleUploadService(new B2WriteFeature(session))), new B2WriteFeature(session), cryptomator).touch(
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final Path test = new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new B2SingleUploadService(new B2WriteFeature(session, fileid))), new B2WriteFeature(session, fileid), cryptomator).touch(
                 new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new B2DeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

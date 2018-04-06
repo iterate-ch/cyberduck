@@ -44,9 +44,11 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
             = new B2PathContainerService();
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
 
-    public B2BucketTypeFeature(final B2Session session) {
+    public B2BucketTypeFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -62,7 +64,7 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
         if(containerService.isContainer(file)) {
             try {
                 BucketType bucketType = this.convert(acl);
-                session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
+                session.getClient().updateBucket(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                         bucketType);
             }
             catch(B2ApiException e) {

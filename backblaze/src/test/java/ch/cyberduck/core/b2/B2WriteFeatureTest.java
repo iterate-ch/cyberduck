@@ -71,7 +71,7 @@ public class B2WriteFeatureTest {
         final byte[] content = RandomUtils.nextBytes(1);
         status.setLength(content.length);
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, new B2FileidProvider(session)).write(file, status, new DisabledConnectionCallback());
         IOUtils.write(content, out);
         try {
             out.close();
@@ -101,24 +101,25 @@ public class B2WriteFeatureTest {
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setTimestamp(1503654614004L);
-        final OutputStream out = new B2WriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final OutputStream out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        test.attributes().setVersionId(new B2FileidProvider(session).getFileid(test, new DisabledListProgressListener()));
-        assertTrue(new B2FindFeature(session).find(test));
+        test.attributes().setVersionId(fileid.getFileid(test, new DisabledListProgressListener()));
+        assertTrue(new B2FindFeature(session, fileid).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        final Write.Append append = new B2WriteFeature(session).append(test, status.getLength(), PathCache.empty());
+        final Write.Append append = new B2WriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty());
         assertTrue(append.override);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        assertEquals(1503654614004L, new B2AttributesFinderFeature(session).find(test).getModificationDate());
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

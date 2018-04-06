@@ -44,9 +44,11 @@ public class B2LargeUploadPartService {
             = new B2PathContainerService();
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
 
-    public B2LargeUploadPartService(final B2Session session) {
+    public B2LargeUploadPartService(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     /**
@@ -66,7 +68,7 @@ public class B2LargeUploadPartService {
             do {
                 final B2ListFilesResponse chunk;
                 chunk = session.getClient().listUnfinishedLargeFiles(
-                        new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()), startFileId, null);
+                    fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()), startFileId, null);
                 for(B2FileInfoResponse upload : chunk.getFiles()) {
                     if(file.isDirectory()) {
                         final Path parent = new Path(containerService.getContainer(file), upload.getFileName(), EnumSet.of(Path.Type.file)).getParent();

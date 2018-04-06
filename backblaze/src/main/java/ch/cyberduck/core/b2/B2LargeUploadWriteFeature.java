@@ -76,13 +76,15 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     private final B2Session session;
     private final Find finder;
     private final AttributesFinder attributes;
+    private final B2FileidProvider fileid;
 
-    public B2LargeUploadWriteFeature(final B2Session session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public B2LargeUploadWriteFeature(final B2Session session, final B2FileidProvider fileid) {
+        this(session, fileid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public B2LargeUploadWriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes) {
+    public B2LargeUploadWriteFeature(final B2Session session, final B2FileidProvider fileid, final Find finder, final AttributesFinder attributes) {
         this.session = session;
+        this.fileid = fileid;
         this.finder = finder;
         this.attributes = attributes;
     }
@@ -147,7 +149,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
             try {
                 if(0 == partNumber && len < PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
-                    final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
+                    final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
                     final Checksum checksum = overall.getChecksum();
                     final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                         containerService.getKey(file),
@@ -164,7 +166,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                         if(null != overall.getTimestamp()) {
                             fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(overall.getTimestamp()));
                         }
-                        final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
+                        final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                             containerService.getKey(file), overall.getMime(), fileinfo);
                         version = new VersionId(response.getFileId());
                         if(log.isDebugEnabled()) {
@@ -213,7 +215,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                 if(completed.isEmpty()) {
                     if(null == version) {
                         // No single file upload and zero parts
-                        version = new VersionId(new B2TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId());
+                        version = new VersionId(new B2TouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getVersionId());
                     }
                 }
                 else {
