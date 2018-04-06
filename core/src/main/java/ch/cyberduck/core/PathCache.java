@@ -21,13 +21,15 @@ import java.util.List;
 
 public class PathCache extends AbstractCache<Path> {
 
+    private static final PathCache EMPTY = new PathCache(0) {
+        @Override
+        public AttributedList<Path> put(final Path directory, final AttributedList<Path> children) {
+            return AttributedList.emptyList();
+        }
+    };
+
     public static PathCache empty() {
-        return new PathCache(0) {
-            @Override
-            public AttributedList<Path> put(final Path directory, final AttributedList<Path> children) {
-                return AttributedList.emptyList();
-            }
-        };
+        return EMPTY;
     }
 
     public PathCache(final int size) {
