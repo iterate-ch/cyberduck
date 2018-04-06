@@ -104,12 +104,10 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                     final OneDriveDrive.Metadata drivesIteratorMetadata = drivesIterator.next();
 
                     // compare ID, does not take Name into account (not applicable currently)
-                    if(part.equals(driveMetadata.getId())) {
+                    if(part.equals(drivesIteratorMetadata.getId())) {
                         // checks for first encounter
                         if(!foundDrive && null == temporaryMetadata) {
-                            driveMetadata = drivesIteratorMetadata;
-                            drive = (OneDriveDrive) driveMetadata.getResource();
-                            item = drive.getRoot();
+                            temporaryMetadata = drivesIteratorMetadata;
                             foundDrive = true;
                         }
                         else {
