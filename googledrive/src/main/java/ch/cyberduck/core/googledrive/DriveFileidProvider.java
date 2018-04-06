@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -33,6 +34,8 @@ import java.util.Comparator;
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
+
+    private Cache<Path> cache = PathCache.empty();
 
     public DriveFileidProvider(final DriveSession session) {
         this.session = session;
@@ -49,6 +52,15 @@ public class DriveFileidProvider implements IdProvider {
         if(file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
+        if(cache.isCached(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            if(null != found) {
+                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
+                    return found.attributes().getVersionId();
+                }
+            }
+        }
         final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.filter(new Comparator<Path>() {
             @Override
@@ -64,6 +76,7 @@ public class DriveFileidProvider implements IdProvider {
 
     @Override
     public IdProvider withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }
