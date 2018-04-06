@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
@@ -52,7 +53,7 @@ public class OneDriveTouchFeature implements Touch<Void> {
                 throw new NotfoundException(String.format("Did not find directory %s for file %s", file.getParent(), file));
             }
             final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), (OneDriveFolder) foundItem,
-                file.getName(), OneDriveItem.ItemIdentifierType.Path);
+                URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
             oneDriveFile.create(StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
         }
         catch(OneDriveAPIException e) {
