@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -53,11 +52,7 @@ public class B2ObjectListService implements ListService {
     private final B2Session session;
 
     private final int chunksize;
-    private B2FileidProvider fileid;
-
-    public B2ObjectListService(final B2Session session) {
-        this(session, new B2FileidProvider(session));
-    }
+    private final B2FileidProvider fileid;
 
     public B2ObjectListService(final B2Session session, final B2FileidProvider fileid) {
         this(session, fileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
@@ -116,12 +111,6 @@ public class B2ObjectListService implements ListService {
             if(StringUtils.isBlank(info.getFileId())) {
                 // Common prefix
                 final Path placeholder = new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-                try {
-                    placeholder.attributes().setModificationDate(new B2AttributesFinderFeature(session).find(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder))).getModificationDate());
-                }
-                catch(NotfoundException e) {
-                    // Ignore
-                }
                 objects.add(placeholder);
                 continue;
             }
