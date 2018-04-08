@@ -144,7 +144,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
                     final OneDriveFolder folder = (OneDriveFolder) item;
                     // iterate over all children
-                    for(final OneDriveItem.Metadata childMetadata : folder.getChildren()) {
+                    for(final OneDriveItem.Metadata childMetadata : folder.search(part)) {
                         // check name, do not take ID or anything else into account (not applicable)
                         // paths given here are always human readable
                         if(part.equals(childMetadata.getName())) {
