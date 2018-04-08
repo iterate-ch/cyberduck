@@ -28,7 +28,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -66,9 +65,6 @@ public class S3UrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
-            if(!session.getHost().isDefaultWebURL()) {
-                list.addAll(new WebUrlProvider(session.getHost()).toUrl(file));
-            }
             // Publicly accessible URL of given object
             list.add(this.toUrl(file, session.getHost().getProtocol().getScheme()));
             list.add(this.toUrl(file, Scheme.http));
