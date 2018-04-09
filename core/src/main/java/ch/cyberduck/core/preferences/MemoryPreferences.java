@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MemoryPreferences extends Preferences {
+public class MemoryPreferences extends DefaultPreferences {
 
     private Map<String, String> store;
 
@@ -38,16 +38,6 @@ public class MemoryPreferences extends Preferences {
     @Override
     public void deleteProperty(final String property) {
         store.remove(property);
-    }
-
-    @Override
-    public String getDefault(final String property) {
-        return null;
-    }
-
-    @Override
-    public void setDefault(final String property, final String value) {
-        //
     }
 
     @Override
