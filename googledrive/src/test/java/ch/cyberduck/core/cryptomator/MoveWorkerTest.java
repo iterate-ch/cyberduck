@@ -83,7 +83,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new DriveDeleteFeature(session, fileid), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(source, status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new DriveWriteFeature(session, fileid), cryptomator).write(source, status.length(content.length), new DisabledConnectionCallback()));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
@@ -105,7 +105,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new CryptoTouchFeature<>(session, new DriveTouchFeature(session, fileid), new DriveWriteFeature(session, fileid), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         final Path targetFolder = new CryptoDirectoryFeature<>(session, new DriveDirectoryFeature(session, fileid), new DriveWriteFeature(session, fileid), cryptomator).mkdir(
@@ -127,7 +127,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new CryptoTouchFeature<>(session, new DriveTouchFeature(session, fileid), new DriveWriteFeature(session, fileid), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         final Path targetFolder = new CryptoDirectoryFeature<>(session, new DriveDirectoryFeature(session, fileid), new DriveWriteFeature(session, fileid), cryptomator).mkdir(
@@ -148,7 +148,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final Path folder = new CryptoDirectoryFeature<>(session, new DriveDirectoryFeature(session, fileid), new DriveWriteFeature(session, fileid), cryptomator).mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
@@ -174,7 +174,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
     public void testMoveFileIntoVault() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path clearFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveTouchFeature(session, fileid).touch(clearFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(clearFile));
         final CryptoVault cryptomator = new CryptoVault(
@@ -200,7 +200,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, fileid).mkdir(clearFolder, null, new TransferStatus());
         new DriveTouchFeature(session, fileid).touch(clearFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(clearFolder));
@@ -227,7 +227,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
     public void testMoveFileOutsideVault() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, fileid).mkdir(clearFolder, null, new TransferStatus());
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
@@ -259,7 +259,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final Path encryptedFolder = new CryptoDirectoryFeature<>(session, new DriveDirectoryFeature(session, fileid), new DriveWriteFeature(session, fileid), cryptomator).mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));

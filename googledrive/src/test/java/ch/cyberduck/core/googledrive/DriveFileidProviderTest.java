@@ -49,21 +49,21 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
     @Test
     public void testGetFileid() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session, new DriveFileidProvider(session)).touch(test, new TransferStatus());
-        assertNotNull(new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
-        new DriveDeleteFeature(session, new DriveFileidProvider(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
+        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testGetFileidSameName() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Path p1 = new DriveTouchFeature(session, new DriveFileidProvider(session)).touch(test, new TransferStatus());
-        assertEquals(p1.attributes().getVersionId(), new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
+        final Path p1 = new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
+        assertEquals(p1.attributes().getVersionId(), new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
         final File body = new File();
         body.set("trashed", true);
         session.getClient().files().update(p1.attributes().getVersionId(), body).execute();
-        final Path p2 = new DriveTouchFeature(session, new DriveFileidProvider(session)).touch(test, new TransferStatus());
-        assertEquals(p2.attributes().getVersionId(), new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
+        final Path p2 = new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
+        assertEquals(p2.attributes().getVersionId(), new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
         session.getClient().files().delete(p1.attributes().getVersionId());
         session.getClient().files().delete(p2.attributes().getVersionId());
     }

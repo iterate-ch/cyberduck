@@ -42,7 +42,7 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
     @Test
     public void testCopyFile() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
         final Path copy = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
@@ -55,7 +55,7 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
     @Test
     public void testCopyToExistingFile() throws Exception {
         final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, fileid).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());

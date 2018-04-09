@@ -75,7 +75,7 @@ public class DriveFileidProvider implements IdProvider {
     }
 
     @Override
-    public IdProvider withCache(final Cache<Path> cache) {
+    public DriveFileidProvider withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

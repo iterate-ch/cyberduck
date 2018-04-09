@@ -72,7 +72,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<Void>(session, new DriveWriteFeature(session, fileid), cryptomator);
         final Cryptor cryptor = cryptomator.getCryptor();
         final FileHeader header = cryptor.fileHeaderCryptor().create();

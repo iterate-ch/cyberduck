@@ -61,7 +61,7 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(session.getHost(), new ThreadLocalHostnameDelegatingTrustManager(
                 new DisabledX509TrustManager(), session.getHost().getHostname()), new DefaultX509KeyManager(), new DisabledProxyFinder()
         );
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final DriveUploadFeature upload = new DriveUploadFeature(new DriveWriteFeature(session, fileid));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());

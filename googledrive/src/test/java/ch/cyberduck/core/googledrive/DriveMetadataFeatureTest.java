@@ -37,7 +37,7 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
     public void setMetadata() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
         assertEquals(Collections.emptyMap(), new DriveMetadataFeature(session, fileid).getMetadata(test));
         new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));

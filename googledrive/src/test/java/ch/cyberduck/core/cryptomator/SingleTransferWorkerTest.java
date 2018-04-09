@@ -106,18 +106,18 @@ public class SingleTransferWorkerTest extends AbstractDriveTest {
         Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, new DriveFileidProvider(session)), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, new DriveFileidProvider(session).withCache(cache)), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             Assert.assertArrayEquals(content, buffer.toByteArray());
         }
         Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, new DriveFileidProvider(session)), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, new DriveFileidProvider(session).withCache(cache)), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             Assert.assertArrayEquals(content, buffer.toByteArray());
         }
-        new CryptoDeleteFeature(session, new DriveDeleteFeature(session, new DriveFileidProvider(session)), cryptomator).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)), cryptomator).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

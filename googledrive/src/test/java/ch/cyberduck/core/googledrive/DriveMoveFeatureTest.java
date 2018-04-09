@@ -41,7 +41,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
     @Test
     public void testMoveFile() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
         final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session, fileid).mkdir(folder, null, new TransferStatus());
@@ -56,7 +56,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
     @Test
     public void testMoveToExistingFile() throws Exception {
         final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, fileid).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
@@ -75,7 +75,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
     public void testMoveDirectory() throws Exception {
         final Path sourceDirectory = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetDirectory = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, fileid).mkdir(sourceDirectory, null, new TransferStatus());
         final Path sourceFile = new Path(sourceDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session, fileid).touch(sourceFile, new TransferStatus());

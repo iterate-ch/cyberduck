@@ -42,7 +42,7 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
     public void testSearchRoot() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
         final Path workdir = DriveHomeFinderService.MYDRIVE_FOLDER;
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveSearchFeature feature = new DriveSearchFeature(session);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
@@ -57,7 +57,7 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
     @Test
     public void testSearchFolder() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final Path workdir = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveSearchFeature feature = new DriveSearchFeature(session);

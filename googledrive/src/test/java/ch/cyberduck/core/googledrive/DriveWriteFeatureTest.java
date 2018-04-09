@@ -48,7 +48,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
     @Test
     public void testWrite() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         {
             final TransferStatus status = new TransferStatus();
             status.setMime("x-application/cyberduck");

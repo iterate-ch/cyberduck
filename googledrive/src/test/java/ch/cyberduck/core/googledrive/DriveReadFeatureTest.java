@@ -46,13 +46,13 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testAppend() throws Exception {
-        assertTrue(new DriveReadFeature(null, new DriveFileidProvider(session)).offset(new Path("/", EnumSet.of(Path.Type.file))));
+        assertTrue(new DriveReadFeature(null, new DriveFileidProvider(session).withCache(cache)).offset(new Path("/", EnumSet.of(Path.Type.file))));
     }
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new DriveReadFeature(session, new DriveFileidProvider(session)).read(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new DriveReadFeature(session, new DriveFileidProvider(session).withCache(cache)).read(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveUploadFeature(new DriveWriteFeature(session, fileid)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),

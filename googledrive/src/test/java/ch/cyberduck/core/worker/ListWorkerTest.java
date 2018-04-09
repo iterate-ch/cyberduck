@@ -53,7 +53,7 @@ public class ListWorkerTest extends AbstractDriveTest {
         final String f2 = new AlphanumericRandomStringService().random();
         final Path parent = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, f2, EnumSet.of(Path.Type.directory));
-        final DriveFileidProvider fileidProvider = new DriveFileidProvider(session);
+        final DriveFileidProvider fileidProvider = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, fileidProvider).mkdir(parent, null, new TransferStatus());
         new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
