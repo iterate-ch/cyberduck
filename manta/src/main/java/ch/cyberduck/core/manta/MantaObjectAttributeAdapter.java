@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
@@ -57,8 +58,7 @@ public final class MantaObjectAttributeAdapter {
         }
         if(session.isWorldReadable(object)) {
             // mantaObject.getPath() starts with /
-            final String joinedPath = session.getHost().getWebURL() + URIEncoder.encode(object.getPath());
-
+            final String joinedPath = new WebUrlProvider(session.getHost()).toUrl() + URIEncoder.encode(object.getPath());
             try {
                 final URI link = new URI(joinedPath);
                 attributes.setLink(new DescriptiveUrl(link, DescriptiveUrl.Type.http));
