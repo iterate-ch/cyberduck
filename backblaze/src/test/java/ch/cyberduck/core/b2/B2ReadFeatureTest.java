@@ -15,19 +15,11 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -57,38 +49,23 @@ import synapticloop.b2.response.BaseB2Response;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class B2ReadFeatureTest {
+public class B2ReadFeatureTest extends AbstractB2Test {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
-        new B2ReadFeature(session, new B2FileidProvider(session)).read(new Path(new B2HomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new B2ReadFeature(session, new B2FileidProvider(session).withCache(cache)).read(new Path(new B2HomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
     public void testReadChunkedTransfer() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(923);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
         IOUtils.write(content, out);
         out.close();
@@ -104,26 +81,17 @@ public class B2ReadFeatureTest {
                 }, new DisabledLoginCallback(), new DisabledPasswordCallback());
         assertEquals(923L, local.attributes().getSize());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testReadInterrupt() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(923);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
         IOUtils.write(content, out);
         out.close();
@@ -140,22 +108,13 @@ public class B2ReadFeatureTest {
             in.close();
         }
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testReadRange() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -181,22 +140,13 @@ public class B2ReadFeatureTest {
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -222,6 +172,5 @@ public class B2ReadFeatureTest {
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

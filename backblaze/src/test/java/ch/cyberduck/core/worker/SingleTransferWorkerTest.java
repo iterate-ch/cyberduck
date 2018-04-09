@@ -28,6 +28,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.TransferItemCache;
+import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2FileidProvider;
@@ -69,7 +70,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest {
+public class SingleTransferWorkerTest extends AbstractB2Test {
 
     @Test
     public void testTransferredSizeRepeat() throws Exception {
@@ -80,14 +81,14 @@ public class SingleTransferWorkerTest {
         IOUtils.write(content, out);
         out.close();
         final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                ));
+            new Credentials(
+                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+            ));
         final AtomicBoolean failed = new AtomicBoolean();
         final B2Session session = new B2Session(host) {
-            final B2LargeUploadService upload = new B2LargeUploadService(this, new B2FileidProvider(this), new B2WriteFeature(this, new B2FileidProvider(this)),
-                    PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
-                    PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")) {
+            final B2LargeUploadService upload = new B2LargeUploadService(this, new B2FileidProvider(this).withCache(cache), new B2WriteFeature(this, new B2FileidProvider(this).withCache(cache)),
+                PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
+                PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")) {
                 @Override
                 protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                     if(failed.get()) {
@@ -128,11 +129,11 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty()) {
 
         }.run(session, session));
         local.delete();
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFinderFeature(session, fileid).find(test).getSize());
         assertEquals(100 * 1024 * 1024 + 1, counter.getSent(), 0L);
         assertTrue(failed.get());

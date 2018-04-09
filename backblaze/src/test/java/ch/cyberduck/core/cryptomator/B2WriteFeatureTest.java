@@ -16,23 +16,18 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2FindFeature;
-import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2ReadFeature;
-import ch.cyberduck.core.b2.B2Session;
 import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
@@ -65,17 +60,10 @@ import synapticloop.b2.response.BaseB2Response;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class B2WriteFeatureTest {
+public class B2WriteFeatureTest extends AbstractB2Test {
 
     @Test
     public void testWrite() throws Exception {
-        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                ));
-        final B2Session session = new B2Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -86,7 +74,7 @@ public class B2WriteFeatureTest {
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final CryptoWriteFeature<BaseB2Response> writer = new CryptoWriteFeature<BaseB2Response>(session, new B2WriteFeature(session, fileid), cryptomator);
         final Cryptor cryptor = cryptomator.getCryptor();
         final FileHeader header = cryptor.fileHeaderCryptor().create();
@@ -105,6 +93,5 @@ public class B2WriteFeatureTest {
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new B2DeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

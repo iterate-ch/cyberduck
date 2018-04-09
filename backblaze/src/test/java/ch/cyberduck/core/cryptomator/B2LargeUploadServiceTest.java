@@ -16,24 +16,19 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2FindFeature;
 import ch.cyberduck.core.b2.B2LargeUploadService;
-import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2ReadFeature;
-import ch.cyberduck.core.b2.B2Session;
 import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
@@ -69,24 +64,17 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class B2LargeUploadServiceTest {
+public class B2LargeUploadServiceTest extends AbstractB2Test {
 
     @Test
     public void testWrite() throws Exception {
         // 5L * 1024L * 1024L
-        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                ));
-        final B2Session session = new B2Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("/test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
             new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid), 5242880L, 5),
             new B2WriteFeature(session, fileid), cryptomator);
@@ -111,19 +99,11 @@ public class B2LargeUploadServiceTest {
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new B2DeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 
     @Test
     public void testUploadWithBulk() throws Exception {
         // 5L * 1024L * 1024L
-        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                ));
-        final B2Session session = new B2Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("/test-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
@@ -134,7 +114,7 @@ public class B2LargeUploadServiceTest {
         final int length = 5242885;
         final byte[] content = RandomUtils.nextBytes(length);
         writeStatus.setLength(content.length);
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final CryptoBulkFeature<Void> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new B2DeleteFeature(session, fileid), cryptomator);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus), new DisabledConnectionCallback());
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
@@ -154,6 +134,5 @@ public class B2LargeUploadServiceTest {
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new B2DeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 }

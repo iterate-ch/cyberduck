@@ -99,7 +99,7 @@ public class B2FileidProvider implements IdProvider {
     }
 
     @Override
-    public IdProvider withCache(final Cache<Path> cache) {
+    public B2FileidProvider withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

@@ -15,14 +15,9 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -54,24 +49,17 @@ import synapticloop.b2.response.BaseB2Response;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class B2WriteFeatureTest {
+public class B2WriteFeatureTest extends AbstractB2Test {
 
     @Test
     public void testWriteChecksumFailure() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1);
         status.setLength(content.length);
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, new B2FileidProvider(session)).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, new B2FileidProvider(session).withCache(cache)).write(file, status, new DisabledConnectionCallback());
         IOUtils.write(content, out);
         try {
             out.close();
@@ -80,20 +68,10 @@ public class B2WriteFeatureTest {
         catch(IOException e) {
             assertTrue(e.getCause() instanceof ChecksumException);
         }
-        finally {
-            session.close();
-        }
     }
 
     @Test
     public void testWrite() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
@@ -101,7 +79,7 @@ public class B2WriteFeatureTest {
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setTimestamp(1503654614004L);
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final OutputStream out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -120,6 +98,5 @@ public class B2WriteFeatureTest {
         assertArrayEquals(content, buffer);
         assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

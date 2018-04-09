@@ -15,12 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,20 +31,13 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class B2BucketTypeFeatureTest {
+public class B2BucketTypeFeatureTest extends AbstractB2Test {
 
     @Test
     public void getLocation() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket1 = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path bucket2 = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2DirectoryFeature(session, fileid).mkdir(bucket1, null, new TransferStatus());
         assertEquals("allPrivate", new B2BucketTypeFeature(session, fileid).getLocation(bucket1).getIdentifier());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket1), new DisabledLoginCallback(), new Delete.DisabledCallback());

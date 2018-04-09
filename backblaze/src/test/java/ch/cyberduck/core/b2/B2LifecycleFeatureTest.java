@@ -16,12 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -37,19 +32,12 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class B2LifecycleFeatureTest {
+public class B2LifecycleFeatureTest extends AbstractB2Test {
 
     @Test
     public void setConfiguration() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final B2FileidProvider fileid = new B2FileidProvider(session);
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2DirectoryFeature(session, fileid).mkdir(bucket, null, new TransferStatus());
         assertEquals(LifecycleConfiguration.empty(), new B2LifecycleFeature(session, fileid).getConfiguration(bucket));
         new B2LifecycleFeature(session, fileid).setConfiguration(bucket, new LifecycleConfiguration(1, null, 30));
@@ -58,6 +46,5 @@ public class B2LifecycleFeatureTest {
         new B2LifecycleFeature(session, fileid).setConfiguration(bucket, LifecycleConfiguration.empty());
         assertEquals(LifecycleConfiguration.empty(), new B2LifecycleFeature(session, fileid).getConfiguration(bucket));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
