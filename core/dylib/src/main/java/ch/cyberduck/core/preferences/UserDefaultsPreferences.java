@@ -45,7 +45,7 @@ import java.util.List;
  *
  * @see ch.cyberduck.binding.foundation.NSUserDefaults
  */
-public class UserDefaultsPreferences extends Preferences {
+public class UserDefaultsPreferences extends DefaultPreferences {
     private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
 
     public final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();

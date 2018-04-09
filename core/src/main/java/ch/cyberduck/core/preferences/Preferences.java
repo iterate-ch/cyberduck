@@ -102,9 +102,6 @@ import com.google.common.collect.ImmutableMap;
 public abstract class Preferences {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
-    private final Map<String, String> defaults
-        = new HashMap<String, String>();
-
     /**
      * Called after the defaults have been set.
      */
@@ -197,6 +194,10 @@ public abstract class Preferences {
     public void setProperty(final String property, final double v) {
         this.setProperty(property, String.valueOf(v));
     }
+
+    public abstract String getDefault(String property);
+
+    public abstract void setDefault(String property, String value);
 
     private static final class Version {
         /**
@@ -1058,7 +1059,7 @@ public abstract class Preferences {
         SLF4JBridgeHandler.install();
 
         final URL configuration;
-        final String file = defaults.get("logging.config");
+        final String file = this.getDefault("logging.config");
         if(null == file) {
             configuration = Preferences.class.getClassLoader().getResource("log4j-default.xml");
         }
@@ -1096,24 +1097,6 @@ public abstract class Preferences {
                 java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
             }
         }
-    }
-
-    /**
-     * Default value for a given property.
-     *
-     * @param property The property to query.
-     * @return A default value if any or null if not found.
-     */
-    public String getDefault(final String property) {
-        String value = defaults.get(property);
-        if(null == value) {
-            log.warn(String.format("No property with key '%s'", property));
-        }
-        return value;
-    }
-
-    public void setDefault(final String property, final String value) {
-        defaults.put(property, value);
     }
 
     /**

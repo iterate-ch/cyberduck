@@ -39,7 +39,7 @@ using File = System.IO.File;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
-    public class SettingsDictionaryPreferences : ch.cyberduck.core.preferences.Preferences
+    public class SettingsDictionaryPreferences : DefaultPreferences
     {
         private static readonly Logger Log = Logger.getLogger(typeof(SettingsDictionaryPreferences).FullName);
         private SettingsDictionary _settings;

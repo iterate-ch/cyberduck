@@ -41,11 +41,21 @@ public class MemoryPreferences extends Preferences {
     }
 
     @Override
+    public String getDefault(final String property) {
+        return null;
+    }
+
+    @Override
+    public void setDefault(final String property, final String value) {
+        //
+    }
+
+    @Override
     public String getProperty(final String property) {
         if(store.containsKey(property)) {
             return store.get(property);
         }
-        return super.getDefault(property);
+        return this.getDefault(property);
     }
 
     @Override

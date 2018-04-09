@@ -152,7 +152,7 @@ public class Terminal {
      * @param args Command line arguments
      */
     public static void main(final String... args) {
-        open(args, new TerminalPreferences());
+        open(args, new LinuxTerminalPreferences());
     }
 
     protected static void open(final String[] args, final TerminalPreferences defaults) {
