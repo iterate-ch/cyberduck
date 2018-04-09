@@ -53,16 +53,17 @@ public class ListWorkerTest extends AbstractDriveTest {
         final String f2 = new AlphanumericRandomStringService().random();
         final Path parent = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, f2, EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(parent, null, new TransferStatus());
-        new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final DriveFileidProvider fileidProvider = new DriveFileidProvider(session);
+        new DriveDirectoryFeature(session, fileidProvider).mkdir(parent, null, new TransferStatus());
+        new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         {
             // trash folder and recreate it
-            final String fileid = new DriveFileidProvider(session).getFileid(folder, new DisabledListProgressListener());
+            final String fileid = fileidProvider.getFileid(folder, new DisabledListProgressListener());
             final File body = new File();
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();
-            new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+            new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, null, new TransferStatus());
             final PathCache cache = new PathCache(10);
             final SessionListWorker worker = new SessionListWorker(cache, parent, new DisabledListProgressListener());
             final AttributedList<Path> list = worker.run(session);
@@ -77,7 +78,7 @@ public class ListWorkerTest extends AbstractDriveTest {
         }
         {
             // trash recreated folder
-            final String fileid = new DriveFileidProvider(session).getFileid(folder, new DisabledListProgressListener());
+            final String fileid = fileidProvider.getFileid(folder, new DisabledListProgressListener());
             final File body = new File();
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();
@@ -93,6 +94,6 @@ public class ListWorkerTest extends AbstractDriveTest {
             assertEquals(2, l.filter(new NullFilter<>()).size());
             assertEquals(0, l.attributes().getHidden().size());
         }
-        new DriveDeleteFeature(session).delete(Arrays.asList(parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileidProvider).delete(Arrays.asList(parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

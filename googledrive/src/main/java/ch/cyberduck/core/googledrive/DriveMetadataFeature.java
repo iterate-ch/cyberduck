@@ -31,9 +31,11 @@ import com.google.api.services.drive.model.File;
 public class DriveMetadataFeature implements Metadata {
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
 
-    public DriveMetadataFeature(final DriveSession session) {
+    public DriveMetadataFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class DriveMetadataFeature implements Metadata {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
+            final String fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
             final Map<String, String> properties = session.getClient().files().get(fileid).setFields("properties")
                 .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute().getProperties();
             if(null == properties) {
@@ -60,7 +62,7 @@ public class DriveMetadataFeature implements Metadata {
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         try {
-            final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
+            final String fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
             final File body = new File();
             body.setProperties(metadata);
             session.getClient().files().update(fileid, body).setFields("properties").

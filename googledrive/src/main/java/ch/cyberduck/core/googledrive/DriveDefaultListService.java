@@ -23,17 +23,9 @@ public class DriveDefaultListService extends AbstractDriveListService {
 
     private final DriveFileidProvider fileid;
 
-    public DriveDefaultListService(final DriveSession session) {
-        this(session, new DriveFileidProvider(session));
-    }
-
     public DriveDefaultListService(final DriveSession session, final DriveFileidProvider fileid) {
         super(session);
         this.fileid = fileid;
-    }
-
-    public DriveDefaultListService(final DriveSession session, final int pagesize) {
-        this(session, new DriveFileidProvider(session), pagesize);
     }
 
     public DriveDefaultListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize) {

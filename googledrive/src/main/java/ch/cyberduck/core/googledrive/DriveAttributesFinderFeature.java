@@ -29,14 +29,16 @@ import ch.cyberduck.core.features.AttributesFinder;
 public class DriveAttributesFinderFeature implements AttributesFinder {
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
 
-    public DriveAttributesFinderFeature(final DriveSession session) {
+    public DriveAttributesFinderFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
-        final AttributedList<Path> list = new FileidDriveListService(session, new DriveFileidProvider(session), file).list(file.getParent(), new DisabledListProgressListener());
+        final AttributedList<Path> list = new FileidDriveListService(session, fileid, file).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());

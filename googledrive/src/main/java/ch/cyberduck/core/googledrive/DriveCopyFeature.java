@@ -33,16 +33,18 @@ import com.google.api.services.drive.model.File;
 public class DriveCopyFeature implements Copy {
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
 
-    public DriveCopyFeature(final DriveSession session) {
+    public DriveCopyFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final File copy = session.getClient().files().copy(new DriveFileidProvider(session).getFileid(source, new DisabledListProgressListener()), new File()
-                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())))
+            final File copy = session.getClient().files().copy(fileid.getFileid(source, new DisabledListProgressListener()), new File()
+                .setParents(Collections.singletonList(fileid.getFileid(target.getParent(), new DisabledListProgressListener())))
                 .setName(target.getName()))
                 .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             return new Path(target.getParent(), target.getName(), target.getType(),

@@ -38,23 +38,25 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
     public void testSetTimestamp() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(test, new TransferStatus());
-        new DriveMetadataFeature(session).setMetadata(test, Collections.singletonMap("test", "t"));
+        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));
         final long modified = System.currentTimeMillis();
-        new DriveTimestampFeature(session).setTimestamp(test, modified);
+        new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
-        assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session).getMetadata(test));
-        new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session, fileid).getMetadata(test));
+        new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testSetTimestampDirectory() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(test, null, new TransferStatus());
+        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        new DriveDirectoryFeature(session, fileid).mkdir(test, null, new TransferStatus());
         final long modified = System.currentTimeMillis();
-        new DriveTimestampFeature(session).setTimestamp(test, modified);
+        new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
-        new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

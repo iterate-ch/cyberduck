@@ -57,16 +57,18 @@ import static com.google.api.client.json.Json.MEDIA_TYPE;
 public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements Write<Void> {
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public DriveWriteFeature(final DriveSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public DriveWriteFeature(final DriveSession session, final DriveFileidProvider fileid) {
+        this(session, fileid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public DriveWriteFeature(final DriveSession session, final Find finder, final AttributesFinder attributes) {
+    public DriveWriteFeature(final DriveSession session, final DriveFileidProvider fileid, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
+        this.fileid = fileid;
         this.finder = finder;
         this.attributes = attributes;
     }
@@ -100,7 +102,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
-                        final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
+                        final String fileid = DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener());
                         request = new HttpPatch(String.format("%s/upload/drive/v3/files/%s?supportsTeamDrives=true", base, fileid));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
@@ -112,7 +114,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                         request = new HttpPost(String.format(String.format("%%s/upload/drive/v3/files?uploadType=resumable&supportsTeamDrives=%s", PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")), base));
                         request.setEntity(new StringEntity("{\"name\": \""
                             + file.getName() + "\", \"parents\": [\""
-                            + new DriveFileidProvider(session).getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
+                            + fileid.getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
                             ContentType.create("application/json", "UTF-8")));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             // Set to the media MIME type of the upload data to be transferred in subsequent requests.

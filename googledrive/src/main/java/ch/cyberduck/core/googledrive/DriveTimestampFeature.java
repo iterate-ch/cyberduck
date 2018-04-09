@@ -29,15 +29,17 @@ import com.google.api.services.drive.model.File;
 public class DriveTimestampFeature extends DefaultTimestampFeature {
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
 
-    public DriveTimestampFeature(final DriveSession session) {
+    public DriveTimestampFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
     public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         try {
-            final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
+            final String fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
             final File properties = new File();
             properties.setModifiedTime(new DateTime(modified));
             session.getClient().files().update(fileid, properties).setFields("modifiedTime").

@@ -48,24 +48,25 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
     @Test
     public void testWrite() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final DriveFileidProvider fileid = new DriveFileidProvider(session);
         {
             final TransferStatus status = new TransferStatus();
             status.setMime("x-application/cyberduck");
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
-            final OutputStream out = new DriveWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new DriveWriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
-            test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test, new DisabledListProgressListener()));
+            test.attributes().setVersionId(fileid.getFileid(test, new DisabledListProgressListener()));
             assertTrue(new DefaultFindFeature(session).find(test));
             final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
             assertEquals(content.length, attributes.getSize());
-            final Write.Append append = new DriveWriteFeature(session).append(test, status.getLength(), PathCache.empty());
+            final Write.Append append = new DriveWriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty());
             assertTrue(append.override);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
-            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new DriveReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);
@@ -77,7 +78,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             status.setExists(true);
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
-            final OutputStream out = new DriveWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new DriveWriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -85,6 +86,6 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertEquals(content.length, attributes.getSize());
             assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getVersionId()).execute().getMimeType());
         }
-        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -35,11 +35,14 @@ import com.google.api.services.drive.model.File;
 public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
+
     private Delete delete;
 
-    public DriveMoveFeature(final DriveSession session) {
+    public DriveMoveFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
-        this.delete = new DriveDeleteFeature(session);
+        this.delete = new DriveDeleteFeature(session, fileid);
+        this.fileid = fileid;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class DriveMoveFeature implements Move {
             if(status.isExists()) {
                 delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
-            final String fileid = new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener());
+            final String fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 // Rename title
                 final File properties = new File();
@@ -80,7 +83,7 @@ public class DriveMoveFeature implements Move {
             }
             // Move the file to the new folder
             session.getClient().files().update(fileid, null)
-                .setAddParents(new DriveFileidProvider(session).getFileid(renamed.getParent(), new DisabledListProgressListener()))
+                .setAddParents(this.fileid.getFileid(renamed.getParent(), new DisabledListProgressListener()))
                 .setRemoveParents(previousParents.toString())
                 .setFields("id, parents")
                 .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))

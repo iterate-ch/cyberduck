@@ -38,19 +38,20 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session);
+        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, new DriveFileidProvider(session));
         f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
     public void testFind() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(test, new TransferStatus());
-        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getVersionId());
-        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -58,13 +59,14 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path file = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(file, null, new TransferStatus());
-        final PathAttributes attributes = new DriveAttributesFinderFeature(session).find(file);
+        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        new DriveDirectoryFeature(session, fileid).mkdir(file, null, new TransferStatus());
+        final PathAttributes attributes = new DriveAttributesFinderFeature(session, fileid).find(file);
         assertNotNull(attributes);
         assertEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getVersionId());
-        new DriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

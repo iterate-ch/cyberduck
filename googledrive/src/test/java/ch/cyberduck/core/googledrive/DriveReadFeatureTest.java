@@ -46,13 +46,13 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testAppend() throws Exception {
-        assertTrue(new DriveReadFeature(null).offset(new Path("/", EnumSet.of(Path.Type.file))));
+        assertTrue(new DriveReadFeature(null, new DriveFileidProvider(session)).offset(new Path("/", EnumSet.of(Path.Type.file))));
     }
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new DriveReadFeature(session).read(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new DriveReadFeature(session, new DriveFileidProvider(session)).read(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -66,7 +66,8 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DriveUploadFeature(new DriveWriteFeature(session)).upload(
+        final DriveFileidProvider fileid = new DriveFileidProvider(session);
+        new DriveUploadFeature(new DriveWriteFeature(session, fileid)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());
@@ -74,7 +75,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DriveReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new DriveReadFeature(session, fileid).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -82,6 +83,6 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

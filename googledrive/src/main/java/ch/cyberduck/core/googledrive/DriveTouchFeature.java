@@ -33,9 +33,11 @@ import com.google.api.services.drive.model.File;
 public class DriveTouchFeature implements Touch<Void> {
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
 
-    public DriveTouchFeature(final DriveSession session) {
+    public DriveTouchFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class DriveTouchFeature implements Touch<Void> {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())
                     .setMimeType(status.getMime())
-                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(file.getParent(), new DisabledListProgressListener()))));
+                .setParents(Collections.singletonList(fileid.getFileid(file.getParent(), new DisabledListProgressListener()))));
             final File execute = insert.
                 setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             return new Path(file.getParent(), file.getName(), file.getType(),
