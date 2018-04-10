@@ -28,7 +28,7 @@ public class LinuxTerminalPreferencesTest {
     public void setDefaults() {
         final LinuxTerminalPreferences prefs = new LinuxTerminalPreferences();
         PreferencesFactory.set(prefs);
-        assertEquals("NativePRNGNonBlocking", prefs.getProperty("connection.ssl.securerandom"));
+        assertEquals("NativePRNGNonBlocking", prefs.getProperty("connection.ssl.securerandom.algorithm"));
         assertEquals(UnsecureHostPasswordStore.class.getName(), prefs.getProperty("factory.passwordstore.class"));
     }
 }

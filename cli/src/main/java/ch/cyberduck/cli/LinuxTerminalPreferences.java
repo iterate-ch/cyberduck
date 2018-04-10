@@ -56,7 +56,7 @@ public class LinuxTerminalPreferences extends TerminalPreferences {
         // Lowercase folder names to use when looking for profiles and bookmarks in user support directory
         this.setDefault("bookmarks.folder.name", "bookmarks");
         this.setDefault("profiles.folder.name", "profiles");
-        this.setDefault("connection.ssl.securerandom", "NativePRNGNonBlocking");
+        this.setDefault("connection.ssl.securerandom.algorithm", "NativePRNGNonBlocking");
     }
 
     @Override
