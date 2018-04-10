@@ -81,15 +81,17 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public SDSMultipartWriteFeature(final SDSSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public SDSMultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        this(session, nodeid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public SDSMultipartWriteFeature(final SDSSession session, final Find finder, final AttributesFinder attributes) {
+    public SDSMultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Find finder, final AttributesFinder attributes) {
         this.session = session;
+        this.nodeid = nodeid;
         this.finder = finder;
         this.attributes = attributes;
     }
@@ -97,7 +99,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final CreateFileUploadRequest body = new CreateFileUploadRequest();
-        body.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file.getParent(), new DisabledListProgressListener())));
+        body.setParentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())));
         body.setName(file.getName());
         body.classification(DEFAULT_CLASSIFICATION); // internal
         try {

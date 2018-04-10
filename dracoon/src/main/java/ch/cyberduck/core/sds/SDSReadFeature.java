@@ -43,9 +43,11 @@ public class SDSReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SDSReadFeature.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSReadFeature(final SDSSession session) {
+    public SDSReadFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class SDSReadFeature implements Read {
         try {
             final SDSApiClient client = session.getClient();
             final HttpUriRequest request = new HttpGet(String.format("%s/nodes/files/%s/downloads", client.getBasePath(),
-                    new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
+                nodeid.getFileid(file, new DisabledListProgressListener())));
             request.addHeader("X-Sds-Auth-Token", StringUtils.EMPTY);
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);

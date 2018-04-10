@@ -69,17 +69,18 @@ public class SDSMissingFileKeysSchedulerFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
-        final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session));
+        final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new SDSAttributesFinderFeature(session).find(test).getSize());
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
+        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
         final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -95,7 +96,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest {
             }
         }
         assertTrue(found);
-        new SDSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -107,7 +108,8 @@ public class SDSMissingFileKeysSchedulerFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
         final AtomicBoolean prompt = new AtomicBoolean();
         final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
             @Override

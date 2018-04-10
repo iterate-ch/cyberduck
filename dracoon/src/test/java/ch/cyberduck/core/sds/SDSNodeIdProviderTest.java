@@ -70,25 +70,26 @@ public class SDSNodeIdProviderTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path bucket = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path bucket = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new SDSTouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(nodeid.getFileid(file, new DisabledListProgressListener()));
         try {
-            assertNull(new SDSNodeIdProvider(session).getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+            assertNull(nodeid.getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
         try {
-            assertNull(new SDSNodeIdProvider(session).getFileid(new Path(bucket, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+            assertNull(nodeid.getFileid(new Path(bucket, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
-        new SDSDeleteFeature(session).delete(Arrays.asList(file, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(file, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -101,24 +102,25 @@ public class SDSNodeIdProviderTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new SDSTouchFeature(session).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionIdTouch = file.attributes().getVersionId();
-        assertEquals(versionIdTouch, new SDSNodeIdProvider(session).getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertEquals(versionIdTouch, nodeid.getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setExists(true);
-        final SDSWriteFeature writer = new SDSWriteFeature(session);
+        final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
         final HttpResponseOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId versionIdWrite = out.getStatus();
         assertNotNull(versionIdWrite);
         assertNotEquals(versionIdTouch, versionIdWrite);
-        assertEquals(versionIdWrite.toString(), new SDSNodeIdProvider(session).getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
-        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(versionIdWrite.toString(), nodeid.getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -131,18 +133,19 @@ public class SDSNodeIdProviderTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path bucket = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path bucket = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path folder = new SDSDirectoryFeature(session).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertNotNull(new SDSNodeIdProvider(session).getFileid(folder, new DisabledListProgressListener()));
+        final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertNotNull(nodeid.getFileid(folder, new DisabledListProgressListener()));
         try {
-            assertNull(new SDSNodeIdProvider(session).getFileid(new Path(bucket, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+            assertNull(nodeid.getFileid(new Path(bucket, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
             fail();
         }
         catch(NotfoundException e) {
             //
         }
-        new SDSDeleteFeature(session).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -155,18 +158,19 @@ public class SDSNodeIdProviderTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path subroom = new SDSDirectoryFeature(session).mkdir(new Path(room, name, EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        assertNotNull(new SDSNodeIdProvider(session).getFileid(new Path(room, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+        final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, name, EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        assertNotNull(nodeid.getFileid(new Path(room, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         try {
-            assertNull(new SDSNodeIdProvider(session).getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+            assertNull(nodeid.getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
             fail();
         }
         catch(NotfoundException e) {
             //
         }
-        new SDSDeleteFeature(session).delete(Arrays.asList(subroom, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(subroom, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

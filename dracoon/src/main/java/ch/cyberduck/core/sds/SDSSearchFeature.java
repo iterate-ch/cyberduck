@@ -36,9 +36,11 @@ import java.util.EnumSet;
 public class SDSSearchFeature implements Search {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSSearchFeature(final SDSSession session) {
+    public SDSSearchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -47,9 +49,9 @@ public class SDSSearchFeature implements Search {
             final AttributedList<Path> result = new AttributedList<>();
             final NodeList list = new NodesApi(session.getClient()).searchFsNodes(StringUtils.EMPTY,
                 String.format("*%s*", regex.toPattern().pattern()), null,
-                -1, Long.valueOf(new SDSNodeIdProvider(session).getFileid(workdir, listener)), null,
+                -1, Long.valueOf(nodeid.getFileid(workdir, listener)), null,
                 null, null, null);
-            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session);
+            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             for(Node node : list.getItems()) {
                 final PathAttributes attributes = feature.toAttributes(node);
                 final EnumSet<AbstractPath.Type> type;

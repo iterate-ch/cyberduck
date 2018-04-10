@@ -35,6 +35,7 @@ import ch.cyberduck.core.sds.SDSAttributesFinderFeature;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSEncryptionBulkFeature;
 import ch.cyberduck.core.sds.SDSMultipartWriteFeature;
+import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sds.SDSReadFeature;
 import ch.cyberduck.core.sds.SDSSession;
@@ -77,18 +78,19 @@ public class CryptoWriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
-        final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session));
+        final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new SDSAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus(), new ConnectionCallback() {
+        final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new ConnectionCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
                 //
@@ -102,7 +104,7 @@ public class CryptoWriteFeatureTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -120,18 +122,19 @@ public class CryptoWriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
-        final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSMultipartWriteFeature(session));
+        final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSMultipartWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new SDSAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new CryptoReadFeature(session, new SDSReadFeature(session)).read(test, new TransferStatus(), new ConnectionCallback() {
+        final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new ConnectionCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
                 //
@@ -145,7 +148,7 @@ public class CryptoWriteFeatureTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

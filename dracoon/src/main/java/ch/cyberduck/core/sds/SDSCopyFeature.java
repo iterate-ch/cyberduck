@@ -36,12 +36,14 @@ import java.util.Objects;
 public class SDSCopyFeature implements Copy {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
     private final PathContainerService containerService
         = new SDSPathContainerService();
 
-    public SDSCopyFeature(final SDSSession session) {
+    public SDSCopyFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -49,9 +51,9 @@ public class SDSCopyFeature implements Copy {
         try {
             final Node node = new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
                 // Target Parent Node ID
-                Long.parseLong(new SDSNodeIdProvider(session).getFileid(target.getParent(), new DisabledListProgressListener())),
+                Long.parseLong(nodeid.getFileid(target.getParent(), new DisabledListProgressListener())),
                 new CopyNodesRequest()
-                    .addNodeIdsItem(Long.parseLong(new SDSNodeIdProvider(session).getFileid(source, new DisabledListProgressListener())))
+                    .addNodeIdsItem(Long.parseLong(nodeid.getFileid(source, new DisabledListProgressListener())))
                     .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
             return new Path(target.getParent(), target.getName(), target.getType(),
                 new PathAttributes(target.attributes()).withVersionId(String.valueOf(node.getId())));

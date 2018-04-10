@@ -42,23 +42,26 @@ public class SDSFindFeatureTest {
     @Test
     public void testFind() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(new SDSFindFeature(session).find(new DefaultHomeFinderService(session).find()));
-        assertFalse(new SDSFindFeature(session).find(
-                new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        assertTrue(new SDSFindFeature(nodeid).find(new DefaultHomeFinderService(session).find()));
+        assertFalse(new SDSFindFeature(nodeid).find(
+            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
         ));
-        assertFalse(new SDSFindFeature(session).find(
-                new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
+        assertFalse(new SDSFindFeature(nodeid).find(
+            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
         ));
         session.close();
     }
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new SDSFindFeature(new SDSSession(new Host(new SDSProtocol(), "h"), new DisabledX509TrustManager(), new DefaultX509KeyManager())).find(new Path("/", EnumSet.of(Path.Type.directory))));
+        final SDSSession session = new SDSSession(new Host(new SDSProtocol(), "h"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        assertTrue(new SDSFindFeature(nodeid).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }

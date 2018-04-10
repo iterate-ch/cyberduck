@@ -36,12 +36,14 @@ import java.util.EnumSet;
 public class SDSDirectoryFeature implements Directory {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
     private final PathContainerService containerService
         = new SDSPathContainerService();
 
-    public SDSDirectoryFeature(final SDSSession session) {
+    public SDSDirectoryFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class SDSDirectoryFeature implements Directory {
                 roomRequest.addAdminIdsItem(user.getId());
                 roomRequest.setAdminGroupIds(null);
                 if(!folder.getParent().isRoot()) {
-                    roomRequest.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(folder.getParent(), new DisabledListProgressListener())));
+                    roomRequest.setParentId(Long.parseLong(nodeid.getFileid(folder.getParent(), new DisabledListProgressListener())));
                 }
                 roomRequest.setName(folder.getName());
                 final Node r = new NodesApi(session.getClient()).createRoom(StringUtils.EMPTY, null, roomRequest);
@@ -62,7 +64,7 @@ public class SDSDirectoryFeature implements Directory {
             }
             else {
                 final CreateFolderRequest folderRequest = new CreateFolderRequest();
-                folderRequest.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(folder.getParent(), new DisabledListProgressListener())));
+                folderRequest.setParentId(Long.parseLong(nodeid.getFileid(folder.getParent(), new DisabledListProgressListener())));
                 folderRequest.setName(folder.getName());
                 final Node f = new NodesApi(session.getClient()).createFolder(StringUtils.EMPTY, folderRequest, null);
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),

@@ -45,7 +45,8 @@ public class SDSQuotaFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Quota.Space quota = new SDSQuotaFeature(session).get();
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Quota.Space quota = new SDSQuotaFeature(session, nodeid).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);
     }
@@ -59,7 +60,8 @@ public class SDSQuotaFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Quota.Space quota = new SDSQuotaFeature(session).get();
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Quota.Space quota = new SDSQuotaFeature(session, nodeid).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);
     }

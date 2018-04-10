@@ -39,9 +39,11 @@ import java.util.Map;
 public class SDSListService implements ListService {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSListService(final SDSSession session) {
+    public SDSListService(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -53,11 +55,11 @@ public class SDSListService implements ListService {
         final AttributedList<Path> children = new AttributedList<Path>();
         try {
             Integer offset = 0;
-            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session);
+            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, 0,
-                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(directory, new DisabledListProgressListener())),
+                    Long.parseLong(nodeid.getFileid(directory, new DisabledListProgressListener())),
                     null, null, "name:asc", offset, chunksize);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
