@@ -15,16 +15,8 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -37,17 +29,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SDSFindFeatureTest {
+public class SDSFindFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testFind() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         assertTrue(new SDSFindFeature(nodeid).find(new DefaultHomeFinderService(session).find()));
         assertFalse(new SDSFindFeature(nodeid).find(
             new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
@@ -55,13 +41,11 @@ public class SDSFindFeatureTest {
         assertFalse(new SDSFindFeature(nodeid).find(
             new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
         ));
-        session.close();
     }
 
     @Test
     public void testFindRoot() throws Exception {
-        final SDSSession session = new SDSSession(new Host(new SDSProtocol(), "h"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         assertTrue(new SDSFindFeature(nodeid).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }
