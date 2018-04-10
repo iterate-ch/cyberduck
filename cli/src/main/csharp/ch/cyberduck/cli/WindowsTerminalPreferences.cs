@@ -45,7 +45,7 @@ namespace Ch.Cyberduck.Cli
             this.setDefault("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
             this.setDefault("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
             this.setDefault("factory.local.class", typeof(SystemLocal).AssemblyQualifiedName);
-            this.setDefault("factory.passwordstore.class", typeof(DataProtectorPasswordStore).AssemblyQualifiedName);
+            this.setDefault("factory.passwordstore.class", typeof(PasswordStoreFacade).AssemblyQualifiedName);
             this.setDefault("factory.proxycredentialsstore.class",
                 typeof(CredentialManagerProxyCredentialsStore).AssemblyQualifiedName);
             this.setDefault("factory.proxy.class", typeof(SystemProxy).AssemblyQualifiedName);
