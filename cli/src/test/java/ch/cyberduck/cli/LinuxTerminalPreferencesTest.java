@@ -15,6 +15,9 @@ package ch.cyberduck.cli;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.UnsecureHostPasswordStore;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -24,8 +27,8 @@ public class LinuxTerminalPreferencesTest {
     @Test
     public void setDefaults() {
         final LinuxTerminalPreferences prefs = new LinuxTerminalPreferences();
-        prefs.load();
-        assertEquals(null, prefs.getProperty("connection.ssl.securerandom"));
-        assertEquals(null, prefs.getProperty("factory.passwordstore.class"));
+        PreferencesFactory.set(prefs);
+        assertEquals("NativePRNGNonBlocking", prefs.getProperty("connection.ssl.securerandom"));
+        assertEquals(UnsecureHostPasswordStore.class.getName(), prefs.getProperty("factory.passwordstore.class"));
     }
 }
