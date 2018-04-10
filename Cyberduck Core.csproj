@@ -140,6 +140,7 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemWatchEditorFactory.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\i18n\DictionaryLocale.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\DataProtectorPasswordStore.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\i18n\PreferenceLocales.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\ListAdapter.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\DefaultBrowserLauncher.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\ExplorerRevealService.cs" />
@@ -153,6 +154,8 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeMethods.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\OSVersion.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\PasswordStoreFacade.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AppConfigPreferences.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\DefaultPreferenceLocales.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\RoamingSupportDirectoryFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AssemblyApplicationResourcesFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\sparkle\WinSparkle.cs" />

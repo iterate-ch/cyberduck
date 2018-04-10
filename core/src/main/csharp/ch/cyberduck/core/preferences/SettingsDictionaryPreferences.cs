@@ -1,21 +1,29 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
+using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core.Editor;
+using Ch.Cyberduck.Properties;
+using java.io;
+using java.security;
+using java.util;
+using org.apache.log4j;
+using sun.security.mscapi;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -27,44 +35,16 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Windows.Storage;
-using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core.Editor;
-using Ch.Cyberduck.Properties;
-using java.io;
-using java.security;
-using java.util;
-using org.apache.log4j;
-using sun.security.mscapi;
 using File = System.IO.File;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
-    public class SettingsDictionaryPreferences : DefaultPreferences
+    public class SettingsDictionaryPreferences : AppConfigPreferences
     {
         private static readonly Logger Log = Logger.getLogger(typeof(SettingsDictionaryPreferences).FullName);
-        private SettingsDictionary _settings;
 
-        /// <summary>
-        /// Try to get an OS version specific download path:
-        /// - XP : Desktop
-        /// - Vista or later : Downloads folder in the user home directory 
-        /// </summary>
-        private string DefaultDownloadPath
+        public SettingsDictionaryPreferences() : base(new DefaultPreferenceLocales())
         {
-            get
-            {
-                string homePath = HomeFolder;
-                if (!string.IsNullOrEmpty(homePath))
-                {
-                    string downloads = Path.Combine(homePath, "Downloads");
-                    if (Directory.Exists(downloads))
-                    {
-                        return downloads;
-                    }
-                }
-                // fallback is Desktop
-                return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            }
         }
 
         /// <summary>
@@ -95,52 +75,46 @@ namespace Ch.Cyberduck.Core.Preferences
             }
         }
 
-        private void ValidatePreferences()
+        /// <summary>
+        /// Try to get an OS version specific download path:
+        /// - XP : Desktop
+        /// - Vista or later : Downloads folder in the user home directory
+        /// </summary>
+        private string DefaultDownloadPath
         {
-            try
+            get
             {
-                ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoaming);
-            }
-            catch (ConfigurationErrorsException ex)
-            {
-                if (!string.IsNullOrEmpty(ex.Filename))
+                string homePath = HomeFolder;
+                if (!string.IsNullOrEmpty(homePath))
                 {
-                    File.Move(ex.Filename, $"{ex.Filename}_{DateTime.Now:yyyyMMddHHmmssffff}");
+                    string downloads = Path.Combine(homePath, "Downloads");
+                    if (Directory.Exists(downloads))
+                    {
+                        return downloads;
+                    }
+                }
+                // fallback is Desktop
+                return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            }
+        }
+
+        public string GetDefaultLanguage()
+        {
+            List sysLocales = systemLocales();
+            List appLocales = applicationLocales();
+            for (int i = 0; i < sysLocales.size(); i++)
+            {
+                string s = (string)sysLocales.get(i);
+                string match = TryToMatchLocale(s.Replace('-', '_'), appLocales);
+                if (null != match)
+                {
+                    Log.debug(String.Format("Default locale is '{0}' for system locale '{1}'", match, s));
+                    return match;
                 }
             }
-        }
-
-        public override void setProperty(string property, string value)
-        {
-            Log.info("setProperty: " + property + "," + value);
-            _settings[property] = value;
-            save();
-        }
-
-        public override string locale()
-        {
-            return getProperty("application.language");
-        }
-
-        public override void setProperty(string str, List l)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public override void deleteProperty(string property)
-        {
-            Log.debug("deleteProperty: " + property);
-            _settings.Remove(property);
-            save();
-        }
-
-        public override string getProperty(string property)
-        {
-            if (_settings.ContainsKey(property))
-            {
-                return _settings[property];
-            }
-            return getDefault(property);
+            //default to english
+            Log.debug("Fallback to locale 'en'");
+            return "en";
         }
 
         public override string getDisplayName(string locale)
@@ -154,75 +128,33 @@ namespace Ch.Cyberduck.Core.Preferences
             return cultureInfo.TextInfo.ToTitleCase(cultureInfo.NativeName);
         }
 
-        public override List applicationLocales()
-        {
-            Assembly asm = Utils.Me();
-            string[] names = asm.GetManifestResourceNames();
-            // the dots apparently come from the relative path in the msbuild file
-            Regex regex = new Regex("Core.*\\.([^\\..]+).lproj\\.Localizable\\.strings");
-            List<string> distinctNames = new List<string>();
-            foreach (var name in names)
-            {
-                Match match = regex.Match(name);
-                if (match.Groups.Count > 1)
-                {
-                    distinctNames.Add(match.Groups[1].Value);
-                }
-            }
-            if (!HasEastAsianFontSupport())
-            {
-                distinctNames.Remove("ja");
-                distinctNames.Remove("ko");
-                distinctNames.Remove("ka");
-                distinctNames.Remove("zh_CN");
-                distinctNames.Remove("zh_TW");
-            }
-            return Utils.ConvertToJavaList(distinctNames);
-        }
-
-        private bool HasEastAsianFontSupport()
-        {
-            if (Utils.IsVistaOrLater)
-            {
-                return true;
-            }
-            return
-                Convert.ToBoolean(NativeMethods.IsValidLocale(CultureInfo.CreateSpecificCulture("zh").LCID,
-                    NativeConstants.LCID_INSTALLED));
-        }
-
         public object GetSpecialObject(string property)
         {
             return Settings.Default[property];
         }
 
-        public override void save()
+        public override string locale()
         {
-            Log.debug("Saving preferences");
-            // re-set field to force save
-            Settings.Default.CdSettings = _settings;
-            Settings.Default.Save();
+            return getProperty("application.language");
         }
 
-        public override List systemLocales()
+        protected override void post()
         {
-            List locales = new ArrayList();
-            //add current UI culture
-            locales.add(CultureInfo.CurrentUICulture.Name);
-            //add current system culture
-            locales.add(Application.CurrentCulture.Name);
-            return locales;
-        }
-
-        public override void load()
-        {
-            ValidatePreferences();
-            if (Settings.Default.UpgradeSettings)
+            base.post();
+            Logger root = Logger.getRootLogger();
+            var fileName = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
+                getProperty("application.name").ToLower().Replace(" ", "") + ".log");
+            RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
+                fileName, true);
+            appender.setEncoding("UTF-8");
+            appender.setMaxFileSize("10MB");
+            appender.setMaxBackupIndex(0);
+            root.addAppender(appender);
+            if (Debugger.IsAttached)
             {
-                Settings.Default.Upgrade();
-                Settings.Default.UpgradeSettings = false;
+                root.setLevel(Level.DEBUG);
             }
-            _settings = Settings.Default.CdSettings ?? new SettingsDictionary();
+            ApplyGlobalConfig();
         }
 
         protected override void setDefaults()
@@ -403,32 +335,6 @@ namespace Ch.Cyberduck.Core.Preferences
             }
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void SetUWPDefaults()
-        {
-            this.setDefault("update.check", $"{false}");
-            this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
-        }
-
-        protected override void post()
-        {
-            base.post();
-            Logger root = Logger.getRootLogger();
-            var fileName = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
-                getProperty("application.name").ToLower().Replace(" ", "") + ".log");
-            RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
-                fileName, true);
-            appender.setEncoding("UTF-8");
-            appender.setMaxFileSize("10MB");
-            appender.setMaxBackupIndex(0);
-            root.addAppender(appender);
-            if (Debugger.IsAttached)
-            {
-                root.setLevel(Level.DEBUG);
-            }
-            ApplyGlobalConfig();
-        }
-
         private void ApplyGlobalConfig()
         {
             var config = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
@@ -448,30 +354,18 @@ namespace Ch.Cyberduck.Core.Preferences
             }
         }
 
-        public string GetDefaultLanguage()
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void SetUWPDefaults()
         {
-            List sysLocales = systemLocales();
-            List appLocales = applicationLocales();
-            for (int i = 0; i < sysLocales.size(); i++)
-            {
-                string s = (string) sysLocales.get(i);
-                string match = TryToMatchLocale(s.Replace('-', '_'), appLocales);
-                if (null != match)
-                {
-                    Log.debug(String.Format("Default locale is '{0}' for system locale '{1}'", match, s));
-                    return match;
-                }
-            }
-            //default to english
-            Log.debug("Fallback to locale 'en'");
-            return "en";
+            this.setDefault("update.check", $"{false}");
+            this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
         }
 
         private string TryToMatchLocale(string sysLocale, List appLocales)
         {
             for (int i = 0; i < appLocales.size(); i++)
             {
-                string l = (string) appLocales.get(i);
+                string l = (string)appLocales.get(i);
                 if (l.Equals(sysLocale))
                 {
                     //direct match
