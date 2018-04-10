@@ -50,6 +50,7 @@ public class AbstractSDSTest {
         session = new SDSSession(new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         )), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.enableMetrics();
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
