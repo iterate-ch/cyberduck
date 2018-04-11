@@ -102,6 +102,8 @@ import com.google.common.collect.ImmutableMap;
 public abstract class Preferences {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
+    protected static final String LIST_SEPERATOR = " ";
+
     /**
      * Called after the defaults have been set.
      */
@@ -136,7 +138,9 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param values   The new or updated value
      */
-    public abstract void setProperty(final String property, List<String> values);
+    public void setProperty(final String property, List<String> values) {
+        this.setProperty(property, StringUtils.join(values, LIST_SEPERATOR));
+    }
 
     /**
      * Remove a user customized property from the preferences.

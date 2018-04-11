@@ -81,11 +81,6 @@ namespace Ch.Cyberduck.Core.Preferences
             Settings.Default.Save();
         }
 
-        public override void setProperty(string property, List values)
-        {
-            settings[property] = StringUtils.join(values, ',');
-        }
-
         public override void setProperty(string property, string value)
         {
             Log.info("setProperty: " + property + "," + value);
