@@ -114,11 +114,6 @@ public class TerminalPreferences extends Preferences {
     }
 
     @Override
-    public void setProperty(final String property, final List<String> values) {
-        proxy.setProperty(property, values);
-    }
-
-    @Override
     public void deleteProperty(final String property) {
         proxy.deleteProperty(property);
     }
