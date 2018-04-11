@@ -115,7 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cli\src\main\csharp\ch\cyberduck\cli\WindowsTerminal.cs" />
-    <Compile Include="cli\src\main\csharp\ch\cyberduck\cli\WindowsTerminalPreferenceLocales.cs" />
+    <Compile Include="cli\src\main\csharp\ch\cyberduck\cli\WindowsTerminalLocales.cs" />
     <Compile Include="cli\src\main\csharp\ch\cyberduck\cli\WindowsTerminalPreferences.cs" />
     <Compile Include="cli\windows\target\AssemblyInfo.cs" />
   </ItemGroup>

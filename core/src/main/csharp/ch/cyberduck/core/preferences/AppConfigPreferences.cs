@@ -17,7 +17,7 @@
 //
 
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core.I18n;
+using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Properties;
 using java.util;
 using org.apache.commons.lang3;
@@ -37,9 +37,9 @@ namespace Ch.Cyberduck.Core.Preferences
     {
         private static readonly Logger Log = Logger.getLogger(typeof(AppConfigPreferences).FullName);
         private SettingsDictionary settings;
-        private PreferenceLocales locales;
+        private Locales locales;
 
-        public AppConfigPreferences(PreferenceLocales locales)
+        public AppConfigPreferences(Locales locales)
         {
             this.locales = locales;
         }

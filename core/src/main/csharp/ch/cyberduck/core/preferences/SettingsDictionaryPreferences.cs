@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Core.Preferences
     {
         private static readonly Logger Log = Logger.getLogger(typeof(SettingsDictionaryPreferences).FullName);
 
-        public SettingsDictionaryPreferences() : base(new DefaultPreferenceLocales())
+        public SettingsDictionaryPreferences() : base(new DefaultLocales())
         {
         }
 

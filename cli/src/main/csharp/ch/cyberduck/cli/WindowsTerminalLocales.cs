@@ -16,18 +16,20 @@
 // feedback@cyberduck.io
 //
 
+using ch.cyberduck.core.i18n;
 using java.util;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ch.Cyberduck.Core.I18n
+namespace Ch.Cyberduck.Cli
 {
-    public abstract class PreferenceLocales
+    public class WindowsTerminalPreferenceLocales : Locales
     {
-        public abstract List applicationLocales();
+        public List applicationLocales() => Collections.singletonList("en");
 
-        public abstract List systemLocales();
+        public List systemLocales() => Collections.singletonList("en");
     }
 }

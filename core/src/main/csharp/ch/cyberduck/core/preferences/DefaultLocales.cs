@@ -16,7 +16,7 @@
 // feedback@cyberduck.io
 //
 
-using Ch.Cyberduck.Core.I18n;
+using ch.cyberduck.core.i18n;
 using java.util;
 using System;
 using System.Collections.Generic;
@@ -30,9 +30,9 @@ using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
-    public class DefaultPreferenceLocales : PreferenceLocales
+    public class DefaultLocales : Locales
     {
-        public override List applicationLocales()
+        public List applicationLocales()
         {
             Assembly asm = Utils.Me();
             string[] names = asm.GetManifestResourceNames();
@@ -58,7 +58,7 @@ namespace Ch.Cyberduck.Core.Preferences
             return Utils.ConvertToJavaList(distinctNames);
         }
 
-        public override List systemLocales()
+        public List systemLocales()
         {
             List locales = new ArrayList();
             //add current UI culture
