@@ -35,6 +35,7 @@ import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.diagnostics.DefaultInetAddressReachability;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
+import ch.cyberduck.core.i18n.Locales;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
@@ -99,7 +100,7 @@ import com.google.common.collect.ImmutableMap;
  * the <code>PREFERENCES_FILE</code>.
  * Singleton class.
  */
-public abstract class Preferences {
+public abstract class Preferences implements Locales {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
     protected static final String LIST_SEPERATOR = " ";
@@ -1303,11 +1304,13 @@ public abstract class Preferences {
      *
      * @return Available locales in application bundle
      */
+    @Override
     public abstract List<String> applicationLocales();
 
     /**
      * @return Available locales in system
      */
+    @Override
     public abstract List<String> systemLocales();
 
     /**
