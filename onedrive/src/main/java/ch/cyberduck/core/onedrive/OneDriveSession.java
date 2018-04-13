@@ -53,11 +53,13 @@ import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;
 import org.nuxeo.onedrive.client.OneDriveResource;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
 
@@ -143,8 +145,8 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                     OneDriveItem.Metadata temporaryChild = null;
 
                     final OneDriveFolder folder = (OneDriveFolder) item;
-                    // iterate over all children
-                    for(final OneDriveItem.Metadata childMetadata : folder.search(part)) {
+                    // fast search for item
+                    for(final OneDriveItem.Metadata childMetadata : folder.search(URIEncoder.encode(part))) {
                         // check name, do not take ID or anything else into account (not applicable)
                         // paths given here are always human readable
                         if(part.equals(childMetadata.getName())) {
@@ -154,6 +156,30 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                             }
                             else {
                                 temporaryChild = null;
+                            }
+                        }
+                    }
+
+                    // if nothing found try slower folder iteration
+                    if(!foundChild) {
+                        final Iterator<OneDriveItem.Metadata> oneDriveFolderIterator = folder.iterator();
+
+                        while(oneDriveFolderIterator.hasNext()) {
+                            try {
+                                final OneDriveItem.Metadata childMetadata = oneDriveFolderIterator.next();
+
+                                if(part.equals(childMetadata.getName())) {
+                                    if(!foundChild && null == temporaryChild) {
+                                        temporaryChild = childMetadata;
+                                        foundChild = true;
+                                    }
+                                    else {
+                                        temporaryChild = null;
+                                    }
+                                }
+                            }
+                            catch(OneDriveRuntimeException e) {
+                                // silent ignore OneDriveRuntimeExceptions
                             }
                         }
                     }
