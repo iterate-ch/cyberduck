@@ -103,7 +103,7 @@ import com.google.common.collect.ImmutableMap;
 public abstract class Preferences implements Locales {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
-    protected static final String LIST_SEPERATOR = " ";
+    protected static final String LIST_SEPERATOR = StringUtils.SPACE;
 
     /**
      * Called after the defaults have been set.
