@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace Ch.Cyberduck.Cli
 {
-    public class WindowsTerminalPreferenceLocales : Locales
+    public class WindowsTerminalLocales : Locales
     {
         public List applicationLocales() => Collections.singletonList("en");
 
