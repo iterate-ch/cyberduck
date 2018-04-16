@@ -439,7 +439,10 @@ namespace Ch.Cyberduck.Core.Preferences
                 {
                     var properties = new java.util.Properties();
                     properties.load(new FileInputStream(config));
-                    this.setDefaults(properties);
+                    foreach (var key in Utils.ConvertFromJavaList<String>(properties.keySet()))
+                    {
+                        setProperty(key, properties.getProperty(key));
+                    }
                 }
                 catch (Exception e)
                 {
