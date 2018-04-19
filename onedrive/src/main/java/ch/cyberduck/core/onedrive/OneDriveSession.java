@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
@@ -32,8 +31,21 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveBufferWriteFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveCopyFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveMoveFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveQuotaFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveReadFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveSearchFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveTimestampFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveTouchFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveWriteFeature;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -52,13 +64,11 @@ import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;
-import org.nuxeo.onedrive.client.OneDriveResource;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
@@ -77,6 +87,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     /**
      * Resolves given path to OneDriveResource
      */
+    @Override
     public OneDriveItem toItem(final Path currentPath) throws BackgroundException {
         final Stack<String> parts = new Stack<String>();
         Path traverse = currentPath;

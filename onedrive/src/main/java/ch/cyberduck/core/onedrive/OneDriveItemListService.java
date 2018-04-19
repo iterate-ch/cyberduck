@@ -23,10 +23,10 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;

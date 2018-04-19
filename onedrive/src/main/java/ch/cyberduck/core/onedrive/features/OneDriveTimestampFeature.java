@@ -1,4 +1,4 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.onedrive.features;
 
 /*
  * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
@@ -19,6 +19,8 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
