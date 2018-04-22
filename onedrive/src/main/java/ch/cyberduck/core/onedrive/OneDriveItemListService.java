@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -39,7 +40,7 @@ public class OneDriveItemListService implements ListService {
     private static final Logger log = Logger.getLogger(OneDriveItemListService.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final OneDriveSession session;
     private final OneDriveAttributesFinderFeature attributes;
@@ -53,7 +54,7 @@ public class OneDriveItemListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<>();
         final OneDriveItem local = session.toItem(directory);
-        if (!(local instanceof OneDriveFolder)) {
+        if(!(local instanceof OneDriveFolder)) {
             throw new NotfoundException(String.format("Did not find directory %s", directory));
         }
         final OneDriveFolder folder = (OneDriveFolder) local;
@@ -69,8 +70,22 @@ public class OneDriveItemListService implements ListService {
                     continue;
                 }
                 final PathAttributes attributes = this.attributes.convert(metadata);
-                children.add(new Path(directory, metadata.getName(),
-                        metadata.isFolder() ? EnumSet.of(Path.Type.directory) : metadata instanceof OneDrivePackageItem.Metadata ? EnumSet.of(Path.Type.placeholder, Path.Type.file) : EnumSet.of(Path.Type.file), attributes));
+
+                final EnumSet<Path.Type> pathType = EnumSet.noneOf(Path.Type.class);
+                if(metadata.isFolder()) {
+                    pathType.add(Path.Type.directory);
+                }
+                if(metadata.isFile()) {
+                    pathType.add(Path.Type.file);
+                }
+                if(metadata instanceof OneDrivePackageItem.Metadata) {
+                    pathType.add(Path.Type.placeholder);
+                }
+                if(null != metadata.getRemoteItem()) {
+                    pathType.add(Path.Type.symboliclink);
+                }
+
+                children.add(new Path(directory, metadata.getName(), pathType, attributes));
                 listener.chunk(directory, children);
             }
         }
