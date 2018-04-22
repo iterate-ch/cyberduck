@@ -36,6 +36,10 @@ import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 
 public class ApplicationTerminalPreferences extends TerminalPreferences {
 
+    public ApplicationTerminalPreferences() {
+        super(new MemoryPreferences());
+    }
+
     @Override
     protected void setFactories() {
         super.setFactories();

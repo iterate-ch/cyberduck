@@ -14,34 +14,26 @@
 
 package ch.cyberduck.cli;
 
-import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.UnsecureHostPasswordStore;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
-import ch.cyberduck.core.editor.DefaultEditorFactory;
-import ch.cyberduck.core.i18n.RegexLocale;
-import ch.cyberduck.core.local.DefaultSymlinkFeature;
-import ch.cyberduck.core.local.DesktopBrowserLauncher;
-import ch.cyberduck.core.local.ExecApplicationLauncher;
-import ch.cyberduck.core.preferences.MemoryPreferences;
-import ch.cyberduck.core.preferences.StaticApplicationResourcesFinder;
-import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
-import ch.cyberduck.core.proxy.EnvironmentVariableProxyFinder;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.awt.*;
-import java.io.IOException;
-import java.nio.charset.Charset;
+import java.util.List;
 
-public class TerminalPreferences extends MemoryPreferences {
+public class TerminalPreferences extends Preferences {
     private static final Logger log = Logger.getLogger(TerminalPreferences.class);
+
+    private final Preferences proxy;
+
+    public TerminalPreferences(final Preferences persistence) {
+        this.proxy = persistence;
+    }
 
     @Override
     protected void setFactories() {
@@ -56,28 +48,6 @@ public class TerminalPreferences extends MemoryPreferences {
         this.setDefault("factory.notification.class", TerminalNotification.class.getName());
         for(Transfer.Type t : Transfer.Type.values()) {
             this.setDefault(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
-        }
-        switch(Factory.Platform.getDefault()) {
-            case mac:
-                break;
-            case windows:
-                break;
-            case linux:
-                if(Desktop.isDesktopSupported()) {
-                    this.setDefault("factory.browserlauncher.class", DesktopBrowserLauncher.class.getName());
-                }
-                else {
-                    this.setDefault("factory.browserlauncher.class", TerminalBrowserLauncher.class.getName());
-                }
-                this.setDefault("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
-                this.setDefault("factory.applicationresourcesfinder.class", StaticApplicationResourcesFinder.class.getName());
-                this.setDefault("factory.locale.class", RegexLocale.class.getName());
-                this.setDefault("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
-                this.setDefault("factory.editorfactory.class", DefaultEditorFactory.class.getName());
-                this.setDefault("factory.proxy.class", EnvironmentVariableProxyFinder.class.getName());
-                this.setDefault("factory.symlink.class", DefaultSymlinkFeature.class.getName());
-                this.setDefault("factory.passwordstore.class", UnsecureHostPasswordStore.class.getName());
-                break;
         }
         this.setDefault("factory.vault.class", CryptoVault.class.getName());
         this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
@@ -99,30 +69,6 @@ public class TerminalPreferences extends MemoryPreferences {
 
         System.setProperty("jna.library.path", this.getProperty("java.library.path"));
 
-        switch(Factory.Platform.getDefault()) {
-            case mac: {
-                break;
-            }
-            case windows: {
-                break;
-            }
-            case linux: {
-                try {
-                    final Process echo = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", "echo ~"});
-                    this.setDefault("local.user.home", StringUtils.strip(IOUtils.toString(echo.getInputStream(), Charset.defaultCharset())));
-                }
-                catch(IOException e) {
-                    log.warn("Failure determining user home with `echo ~`");
-                }
-                this.setDefault("ssh.authentication.agent.enable", String.valueOf(false));
-                // Lowercase folder names to use when looking for profiles and bookmarks in user support directory
-                this.setDefault("bookmarks.folder.name", "bookmarks");
-                this.setDefault("profiles.folder.name", "profiles");
-                this.setDefault("connection.ssl.securerandom", "NativePRNGNonBlocking");
-
-                break;
-            }
-        }
         this.setDefault("local.normalize.prefix", String.valueOf(true));
         this.setDefault("connection.login.name", System.getProperty("user.name"));
 
@@ -145,15 +91,55 @@ public class TerminalPreferences extends MemoryPreferences {
     }
 
     @Override
+    public void setDefault(final String property, final String value) {
+        proxy.setDefault(property, value);
+    }
+
+    @Override
     public String getProperty(final String property) {
         final String env = System.getenv(property);
         if(null == env) {
             final String system = System.getProperty(property);
             if(null == system) {
-                return super.getProperty(property);
+                return proxy.getProperty(property);
             }
             return system;
         }
         return env;
+    }
+
+    @Override
+    public void setProperty(final String property, final String v) {
+        proxy.setProperty(property, v);
+    }
+
+    @Override
+    public void deleteProperty(final String property) {
+        proxy.deleteProperty(property);
+    }
+
+    @Override
+    public String getDefault(final String property) {
+        return proxy.getDefault(property);
+    }
+
+    @Override
+    public void save() {
+        proxy.save();
+    }
+
+    @Override
+    public void load() {
+        proxy.load();
+    }
+
+    @Override
+    public List<String> applicationLocales() {
+        return proxy.applicationLocales();
+    }
+
+    @Override
+    public List<String> systemLocales() {
+        return proxy.systemLocales();
     }
 }
