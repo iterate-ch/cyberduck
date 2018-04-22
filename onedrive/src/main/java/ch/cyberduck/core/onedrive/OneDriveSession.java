@@ -204,8 +204,14 @@ public class OneDriveSession extends GraphSession {
                         }
                     }
                     else {
+
+                        final OneDriveItem.Metadata remoteItem = temporaryChild.getRemoteItem();
+                        if(null != remoteItem) {
+                            temporaryChild = remoteItem;
+                        }
+
                         itemMetadata = temporaryChild;
-                        item = (OneDriveItem) temporaryChild.getResource();
+                        item = temporaryChild.getResource();
                     }
                 }
                 else if(item instanceof OneDriveFile) {
