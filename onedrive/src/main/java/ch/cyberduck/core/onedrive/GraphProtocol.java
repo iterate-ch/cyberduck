@@ -33,7 +33,7 @@ public abstract class GraphProtocol extends AbstractProtocol {
 
     @Override
     public boolean isHostnameConfigurable() {
-        return true;
+        return false;
     }
 
     @Override
