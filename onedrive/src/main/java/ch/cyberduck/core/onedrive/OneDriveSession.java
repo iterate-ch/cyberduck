@@ -64,6 +64,7 @@ import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;
+import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
@@ -205,9 +206,8 @@ public class OneDriveSession extends GraphSession {
                     }
                     else {
 
-                        final OneDriveItem.Metadata remoteItem = temporaryChild.getRemoteItem();
-                        if(null != remoteItem) {
-                            temporaryChild = remoteItem;
+                        if (temporaryChild instanceof OneDriveRemoteItem.Metadata) {
+                            temporaryChild = ((OneDriveRemoteItem.Metadata)temporaryChild).getRemoteItem();
                         }
 
                         itemMetadata = temporaryChild;

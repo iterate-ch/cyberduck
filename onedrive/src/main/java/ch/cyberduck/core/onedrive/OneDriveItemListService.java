@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;
+import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.util.EnumSet;
@@ -71,21 +72,7 @@ public class OneDriveItemListService implements ListService {
                 }
                 final PathAttributes attributes = this.attributes.convert(metadata);
 
-                final EnumSet<Path.Type> pathType = EnumSet.noneOf(Path.Type.class);
-                if(metadata.isFolder()) {
-                    pathType.add(Path.Type.directory);
-                }
-                if(metadata.isFile()) {
-                    pathType.add(Path.Type.file);
-                }
-                if(metadata instanceof OneDrivePackageItem.Metadata) {
-                    pathType.add(Path.Type.placeholder);
-                }
-                if(null != metadata.getRemoteItem()) {
-                    pathType.add(Path.Type.symboliclink);
-                }
-
-                children.add(new Path(directory, metadata.getName(), pathType, attributes));
+                children.add(new Path(directory, metadata.getName(), resolveType(metadata), attributes));
                 listener.chunk(directory, children);
             }
         }
@@ -93,5 +80,19 @@ public class OneDriveItemListService implements ListService {
             throw new OneDriveExceptionMappingService().map("Listing directory {0} failed", e.getCause(), directory);
         }
         return children;
+    }
+
+    private EnumSet<Path.Type> resolveType(OneDriveItem.Metadata metadata) {
+        if(metadata instanceof OneDrivePackageItem.Metadata) {
+            return EnumSet.of(Path.Type.placeholder);
+        }
+        else if(metadata instanceof OneDriveRemoteItem.Metadata) {
+            final EnumSet<Path.Type> types = resolveType(((OneDriveRemoteItem.Metadata) metadata).getRemoteItem());
+            types.add(Path.Type.symboliclink);
+            return types;
+        }
+        else {
+            return EnumSet.of(metadata.isFolder() ? Path.Type.directory : Path.Type.file);
+        }
     }
 }
