@@ -73,7 +73,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
 
-public class OneDriveSession extends HttpSession<OneDriveAPI> {
+public class OneDriveSession extends GraphSession {
 
     private final PathContainerService containerService
         = new PathContainerService();
