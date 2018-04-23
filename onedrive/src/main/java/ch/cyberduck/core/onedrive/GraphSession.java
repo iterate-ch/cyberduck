@@ -22,12 +22,13 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 
+import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveItem;
 
-import javax.net.SocketFactory;
-
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
+    protected final Logger logger = Logger.getLogger(getClass());
+
     protected GraphSession(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
