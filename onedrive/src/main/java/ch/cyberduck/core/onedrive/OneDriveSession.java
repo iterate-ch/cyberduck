@@ -133,7 +133,8 @@ public class OneDriveSession extends GraphSession {
                 try {
                     drivesIteratorMetadata = drivesIterator.next();
                 }
-                catch(OneDriveRuntimeException runtimeException) { // catches next()
+                catch(OneDriveRuntimeException e) { // catches next()
+                    logger.warn(String.format("Search for Drive %s errored.", driveName), e);
                     continue;
                 }
 
@@ -153,8 +154,8 @@ public class OneDriveSession extends GraphSession {
                 }
             }
         }
-        catch(OneDriveRuntimeException runtimeException) { //catches hasNext(), rethrow
-            throw new BackgroundException(runtimeException);
+        catch(OneDriveRuntimeException e) { //catches hasNext(), rethrow
+            throw new BackgroundException(e);
         }
 
         // temporaryMetadata may be null if there is no drive or a duplicate is found
@@ -224,9 +225,9 @@ public class OneDriveSession extends GraphSession {
                 }
             }
         }
-        catch(OneDriveRuntimeException runtimeException) {
+        catch(OneDriveRuntimeException e) {
             // search for item, ignore errors
-
+            logger.warn(String.format("Fast search for item %s errored", itemName), e);
             return new SearchResult(false, null);
         }
 
@@ -247,6 +248,7 @@ public class OneDriveSession extends GraphSession {
                 }
                 catch(OneDriveRuntimeException e) {
                     // silent ignore OneDriveRuntimeExceptions
+                    logger.warn(String.format("Fast search for item %s errored", itemName), e);
                     continue;
                 }
 
