@@ -28,7 +28,6 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
@@ -70,9 +69,10 @@ import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Stack;
 
 public class OneDriveSession extends GraphSession {
 
@@ -86,11 +86,11 @@ public class OneDriveSession extends GraphSession {
     }
 
     /**
-     * Resolves given path to OneDriveResource
+     * Resolves given path to OneDriveItem
      */
     @Override
     public OneDriveItem toItem(final Path currentPath) throws BackgroundException {
-        final Stack<String> parts = new Stack<String>();
+        final Deque<String> parts = new ArrayDeque<>();
         Path traverse = currentPath;
         while(!traverse.isRoot()) {
             parts.add(traverse.getName());
