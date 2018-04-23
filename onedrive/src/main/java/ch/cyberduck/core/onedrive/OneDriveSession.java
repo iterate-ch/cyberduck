@@ -93,7 +93,7 @@ public class OneDriveSession extends GraphSession {
         final Deque<String> parts = new ArrayDeque<>();
         Path traverse = currentPath;
         while(!traverse.isRoot()) {
-            parts.add(traverse.getName());
+            parts.push(traverse.getName());
 
             traverse = traverse.getParent();
         }
