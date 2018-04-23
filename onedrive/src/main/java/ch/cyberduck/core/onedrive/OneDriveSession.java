@@ -98,151 +98,176 @@ public class OneDriveSession extends GraphSession {
             traverse = traverse.getParent();
         }
 
-        OneDriveDrive drive = null;
-        OneDriveDrive.Metadata driveMetadata = null;
-        OneDriveItem item = null;
-        OneDriveItem.Metadata itemMetadata = null;
+        final OneDriveItemWrapper oneDriveItemWrapper = new OneDriveItemWrapper();
 
-        while(!parts.empty()) {
+        while(!parts.isEmpty()) {
             final String part = parts.pop();
 
-            if(null == driveMetadata) {
-                // external tracker for if a drive is found
-                boolean foundDrive = false;
-                // keeps track of latest known metadata (null if none or duplicate)
-                OneDriveDrive.Metadata temporaryMetadata = null;
-
-                final OneDriveDrivesIterator drivesIterator = new OneDriveDrivesIterator(getClient());
-                // iterate through all drives
-                while(drivesIterator.hasNext()) {
-                    final OneDriveDrive.Metadata drivesIteratorMetadata = drivesIterator.next();
-
-                    // compare ID, does not take Name into account (not applicable currently)
-                    if(part.equals(drivesIteratorMetadata.getId())) {
-                        // checks for first encounter
-                        if(!foundDrive && null == temporaryMetadata) {
-                            temporaryMetadata = drivesIteratorMetadata;
-                            foundDrive = true;
-                        }
-                        else {
-                            // resets temporaryMetadata to null for further usage
-                            temporaryMetadata = null;
-                        }
-                    }
-                }
-
-                // temporaryMetadata may be null if there is no drive or a duplicate is found
-                if(null == temporaryMetadata) {
-                    if(foundDrive) {
-                        return null;
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                else {
-                    // store drive
-                    driveMetadata = temporaryMetadata;
-                    drive = (OneDriveDrive) temporaryMetadata.getResource();
-                    // continue on drive root
-                    item = drive.getRoot();
-                    itemMetadata = null;
+            if(!oneDriveItemWrapper.isDefined()) {
+                if(!searchDrive(oneDriveItemWrapper, part)) {
+                    return null;
                 }
             }
             else {
-                if(item instanceof OneDriveFolder) {
-                    // external track for found child
-                    boolean foundChild = false;
-                    // temporary storage for found child (null if none or duplicate)
-                    OneDriveItem.Metadata temporaryChild = null;
-
-                    final OneDriveFolder folder = (OneDriveFolder) item;
-                    // fast search for item
-                    for(final OneDriveItem.Metadata childMetadata : folder.search(URIEncoder.encode(part))) {
-                        // check name, do not take ID or anything else into account (not applicable)
-                        // paths given here are always human readable
-                        if(part.equals(childMetadata.getName())) {
-                            if(!foundChild && null == temporaryChild) {
-                                temporaryChild = childMetadata;
-                                foundChild = true;
-                            }
-                            else {
-                                temporaryChild = null;
-                            }
-                        }
-                    }
-
-                    // if nothing found try slower folder iteration
-                    if(!foundChild) {
-                        final Iterator<OneDriveItem.Metadata> oneDriveFolderIterator = folder.iterator();
-
-                        while(oneDriveFolderIterator.hasNext()) {
-                            try {
-                                final OneDriveItem.Metadata childMetadata = oneDriveFolderIterator.next();
-
-                                if(part.equals(childMetadata.getName())) {
-                                    if(!foundChild && null == temporaryChild) {
-                                        temporaryChild = childMetadata;
-                                        foundChild = true;
-                                    }
-                                    else {
-                                        temporaryChild = null;
-                                    }
-                                }
-                            }
-                            catch(OneDriveRuntimeException e) {
-                                // silent ignore OneDriveRuntimeExceptions
-                            }
-                        }
-                    }
-
-                    if(null == temporaryChild) {
-                        if(foundChild) {
-                            return null;
-                        }
-                        else {
-                            return null;
-                        }
-                    }
-                    else {
-
-                        if (temporaryChild instanceof OneDriveRemoteItem.Metadata) {
-                            temporaryChild = ((OneDriveRemoteItem.Metadata)temporaryChild).getRemoteItem();
-                        }
-
-                        itemMetadata = temporaryChild;
-                        item = temporaryChild.getResource();
-                    }
-                }
-                else if(item instanceof OneDriveFile) {
-                    return null; // cannot enumerate file
-                }
-                else if(item instanceof OneDrivePackageItem) {
-                    return null; // Package Item not handled.
-                }
-                else {
-                    return null; // unknown return
+                if(!searchItem(oneDriveItemWrapper, part)) {
+                    return null;
                 }
             }
         }
 
-        return item;
+        return oneDriveItemWrapper.getItem();
     }
 
-    public OneDriveFile toFile(final Path file) {
-        return new OneDriveFile(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
-            URIEncoder.encode(containerService.getKey(file)), OneDriveItem.ItemIdentifierType.Path);
+    private boolean searchDrive(final OneDriveItemWrapper itemWrapper, final String driveName) throws BackgroundException {
+        // external tracker for if a drive is found
+        boolean foundDrive = false;
+        // keeps track of latest known metadata (null if none or duplicate)
+        OneDriveDrive.Metadata temporaryMetadata = null;
+
+        final OneDriveDrivesIterator drivesIterator = new OneDriveDrivesIterator(getClient());
+        // iterate through all drives
+        try {
+            while(drivesIterator.hasNext()) {
+                final OneDriveDrive.Metadata drivesIteratorMetadata;
+
+                try {
+                    drivesIteratorMetadata = drivesIterator.next();
+                }
+                catch(OneDriveRuntimeException runtimeException) { // catches next()
+                    continue;
+                }
+
+                // compare ID, does not take Name into account (not applicable currently)
+                if(driveName.equals(drivesIteratorMetadata.getId())) {
+                    // checks for first encounter
+                    // IDE inspection says "Condition always true" because "temporaryMetadata" being
+                    // null all the time. Which is fault in IDE.
+                    if(!foundDrive && null == temporaryMetadata) {
+                        temporaryMetadata = drivesIteratorMetadata;
+                        foundDrive = true;
+                    }
+                    else {
+                        // resets temporaryMetadata to null for further usage
+                        temporaryMetadata = null;
+                    }
+                }
+            }
+        }
+        catch(OneDriveRuntimeException runtimeException) { //catches hasNext(), rethrow
+            throw new BackgroundException(runtimeException);
+        }
+
+        // temporaryMetadata may be null if there is no drive or a duplicate is found
+        if(null == temporaryMetadata) {
+            return false;
+        }
+        itemWrapper.setItem(((OneDriveDrive) temporaryMetadata.getResource()).getRoot(), null);
+        return true;
     }
 
-    public OneDriveFolder toFolder(final Path file) {
-        if(file.isRoot()) {
-            return OneDriveDrive.getDefaultDrive(client).getRoot();
+    private boolean searchItem(final OneDriveItemWrapper itemWrapper, final String itemName) throws BackgroundException {
+        final OneDriveItem item = itemWrapper.getItem();
+
+        if(item instanceof OneDriveFolder) {
+            final OneDriveFolder folder = (OneDriveFolder) item;
+
+            SearchResult searchResult = searchItemFast(folder, itemName);
+            if(!searchResult.isFoundChild()) {
+                // retry with slow iteration instead of search
+                searchResult = searchItemSlow(folder, itemName);
+            }
+
+            // did not find child
+            if(!searchResult.isFoundChild()) {
+                return false;
+            }
+            // found duplicate
+            OneDriveItem.Metadata child = searchResult.getChild();
+            if(null == child) {
+                return false;
+            }
+
+            if(child instanceof OneDriveRemoteItem.Metadata) {
+                child = ((OneDriveRemoteItem.Metadata) child).getRemoteItem();
+            }
+
+            itemWrapper.setItem(child.getResource(), child);
+            return true;
         }
-        if(containerService.isContainer(file)) {
-            return new OneDriveDrive(client, containerService.getContainer(file).getName()).getRoot();
+        else if(item instanceof OneDriveFile) {
+            return false; // cannot enumerate file
         }
-        return new OneDriveFolder(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
-            URIEncoder.encode(containerService.getKey(file)), OneDriveItem.ItemIdentifierType.Path);
+        else if(item instanceof OneDrivePackageItem) {
+            return false; // Package Item not handled.
+        }
+        else {
+            return false; // unknown return
+        }
+    }
+
+    private SearchResult searchItemFast(final OneDriveFolder folder, final String itemName) {
+        boolean foundChild = false;
+        OneDriveItem.Metadata temporaryChild = null;
+
+        try {
+            for(final OneDriveItem.Metadata childMetadata : folder.search(URIEncoder.encode(itemName))) {
+                // check name, do not take ID or anything else into account (not applicable)
+                // paths given here are always human readable
+                if(itemName.equals(childMetadata.getName())) {
+                    if(!foundChild && null == temporaryChild) {
+                        temporaryChild = childMetadata;
+                        foundChild = true;
+                    }
+                    else {
+                        temporaryChild = null;
+                    }
+                }
+            }
+        }
+        catch(OneDriveRuntimeException runtimeException) {
+            // search for item, ignore errors
+
+            return new SearchResult(false, null);
+        }
+
+        return new SearchResult(foundChild, temporaryChild);
+    }
+
+    private SearchResult searchItemSlow(final OneDriveFolder folder, final String itemName) throws BackgroundException {
+        boolean foundChild = false;
+        OneDriveItem.Metadata temporaryChild = null;
+
+        final Iterator<OneDriveItem.Metadata> oneDriveFolderIterator = folder.iterator();
+        try {
+            while(oneDriveFolderIterator.hasNext()) {
+                final OneDriveItem.Metadata childMetadata;
+
+                try {
+                    childMetadata = oneDriveFolderIterator.next();
+                }
+                catch(OneDriveRuntimeException e) {
+                    // silent ignore OneDriveRuntimeExceptions
+                    continue;
+                }
+
+                if(itemName.equals(childMetadata.getName())) {
+                    if(!foundChild && null == temporaryChild) {
+                        temporaryChild = childMetadata;
+                        foundChild = true;
+                    }
+                    else {
+                        temporaryChild = null;
+                    }
+                }
+
+            }
+        }
+        catch(OneDriveRuntimeException e) {
+            // log error, continue
+            throw new BackgroundException(e);
+        }
+
+        return new SearchResult(foundChild, temporaryChild);
     }
 
     @Override
@@ -365,5 +390,45 @@ public class OneDriveSession extends GraphSession {
             return (T) new OneDriveTimestampFeature(this);
         }
         return super._getFeature(type);
+    }
+
+    private class OneDriveItemWrapper {
+        private OneDriveItem item;
+        private OneDriveItem.Metadata itemMetadata;
+
+        public OneDriveItem getItem() {
+            return item;
+        }
+
+        public OneDriveItem.Metadata getItemMetadata() {
+            return itemMetadata;
+        }
+
+        public boolean isDefined() {
+            return null != item;
+        }
+
+        public void setItem(OneDriveItem item, OneDriveItem.Metadata itemMetadata) {
+            this.item = item;
+            this.itemMetadata = itemMetadata;
+        }
+    }
+
+    private class SearchResult {
+        private final boolean foundChild;
+        private final OneDriveItem.Metadata child;
+
+        public boolean isFoundChild() {
+            return foundChild;
+        }
+
+        public OneDriveItem.Metadata getChild() {
+            return child;
+        }
+
+        public SearchResult(boolean foundChild, OneDriveItem.Metadata child) {
+            this.foundChild = foundChild;
+            this.child = child;
+        }
     }
 }
