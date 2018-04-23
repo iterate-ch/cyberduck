@@ -21,11 +21,13 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
@@ -46,8 +48,18 @@ public class OneDriveSearchFeature implements Search {
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
+
+        final OneDriveItem item = session.toItem(workdir);
+        if(null == item) {
+            throw new NotfoundException(String.format("Did not find %s", workdir));
+        }
+        if(!(item instanceof OneDriveFolder)) {
+            throw new NotfoundException(String.format("%s is no folder.", workdir));
+        }
+        final OneDriveFolder folder = (OneDriveFolder) item;
+
         // The query text used to search for items. Values may be matched across several fields including filename, metadata, and file content.
-        final Iterator<OneDriveItem.Metadata> iterator = session.toFolder(workdir).search(regex.toPattern().pattern()).iterator();
+        final Iterator<OneDriveItem.Metadata> iterator = folder.search(regex.toPattern().pattern()).iterator();
         while(iterator.hasNext()) {
             final OneDriveItem.Metadata metadata;
             try {
@@ -58,8 +70,8 @@ public class OneDriveSearchFeature implements Search {
                 continue;
             }
             list.add(new Path(String.format("/%s/%s/%s", metadata.getParentReference().getDriveId(), StringUtils.removeStart(metadata.getParentReference().getPath(), "/drive/root:"), metadata.getName()),
-                    metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
-                    attributes.convert(metadata)));
+                metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
+                attributes.convert(metadata)));
         }
         return list;
     }
