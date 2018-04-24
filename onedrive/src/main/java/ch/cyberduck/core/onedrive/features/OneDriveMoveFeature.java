@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
@@ -89,12 +90,8 @@ public class OneDriveMoveFeature implements Move {
         if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
             return false;
         }
-        try {
-            if(session.toItem(source, false) instanceof OneDriveRemoteItem) {
-                return false;
-            }
-        }
-        catch(BackgroundException ignored) {
+        if(source.getType().contains(Path.Type.shared)) {
+            return false;
         }
         return true;
     }

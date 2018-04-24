@@ -50,6 +50,12 @@ public abstract class AbstractPath {
                 return 4;
             }
         },
+        shared {
+            @Override
+            public int legacy() {
+                return 0;
+            }
+        },
         volume {
             @Override
             public int legacy() {

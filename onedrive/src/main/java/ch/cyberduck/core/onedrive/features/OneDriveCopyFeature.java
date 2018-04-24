@@ -90,12 +90,8 @@ public class OneDriveCopyFeature implements Copy {
         if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
             return false;
         }
-        try {
-            if(session.toItem(source, false) instanceof OneDriveRemoteItem) {
-                return false;
-            }
-        }
-        catch(BackgroundException ignored) {
+        if(source.getType().contains(Path.Type.shared)) {
+            return false;
         }
         return true;
     }
