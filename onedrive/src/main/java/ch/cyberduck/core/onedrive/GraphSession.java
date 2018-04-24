@@ -33,10 +33,18 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         super(host, trust, key);
     }
 
-    public abstract OneDriveItem toItem(final Path currentPath) throws BackgroundException;
+    public OneDriveItem toItem(final Path currentPath) throws BackgroundException {
+        return toItem(currentPath, true);
+    }
+
+    public abstract OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException;
 
     public OneDriveFile toFile(final Path currentPath) throws BackgroundException {
-        final OneDriveItem item = toItem(currentPath);
+        return toFile(currentPath, true);
+    }
+
+    public OneDriveFile toFile(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
+        final OneDriveItem item = toItem(currentPath, resolveLastItem);
         if(!(item instanceof OneDriveFile)) {
             throw new NotfoundException(String.format("%s is not a file.", currentPath.getAbsolute()));
         }
@@ -44,7 +52,11 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     }
 
     public OneDriveFolder toFolder(final Path currentPath) throws BackgroundException {
-        final OneDriveItem item = toItem(currentPath);
+        return toFolder(currentPath, true);
+    }
+
+    public OneDriveFolder toFolder(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
+        final OneDriveItem item = toItem(currentPath, resolveLastItem);
         if(!(item instanceof OneDriveFolder)) {
             throw new NotfoundException(String.format("%s is not a folder.", currentPath.getAbsolute()));
         }

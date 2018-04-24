@@ -87,9 +87,7 @@ public class OneDriveItemListService implements ListService {
             return EnumSet.of(Path.Type.placeholder);
         }
         else if(metadata instanceof OneDriveRemoteItem.Metadata) {
-            final EnumSet<Path.Type> types = resolveType(((OneDriveRemoteItem.Metadata) metadata).getRemoteItem());
-            types.add(Path.Type.symboliclink);
-            return types;
+            return resolveType(((OneDriveRemoteItem.Metadata) metadata).getRemoteItem());
         }
         else {
             return EnumSet.of(metadata.isFolder() ? Path.Type.directory : Path.Type.file);

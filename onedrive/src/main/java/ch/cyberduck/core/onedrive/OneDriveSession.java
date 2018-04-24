@@ -92,7 +92,7 @@ public class OneDriveSession extends GraphSession {
      * Resolves given path to OneDriveItem
      */
     @Override
-    public OneDriveItem toItem(final Path currentPath) throws BackgroundException {
+    public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
         final Deque<String> parts = new ArrayDeque<>();
         Path traverse = currentPath;
         while(!traverse.isRoot()) {
@@ -101,7 +101,7 @@ public class OneDriveSession extends GraphSession {
             traverse = traverse.getParent();
         }
 
-        final OneDriveItemWrapper oneDriveItemWrapper = new OneDriveItemWrapper();
+        final OneDriveItemWrapper oneDriveItemWrapper = new OneDriveItemWrapper(resolveLastItem);
 
         while(!parts.isEmpty()) {
             final String part = parts.pop();
@@ -172,6 +172,10 @@ public class OneDriveSession extends GraphSession {
     private boolean searchItem(final OneDriveItemWrapper itemWrapper, final String itemName) throws BackgroundException {
         final OneDriveItem item = itemWrapper.getItem();
 
+        if(!itemWrapper.shouldResolveLastItem()) {
+            itemWrapper.resolveItem();
+        }
+
         if(item instanceof OneDriveFolder) {
             final OneDriveFolder folder = (OneDriveFolder) item;
 
@@ -191,8 +195,8 @@ public class OneDriveSession extends GraphSession {
                 return false;
             }
 
-            if(child instanceof OneDriveRemoteItem.Metadata) {
-                child = ((OneDriveRemoteItem.Metadata) child).getRemoteItem();
+            if(itemWrapper.shouldResolveLastItem()) {
+                itemWrapper.resolveItem();
             }
 
             itemWrapper.setItem(child.getResource(), child);
@@ -398,6 +402,7 @@ public class OneDriveSession extends GraphSession {
     }
 
     private class OneDriveItemWrapper {
+        private boolean resolveLastItem;
         private OneDriveItem item;
         private OneDriveItem.Metadata itemMetadata;
 
@@ -413,9 +418,24 @@ public class OneDriveSession extends GraphSession {
             return null != item;
         }
 
+        public boolean shouldResolveLastItem() {
+            return resolveLastItem;
+        }
+
+        public OneDriveItemWrapper(boolean resolveLastItem) {
+            this.resolveLastItem = resolveLastItem;
+        }
+
         public void setItem(OneDriveItem item, OneDriveItem.Metadata itemMetadata) {
             this.item = item;
             this.itemMetadata = itemMetadata;
+        }
+
+        public void resolveItem() {
+            if(item instanceof OneDriveRemoteItem) {
+                itemMetadata = ((OneDriveRemoteItem.Metadata) itemMetadata).getRemoteItem();
+                item = itemMetadata.getResource();
+            }
         }
     }
 

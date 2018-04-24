@@ -32,6 +32,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePatchOperation;
+import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -87,6 +88,13 @@ public class OneDriveMoveFeature implements Move {
         }
         if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
             return false;
+        }
+        try {
+            if(session.toItem(source, false) instanceof OneDriveRemoteItem) {
+                return false;
+            }
+        }
+        catch(BackgroundException ignored) {
         }
         return true;
     }
