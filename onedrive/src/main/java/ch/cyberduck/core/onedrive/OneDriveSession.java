@@ -57,6 +57,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveDrivesIterator;
@@ -76,6 +77,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class OneDriveSession extends GraphSession {
+    private final Logger logger = Logger.getLogger(OneDriveSession.class);
 
     private final PathContainerService containerService
         = new PathContainerService();
@@ -106,12 +108,12 @@ public class OneDriveSession extends GraphSession {
 
             if(!oneDriveItemWrapper.isDefined()) {
                 if(!searchDrive(oneDriveItemWrapper, part)) {
-                    throw new NotfoundException(String.format("Did not find drive for %s", currentPath));
+                    throw new NotfoundException(String.format("Did not find drive for %s", currentPath.getAbsolute()));
                 }
             }
             else {
                 if(!searchItem(oneDriveItemWrapper, part)) {
-                    throw new NotfoundException(String.format("Did not find %s", currentPath));
+                    throw new NotfoundException(String.format("Did not find %s", currentPath.getAbsolute()));
                 }
             }
         }

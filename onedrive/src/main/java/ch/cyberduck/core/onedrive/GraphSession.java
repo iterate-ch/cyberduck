@@ -23,15 +23,12 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 
-import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
-    protected final Logger logger = Logger.getLogger(getClass());
-
     protected GraphSession(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
@@ -41,7 +38,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     public OneDriveFile toFile(final Path currentPath) throws BackgroundException {
         final OneDriveItem item = toItem(currentPath);
         if(!(item instanceof OneDriveFile)) {
-            throw new NotfoundException(String.format("Item at %s is no file.", currentPath));
+            throw new NotfoundException(String.format("%s is not a file.", currentPath.getAbsolute()));
         }
         return (OneDriveFile) item;
     }
@@ -49,7 +46,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     public OneDriveFolder toFolder(final Path currentPath) throws BackgroundException {
         final OneDriveItem item = toItem(currentPath);
         if(!(item instanceof OneDriveFolder)) {
-            throw new NotfoundException(String.format("Item at %s is no folder.", currentPath));
+            throw new NotfoundException(String.format("%s is not a folder.", currentPath.getAbsolute()));
         }
         return (OneDriveFolder) item;
     }
