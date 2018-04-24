@@ -41,14 +41,7 @@ public class OneDriveDirectoryFeature implements Directory<Void> {
 
     @Override
     public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
-        final OneDriveItem item = session.toItem(directory.getParent());
-        if(item == null) {
-            throw new NotfoundException(String.format("Cannot create folder %s. %s not found.", directory, directory.getParent()));
-        }
-        if (!(item instanceof OneDriveFolder)){
-            throw new NotfoundException(String.format("Cannot create folder %s. %s is no directory.", directory, directory.getParent()));
-        }
-        final OneDriveFolder folder = (OneDriveFolder) item;
+        final OneDriveFolder folder = session.toFolder(directory.getParent());
         try {
             folder.create(directory.getName());
         }

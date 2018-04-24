@@ -47,14 +47,8 @@ public class OneDriveTouchFeature implements Touch<Void> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final OneDriveItem foundItem = session.toItem(file.getParent());
-            if(null == foundItem) {
-                throw new NotfoundException(String.format("Did not find parent for %s", file));
-            }
-            if(!(foundItem instanceof OneDriveFolder)) {
-                throw new NotfoundException(String.format("Did not find directory %s for file %s", file.getParent(), file));
-            }
-            final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), (OneDriveFolder) foundItem,
+            final OneDriveFolder folder = session.toFolder(file.getParent());
+            final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), folder,
                 URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
             oneDriveFile.create(StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
         }

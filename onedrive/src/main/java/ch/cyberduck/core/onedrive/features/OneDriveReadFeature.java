@@ -62,14 +62,7 @@ public class OneDriveReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
-                final OneDriveItem item = session.toItem(file);
-                if(null == item) {
-                    throw new NotfoundException(String.format("Did not find %s", file));
-                }
-                if(!(item instanceof OneDriveFile)) {
-                    throw new NotfoundException(String.format("%s is no file", file));
-                }
-                final OneDriveFile target = (OneDriveFile) item;
+                final OneDriveFile target = session.toFile(file);
 
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);

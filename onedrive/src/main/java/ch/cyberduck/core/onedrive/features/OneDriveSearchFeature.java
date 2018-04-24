@@ -49,14 +49,7 @@ public class OneDriveSearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
 
-        final OneDriveItem item = session.toItem(workdir);
-        if(null == item) {
-            throw new NotfoundException(String.format("Did not find %s", workdir));
-        }
-        if(!(item instanceof OneDriveFolder)) {
-            throw new NotfoundException(String.format("%s is no folder.", workdir));
-        }
-        final OneDriveFolder folder = (OneDriveFolder) item;
+        final OneDriveFolder folder = session.toFolder(workdir);
 
         // The query text used to search for items. Values may be matched across several fields including filename, metadata, and file content.
         final Iterator<OneDriveItem.Metadata> iterator = folder.search(regex.toPattern().pattern()).iterator();

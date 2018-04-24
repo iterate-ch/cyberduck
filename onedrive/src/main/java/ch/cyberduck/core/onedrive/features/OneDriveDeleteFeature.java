@@ -20,8 +20,10 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.OneDriveItemListService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.log4j.Logger;
@@ -49,13 +51,13 @@ public class OneDriveDeleteFeature implements Delete {
                 continue;
             }
             callback.delete(file);
-            final OneDriveItem item = session.toItem(file);
-            if(null == item) {
-                logger.warn(String.format("Cannot delete %s. Not found.", file));
-                continue;
-            }
+
             try {
+                final OneDriveItem item = session.toItem(file);
                 item.delete();
+            }
+            catch(NotfoundException e) {
+                logger.warn(String.format("Cannot delete %s. Not found.", file));
             }
             catch(OneDriveAPIException e) {
                 throw new OneDriveExceptionMappingService().map("Cannot delete {0}", e, file);

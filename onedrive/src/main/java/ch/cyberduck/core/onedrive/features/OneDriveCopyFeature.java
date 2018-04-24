@@ -58,18 +58,9 @@ public class OneDriveCopyFeature implements Copy {
         if(status.isExists()) {
             new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
         }
-        final OneDriveItem targetItem = session.toItem(target.getParent());
-        if(null == targetItem) {
-            throw new NotfoundException(String.format("Target parent %s not found", target.getParent()));
-        }
-        if(!(targetItem instanceof OneDriveFolder)) {
-            throw new NotfoundException(String.format("Target parent %s is no directory", target.getParent()));
-        }
-        copyOperation.copy((OneDriveFolder) targetItem);
+        final OneDriveFolder targetItem = session.toFolder(target.getParent());
+        copyOperation.copy(targetItem);
         final OneDriveItem item = session.toItem(source);
-        if(null == item) {
-            throw new NotfoundException(String.format("Source %s not found", source));
-        }
         try {
             item.copy(copyOperation).await(statusObject -> logger.info(String.format("Copy Progress Operation %s progress %f status %s",
                 statusObject.getOperation(),

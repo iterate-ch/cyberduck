@@ -27,6 +27,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -105,12 +106,12 @@ public class OneDriveSession extends GraphSession {
 
             if(!oneDriveItemWrapper.isDefined()) {
                 if(!searchDrive(oneDriveItemWrapper, part)) {
-                    return null;
+                    throw new NotfoundException(String.format("Did not find drive for %s", currentPath));
                 }
             }
             else {
                 if(!searchItem(oneDriveItemWrapper, part)) {
-                    return null;
+                    throw new NotfoundException(String.format("Did not find %s", currentPath));
                 }
             }
         }
@@ -155,7 +156,7 @@ public class OneDriveSession extends GraphSession {
             }
         }
         catch(OneDriveRuntimeException e) { //catches hasNext(), rethrow
-            throw new BackgroundException(e);
+            throw new OneDriveExceptionMappingService().map(e.getCause());
         }
 
         // temporaryMetadata may be null if there is no drive or a duplicate is found

@@ -59,19 +59,10 @@ public class OneDriveMoveFeature implements Move {
             patchOperation.rename(renamed.getName());
         }
         if(!file.getParent().equals(renamed.getParent())) {
-            final OneDriveItem moveTarget = session.toItem(renamed.getParent());
-            if(null == moveTarget) {
-                throw new NotfoundException(String.format("Did not find move target parent directory %s", renamed.getParent()));
-            }
-            if(!(moveTarget instanceof OneDriveFolder)) {
-                throw new NotfoundException(String.format("Move target parent directory %s is no folder", renamed.getParent()));
-            }
-            patchOperation.move((OneDriveFolder) moveTarget);
+            final OneDriveFolder moveTarget = session.toFolder(renamed.getParent());
+            patchOperation.move(moveTarget);
         }
         final OneDriveItem item = session.toItem(file);
-        if (null == item) {
-            throw new NotfoundException(String.format("Did not find source file", file));
-        }
         try {
             item.patch(patchOperation);
         }

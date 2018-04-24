@@ -47,9 +47,6 @@ public class OneDriveTimestampFeature extends DefaultTimestampFeature {
         patch.facet("fileSystemInfo", info);
 
         final OneDriveItem item = session.toItem(file);
-        if(null == item) {
-            throw new NotfoundException(String.format("Did not find %s", file));
-        }
 
         try {
             item.patch(patch);

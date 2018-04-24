@@ -74,14 +74,8 @@ public class OneDriveWriteFeature implements Write<Void> {
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final OneDriveItem foundItem = session.toItem(file.getParent());
-            if(null == foundItem) {
-                throw new NotfoundException(String.format("Did not find parent for %s", file));
-            }
-            if(!(foundItem instanceof OneDriveFolder)) {
-                throw new NotfoundException(String.format("Did not find directory %s for file %s", file.getParent(), file));
-            }
-            final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), (OneDriveFolder) foundItem,
+            final OneDriveFolder folder = session.toFolder(file.getParent());
+            final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), folder,
                 URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
             final OneDriveUploadSession upload = oneDriveFile.createUploadSession();
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, new TransferStatus(status));

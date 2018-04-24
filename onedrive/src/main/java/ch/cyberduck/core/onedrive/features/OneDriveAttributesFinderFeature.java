@@ -53,9 +53,6 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         final OneDriveItem item = session.toItem(file);
-        if(item == null) {
-            throw new NotfoundException(String.format("File not found: %s", file));
-        }
         try {
             final OneDriveItem.Metadata metadata = item.getMetadata();
             return this.convert(metadata);

@@ -18,12 +18,15 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
+import org.nuxeo.onedrive.client.OneDriveFile;
+import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
@@ -34,4 +37,20 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     }
 
     public abstract OneDriveItem toItem(final Path currentPath) throws BackgroundException;
+
+    public OneDriveFile toFile(final Path currentPath) throws BackgroundException {
+        final OneDriveItem item = toItem(currentPath);
+        if(!(item instanceof OneDriveFile)) {
+            throw new NotfoundException(String.format("Item at %s is no file.", currentPath));
+        }
+        return (OneDriveFile) item;
+    }
+
+    public OneDriveFolder toFolder(final Path currentPath) throws BackgroundException {
+        final OneDriveItem item = toItem(currentPath);
+        if(!(item instanceof OneDriveFolder)) {
+            throw new NotfoundException(String.format("Item at %s is no folder.", currentPath));
+        }
+        return (OneDriveFolder) item;
+    }
 }
