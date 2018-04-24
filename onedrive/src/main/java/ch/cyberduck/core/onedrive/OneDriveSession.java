@@ -267,7 +267,7 @@ public class OneDriveSession extends GraphSession {
         }
         catch(OneDriveRuntimeException e) {
             // log error, continue
-            throw new BackgroundException(e);
+            throw new OneDriveExceptionMappingService().map(e.getCause());
         }
 
         return new SearchResult(foundChild, temporaryChild);
