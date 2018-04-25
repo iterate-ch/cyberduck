@@ -21,6 +21,7 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSLocale;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -38,20 +39,22 @@ import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Concrete subclass using the Cocoa Preferences classes. The NSUserDefaults class is thread-safe.
  *
  * @see ch.cyberduck.binding.foundation.NSUserDefaults
  */
-public class UserDefaultsPreferences extends Preferences {
+public class UserDefaultsPreferences extends DefaultPreferences {
     private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
 
     public final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
 
     private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty,
-        PreferencesFactory.get().getLong("browser.cache.size"));
+        PreferencesFactory.get().getLong("preferences.cache.size"));
 
     private static final String MISSING_PROPERTY = String.valueOf(StringUtils.INDEX_NOT_FOUND);
 
@@ -86,6 +89,9 @@ public class UserDefaultsPreferences extends Preferences {
         return StringUtils.equals(MISSING_PROPERTY, value) ? null : value;
     }
 
+    /**
+     * Load and convert from native storage into cache
+     */
     private String loadProperty(final String property) {
         final NSObject value = store.objectForKey(property);
         if(null == value) {
@@ -93,6 +99,13 @@ public class UserDefaultsPreferences extends Preferences {
             return null == d ? MISSING_PROPERTY : d;
         }
         // Customized property found
+        if(value.isKindOfClass(Rococoa.createClass("NSString", NSString._Class.class))) {
+            return value.toString();
+        }
+        if(value.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+            return StringUtils.join(this.toList(Rococoa.cast(value, NSArray.class)), LIST_SEPERATOR);
+        }
+        log.warn(String.format("Unknown type for property %s", property));
         return value.toString();
     }
 
@@ -283,19 +296,32 @@ public class UserDefaultsPreferences extends Preferences {
     /**
      * Convert collection
      *
-     * @param list List of properties
+     * @param array List of properties
      * @return Collection
      */
-    private List<String> toList(final NSArray list) {
-        if(null == list) {
+    private List<String> toList(final NSArray array) {
+        if(null == array) {
             return Collections.emptyList();
         }
-        final List<String> localizations = new ArrayList<String>();
-        NSEnumerator ordered = list.objectEnumerator();
+        final List<String> list = new ArrayList<>();
+        NSEnumerator ordered = array.objectEnumerator();
         NSObject next;
         while(((next = ordered.nextObject()) != null)) {
-            localizations.add(next.toString());
+            list.add(next.toString());
         }
-        return localizations;
+        return list;
+    }
+
+    private Map<String, String> toMap(final NSDictionary dictionary) {
+        if(null == dictionary) {
+            return Collections.emptyMap();
+        }
+        final Map<String, String> map = new HashMap<>();
+        NSEnumerator keys = dictionary.keyEnumerator();
+        NSObject key;
+        while(((key = keys.nextObject()) != null)) {
+            map.put(key.toString(), dictionary.objectForKey(key.toString()).toString());
+        }
+        return map;
     }
 }

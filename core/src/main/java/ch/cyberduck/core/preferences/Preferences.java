@@ -35,6 +35,7 @@ import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.diagnostics.DefaultInetAddressReachability;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
+import ch.cyberduck.core.i18n.Locales;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
@@ -99,11 +100,10 @@ import com.google.common.collect.ImmutableMap;
  * the <code>PREFERENCES_FILE</code>.
  * Singleton class.
  */
-public abstract class Preferences {
+public abstract class Preferences implements Locales {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
-    private final Map<String, String> defaults
-        = new HashMap<String, String>();
+    protected static final String LIST_SEPERATOR = StringUtils.SPACE;
 
     /**
      * Called after the defaults have been set.
@@ -139,7 +139,9 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param values   The new or updated value
      */
-    public abstract void setProperty(final String property, List<String> values);
+    public void setProperty(final String property, List<String> values) {
+        this.setProperty(property, StringUtils.join(values, LIST_SEPERATOR));
+    }
 
     /**
      * Remove a user customized property from the preferences.
@@ -197,6 +199,10 @@ public abstract class Preferences {
     public void setProperty(final String property, final double v) {
         this.setProperty(property, String.valueOf(v));
     }
+
+    public abstract String getDefault(String property);
+
+    public abstract void setDefault(String property, String value);
 
     private static final class Version {
         /**
@@ -303,6 +309,7 @@ public abstract class Preferences {
         this.setDefault("browser.cache.size", String.valueOf(1000));
         this.setDefault("transfer.cache.size", String.valueOf(100));
         this.setDefault("icon.cache.size", String.valueOf(200));
+        this.setDefault("preferences.cache.size", String.valueOf(1000));
 
         /*
           Caching NS* proxy instances.
@@ -1058,7 +1065,7 @@ public abstract class Preferences {
         SLF4JBridgeHandler.install();
 
         final URL configuration;
-        final String file = defaults.get("logging.config");
+        final String file = this.getDefault("logging.config");
         if(null == file) {
             configuration = Preferences.class.getClassLoader().getResource("log4j-default.xml");
         }
@@ -1096,24 +1103,6 @@ public abstract class Preferences {
                 java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
             }
         }
-    }
-
-    /**
-     * Default value for a given property.
-     *
-     * @param property The property to query.
-     * @return A default value if any or null if not found.
-     */
-    public String getDefault(final String property) {
-        String value = defaults.get(property);
-        if(null == value) {
-            log.warn(String.format("No property with key '%s'", property));
-        }
-        return value;
-    }
-
-    public void setDefault(final String property, final String value) {
-        defaults.put(property, value);
     }
 
     /**
@@ -1315,11 +1304,13 @@ public abstract class Preferences {
      *
      * @return Available locales in application bundle
      */
+    @Override
     public abstract List<String> applicationLocales();
 
     /**
      * @return Available locales in system
      */
+    @Override
     public abstract List<String> systemLocales();
 
     /**

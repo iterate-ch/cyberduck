@@ -171,7 +171,7 @@ public class FinderLocalTest {
     @Test
     public void testGetSymlinkTargetAbsolute() throws Exception {
         assertEquals(new FinderLocal("/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java"),
-                new FinderLocal("/usr/bin/java").getSymlinkTarget());
+            new FinderLocal("/usr/bin/java").getSymlinkTarget());
     }
 
     @Test
@@ -226,7 +226,7 @@ public class FinderLocalTest {
     public void testMoveFolder() throws Exception {
         final String name = UUID.randomUUID().toString();
         final String newname = UUID.randomUUID().toString();
-        new FinderLocal(name).mkdir();
+        new DefaultLocalDirectoryFeature().mkdir(new FinderLocal(name));
         new FinderLocal(name).rename(new FinderLocal(newname));
         assertFalse(new FinderLocal(name).exists());
         assertTrue(new FinderLocal(newname).exists());

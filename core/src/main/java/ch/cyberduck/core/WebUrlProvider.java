@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.URI;
 import java.text.MessageFormat;
 
@@ -32,11 +34,28 @@ public class WebUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        list.add(new DescriptiveUrl(URI.create(String.format("%s/%s", host.getWebURL(), URIEncoder.encode(PathRelativizer.relativize(
-                        PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute())
+        final DescriptiveUrl base = this.toUrl();
+        list.add(new DescriptiveUrl(URI.create(String.format("%s%s", base.getUrl(), URIEncoder.encode(
+            PathNormalizer.normalize(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))
         ))).normalize(),
-                DescriptiveUrl.Type.http,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
+            DescriptiveUrl.Type.http,
+            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
         return list;
+    }
+
+    public DescriptiveUrl toUrl() {
+        final String base;
+        if(StringUtils.isBlank(host.getWebURL())) {
+            base = String.format("http://%s/", StringUtils.strip(host.getHostname()));
+        }
+        else {
+            if(host.getWebURL().matches("^http(s)?://.*$")) {
+                base = host.getWebURL();
+            }
+            else {
+                base = String.format("http://%s/", host.getWebURL());
+            }
+        }
+        return new DescriptiveUrl(URI.create(base), DescriptiveUrl.Type.http);
     }
 }
