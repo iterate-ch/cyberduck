@@ -152,9 +152,9 @@ public abstract class NSData extends NSObject {
      * Original signature : <code>BOOL writeToFile(NSString*, BOOL)</code><br>
      * <i>from NSExtendedData native declaration : :42</i>
      */
-    public abstract byte writeToFile_atomically(String path, boolean useAuxiliaryFile);
+    public abstract boolean writeToFile_atomically(String path, boolean useAuxiliaryFile);
 
-    public byte writeToFile(String path) {
+    public boolean writeToFile(String path) {
         return this.writeToFile_atomically(path, true);
     }
 
