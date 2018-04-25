@@ -71,4 +71,13 @@ public class AttributedListTest {
         final AttributedList<Path> filtered2 = list.filter(new NullFilter<>());
         assertNotNull(filtered2.find(new SimplePathPredicate(a)));
     }
+
+    @Test
+    public void testNullFilter() throws Exception {
+        final AttributedList<Path> list = new AttributedList<Path>();
+        final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
+        assertTrue(list.add(a));
+        assertNotSame(list, list.filter(new NullFilter<>()));
+        assertEquals(list, list.filter(new NullFilter<>()));
+    }
 }
