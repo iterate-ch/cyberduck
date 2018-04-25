@@ -21,7 +21,7 @@ package ch.cyberduck.core.unicode;
 import java.text.Normalizer;
 
 public class NFCNormalizer extends AbstractUnicodeNormalizer implements UnicodeNormalizer {
-    public NFCNormalizer(final Normalizer.Form form) {
+    public NFCNormalizer() {
         super(Normalizer.Form.NFC);
     }
 }
