@@ -55,10 +55,10 @@ public abstract class ListFilteringFeature {
         final Predicate<Path> simple = session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file);
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             // Look for exact match
-            return list.filter(new NullFilter<>()).find(new PredicateChain<Path>(simple, new DefaultPathPredicate(file)));
+            return list.find(new PredicateChain<Path>(simple, new DefaultPathPredicate(file)));
         }
         else {
-            return list.filter(new NullFilter<>()).find(simple);
+            return list.find(simple);
         }
     }
 

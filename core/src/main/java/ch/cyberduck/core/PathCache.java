@@ -17,8 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import java.util.List;
-
 public class PathCache extends AbstractCache<Path> {
 
     private static final PathCache EMPTY = new PathCache(0) {
@@ -39,11 +37,5 @@ public class PathCache extends AbstractCache<Path> {
     @Override
     public CacheReference key(final Path file) {
         return new DefaultPathPredicate(file);
-    }
-
-    @Override
-    public boolean isHidden(final Path file) {
-        final List<?> hidden = this.get(file.getParent()).attributes().getHidden();
-        return hidden.contains(file);
     }
 }
