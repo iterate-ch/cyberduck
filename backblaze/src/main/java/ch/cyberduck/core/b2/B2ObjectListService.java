@@ -75,6 +75,7 @@ public class B2ObjectListService implements ListService {
             else {
                 marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
             }
+            final String containerId = fileid.getFileid(containerService.getContainer(directory), listener);
             // Seen placeholders
             final Map<String, Integer> revisions = new HashMap<String, Integer>();
             do {
@@ -84,7 +85,7 @@ public class B2ObjectListService implements ListService {
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
-                    fileid.getFileid(containerService.getContainer(directory), listener),
+                    containerId,
                     marker.nextFilename, marker.nextFileId, chunksize,
                     containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
                     String.valueOf(Path.DELIMITER));
