@@ -71,7 +71,7 @@ public class ListWorkerTest extends AbstractDriveTest {
             assertTrue(cache.containsKey(parent));
             final AttributedList<Path> l = cache.get(parent);
             assertEquals(1, l.filter(new RegexFilter()).size());
-            assertEquals(2, l.filter(new NullFilter<>()).size());
+            assertEquals(2, l.size());
         }
         {
             // trash recreated folder
@@ -87,7 +87,7 @@ public class ListWorkerTest extends AbstractDriveTest {
             assertTrue(cache.containsKey(parent));
             final AttributedList<Path> l = cache.get(parent);
             assertEquals(0, l.filter(new RegexFilter()).size());
-            assertEquals(2, l.filter(new NullFilter<>()).size());
+            assertEquals(2, l.size());
         }
         new DriveDeleteFeature(session).delete(Arrays.asList(parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
