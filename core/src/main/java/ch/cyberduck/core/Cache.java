@@ -36,8 +36,6 @@ public interface Cache<T extends Referenceable> {
      */
     boolean isEmpty();
 
-    boolean isHidden(T item);
-
     boolean isValid(T item);
 
     /**

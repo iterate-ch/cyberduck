@@ -2,7 +2,6 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -68,22 +67,5 @@ public class PathCacheTest {
         cache.put(file, AttributedList.<Path>emptyList());
         assertFalse(cache.containsKey(file));
         assertEquals(0, cache.keySet().size());
-    }
-
-    @Test
-    public void testCacheIsHidden() throws Exception {
-        final PathCache cache = new PathCache(1);
-        final Path parent = new Path("/", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> list = new AttributedList<Path>(
-                Arrays.asList(new Path(parent, "a", EnumSet.of(Path.Type.file)), new Path(parent, "b", EnumSet.of(Path.Type.file))));
-        list.filter(new NullFilter<Path>() {
-            @Override
-            public boolean accept(final Path file) {
-                return file.equals(new Path(parent, "a", EnumSet.of(Path.Type.file)));
-            }
-        });
-        cache.put(parent, list);
-        assertFalse(cache.isHidden(new Path(parent, "a", EnumSet.of(Path.Type.file))));
-        assertTrue(cache.isHidden(new Path(parent, "b", EnumSet.of(Path.Type.file))));
     }
 }

@@ -37,7 +37,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         final AttributedList<Path> list = new FileidDriveListService(session, new DriveFileidProvider(session), file).list(file.getParent(), new DisabledListProgressListener());
-        final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+        final Path found = list.find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }

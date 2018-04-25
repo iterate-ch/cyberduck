@@ -70,9 +70,7 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
                         log.debug(String.format("Recursively search in %s", file));
                     }
                     if(this.search(search, file).isEmpty()) {
-                        if(list.attributes().addHidden(file)) {
-                            removal.add(file);
-                        }
+                        removal.add(file);
                     }
                 }
             }

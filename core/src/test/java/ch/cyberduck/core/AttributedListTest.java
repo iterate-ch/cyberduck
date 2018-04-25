@@ -2,7 +2,6 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.regex.Pattern;
 
@@ -21,14 +20,12 @@ public class AttributedListTest {
                 return !file.getName().equals("a");
             }
         }).isEmpty());
-        assertEquals(Collections.singletonList(a), list.attributes().getHidden());
         assertFalse(list.filter(new NullComparator<Path>(), new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {
                 return !file.getName().equals("b");
             }
         }).isEmpty());
-        assertEquals(Collections.<Path>emptyList(), list.attributes().getHidden());
     }
 
     @Test
@@ -42,7 +39,6 @@ public class AttributedListTest {
             }
         }).isEmpty());
         assertTrue(list.add(a));
-        assertEquals(Collections.singletonList(a), list.attributes().getHidden());
     }
 
     @Test
@@ -60,7 +56,7 @@ public class AttributedListTest {
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
         assertTrue(list.add(a));
-        list.filter(new Filter<Path>() {
+        final AttributedList<Path> filtered1 = list.filter(new Filter<Path>() {
             @Override
             public boolean accept(final Path file) {
                 return false;
@@ -71,8 +67,17 @@ public class AttributedListTest {
                 return null;
             }
         });
-        assertNull(list.find(new SimplePathPredicate(a)));
-        list.filter(new NullFilter<>());
-        assertNotNull(list.find(new SimplePathPredicate(a)));
+        assertNull(filtered1.find(new SimplePathPredicate(a)));
+        final AttributedList<Path> filtered2 = list.filter(new NullFilter<>());
+        assertNotNull(filtered2.find(new SimplePathPredicate(a)));
+    }
+
+    @Test
+    public void testNullFilter() throws Exception {
+        final AttributedList<Path> list = new AttributedList<Path>();
+        final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
+        assertTrue(list.add(a));
+        assertNotSame(list, list.filter(new NullFilter<>()));
+        assertEquals(list, list.filter(new NullFilter<>()));
     }
 }
