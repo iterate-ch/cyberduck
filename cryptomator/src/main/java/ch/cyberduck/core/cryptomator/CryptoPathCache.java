@@ -34,11 +34,6 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
-    public boolean isHidden(final Path file) {
-        return delegate.isHidden(this.toDecrypted(file));
-    }
-
-    @Override
     public boolean isValid(final Path file) {
         return delegate.isValid(this.toDecrypted(file));
     }

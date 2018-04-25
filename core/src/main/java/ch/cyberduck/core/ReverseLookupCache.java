@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,11 +59,6 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     }
 
     @Override
-    public boolean isHidden(final T item) {
-        return proxy.isHidden(item);
-    }
-
-    @Override
     public boolean isValid(final T item) {
         return proxy.isValid(item);
     }
@@ -72,11 +66,6 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     @Override
     public AttributedList<T> put(final T reference, final AttributedList<T> children) {
         for(T f : children) {
-            final CacheReference key = proxy.key(f);
-            reverse.remove(key);
-            reverse.put(key, reference);
-        }
-        for(T f : children.attributes().getHidden()) {
             final CacheReference key = proxy.key(f);
             reverse.remove(key);
             reverse.put(key, reference);
@@ -105,12 +94,6 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
         }
         final T[] entries = list.toArray();
         for(T entry : entries) {
-            if(proxy.key(entry).equals(reference)) {
-                return entry;
-            }
-        }
-        final List<T> hidden = list.attributes().getHidden();
-        for(T entry : hidden) {
             if(proxy.key(entry).equals(reference)) {
                 return entry;
             }
