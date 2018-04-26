@@ -21,6 +21,8 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -52,6 +54,10 @@ public class DefaultTouchFeature<T> implements Touch<T> {
                     new DisabledStreamListener(), status, new DisabledConnectionCallback());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Received reply %s for creating file %s", reply, file));
+            }
+            if(reply instanceof VersionId) {
+                return new Path(file.getParent(), file.getName(), file.getType(),
+                    new PathAttributes(file.attributes()).withVersionId(((VersionId) reply).id));
             }
         }
         finally {
