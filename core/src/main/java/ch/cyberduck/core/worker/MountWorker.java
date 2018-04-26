@@ -55,6 +55,10 @@ public class MountWorker extends Worker<Path> {
      */
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
+        return this.list(session);
+    }
+
+    protected Path list(final Session<?> session) throws BackgroundException {
         Path home;
         AttributedList<Path> list;
         try {
