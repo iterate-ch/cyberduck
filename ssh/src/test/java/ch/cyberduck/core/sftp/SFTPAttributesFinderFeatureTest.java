@@ -10,6 +10,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -72,8 +73,17 @@ public class SFTPAttributesFinderFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-                throw new AccessDeniedException("f");
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == ListService.class) {
+                    return (T) new SFTPListService(this) {
+                        @Override
+                        public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+                            throw new AccessDeniedException("f");
+                        }
+                    };
+                }
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());

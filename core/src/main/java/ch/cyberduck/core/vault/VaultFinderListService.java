@@ -16,6 +16,7 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -51,5 +52,11 @@ public class VaultFinderListService implements ListService {
             }
             return delegate.list(cryptomator.encrypt(session, directory), new DecryptingListProgressListener(session, cryptomator, listener.reset()));
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        delegate.withCache(cache);
+        return this;
     }
 }

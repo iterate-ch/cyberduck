@@ -28,9 +28,11 @@ import java.util.List;
 public class DriveDeleteFeature implements Delete {
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
 
-    public DriveDeleteFeature(final DriveSession session) {
+    public DriveDeleteFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class DriveDeleteFeature implements Delete {
             }
             callback.delete(file);
             try {
-                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener()))
+                session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
                     .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             }
             catch(IOException e) {

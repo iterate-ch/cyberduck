@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
 import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
+import ch.cyberduck.core.googledrive.DriveFileidProvider;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.googledrive.DriveTouchFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -49,10 +50,11 @@ public class MoveWorkerTest extends AbstractDriveTest {
     @Test
     public void testMoveFolder() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
-        final Path folder = new DriveDirectoryFeature(session).mkdir(
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
-        final Path file = new DriveTouchFeature(session).touch(
+        final Path file = new DriveTouchFeature(session, fileid).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         // rename file
@@ -67,6 +69,6 @@ public class MoveWorkerTest extends AbstractDriveTest {
         assertTrue(new DefaultFindFeature(session).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new DefaultFindFeature(session).find(fileRenamedInRenamedFolder));
-        new DriveDeleteFeature(session).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

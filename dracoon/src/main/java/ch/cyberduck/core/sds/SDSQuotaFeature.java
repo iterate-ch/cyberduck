@@ -35,9 +35,11 @@ public class SDSQuotaFeature implements Quota {
     private static final Logger log = Logger.getLogger(SDSQuotaFeature.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSQuotaFeature(final SDSSession session) {
+    public SDSQuotaFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class SDSQuotaFeature implements Quota {
             final Path home = new DefaultHomeFinderService(session).find();
             if(!home.isRoot()) {
                 final Node node = new NodesApi(session.getClient()).getFsNode(StringUtils.EMPTY,
-                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(home, new DisabledListProgressListener())), null);
+                    Long.parseLong(nodeid.getFileid(home, new DisabledListProgressListener())), null);
                 if(null == node.getQuota()) {
                     log.warn(String.format("No quota set for node %s", home));
                 }

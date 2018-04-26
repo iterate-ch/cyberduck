@@ -28,20 +28,22 @@ import java.io.InputStream;
 public class SDSDelegatingReadFeature implements Read {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final SDSReadFeature proxy;
 
     private final PathContainerService containerService
             = new SDSPathContainerService();
 
-    public SDSDelegatingReadFeature(final SDSSession session, final SDSReadFeature proxy) {
+    public SDSDelegatingReadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSReadFeature proxy) {
         this.session = session;
+        this.nodeid = nodeid;
         this.proxy = proxy;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
-            return new CryptoReadFeature(session, proxy).read(file, status, callback);
+            return new CryptoReadFeature(session, nodeid, proxy).read(file, status, callback);
         }
         else {
             return proxy.read(file, status, callback);
@@ -51,7 +53,7 @@ public class SDSDelegatingReadFeature implements Read {
     @Override
     public boolean offset(final Path file) throws BackgroundException {
         if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
-            return new CryptoReadFeature(session, proxy).offset(file);
+            return new CryptoReadFeature(session, nodeid, proxy).offset(file);
         }
         else {
             return proxy.offset(file);

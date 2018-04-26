@@ -29,9 +29,11 @@ public class B2MetadataFeature implements Headers {
     public static final String X_BZ_INFO_LARGE_FILE_SHA1 = "large_file_sha1";
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
 
-    public B2MetadataFeature(final B2Session session) {
+    public B2MetadataFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class B2MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return new B2AttributesFinderFeature(session).find(file).getMetadata();
+        return new B2AttributesFinderFeature(session, fileid).find(file).getMetadata();
     }
 
     @Override

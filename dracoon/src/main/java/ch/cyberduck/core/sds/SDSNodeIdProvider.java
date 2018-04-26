@@ -15,11 +15,15 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -38,6 +42,8 @@ public class SDSNodeIdProvider implements IdProvider {
 
     private final SDSSession session;
 
+    private Cache<Path> cache = PathCache.empty();
+
     private final PathContainerService containerService
         = new SDSPathContainerService();
 
@@ -55,6 +61,15 @@ public class SDSNodeIdProvider implements IdProvider {
         }
         if(file.isRoot()) {
             return ROOT_NODE_ID;
+        }
+        if(cache.isCached(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            if(null != found) {
+                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
+                    return found.attributes().getVersionId();
+                }
+            }
         }
         try {
             final String type;
@@ -85,7 +100,8 @@ public class SDSNodeIdProvider implements IdProvider {
     }
 
     @Override
-    public IdProvider withCache(final Cache<Path> cache) {
+    public SDSNodeIdProvider withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }

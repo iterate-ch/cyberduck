@@ -16,6 +16,7 @@ package ch.cyberduck.core.ftp.list;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -77,5 +78,10 @@ public class FTPDefaultListService implements ListService {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 }

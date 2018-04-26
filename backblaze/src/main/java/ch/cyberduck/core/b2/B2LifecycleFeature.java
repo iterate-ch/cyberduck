@@ -39,9 +39,11 @@ public class B2LifecycleFeature implements Lifecycle {
             = new B2PathContainerService();
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
 
-    public B2LifecycleFeature(final B2Session session) {
+    public B2LifecycleFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -74,8 +76,8 @@ public class B2LifecycleFeature implements Lifecycle {
     public void setConfiguration(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
         try {
             session.getClient().updateBucket(
-                    new B2FileidProvider(session).getFileid(containerService.getContainer(container), new DisabledListProgressListener()),
-                    new B2BucketTypeFeature(session).convert(container.attributes().getAcl()),
+                fileid.getFileid(containerService.getContainer(container), new DisabledListProgressListener()),
+                new B2BucketTypeFeature(session, fileid).convert(container.attributes().getAcl()),
                     new LifecycleRule(
                             null == configuration.getExpiration() ? null : configuration.getExpiration().longValue(),
                             null == configuration.getTransition() ? null : configuration.getTransition().longValue(),

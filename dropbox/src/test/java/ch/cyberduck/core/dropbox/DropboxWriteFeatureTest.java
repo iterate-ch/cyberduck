@@ -58,7 +58,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new DropboxFindFeature(session).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
@@ -90,7 +90,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new DropboxFindFeature(session).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());

@@ -16,10 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -29,12 +26,12 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
+import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2FindFeature;
-import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2ReadFeature;
-import ch.cyberduck.core.b2.B2Session;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
@@ -72,17 +69,10 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest {
+public class SingleTransferWorkerTest extends AbstractB2Test {
 
     @Test
     public void testUpload() throws Exception {
-        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                ));
-        final B2Session session = new B2Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -112,22 +102,23 @@ public class SingleTransferWorkerTest {
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()) {
 
         }.run(session, session));
-        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session), cryptomator).find(dir1));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session), cryptomator).find(file1).getSize());
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(dir1));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session, fileid), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session), cryptomator).find(file2).getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session, fileid), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new B2DeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

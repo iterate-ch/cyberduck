@@ -49,10 +49,12 @@ public class CryptoReadFeature implements Read {
     private static final Logger log = Logger.getLogger(CryptoReadFeature.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final SDSReadFeature proxy;
 
-    public CryptoReadFeature(final SDSSession session, final SDSReadFeature proxy) {
+    public CryptoReadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSReadFeature proxy) {
         this.session = session;
+        this.nodeid = nodeid;
         this.proxy = proxy;
     }
 
@@ -60,7 +62,7 @@ public class CryptoReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final FileKey key = new NodesApi(session.getClient()).getUserFileKey(StringUtils.EMPTY,
-                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
+                Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())));
             final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = session.keyPair();
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());

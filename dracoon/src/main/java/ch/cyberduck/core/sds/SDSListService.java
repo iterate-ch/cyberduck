@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -39,9 +40,11 @@ import java.util.Map;
 public class SDSListService implements ListService {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSListService(final SDSSession session) {
+    public SDSListService(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -53,11 +56,11 @@ public class SDSListService implements ListService {
         final AttributedList<Path> children = new AttributedList<Path>();
         try {
             Integer offset = 0;
-            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session);
+            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, 0,
-                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(directory, new DisabledListProgressListener())),
+                    Long.parseLong(nodeid.getFileid(directory, new DisabledListProgressListener())),
                     null, null, "name:asc", offset, chunksize);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
@@ -104,5 +107,11 @@ public class SDSListService implements ListService {
             throw new SDSExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         return children;
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        nodeid.withCache(cache);
+        return this;
     }
 }

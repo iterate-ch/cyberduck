@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
 import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
+import ch.cyberduck.core.googledrive.DriveFileidProvider;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.googledrive.DriveMoveFeature;
 import ch.cyberduck.core.googledrive.DriveUploadFeature;
@@ -58,11 +59,12 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path folder = new CryptoDirectoryFeature<Void>(session, new DriveDirectoryFeature(session), new DriveWriteFeature(session), cryptomator).mkdir(
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final Path folder = new CryptoDirectoryFeature<Void>(session, new DriveDirectoryFeature(session, fileid), new DriveWriteFeature(session, fileid), cryptomator).mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DriveUploadFeature(new DriveWriteFeature(session))), new DriveWriteFeature(session), cryptomator).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DriveUploadFeature(new DriveWriteFeature(session, fileid))), new DriveWriteFeature(session, fileid), cryptomator).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final CryptoMoveFeature move = new CryptoMoveFeature(session, new DriveMoveFeature(session), new DriveDeleteFeature(session), cryptomator);
+        final CryptoMoveFeature move = new CryptoMoveFeature(session, new DriveMoveFeature(session, fileid), new DriveDeleteFeature(session, fileid), cryptomator);
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -75,7 +77,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
-        new CryptoDeleteFeature(session, new DriveDeleteFeature(session), cryptomator).delete(Arrays.asList(
+        new CryptoDeleteFeature(session, new DriveDeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(
                 fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

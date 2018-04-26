@@ -35,6 +35,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
+import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
@@ -96,7 +97,7 @@ public class DAVReadFeatureTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
-        Assert.assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        Assert.assertEquals(content.length, new CryptoListService(session, new DAVListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         Assert.assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(40000);

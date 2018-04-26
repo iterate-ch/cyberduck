@@ -67,18 +67,20 @@ import com.fasterxml.jackson.databind.ObjectReader;
 public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final Find finder;
     private final AttributesFinder attributes;
 
     public static final int DEFAULT_CLASSIFICATION = 1; // public
 
-    public SDSWriteFeature(final SDSSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public SDSWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        this(session, nodeid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public SDSWriteFeature(final SDSSession session, final Find finder, final AttributesFinder attributes) {
+    public SDSWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
+        this.nodeid = nodeid;
         this.finder = finder;
         this.attributes = attributes;
     }
@@ -86,7 +88,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final CreateFileUploadRequest body = new CreateFileUploadRequest();
-        body.setParentId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file.getParent(), new DisabledListProgressListener())));
+        body.setParentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())));
         body.setName(file.getName());
         body.classification(DEFAULT_CLASSIFICATION);
         try {

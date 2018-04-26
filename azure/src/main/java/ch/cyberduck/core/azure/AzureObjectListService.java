@@ -20,6 +20,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -114,5 +115,10 @@ public class AzureObjectListService implements ListService {
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 }

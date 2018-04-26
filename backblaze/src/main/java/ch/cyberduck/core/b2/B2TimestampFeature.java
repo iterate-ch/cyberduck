@@ -28,16 +28,18 @@ import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED
 public class B2TimestampFeature extends DefaultTimestampFeature implements Timestamp {
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
 
-    public B2TimestampFeature(final B2Session session) {
+    public B2TimestampFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
     public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         final Map<String, String> metadata = PreferencesFactory.get().getMap("b2.metadata.default");
         metadata.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(modified));
-        new B2MetadataFeature(session).setMetadata(file, metadata);
+        new B2MetadataFeature(session, fileid).setMetadata(file, metadata);
     }
 }
 

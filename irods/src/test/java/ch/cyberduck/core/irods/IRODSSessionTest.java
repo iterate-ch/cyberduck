@@ -81,7 +81,7 @@ public class IRODSSessionTest {
 
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final AttributedList<Path> list = session.list(new IRODSHomeFinderService(session).find(), new DisabledListProgressListener());
+        final AttributedList<Path> list = new IRODSListService(session).list(new IRODSHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
 
         assertTrue(session.isConnected());

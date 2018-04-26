@@ -36,12 +36,14 @@ public class SDSDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(SDSDeleteFeature.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
     private final PathContainerService containerService
         = new SDSPathContainerService();
 
-    public SDSDeleteFeature(final SDSSession session) {
+    public SDSDeleteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class SDSDeleteFeature implements Delete {
         for(Path file : files) {
             try {
                 new NodesApi(session.getClient()).deleteNode(StringUtils.EMPTY,
-                    Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())));
+                    Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())));
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -79,7 +81,7 @@ public class SDSDeleteFeature implements Delete {
     }
 
     private Set<Acl.Role> getRoles(final Path file) throws BackgroundException {
-        final Acl acl = new SDSPermissionsFeature(session).getPermission(containerService.getContainer(file));
+        final Acl acl = new SDSPermissionsFeature(session, nodeid).getPermission(containerService.getContainer(file));
         final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
         return roles != null ? roles : Collections.emptySet();
     }

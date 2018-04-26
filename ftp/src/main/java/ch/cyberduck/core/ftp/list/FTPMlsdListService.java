@@ -16,10 +16,9 @@ package ch.cyberduck.core.ftp.list;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.DataConnectionAction;
@@ -37,14 +36,10 @@ import java.util.List;
 public class FTPMlsdListService implements ListService {
 
     private final FTPSession session;
-    private final HostPasswordStore keychain;
-    private final LoginCallback prompt;
     private final FTPDataResponseReader reader;
 
-    public FTPMlsdListService(final FTPSession session, final HostPasswordStore keychain, final LoginCallback prompt) {
+    public FTPMlsdListService(final FTPSession session) {
         this.session = session;
-        this.keychain = keychain;
-        this.prompt = prompt;
         this.reader = new FTPMlsdListResponseReader();
     }
 
@@ -75,5 +70,10 @@ public class FTPMlsdListService implements ListService {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 }

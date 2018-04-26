@@ -27,11 +27,13 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -68,10 +70,11 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             status.setMime(MIMETYPE);
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
-            final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
-                new PathAttributes(folder.attributes()));
-            new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
-            return placeholder;
+            final StatusOutputStream<StorageObject> out = writer.write(new Path(folder.getParent(), folder.getName(), type,
+                new PathAttributes(folder.attributes())), status, new DisabledConnectionCallback());
+            new DefaultStreamCloser().close(out);
+            return new Path(folder.getParent(), folder.getName(), type,
+                new PathAttributes(folder.attributes()).withVersionId(((S3Object) out.getStatus()).getVersionId()));
         }
     }
 

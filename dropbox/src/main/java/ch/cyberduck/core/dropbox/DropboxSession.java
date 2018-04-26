@@ -15,14 +15,12 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
@@ -109,13 +107,11 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     }
 
     @Override
-    public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
-        return new DropboxListService(this).list(directory, listener);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new DropboxListService(this);
+        }
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);
         }

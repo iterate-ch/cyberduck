@@ -35,17 +35,12 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class SDSQuotaFeatureTest {
+public class SDSQuotaFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testAccount() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Quota.Space quota = new SDSQuotaFeature(session).get();
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Quota.Space quota = new SDSQuotaFeature(session, nodeid).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);
     }
@@ -59,7 +54,8 @@ public class SDSQuotaFeatureTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Quota.Space quota = new SDSQuotaFeature(session).get();
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Quota.Space quota = new SDSQuotaFeature(session, nodeid).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);
     }

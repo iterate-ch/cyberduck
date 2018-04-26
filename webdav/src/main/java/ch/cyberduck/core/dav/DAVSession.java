@@ -26,7 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -264,13 +263,11 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return new DAVListService(this).list(directory, listener);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new DAVListService(this);
+        }
         if(type == Directory.class) {
             return (T) new DAVDirectoryFeature(this);
         }

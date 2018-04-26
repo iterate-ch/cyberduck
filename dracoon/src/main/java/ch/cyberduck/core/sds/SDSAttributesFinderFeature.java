@@ -20,6 +20,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -37,16 +38,20 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     public static final String KEY_BRANCHVERSION = "branch_version";
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSAttributesFinderFeature(final SDSSession session) {
+    private Cache<Path> cache = PathCache.empty();
+
+    public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
             final Node node = new NodesApi(session.getClient()).getFsNode(StringUtils.EMPTY,
-                Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())), null);
+                Long.parseLong(nodeid.withCache(cache).getFileid(file, new DisabledListProgressListener())), null);
             return this.toAttributes(node);
         }
         catch(ApiException e) {
@@ -108,6 +113,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }

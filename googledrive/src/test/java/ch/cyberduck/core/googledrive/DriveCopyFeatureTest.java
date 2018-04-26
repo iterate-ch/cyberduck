@@ -42,28 +42,30 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
     @Test
     public void testCopyFile() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(test, new TransferStatus());
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
         final Path copy = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
+        new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new DriveDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testCopyToExistingFile() throws Exception {
         final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        new DriveDirectoryFeature(session, fileid).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(copy, new TransferStatus());
-        new DriveCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        new DriveTouchFeature(session, fileid).touch(copy, new TransferStatus());
+        new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new DriveListService(session, new DriveFileidProvider(session)).list(folder, new DisabledListProgressListener());
+        final AttributedList<Path> files = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new DriveDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

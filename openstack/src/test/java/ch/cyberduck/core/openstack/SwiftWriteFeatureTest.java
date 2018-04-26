@@ -64,7 +64,7 @@ public class SwiftWriteFeatureTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new SwiftFindFeature(session).find(test));
-        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        final PathAttributes attributes = new SwiftListService(session, regionService).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
         final Write.Append append = new SwiftWriteFeature(session, regionService).append(test, status.getLength(), PathCache.empty());
         assertTrue(append.override);

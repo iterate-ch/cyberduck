@@ -44,9 +44,9 @@ public class SDSTouchFeature implements Touch<VersionId> {
     private final PathContainerService containerService
         = new SDSPathContainerService();
 
-    public SDSTouchFeature(final SDSSession session) {
+    public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
-        this.writer = new SDSDelegatingWriteFeature(session, new SDSWriteFeature(session));
+        this.writer = new SDSDelegatingWriteFeature(session, new SDSWriteFeature(session, nodeid));
     }
 
     @Override

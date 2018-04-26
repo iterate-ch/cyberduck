@@ -16,7 +16,9 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RootListService;
@@ -63,5 +65,10 @@ public class OneDriveContainerListService implements RootListService {
             listener.chunk(directory, children);
         }
         return children;
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 }

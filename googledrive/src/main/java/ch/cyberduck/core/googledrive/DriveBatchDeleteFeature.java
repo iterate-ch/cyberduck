@@ -39,9 +39,11 @@ public class DriveBatchDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(DriveBatchDeleteFeature.class);
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
 
-    public DriveBatchDeleteFeature(final DriveSession session) {
+    public DriveBatchDeleteFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class DriveBatchDeleteFeature implements Delete {
         final List<BackgroundException> failures = new ArrayList<>();
         for(Path file : files) {
             try {
-                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener()))
+                session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
                     .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                     .queue(batch, new JsonBatchCallback<Void>() {
                         @Override

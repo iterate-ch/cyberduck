@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -37,5 +38,10 @@ public class OneDriveListService implements ListService {
         else {
             return new OneDriveItemListService(session).list(directory, listener);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 }

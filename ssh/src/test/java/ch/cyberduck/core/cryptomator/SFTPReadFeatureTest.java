@@ -38,6 +38,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPFindFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
+import ch.cyberduck.core.sftp.SFTPListService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPReadFeature;
 import ch.cyberduck.core.sftp.SFTPSession;
@@ -95,7 +96,7 @@ public class SFTPReadFeatureTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
-        Assert.assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        Assert.assertEquals(content.length, new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         Assert.assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(30000);
         final TransferStatus read = new TransferStatus();

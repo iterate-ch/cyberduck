@@ -55,14 +55,16 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
     private static final Logger log = Logger.getLogger(SDSMissingFileKeysSchedulerFeature.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSMissingFileKeysSchedulerFeature(final SDSSession session) {
-        this(session, PreferencesFactory.get().getLong("sds.encryption.missingkeys.scheduler.period"));
+    public SDSMissingFileKeysSchedulerFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        this(session, nodeid, PreferencesFactory.get().getLong("sds.encryption.missingkeys.scheduler.period"));
     }
 
-    public SDSMissingFileKeysSchedulerFeature(final SDSSession session, final long period) {
+    public SDSMissingFileKeysSchedulerFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final long period) {
         super(period);
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -81,7 +83,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             final UserKeyPair userKeyPair = new UserKeyPair();
             userKeyPair.setUserPrivateKey(privateKey);
             final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
-            final Long fileId = file != null ? Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener())) : null;
+            final Long fileId = file != null ? Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())) : null;
             UserFileKeySetBatchRequest request;
             do {
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(StringUtils.EMPTY,

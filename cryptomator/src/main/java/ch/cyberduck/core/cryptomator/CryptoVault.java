@@ -327,7 +327,7 @@ public class CryptoVault implements Vault {
             }
             final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            final PathAttributes attributes = new PathAttributes(file.attributes()).withVersionId(null);
+            final PathAttributes attributes = new PathAttributes(file.attributes());
             // Translate file size
             attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());

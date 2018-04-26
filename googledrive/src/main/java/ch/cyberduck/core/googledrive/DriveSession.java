@@ -15,13 +15,11 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
@@ -59,6 +57,8 @@ public class DriveSession extends HttpSession<Drive> {
 
     private OAuth2RequestInterceptor authorizationService;
 
+    private final DriveFileidProvider fileid = new DriveFileidProvider(this);
+
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -92,11 +92,6 @@ public class DriveSession extends HttpSession<Drive> {
         transport.shutdown();
     }
 
-    @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return new DriveListService(this, new DriveFileidProvider(this)).list(directory, listener);
-    }
-
     public HttpClient getHttpClient() {
         return transport.getHttpClient();
     }
@@ -104,29 +99,32 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new DriveListService(this, fileid);
+        }
         if(type == Read.class) {
-            return (T) new DriveReadFeature(this);
+            return (T) new DriveReadFeature(this, fileid);
         }
         if(type == Write.class) {
-            return (T) new DriveWriteFeature(this);
+            return (T) new DriveWriteFeature(this, fileid);
         }
         if(type == Upload.class) {
-            return (T) new DriveUploadFeature(new DriveWriteFeature(this));
+            return (T) new DriveUploadFeature(new DriveWriteFeature(this, fileid));
         }
         if(type == Directory.class) {
-            return (T) new DriveDirectoryFeature(this);
+            return (T) new DriveDirectoryFeature(this, fileid);
         }
         if(type == Delete.class) {
-            return (T) new DriveBatchDeleteFeature(this);
+            return (T) new DriveBatchDeleteFeature(this, fileid);
         }
         if(type == Move.class) {
-            return (T) new DriveMoveFeature(this);
+            return (T) new DriveMoveFeature(this, fileid);
         }
         if(type == Copy.class) {
-            return (T) new DriveCopyFeature(this);
+            return (T) new DriveCopyFeature(this, fileid);
         }
         if(type == Touch.class) {
-            return (T) new DriveTouchFeature(this);
+            return (T) new DriveTouchFeature(this, fileid);
         }
         if(type == UrlProvider.class) {
             return (T) new DriveUrlProvider();
@@ -135,25 +133,25 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveHomeFinderService(this);
         }
         if(type == IdProvider.class) {
-            return (T) new DriveFileidProvider(this);
+            return (T) fileid;
         }
         if(type == Quota.class) {
             return (T) new DriveQuotaFeature(this);
         }
         if(type == Timestamp.class) {
-            return (T) new DriveTimestampFeature(this);
+            return (T) new DriveTimestampFeature(this, fileid);
         }
         if(type == Metadata.class) {
-            return (T) new DriveMetadataFeature(this);
+            return (T) new DriveMetadataFeature(this, fileid);
         }
         if(type == Search.class) {
             return (T) new DriveSearchFeature(this);
         }
         if(type == Find.class) {
-            return (T) new DriveFindFeature(this);
+            return (T) new DriveFindFeature(this, fileid);
         }
         if(type == AttributesFinder.class) {
-            return (T) new DriveAttributesFinderFeature(this);
+            return (T) new DriveAttributesFinderFeature(this, fileid);
         }
         return super._getFeature(type);
     }

@@ -39,6 +39,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.openstack.SwiftDeleteFeature;
 import ch.cyberduck.core.openstack.SwiftFindFeature;
 import ch.cyberduck.core.openstack.SwiftLargeObjectUploadFeature;
+import ch.cyberduck.core.openstack.SwiftListService;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.openstack.SwiftReadFeature;
 import ch.cyberduck.core.openstack.SwiftRegionService;
@@ -83,10 +84,11 @@ public class SwiftLargeObjectUploadFeatureTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        final SwiftRegionService regionService = new SwiftRegionService(session);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-                new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session,
-                        new SwiftRegionService(session)), 5242880L, 5), new SwiftWriteFeature(session,
-                new SwiftRegionService(session)), cryptomator);
+            new SwiftLargeObjectUploadFeature(session, regionService, new SwiftWriteFeature(session,
+                regionService), 5242880L, 5), new SwiftWriteFeature(session,
+            regionService), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 5242885;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -100,10 +102,10 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals((long) content.length, writeStatus.getOffset(), 0L);
         assertTrue(writeStatus.isComplete());
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new CryptoListService(session, new SwiftListService(session, regionService), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        final InputStream in = new CryptoReadFeature(session, new SwiftReadFeature(session, new SwiftRegionService(session)), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new SwiftReadFeature(session, regionService), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
         new StreamCopier(readStatus, readStatus).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new SwiftDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -37,10 +37,11 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
     public void setMetadata() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(test, new TransferStatus());
-        assertEquals(Collections.emptyMap(), new DriveMetadataFeature(session).getMetadata(test));
-        new DriveMetadataFeature(session).setMetadata(test, Collections.singletonMap("test", "t"));
-        assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session).getMetadata(test));
-        new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        assertEquals(Collections.emptyMap(), new DriveMetadataFeature(session, fileid).getMetadata(test));
+        new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));
+        assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session, fileid).getMetadata(test));
+        new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

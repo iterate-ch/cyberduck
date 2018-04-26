@@ -42,11 +42,13 @@ public class B2SearchFeature implements Search {
             = new PathContainerService();
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
 
     private Cache<Path> cache = PathCache.empty();
 
-    public B2SearchFeature(final B2Session session) {
+    public B2SearchFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -68,14 +70,14 @@ public class B2SearchFeature implements Search {
                 String startFilename = prefix;
                 do {
                     final B2ListFilesResponse response = session.getClient().listFileNames(
-                            new B2FileidProvider(session).withCache(cache).getFileid(container, listener),
+                        fileid.withCache(cache).getFileid(container, listener),
                             startFilename,
                             PreferencesFactory.get().getInteger("b2.listing.chunksize"),
                             prefix, null);
                     for(B2FileInfoResponse info : response.getFiles()) {
                         if(PathNormalizer.name(info.getFileName()).startsWith(regex.toPattern().pattern())) {
                             list.add(new Path(String.format("%s%s%s", container.getAbsolute(),
-                                    String.valueOf(Path.DELIMITER), info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session).parse(info)));
+                                String.valueOf(Path.DELIMITER), info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session, fileid).parse(info)));
                         }
                     }
                     startFilename = response.getNextFileName();

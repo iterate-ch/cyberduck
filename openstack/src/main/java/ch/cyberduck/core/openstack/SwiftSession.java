@@ -18,12 +18,11 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -136,19 +135,11 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            return new SwiftContainerListService(this,
-                new SwiftLocationFeature.SwiftRegion(host.getRegion())).list(directory, listener);
-        }
-        else {
-            return new SwiftObjectListService(this, regionService).list(directory, listener);
-        }
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new SwiftListService(this, regionService);
+        }
         if(type == Read.class) {
             return (T) new SwiftReadFeature(this, regionService);
         }

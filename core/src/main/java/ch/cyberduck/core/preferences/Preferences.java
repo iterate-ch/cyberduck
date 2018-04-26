@@ -779,7 +779,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("googledrive.teamdrive.enable", String.valueOf(true));
 
         this.setDefault("b2.bucket.acl.default", "allPrivate");
-        this.setDefault("b2.listing.chunksize", String.valueOf(100));
+        this.setDefault("b2.listing.chunksize", String.valueOf(1000));
         this.setDefault("b2.upload.checksum.verify", String.valueOf(true));
 
         this.setDefault("b2.upload.largeobject", String.valueOf(true));

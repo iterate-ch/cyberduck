@@ -17,6 +17,7 @@ package ch.cyberduck.core.ftp.list;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -175,6 +176,11 @@ public class FTPListServiceTest {
                 }
                 set.set(true);
                 throw new ConnectionTimeoutException("t", new SocketTimeoutException());
+            }
+
+            @Override
+            public ListService withCache(final Cache<Path> cache) {
+                return this;
             }
         });
         final Path directory = new FTPWorkdirService(session).find();

@@ -30,6 +30,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.azure.AzureAttributesFinderFeature;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
 import ch.cyberduck.core.azure.AzureFindFeature;
+import ch.cyberduck.core.azure.AzureListService;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.azure.AzureReadFeature;
 import ch.cyberduck.core.azure.AzureSession;
@@ -98,7 +99,7 @@ public class AzureWriteFeatureTest {
         out.close();
         final OperationContext context = new OperationContext();
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, context), cryptomator).find(test));
-        assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new CryptoListService(session, new AzureListService(session, context), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, context, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session)), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, context, new AzureFindFeature(session, context), new AzureAttributesFinderFeature(session, context)), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

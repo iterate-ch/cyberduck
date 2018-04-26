@@ -57,7 +57,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class Session<C> implements ListService, TranscriptListener {
+public abstract class Session<C> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
@@ -281,13 +281,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     }
 
     /**
-     * @param directory Directory
-     * @param listener  Callback
-     */
-    @Override
-    public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
-
-    /**
      * Get feature implementation
      *
      * @param type Feature type
@@ -354,9 +347,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
-        }
-        if(type == ListService.class) {
-            return (T) this;
         }
         return null;
     }

@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -178,18 +177,11 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            return new AzureContainerListService(this, context).list(directory, listener);
-        }
-        else {
-            return new AzureObjectListService(this, context).list(directory, listener);
-        }
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new AzureListService(this, context);
+        }
         if(type == Read.class) {
             return (T) new AzureReadFeature(this, context);
         }

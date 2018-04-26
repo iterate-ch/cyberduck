@@ -16,24 +16,17 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
-import ch.cyberduck.core.sds.SDSProtocol;
-import ch.cyberduck.core.sds.SDSSession;
+import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSTouchFeature;
 import ch.cyberduck.core.sds.SDSWriteFeature;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -49,37 +42,26 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DefaultCopyFeatureTest {
+public class DefaultCopyFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testSupported() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(new DefaultCopyFeature(session).isSupported(source, target));
-        session.close();
     }
 
     @Test
     public void testCopy() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-
-        final Path room = new SDSDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path source = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session).touch(source, new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setExists(true);
-        final OutputStream out = new SDSWriteFeature(session).write(source, status, new DisabledConnectionCallback());
+        final OutputStream out = new SDSWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -87,7 +69,6 @@ public class DefaultCopyFeatureTest {
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());
-        new SDSDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

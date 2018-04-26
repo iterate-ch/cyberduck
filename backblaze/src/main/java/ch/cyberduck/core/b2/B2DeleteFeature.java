@@ -35,12 +35,14 @@ public class B2DeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(B2DeleteFeature.class);
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
 
-    public B2DeleteFeature(final B2Session session) {
+    public B2DeleteFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -51,14 +53,14 @@ public class B2DeleteFeature implements Delete {
             }
             callback.delete(file);
             if(file.getType().contains(Path.Type.upload)) {
-                new B2LargeUploadPartService(session).delete(file.attributes().getVersionId());
+                new B2LargeUploadPartService(session, fileid).delete(file.attributes().getVersionId());
             }
             else {
                 if(file.isDirectory()) {
                     // Delete /.bzEmpty if any
                     final String fileid;
                     try {
-                        fileid = new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener());
+                        fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
                     }
                     catch(NotfoundException e) {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getDetail(), file));
@@ -76,7 +78,7 @@ public class B2DeleteFeature implements Delete {
                 }
                 else if(file.isFile()) {
                     try {
-                        session.getClient().deleteFileVersion(containerService.getKey(file), new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
+                        session.getClient().deleteFileVersion(containerService.getKey(file), fileid.getFileid(file, new DisabledListProgressListener()));
                     }
                     catch(B2ApiException e) {
                         throw new B2ExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -92,7 +94,7 @@ public class B2DeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     callback.delete(file);
                     // Finally delete bucket itself
-                    session.getClient().deleteBucket(new B2FileidProvider(session).getFileid(file, new DisabledListProgressListener()));
+                    session.getClient().deleteBucket(fileid.getFileid(file, new DisabledListProgressListener()));
                 }
             }
             catch(B2ApiException e) {

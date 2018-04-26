@@ -16,19 +16,14 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
+import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2LargeUploadWriteFeature;
-import ch.cyberduck.core.b2.B2Protocol;
-import ch.cyberduck.core.b2.B2Session;
 import ch.cyberduck.core.b2.B2TouchFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -47,41 +42,26 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class DefaultFindFeatureTest {
+public class DefaultFindFeatureTest extends AbstractB2Test {
 
     @Test
     public void testFind() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(file, new TransferStatus());
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         // Find without version id set in attributes
         new DefaultFindFeature(session).find(file);
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testFindLargeUpload() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<VersionId> out = new B2LargeUploadWriteFeature(session).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        final StatusOutputStream<VersionId> out = new B2LargeUploadWriteFeature(session, new B2FileidProvider(session).withCache(cache)).write(file, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.copyLarge(new ByteArrayInputStream(RandomUtils.nextBytes(100)), out);
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
-        session.close();
     }
 }
