@@ -45,7 +45,8 @@ public abstract class ListFilteringFeature {
     protected Path search(final Path file) throws BackgroundException {
         final AttributedList<Path> list;
         if(!cache.isCached(file.getParent())) {
-            list = session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+            // Do not decrypt filenames to match with input
+            list = session._getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
             cache.put(file.getParent(), list);
         }
         else {
