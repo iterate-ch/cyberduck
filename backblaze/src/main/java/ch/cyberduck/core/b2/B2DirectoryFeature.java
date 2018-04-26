@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -40,6 +41,7 @@ import java.util.EnumSet;
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
+import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2DirectoryFeature implements Directory<BaseB2Response> {
@@ -77,10 +79,12 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                     status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
                 }
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
-                new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
+                final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
+                new DefaultStreamCloser().close(out);
                 final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
-                return new Path(folder.getParent(), folder.getName(), type, new PathAttributes(folder.attributes()));
+                return new Path(folder.getParent(), folder.getName(), type,
+                    new PathAttributes(folder.attributes()).withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
             }
         }
         catch(B2ApiException e) {

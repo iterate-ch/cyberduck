@@ -50,7 +50,8 @@ public class DriveDirectoryFeature implements Directory<Void> {
                 .setParents(Collections.singletonList(fileid.getFileid(folder.getParent(), new DisabledListProgressListener()))));
             final File execute = insert
                 .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
-            return new Path(folder.getParent(), folder.getName(), folder.getType(), new PathAttributes(folder.attributes()));
+            return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                new PathAttributes(folder.attributes()).withVersionId(execute.getId()));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, folder);
