@@ -10,6 +10,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
@@ -18,6 +19,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
+import ch.cyberduck.core.sftp.SFTPListService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.sftp.SFTPTouchFeature;
@@ -57,11 +59,20 @@ public class DefaultAttributesFinderFeatureTest {
         final AtomicBoolean set = new AtomicBoolean();
         final SFTPSession session = new SFTPSession(host) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-                assertFalse(set.get());
-                final AttributedList<Path> list = super.list(file, listener);
-                set.set(true);
-                return list;
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == ListService.class) {
+                    return (T) new SFTPListService(this) {
+                        @Override
+                        public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+                            assertFalse(set.get());
+                            final AttributedList<Path> list = super.list(file, listener);
+                            set.set(true);
+                            return list;
+                        }
+                    };
+                }
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
