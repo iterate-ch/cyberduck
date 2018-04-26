@@ -348,9 +348,6 @@ public abstract class Session<C> implements TranscriptListener {
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
         }
-        if(type == ListService.class) {
-            return (T) this;
-        }
         return null;
     }
 
