@@ -20,6 +20,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -54,8 +56,22 @@ public class FTPAttributesFinderFeatureTest {
         ));
         final FTPSession session = new FTPSession(host) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-                throw new AccessDeniedException("f");
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == ListService.class) {
+                    return (T) new ListService() {
+                        @Override
+                        public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+                            throw new AccessDeniedException("f");
+                        }
+
+                        @Override
+                        public ListService withCache(final Cache<Path> cache) {
+                            return this;
+                        }
+                    };
+                }
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -73,8 +89,22 @@ public class FTPAttributesFinderFeatureTest {
         ));
         final FTPSession session = new FTPSession(host) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-                throw new AccessDeniedException("f");
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == ListService.class) {
+                    return (T) new ListService() {
+                        @Override
+                        public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+                            throw new AccessDeniedException("f");
+                        }
+
+                        @Override
+                        public ListService withCache(final Cache<Path> cache) {
+                            return this;
+                        }
+                    };
+                }
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());

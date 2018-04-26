@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -188,5 +189,11 @@ public class B2ObjectListService implements ListService {
             sb.append('}');
             return sb.toString();
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        fileid.withCache(cache);
+        return this;
     }
 }

@@ -20,7 +20,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -45,7 +45,7 @@ public abstract class ListFilteringFeature {
     protected Path search(final Path file) throws BackgroundException {
         final AttributedList<Path> list;
         if(!cache.isCached(file.getParent())) {
-            list = session.list(file.getParent(), new DisabledListProgressListener());
+            list = session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
             cache.put(file.getParent(), list);
         }
         else {

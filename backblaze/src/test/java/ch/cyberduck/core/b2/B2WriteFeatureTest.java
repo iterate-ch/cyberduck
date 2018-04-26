@@ -86,7 +86,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         out.close();
         test.attributes().setVersionId(fileid.getFileid(test, new DisabledListProgressListener()));
         assertTrue(new B2FindFeature(session, fileid).find(test));
-        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        final PathAttributes attributes = new B2ListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
         final Write.Append append = new B2WriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty());
         assertTrue(append.override);

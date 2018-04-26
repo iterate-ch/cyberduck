@@ -32,6 +32,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
+import ch.cyberduck.core.s3.S3ListService;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3ReadFeature;
@@ -248,7 +249,7 @@ public class UDTProxyConfiguratorTest {
             new DisabledStreamListener(), status, new DisabledConnectionCallback());
 
         assertTrue(tunneled.getFeature(Find.class).find(test));
-        assertEquals(status.getLength(), tunneled.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
+        assertEquals(status.getLength(), new S3ListService(tunneled).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
         assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength(), PathCache.empty()).override);
         {
             final byte[] buffer = new byte[random.getBytes().length];

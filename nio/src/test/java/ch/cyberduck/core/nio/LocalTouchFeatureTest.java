@@ -50,7 +50,7 @@ public class LocalTouchFeatureTest {
         // Test override
         new LocalTouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new LocalFindFeature(session).find(test));
-        final AttributedList<Path> list = session.list(workdir, new DisabledListProgressListener());
+        final AttributedList<Path> list = new LocalListService(session).list(workdir, new DisabledListProgressListener());
         assertTrue(list.contains(test));
         new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

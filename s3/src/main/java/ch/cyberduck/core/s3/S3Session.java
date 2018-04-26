@@ -24,12 +24,10 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
@@ -40,7 +38,6 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
@@ -72,12 +69,10 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
-import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Map;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
@@ -236,38 +231,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            // List all buckets
-            return new S3BucketListService(this, new S3LocationFeature.S3Region(host.getRegion())).list(directory, listener);
-        }
-        else {
-            AttributedList<Path> objects;
-            try {
-                objects = new S3VersionedObjectListService(this).list(directory, listener);
-            }
-            catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing versioned objects. %s", e.getDetail()));
-                objects = new S3ObjectListService(this).list(directory, listener);
-            }
-            try {
-                for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setVersionId(upload.getUploadId());
-                    attributes.setModificationDate(upload.getInitiatedDate().getTime());
-                    objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
-                }
-            }
-            catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
-            }
-            return objects;
-        }
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new S3ListService(this);
+        }
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
         }

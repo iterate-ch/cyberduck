@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -106,5 +107,11 @@ public class SDSListService implements ListService {
             throw new SDSExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         return children;
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        nodeid.withCache(cache);
+        return this;
     }
 }

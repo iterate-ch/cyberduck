@@ -53,7 +53,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
     @Test(expected = NotfoundException.class)
@@ -79,7 +79,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         session.retryHandler.setTokens(System.getProperties().getProperty("sds.user"),
             System.getProperties().getProperty("sds.key"),
             "invalid");
-        session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -93,7 +93,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             "invalid",
             System.getProperties().getProperty("sds.key"),
             "invalid");
-        session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -117,7 +117,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                 return new Credentials(username, "889153");
             }
         }, new DisabledCancelCallback());
-        assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -144,7 +144,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                 return null;
             }
         }, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
     @Test(expected = LoginFailureException.class)

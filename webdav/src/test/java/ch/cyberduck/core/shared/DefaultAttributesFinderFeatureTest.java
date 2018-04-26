@@ -15,7 +15,6 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -23,14 +22,12 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
@@ -43,7 +40,6 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -53,7 +49,7 @@ public class DefaultAttributesFinderFeatureTest {
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -65,18 +61,10 @@ public class DefaultAttributesFinderFeatureTest {
     @Test
     public void testAttributes() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
-        final AtomicBoolean set = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-                final AttributedList<Path> list = super.list(file, listener);
-                set.set(true);
-                return list;
-            }
-        };
+        final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathCache cache = new PathCache(1);
@@ -104,15 +92,7 @@ public class DefaultAttributesFinderFeatureTest {
     @Test
     public void testFindNoWebDAV() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io");
-        final AtomicBoolean set = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-                final AttributedList<Path> list = super.list(file, listener);
-                set.set(true);
-                return list;
-            }
-        };
+        final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session);

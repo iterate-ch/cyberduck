@@ -58,7 +58,7 @@ public class SFTPUnixPermissionFeatureTest {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
         new SFTPUnixPermissionFeature(session).setUnixOwner(test, "80");
-        assertEquals("80", session.list(home, new DisabledListProgressListener()).get(test).attributes().getOwner());
+        assertEquals("80", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getOwner());
         session.close();
     }
 
@@ -77,7 +77,7 @@ public class SFTPUnixPermissionFeatureTest {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
         new SFTPUnixPermissionFeature(session).setUnixGroup(test, "80");
-        assertEquals("80", session.list(home, new DisabledListProgressListener()).get(test).attributes().getGroup());
+        assertEquals("80", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getGroup());
         session.close();
     }
 
@@ -96,14 +96,14 @@ public class SFTPUnixPermissionFeatureTest {
             final Path file = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
             new SFTPTouchFeature(session).touch(file, new TransferStatus());
             new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
-            assertEquals("666", session.list(home, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
+            assertEquals("666", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
             new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         {
             final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
             new SFTPDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
             new SFTPUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
-            assertEquals("666", session.list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
+            assertEquals("666", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
             new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         session.close();

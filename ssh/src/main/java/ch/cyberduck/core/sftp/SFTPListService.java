@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -45,12 +46,11 @@ public class SFTPListService implements ListService {
     private final NFCNormalizer normalizer = new NFCNormalizer();
 
     private final SFTPSession session;
-
-    private final SFTPAttributesFinderFeature feature;
+    private final SFTPAttributesFinderFeature attributes;
 
     public SFTPListService(final SFTPSession session) {
         this.session = session;
-        this.feature = new SFTPAttributesFinderFeature(session);
+        this.attributes = new SFTPAttributesFinderFeature(session);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class SFTPListService implements ListService {
                     return true;
                 }
             })) {
-                final PathAttributes attributes = feature.convert(f.getAttributes());
+                final PathAttributes attributes = this.attributes.convert(f.getAttributes());
                 final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
                 if(f.getAttributes().getType().equals(FileMode.Type.DIRECTORY)) {
                     type.add(Path.Type.directory);
@@ -87,6 +87,12 @@ public class SFTPListService implements ListService {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        attributes.withCache(cache);
+        return this;
     }
 
     protected boolean post(final Path file) throws BackgroundException {

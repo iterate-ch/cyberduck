@@ -15,12 +15,11 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -109,11 +108,6 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return new LocalListService(this).list(directory, listener);
-    }
-
-    @Override
     public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Path home = new LocalHomeFinderFeature(this).find();
         try {
@@ -137,6 +131,9 @@ public class LocalSession extends Session<FileSystem> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new LocalListService(this);
+        }
         if(type == Touch.class) {
             return (T) new LocalTouchFeature(this);
         }

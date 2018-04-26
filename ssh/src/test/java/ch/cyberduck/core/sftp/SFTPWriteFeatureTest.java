@@ -61,7 +61,7 @@ public class SFTPWriteFeatureTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new SFTPFindFeature(session).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

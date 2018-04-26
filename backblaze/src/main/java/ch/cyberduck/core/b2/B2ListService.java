@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -23,21 +24,28 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public class B2ListService implements ListService {
 
-    private final B2Session session;
-    private final B2FileidProvider fileid;
+    private final B2BucketListService buckets;
+    private final B2ObjectListService objects;
 
     public B2ListService(final B2Session session, final B2FileidProvider fileid) {
-        this.session = session;
-        this.fileid = fileid;
+        buckets = new B2BucketListService(session);
+        objects = new B2ObjectListService(session, fileid);
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new B2BucketListService(session).list(directory, listener);
+            return buckets.list(directory, listener);
         }
         else {
-            return new B2ObjectListService(session, fileid).list(directory, listener);
+            return objects.list(directory, listener);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        buckets.withCache(cache);
+        objects.withCache(cache);
+        return this;
     }
 }

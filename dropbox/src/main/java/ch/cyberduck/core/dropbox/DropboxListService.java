@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -40,7 +41,6 @@ public class DropboxListService implements ListService {
     private static final Logger log = Logger.getLogger(DropboxListService.class);
 
     private final DropboxSession session;
-
     private final DropboxAttributesFinderFeature attributes;
 
     public DropboxListService(final DropboxSession session) {
@@ -65,6 +65,11 @@ public class DropboxListService implements ListService {
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 
     private void parse(final Path directory, final ListProgressListener listener, final AttributedList<Path> children, final ListFolderResult result)

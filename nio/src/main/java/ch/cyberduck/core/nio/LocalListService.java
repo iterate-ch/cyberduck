@@ -16,6 +16,7 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -72,6 +73,11 @@ public class LocalListService implements ListService {
             throw new LocalExceptionMappingService().map("Listing directory {0} failed", ex, directory);
         }
         return paths;
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 
     protected boolean post(final java.nio.file.Path path, final Path file) {

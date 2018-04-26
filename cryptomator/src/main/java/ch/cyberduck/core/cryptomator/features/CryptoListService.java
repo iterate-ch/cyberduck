@@ -16,10 +16,12 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.CryptoPathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.DecryptingListProgressListener;
@@ -40,6 +42,12 @@ public class CryptoListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return delegate.list(vault.encrypt(session, directory),
                 new DecryptingListProgressListener(session, vault, listener));
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        delegate.withCache(new CryptoPathCache(cache));
+        return this;
     }
 
     @Override

@@ -16,6 +16,7 @@ package ch.cyberduck.core.ftp.list;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.HostPasswordStore;
@@ -115,7 +116,7 @@ public class FTPListService implements ListService {
             }
         }
         if(PreferencesFactory.get().getBoolean("ftp.command.mlsd")) {
-            this.implementations.put(Command.mlsd, new FTPMlsdListService(session, keychain, prompt));
+            this.implementations.put(Command.mlsd, new FTPMlsdListService(session));
         }
         if(PreferencesFactory.get().getBoolean("ftp.command.lista")) {
             this.implementations.put(Command.lista, new FTPDefaultListService(session, keychain, prompt, parser, Command.lista));
@@ -175,6 +176,11 @@ public class FTPListService implements ListService {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 
     /**
