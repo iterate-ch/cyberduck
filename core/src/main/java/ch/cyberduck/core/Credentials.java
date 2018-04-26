@@ -32,12 +32,12 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * The login name
      */
-    private String user;
+    private String user = StringUtils.EMPTY;
 
     /**
      * The login password
      */
-    private String password;
+    private String password = StringUtils.EMPTY;
 
     /**
      * Private key identity for SSH public key authentication.

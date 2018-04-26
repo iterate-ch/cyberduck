@@ -37,14 +37,14 @@ public class CredentialsTest {
     @Test
     public void testDefault() throws Exception {
         Credentials c = new Credentials();
-        assertEquals(null, c.getUsername());
-        assertEquals(null, c.getPassword());
+        assertEquals("", c.getUsername());
+        assertEquals("", c.getPassword());
     }
 
     @Test
     public void testNullifyPassword() throws Exception {
         Credentials c = new Credentials();
-        assertEquals(null, c.getPassword());
+        assertEquals("", c.getPassword());
         c.setPassword(null);
         assertEquals(null, c.getPassword());
         c.setPassword("n");
