@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.unicode.NFCNormalizer;
 
 import org.apache.log4j.Logger;
 
@@ -42,8 +41,6 @@ import net.schmizz.sshj.sftp.SFTPException;
 
 public class SFTPListService implements ListService {
     private static final Logger log = Logger.getLogger(SFTPListService.class);
-
-    private final NFCNormalizer normalizer = new NFCNormalizer();
 
     private final SFTPSession session;
     private final SFTPAttributesFinderFeature attributes;
@@ -75,7 +72,7 @@ public class SFTPListService implements ListService {
                 if(f.getAttributes().getType().equals(FileMode.Type.SYMLINK)) {
                     type.add(Path.Type.symboliclink);
                 }
-                final Path file = new Path(directory, normalizer.normalize(f.getName()).toString(), type, attributes);
+                final Path file = new Path(directory, f.getName(), type, attributes);
                 if(this.post(file)) {
                     children.add(file);
                     listener.chunk(directory, children);
