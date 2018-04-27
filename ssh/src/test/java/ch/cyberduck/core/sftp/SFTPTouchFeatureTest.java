@@ -59,7 +59,7 @@ public class SFTPTouchFeatureTest {
         new SFTPUnixPermissionFeature(session).setUnixPermission(test, new Permission("664"));
         // Test override
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
-        final AttributedList<Path> list = session.list(home, new DisabledListProgressListener());
+        final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test));
         assertEquals("664", list.get(test).attributes().getPermission().getMode());
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

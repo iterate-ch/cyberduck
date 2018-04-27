@@ -41,7 +41,7 @@ import java.util.HashSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SDSSessionTest {
+public class SDSSessionTest extends AbstractSDSTest {
 
     @Test
     public void testLoginUserPassword() throws Exception {
@@ -53,8 +53,7 @@ public class SDSSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
-        session.close();
+        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
     @Test(expected = NotfoundException.class)
@@ -80,7 +79,7 @@ public class SDSSessionTest {
         session.retryHandler.setTokens(System.getProperties().getProperty("sds.user"),
             System.getProperties().getProperty("sds.key"),
             "invalid");
-        session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -94,7 +93,7 @@ public class SDSSessionTest {
             "invalid",
             System.getProperties().getProperty("sds.key"),
             "invalid");
-        session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -118,8 +117,7 @@ public class SDSSessionTest {
                 return new Credentials(username, "889153");
             }
         }, new DisabledCancelCallback());
-        assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
-        session.close();
+        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -146,8 +144,7 @@ public class SDSSessionTest {
                 return null;
             }
         }, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertFalse(session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
-        session.close();
+        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -160,7 +157,6 @@ public class SDSSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.close();
     }
 
     @Test(expected = ConnectionRefusedException.class)
@@ -182,7 +178,6 @@ public class SDSSessionTest {
             }
         );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        session.close();
     }
 
     @Ignore
@@ -212,6 +207,5 @@ public class SDSSessionTest {
             }
         );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        session.close();
     }
 }

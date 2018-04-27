@@ -51,7 +51,7 @@ public class CryptoUrlProvider implements UrlProvider {
             final DescriptiveUrlBag set = delegate.toUrl(file);
             final Path encrypt = vault.encrypt(session, file);
             set.add(new DescriptiveUrl(URI.create(String.format("%s%s",
-                    new HostUrlProvider(false).get(session.getHost()), URIEncoder.encode(encrypt.getAbsolute()))),
+                new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(encrypt.getAbsolute()))),
                     DescriptiveUrl.Type.encrypted,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                             LocaleFactory.localizedString("Encrypted", "Cryptomator")))

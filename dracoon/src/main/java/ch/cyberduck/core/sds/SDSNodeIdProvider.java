@@ -15,11 +15,15 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -38,8 +42,10 @@ public class SDSNodeIdProvider implements IdProvider {
 
     private final SDSSession session;
 
+    private Cache<Path> cache = PathCache.empty();
+
     private final PathContainerService containerService
-            = new SDSPathContainerService();
+        = new SDSPathContainerService();
 
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
@@ -56,24 +62,28 @@ public class SDSNodeIdProvider implements IdProvider {
         if(file.isRoot()) {
             return ROOT_NODE_ID;
         }
+        if(cache.isCached(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            if(null != found) {
+                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
+                    return found.attributes().getVersionId();
+                }
+            }
+        }
         try {
             final String type;
             if(file.isDirectory()) {
-                if(containerService.isContainer(file)) {
-                    type = "room";
-                }
-                else {
-                    type = "folder";
-                }
+                type = "room:folder";
             }
             else {
                 type = "file";
             }
             // Top-level nodes only
             final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, 0,
-                    Long.parseLong(this.getFileid(file.getParent(), new DisabledListProgressListener())),
-                    null, String.format("type:eq:%s|name:cn:%s", type, file.getName()),
-                    null, null, null);
+                Long.parseLong(this.getFileid(file.getParent(), new DisabledListProgressListener())),
+                null, String.format("type:eq:%s|name:cn:%s", type, file.getName()),
+                null, null, null);
             for(Node node : nodes.getItems()) {
                 if(node.getName().equals(file.getName())) {
                     if(log.isInfoEnabled()) {
@@ -90,7 +100,8 @@ public class SDSNodeIdProvider implements IdProvider {
     }
 
     @Override
-    public IdProvider withCache(final Cache<Path> cache) {
+    public SDSNodeIdProvider withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }

@@ -27,6 +27,8 @@ import java.lang.reflect.InvocationTargetException;
 
 public final class LocalFactory extends Factory<Local> {
 
+    private static final LocalFactory factory = new LocalFactory();
+
     protected LocalFactory() {
         super("factory.local.class");
     }
@@ -37,48 +39,38 @@ public final class LocalFactory extends Factory<Local> {
     }
 
     protected Local create(final String path) {
-        final String clazz = PreferencesFactory.get().getProperty("factory.local.class");
-        if(null == clazz) {
-            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
-        }
         try {
-            final Class<Local> name = (Class<Local>) Class.forName(clazz);
-            final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, path.getClass());
+            final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, path.getClass());
             return constructor.newInstance(path);
         }
-        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
 
     protected Local create(final Local parent, final String path) {
-        final String clazz = PreferencesFactory.get().getProperty("factory.local.class");
-        if(null == clazz) {
-            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
-        }
         try {
-            final Class<Local> name = (Class<Local>) Class.forName(clazz);
-            final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, parent.getClass(), path.getClass());
+            final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, parent.getClass(), path.getClass());
             return constructor.newInstance(parent, path);
         }
-        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
 
     public static Local get(final Local parent, final String name) {
-        return new LocalFactory().create(parent, name);
+        return factory.create(parent, name);
     }
 
     public static Local get(final String parent, final String name) {
-        return new LocalFactory().create(new LocalFactory().create(parent), name);
+        return factory.create(factory.create(parent), name);
     }
 
     public static Local get(final String path) {
-        return new LocalFactory().create(path);
+        return factory.create(path);
     }
 
     public static Local get() {
-        return new LocalFactory().create();
+        return factory.create();
     }
 }

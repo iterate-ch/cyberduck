@@ -15,14 +15,12 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
@@ -45,6 +43,8 @@ import synapticloop.b2.exception.B2ApiException;
 public class B2Session extends HttpSession<B2ApiClient> {
 
     private B2ErrorResponseInterceptor retryHandler;
+
+    private final B2FileidProvider fileid = new B2FileidProvider(this);
 
     public B2Session(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -74,11 +74,6 @@ public class B2Session extends HttpSession<B2ApiClient> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return new B2ListService(this, new B2FileidProvider(this)).list(directory, listener);
-    }
-
-    @Override
     public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final String accountId = host.getCredentials().getUsername();
@@ -97,68 +92,71 @@ public class B2Session extends HttpSession<B2ApiClient> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new B2ListService(this, fileid);
+        }
         if(type == Touch.class) {
-            return (T) new B2TouchFeature(this);
+            return (T) new B2TouchFeature(this, fileid);
         }
         if(type == Read.class) {
-            return (T) new B2ReadFeature(this);
+            return (T) new B2ReadFeature(this, fileid);
         }
         if(type == Upload.class) {
-            return (T) new B2ThresholdUploadService(this);
+            return (T) new B2ThresholdUploadService(this, fileid);
         }
         if(type == MultipartWrite.class) {
-            return (T) new B2LargeUploadWriteFeature(this);
+            return (T) new B2LargeUploadWriteFeature(this, fileid);
         }
         if(type == Write.class) {
-            return (T) new B2WriteFeature(this);
+            return (T) new B2WriteFeature(this, fileid);
         }
         if(type == Directory.class) {
-            return (T) new B2DirectoryFeature(this);
+            return (T) new B2DirectoryFeature(this, fileid);
         }
         if(type == Delete.class) {
-            return (T) new B2DeleteFeature(this);
+            return (T) new B2DeleteFeature(this, fileid);
         }
         if(type == UrlProvider.class) {
             return (T) new B2UrlProvider(this);
         }
         if(type == PromptUrlProvider.class) {
-            return (T) new B2AuthorizedUrlProvider(this);
+            return (T) new B2AuthorizedUrlProvider(this, fileid);
         }
         if(type == Find.class) {
-            return (T) new B2FindFeature(this);
+            return (T) new B2FindFeature(this, fileid);
         }
         if(type == AttributesFinder.class) {
-            return (T) new B2AttributesFinderFeature(this);
+            return (T) new B2AttributesFinderFeature(this, fileid);
         }
         if(type == Home.class) {
             return (T) new B2HomeFinderService(this);
         }
         if(type == AclPermission.class) {
-            return (T) new B2BucketTypeFeature(this);
+            return (T) new B2BucketTypeFeature(this, fileid);
         }
         if(type == Location.class) {
-            return (T) new B2BucketTypeFeature(this);
+            return (T) new B2BucketTypeFeature(this, fileid);
         }
         if(type == IdProvider.class) {
-            return (T) new B2FileidProvider(this);
+            return (T) fileid;
         }
         if(type == AttributesFinder.class) {
-            return (T) new B2AttributesFinderFeature(this);
+            return (T) new B2AttributesFinderFeature(this, fileid);
         }
         if(type == Lifecycle.class) {
-            return (T) new B2LifecycleFeature(this);
+            return (T) new B2LifecycleFeature(this, fileid);
         }
         if(type == Search.class) {
-            return (T) new B2SearchFeature(this);
+            return (T) new B2SearchFeature(this, fileid);
         }
         if(type == Headers.class) {
-            return (T) new B2MetadataFeature(this);
+            return (T) new B2MetadataFeature(this, fileid);
         }
         if(type == Metadata.class) {
-            return (T) new B2MetadataFeature(this);
+            return (T) new B2MetadataFeature(this, fileid);
         }
         if(type == Timestamp.class) {
-            return (T) new B2TimestampFeature(this);
+            return (T) new B2TimestampFeature(this, fileid);
         }
         return super._getFeature(type);
     }

@@ -31,6 +31,7 @@ import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPFindFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
+import ch.cyberduck.core.sftp.SFTPListService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPReadFeature;
 import ch.cyberduck.core.sftp.SFTPSession;
@@ -120,7 +121,7 @@ public class SingleTransferWorkerTest {
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(dir1));
         final PathAttributes attributes1 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file1);
         assertEquals(1513092263000L, attributes1.getModificationDate());
-        assertEquals(1513092263000L, new CryptoListService(session, session, cryptomator).list(dir1, new DisabledListProgressListener()).get(file1).attributes().getModificationDate());
+        assertEquals(1513092263000L, new CryptoListService(session, new SFTPListService(session), cryptomator).list(dir1, new DisabledListProgressListener()).get(file1).attributes().getModificationDate());
         assertEquals(content.length, attributes1.getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

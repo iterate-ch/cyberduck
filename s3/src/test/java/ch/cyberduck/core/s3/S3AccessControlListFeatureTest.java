@@ -230,7 +230,7 @@ public class S3AccessControlListFeatureTest {
         f.setPermission(test, acl);
     }
 
-    @Test(expected = NotfoundException.class)
+    @Test
     public void testReadVersioned() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
@@ -249,8 +249,6 @@ public class S3AccessControlListFeatureTest {
             fail();
         }
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(test));
-        new S3AccessControlListFeature(session).getPermission(test);
         session.close();
     }
 

@@ -56,7 +56,7 @@ public class SFTPTimestampFeatureTest {
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals((float) modified, (float) session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0);
+        assertEquals((float) modified, (float) new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0);
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -76,7 +76,7 @@ public class SFTPTimestampFeatureTest {
         new SFTPDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals((float) modified, (float) session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0);
+        assertEquals((float) modified, (float) new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0);
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

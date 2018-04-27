@@ -22,11 +22,13 @@ import ch.cyberduck.core.Factory;
 
 public class ApplicationLauncherFactory extends Factory<ApplicationLauncher> {
 
+    private static final ApplicationLauncherFactory factory = new ApplicationLauncherFactory();
+
     public ApplicationLauncherFactory() {
         super("factory.applicationlauncher.class");
     }
 
     public static ApplicationLauncher get() {
-        return new ApplicationLauncherFactory().create();
+        return factory.create();
     }
 }

@@ -24,6 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.s3.S3ListService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -85,7 +86,7 @@ public class SpectraSessionTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new S3ListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         session.close();
     }
 }

@@ -16,6 +16,7 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -68,6 +69,12 @@ public class VaultRegistryListService implements ListService {
             log.warn(String.format("Canceled loading vault %s. %s", e.getVault(), e.getDetail()));
             throw e;
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        proxy.withCache(cache);
+        return this;
     }
 
     public VaultRegistryListService withAutodetect(final boolean autodetect) {

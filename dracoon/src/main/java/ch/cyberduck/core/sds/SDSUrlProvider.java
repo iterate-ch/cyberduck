@@ -33,9 +33,11 @@ import java.util.Locale;
 public class SDSUrlProvider implements UrlProvider {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSUrlProvider(final SDSSession session) {
+    public SDSUrlProvider(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -43,8 +45,8 @@ public class SDSUrlProvider implements UrlProvider {
         try {
             return new DescriptiveUrlBag(Collections.singletonList(
                 new DescriptiveUrl(URI.create(String.format("%s/#/node/%s",
-                    new HostUrlProvider(false).get(session.getHost()), URIEncoder.encode(
-                        new SDSNodeIdProvider(session).getFileid(file.isDirectory() ? file : file.getParent(), new DisabledListProgressListener())
+                    new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(
+                        nodeid.getFileid(file.isDirectory() ? file : file.getParent(), new DisabledListProgressListener())
                     ))),
                     DescriptiveUrl.Type.http,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getScheme().toString().toUpperCase(Locale.ROOT)))

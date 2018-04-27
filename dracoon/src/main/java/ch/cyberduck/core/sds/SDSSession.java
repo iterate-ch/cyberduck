@@ -15,18 +15,16 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -87,6 +85,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
 
     private final List<KeyValueEntry> configuration = new ArrayList<>();
+    private final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(this);
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -227,63 +226,61 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return new SDSListService(this).list(directory, listener);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new SDSListService(this, nodeid);
+        }
         if(type == Read.class) {
-            return (T) new SDSDelegatingReadFeature(this, new SDSReadFeature(this));
+            return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Write.class) {
-            return (T) new SDSDelegatingWriteFeature(this, new SDSWriteFeature(this));
+            return (T) new SDSDelegatingWriteFeature(this, new SDSWriteFeature(this, nodeid));
         }
         if(type == MultipartWrite.class) {
-            return (T) new SDSDelegatingWriteFeature(this, new SDSMultipartWriteFeature(this));
+            return (T) new SDSDelegatingWriteFeature(this, new SDSMultipartWriteFeature(this, nodeid));
         }
         if(type == Directory.class) {
-            return (T) new SDSDirectoryFeature(this);
+            return (T) new SDSDirectoryFeature(this, nodeid);
         }
         if(type == Delete.class) {
-            return (T) new SDSDeleteFeature(this);
+            return (T) new SDSDeleteFeature(this, nodeid);
         }
         if(type == IdProvider.class) {
-            return (T) new SDSNodeIdProvider(this);
+            return (T) nodeid;
         }
         if(type == Touch.class) {
-            return (T) new SDSTouchFeature(this);
+            return (T) new SDSTouchFeature(this, nodeid);
         }
         if(type == Find.class) {
-            return (T) new SDSFindFeature(this);
+            return (T) new SDSFindFeature(nodeid);
         }
         if(type == AttributesFinder.class) {
-            return (T) new SDSAttributesFinderFeature(this);
+            return (T) new SDSAttributesFinderFeature(this, nodeid);
         }
         if(type == Move.class) {
-            return (T) new SDSDelegatingMoveFeature(this, new SDSMoveFeature(this));
+            return (T) new SDSDelegatingMoveFeature(this, new SDSMoveFeature(this, nodeid));
         }
         if(type == Copy.class) {
-            return (T) new SDSDelegatingCopyFeature(this, new SDSCopyFeature(this));
+            return (T) new SDSDelegatingCopyFeature(this, new SDSCopyFeature(this, nodeid));
         }
         if(type == Bulk.class) {
-            return (T) new SDSEncryptionBulkFeature(this);
+            return (T) new SDSEncryptionBulkFeature(this, nodeid);
         }
         if(type == Scheduler.class) {
-            return (T) new SDSMissingFileKeysSchedulerFeature(this);
+            return (T) new SDSMissingFileKeysSchedulerFeature(this, nodeid);
         }
         if(type == UrlProvider.class) {
-            return (T) new SDSUrlProvider(this);
+            return (T) new SDSUrlProvider(this, nodeid);
         }
         if(type == PromptUrlProvider.class) {
-            return (T) new SDSSharesUrlProvider(this);
+            return (T) new SDSSharesUrlProvider(this, nodeid);
         }
         if(type == Quota.class) {
-            return (T) new SDSQuotaFeature(this);
+            return (T) new SDSQuotaFeature(this, nodeid);
         }
         if(type == Search.class) {
-            return (T) new SDSSearchFeature(this);
+            return (T) new SDSSearchFeature(this, nodeid);
         }
         return super._getFeature(type);
     }

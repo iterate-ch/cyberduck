@@ -17,17 +17,10 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -41,51 +34,39 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SDSListServiceTest {
+public class SDSListServiceTest extends AbstractSDSTest {
 
     @Test
     public void testList() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path room = new SDSDirectoryFeature(session).mkdir(
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        assertTrue(new SDSListService(session).list(room, new DisabledListProgressListener()).isEmpty());
-        new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(1, (new SDSListService(session).list(room, new DisabledListProgressListener(), 1).size()));
-        new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(2, (new SDSListService(session).list(room, new DisabledListProgressListener(), 1).size()));
-        assertEquals(2, (new SDSListService(session).list(room, new DisabledListProgressListener()).size()));
-        new SDSTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(3, (new SDSListService(session).list(room, new DisabledListProgressListener(), 1).size()));
-        assertEquals(3, (new SDSListService(session).list(room, new DisabledListProgressListener()).size()));
-        new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
+        assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).isEmpty());
+        new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(1, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1).size()));
+        new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(2, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1).size()));
+        assertEquals(2, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).size()));
+        new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(3, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1).size()));
+        assertEquals(3, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).size()));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListAlphanumeric() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path room = new SDSDirectoryFeature(session).mkdir(
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        assertTrue(new SDSListService(session).list(room, new DisabledListProgressListener()).isEmpty());
-        new SDSTouchFeature(session).touch(new Path(room, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
-        new SDSTouchFeature(session).touch(new Path(room, "0a", EnumSet.of(Path.Type.file)), new TransferStatus());
-        new SDSTouchFeature(session).touch(new Path(room, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
-        final AttributedList<Path> list = new SDSListService(session).list(room, new DisabledListProgressListener());
+        assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).isEmpty());
+        new SDSTouchFeature(session, nodeid).touch(new Path(room, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new Path(room, "0a", EnumSet.of(Path.Type.file)), new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new Path(room, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new SDSListService(session, nodeid).list(room, new DisabledListProgressListener());
         assertEquals(3, list.size());
         assertEquals("0a", list.get(0).getName());
         assertEquals("a", list.get(1).getName());
         assertEquals("aa", list.get(2).getName());
-        new SDSDeleteFeature(session).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
+        new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

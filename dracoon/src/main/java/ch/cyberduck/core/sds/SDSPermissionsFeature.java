@@ -36,15 +36,17 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
     public static final Acl.Role UPLOAD_SHARE_ROLE = new Acl.Role("UPLOAD_SHARE");
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSPermissionsFeature(final SDSSession session) {
+    public SDSPermissionsFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
         if(Acl.EMPTY.equals(file.attributes().getAcl())) {
-            return new SDSAttributesFinderFeature(session).find(file).getAcl();
+            return new SDSAttributesFinderFeature(session, nodeid).find(file).getAcl();
         }
         return file.attributes().getAcl();
     }

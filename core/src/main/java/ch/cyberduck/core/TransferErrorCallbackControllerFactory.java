@@ -17,8 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 
@@ -31,25 +29,21 @@ import java.lang.reflect.InvocationTargetException;
 public class TransferErrorCallbackControllerFactory extends Factory<TransferErrorCallback> {
     private static final Logger log = Logger.getLogger(TransferErrorCallbackControllerFactory.class);
 
-    private static final Preferences preferences
-            = PreferencesFactory.get();
+    public TransferErrorCallbackControllerFactory() {
+        super("factory.transfererrorcallback.class");
+    }
 
     public TransferErrorCallback create(final Controller c) {
-        final String clazz = preferences.getProperty("factory.transfererrorcallback.class");
-        if(null == clazz) {
-            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
-        }
         try {
-            final Class<TransferErrorCallback> name = (Class<TransferErrorCallback>) Class.forName(clazz);
-            final Constructor<TransferErrorCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
+            final Constructor<TransferErrorCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations
-                return name.newInstance();
+                return clazz.newInstance();
             }
             return constructor.newInstance(c);
         }
-        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return new DisabledTransferErrorCallback();
         }

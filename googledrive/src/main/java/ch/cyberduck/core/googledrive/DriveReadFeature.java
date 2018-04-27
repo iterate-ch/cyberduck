@@ -50,9 +50,11 @@ public class DriveReadFeature implements Read {
     private static final Logger log = Logger.getLogger(DriveReadFeature.class);
 
     private final DriveSession session;
+    private final DriveFileidProvider fileid;
 
-    public DriveReadFeature(final DriveSession session) {
+    public DriveReadFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -75,7 +77,7 @@ public class DriveReadFeature implements Read {
             else {
                 final String base = session.getClient().getRootUrl();
                 final HttpUriRequest request = new HttpGet(String.format(String.format("%%s/drive/v3/files/%%s?alt=media&supportsTeamDrives=%s", PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")), base,
-                        new DriveFileidProvider(session).getFileid(file, new DisabledListProgressListener())));
+                    fileid.getFileid(file, new DisabledListProgressListener())));
                 request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);

@@ -20,11 +20,10 @@ package ch.cyberduck.core.udt.qloudsonic;
 
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.aquaticprime.DonationKey;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -33,8 +32,7 @@ import java.util.regex.Pattern;
 public class QloudsonicVoucherFinder extends LicenseFactory {
 
     public QloudsonicVoucherFinder() {
-        super(LocalFactory.get(
-                PreferencesFactory.get().getProperty("application.support.path")), new Filter<Local>() {
+        super(SupportDirectoryFinderFactory.get().find(), new Filter<Local>() {
             @Override
             public boolean accept(final Local file) {
                 return "qloudsonicvoucher".equals(FilenameUtils.getExtension(file.getName()));

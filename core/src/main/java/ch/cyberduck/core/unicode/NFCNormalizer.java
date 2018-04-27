@@ -18,22 +18,10 @@ package ch.cyberduck.core.unicode;
  * feedback@cyberduck.io
  */
 
-import org.apache.log4j.Logger;
-
 import java.text.Normalizer;
 
-public class NFCNormalizer {
-    private static final Logger log = Logger.getLogger(NFCNormalizer.class);
-
-    public CharSequence normalize(final CharSequence name) {
-        if(!Normalizer.isNormalized(name, Normalizer.Form.NFC)) {
-            // Canonical decomposition followed by canonical composition (default)
-            final String normalized = Normalizer.normalize(name, Normalizer.Form.NFC);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Normalized string %s to %s", name, normalized));
-            }
-            return normalized;
-        }
-        return name;
+public class NFCNormalizer extends AbstractUnicodeNormalizer implements UnicodeNormalizer {
+    public NFCNormalizer() {
+        super(Normalizer.Form.NFC);
     }
 }

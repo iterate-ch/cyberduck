@@ -10,7 +10,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import java.util.function.Predicate;
 
-public class NullSession extends Session<Void> {
+public class NullSession extends Session<Void> implements ListService {
 
     public NullSession(Host h) {
         super(h);
@@ -41,6 +41,7 @@ public class NullSession extends Session<Void> {
         //
     }
 
+    @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         return new AttributedList<Path>() {
             @Override
@@ -61,8 +62,16 @@ public class NullSession extends Session<Void> {
     }
 
     @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
+        if(type == ListService.class) {
+            return (T) this;
+        }
         if(type == Write.class) {
             return (T) new NullWriteFeature(this);
         }

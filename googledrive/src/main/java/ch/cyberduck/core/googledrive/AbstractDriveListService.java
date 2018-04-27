@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -156,4 +157,9 @@ public abstract class AbstractDriveListService implements ListService {
     }
 
     protected abstract String query(final Path directory, final ListProgressListener listener) throws BackgroundException;
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
+    }
 }

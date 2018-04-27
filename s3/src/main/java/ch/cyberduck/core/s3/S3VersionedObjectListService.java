@@ -16,6 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -48,11 +49,9 @@ public class S3VersionedObjectListService implements ListService {
         = new S3PathContainerService();
 
     private final S3Session session;
-    private final S3AttributesFinderFeature attributes;
 
     public S3VersionedObjectListService(final S3Session session) {
         this.session = session;
-        this.attributes = new S3AttributesFinderFeature(session);
     }
 
     @Override
@@ -129,6 +128,11 @@ public class S3VersionedObjectListService implements ListService {
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 
     protected String createPrefix(final Path directory) {

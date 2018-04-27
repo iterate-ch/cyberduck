@@ -62,7 +62,7 @@ public class DAVSessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = session.list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new DAVListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list.get(new Path("/trunk", EnumSet.of(Path.Type.directory))));
         assertNotNull(list.get(new Path("/branches", EnumSet.of(Path.Type.directory))));
         assertNotNull(list.get(new Path("/tags", EnumSet.of(Path.Type.directory))));
@@ -109,7 +109,7 @@ public class DAVSessionTest {
         try {
             session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
+            new DAVListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         }
         catch(InteroperabilityException e) {
             assertEquals("Unexpected response (405 Method Not Allowed). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -190,7 +190,7 @@ public class DAVSessionTest {
         host.setDefaultPath("/dav/anon");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        assertNotNull(session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()));
+        assertNotNull(new DAVListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()));
         session.close();
     }
 

@@ -89,7 +89,7 @@ public class HttpConnectionPoolBuilder {
                 return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
                     @Override
                     public String getTarget() {
-                        return context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST).toString();
+                        return ((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName();
                     }
                 }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }
@@ -102,7 +102,7 @@ public class HttpConnectionPoolBuilder {
                 return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
                     @Override
                     public String getTarget() {
-                        return context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST).toString();
+                        return ((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName();
                     }
                 }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }

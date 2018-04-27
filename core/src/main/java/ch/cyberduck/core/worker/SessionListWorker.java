@@ -53,7 +53,8 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
                 listener.chunk(directory, list);
                 return list;
             }
-            return session.getFeature(ListService.class).list(directory, listener);
+            final ListService service = session.getFeature(ListService.class).withCache(cache);
+            return service.list(directory, listener);
         }
         catch(ListCanceledException e) {
             return e.getChunk();

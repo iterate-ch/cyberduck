@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+6.4.6
+- [Bugfix] Fix use proxy configuration using PAC file (macOS)
+- [Bugfix] Disable extended master secret extension to allow session reuse for data connections (FTP-SSL) (#10276)
+
 6.4.4
 - [Bugfix] Skip failures saving or finding passwords in credential manager (Windows)
 - [Bugfix] Ignore 550 error replies for STAT (FTP) (#10240)

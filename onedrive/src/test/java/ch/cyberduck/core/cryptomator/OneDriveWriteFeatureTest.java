@@ -35,6 +35,7 @@ import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveListService;
 import ch.cyberduck.core.onedrive.features.OneDriveReadFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -83,7 +84,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new CryptoListService(session, new OneDriveListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, new CryptoWriteFeature<>(session, new OneDriveWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         assertEquals(content.length, new CryptoWriteFeature<>(session, new OneDriveWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -59,6 +60,12 @@ public class S3ObjectListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return this.list(directory, listener, String.valueOf(Path.DELIMITER), preferences.getInteger("s3.listing.chunksize"));
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        attributes.withCache(cache);
+        return this;
     }
 
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {

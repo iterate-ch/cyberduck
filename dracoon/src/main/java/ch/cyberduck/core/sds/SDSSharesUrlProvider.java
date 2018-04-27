@@ -60,20 +60,22 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         = new SDSPathContainerService();
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSSharesUrlProvider(final SDSSession session) {
+    public SDSSharesUrlProvider(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final CreateDownloadShareRequest options,
                                         final PasswordCallback callback) throws BackgroundException {
         try {
-            final Set<Acl.Role> roles = new SDSPermissionsFeature(session).getPermission(containerService.getContainer(file)).get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            final Set<Acl.Role> roles = new SDSPermissionsFeature(session, nodeid).getPermission(containerService.getContainer(file)).get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
             if(roles != null && !roles.contains(SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE)) {
                 return DescriptiveUrl.EMPTY;
             }
-            final Long fileid = Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()));
+            final Long fileid = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
                 // get existing file key associated with the sharing user
                 final FileKey key = new NodesApi(session.getClient()).getUserFileKey(StringUtils.EMPTY, fileid);
@@ -123,12 +125,12 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
-            final Set<Acl.Role> roles = new SDSPermissionsFeature(session).getPermission(containerService.getContainer(file)).get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            final Set<Acl.Role> roles = new SDSPermissionsFeature(session, nodeid).getPermission(containerService.getContainer(file)).get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
             if(roles != null && !roles.contains(SDSPermissionsFeature.UPLOAD_SHARE_ROLE)) {
                 return DescriptiveUrl.EMPTY;
             }
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(StringUtils.EMPTY,
-                options.targetId(Long.parseLong(new SDSNodeIdProvider(session).getFileid(file, new DisabledListProgressListener()))), null);
+                options.targetId(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()))), null);
             final String help;
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));

@@ -26,7 +26,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.serializer.impl.dd.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.cli.CommandLine;
@@ -89,7 +88,7 @@ public class CommandLinePathParserTest {
                 return true;
             }
         })));
-        final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory(PlistDeserializer.class.getName()));
+        final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory());
         final Profile profile = reader.read(
                 new Local("../profiles/default/Rackspace US.cyberduckprofile")
         );

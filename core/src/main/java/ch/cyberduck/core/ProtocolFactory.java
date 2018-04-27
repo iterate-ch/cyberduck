@@ -16,7 +16,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +49,8 @@ public final class ProtocolFactory {
     }
 
     public ProtocolFactory(final Set<Protocol> protocols) {
-        this(LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path")), protocols);
+        this(LocalFactory.get(ApplicationResourcesFinderFactory.get().find(),
+            PreferencesFactory.get().getProperty("profiles.folder.name")), protocols);
     }
 
     public ProtocolFactory(final Local bundle, final Set<Protocol> protocols) {
@@ -79,7 +82,7 @@ public final class ProtocolFactory {
             }
         }
         // Load thirdparty protocols
-        final Local library = LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
+        final Local library = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
             PreferencesFactory.get().getProperty("profiles.folder.name"));
         if(library.exists()) {
             try {

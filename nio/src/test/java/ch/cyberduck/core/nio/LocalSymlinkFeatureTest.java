@@ -49,7 +49,7 @@ public class LocalSymlinkFeatureTest {
             new LocalSymlinkFeature(session).symlink(link, target.getName());
             assertTrue(new LocalFindFeature(session).find(link));
             assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
-                    session.list(workdir, new DisabledListProgressListener()).get(link).getType());
+                new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(link).getType());
             new LocalDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse(new LocalFindFeature(session).find(link));
             assertTrue(new LocalFindFeature(session).find(target));

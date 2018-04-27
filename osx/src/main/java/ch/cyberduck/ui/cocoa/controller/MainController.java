@@ -62,6 +62,7 @@ import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -147,7 +148,7 @@ public class MainController extends BundleController implements NSApplication.De
      * Saved browsers
      */
     private final AbstractHostCollection sessions = new FolderBookmarkCollection(
-        LocalFactory.get(preferences.getProperty("application.support.path"), "Sessions"), "session");
+        LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Sessions"), "session");
 
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
@@ -585,7 +586,7 @@ public class MainController extends BundleController implements NSApplication.De
                 final License l = LicenseFactory.get(f);
                 if(l.verify(new DisabledLicenseVerifierCallback())) {
                     try {
-                        f.copy(LocalFactory.get(preferences.getProperty("application.support.path"), f.getName()));
+                        f.copy(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), f.getName()));
                         final NSAlert alert = NSAlert.alert(
                             l.toString(),
                             LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
@@ -643,7 +644,7 @@ public class MainController extends BundleController implements NSApplication.De
                         final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                         newDocument().addBookmark(host);
                         // Register in application support
-                        final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
+                        final Local profiles = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
                             PreferencesFactory.get().getProperty("profiles.folder.name"));
                         if(!profiles.exists()) {
                             new DefaultLocalDirectoryFeature().mkdir(profiles);

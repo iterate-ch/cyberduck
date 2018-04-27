@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -24,7 +25,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -53,11 +53,7 @@ public class B2ObjectListService implements ListService {
     private final B2Session session;
 
     private final int chunksize;
-    private B2FileidProvider fileid;
-
-    public B2ObjectListService(final B2Session session) {
-        this(session, new B2FileidProvider(session));
-    }
+    private final B2FileidProvider fileid;
 
     public B2ObjectListService(final B2Session session, final B2FileidProvider fileid) {
         this(session, fileid, PreferencesFactory.get().getInteger("b2.listing.chunksize"));
@@ -80,6 +76,7 @@ public class B2ObjectListService implements ListService {
             else {
                 marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
             }
+            final String containerId = fileid.getFileid(containerService.getContainer(directory), listener);
             // Seen placeholders
             final Map<String, Integer> revisions = new HashMap<String, Integer>();
             do {
@@ -89,7 +86,7 @@ public class B2ObjectListService implements ListService {
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
-                    fileid.getFileid(containerService.getContainer(directory), listener),
+                    containerId,
                     marker.nextFilename, marker.nextFileId, chunksize,
                     containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
                     String.valueOf(Path.DELIMITER));
@@ -116,12 +113,6 @@ public class B2ObjectListService implements ListService {
             if(StringUtils.isBlank(info.getFileId())) {
                 // Common prefix
                 final Path placeholder = new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-                try {
-                    placeholder.attributes().setModificationDate(new B2AttributesFinderFeature(session).find(new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder))).getModificationDate());
-                }
-                catch(NotfoundException e) {
-                    // Ignore
-                }
                 objects.add(placeholder);
                 continue;
             }
@@ -198,5 +189,11 @@ public class B2ObjectListService implements ListService {
             sb.append('}');
             return sb.toString();
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        fileid.withCache(cache);
+        return this;
     }
 }

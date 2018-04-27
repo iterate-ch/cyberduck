@@ -15,13 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -39,88 +33,57 @@ import synapticloop.b2.response.B2StartLargeFileResponse;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class B2LargeUploadPartServiceTest {
+public class B2LargeUploadPartServiceTest extends AbstractB2Test {
 
     @Test
     public void testFind() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-                new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
+            new B2FileidProvider(session).withCache(cache).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        assertEquals(1, new B2LargeUploadPartService(session).find(file).size());
+        assertEquals(1, new B2LargeUploadPartService(session, new B2FileidProvider(session).withCache(cache)).find(file).size());
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
-        session.close();
     }
 
     @Test
     public void testFindAllPendingInBucket() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final B2StartLargeFileResponse start1Response = session.getClient().startLargeFileUpload(
-                new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
+            fileid.getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
         final B2StartLargeFileResponse start2Response = session.getClient().startLargeFileUpload(
-                new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
+            fileid.getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        final List<B2FileInfoResponse> list = new B2LargeUploadPartService(session).find(file);
+        final List<B2FileInfoResponse> list = new B2LargeUploadPartService(session, fileid).find(file);
         assertFalse(list.isEmpty());
         assertEquals(start2Response.getFileId(), list.get(0).getFileId());
         assertEquals(start1Response.getFileId(), list.get(1).getFileId());
         session.getClient().cancelLargeFileUpload(start1Response.getFileId());
         session.getClient().cancelLargeFileUpload(start2Response.getFileId());
-        session.close();
     }
 
     @Test
     public void testList() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-                new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
+            new B2FileidProvider(session).withCache(cache).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        assertTrue(new B2LargeUploadPartService(session).list(startResponse.getFileId()).isEmpty());
+        assertTrue(new B2LargeUploadPartService(session, new B2FileidProvider(session).withCache(cache)).list(startResponse.getFileId()).isEmpty());
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
-        session.close();
     }
 
     @Test
     public void testDelete() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-                new B2FileidProvider(session).getFileid(bucket, new DisabledListProgressListener()),
+            new B2FileidProvider(session).withCache(cache).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
         final String fileid = startResponse.getFileId();
-        new B2LargeUploadPartService(session).delete(startResponse.getFileId());
-        session.close();
+        new B2LargeUploadPartService(session, new B2FileidProvider(session).withCache(cache)).delete(startResponse.getFileId());
     }
 }

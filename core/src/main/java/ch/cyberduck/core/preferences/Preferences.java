@@ -35,6 +35,7 @@ import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.diagnostics.DefaultInetAddressReachability;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
+import ch.cyberduck.core.i18n.Locales;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
@@ -48,7 +49,6 @@ import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NativeLocalTrashFeature;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
-import ch.cyberduck.core.local.WorkingDirectoryFinderFactory;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.random.DefaultSecureRandomProvider;
@@ -74,6 +74,7 @@ import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -85,6 +86,7 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,11 +100,10 @@ import com.google.common.collect.ImmutableMap;
  * the <code>PREFERENCES_FILE</code>.
  * Singleton class.
  */
-public abstract class Preferences {
+public abstract class Preferences implements Locales {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
-    private final Map<String, String> defaults
-        = new HashMap<String, String>();
+    protected static final String LIST_SEPERATOR = StringUtils.SPACE;
 
     /**
      * Called after the defaults have been set.
@@ -138,7 +139,9 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param values   The new or updated value
      */
-    public abstract void setProperty(final String property, List<String> values);
+    public void setProperty(final String property, List<String> values) {
+        this.setProperty(property, StringUtils.join(values, LIST_SEPERATOR));
+    }
 
     /**
      * Remove a user customized property from the preferences.
@@ -196,6 +199,10 @@ public abstract class Preferences {
     public void setProperty(final String property, final double v) {
         this.setProperty(property, String.valueOf(v));
     }
+
+    public abstract String getDefault(String property);
+
+    public abstract void setDefault(String property, String value);
 
     private static final class Version {
         /**
@@ -286,14 +293,6 @@ public abstract class Preferences {
 
         this.setDefault("application.name", "Cyberduck");
         this.setDefault("application.container.name", "duck");
-        final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
-        this.setDefault("application.support.path", support);
-        this.setDefault("application.receipt.path", support);
-
-        // Default bundled profiles location
-        final Local resources = ApplicationResourcesFinderFactory.get().find();
-        this.setDefault("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
-        this.setDefault("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
 
         /*
           Lowercase folder name to use when looking for bookmarks in user support directory
@@ -310,6 +309,7 @@ public abstract class Preferences {
         this.setDefault("browser.cache.size", String.valueOf(1000));
         this.setDefault("transfer.cache.size", String.valueOf(100));
         this.setDefault("icon.cache.size", String.valueOf(200));
+        this.setDefault("preferences.cache.size", String.valueOf(1000));
 
         /*
           Caching NS* proxy instances.
@@ -518,7 +518,7 @@ public abstract class Preferences {
 
         this.setDefault("queue.download.priority.regex", "");
 
-        this.setDefault("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
+        this.setDefault("queue.download.folder", System.getProperty("user.dir"));
         // Security scoped bookmark
         this.setDefault("queue.download.folder.bookmark", null);
 
@@ -779,7 +779,7 @@ public abstract class Preferences {
         this.setDefault("googledrive.teamdrive.enable", String.valueOf(true));
 
         this.setDefault("b2.bucket.acl.default", "allPrivate");
-        this.setDefault("b2.listing.chunksize", String.valueOf(100));
+        this.setDefault("b2.listing.chunksize", String.valueOf(1000));
         this.setDefault("b2.upload.checksum.verify", String.valueOf(true));
 
         this.setDefault("b2.upload.largeobject", String.valueOf(true));
@@ -1065,7 +1065,7 @@ public abstract class Preferences {
         SLF4JBridgeHandler.install();
 
         final URL configuration;
-        final String file = defaults.get("logging.config");
+        final String file = this.getDefault("logging.config");
         if(null == file) {
             configuration = Preferences.class.getClassLoader().getResource("log4j-default.xml");
         }
@@ -1085,7 +1085,7 @@ public abstract class Preferences {
             root.setLevel(Level.toLevel(this.getProperty("logging"), Level.ERROR));
         }
         // Map logging level to pass through bridge
-        java.util.logging.Logger.getLogger("").setLevel(new ImmutableMap.Builder<Level, java.util.logging.Level>()
+        final ImmutableMap<Level, java.util.logging.Level> map = new ImmutableMap.Builder<Level, java.util.logging.Level>()
             .put(Level.ALL, java.util.logging.Level.ALL)
             .put(Level.DEBUG, java.util.logging.Level.FINE)
             .put(Level.ERROR, java.util.logging.Level.SEVERE)
@@ -1094,25 +1094,15 @@ public abstract class Preferences {
             .put(Level.OFF, java.util.logging.Level.OFF)
             .put(Level.TRACE, java.util.logging.Level.FINEST)
             .put(Level.WARN, java.util.logging.Level.WARNING)
-            .build().get(root.getLevel()));
-    }
-
-    /**
-     * Default value for a given property.
-     *
-     * @param property The property to query.
-     * @return A default value if any or null if not found.
-     */
-    public String getDefault(final String property) {
-        String value = defaults.get(property);
-        if(null == value) {
-            log.warn(String.format("No property with key '%s'", property));
+            .build();
+        java.util.logging.Logger.getLogger("").setLevel(map.get(root.getLevel()));
+        final Enumeration loggers = LogManager.getCurrentLoggers();
+        while(loggers.hasMoreElements()) {
+            final Logger logger = (Logger) loggers.nextElement();
+            if(logger.getLevel() != null) {
+                java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
+            }
         }
-        return value;
-    }
-
-    public void setDefault(final String property, final String value) {
-        defaults.put(property, value);
     }
 
     /**
@@ -1314,11 +1304,13 @@ public abstract class Preferences {
      *
      * @return Available locales in application bundle
      */
+    @Override
     public abstract List<String> applicationLocales();
 
     /**
      * @return Available locales in system
      */
+    @Override
     public abstract List<String> systemLocales();
 
     /**

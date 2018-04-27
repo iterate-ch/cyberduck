@@ -14,6 +14,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -32,6 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -56,7 +58,7 @@ public class FTPWriteFeatureTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new FTPListService(session, null, TimeZone.getDefault()).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());

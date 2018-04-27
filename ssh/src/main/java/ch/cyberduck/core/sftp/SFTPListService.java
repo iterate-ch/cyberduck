@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -26,7 +27,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.unicode.NFCNormalizer;
 
 import org.apache.log4j.Logger;
 
@@ -42,15 +42,12 @@ import net.schmizz.sshj.sftp.SFTPException;
 public class SFTPListService implements ListService {
     private static final Logger log = Logger.getLogger(SFTPListService.class);
 
-    private final NFCNormalizer normalizer = new NFCNormalizer();
-
     private final SFTPSession session;
-
-    private final SFTPAttributesFinderFeature feature;
+    private final SFTPAttributesFinderFeature attributes;
 
     public SFTPListService(final SFTPSession session) {
         this.session = session;
-        this.feature = new SFTPAttributesFinderFeature(session);
+        this.attributes = new SFTPAttributesFinderFeature(session);
     }
 
     @Override
@@ -64,7 +61,7 @@ public class SFTPListService implements ListService {
                     return true;
                 }
             })) {
-                final PathAttributes attributes = feature.convert(f.getAttributes());
+                final PathAttributes attributes = this.attributes.convert(f.getAttributes());
                 final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
                 if(f.getAttributes().getType().equals(FileMode.Type.DIRECTORY)) {
                     type.add(Path.Type.directory);
@@ -75,7 +72,7 @@ public class SFTPListService implements ListService {
                 if(f.getAttributes().getType().equals(FileMode.Type.SYMLINK)) {
                     type.add(Path.Type.symboliclink);
                 }
-                final Path file = new Path(directory, normalizer.normalize(f.getName()).toString(), type, attributes);
+                final Path file = new Path(directory, f.getName(), type, attributes);
                 if(this.post(file)) {
                     children.add(file);
                     listener.chunk(directory, children);
@@ -87,6 +84,12 @@ public class SFTPListService implements ListService {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        attributes.withCache(cache);
+        return this;
     }
 
     protected boolean post(final Path file) throws BackgroundException {

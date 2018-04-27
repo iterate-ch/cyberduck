@@ -26,6 +26,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3FindFeature;
+import ch.cyberduck.core.s3.S3ListService;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -63,7 +64,7 @@ public class S3SingleUploadServiceTest extends AbstractGoogleStorageTest {
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = session.list(container,
+        final PathAttributes attributes = new S3ListService(session).list(container,
                 new DisabledListProgressListener()).get(test).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

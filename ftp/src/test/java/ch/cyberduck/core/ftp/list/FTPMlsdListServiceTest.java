@@ -44,12 +44,12 @@ public class FTPMlsdListServiceTest {
     @Test(expected = InteroperabilityException.class)
     public void testListNotSupportedTest() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
+            System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final ListService list = new FTPMlsdListService(session, new DisabledPasswordStore(), new DisabledLoginCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final ListService list = new FTPMlsdListService(session);
         final Path directory = new FTPWorkdirService(session).find();
         list.list(directory, new DisabledListProgressListener());
         session.close();
@@ -58,12 +58,12 @@ public class FTPMlsdListServiceTest {
     @Test(expected = InteroperabilityException.class)
     public void testListNotSupportedSwitch() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final ListService list = new FTPMlsdListService(session, new DisabledPasswordStore(), new DisabledLoginCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final ListService list = new FTPMlsdListService(session);
         final Path directory = new FTPWorkdirService(session).find();
         list.list(directory, new DisabledListProgressListener());
         session.close();

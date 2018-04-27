@@ -26,11 +26,9 @@ import org.apache.log4j.Logger;
 public class TemporarySupportDirectoryFinder implements SupportDirectoryFinder {
     private static final Logger log = Logger.getLogger(TemporarySupportDirectoryFinder.class);
 
-    private final Preferences preferences = PreferencesFactory.get();
-
     @Override
     public Local find() {
-        final Local folder = LocalFactory.get(preferences.getProperty("tmp.dir"));
+        final Local folder = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use folder %s for application support directory", folder));
         }

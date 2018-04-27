@@ -263,10 +263,16 @@
             <key>WorkingDirectory</key>
             <string>$APP_PACKAGE/Contents/Resources</string>
             <key>VMOptions</key>
-            <string>-client -Djava.ext.dirs=$APP_PACKAGE/Contents/PlugIns/Runtime.jre/Contents/Home/lib/ext -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -Xverify:none -XX:+UseG1GC</string>
+            <string>-client -Djava.ext.dirs=$APP_PACKAGE/Contents/PlugIns/Runtime.jre/Contents/Home/lib/ext -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -Djdk.tls.useExtendedMasterSecret=false -Xverify:none -XX:+UseG1GC</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <false/>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <!-- Add support for http requests, e.g. PAC files in a corporate environment -->
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+        </dict>
         <key>${SPARKLE_KEY_PREFIX}FeedURL</key>
         <string>${SPARKLEFEED}</string>
         <key>${SPARKLE_KEY_PREFIX}CheckAtStartup</key>

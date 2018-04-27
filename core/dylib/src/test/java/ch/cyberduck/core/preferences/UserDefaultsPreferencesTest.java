@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -45,6 +46,16 @@ public class UserDefaultsPreferencesTest {
         p.setProperty("metadata",
                 "a b");
 
+        final List<String> properties = p.getList("metadata");
+        assertTrue(properties.contains("a"));
+        assertTrue(properties.contains("b"));
+    }
+
+    @Test
+    public void testSetList() throws Exception {
+        Preferences p = new UserDefaultsPreferences();
+        p.load();
+        p.setProperty("metadata", Arrays.asList("a", "b"));
         final List<String> properties = p.getList("metadata");
         assertTrue(properties.contains("a"));
         assertTrue(properties.contains("b"));

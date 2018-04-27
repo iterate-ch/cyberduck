@@ -39,12 +39,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
     private final PathContainerService containerService
         = new SDSPathContainerService();
 
-    public SDSEncryptionBulkFeature(final SDSSession session) {
+    public SDSEncryptionBulkFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
@@ -82,7 +84,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             default:
                 if(PreferencesFactory.get().getBoolean("sds.encryption.missingkeys.upload")) {
                     if(session.userAccount().isEncryptionEnabled()) {
-                        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session);
+                        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
                         for(Path file : files.keySet()) {
                             if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
                                 background.operate(callback, file);

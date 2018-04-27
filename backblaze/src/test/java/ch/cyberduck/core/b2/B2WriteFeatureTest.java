@@ -15,14 +15,9 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -54,24 +49,17 @@ import synapticloop.b2.response.BaseB2Response;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class B2WriteFeatureTest {
+public class B2WriteFeatureTest extends AbstractB2Test {
 
     @Test
     public void testWriteChecksumFailure() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1);
         status.setLength(content.length);
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, new B2FileidProvider(session).withCache(cache)).write(file, status, new DisabledConnectionCallback());
         IOUtils.write(content, out);
         try {
             out.close();
@@ -80,20 +68,10 @@ public class B2WriteFeatureTest {
         catch(IOException e) {
             assertTrue(e.getCause() instanceof ChecksumException);
         }
-        finally {
-            session.close();
-        }
     }
 
     @Test
     public void testWrite() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
@@ -101,24 +79,24 @@ public class B2WriteFeatureTest {
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setTimestamp(1503654614004L);
-        final OutputStream out = new B2WriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final OutputStream out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        test.attributes().setVersionId(new B2FileidProvider(session).getFileid(test, new DisabledListProgressListener()));
-        assertTrue(new B2FindFeature(session).find(test));
-        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        test.attributes().setVersionId(fileid.getFileid(test, new DisabledListProgressListener()));
+        assertTrue(new B2FindFeature(session, fileid).find(test));
+        final PathAttributes attributes = new B2ListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        final Write.Append append = new B2WriteFeature(session).append(test, status.getLength(), PathCache.empty());
+        final Write.Append append = new B2WriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty());
         assertTrue(append.override);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        assertEquals(1503654614004L, new B2AttributesFinderFeature(session).find(test).getModificationDate());
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
+        assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

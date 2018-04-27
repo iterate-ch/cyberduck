@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.log4j.Logger;
 
@@ -30,27 +28,24 @@ import java.lang.reflect.InvocationTargetException;
 public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
     private static final Logger log = Logger.getLogger(HostKeyCallbackFactory.class);
 
+    private static final HostKeyCallbackFactory factory = new HostKeyCallbackFactory();
+
     protected HostKeyCallbackFactory() {
         super("factory.hostkeycallback.class");
     }
 
     public HostKeyCallback create(final Controller c, final Protocol protocol) {
         if(Scheme.sftp.equals(protocol.getScheme())) {
-            final String clazz = PreferencesFactory.get().getProperty("factory.hostkeycallback.class");
-            if(null == clazz) {
-                throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
-            }
             try {
-                final Class<HostKeyCallback> name = (Class<HostKeyCallback>) Class.forName(clazz);
-                final Constructor<HostKeyCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
+                final Constructor<HostKeyCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
                 if(null == constructor) {
                     log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                     // Call default constructor for disabled implementations
-                    return name.newInstance();
+                    return clazz.newInstance();
                 }
                 return constructor.newInstance(c);
             }
-            catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+            catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
                 log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
                 return new DisabledHostKeyCallback();
             }
@@ -63,6 +58,6 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
      * @return Login controller instance for the current platform.
      */
     public static HostKeyCallback get(final Controller c, final Protocol protocol) {
-        return new HostKeyCallbackFactory().create(c, protocol);
+        return factory.create(c, protocol);
     }
 }

@@ -38,9 +38,4 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
     public CacheReference key(final TransferItem object) {
         return new DefaultPathPredicate(object.remote);
     }
-
-    @Override
-    public boolean isHidden(final TransferItem item) {
-        return false;
-    }
 }

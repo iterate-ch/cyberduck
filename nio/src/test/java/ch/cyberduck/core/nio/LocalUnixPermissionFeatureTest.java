@@ -49,14 +49,14 @@ public class LocalUnixPermissionFeatureTest {
                 final Path file = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
                 new LocalTouchFeature(session).touch(file, new TransferStatus());
                 new LocalUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
-                assertEquals("666", session.list(workdir, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
+                assertEquals("666", new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
                 new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
             {
                 final Path directory = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
                 new LocalDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
                 new LocalUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
-                assertEquals("666", session.list(workdir, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
+                assertEquals("666", new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
                 new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
             session.close();

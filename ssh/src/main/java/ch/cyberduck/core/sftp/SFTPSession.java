@@ -348,13 +348,11 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return new SFTPListService(this).list(directory, listener);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new SFTPListService(this);
+        }
         if(type == Find.class) {
             return (T) new SFTPFindFeature(this);
         }

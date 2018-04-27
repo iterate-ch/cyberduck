@@ -92,10 +92,7 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     }
 
     public boolean add(final E e) {
-        if(attributes.getFilter().accept(e)) {
-            return impl.add(e);
-        }
-        return attributes.getHidden().add(e);
+        return impl.add(e);
     }
 
     public void add(final int index, final E e) {
@@ -134,18 +131,19 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
      * The CopyOnWriteArrayList iterator does not support remove but the sort implementation
      * makes use of it. Provide our own implementation here to circumvent.
      *
+     * @param copy       The list copy to sort
      * @param comparator The comparator to use
      * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
      * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
      */
-    private void doSort(final Comparator<E> comparator) {
+    private void doSort(final List<E> copy, final Comparator<E> comparator) {
         if(null == comparator) {
             return;
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Sort list %s with comparator %s", this, comparator));
         }
-        Collections.sort(impl, comparator);
+        Collections.sort(copy, comparator);
     }
 
     /**
@@ -166,57 +164,28 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
      * @return Filtered list sorted with comparator
      */
     public AttributedList<E> filter(final Comparator<E> comparator, final Filter<E> filter) {
-        boolean needsSorting = false;
+        final AttributedList<E> filtered = new AttributedList<>(impl);
         if(null != comparator) {
-            needsSorting = !attributes.getComparator().equals(comparator);
+            this.doSort(filtered.impl, comparator);
         }
-        boolean needsFiltering = false;
         if(null != filter) {
-            needsFiltering = !attributes.getFilter().equals(filter);
-        }
-        if(needsSorting) {
-            // Do not sort when the list has not been filtered yet
-            if(!needsFiltering) {
-                this.doSort(comparator);
-            }
-            // Saving last sorting comparator
-            attributes.setComparator(comparator);
-        }
-        if(needsFiltering) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Filter list %s with filter %s", this, filter));
             }
-            // Add previously hidden files to children
-            final List<E> hidden = attributes.getHidden();
-            if(!hidden.isEmpty()) {
-                impl.addAll(hidden);
-                // Clear the previously set of hidden files
-                hidden.clear();
-            }
-            impl.removeIf(new Predicate<E>() {
+            filtered.impl.removeIf(new Predicate<E>() {
                 @Override
                 public boolean test(final E e) {
-                    final boolean accept = filter.accept(e);
-                    if(!accept) {
-                        // Child not accepted by filter; add to cached hidden files
-                        attributes.addHidden(e);
-                    }
-                    return !accept;
+                    return !filter.accept(e);
                 }
             });
-            // Saving last filter
-            attributes.setFilter(filter);
-            // Sort again because the list has changed
-            this.doSort(comparator);
         }
-        return this;
+        return filtered;
     }
 
     /**
      * Clear the list and all references.
      */
     public void clear() {
-        attributes.clear();
         impl.clear();
     }
 

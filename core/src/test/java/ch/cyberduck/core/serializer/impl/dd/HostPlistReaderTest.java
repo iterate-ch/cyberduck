@@ -41,7 +41,7 @@ public class HostPlistReaderTest {
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testDeserializeNoSuchFile() throws Exception {
-        final HostPlistReader reader = new HostPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
+        final HostPlistReader reader = new HostPlistReader(new DeserializerFactory());
         reader.read(new Local("test"));
     }
 
@@ -49,7 +49,7 @@ public class HostPlistReaderTest {
     public void testRead() throws Exception {
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
-                "src/test/resources/s3.amazonaws.com – S3.duck"));
+            "src/test/resources/s3.amazonaws.com – S3.duck"));
         assertNotNull(read);
         assertEquals("Amazon Simple Storage Service & CloudFront CDN", read.getComment());
         assertEquals(new TestProtocol(), read.getProtocol());
@@ -59,7 +59,7 @@ public class HostPlistReaderTest {
     public void testReadPrivateKey() throws Exception {
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
-                "src/test/resources/Private Key Legacy.duck"));
+            "src/test/resources/Private Key Legacy.duck"));
         assertNotNull(read);
         assertEquals(new TestProtocol(), read.getProtocol());
         assertNotNull(read.getCredentials().getIdentity());
@@ -70,7 +70,7 @@ public class HostPlistReaderTest {
     public void testReadPrivateKeyBookmark() throws Exception {
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
-                "src/test/resources/Private Key.duck"));
+            "src/test/resources/Private Key.duck"));
         assertNotNull(read);
         assertEquals(new TestProtocol(), read.getProtocol());
         assertNotNull(read.getCredentials().getIdentity());

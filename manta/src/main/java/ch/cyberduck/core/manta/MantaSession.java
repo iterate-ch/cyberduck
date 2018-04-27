@@ -15,12 +15,11 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
@@ -47,7 +46,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaObject;
@@ -116,15 +114,6 @@ public class MantaSession extends HttpSession<MantaClient> {
         }
     }
 
-    @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            return new AttributedList<Path>(Collections.singletonList(
-                new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath()).getNormalizedHomePath()));
-        }
-        return new MantaListService(this).list(directory, listener);
-    }
-
     protected boolean userIsOwner() {
         final MantaAccountHomeInfo account = new MantaAccountHomeInfo(host.getCredentials().getUsername(), host.getDefaultPath());
         return StringUtils.equals(host.getCredentials().getUsername(),
@@ -162,6 +151,9 @@ public class MantaSession extends HttpSession<MantaClient> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new MantaListService(this);
+        }
         if(type == Directory.class) {
             return (T) new MantaDirectoryFeature(this);
         }

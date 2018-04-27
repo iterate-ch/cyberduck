@@ -40,7 +40,7 @@ import synapticloop.b2.response.B2ListFilesResponse;
 public class B2FileidProvider implements IdProvider {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
 
@@ -64,16 +64,25 @@ public class B2FileidProvider implements IdProvider {
             else {
                 list = cache.get(file.getParent());
             }
-            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            final Path found = list.find(new SimplePathPredicate(file));
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
             return found.attributes().getVersionId();
         }
+        if(cache.isCached(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            if(null != found) {
+                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
+                    return found.attributes().getVersionId();
+                }
+            }
+        }
         try {
             final B2ListFilesResponse response = session.getClient().listFileNames(
-                    this.getFileid(containerService.getContainer(file), listener),
-                    containerService.getKey(file), 2);
+                this.getFileid(containerService.getContainer(file), listener),
+                containerService.getKey(file), 2);
             for(B2FileInfoResponse info : response.getFiles()) {
                 if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
                     return info.getFileId();
@@ -90,9 +99,8 @@ public class B2FileidProvider implements IdProvider {
     }
 
     @Override
-    public IdProvider withCache(final Cache<Path> cache) {
+    public B2FileidProvider withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }
-
 }

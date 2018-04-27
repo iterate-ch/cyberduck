@@ -14,25 +14,18 @@
 
 package ch.cyberduck.core.preferences;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MemoryPreferences extends Preferences {
+public class MemoryPreferences extends DefaultPreferences {
 
     private Map<String, String> store;
 
     @Override
     public void setProperty(final String property, final String v) {
         store.put(property, v);
-    }
-
-    @Override
-    public void setProperty(final String property, final List<String> values) {
-        store.put(property, StringUtils.join(values, ","));
     }
 
     @Override
@@ -45,7 +38,7 @@ public class MemoryPreferences extends Preferences {
         if(store.containsKey(property)) {
             return store.get(property);
         }
-        return super.getDefault(property);
+        return this.getDefault(property);
     }
 
     @Override

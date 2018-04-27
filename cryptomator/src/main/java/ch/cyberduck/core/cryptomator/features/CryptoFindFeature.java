@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator.features;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoPathCache;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,6 +31,8 @@ public class CryptoFindFeature implements Find {
     private final Find delegate;
     private final Vault vault;
 
+    private Cache<Path> cache = PathCache.empty();
+
     public CryptoFindFeature(final Session<?> session, final Find delegate, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
@@ -40,7 +43,7 @@ public class CryptoFindFeature implements Find {
     public boolean find(final Path file) throws BackgroundException {
         try {
             // Look for metadata file to exist when searching for folder
-            return delegate.find(vault.encrypt(session, file, file.isDirectory()));
+            return delegate.withCache(new CryptoPathCache(cache)).find(vault.encrypt(session, file, file.isDirectory()));
         }
         catch(NotfoundException e) {
             return false;
@@ -49,7 +52,7 @@ public class CryptoFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        delegate.withCache(new CryptoPathCache(cache));
+        this.cache = cache;
         return this;
     }
 

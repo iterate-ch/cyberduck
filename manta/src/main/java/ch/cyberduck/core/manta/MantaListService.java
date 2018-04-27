@@ -16,6 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 
@@ -42,6 +44,10 @@ public class MantaListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        if(directory.isRoot()) {
+            return new AttributedList<Path>(Collections.singletonList(
+                new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getNormalizedHomePath()));
+        }
         final AttributedList<Path> children = new AttributedList<>();
         final Iterator<MantaObject> objectsIter;
         try {
@@ -66,5 +72,10 @@ public class MantaListService implements ListService {
             listener.chunk(directory, children);
         }
         return children;
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 }

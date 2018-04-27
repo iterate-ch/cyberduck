@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -119,5 +120,10 @@ public class SwiftObjectListService implements ListService {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, directory);
         }
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        return this;
     }
 }
