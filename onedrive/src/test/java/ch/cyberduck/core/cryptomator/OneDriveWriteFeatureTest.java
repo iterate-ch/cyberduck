@@ -35,7 +35,7 @@ import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveListService;
+import ch.cyberduck.core.onedrive.OneDriveListService;
 import ch.cyberduck.core.onedrive.features.OneDriveReadFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
