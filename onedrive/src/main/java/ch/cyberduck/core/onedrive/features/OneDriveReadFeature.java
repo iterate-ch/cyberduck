@@ -20,7 +20,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
@@ -34,7 +33,6 @@ import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
 import java.io.InputStream;
