@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.5.0
+- [Bugfix] Improved performance accessing vaults (Cryptomator)
+
 6.4.6
 - [Bugfix] Fix use proxy configuration using PAC file (macOS)
 - [Bugfix] Disable extended master secret extension to allow session reuse for data connections (FTP-SSL) (#10276)
