@@ -15,10 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Scheme;
-
 public class OneDriveProtocol extends GraphProtocol {
     @Override
     public String getIdentifier() {
