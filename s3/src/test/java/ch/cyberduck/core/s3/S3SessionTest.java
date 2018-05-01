@@ -6,6 +6,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
@@ -316,9 +317,18 @@ public class S3SessionTest {
         session.close();
     }
 
+    @Test(expected = InteroperabilityException.class)
+    public void testConnectCn_North_1MissingToken() throws Exception {
+        final Host host = new Host(new S3Protocol(), "s3.cn-north-1.amazonaws.com.cn");
+        final S3Session session = new S3Session(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
+    }
+
     @Test(expected = LoginFailureException.class)
     public void testConnectCn_North_1() throws Exception {
-        final Host host = new Host(new S3Protocol(), "s3.cn-north-1.amazonaws.com.cn");
+        final Host host = new Host(new S3Protocol(), "s3.cn-north-1.amazonaws.com.cn", new Credentials("AWS-QWEZUKJHGVCVBJHG", "uztfjkjnbvcf"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
