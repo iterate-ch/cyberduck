@@ -3,6 +3,8 @@ https://cyberduck.io/
 
 6.5.0
 - [Bugfix] Improved performance accessing vaults (Cryptomator)
+- [Bugfix] Improved performance accessing files (Backblaze B2, Google Drive)
+- [Bugfix] Allow reuse of OAuth tokens (Cyberduck CLI, Windows)
 
 6.4.6
 - [Bugfix] Fix use proxy configuration using PAC file (macOS)
