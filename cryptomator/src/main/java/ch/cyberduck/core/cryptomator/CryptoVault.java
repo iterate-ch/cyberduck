@@ -430,7 +430,7 @@ public class CryptoVault implements Vault {
             throw new CryptoInvalidFilesizeException(String.format("Encrypted file size must be at least %d bytes", headerSize));
         }
         catch(IllegalArgumentException e) {
-            throw new CryptoInvalidFilesizeException("Invalid file size");
+            throw new CryptoInvalidFilesizeException(String.format("Invalid file size. %s", e.getMessage()));
         }
     }
 
