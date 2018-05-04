@@ -47,10 +47,10 @@ public class SDSSearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> result = new AttributedList<>();
-            final NodeList list = new NodesApi(session.getClient()).searchFsNodes(StringUtils.EMPTY,
-                String.format("*%s*", regex.toPattern().pattern()), null,
+            final NodeList list = new NodesApi(session.getClient()).searchFsNodes(
+                String.format("*%s*", regex.toPattern().pattern()),
                 -1, Long.valueOf(nodeid.getFileid(workdir, listener)), null,
-                null, null, null);
+                null, null, null, StringUtils.EMPTY, null);
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             for(Node node : list.getItems()) {
                 final PathAttributes attributes = feature.toAttributes(node);

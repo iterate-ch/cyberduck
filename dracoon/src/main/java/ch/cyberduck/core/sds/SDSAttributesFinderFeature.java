@@ -50,8 +50,8 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final Node node = new NodesApi(session.getClient()).getFsNode(StringUtils.EMPTY,
-                Long.parseLong(nodeid.withCache(cache).getFileid(file, new DisabledListProgressListener())), null);
+            final Node node = new NodesApi(session.getClient()).getFsNode(
+                Long.parseLong(nodeid.withCache(cache).getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
             return this.toAttributes(node);
         }
         catch(ApiException e) {
@@ -63,8 +63,8 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setChecksum(Checksum.parse(node.getHash()));
-        attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getTime() : -1L);
-        attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getTime() : -1L);
+        attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
+        attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getMillis() : -1L);
         attributes.setSize(node.getSize());
         attributes.setPermission(this.toPermission(node));
         attributes.setAcl(this.toAcl(node));

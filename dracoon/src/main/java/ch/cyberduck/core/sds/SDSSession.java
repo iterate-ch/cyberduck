@@ -148,7 +148,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 );
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
-                    .authType(host.getProtocol().getAuthorization())
+                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
                     .login(login)
                     .password(additional.getPassword())
                 ));
@@ -156,7 +156,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             default:
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
-                    .authType(host.getProtocol().getAuthorization())
+                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
                     .login(login)
                     .password(password)
                 ));
@@ -186,7 +186,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 e.getDetail(), new LoginOptions(host.getProtocol()).user(false).keychain(false)
             );
             return this.login(controller, new LoginRequest()
-                .authType(host.getProtocol().getAuthorization())
+                .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
                 .password(additional.getPassword())
             );
         }
@@ -195,7 +195,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
-                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false)));
+                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService().map(e);

@@ -36,11 +36,11 @@ import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
 import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -103,7 +103,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
         body.setName(file.getName());
         body.classification(DEFAULT_CLASSIFICATION); // internal
         try {
-            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(StringUtils.EMPTY, body);
+            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
             final String id = response.getUploadId();
             final MultipartOutputStream proxy = new MultipartOutputStream(id, file, status);
             return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
@@ -228,7 +228,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     );
                     body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                 }
-                final Node upload = new NodesApi(session.getClient()).completeFileUpload(StringUtils.EMPTY, uploadId, null, body);
+                final Node upload = new NodesApi(session.getClient()).completeFileUpload(uploadId, body, StringUtils.EMPTY, null);
                 versionId = new VersionId(String.valueOf(upload.getId()));
             }
             catch(ApiException e) {
