@@ -32,6 +32,14 @@ public class WebUrlProviderTest {
     }
 
     @Test
+    public void testHttps() {
+        final Host host = new Host(new TestProtocol(Scheme.https), "test.cyberduck.ch");
+        assertEquals("https://test.cyberduck.ch/", new WebUrlProvider(host).toUrl().getUrl());
+        assertEquals("https://test.cyberduck.ch/my/documentroot/f",
+            new WebUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+    }
+
+    @Test
     public void testCustom() {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         host.setWebURL("customhost");
