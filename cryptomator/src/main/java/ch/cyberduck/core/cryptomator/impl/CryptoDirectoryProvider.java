@@ -49,10 +49,10 @@ public class CryptoDirectoryProvider {
     private final CryptoVault cryptomator;
 
     private final RandomStringService random
-            = new UUIDRandomStringService();
+        = new UUIDRandomStringService();
 
     private final Map<CacheReference<Path>, String> cache = new LRUMap<CacheReference<Path>, String>(
-            PreferencesFactory.get().getInteger("browser.cache.size"));
+        PreferencesFactory.get().getInteger("browser.cache.size"));
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
         this.home = vault;
@@ -72,7 +72,7 @@ public class CryptoDirectoryProvider {
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
-                cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
+            cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Encrypted filename %s to %s", filename, ciphertextName));
         }
@@ -92,10 +92,6 @@ public class CryptoDirectoryProvider {
         }
         if(new SimplePathPredicate(directory).test(home) || directory.isChild(home)) {
             final PathAttributes attributes = new PathAttributes(directory.attributes());
-            if(new SimplePathPredicate(directory).test(home)) {
-                // The root of the vault is a different target directory
-                attributes.withVersionId(null);
-            }
             // Remember random directory id for use in vault
             final String id = this.toDirectoryId(session, directory, directoryId);
             if(log.isDebugEnabled()) {

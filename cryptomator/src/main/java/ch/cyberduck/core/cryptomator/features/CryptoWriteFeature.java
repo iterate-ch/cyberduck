@@ -47,9 +47,9 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     public CryptoWriteFeature(final Session<?> session, final Write<Reply> proxy, final CryptoVault vault) {
         this(session, proxy,
-                new CryptoFindFeature(session, new DefaultFindFeature(session), vault),
-                new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), vault),
-                vault);
+            new CryptoFindFeature(session, new DefaultFindFeature(session), vault),
+            new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), vault),
+            vault);
     }
 
     public CryptoWriteFeature(final Session<?> session, final Write<Reply> proxy, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {
@@ -68,15 +68,15 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
             final StatusOutputStream<Reply> out;
             if(status.getOffset() == 0) {
                 out = proxy.write(encrypted,
-                        new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
+                    new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())).withMime(null), callback);
                 out.write(status.getHeader().array());
             }
             else {
                 out = proxy.write(encrypted,
-                        new TransferStatus(status).length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()), callback);
+                    new TransferStatus(status).length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()).withMime(null), callback);
             }
             return new CryptoOutputStream<Reply>(out, cryptor, cryptor.fileHeaderCryptor().decryptHeader(status.getHeader()),
-                    status.getNonces(), vault.numberOfChunks(status.getOffset()));
+                status.getNonces(), vault.numberOfChunks(status.getOffset()));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
