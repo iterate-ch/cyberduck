@@ -14,12 +14,13 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>6.4.7-SNAPSHOT</version>
+        <version>6.5.1-SNAPSHOT</version>
     </parent>
     <artifactId>dracoon</artifactId>
     <properties>
@@ -116,41 +117,51 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <compilerArguments combine.self="override" />
+                    <compilerArguments combine.self="override"/>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.2.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>https://demo.dracoon.com/swagger-proxy/api_v4/</inputSpec>
-                            <language>java</language>
-                            <output>${project.build.directory}/generated-sources</output>
-                            <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
-                            <apiPackage>ch.cyberduck.core.sds.io.swagger.client.api</apiPackage>
-                            <configOptions>
-                                <sourceFolder>swagger</sourceFolder>
-                                <library>jersey2</library>
-                                <import-mappings>
-                                    EncryptionInfo=ch.cyberduck.core.sds.model.EncryptionInfo,
-                                    CompleteUploadRequest=ch.cyberduck.core.sds.swagger.CompleteUploadRequest,
-                                    CopyNodesRequest=ch.cyberduck.core.sds.swagger.CopyNodesRequest,
-                                    MoveNodesRequest=ch.cyberduck.core.sds.swagger.MoveNodesRequest
-                                </import-mappings>
-                            </configOptions>
-                            <environmentVariables>
-                                <apiTests>false</apiTests>
-                            </environmentVariables>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>codegen</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-codegen-maven-plugin</artifactId>
+                        <version>2.2.3</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>https://demo.dracoon.com/swagger-proxy/api_v4/</inputSpec>
+                                    <language>java</language>
+                                    <output>${project.build.directory}/generated-sources</output>
+                                    <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
+                                    <apiPackage>ch.cyberduck.core.sds.io.swagger.client.api</apiPackage>
+                                    <configOptions>
+                                        <sourceFolder>swagger</sourceFolder>
+                                        <library>jersey2</library>
+                                        <import-mappings>
+                                            EncryptionInfo=ch.cyberduck.core.sds.model.EncryptionInfo,
+                                            CompleteUploadRequest=ch.cyberduck.core.sds.swagger.CompleteUploadRequest,
+                                            CopyNodesRequest=ch.cyberduck.core.sds.swagger.CopyNodesRequest,
+                                            MoveNodesRequest=ch.cyberduck.core.sds.swagger.MoveNodesRequest
+                                        </import-mappings>
+                                    </configOptions>
+                                    <environmentVariables>
+                                        <apiTests>false</apiTests>
+                                    </environmentVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

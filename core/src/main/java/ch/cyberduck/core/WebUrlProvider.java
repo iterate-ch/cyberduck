@@ -37,16 +37,24 @@ public class WebUrlProvider implements UrlProvider {
         final DescriptiveUrl base = this.toUrl();
         list.add(new DescriptiveUrl(URI.create(String.format("%s%s", base.getUrl(), URIEncoder.encode(
             PathNormalizer.normalize(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))
-        ))).normalize(),
-            DescriptiveUrl.Type.http,
-            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
+            ))).normalize(),
+                base.getType(),
+                base.getHelp())
+        );
         return list;
     }
 
     public DescriptiveUrl toUrl() {
         final String base;
         if(StringUtils.isBlank(host.getWebURL())) {
-            base = String.format("http://%s/", StringUtils.strip(host.getHostname()));
+            switch(host.getProtocol().getScheme()) {
+                case https:
+                    base = String.format("https://%s/", StringUtils.strip(host.getHostname()));
+                    break;
+                default:
+                    base = String.format("http://%s/", StringUtils.strip(host.getHostname()));
+                    break;
+            }
         }
         else {
             if(host.getWebURL().matches("^http(s)?://.*$")) {
@@ -56,6 +64,9 @@ public class WebUrlProvider implements UrlProvider {
                 base = String.format("http://%s/", host.getWebURL());
             }
         }
-        return new DescriptiveUrl(URI.create(base), DescriptiveUrl.Type.http);
+        final URI uri = URI.create(base);
+        return new DescriptiveUrl(uri,
+            DescriptiveUrl.Type.http,
+            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), StringUtils.upperCase(uri.getScheme())));
     }
 }
