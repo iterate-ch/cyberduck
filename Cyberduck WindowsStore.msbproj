@@ -124,6 +124,9 @@
     <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.SwingAWT.dll">
       <PackagePath>$(PackageLayout)\IKVM.OpenJDK.SwingAWT.dll</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Misc.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Misc.dll</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Naming.dll">
       <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Naming.dll</PackagePath>
     </LayoutFile>
