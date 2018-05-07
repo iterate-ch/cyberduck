@@ -101,7 +101,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                 public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                     try {
                         final SDSApiClient client = session.getClient();
-                        final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), uploadId));
+                        final HttpPost request = new HttpPost(String.format("%s/v4/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                         request.setEntity(entity);
                         request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                         request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
