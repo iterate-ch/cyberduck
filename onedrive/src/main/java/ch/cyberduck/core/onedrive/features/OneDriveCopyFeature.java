@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
@@ -34,7 +33,6 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveCopyOperation;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -59,6 +57,7 @@ public class OneDriveCopyFeature implements Copy {
         if(status.isExists()) {
             new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
         }
+
         final OneDriveFolder targetItem = session.toFolder(target.getParent());
         copyOperation.copy(targetItem);
         final OneDriveItem item = session.toItem(source);

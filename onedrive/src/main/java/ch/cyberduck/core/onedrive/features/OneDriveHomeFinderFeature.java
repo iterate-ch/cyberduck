@@ -31,10 +31,12 @@ import java.util.EnumSet;
 public class OneDriveHomeFinderFeature extends DefaultHomeFinderService {
 
     private final OneDriveSession session;
+    private final OneDriveAttributesFinderFeature attributes;
 
     public OneDriveHomeFinderFeature(final OneDriveSession session) {
         super(session);
         this.session = session;
+        this.attributes = new OneDriveAttributesFinderFeature(session);
     }
 
     @Override
@@ -44,6 +46,7 @@ public class OneDriveHomeFinderFeature extends DefaultHomeFinderService {
             try {
                 final OneDriveDrive.Metadata metadata = OneDriveDrive.getDefaultDrive(session.getClient()).getMetadata();
                 final Path drive = new Path(metadata.getId(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                drive.attributes().setVersionId(metadata.getId());
                 switch(metadata.getDriveType()) {
                     case personal:
                         drive.attributes().setDisplayname("OneDrive Personal");

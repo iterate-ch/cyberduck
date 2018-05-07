@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.onedrive.OneDriveSession;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 
 import java.io.IOException;
 import java.net.URI;
@@ -52,6 +52,7 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
+
         final OneDriveItem item = session.toItem(file);
         try {
             final OneDriveItem.Metadata metadata = item.getMetadata();
@@ -67,8 +68,26 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
 
     public PathAttributes convert(final OneDriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
+        annotate(attributes, metadata);
+        return attributes;
+    }
+
+    public void annotate(final PathAttributes attributes, final OneDriveItem.Metadata metadata) {
         attributes.setETag(metadata.getETag());
         attributes.setSize(metadata.getSize());
+
+        if(metadata instanceof OneDriveRemoteItem.Metadata) {
+            final OneDriveRemoteItem.Metadata remoteMetadata = (OneDriveRemoteItem.Metadata) metadata;
+            final OneDriveItem.Metadata originMetadata = remoteMetadata.getRemoteItem();
+
+            attributes.setVersionId(String.join("/",
+                metadata.getParentReference().getDriveId(), metadata.getId(),
+                originMetadata.getParentReference().getDriveId(), originMetadata.getId()));
+        }
+        else {
+            attributes.setVersionId(String.join("/", metadata.getParentReference().getDriveId(), metadata.getId()));
+        }
+
         try {
             attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
         }
@@ -83,7 +102,6 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
             attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
             attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
         }
-        return attributes;
     }
 
     @Override

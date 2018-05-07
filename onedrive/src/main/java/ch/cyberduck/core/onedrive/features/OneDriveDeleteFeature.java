@@ -23,7 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
-import ch.cyberduck.core.onedrive.OneDriveItemListService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.log4j.Logger;

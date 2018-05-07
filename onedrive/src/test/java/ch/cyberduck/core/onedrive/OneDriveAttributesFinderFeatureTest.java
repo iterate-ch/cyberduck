@@ -56,7 +56,7 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertNull(attributes.getVersionId());
+        assertNotNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -71,7 +71,7 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertNull(attributes.getVersionId());
+        assertNotNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

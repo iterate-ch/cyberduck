@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -23,27 +24,13 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveBufferWriteFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveCopyFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveMoveFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveQuotaFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveReadFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveSearchFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveTimestampFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveTouchFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveWriteFeature;
+import ch.cyberduck.core.onedrive.features.*;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -59,20 +46,15 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.OneDriveDrivesIterator;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;
 import org.nuxeo.onedrive.client.OneDriveRemoteItem;
-import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Iterator;
 import java.util.Set;
 
 public class OneDriveSession extends GraphSession {
@@ -83,8 +65,11 @@ public class OneDriveSession extends GraphSession {
 
     private OAuth2RequestInterceptor authorizationService;
 
+    private final OneDriveFileIdProvider fileIdProvider;
+
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        this.fileIdProvider = new OneDriveFileIdProvider(this);
     }
 
     /**
@@ -92,190 +77,45 @@ public class OneDriveSession extends GraphSession {
      */
     @Override
     public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
-        final Deque<String> parts = new ArrayDeque<>();
-        Path traverse = currentPath;
-        while(!traverse.isRoot()) {
-            parts.push(traverse.getName());
-
-            traverse = traverse.getParent();
+        String versionId = fileIdProvider.getFileid(currentPath, new DisabledListProgressListener());
+        if(StringUtils.isEmpty(versionId)) {
+            throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
         }
 
-        final OneDriveItemWrapper oneDriveItemWrapper = new OneDriveItemWrapper(resolveLastItem);
+        final String[] idParts = versionId.split("/");
 
-        while(!parts.isEmpty()) {
-            final String part = parts.pop();
-
-            if(!oneDriveItemWrapper.isDefined()) {
-                if(!searchDrive(oneDriveItemWrapper, part)) {
-                    throw new NotfoundException(String.format("Did not find drive for %s", currentPath.getAbsolute()));
-                }
-            }
-            else {
-                if(!searchItem(oneDriveItemWrapper, part)) {
-                    throw new NotfoundException(String.format("Did not find %s", currentPath.getAbsolute()));
-                }
-            }
-        }
-
-        return oneDriveItemWrapper.getItem();
-    }
-
-    private boolean searchDrive(final OneDriveItemWrapper itemWrapper, final String driveName) throws BackgroundException {
-        // external tracker for if a drive is found
-        boolean foundDrive = false;
-        // keeps track of latest known metadata (null if none or duplicate)
-        OneDriveDrive.Metadata temporaryMetadata = null;
-
-        final OneDriveDrivesIterator drivesIterator = new OneDriveDrivesIterator(getClient());
-        // iterate through all drives
-        try {
-            while(drivesIterator.hasNext()) {
-                final OneDriveDrive.Metadata drivesIteratorMetadata;
-
-                try {
-                    drivesIteratorMetadata = drivesIterator.next();
-                }
-                catch(OneDriveRuntimeException e) { // catches next()
-                    logger.warn(String.format("Search for Drive %s errored.", driveName), e);
-                    continue;
-                }
-
-                // compare ID, does not take Name into account (not applicable currently)
-                if(driveName.equals(drivesIteratorMetadata.getId())) {
-                    // checks for first encounter
-                    // IDE inspection says "Condition always true" because "temporaryMetadata" being
-                    // null all the time. Which is fault in IDE.
-                    if(!foundDrive && null == temporaryMetadata) {
-                        temporaryMetadata = drivesIteratorMetadata;
-                        foundDrive = true;
-                    }
-                    else {
-                        // resets temporaryMetadata to null for further usage
-                        temporaryMetadata = null;
-                    }
-                }
-            }
-        }
-        catch(OneDriveRuntimeException e) { //catches hasNext(), rethrow
-            throw new OneDriveExceptionMappingService().map(e.getCause());
-        }
-
-        // temporaryMetadata may be null if there is no drive or a duplicate is found
-        if(null == temporaryMetadata) {
-            return false;
-        }
-        itemWrapper.setItem(((OneDriveDrive) temporaryMetadata.getResource()).getRoot(), null);
-        return true;
-    }
-
-    private boolean searchItem(final OneDriveItemWrapper itemWrapper, final String itemName) throws BackgroundException {
-        final OneDriveItem item = itemWrapper.getItem();
-
-        if(!itemWrapper.shouldResolveLastItem()) {
-            itemWrapper.resolveItem();
-        }
-
-        if(item instanceof OneDriveFolder) {
-            final OneDriveFolder folder = (OneDriveFolder) item;
-
-            SearchResult searchResult = searchItemFast(folder, itemName);
-            if(!searchResult.isFoundChild()) {
-                // retry with slow iteration instead of search
-                searchResult = searchItemSlow(folder, itemName);
-            }
-
-            // did not find child
-            if(!searchResult.isFoundChild()) {
-                return false;
-            }
-            // found duplicate
-            OneDriveItem.Metadata child = searchResult.getChild();
-            if(null == child) {
-                return false;
-            }
-
-            if(itemWrapper.shouldResolveLastItem()) {
-                itemWrapper.resolveItem();
-            }
-
-            itemWrapper.setItem(child.getResource(), child);
-            return true;
-        }
-        else if(item instanceof OneDriveFile) {
-            return false; // cannot enumerate file
-        }
-        else if(item instanceof OneDrivePackageItem) {
-            return false; // Package Item not handled.
+        if(idParts.length == 1) {
+            return new OneDriveDrive(getClient(), idParts[0]).getRoot();
         }
         else {
-            return false; // unknown return
-        }
-    }
+            final String driveId;
+            final String itemId;
 
-    private SearchResult searchItemFast(final OneDriveFolder folder, final String itemName) {
-        boolean foundChild = false;
-        OneDriveItem.Metadata temporaryChild = null;
+            if(idParts.length == 2 || !resolveLastItem) {
+                driveId = idParts[0];
+                itemId = idParts[1];
+            }
+            else if(idParts.length == 4) {
+                driveId = idParts[2];
+                itemId = idParts[3];
+            }
+            else {
+                throw new NotfoundException(String.format("Did not find %s", currentPath.getAbsolute()));
+            }
 
-        try {
-            for(final OneDriveItem.Metadata childMetadata : folder.search(URIEncoder.encode(itemName))) {
-                // check name, do not take ID or anything else into account (not applicable)
-                // paths given here are always human readable
-                if(itemName.equals(childMetadata.getName())) {
-                    if(!foundChild && null == temporaryChild) {
-                        temporaryChild = childMetadata;
-                        foundChild = true;
-                    }
-                    else {
-                        temporaryChild = null;
-                    }
-                }
+            final OneDriveDrive drive = new OneDriveDrive(getClient(), driveId);
+            if(currentPath.getType().contains(Path.Type.file)) {
+                return new OneDriveFile(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+            }
+            else if(currentPath.getType().contains(Path.Type.directory)) {
+                return new OneDriveFolder(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+            }
+            else if(currentPath.getType().contains(Path.Type.placeholder)) {
+                return new OneDrivePackageItem(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
             }
         }
-        catch(OneDriveRuntimeException e) {
-            // search for item, ignore errors
-            logger.warn(String.format("Fast search for item %s errored", itemName), e);
-            return new SearchResult(false, null);
-        }
 
-        return new SearchResult(foundChild, temporaryChild);
-    }
-
-    private SearchResult searchItemSlow(final OneDriveFolder folder, final String itemName) throws BackgroundException {
-        boolean foundChild = false;
-        OneDriveItem.Metadata temporaryChild = null;
-
-        final Iterator<OneDriveItem.Metadata> oneDriveFolderIterator = folder.iterator();
-        try {
-            while(oneDriveFolderIterator.hasNext()) {
-                final OneDriveItem.Metadata childMetadata;
-
-                try {
-                    childMetadata = oneDriveFolderIterator.next();
-                }
-                catch(OneDriveRuntimeException e) {
-                    // silent ignore OneDriveRuntimeExceptions
-                    logger.warn(String.format("Fast search for item %s errored", itemName), e);
-                    continue;
-                }
-
-                if(itemName.equals(childMetadata.getName())) {
-                    if(!foundChild && null == temporaryChild) {
-                        temporaryChild = childMetadata;
-                        foundChild = true;
-                    }
-                    else {
-                        temporaryChild = null;
-                    }
-                }
-
-            }
-        }
-        catch(OneDriveRuntimeException e) {
-            // log error, continue
-            throw new OneDriveExceptionMappingService().map(e.getCause());
-        }
-
-        return new SearchResult(foundChild, temporaryChild);
+        throw new NotfoundException(String.format("Did not find %s", currentPath.getAbsolute()));
     }
 
     @Override
@@ -346,6 +186,9 @@ public class OneDriveSession extends GraphSession {
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
             return (T) new OneDriveListService(this);
+        }
+        if(type == IdProvider.class) {
+            return (T) fileIdProvider;
         }
         if(type == Directory.class) {
             return (T) new OneDriveDirectoryFeature(this);

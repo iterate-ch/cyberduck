@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
@@ -27,23 +26,25 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
 
 public class OneDriveDirectoryFeature implements Directory<Void> {
 
     private final OneDriveSession session;
+    private final OneDriveAttributesFinderFeature attributes;
 
     public OneDriveDirectoryFeature(OneDriveSession session) {
         this.session = session;
+        this.attributes = new OneDriveAttributesFinderFeature(session);
     }
 
     @Override
     public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
         final OneDriveFolder folder = session.toFolder(directory.getParent());
+        final OneDriveFolder.Metadata metadata;
         try {
-            folder.create(directory.getName());
+            metadata = folder.create(directory.getName());
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot create folder {0}", e, directory);
@@ -51,6 +52,7 @@ public class OneDriveDirectoryFeature implements Directory<Void> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, directory);
         }
+        // attributes.annotate(directory.attributes(), metadata);
         return directory;
     }
 

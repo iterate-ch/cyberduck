@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;

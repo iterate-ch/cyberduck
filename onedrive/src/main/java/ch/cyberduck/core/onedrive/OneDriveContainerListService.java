@@ -60,6 +60,7 @@ public class OneDriveContainerListService implements RootListService {
                 continue;
             }
             final PathAttributes attributes = new PathAttributes();
+            attributes.setVersionId(metadata.getId());
             attributes.setSize(metadata.getTotal());
             children.add(new Path(directory, metadata.getId(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
             listener.chunk(directory, children);
