@@ -68,14 +68,13 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
 
     public PathAttributes convert(final OneDriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
-        annotate(attributes, metadata);
+        this.annotate(attributes, metadata);
         return attributes;
     }
 
     public void annotate(final PathAttributes attributes, final OneDriveItem.Metadata metadata) {
         attributes.setETag(metadata.getETag());
         attributes.setSize(metadata.getSize());
-
         if(metadata instanceof OneDriveRemoteItem.Metadata) {
             final OneDriveRemoteItem.Metadata remoteMetadata = (OneDriveRemoteItem.Metadata) metadata;
             final OneDriveItem.Metadata originMetadata = remoteMetadata.getRemoteItem();
@@ -87,7 +86,6 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         else {
             attributes.setVersionId(String.join("/", metadata.getParentReference().getDriveId(), metadata.getId()));
         }
-
         try {
             attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
         }

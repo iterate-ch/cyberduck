@@ -176,7 +176,7 @@ public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecu
 
         public CommonsHttpResponse(final HttpResponse response) throws IOException {
             super(null == response.getEntity() ? new NullInputStream(0L) :
-                    new HttpMethodReleaseInputStream(response));
+                new HttpMethodReleaseInputStream(response));
             this.response = response;
         }
 
@@ -193,7 +193,7 @@ public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecu
         @Override
         public String getLocation() {
             Header locationHeader = response.getFirstHeader("Location");
-            if (null == locationHeader) {
+            if(null == locationHeader) {
                 return null;
             }
             return locationHeader.getValue();

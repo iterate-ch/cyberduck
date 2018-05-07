@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveMoveFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveTouchFeature;
@@ -125,7 +126,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         new OneDriveTouchFeature(session).touch(temp, new TransferStatus());
         new OneDriveMoveFeature(session).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new OneDriveListService(session).list(folder, new DisabledListProgressListener());
+        final AttributedList<Path> files = new OneDriveListService(session, new OneDriveFileIdProvider(session)).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());
         assertFalse(find.find(temp));
         assertTrue(find.find(test));

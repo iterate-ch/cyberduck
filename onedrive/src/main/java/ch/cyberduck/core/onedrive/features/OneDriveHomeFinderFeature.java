@@ -31,12 +31,10 @@ import java.util.EnumSet;
 public class OneDriveHomeFinderFeature extends DefaultHomeFinderService {
 
     private final OneDriveSession session;
-    private final OneDriveAttributesFinderFeature attributes;
 
     public OneDriveHomeFinderFeature(final OneDriveSession session) {
         super(session);
         this.session = session;
-        this.attributes = new OneDriveAttributesFinderFeature(session);
     }
 
     @Override

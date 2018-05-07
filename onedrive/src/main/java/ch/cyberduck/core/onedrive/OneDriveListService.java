@@ -21,13 +21,16 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
 
 public class OneDriveListService implements ListService {
 
     private final OneDriveSession session;
+    private final OneDriveFileIdProvider fileIdProvider;
 
-    public OneDriveListService(final OneDriveSession session) {
+    public OneDriveListService(final OneDriveSession session, final OneDriveFileIdProvider fileIdProvider) {
         this.session = session;
+        this.fileIdProvider = fileIdProvider;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class OneDriveListService implements ListService {
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
-        session.getFileIdProvider().withCache(cache);
+        fileIdProvider.withCache(cache);
         return this;
     }
 }

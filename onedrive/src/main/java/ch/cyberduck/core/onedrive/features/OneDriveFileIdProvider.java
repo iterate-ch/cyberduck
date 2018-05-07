@@ -32,11 +32,13 @@ import ch.cyberduck.core.onedrive.OneDriveSession;
 import org.apache.commons.lang3.StringUtils;
 
 public class OneDriveFileIdProvider implements IdProvider {
-    private Cache<Path> cache = PathCache.empty();
-    private OneDriveSession session;
-    private PathContainerService containerService = new PathContainerService();
+    private final PathContainerService containerService
+        = new PathContainerService();
 
-    public OneDriveFileIdProvider(OneDriveSession session) {
+    private final OneDriveSession session;
+    private Cache<Path> cache = PathCache.empty();
+
+    public OneDriveFileIdProvider(final OneDriveSession session) {
         this.session = session;
     }
 
@@ -48,7 +50,7 @@ public class OneDriveFileIdProvider implements IdProvider {
 
         final AttributedList<Path> list;
         if(!cache.isCached(file.getParent())) {
-            list = new OneDriveListService(session).list(file.getParent(), new DisabledListProgressListener());
+            list = new OneDriveListService(session, this).list(file.getParent(), new DisabledListProgressListener());
             cache.put(file.getParent(), list);
         }
         else {
@@ -65,7 +67,6 @@ public class OneDriveFileIdProvider implements IdProvider {
     @Override
     public IdProvider withCache(final Cache<Path> cache) {
         this.cache = cache;
-
         return this;
     }
 }

@@ -34,6 +34,7 @@ import java.util.List;
 
 public class OneDriveDeleteFeature implements Delete {
     private static final Logger logger = Logger.getLogger(OneDriveDeleteFeature.class);
+
     private final PathContainerService containerService
         = new PathContainerService();
 

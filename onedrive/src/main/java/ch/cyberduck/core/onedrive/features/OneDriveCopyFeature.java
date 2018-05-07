@@ -39,6 +39,7 @@ import java.util.Collections;
 
 public class OneDriveCopyFeature implements Copy {
     private static final Logger logger = Logger.getLogger(OneDriveCopyFeature.class);
+
     private final OneDriveSession session;
 
     private final PathContainerService containerService

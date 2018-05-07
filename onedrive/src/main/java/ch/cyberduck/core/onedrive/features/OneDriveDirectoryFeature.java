@@ -32,11 +32,9 @@ import java.io.IOException;
 public class OneDriveDirectoryFeature implements Directory<Void> {
 
     private final OneDriveSession session;
-    private final OneDriveAttributesFinderFeature attributes;
 
     public OneDriveDirectoryFeature(OneDriveSession session) {
         this.session = session;
-        this.attributes = new OneDriveAttributesFinderFeature(session);
     }
 
     @Override
