@@ -72,6 +72,10 @@ public class OneDriveSession extends GraphSession {
         this.fileIdProvider = new OneDriveFileIdProvider(this);
     }
 
+    public OneDriveFileIdProvider getFileIdProvider() {
+        return fileIdProvider;
+    }
+
     /**
      * Resolves given path to OneDriveItem
      */
