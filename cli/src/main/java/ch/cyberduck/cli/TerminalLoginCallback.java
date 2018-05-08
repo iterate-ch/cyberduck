@@ -35,14 +35,14 @@ import java.util.Arrays;
 public class TerminalLoginCallback extends TerminalPasswordCallback implements LoginCallback {
 
     private final Console console = new Console();
-
     private final TerminalPromptReader prompt;
 
     public TerminalLoginCallback() {
-        this.prompt = new InteractiveTerminalPromptReader();
+        this(new InteractiveTerminalPromptReader());
     }
 
     public TerminalLoginCallback(final TerminalPromptReader prompt) {
+        super(prompt);
         this.prompt = prompt;
     }
 
