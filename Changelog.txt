@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.6.0
+- [Feature] Include shared items (OneDrive) (#10107)
+
 6.5.0
 - [Bugfix] Improved performance accessing vaults (Cryptomator)
 - [Bugfix] Improved performance accessing files (Backblaze B2, Google Drive)
