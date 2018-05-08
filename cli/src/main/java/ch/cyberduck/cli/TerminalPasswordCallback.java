@@ -42,7 +42,8 @@ public class TerminalPasswordCallback implements PasswordCallback {
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
             final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
-            final Credentials credentials = new Credentials(String.valueOf(input));
+            final Credentials credentials = new Credentials();
+            credentials.setPassword(String.valueOf(input));
             if(options.save && options.keychain) {
                 credentials.setSaved(prompt.prompt(LocaleFactory.get().localize("Save password", "Credentials")));
             }
