@@ -56,7 +56,7 @@ public class OneDriveItemListService implements ListService {
         final AttributedList<Path> children = new AttributedList<>();
         final OneDriveItem local = session.toItem(directory);
         if(!(local instanceof OneDriveFolder)) {
-            throw new NotfoundException(String.format("Did not find directory %s", directory));
+            throw new NotfoundException(directory.getAbsolute());
         }
         final OneDriveFolder folder = (OneDriveFolder) local;
         try {

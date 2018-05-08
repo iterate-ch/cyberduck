@@ -48,7 +48,7 @@ public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
         try {
             final OneDriveItem item = session.toItem(file);
             if(null == item) {
-                throw new NotfoundException(String.format("Did not find %s", file));
+                throw new NotfoundException(file.getAbsolute());
             }
             return new DescriptiveUrl(URI.create(item.createSharedLink(OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
                 DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));
