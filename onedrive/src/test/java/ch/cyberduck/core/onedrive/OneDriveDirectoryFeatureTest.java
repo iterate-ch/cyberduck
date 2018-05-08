@@ -22,6 +22,11 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
+import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -48,7 +53,7 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
         final String name = String.format("%s %s", randomStringService.random(), randomStringService.random());
         final Path target = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), name, EnumSet.of(Path.Type.directory)), null, null);
         assertEquals(name, target.getName());
-        final AttributedList<Path> list = new OneDriveListService(session).list(new OneDriveHomeFinderFeature(session).find(), new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(session, new OneDriveFileIdProvider(session)).list(new OneDriveHomeFinderFeature(session).find(), new DisabledListProgressListener());
         assertTrue(list.contains(target));
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(target).getETag());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

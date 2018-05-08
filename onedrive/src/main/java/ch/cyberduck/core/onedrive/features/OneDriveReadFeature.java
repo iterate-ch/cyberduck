@@ -1,12 +1,12 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.onedrive.features;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,6 +22,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.OneDriveSession;
+import ch.cyberduck.core.onedrive.OneDriveUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
@@ -29,6 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +60,8 @@ public class OneDriveReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
+                final OneDriveFile target = session.toFile(file);
+
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
                     final String header;
@@ -68,9 +74,9 @@ public class OneDriveReadFeature implements Read {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Add range header %s for file %s", header, file));
                     }
-                    return session.toFile(file).download(header);
+                    return target.download(header);
                 }
-                return session.toFile(file).download();
+                return target.download();
             }
         }
         catch(OneDriveAPIException e) {

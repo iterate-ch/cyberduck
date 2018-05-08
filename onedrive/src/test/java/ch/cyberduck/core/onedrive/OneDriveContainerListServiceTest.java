@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class OneDriveContainerListServiceTest extends AbstractOneDriveTest {
             assertNotEquals(-1L, attributes.getSize());
             assertNotEquals(-1L, attributes.getCreationDate());
             assertNotEquals(-1L, attributes.getModificationDate());
-            assertNull(attributes.getVersionId());
+            assertNotNull(attributes.getVersionId());
             assertNotNull(attributes.getLink());
         }
     }

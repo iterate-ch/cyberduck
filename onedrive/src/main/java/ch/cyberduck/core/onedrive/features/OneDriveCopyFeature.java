@@ -1,12 +1,12 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.onedrive.features;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,18 +23,23 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveCopyOperation;
+import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
 import java.util.Collections;
 
 public class OneDriveCopyFeature implements Copy {
     private static final Logger logger = Logger.getLogger(OneDriveCopyFeature.class);
+
     private final OneDriveSession session;
 
     private final PathContainerService containerService
@@ -53,13 +58,15 @@ public class OneDriveCopyFeature implements Copy {
         if(status.isExists()) {
             new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
         }
-        copyOperation.copy(session.toFolder(target.getParent()));
+
+        final OneDriveFolder targetItem = session.toFolder(target.getParent());
+        copyOperation.copy(targetItem);
+        final OneDriveItem item = session.toItem(source);
         try {
-            session.toFile(source).copy(copyOperation).await(statusObject -> logger.info(
-                String.format("Copy Progress Operation %s progress %f status %s",
-                    statusObject.getOperation(),
-                    statusObject.getPercentage(),
-                    statusObject.getStatus())));
+            item.copy(copyOperation).await(statusObject -> logger.info(String.format("Copy Progress Operation %s progress %f status %s",
+                statusObject.getOperation(),
+                statusObject.getPercentage(),
+                statusObject.getStatus())));
             return target;
         }
         catch(OneDriveAPIException e) {
@@ -81,6 +88,9 @@ public class OneDriveCopyFeature implements Copy {
             return false;
         }
         if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
+            return false;
+        }
+        if(source.getType().contains(Path.Type.shared)) {
             return false;
         }
         return true;

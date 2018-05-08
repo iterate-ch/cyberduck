@@ -1,12 +1,12 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.onedrive.features;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,12 +23,13 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 
 import java.io.IOException;
 import java.net.URI;
@@ -51,12 +52,10 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
+
+        final OneDriveItem item = session.toItem(file);
         try {
-            if(containerService.isContainer(file)) {
-                final OneDriveFolder.Metadata metadata = session.toFolder(file).getMetadata();
-                return this.convert(metadata);
-            }
-            final OneDriveFile.Metadata metadata = session.toFile(file).getMetadata();
+            final OneDriveItem.Metadata metadata = item.getMetadata();
             return this.convert(metadata);
         }
         catch(OneDriveAPIException e) {
@@ -67,10 +66,26 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes convert(final OneDriveItem.Metadata metadata) {
+    public PathAttributes convert(final OneDriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
+        this.annotate(attributes, metadata);
+        return attributes;
+    }
+
+    public void annotate(final PathAttributes attributes, final OneDriveItem.Metadata metadata) {
         attributes.setETag(metadata.getETag());
         attributes.setSize(metadata.getSize());
+        if(metadata instanceof OneDriveRemoteItem.Metadata) {
+            final OneDriveRemoteItem.Metadata remoteMetadata = (OneDriveRemoteItem.Metadata) metadata;
+            final OneDriveItem.Metadata originMetadata = remoteMetadata.getRemoteItem();
+
+            attributes.setVersionId(String.join("/",
+                metadata.getParentReference().getDriveId(), metadata.getId(),
+                originMetadata.getParentReference().getDriveId(), originMetadata.getId()));
+        }
+        else {
+            attributes.setVersionId(String.join("/", metadata.getParentReference().getDriveId(), metadata.getId()));
+        }
         try {
             attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
         }
@@ -85,7 +100,6 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
             attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
             attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
         }
-        return attributes;
     }
 
     @Override

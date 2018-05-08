@@ -1,12 +1,12 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.onedrive.features;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,10 +22,14 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePatchOperation;
 
 import java.io.IOException;
@@ -37,7 +41,7 @@ public class OneDriveMoveFeature implements Move {
     private Delete delete;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     public OneDriveMoveFeature(OneDriveSession session) {
         this.session = session;
@@ -54,10 +58,12 @@ public class OneDriveMoveFeature implements Move {
             patchOperation.rename(renamed.getName());
         }
         if(!file.getParent().equals(renamed.getParent())) {
-            patchOperation.move(session.toFolder(renamed.getParent()));
+            final OneDriveFolder moveTarget = session.toFolder(renamed.getParent());
+            patchOperation.move(moveTarget);
         }
+        final OneDriveItem item = session.toItem(file);
         try {
-            session.toFile(file).patch(patchOperation);
+            item.patch(patchOperation);
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot rename {0}", e, file);
@@ -79,6 +85,9 @@ public class OneDriveMoveFeature implements Move {
             return false;
         }
         if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
+            return false;
+        }
+        if(source.getType().contains(Path.Type.shared)) {
             return false;
         }
         return true;

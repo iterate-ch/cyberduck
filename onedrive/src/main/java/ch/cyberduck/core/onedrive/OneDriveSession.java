@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -23,13 +24,13 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.onedrive.features.*;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -42,41 +43,78 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDrivePackageItem;
+import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 
 import java.io.IOException;
 import java.util.Set;
 
-public class OneDriveSession extends HttpSession<OneDriveAPI> {
+public class OneDriveSession extends GraphSession {
+    private final Logger logger = Logger.getLogger(OneDriveSession.class);
 
     private final PathContainerService containerService
         = new PathContainerService();
 
     private OAuth2RequestInterceptor authorizationService;
 
+    private final OneDriveFileIdProvider fileIdProvider = new OneDriveFileIdProvider(this);
+
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
-    public OneDriveFile toFile(final Path file) {
-        return new OneDriveFile(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
-            URIEncoder.encode(containerService.getKey(file)));
-    }
+    /**
+     * Resolves given path to OneDriveItem
+     */
+    @Override
+    public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
+        final String versionId = fileIdProvider.getFileid(currentPath, new DisabledListProgressListener());
+        if(StringUtils.isEmpty(versionId)) {
+            throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
+        }
 
-    public OneDriveFolder toFolder(final Path file) {
-        if(file.isRoot()) {
-            return OneDriveFolder.getRoot(client);
+        final String[] idParts = versionId.split("/");
+
+        if(idParts.length == 1) {
+            return new OneDriveDrive(getClient(), idParts[0]).getRoot();
         }
-        if(containerService.isContainer(file)) {
-            return new OneDriveDrive(client, containerService.getContainer(file).getName()).getRoot();
+        else {
+            final String driveId;
+            final String itemId;
+
+            if(idParts.length == 2 || !resolveLastItem) {
+                driveId = idParts[0];
+                itemId = idParts[1];
+            }
+            else if(idParts.length == 4) {
+                driveId = idParts[2];
+                itemId = idParts[3];
+            }
+            else {
+                throw new NotfoundException(String.format("Did not find %s", currentPath.getAbsolute()));
+            }
+
+            final OneDriveDrive drive = new OneDriveDrive(getClient(), driveId);
+            if(currentPath.getType().contains(Path.Type.file)) {
+                return new OneDriveFile(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+            }
+            else if(currentPath.getType().contains(Path.Type.directory)) {
+                return new OneDriveFolder(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+            }
+            else if(currentPath.getType().contains(Path.Type.placeholder)) {
+                return new OneDrivePackageItem(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+            }
         }
-        return new OneDriveFolder(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
-            URIEncoder.encode(containerService.getKey(file)));
+
+        throw new NotfoundException(String.format("Did not find %s", currentPath.getAbsolute()));
     }
 
     @Override
@@ -146,7 +184,10 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new OneDriveListService(this);
+            return (T) new OneDriveListService(this, fileIdProvider);
+        }
+        if(type == IdProvider.class) {
+            return (T) fileIdProvider;
         }
         if(type == Directory.class) {
             return (T) new OneDriveDirectoryFeature(this);
@@ -197,5 +238,61 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             return (T) new OneDriveTimestampFeature(this);
         }
         return super._getFeature(type);
+    }
+
+    private class OneDriveItemWrapper {
+        private boolean resolveLastItem;
+        private OneDriveItem item;
+        private OneDriveItem.Metadata itemMetadata;
+
+        public OneDriveItem getItem() {
+            return item;
+        }
+
+        public OneDriveItem.Metadata getItemMetadata() {
+            return itemMetadata;
+        }
+
+        public boolean isDefined() {
+            return null != item;
+        }
+
+        public boolean shouldResolveLastItem() {
+            return resolveLastItem;
+        }
+
+        public OneDriveItemWrapper(boolean resolveLastItem) {
+            this.resolveLastItem = resolveLastItem;
+        }
+
+        public void setItem(OneDriveItem item, OneDriveItem.Metadata itemMetadata) {
+            this.item = item;
+            this.itemMetadata = itemMetadata;
+        }
+
+        public void resolveItem() {
+            if(item instanceof OneDriveRemoteItem) {
+                itemMetadata = ((OneDriveRemoteItem.Metadata) itemMetadata).getRemoteItem();
+                item = itemMetadata.getResource();
+            }
+        }
+    }
+
+    private class SearchResult {
+        private final boolean foundChild;
+        private final OneDriveItem.Metadata child;
+
+        public boolean isFoundChild() {
+            return foundChild;
+        }
+
+        public OneDriveItem.Metadata getChild() {
+            return child;
+        }
+
+        public SearchResult(boolean foundChild, OneDriveItem.Metadata child) {
+            this.foundChild = foundChild;
+            this.child = child;
+        }
     }
 }
