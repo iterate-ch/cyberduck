@@ -29,4 +29,21 @@ public class HostParserTest {
         assertEquals("host", host.getHostname());
         assertEquals("t@u", host.getCredentials().getUsername());
     }
+
+    @Test
+    public void parseDefaultHostname() throws Exception {
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
+            @Override
+            public String getDefaultHostname() {
+                return "defaultHostname";
+            }
+
+            @Override
+            public boolean isHostnameConfigurable() {
+                return false;
+            }
+        }))).get("https://folder/file");
+        assertEquals("defaultHostname", host.getHostname());
+        assertEquals("/folder/file", host.getDefaultPath());
+    }
 }
