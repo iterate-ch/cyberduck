@@ -42,7 +42,8 @@ public class S3Protocol extends AbstractProtocol {
 
     private final AWSCredentialsConfigurator credentials = new AWSCredentialsConfigurator(
         new AWSCredentialsProviderChain(
-            new ProfileCredentialsProvider(),
+            // Use context in profile as profile name unless URL; then assume Amazon EC2 Instance Metadata Service which is handled in login
+            new ProfileCredentialsProvider(Scheme.isURL(this.getContext()) ? null : this.getContext()),
             new EnvironmentVariableCredentialsProvider()
         )
     );
