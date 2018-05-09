@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSSessionCredentials;
 
 public class AWSCredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = Logger.getLogger(AWSCredentialsConfigurator.class);
@@ -48,6 +49,9 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
                         final AWSCredentials c = provider.getCredentials();
                         credentials.setUsername(c.getAWSAccessKeyId());
                         credentials.setPassword(c.getAWSSecretKey());
+                        if(c instanceof AWSSessionCredentials) {
+                            credentials.setToken(((AWSSessionCredentials) c).getSessionToken());
+                        }
                         break;
                     }
                     catch(SdkClientException e) {
