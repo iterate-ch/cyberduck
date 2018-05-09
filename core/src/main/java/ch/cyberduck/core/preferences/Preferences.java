@@ -1255,6 +1255,7 @@ public abstract class Preferences implements Locales {
             this.setDefault(String.format("factory.transferpromptcallback.%s.class", t.name()), DisabledTransferPrompt.class.getName());
         }
         this.setDefault("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
+        this.setDefault("factory.localsupportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
         this.setDefault("factory.applicationresourcesfinder.class", TemporaryApplicationResourcesFinder.class.getName());
         this.setDefault("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
         this.setDefault("factory.watchservice.class", NIOEventWatchService.class.getName());
