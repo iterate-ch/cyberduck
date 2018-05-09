@@ -21,6 +21,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -51,7 +56,7 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertNull(attributes.getVersionId());
+        assertNotNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -66,7 +71,7 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertNull(attributes.getVersionId());
+        assertNotNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

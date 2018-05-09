@@ -15,11 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Scheme;
-
-public class OneDriveProtocol extends AbstractProtocol {
+public class OneDriveProtocol extends GraphProtocol {
     @Override
     public String getIdentifier() {
         return "onedrive";
@@ -38,31 +34,5 @@ public class OneDriveProtocol extends AbstractProtocol {
     @Override
     public String getPrefix() {
         return String.format("%s.%s", OneDriveProtocol.class.getPackage().getName(), "OneDrive");
-    }
-
-    @Override
-    public Scheme getScheme() {
-        return Scheme.https;
-    }
-
-    @Override
-    public boolean isUsernameConfigurable() {
-        return true;
-    }
-
-    @Override
-    public boolean isHostnameConfigurable() {
-        return true;
-    }
-
-    @Override
-    public String getPasswordPlaceholder() {
-        return LocaleFactory.localizedString("Authorization code", "Credentials");
-    }
-
-    @Override
-    public boolean isPasswordConfigurable() {
-        // Only provide account email
-        return false;
     }
 }

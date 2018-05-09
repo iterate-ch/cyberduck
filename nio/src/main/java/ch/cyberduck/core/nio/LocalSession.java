@@ -15,7 +15,6 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -26,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -140,7 +140,7 @@ public class LocalSession extends Session<FileSystem> {
         if(type == Find.class) {
             return (T) new LocalFindFeature(this);
         }
-        if(type == Attributes.class) {
+        if(type == AttributesFinder.class) {
             return (T) new LocalAttributesFinderFeature(this);
         }
         if(type == Read.class) {

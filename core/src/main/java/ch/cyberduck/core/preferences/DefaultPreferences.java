@@ -15,13 +15,10 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class DefaultPreferences extends Preferences {
-    private static final Logger log = Logger.getLogger(DefaultPreferences.class);
 
     private final Map<String, String> defaults = new HashMap<String, String>();
 
@@ -33,11 +30,7 @@ public abstract class DefaultPreferences extends Preferences {
      */
     @Override
     public String getDefault(final String property) {
-        String value = defaults.get(property);
-        if(null == value) {
-            log.warn(String.format("No property with key '%s'", property));
-        }
-        return value;
+        return defaults.get(property);
     }
 
     @Override
