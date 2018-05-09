@@ -19,18 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
@@ -70,6 +59,7 @@ import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.security.AWSSessionCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 
 import java.util.Collections;
@@ -194,22 +184,40 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
-        return new RequestEntityRestStorageService(this, this.configure(), builder.build(proxy, this, prompt));
+    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) throws BackgroundException {
+        final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this, this.configure(), builder.build(proxy, this, prompt));
+        if(host.getProtocol().isTokenConfigurable()) {
+            final String sessionToken;
+            if(Scheme.isURL(host.getProtocol().getContext())) {
+                try {
+                    final Credentials temporary = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
+                    client.setProviderCredentials(new AWSSessionCredentials(temporary.getUsername(), temporary.getPassword(),
+                        temporary.getToken()));
+                }
+                catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException | InteroperabilityException e) {
+                    log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
+                    throw new LoginFailureException(e.getDetail(false), e);
+                }
+            }
+            else {
+                if(StringUtils.isBlank(host.getCredentials().getToken())) {
+                    client.setProviderCredentials(new AWSSessionCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                        prompt.prompt(host,
+                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                            LocaleFactory.localizedString("Security Token", "S3"), new LoginOptions(host.getProtocol())).getPassword()));
+                }
+                else {
+                    client.setProviderCredentials(new AWSSessionCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                        host.getCredentials().getToken()));
+                }
+            }
+        }
+        return client;
     }
 
     @Override
     public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(Scheme.isURL(host.getProtocol().getContext())) {
-            try {
-                client.setProviderCredentials(new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get());
-            }
-            catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException | InteroperabilityException e) {
-                log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
-                throw new LoginFailureException(e.getDetail(false), e);
-            }
-        }
-        else {
+        if(!host.getProtocol().isTokenConfigurable()) {
             client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         }
