@@ -73,7 +73,7 @@ public class AzureSessionTest {
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                return new Credentials(null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2018-05-20T04:27:59Z&st=2018-05-09T20:27:59Z&spr=https&sig=wYgrGc2kapRuOslcV5qtMhGI62%2FcoM3dDUbUciOVTX4%3D");
+                return new Credentials(null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=bMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D");
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
