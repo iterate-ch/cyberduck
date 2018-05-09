@@ -49,6 +49,39 @@ public class AzureSessionTest {
         assertFalse(session.isConnected());
     }
 
+    @Test
+    public void testConnectSharedAccessSignature() throws Exception {
+        final Host host = new Host(new AzureProtocol() {
+            @Override
+            public boolean isUsernameConfigurable() {
+                return false;
+            }
+
+            @Override
+            public boolean isPasswordConfigurable() {
+                return false;
+            }
+
+            @Override
+            public boolean isTokenConfigurable() {
+                return true;
+            }
+        }, "kahy9boj3eib.blob.core.windows.net", new Credentials(
+            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
+        ));
+        final AzureSession session = new AzureSession(host);
+        new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new Credentials(null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2018-05-09T15:53:42Z&st=2018-05-08T07:53:42Z&spr=https&sig=Kx6DSSb4hqpqLfpuik0ngfvRS0TT%2BnYX87No8%2B4Sjzo%3D");
+            }
+        }, new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+    }
+
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidKey() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
