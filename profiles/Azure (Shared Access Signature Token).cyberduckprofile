@@ -21,6 +21,8 @@
         <string>azure</string>
         <key>Vendor</key>
         <string>azure-sas</string>
+        <key>Description</key>
+        <string>Azure (Shared Access Signature Token)</string>
         <key>Username Configurable</key>
         <false/>
         <key>Password Configurable</key>
