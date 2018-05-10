@@ -37,7 +37,7 @@ public class HostTest {
     public void testCreate1() {
         final Credentials credentials = new Credentials("u", "p");
         final Host bookmark = new Host(new TestProtocol(), "h", 555, "/h", credentials);
-        assertNotSame(credentials, bookmark.getCredentials());
+        assertSame(credentials, bookmark.getCredentials());
         assertEquals(555, bookmark.getPort());
         assertEquals(Scheme.http, bookmark.getProtocol().getScheme());
         assertEquals("/h", bookmark.getDefaultPath());
@@ -49,7 +49,7 @@ public class HostTest {
     public void testCreate2() {
         final Credentials credentials = new Credentials("u", "p");
         final Host bookmark = new Host(new TestProtocol(Scheme.sftp), "h", credentials);
-        assertNotSame(credentials, bookmark.getCredentials());
+        assertSame(credentials, bookmark.getCredentials());
         assertEquals(22, bookmark.getPort());
         assertEquals(Scheme.sftp, bookmark.getProtocol().getScheme());
         assertNull(bookmark.getDefaultPath());
