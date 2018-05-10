@@ -47,9 +47,9 @@ public class S3SessionTest {
     public void testHttpProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/S3 (HTTP).cyberduckprofile"));
+            new Local("../profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         assertFalse(host.getProtocol().isSecure());
         final S3Session session = new S3Session(host, new X509TrustManager() {
@@ -88,7 +88,7 @@ public class S3SessionTest {
     @Test
     public void testConnectUnsecured() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
@@ -108,7 +108,7 @@ public class S3SessionTest {
     @Test
     public void testConnectDefaultPath() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         host.setDefaultPath("/test-us-east-1-cyberduck");
         final S3Session session = new S3Session(host);
@@ -120,7 +120,7 @@ public class S3SessionTest {
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), "s"
+            System.getProperties().getProperty("s3.key"), "s"
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -130,7 +130,7 @@ public class S3SessionTest {
     @Test
     public void testLoginFailureFix() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), "s"
+            System.getProperties().getProperty("s3.key"), "s"
         ));
         final AtomicBoolean p = new AtomicBoolean();
         final S3Session session = new S3Session(host);
@@ -151,7 +151,7 @@ public class S3SessionTest {
     @Test(expected = BackgroundException.class)
     public void testCustomHostnameUnknown() throws Exception {
         final Host host = new Host(new S3Protocol(), "testu.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("s3.key"), "s"
+            System.getProperties().getProperty("s3.key"), "s"
         ));
         final S3Session session = new S3Session(host);
         try {
@@ -167,7 +167,7 @@ public class S3SessionTest {
     @Test(expected = BackgroundException.class)
     public void testCustomHostname() throws Exception {
         final Host host = new Host(new S3Protocol(), "cyberduck.io", new Credentials(
-                System.getProperties().getProperty("s3.key"), "s"
+            System.getProperties().getProperty("s3.key"), "s"
         ));
         final AtomicBoolean set = new AtomicBoolean();
         final S3Session session = new S3Session(host);
@@ -186,7 +186,7 @@ public class S3SessionTest {
         session.open(new HostKeyCallback() {
             @Override
             public boolean verify(final String hostname, final int port, final PublicKey key)
-                    throws ConnectionCanceledException {
+                throws ConnectionCanceledException {
                 assertEquals("cyberduck.io", hostname);
                 return true;
             }
@@ -248,7 +248,7 @@ public class S3SessionTest {
     public void testBucketVirtualHostStyleEucalyptusDefaultHost() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
+            new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
     }
@@ -257,7 +257,7 @@ public class S3SessionTest {
     public void testBucketVirtualHostStyleEucalyptusCustomDeployment() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
+            new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, "ec.cyberduck.io");
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
     }
@@ -267,7 +267,7 @@ public class S3SessionTest {
     public void testTemporaryAccessToken() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile"));
+            new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile"));
         assertTrue(profile.validate(new Credentials(), new LoginOptions(profile)));
         final Host host = new Host(profile);
         final S3Session s = new S3Session(host);
@@ -284,7 +284,7 @@ public class S3SessionTest {
     @Test
     public void testTrustChain() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final AtomicBoolean verified = new AtomicBoolean();
         final S3Session session = new S3Session(host, new DefaultX509TrustManager() {
@@ -294,12 +294,12 @@ public class S3SessionTest {
                 super.verify(hostname, certs, cipher);
             }
         },
-                new KeychainX509KeyManager(host, new DisabledCertificateStore()));
+            new KeychainX509KeyManager(host, new DisabledCertificateStore()));
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
-                new DisabledProgressListener()
+            new DisabledLoginCallback(),
+            new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(),
+            new DisabledProgressListener()
         );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(verified.get());
@@ -309,7 +309,7 @@ public class S3SessionTest {
     @Test
     public void testInteroperabilityMinio() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
-                "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
+            "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());

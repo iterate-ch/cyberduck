@@ -24,6 +24,7 @@ import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSKeyedUnarchiver;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -149,7 +150,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
         String user = favorite.username();
         if(StringUtils.isNotBlank(user)) {
-            bookmark.setCredentials(user, null);
+            bookmark.setCredentials(new Credentials(user));
         }
         else {
             bookmark.getCredentials().setUsername(

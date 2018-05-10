@@ -72,8 +72,8 @@ public class CloudFrontDistributionConfigurationTest {
 
     @Test
     public void testReadDownload() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+            new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -92,8 +92,8 @@ public class CloudFrontDistributionConfigurationTest {
 
     @Test
     public void testReadStreaming() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+            new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -120,8 +120,8 @@ public class CloudFrontDistributionConfigurationTest {
 
     @Test
     public void testReadLoginFailureFix() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(System.getProperties().getProperty("s3.key"), null);
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+            new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")));
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -150,8 +150,8 @@ public class CloudFrontDistributionConfigurationTest {
     @Test
     public void testWriteNewStreaming() throws Exception {
         final AtomicBoolean set = new AtomicBoolean();
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+            new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -177,8 +177,8 @@ public class CloudFrontDistributionConfigurationTest {
     @Test
     public void testWriteNewDownload() throws Exception {
         final AtomicBoolean set = new AtomicBoolean();
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+            new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -228,8 +228,8 @@ public class CloudFrontDistributionConfigurationTest {
 
     @Test
     public void testInvalidateWithWildcards() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+            new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

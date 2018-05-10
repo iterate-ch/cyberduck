@@ -52,7 +52,7 @@ public class Host implements Serializable, Comparable<Host> {
     /**
      * The credentials to authenticate with
      */
-    private Credentials credentials = new Credentials();
+    private Credentials credentials;
     /**
      * Unique identifier
      */
@@ -176,10 +176,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param defaultpath Default working directory
      */
     public Host(final Protocol protocol, final String hostname, final int port, final String defaultpath) {
-        this.protocol = protocol;
-        this.hostname = hostname;
-        this.port = port;
-        this.defaultpath = defaultpath;
+        this(protocol, hostname, port, defaultpath, new Credentials());
     }
 
     /**
@@ -189,14 +186,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param credentials Login credentials
      */
     public Host(final Protocol protocol, final String hostname, final int port, final Credentials credentials) {
-        this.protocol = protocol;
-        this.hostname = hostname;
-        this.port = port;
-        this.credentials.setUsername(credentials.getUsername());
-        this.credentials.setIdentity(credentials.getIdentity());
-        if(!credentials.isAnonymousLogin()) {
-            this.credentials.setPassword(credentials.getPassword());
-        }
+        this(protocol, hostname, port, protocol.getDefaultPath(), credentials);
     }
 
     /**
@@ -209,11 +199,7 @@ public class Host implements Serializable, Comparable<Host> {
         this.hostname = hostname;
         this.port = port;
         this.defaultpath = defaultpath;
-        this.credentials.setUsername(credentials.getUsername());
-        this.credentials.setIdentity(credentials.getIdentity());
-        if(!credentials.isAnonymousLogin()) {
-            this.credentials.setPassword(credentials.getPassword());
-        }
+        this.credentials = credentials;
     }
 
     /**
@@ -328,15 +314,6 @@ public class Host implements Serializable, Comparable<Host> {
 
     public void setWorkdir(final Path workdir) {
         this.workdir = workdir;
-    }
-
-    /**
-     * @param username User
-     * @param password Secret
-     */
-    public void setCredentials(final String username, final String password) {
-        credentials.setUsername(username);
-        credentials.setPassword(password);
     }
 
     public Credentials getCredentials() {
