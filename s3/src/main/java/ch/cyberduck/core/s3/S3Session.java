@@ -65,6 +65,14 @@ import org.jets3t.service.security.ProviderCredentials;
 import java.util.Collections;
 import java.util.Map;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
+import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
+
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
@@ -185,7 +193,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) throws BackgroundException {
-        final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this, this.configure(), builder.build(proxy, this, prompt));
+        return new RequestEntityRestStorageService(this, this.configure(), builder.build(proxy, this, prompt));
+    }
+
+    @Override
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(host.getProtocol().isTokenConfigurable()) {
             final String sessionToken;
             if(Scheme.isURL(host.getProtocol().getContext())) {
@@ -201,10 +213,45 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
             else {
                 if(StringUtils.isBlank(host.getCredentials().getToken())) {
-                    client.setProviderCredentials(new AWSSessionCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                        prompt.prompt(host,
-                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                            LocaleFactory.localizedString("Security Token", "S3"), new LoginOptions(host.getProtocol())).getPassword()));
+                    // Not obtained from config in ~/.aws/config
+                    final ClientConfiguration configuration = new ClientConfiguration();
+                    final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+                    configuration.setConnectionTimeout(timeout);
+                    configuration.setSocketTimeout(timeout);
+                    final UseragentProvider ua = new PreferencesUseragentProvider();
+                    configuration.setUserAgentPrefix(ua.get());
+                    configuration.setMaxErrorRetry(0);
+                    configuration.setMaxConnections(1);
+                    configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
+                    switch(proxy.getType()) {
+                        case HTTP:
+                        case HTTPS:
+                            configuration.setProxyHost(proxy.getHostname());
+                            configuration.setProxyPort(proxy.getPort());
+                    }
+                    final AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.standard()
+                        .withCredentials(new AWSStaticCredentialsProvider(new com.amazonaws.auth.AWSCredentials() {
+                            @Override
+                            public String getAWSAccessKeyId() {
+                                return host.getCredentials().getUsername();
+                            }
+
+                            @Override
+                            public String getAWSSecretKey() {
+                                return host.getCredentials().getPassword();
+                            }
+                        }))
+                        .withClientConfiguration(configuration)
+                        .withRegion(Regions.DEFAULT_REGION).build();
+                    // Obtain token from MFA
+                    final Credentials token = versioning.getToken(prompt);
+                    final GetSessionTokenResult result = sts.getSessionToken(new GetSessionTokenRequest()
+                        .withSerialNumber(token.getUsername())
+                        .withTokenCode(token.getPassword())
+                        .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds")));
+                    client.setProviderCredentials(new AWSSessionCredentials(result.getCredentials().getAccessKeyId(),
+                        result.getCredentials().getSecretAccessKey(),
+                        result.getCredentials().getSessionToken()));
                 }
                 else {
                     client.setProviderCredentials(new AWSSessionCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
@@ -212,12 +259,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 }
             }
         }
-        return client;
-    }
-
-    @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(!host.getProtocol().isTokenConfigurable()) {
+        else {
             client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         }

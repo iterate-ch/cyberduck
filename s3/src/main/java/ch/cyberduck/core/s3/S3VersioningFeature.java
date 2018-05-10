@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.collections4.map.LRUMap;
@@ -51,6 +52,7 @@ public class S3VersioningFeature implements Versioning {
         = new S3PathContainerService();
 
     private final S3AccessControlListFeature accessControlListFeature;
+    private final Preferences preferences = PreferencesFactory.get();
 
     @SuppressWarnings("unchecked")
     private Map<Path, VersioningConfiguration> cache
@@ -204,12 +206,16 @@ public class S3VersioningFeature implements Versioning {
     @Override
     public Credentials getToken(final PasswordCallback callback) throws ConnectionCanceledException {
         // Prompt for multi factor authentication credentials.
-        final Credentials credentials = callback.prompt(
-            session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+        final Credentials token = callback.prompt(
+            session.getHost(), /*preferences.getProperty("s3.mfa.serialnumber"),*/ LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
             LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(session.getHost().getProtocol())
+                .user(true)
+                .usernamePlaceholder(LocaleFactory.localizedString("MFA Serial Number", "S3"))
+                .password(true)
+                .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
                 .keychain(false)
-                .user(false));
-        PreferencesFactory.get().setProperty("s3.mfa.serialnumber", credentials.getUsername());
-        return credentials;
+        );
+        preferences.setProperty("s3.mfa.serialnumber", token.getUsername());
+        return token;
     }
 }
