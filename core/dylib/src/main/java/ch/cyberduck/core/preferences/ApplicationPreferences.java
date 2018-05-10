@@ -52,6 +52,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         super.setFactories();
 
         this.setDefault("factory.supportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
+        this.setDefault("factory.localsupportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
         this.setDefault("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
         this.setDefault("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
         this.setDefault("factory.local.class", FinderLocal.class.getName());
