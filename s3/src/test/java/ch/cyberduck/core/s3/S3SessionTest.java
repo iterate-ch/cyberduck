@@ -106,6 +106,32 @@ public class S3SessionTest {
     }
 
     @Test
+    public void testConnectSessionToken() throws Exception {
+        final S3Protocol protocol = new S3Protocol() {
+            @Override
+            public boolean isTokenConfigurable() {
+                return true;
+            }
+        };
+        final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials(
+            "ASIAIC6CF2VDONWYBSHQ", "1hkFZkHaPZcm+2OKDQqZlqK4WbTrli7OCyHsfzCc", "FQoDYXdzEOr//////////wEaDFXkGOEUH1n2rMFPYyKsAeI8hr1vZa9l8yZSQdSmW0y/5fIzHlP7TOwXUBLsyZziLiB5cy8OLoagmgWTApoX02N5CouhczOn7TrHcFaGwBVxIe0o4OAZAKhl6/wJR3AH9O9LVr6DiukP8HgRzptP1uafVK3n/hOssSF+/5AQVFALWG7RPzFAny+G4RqUGN3VAW4lkd9zX2mJeDTQD9lKeOOlq3KH4p4y2juo9zJWOX29dkfMkNfgrJqU7MUo55jQ1wU="
+        ));
+        final S3Session session = new S3Session(host);
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+        assertEquals(Session.State.closed, session.getState());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+    }
+
+    @Test
     public void testConnectDefaultPath() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
