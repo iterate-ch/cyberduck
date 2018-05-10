@@ -29,7 +29,7 @@ public class VaultRegistryAttributesFeature implements AttributesFinder {
     private final VaultRegistry registry;
     private final AttributesFinder proxy;
 
-    private Cache<Path> cache;
+    private Cache<Path> cache = PathCache.empty();
 
     public VaultRegistryAttributesFeature(final Session<?> session, final AttributesFinder proxy, final VaultRegistry registry) {
         this.session = session;
