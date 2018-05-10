@@ -97,7 +97,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidProjectId() throws Exception {
         session.getHost().setCredentials(
-                System.getProperties().getProperty("google.projectid") + "1", null
+            new Credentials(System.getProperties().getProperty("google.projectid") + "1", null)
         );
         session.login(new DisabledPasswordStore() {
             @Override
@@ -147,7 +147,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
     @Test(expected = LoginCanceledException.class)
     public void testInvalidProjectId() throws Exception {
         session.getHost().setCredentials(
-                "duck-1432", ""
+            new Credentials("duck-1432", "")
         );
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
@@ -155,7 +155,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
     @Test(expected = LoginCanceledException.class)
     public void testProjectIdNoAuthorization() throws Exception {
         session.getHost().setCredentials(
-                "stellar-perigee-775", ""
+            new Credentials("stellar-perigee-775", "")
         );
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override

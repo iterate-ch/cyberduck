@@ -1,5 +1,6 @@
 package ch.cyberduck.core.cloudfront;
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -99,8 +100,8 @@ public class WebsiteCloudFrontDistributionConfigurationTest {
 
     @Test
     public void testReadNoWebsiteConfiguration() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+            new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final WebsiteCloudFrontDistributionConfiguration configuration

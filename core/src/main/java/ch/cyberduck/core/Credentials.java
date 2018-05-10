@@ -80,6 +80,12 @@ public class Credentials implements Comparable<Credentials> {
         this.password = password;
     }
 
+    public Credentials(final String user, final String password, final String token) {
+        this.user = user;
+        this.password = password;
+        this.token = token;
+    }
+
     /**
      * @return The login identification
      */
@@ -131,7 +137,7 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     public Credentials withToken(final String token) {
-        this.token = this.token;
+        this.token = token;
         this.passed = false;
         return this;
     }
