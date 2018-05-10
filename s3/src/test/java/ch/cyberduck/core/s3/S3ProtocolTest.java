@@ -40,19 +40,19 @@ public class S3ProtocolTest {
     public void testEquals() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         assertEquals(new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile")),
+            new Local("../profiles/S3 (Security Credentials from Instance Metadata).cyberduckprofile")),
             new ProfilePlistReader(factory).read(
-                new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile")));
+                new Local("../profiles/S3 (Security Credentials from Instance Metadata).cyberduckprofile")));
     }
 
     @Test
     public void testCompareTo() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         assertEquals(0, new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile")).compareTo(new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile"))));
+            new Local("../profiles/S3 (Security Credentials from Instance Metadata).cyberduckprofile")).compareTo(new ProfilePlistReader(factory).read(
+            new Local("../profiles/S3 (Security Credentials from Instance Metadata).cyberduckprofile"))));
         assertNotEquals(0, new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile")).compareTo(new TestProtocol()));
+            new Local("../profiles/S3 (Security Credentials from Instance Metadata).cyberduckprofile")).compareTo(new TestProtocol()));
     }
 
     @Test
