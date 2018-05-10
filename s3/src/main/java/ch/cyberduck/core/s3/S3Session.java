@@ -244,10 +244,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                         .withClientConfiguration(configuration)
                         .withRegion(Regions.DEFAULT_REGION).build();
                     // Obtain token from MFA
-                    final Credentials token = versioning.getToken(prompt);
+                    //final Credentials token = versioning.getToken(prompt);
                     final GetSessionTokenResult result = sts.getSessionToken(new GetSessionTokenRequest()
-                        .withSerialNumber(token.getUsername())
-                        .withTokenCode(token.getPassword())
+                        // Specify this value if the IAM user has a policy that requires MFA authentication
+                        .withSerialNumber(null)
+                        // The value provided by the MFA device, if MFA is required
+                        .withTokenCode(null)
                         .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds")));
                     client.setProviderCredentials(new AWSSessionCredentials(result.getCredentials().getAccessKeyId(),
                         result.getCredentials().getSecretAccessKey(),

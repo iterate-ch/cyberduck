@@ -131,7 +131,7 @@ public class S3SessionTest {
         assertFalse(session.isConnected());
     }
 
-    @Test(expected = LoginCanceledException.class)
+    @Test
     public void testConnectSessionTokenFromService() throws Exception {
         final S3Protocol protocol = new S3Protocol() {
             @Override
@@ -139,7 +139,9 @@ public class S3SessionTest {
                 return true;
             }
         };
-        final Host host = new Host(protocol, protocol.getDefaultHostname());
+        final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials(
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
         final S3Session session = new S3Session(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
