@@ -1,19 +1,19 @@
 package ch.cyberduck.core.sftp.auth;
 
-    /*
-     * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
-     * https://cyberduck.io/
-     *
-     * This program is free software; you can redistribute it and/or modify
-     * it under the terms of the GNU General Public License as published by
-     * the Free Software Foundation, either version 3 of the License, or
-     * (at your option) any later version.
-     *
-     * This program is distributed in the hope that it will be useful,
-     * but WITHOUT ANY WARRANTY; without even the implied warranty of
-     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     * GNU General Public License for more details.
-     */
+/*
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.BookmarkNameProvider;
@@ -38,14 +38,16 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
-import net.schmizz.sshj.userauth.method.PasswordResponseProvider;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class SFTPChallengeResponseAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
+
+    private static final Pattern DEFAULT_PROMPT_PATTERN = Pattern.compile(".*[pP]assword\\s?\\z", Pattern.DOTALL);
 
     private final SFTPSession session;
 
@@ -86,7 +88,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
                     }
-                    if(PasswordResponseProvider.DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
+                    if(DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
                         if(StringUtils.isBlank(credentials.getPassword())) {
                             try {
                                 final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
