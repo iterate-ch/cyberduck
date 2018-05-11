@@ -22,7 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.ui.cocoa.controller.PasswordController;
 
 public class PromptPasswordCallback implements PasswordCallback {
@@ -40,7 +39,7 @@ public class PromptPasswordCallback implements PasswordCallback {
         if(suppressed) {
             throw new LoginCanceledException();
         }
-        final Credentials credentials = new VaultCredentials().withSaved(options.save);
+        final Credentials credentials = new Credentials().withSaved(options.save);
         final PasswordController controller = new PasswordController(bookmark, credentials, title, reason, options);
         final int option = controller.beginSheet(parent);
         if(option == SheetCallback.CANCEL_OPTION) {

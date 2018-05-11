@@ -127,6 +127,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isTokenConfigurable() {
+        return false;
+    }
+
+    @Override
     public boolean isCertificateConfigurable() {
         return false;
     }

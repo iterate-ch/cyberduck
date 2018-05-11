@@ -94,7 +94,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Revision number
      */
-    private long revision;
+    private Long revision;
 
     /**
      * Geographical location
@@ -352,11 +352,11 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * @return The incrementing revision number of the file or null if not versioned.
      */
-    public String getRevision() {
-        return String.valueOf(revision);
+    public Long getRevision() {
+        return revision;
     }
 
-    public void setRevision(final long revision) {
+    public void setRevision(final Long revision) {
         this.revision = revision;
     }
 
@@ -450,14 +450,14 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if(this == o) {
             return true;
         }
         if(!(o instanceof PathAttributes)) {
             return false;
         }
-        PathAttributes that = (PathAttributes) o;
+        final PathAttributes that = (PathAttributes) o;
         if(modified != that.modified) {
             return false;
         }
@@ -476,6 +476,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(versionId != null ? !versionId.equals(that.versionId) : that.versionId != null) {
             return false;
         }
+        if(revision != null ? !revision.equals(that.revision) : that.revision != null) {
+            return false;
+        }
         if(region != null ? !region.equals(that.region) : that.region != null) {
             return false;
         }
@@ -490,6 +493,7 @@ public class PathAttributes extends Attributes implements Serializable {
         result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
         result = 31 * result + (etag != null ? etag.hashCode() : 0);
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
+        result = 31 * result + (revision != null ? revision.hashCode() : 0);
         result = 31 * result + (region != null ? region.hashCode() : 0);
         return result;
     }

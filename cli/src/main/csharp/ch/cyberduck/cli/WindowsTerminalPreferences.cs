@@ -58,6 +58,8 @@ namespace Ch.Cyberduck.Cli
             this.setDefault("factory.locale.class", typeof(DictionaryLocale).AssemblyQualifiedName);
             this.setDefault("factory.supportdirectoryfinder.class",
                 typeof(RoamingSupportDirectoryFinder).AssemblyQualifiedName);
+            this.setDefault("factory.localsupportdirectoryfinder.class",
+                typeof(LocalSupportDirectoryFinder).AssemblyQualifiedName);
             this.setDefault("factory.applicationresourcesfinder.class",
                 typeof(AssemblyApplicationResourcesFinder).AssemblyQualifiedName);
             this.setDefault("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);

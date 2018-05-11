@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault.registry;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -29,7 +30,7 @@ public class VaultRegistryAttributesFeature implements AttributesFinder {
     private final VaultRegistry registry;
     private final AttributesFinder proxy;
 
-    private Cache<Path> cache;
+    private Cache<Path> cache = PathCache.empty();
 
     public VaultRegistryAttributesFeature(final Session<?> session, final AttributesFinder proxy, final VaultRegistry registry) {
         this.session = session;

@@ -71,6 +71,8 @@ public interface Protocol extends Comparable<Protocol> {
      */
     boolean isPasswordConfigurable();
 
+    boolean isTokenConfigurable();
+
     boolean isCertificateConfigurable();
 
     boolean isPrivateKeyConfigurable();
