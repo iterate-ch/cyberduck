@@ -60,7 +60,7 @@ public class SDSDirectoryFeature implements Directory {
                 roomRequest.setName(folder.getName());
                 final Node r = new NodesApi(session.getClient()).createRoom(StringUtils.EMPTY, null, roomRequest);
                 return new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                    new PathAttributes(folder.attributes()));
+                    new PathAttributes(folder.attributes()).withVersionId(String.valueOf(r.getId())));
             }
             else {
                 final CreateFolderRequest folderRequest = new CreateFolderRequest();
