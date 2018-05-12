@@ -24,6 +24,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.SecureRandomProviderFactory;
 
 import org.apache.log4j.Logger;
+import org.conscrypt.OpenSSLProvider;
 
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
@@ -37,6 +38,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
@@ -55,7 +57,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private final String[] protocols;
 
     private final AtomicBoolean initializer
-            = new AtomicBoolean(false);
+        = new AtomicBoolean(false);
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -81,7 +83,13 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         this.trust = trust;
         this.key = key;
         try {
-            context = SSLContext.getInstance("TLS");
+            if(preferences.getBoolean("connection.ssl.provider.conscrypt")) {
+                context = SSLContext.getInstance("TLS",  new OpenSSLProvider());
+            }
+            else {
+                // Default provider
+                context = SSLContext.getInstance("TLS");
+            }
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, seeder);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
@@ -113,12 +121,12 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                 ((SSLSocket) socket).setEnabledCipherSuites(ciphers.toArray(new String[ciphers.size()]));
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Enabled cipher suites %s",
-                            Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
+                        Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
                     ((SSLSocket) socket).addHandshakeCompletedListener(new HandshakeCompletedListener() {
                         @Override
                         public void handshakeCompleted(final HandshakeCompletedEvent event) {
                             log.info(String.format("Completed handshake with %s and negotiated cipher suite %s",
-                                    event.getSession().getProtocol(), event.getCipherSuite()));
+                                event.getSession().getProtocol(), event.getCipherSuite()));
                             ((SSLSocket) socket).removeHandshakeCompletedListener(this);
                         }
                     });
@@ -183,7 +191,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     @Override
     public Socket createSocket(final String host, final int port,
                                final InetAddress clientHost, final int clientPort)
-            throws IOException {
+        throws IOException {
         return this.handshake(new SocketGetter() {
             @Override
             public Socket create() throws IOException {
@@ -225,7 +233,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     @Override
     public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose)
-            throws IOException {
+        throws IOException {
         return this.handshake(new SocketGetter() {
             @Override
             public Socket create() throws IOException {
