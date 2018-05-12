@@ -23,6 +23,7 @@ import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -41,16 +42,14 @@ import java.util.EnumSet;
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
-import synapticloop.b2.response.B2FileResponse;
-import synapticloop.b2.response.BaseB2Response;
 
-public class B2DirectoryFeature implements Directory<BaseB2Response> {
+public class B2DirectoryFeature implements Directory<VersionId> {
 
     private final PathContainerService containerService
         = new B2PathContainerService();
 
     private final B2Session session;
-    private Write<BaseB2Response> writer;
+    private Write<VersionId> writer;
 
     public B2DirectoryFeature(final B2Session session, final B2FileidProvider fileid) {
         this(session, fileid, new B2WriteFeature(session, fileid));
@@ -79,12 +78,12 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                     status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
                 }
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
-                final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
+                final StatusOutputStream<VersionId> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
                 final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 return new Path(folder.getParent(), folder.getName(), type,
-                    new PathAttributes(folder.attributes()).withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
+                    new PathAttributes(folder.attributes()).withVersionId(out.getStatus()));
             }
         }
         catch(B2ApiException e) {
@@ -116,7 +115,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     }
 
     @Override
-    public B2DirectoryFeature withWriter(final Write<BaseB2Response> writer) {
+    public B2DirectoryFeature withWriter(final Write<VersionId> writer) {
         this.writer = writer;
         return this;
     }

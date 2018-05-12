@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -52,11 +53,10 @@ import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
-import synapticloop.b2.response.BaseB2Response;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
-public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> implements Write<BaseB2Response> {
+public class B2WriteFeature extends AbstractHttpWriteFeature<VersionId> implements Write<VersionId> {
     private static final Logger log = Logger.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
@@ -85,20 +85,20 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
-    public HttpResponseOutputStream<BaseB2Response> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // Submit store call to background thread
-        final DelayedHttpEntityCallable<BaseB2Response> command = new DelayedHttpEntityCallable<BaseB2Response>() {
+        final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
             /**
              * @return The SHA-1 returned by the server for the uploaded object
              */
             @Override
-            public BaseB2Response call(final AbstractHttpEntity entity) throws BackgroundException {
+            public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final Checksum checksum = status.getChecksum();
                     if(status.isSegment()) {
                         final B2GetUploadPartUrlResponse uploadUrl
                             = session.getClient().getUploadPartUrl(fileid.getFileid(file, new DisabledListProgressListener()));
-                        return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
+                        return new VersionId(session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash).getFileId());
                     }
                     else {
                         final B2GetUploadUrlResponse uploadUrl;
@@ -120,11 +120,11 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                             if(null != status.getTimestamp()) {
                                 fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
                             }
-                            return session.getClient().uploadFile(uploadUrl,
+                            return new VersionId(session.getClient().uploadFile(uploadUrl,
                                     containerService.getKey(file),
                                     entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                                     status.getMime(),
-                                    fileinfo);
+                                fileinfo).getFileId());
                         }
                         catch(B2ApiException e) {
                             urls.remove();

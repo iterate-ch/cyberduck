@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -28,12 +29,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 
-import synapticloop.b2.response.B2FileResponse;
-import synapticloop.b2.response.BaseB2Response;
+public class B2TouchFeature implements Touch<VersionId> {
 
-public class B2TouchFeature implements Touch<BaseB2Response> {
-
-    private Write<BaseB2Response> writer;
+    private Write<VersionId> writer;
 
     public B2TouchFeature(final B2Session session, final B2FileidProvider fileid) {
         this.writer = new B2WriteFeature(session, fileid);
@@ -45,10 +43,10 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
             status.setChecksum(writer.checksum(file).compute(new NullInputStream(0L), status));
         }
         status.setTimestamp(System.currentTimeMillis());
-        final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
         return new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
+            new PathAttributes(file.attributes()).withVersionId(out.getStatus()));
     }
 
     @Override
@@ -58,7 +56,7 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
     }
 
     @Override
-    public B2TouchFeature withWriter(final Write<BaseB2Response> writer) {
+    public B2TouchFeature withWriter(final Write<VersionId> writer) {
         this.writer = writer;
         return this;
     }
