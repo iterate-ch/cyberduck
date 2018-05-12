@@ -94,7 +94,7 @@ public class CryptoDirectoryProvider {
             final PathAttributes attributes = new PathAttributes(directory.attributes());
             if(new SimplePathPredicate(directory).test(home)) {
                 // The root of the vault is a different target directory
-                attributes.withVersionId(null);
+                attributes.withVersionId((String) null);
             }
             // Remember random directory id for use in vault
             final String id = this.toDirectoryId(session, directory, directoryId);
