@@ -28,14 +28,17 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static org.junit.Assert.assertNotNull;
+
 @Category(IntegrationTest.class)
 public class DriveTouchFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testTouch() throws Exception {
-        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus().withMime("x-application/cyberduck"));
+        final Path test = new DriveTouchFeature(session, fileid).touch(
+            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("x-application/cyberduck"));
+        assertNotNull(test.attributes().getVersionId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

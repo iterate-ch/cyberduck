@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-public class DriveDirectoryFeature implements Directory<Void> {
+public class DriveDirectoryFeature implements Directory<VersionId> {
 
     private final DriveSession session;
     private final DriveFileidProvider fileid;
@@ -64,7 +65,7 @@ public class DriveDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public DriveDirectoryFeature withWriter(final Write<Void> writer) {
+    public DriveDirectoryFeature withWriter(final Write<VersionId> writer) {
         return this;
     }
 }
