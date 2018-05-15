@@ -20,6 +20,7 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.io.Checksum;
 
 import java.util.Collections;
 
@@ -50,6 +51,7 @@ public class PathAttributesDictionary {
         if(permissionObj != null) {
             attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));
         }
+        attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
         attributes.setVersionId(dict.stringForKey("Version"));
         final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
