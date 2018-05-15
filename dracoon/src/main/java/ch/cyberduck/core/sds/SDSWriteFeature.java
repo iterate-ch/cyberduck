@@ -122,9 +122,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                             EntityUtils.consume(response.getEntity());
                         }
                         final CompleteUploadRequest body = new CompleteUploadRequest();
-                        if(status.isExists()) {
-                            body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
-                        }
+                        body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
                         if(status.getFilekey() != null) {
                             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                             final FileKey fileKey = reader.readValue(status.getFilekey().array());
