@@ -154,7 +154,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final String versionId = test.attributes().getVersionId();
         assertNotNull(versionId);
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        assertEquals(versionId, found.attributes().getVersionId());
+        assertNull(found.attributes().getVersionId());
+        assertEquals(versionId, new CryptoIdProvider(session, fileid, cryptomator).getFileid(found, new DisabledListProgressListener()));
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();
         list.add(found);
