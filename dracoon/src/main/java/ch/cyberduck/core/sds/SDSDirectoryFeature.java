@@ -19,6 +19,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -33,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
-public class SDSDirectoryFeature implements Directory {
+public class SDSDirectoryFeature implements Directory<VersionId> {
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -82,7 +83,7 @@ public class SDSDirectoryFeature implements Directory {
     }
 
     @Override
-    public Directory withWriter(final Write writer) {
+    public Directory<VersionId> withWriter(final Write<VersionId> writer) {
         return this;
     }
 }
