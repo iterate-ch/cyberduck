@@ -388,6 +388,7 @@ public class CryptoVault implements Vault {
                     permission.setOther(permission.getOther().or(Permission.Action.execute));
                     // Reset size for folders
                     attributes.setSize(-1L);
+                    attributes.setVersionId(null);
                 }
                 else {
                     // Translate file size
