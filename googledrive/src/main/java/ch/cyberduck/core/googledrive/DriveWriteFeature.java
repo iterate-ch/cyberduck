@@ -151,20 +151,21 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                 switch(putResponse.getStatusLine().getStatusCode()) {
                                     case HttpStatus.SC_OK:
                                     case HttpStatus.SC_CREATED:
-                                        final JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), "UTF-8"));
-                                        reader.beginObject();
-                                        String key = null;
-                                        String secret = null;
-                                        String token = null;
-                                        while(reader.hasNext()) {
-                                            final String name = reader.nextName();
-                                            final String value = reader.nextString();
-                                            switch(name) {
-                                                case "id":
-                                                    return new VersionId(value);
+                                        try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), "UTF-8"))) {
+                                            reader.beginObject();
+                                            String key = null;
+                                            String secret = null;
+                                            String token = null;
+                                            while(reader.hasNext()) {
+                                                final String name = reader.nextName();
+                                                final String value = reader.nextString();
+                                                switch(name) {
+                                                    case "id":
+                                                        return new VersionId(value);
+                                                }
                                             }
+                                            reader.endObject();
                                         }
-                                        reader.endObject();
                                         break;
                                     default:
                                         throw new DriveExceptionMappingService().map(new HttpResponseException(
