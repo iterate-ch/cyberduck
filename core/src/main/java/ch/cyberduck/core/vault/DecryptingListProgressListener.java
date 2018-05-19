@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
@@ -42,17 +41,14 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     }
 
     @Override
-    public void visit(final AttributedList<Path> list, final int index, final Path file) throws ListCanceledException {
-        for(int i = index; i < list.size(); i++) {
-            final Path f = list.get(i);
-            try {
-                f.getType().add(Path.Type.encrypted);
-                list.set(i, vault.decrypt(session, f));
-            }
-            catch(BackgroundException e) {
-                log.error(String.format("Failure decrypting %s. %s", f, e.getDetail()));
-                f.getType().remove(Path.Type.encrypted);
-            }
+    public void visit(final AttributedList<Path> list, final int index, final Path f) {
+        try {
+            f.getType().add(Path.Type.encrypted);
+            list.set(index, vault.decrypt(session, f));
+        }
+        catch(BackgroundException e) {
+            log.error(String.format("Failure decrypting %s. %s", f, e.getDetail()));
+            f.getType().remove(Path.Type.encrypted);
         }
     }
 
