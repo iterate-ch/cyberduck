@@ -29,6 +29,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -106,6 +107,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
     }
 
     @Test
+    @Ignore("Branch version is changing with background task only")
     public void testBranchVersion() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
@@ -115,7 +117,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final PathAttributes previous = f.find(folder);
         assertNotEquals(-1L, previous.getRevision().longValue());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(test.getParent().equals(folder));
+        assertEquals(test.getParent(), folder);
         assertTrue(new SDSFindFeature(nodeid).find(test));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
