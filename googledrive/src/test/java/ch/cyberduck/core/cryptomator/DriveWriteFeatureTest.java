@@ -48,7 +48,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -58,7 +57,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DriveWriteFeatureTest extends AbstractDriveTest {
@@ -84,17 +83,17 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         status.setChecksum(writer.checksum(test).compute(new ByteArrayInputStream(content), status));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
-        assertNotNull(out.getStatus());
-        assertNotNull(out.getStatus().id);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test).getSize());
-        Assert.assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertNotNull(out.getStatus());
+        assertNotNull(out.getStatus().id);
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test).getSize());
+        assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
-        Assert.assertArrayEquals(content, buffer.toByteArray());
+        assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new DriveDeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
