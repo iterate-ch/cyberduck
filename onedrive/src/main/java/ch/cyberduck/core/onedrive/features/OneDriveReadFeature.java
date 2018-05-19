@@ -61,7 +61,6 @@ public class OneDriveReadFeature implements Read {
             }
             else {
                 final OneDriveFile target = session.toFile(file);
-
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
                     final String header;
