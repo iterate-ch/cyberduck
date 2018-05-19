@@ -23,13 +23,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;
+import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.util.EnumSet;
@@ -39,7 +41,7 @@ public class OneDriveItemListService implements ListService {
     private static final Logger log = Logger.getLogger(OneDriveItemListService.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final OneDriveSession session;
     private final OneDriveAttributesFinderFeature attributes;
@@ -52,15 +54,12 @@ public class OneDriveItemListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<>();
+        final OneDriveItem local = session.toItem(directory);
+        if(!(local instanceof OneDriveFolder)) {
+            throw new NotfoundException(directory.getAbsolute());
+        }
+        final OneDriveFolder folder = (OneDriveFolder) local;
         try {
-            final OneDriveDrive drive = new OneDriveDrive(session.getClient(), containerService.getContainer(directory).getName());
-            final OneDriveFolder folder;
-            if(containerService.isContainer(directory)) {
-                folder = drive.getRoot();
-            }
-            else {
-                folder = session.toFolder(directory);
-            }
             final Iterator<OneDriveItem.Metadata> iterator = folder.iterator(PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
             while(iterator.hasNext()) {
                 final OneDriveItem.Metadata metadata;
@@ -72,8 +71,8 @@ public class OneDriveItemListService implements ListService {
                     continue;
                 }
                 final PathAttributes attributes = this.attributes.convert(metadata);
-                children.add(new Path(directory, metadata.getName(),
-                        metadata.isFolder() ? EnumSet.of(Path.Type.directory) : metadata instanceof OneDrivePackageItem.Metadata ? EnumSet.of(Path.Type.placeholder, Path.Type.file) : EnumSet.of(Path.Type.file), attributes));
+
+                children.add(new Path(directory, metadata.getName(), resolveType(metadata), attributes));
                 listener.chunk(directory, children);
             }
         }
@@ -85,7 +84,20 @@ public class OneDriveItemListService implements ListService {
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
-        attributes.withCache(cache);
         return this;
+    }
+
+    private EnumSet<Path.Type> resolveType(OneDriveItem.Metadata metadata) {
+        if(metadata instanceof OneDrivePackageItem.Metadata) {
+            return EnumSet.of(Path.Type.placeholder);
+        }
+        else if(metadata instanceof OneDriveRemoteItem.Metadata) {
+            final EnumSet<Path.Type> types = resolveType(((OneDriveRemoteItem.Metadata) metadata).getRemoteItem());
+            types.add(Path.Type.shared);
+            return types;
+        }
+        else {
+            return EnumSet.of(metadata.isFolder() ? Path.Type.directory : Path.Type.file);
+        }
     }
 }

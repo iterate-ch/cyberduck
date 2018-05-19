@@ -45,6 +45,7 @@ import java.io.OutputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -292,7 +293,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @return True if the path exists on the file system.
      */
     public boolean exists() {
-        return Files.exists(Paths.get(path));
+        return Files.exists(Paths.get(path), LinkOption.NOFOLLOW_LINKS);
     }
 
     public void rename(final Local renamed) throws AccessDeniedException {

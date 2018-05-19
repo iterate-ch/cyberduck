@@ -156,6 +156,7 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AppConfigPreferences.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\DefaultLocales.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\RoamingSupportDirectoryFinder.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\LocalSupportDirectoryFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AssemblyApplicationResourcesFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\sparkle\WinSparkle.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\sparkle\WinSparklePeriodicUpdateChecker.cs" />

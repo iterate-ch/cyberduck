@@ -78,7 +78,7 @@ public class B2ObjectListService implements ListService {
             }
             final String containerId = fileid.getFileid(containerService.getContainer(directory), listener);
             // Seen placeholders
-            final Map<String, Integer> revisions = new HashMap<String, Integer>();
+            final Map<String, Long> revisions = new HashMap<>();
             do {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("List directory %s with marker %s", directory, marker));
@@ -105,7 +105,7 @@ public class B2ObjectListService implements ListService {
     }
 
     protected Marker parse(final Path directory, final AttributedList<Path> objects,
-                           final B2ListFilesResponse response, final Map<String, Integer> revisions) throws BackgroundException {
+                           final B2ListFilesResponse response, final Map<String, Long> revisions) {
         for(B2FileInfoResponse info : response.getFiles()) {
             if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
                 continue;
@@ -117,14 +117,14 @@ public class B2ObjectListService implements ListService {
                 continue;
             }
             final PathAttributes attributes = this.parse(info);
-            final Integer revision;
+            final Long revision;
             if(revisions.keySet().contains(info.getFileName())) {
                 // Later version already found
                 attributes.setDuplicate(true);
-                revision = revisions.get(info.getFileName()) + 1;
+                revision = revisions.get(info.getFileName()) + 1L;
             }
             else {
-                revision = 1;
+                revision = 1L;
             }
             revisions.put(info.getFileName(), revision);
             attributes.setRevision(revision);

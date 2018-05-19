@@ -61,7 +61,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
         final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
         assertNotNull(list.find(new SimplePathPredicate(file)));
-        assertEquals("1", list.find(new SimplePathPredicate(file)).attributes().getRevision());
+        assertEquals(Long.valueOf(1L), list.find(new SimplePathPredicate(file)).attributes().getRevision());
         assertEquals(0L, list.find(new SimplePathPredicate(file)).attributes().getSize());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).contains(file));
@@ -101,7 +101,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
             file1.attributes().setVersionId(resopnse.getFileId());
             assertTrue(list.contains(file1));
-            assertEquals("1", list.find(new SimplePathPredicate(file1)).attributes().getRevision());
+            assertEquals(Long.valueOf(1L), list.find(new SimplePathPredicate(file1)).attributes().getRevision());
             assertEquals(content.length, list.find(new SimplePathPredicate(file1)).attributes().getSize());
             assertEquals(bucket, list.find(new SimplePathPredicate(file1)).getParent());
         }
@@ -118,10 +118,10 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
             file2.attributes().setVersionId(resopnse.getFileId());
             assertTrue(list.contains(file2));
-            assertEquals("1", list.get(file2).attributes().getRevision());
+            assertEquals(Long.valueOf(1L), list.get(file2).attributes().getRevision());
             assertFalse(list.get(file2).attributes().isDuplicate());
             assertTrue(list.contains(file1));
-            assertEquals("2", list.get(file1).attributes().getRevision());
+            assertEquals(Long.valueOf(2L), list.get(file1).attributes().getRevision());
             assertTrue(list.get(file1).attributes().isDuplicate());
             assertEquals(bucket, list.get(file1).getParent());
         }

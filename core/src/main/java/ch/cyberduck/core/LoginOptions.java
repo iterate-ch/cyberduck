@@ -33,6 +33,7 @@ public final class LoginOptions {
      * Allow password input
      */
     public boolean password = true;
+    public boolean token = false;
     /**
      * Enable option to save password in keychain
      */
@@ -78,6 +79,25 @@ public final class LoginOptions {
         passwordPlaceholder = copy.passwordPlaceholder;
     }
 
+    /**
+     * Defer login options from protocol
+     */
+    public LoginOptions(final Protocol protocol) {
+        this.configure(protocol);
+    }
+
+    public void configure(final Protocol protocol) {
+        publickey = protocol.isPrivateKeyConfigurable();
+        certificate = protocol.isCertificateConfigurable();
+        anonymous = protocol.isAnonymousConfigurable();
+        user = protocol.isUsernameConfigurable();
+        password = protocol.isPasswordConfigurable();
+        token = protocol.isTokenConfigurable();
+        icon = protocol.disk();
+        usernamePlaceholder = protocol.getUsernamePlaceholder();
+        passwordPlaceholder = protocol.getPasswordPlaceholder();
+    }
+
     public LoginOptions user(boolean e) {
         user = e;
         return this;
@@ -85,6 +105,11 @@ public final class LoginOptions {
 
     public LoginOptions password(boolean e) {
         password = e;
+        return this;
+    }
+
+    public LoginOptions token(boolean e) {
+        token = e;
         return this;
     }
 
@@ -122,6 +147,10 @@ public final class LoginOptions {
 
     public boolean password() {
         return password;
+    }
+
+    public boolean token() {
+        return token;
     }
 
     public boolean keychain() {
@@ -164,24 +193,6 @@ public final class LoginOptions {
 
     public String getPasswordPlaceholder() {
         return passwordPlaceholder;
-    }
-
-    /**
-     * Defer login options from protocol
-     */
-    public LoginOptions(final Protocol protocol) {
-        this.configure(protocol);
-    }
-
-    public void configure(final Protocol protocol) {
-        publickey = protocol.isPrivateKeyConfigurable();
-        certificate = protocol.isCertificateConfigurable();
-        anonymous = protocol.isAnonymousConfigurable();
-        user = protocol.isUsernameConfigurable();
-        password = protocol.isPasswordConfigurable();
-        icon = protocol.disk();
-        usernamePlaceholder = protocol.getUsernamePlaceholder();
-        passwordPlaceholder = protocol.getPasswordPlaceholder();
     }
 
     @Override

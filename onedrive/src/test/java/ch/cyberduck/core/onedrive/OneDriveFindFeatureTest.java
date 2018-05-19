@@ -16,6 +16,8 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;

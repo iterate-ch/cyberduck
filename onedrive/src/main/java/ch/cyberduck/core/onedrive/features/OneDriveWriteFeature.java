@@ -1,12 +1,12 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.onedrive.features;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -29,6 +30,8 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
+import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -38,6 +41,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFile;
+import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveUploadSession;
 
 import java.io.IOException;
@@ -68,7 +73,10 @@ public class OneDriveWriteFeature implements Write<Void> {
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final OneDriveUploadSession upload = session.toFile(file).createUploadSession();
+            final OneDriveFolder folder = session.toFolder(file.getParent());
+            final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), folder,
+                URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
+            final OneDriveUploadSession upload = oneDriveFile.createUploadSession();
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, new TransferStatus(status));
             return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy,
                 preferences.getInteger("onedrive.upload.multipart.partsize.minimum"))) {

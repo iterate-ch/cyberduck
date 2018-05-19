@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.onedrive.features.OneDriveQuotaFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;

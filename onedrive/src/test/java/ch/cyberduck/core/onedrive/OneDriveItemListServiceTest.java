@@ -20,7 +20,12 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -42,8 +47,8 @@ public class OneDriveItemListServiceTest extends AbstractOneDriveTest {
         final Path f1 = new OneDriveTouchFeature(session).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new OneDriveItemListService(session).list(directory, new DisabledListProgressListener());
         assertEquals(2, list.size());
-        assertEquals(f1, list.get(0));
-        assertEquals(f2, list.get(1));
+        assertEquals(new SimplePathPredicate(f1), new SimplePathPredicate(list.get(0)));
+        assertEquals(new SimplePathPredicate(f2), new SimplePathPredicate(list.get(1)));
         new OneDriveDeleteFeature(session).delete(Arrays.asList(f1, f2, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

@@ -358,6 +358,14 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean isTokenConfigurable() {
+        if(StringUtils.isBlank(this.value("Token Configurable"))) {
+            return parent.isTokenConfigurable();
+        }
+        return this.bool("Token Configurable");
+    }
+
+    @Override
     public boolean isCertificateConfigurable() {
         if(StringUtils.isBlank(this.value("Certificate Configurable"))) {
             return parent.isCertificateConfigurable();
