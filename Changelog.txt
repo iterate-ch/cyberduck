@@ -4,6 +4,7 @@ https://cyberduck.io/
 6.6.0
 - [Feature] Include shared items (OneDrive) (#10107)
 - [Feature] Add support to login with Shared Access Signature (SAS) Token (Azure)
+- [Bugfix] Missing files in folders of vault (Google Drive, Cryptomator) (#10315)
 - [Bugfix] Application error when opening connection (DRACOON) (Windows Store)
 
 6.5.0
