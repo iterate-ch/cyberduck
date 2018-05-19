@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-public class DriveTouchFeature implements Touch<Void> {
+public class DriveTouchFeature implements Touch<VersionId> {
 
     private final DriveSession session;
     private final DriveFileidProvider fileid;
@@ -63,7 +64,7 @@ public class DriveTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public DriveTouchFeature withWriter(final Write<Void> writer) {
+    public DriveTouchFeature withWriter(final Write<VersionId> writer) {
         return this;
     }
 }

@@ -57,7 +57,7 @@ public class DefaultTouchFeature<T> implements Touch<T> {
             }
             if(reply instanceof VersionId) {
                 return new Path(file.getParent(), file.getName(), file.getType(),
-                    new PathAttributes(file.attributes()).withVersionId(((VersionId) reply).id));
+                    new PathAttributes(file.attributes()).withVersionId(((VersionId) reply)));
             }
         }
         finally {
