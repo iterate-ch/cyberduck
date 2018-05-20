@@ -21,7 +21,6 @@ package ch.cyberduck.core.sparkle;
 
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -33,7 +32,10 @@ public abstract class Updater extends NSObject {
 
     public static final String PROPERTY_FEED_URL = "SUFeedURL";
 
-    public static Updater create() throws FactoryException {
+    public static Updater create() {
+        if(null == CLASS) {
+            return null;
+        }
         final String url = getFeed();
         final Updater updater = CLASS.sharedUpdater();
         updater.setFeedURL(NSURL.URLWithString(null == url ? PreferencesFactory.get().getProperty("update.feed.release") : url));
