@@ -17,7 +17,6 @@ package ch.cyberduck.core.sparkle;
 
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.updater.AbstractPeriodicUpdateChecker;
 
 import org.apache.log4j.Logger;
@@ -26,16 +25,10 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
     private static final Logger log = Logger.getLogger(SparklePeriodicUpdateChecker.class);
 
     @Outlet
-    private Updater updater;
+    private Updater updater = Updater.create();
 
     public SparklePeriodicUpdateChecker(final Controller controller) {
         super(controller);
-        try {
-            updater = Updater.create();
-        }
-        catch(FactoryException e) {
-            log.warn(String.format("Updater is disabled. %s", e.getMessage()));
-        }
     }
 
     @Override
@@ -52,6 +45,6 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
 
     @Override
     public boolean hasUpdatePrivileges() {
-        return null != Updater.getFeed();
+        return null != updater;
     }
 }
