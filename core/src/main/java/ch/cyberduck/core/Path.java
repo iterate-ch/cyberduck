@@ -45,12 +45,12 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * The file type
      */
     private EnumSet<Type> type
-            = EnumSet.noneOf(Type.class);
+        = EnumSet.noneOf(Type.class);
 
     /**
      * Attributes denoting this path
      */
-    private final PathAttributes attributes;
+    private PathAttributes attributes;
 
     /**
      * @param parent the absolute directory
@@ -112,7 +112,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         }
         else {
             final Path parent = new Path(PathNormalizer.parent(PathNormalizer.normalize(absolute, true), Path.DELIMITER),
-                    EnumSet.of(Type.directory));
+                EnumSet.of(Type.directory));
             parent.attributes().setRegion(attributes.getRegion());
             if(parent.isRoot()) {
                 parent.setType(EnumSet.of(Type.volume, Type.directory));
@@ -184,6 +184,15 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
 
     public PathAttributes attributes() {
         return attributes;
+    }
+
+    public void setAttributes(final PathAttributes attributes) {
+        this.attributes = attributes;
+    }
+
+    public Path withAttributes(final PathAttributes attributes) {
+        this.setAttributes(attributes);
+        return this;
     }
 
     /**

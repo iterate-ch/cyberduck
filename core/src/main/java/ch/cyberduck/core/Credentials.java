@@ -38,6 +38,7 @@ public class Credentials implements Comparable<Credentials> {
      * The login password
      */
     private String password = StringUtils.EMPTY;
+    private String token = StringUtils.EMPTY;
 
     /**
      * Private key identity for SSH public key authentication.
@@ -116,6 +117,21 @@ public class Credentials implements Comparable<Credentials> {
 
     public Credentials withPassword(final String password) {
         this.password = password;
+        this.passed = false;
+        return this;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(final String token) {
+        this.token = token;
+        this.passed = false;
+    }
+
+    public Credentials withToken(final String token) {
+        this.token = this.token;
         this.passed = false;
         return this;
     }

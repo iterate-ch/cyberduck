@@ -15,7 +15,9 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -35,5 +37,11 @@ public class DriveDefaultListService extends AbstractDriveListService {
 
     protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return String.format("'%s' in parents", fileid.getFileid(directory, listener));
+    }
+
+    @Override
+    public ListService withCache(final Cache<Path> cache) {
+        fileid.withCache(cache);
+        return this;
     }
 }

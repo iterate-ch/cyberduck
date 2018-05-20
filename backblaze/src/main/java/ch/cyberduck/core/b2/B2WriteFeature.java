@@ -124,7 +124,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                                     containerService.getKey(file),
                                     entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                                     status.getMime(),
-                                    fileinfo);
+                                fileinfo);
                         }
                         catch(B2ApiException e) {
                             urls.remove();

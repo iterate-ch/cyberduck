@@ -24,7 +24,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
@@ -72,6 +74,7 @@ import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.SendingRequestEvent;
 import com.microsoft.azure.storage.StorageCredentials;
 import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
+import com.microsoft.azure.storage.StorageCredentialsSharedAccessSignature;
 import com.microsoft.azure.storage.StorageEvent;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
@@ -99,8 +102,15 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     @Override
     public CloudBlobClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
         try {
-            final StorageCredentialsAccountAndKey credentials
-                = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
+            final StorageCredentials credentials;
+            if(host.getProtocol().isTokenConfigurable()) {
+                credentials = new StorageCredentialsSharedAccessSignature(prompt.prompt(host,
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    LocaleFactory.localizedString("Shared Access Signature (SAS) Token", "Azure"), new LoginOptions(host.getProtocol())).getPassword());
+            }
+            else {
+                credentials = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
+            }
             // Client configured with no credentials
             final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
@@ -152,9 +162,9 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
     @Override
     public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        // Update credentials
         final StorageCredentials credentials = client.getCredentials();
         if(credentials instanceof StorageCredentialsAccountAndKey) {
+            // Update credentials
             ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
         }
         // Fetch reference for directory to check login credentials

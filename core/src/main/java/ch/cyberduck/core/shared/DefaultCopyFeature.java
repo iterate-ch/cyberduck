@@ -57,7 +57,7 @@ public class DefaultCopyFeature implements Copy {
         final Object reply = out.getStatus();
         if(reply instanceof VersionId) {
             return new Path(target.getParent(), target.getName(), target.getType(),
-                new PathAttributes(target.attributes()).withVersionId(((VersionId) reply).id));
+                new PathAttributes(target.attributes()).withVersionId(((VersionId) reply)));
         }
         return target;
     }

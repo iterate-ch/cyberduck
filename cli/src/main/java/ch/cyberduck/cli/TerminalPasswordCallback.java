@@ -17,23 +17,40 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.vault.VaultCredentials;
 
 public class TerminalPasswordCallback implements PasswordCallback {
 
     private final Console console = new Console();
+    private final TerminalPromptReader prompt;
+
+    public TerminalPasswordCallback() {
+        this.prompt = new InteractiveTerminalPromptReader();
+    }
+
+    public TerminalPasswordCallback(final TerminalPromptReader prompt) {
+        this.prompt = prompt;
+    }
 
     @Override
     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
             final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
-            return new VaultCredentials(String.valueOf(input));
+            final Credentials credentials = new Credentials();
+            credentials.setPassword(String.valueOf(input));
+            if(options.save && options.keychain) {
+                credentials.setSaved(prompt.prompt(LocaleFactory.get().localize("Save password", "Credentials")));
+            }
+            else {
+                credentials.setSaved(options.save);
+            }
+            return credentials;
         }
         catch(ConnectionCanceledException e) {
             throw new LoginCanceledException(e);

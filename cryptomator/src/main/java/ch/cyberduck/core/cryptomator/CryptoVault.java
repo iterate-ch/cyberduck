@@ -328,6 +328,10 @@ public class CryptoVault implements Vault {
             final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
             final PathAttributes attributes = new PathAttributes(file.attributes());
+            if(metadata) {
+                // The directory is different from the metadata file used to resolve the actual folder
+                attributes.setVersionId(null);
+            }
             // Translate file size
             attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());
@@ -382,6 +386,9 @@ public class CryptoVault implements Vault {
                     permission.setUser(permission.getUser().or(Permission.Action.execute));
                     permission.setGroup(permission.getGroup().or(Permission.Action.execute));
                     permission.setOther(permission.getOther().or(Permission.Action.execute));
+                    // Reset size for folders
+                    attributes.setSize(-1L);
+                    attributes.setVersionId(null);
                 }
                 else {
                     // Translate file size

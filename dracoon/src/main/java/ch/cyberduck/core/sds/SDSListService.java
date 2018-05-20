@@ -34,8 +34,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SDSListService implements ListService {
 
@@ -84,17 +82,6 @@ public class SDSListService implements ListService {
                                 type.add(Path.Type.decrypted);
                             }
                     }
-                    final Map<String, String> custom = new HashMap<>();
-                    if(null != node.getCntDownloadShares()) {
-                        custom.put(SDSAttributesFinderFeature.KEY_CNT_DOWNLOADSHARES, String.valueOf(node.getCntDownloadShares()));
-                    }
-                    if(null != node.getCntUploadShares()) {
-                        custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
-                    }
-                    if(null != node.getBranchVersion()) {
-                        custom.put(SDSAttributesFinderFeature.KEY_BRANCHVERSION, String.valueOf(node.getBranchVersion()));
-                    }
-                    attributes.setCustom(custom);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);
                     listener.chunk(directory, children);

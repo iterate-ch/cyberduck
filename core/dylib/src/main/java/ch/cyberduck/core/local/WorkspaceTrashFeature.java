@@ -22,6 +22,7 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Trash;
+import ch.cyberduck.core.unicode.NFDNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -43,8 +44,8 @@ public class WorkspaceTrashFeature implements Trash {
             // integer if the operation is performed asynchronously and succeeds
             if(!workspace.performFileOperation(
                 NSWorkspace.RecycleOperation,
-                file.getParent().getAbsolute(), StringUtils.EMPTY,
-                NSArray.arrayWithObject(file.getName()))) {
+                new NFDNormalizer().normalize(file.getParent().getAbsolute()).toString(), StringUtils.EMPTY,
+                NSArray.arrayWithObject(new NFDNormalizer().normalize(file.getName()).toString()))) {
                 throw new LocalAccessDeniedException(String.format("Failed to move %s to Trash", file.getName()));
             }
         }
