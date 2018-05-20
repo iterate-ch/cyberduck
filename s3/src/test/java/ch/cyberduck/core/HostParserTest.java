@@ -7,7 +7,6 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class HostParserTest {
 
@@ -21,8 +20,8 @@ public class HostParserTest {
 
     @Test
     public void testParseS3SchemeAccessKey() throws Exception {
-        assertTrue(new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
-                .compareTo(new HostParser(new ProtocolFactory(Collections.singleton(new TestS3Protocol()))).get("s3://AWS456@cyberduck-test/key")) == 0);
+        assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
+            .compareTo(new HostParser(new ProtocolFactory(Collections.singleton(new TestS3Protocol()))).get("s3://AWS456@cyberduck-test/key")));
     }
 
     private static class TestS3Protocol extends S3Protocol {
