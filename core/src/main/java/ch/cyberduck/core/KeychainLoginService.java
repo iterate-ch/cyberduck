@@ -57,39 +57,52 @@ public class KeychainLoginService implements LoginService {
                 credentials.setIdentity(callback.select(credentials.getIdentity()));
             }
         }
-        String password = credentials.getPassword();
-        if(StringUtils.isBlank(password) && options.keychain) {
-            password = keychain.findLoginPassword(bookmark);
-            if(StringUtils.isNotBlank(password)) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Fetched password from keychain for %s", bookmark));
+        if(options.keychain) {
+            if(options.password) {
+                if(StringUtils.isBlank(credentials.getPassword())) {
+                    final String password = keychain.findLoginPassword(bookmark);
+                    if(StringUtils.isNotBlank(password)) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Fetched password from keychain for %s", bookmark));
+                        }
+                        // No need to reinsert found password to the keychain.
+                        credentials.setSaved(false);
+                        credentials.setPassword(password);
+                    }
                 }
-                // No need to reinsert found password to the keychain.
-                credentials.setSaved(false);
+            }
+            if(options.token) {
+                if(StringUtils.isBlank(credentials.getToken())) {
+                    final String token = keychain.findLoginToken(bookmark);
+                    if(StringUtils.isNotBlank(token)) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Fetched token from keychain for %s", bookmark));
+                        }
+                        // No need to reinsert found token to the keychain.
+                        credentials.setSaved(false);
+                        credentials.setToken(token);
+                    }
+                }
             }
         }
-        credentials.setPassword(password);
         if(!credentials.validate(bookmark.getProtocol(), options)) {
-            if(StringUtils.isNotBlank(credentials.getUsername())) {
-                if(StringUtils.isBlank(credentials.getPassword())) {
-                    final StringAppender appender = new StringAppender();
-                    appender.append(message);
-                    appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                    bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
-                        String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                        appender.toString(),
-                        options));
-                }
-            }
-            else {
-                log.warn(String.format("Prompt for username to connect to %s", bookmark));
-                // Ask for username
+            if(options.password) {
                 final StringAppender appender = new StringAppender();
                 appender.append(message);
                 appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                 bookmark.setCredentials(callback.prompt(bookmark, credentials.getUsername(),
                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                    appender.toString(), options));
+                    appender.toString(),
+                    options));
+            }
+            if(options.token) {
+                final StringAppender appender = new StringAppender();
+                appender.append(message);
+                appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+                bookmark.setCredentials(callback.prompt(bookmark,
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    appender.toString(),
+                    options));
             }
         }
     }
