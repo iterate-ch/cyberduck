@@ -55,7 +55,7 @@ public final class TransferQueue {
             = new HashMap<Transfer, Thread>();
 
     public TransferQueue() {
-        this(PreferencesFactory.get().getInteger("queue.maxtransfers"));
+        this(PreferencesFactory.get().getInteger("queue.connections.limit"));
     }
 
     public TransferQueue(final int size) {
