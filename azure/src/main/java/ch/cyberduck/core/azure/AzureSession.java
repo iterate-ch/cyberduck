@@ -24,9 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
@@ -103,10 +101,8 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     public CloudBlobClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
         try {
             final StorageCredentials credentials;
-            if(host.getProtocol().isTokenConfigurable()) {
-                credentials = new StorageCredentialsSharedAccessSignature(prompt.prompt(host,
-                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    LocaleFactory.localizedString("Shared Access Signature (SAS) Token", "Azure"), new LoginOptions(host.getProtocol())).getPassword());
+            if(host.getCredentials().isTokenAuthentication()) {
+                credentials = new StorageCredentialsSharedAccessSignature(host.getCredentials().getPassword());
             }
             else {
                 credentials = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
@@ -163,7 +159,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     @Override
     public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final StorageCredentials credentials = client.getCredentials();
-        if(credentials instanceof StorageCredentialsAccountAndKey) {
+        if(host.getCredentials().isPasswordAuthentication()) {
             // Update credentials
             ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
         }
