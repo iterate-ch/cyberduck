@@ -131,7 +131,7 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     public Credentials withToken(final String token) {
-        this.token = this.token;
+        this.token = token;
         this.passed = false;
         return this;
     }
