@@ -49,10 +49,10 @@ public class TransferQueueTest {
                 c.countDown();
             }
         }).start();
-        assertTrue(c.getCount() == 1);
+        assertEquals(1, c.getCount());
         queue.remove(d1);
         assertTrue(c.await(1, TimeUnit.SECONDS));
-        assertTrue(c.getCount() == 0);
+        assertEquals(0, c.getCount());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class TransferQueueTest {
                 c.countDown();
             }
         }).start();
-        assertTrue(c.getCount() == 1);
+        assertEquals(1, c.getCount());
         assertFalse(c.await(1, TimeUnit.SECONDS));
         queue.resize(2);
         assertTrue(c.await(1, TimeUnit.SECONDS));
@@ -144,13 +144,13 @@ public class TransferQueueTest {
                 });
             }
         }).start();
-        assertTrue(c.getCount() == 1);
+        assertEquals(1, c.getCount());
         assertFalse(c.await(1, TimeUnit.SECONDS));
         assertTrue(set1.get());
         assertTrue(set2.get());
         queue.resize(2);
         assertTrue(c.await(1, TimeUnit.SECONDS));
-        assertTrue(c.getCount() == 0);
+        assertEquals(0, c.getCount());
     }
 
     @Test
@@ -175,10 +175,10 @@ public class TransferQueueTest {
             }
         }).start();
         assertFalse(c.await(1, TimeUnit.SECONDS));
-        assertTrue(c.getCount() == 1);
+        assertEquals(1, c.getCount());
         assertTrue(set.get());
         queue.remove(d2);
         assertTrue(c.await(1, TimeUnit.SECONDS));
-        assertTrue(c.getCount() == 0);
+        assertEquals(0, c.getCount());
     }
 }
