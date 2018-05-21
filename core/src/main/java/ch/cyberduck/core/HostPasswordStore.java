@@ -69,7 +69,7 @@ public abstract class HostPasswordStore implements PasswordStore {
         }
         // Find token named like "Shared Access Signature (SAS) Token"
         final String token = this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-            bookmark.getHostname(), bookmark.getProtocol().getUsernamePlaceholder());
+            bookmark.getHostname(), bookmark.getProtocol().getPasswordPlaceholder());
         if(null == token) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Token not found in keychain for %s", bookmark));
@@ -165,7 +165,7 @@ public abstract class HostPasswordStore implements PasswordStore {
         }
         if(credentials.isTokenAuthentication()) {
             this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                bookmark.getHostname(), bookmark.getProtocol().getUsernamePlaceholder(), credentials.getToken());
+                bookmark.getHostname(), bookmark.getProtocol().getPasswordPlaceholder(), credentials.getToken());
         }
     }
 }
