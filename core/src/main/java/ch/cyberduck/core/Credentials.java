@@ -180,6 +180,10 @@ public class Credentials implements Comparable<Credentials> {
         return StringUtils.isNotBlank(password);
     }
 
+    public boolean isTokenAuthentication() {
+        return StringUtils.isNotBlank(token);
+    }
+
     /**
      * SSH specific
      *
