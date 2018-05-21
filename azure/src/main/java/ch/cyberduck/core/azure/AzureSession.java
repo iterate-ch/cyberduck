@@ -102,7 +102,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         try {
             final StorageCredentials credentials;
             if(host.getCredentials().isTokenAuthentication()) {
-                credentials = new StorageCredentialsSharedAccessSignature(host.getCredentials().getPassword());
+                credentials = new StorageCredentialsSharedAccessSignature(host.getCredentials().getToken());
             }
             else {
                 credentials = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
