@@ -271,6 +271,9 @@ public abstract class AbstractProtocol implements Protocol {
                     return StringUtils.isNotBlank(credentials.getPassword());
             }
         }
+        if(options.token) {
+            return StringUtils.isNotBlank(credentials.getToken());
+        }
         return true;
     }
 

@@ -69,6 +69,7 @@ public final class LoginOptions {
     public LoginOptions(final LoginOptions copy) {
         user = copy.user;
         password = copy.password;
+        token = copy.token;
         keychain = copy.keychain;
         save = copy.save;
         publickey = copy.publickey;

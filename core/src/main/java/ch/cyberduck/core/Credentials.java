@@ -131,7 +131,7 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     public Credentials withToken(final String token) {
-        this.token = this.token;
+        this.token = token;
         this.passed = false;
         return this;
     }
@@ -178,6 +178,10 @@ public class Credentials implements Comparable<Credentials> {
 
     public boolean isPasswordAuthentication() {
         return StringUtils.isNotBlank(password);
+    }
+
+    public boolean isTokenAuthentication() {
+        return StringUtils.isNotBlank(token);
     }
 
     /**

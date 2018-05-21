@@ -58,6 +58,26 @@ public abstract class HostPasswordStore implements PasswordStore {
         return password;
     }
 
+    public String findLoginToken(final Host bookmark) {
+        if(StringUtils.isEmpty(bookmark.getHostname())) {
+            log.warn("No hostname given");
+            return null;
+        }
+        final Credentials credentials = bookmark.getCredentials();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Fetching login token from keychain for %s", bookmark));
+        }
+        // Find token named like "Shared Access Signature (SAS) Token"
+        final String token = this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+            bookmark.getHostname(), bookmark.getProtocol().getPasswordPlaceholder());
+        if(null == token) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Token not found in keychain for %s", bookmark));
+            }
+        }
+        return token;
+    }
+
     /**
      * Find passphrase for private key
      *
@@ -103,45 +123,45 @@ public abstract class HostPasswordStore implements PasswordStore {
     /**
      * Adds the password to the login keychain
      *
-     * @param host Hostname
+     * @param bookmark Hostname
      * @see ch.cyberduck.core.Host#getCredentials()
      */
-    public void save(final Host host) {
-        if(StringUtils.isEmpty(host.getHostname())) {
+    public void save(final Host bookmark) {
+        if(StringUtils.isEmpty(bookmark.getHostname())) {
             log.warn("No hostname given");
             return;
         }
-        final Credentials credentials = host.getCredentials();
+        final Credentials credentials = bookmark.getCredentials();
         if(!credentials.isSaved()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Skip writing credentials for host %s", host.getHostname()));
+                log.info(String.format("Skip writing credentials for bookmark %s", bookmark.getHostname()));
             }
-            return;
-        }
-        if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn(String.format("No username in credentials for host %s", host.getHostname()));
-            return;
-        }
-        if(StringUtils.isEmpty(credentials.getPassword())) {
-            log.warn(String.format("No password in credentials for host %s", host.getHostname()));
             return;
         }
         if(credentials.isAnonymousLogin()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Do not write anonymous credentials for host %s", host.getHostname()));
+                log.info(String.format("Do not write anonymous credentials for bookmark %s", bookmark.getHostname()));
             }
             return;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Add password for host %s", host));
+            log.info(String.format("Add password for bookmark %s", bookmark));
         }
         if(credentials.isPublicKeyAuthentication()) {
-            this.addPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
+            this.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
                 credentials.getPassword());
         }
-        else {
-            this.addPassword(host.getProtocol().getScheme(), host.getPort(),
-                host.getHostname(), credentials.getUsername(), credentials.getPassword());
+        if(credentials.isPasswordAuthentication()) {
+            if(StringUtils.isEmpty(credentials.getUsername())) {
+                log.warn(String.format("No username in credentials for bookmark %s", bookmark.getHostname()));
+                return;
+            }
+            this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
+        }
+        if(credentials.isTokenAuthentication()) {
+            this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                bookmark.getHostname(), bookmark.getProtocol().getPasswordPlaceholder(), credentials.getToken());
         }
     }
 }
