@@ -402,7 +402,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\PersistentFormHandler.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\SyncPromptController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\SyncPromptModel.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\growl\ToolstripNotificationService.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\TaskbarApplicationBadgeLabeler.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\controls\ReadOnlyRichTextBox.cs">
       <SubType>Component</SubType>
