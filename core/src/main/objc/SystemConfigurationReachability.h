@@ -52,11 +52,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_diagnostics_SystemConfigurationRea
 #import <CoreServices/CoreServices.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
 
-@interface Host : NSObject {
+@interface SystemConfigurationReachability : NSObject {
 
 }
 
 + (void)diagnose:(NSString*)urlString;
++ (BOOL)monitor:(NSString*)urlString;
 + (BOOL)isReachable:(NSString*)urlString;
 
 @end

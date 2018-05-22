@@ -19,50 +19,95 @@
 
 #import "SystemConfigurationReachability.h"
 #import <JavaNativeFoundation/JNFString.h>
+#import <Foundation/Foundation.h>
+#import <SystemConfiguration/SystemConfiguration.h>
+#import <netinet/in.h>
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_diagnostics_SystemConfigurationReachability_isReachable
   (JNIEnv *env, jobject this, jstring urlString)
 {
-	return [Host isReachable:JNFJavaToNSString(env, urlString)];
+	return [SystemConfigurationReachability isReachable:JNFJavaToNSString(env, urlString)];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_diagnostics_SystemConfigurationReachability_diagnose
   (JNIEnv *env, jobject this, jstring urlString)
 {
-	[Host diagnose:JNFJavaToNSString(env, urlString)];
+	[SystemConfigurationReachability diagnose:JNFJavaToNSString(env, urlString)];
 }
 
-@implementation Host
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_diagnostics_SystemConfigurationReachability_monitor
+  (JNIEnv *env, jobject this, jstring urlString)
+{
+	return [SystemConfigurationReachability monitor:JNFJavaToNSString(env, urlString)];
+}
+
+NSString *kReachabilityChangedNotification = @"kNetworkReachabilityChangedNotification";
+
+static void _ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* info) {
+    NSString* urlString = (NSString *)info;
+    // Post a notification to notify the client that the network reachability changed
+    [[NSNotificationCenter defaultCenter] postNotificationName: kReachabilityChangedNotification object: urlString];
+    // Delete callback and unschedule
+    SCNetworkReachabilitySetCallback(target, NULL, NULL);
+    SCNetworkReachabilityUnscheduleFromRunLoop(target, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    CFRelease(target);
+}
+
+@implementation SystemConfigurationReachability
 
 + (void)diagnose:(NSString*)urlString {
 	CFURLRef url;
-	CFNetDiagnosticRef myDiagnostics;
-	CFNetDiagnosticStatus myStatus;
-	
-	//First get the CFURLRef
+	CFNetDiagnosticRef diagnostics;
+	CFNetDiagnosticStatus status;
 	url = CFURLCreateWithString(kCFAllocatorDefault, (CFStringRef)urlString, NULL);
-	
 	if(url) {
-		//Now create the CFNetDiagnosticRef then release url since we are done with it
-		myDiagnostics = CFNetDiagnosticCreateWithURL(kCFAllocatorDefault, url);
+		diagnostics = CFNetDiagnosticCreateWithURL(kCFAllocatorDefault, url);
 		CFRelease(url);
-		
-		if(myDiagnostics) {
-			//Call the interactive diagnose call
-			myStatus = CFNetDiagnosticDiagnoseProblemInteractively(myDiagnostics);
-			CFRelease(myDiagnostics);
+		if(diagnostics) {
+			status = CFNetDiagnosticDiagnoseProblemInteractively(diagnostics);
+			CFRelease(diagnostics);
 		}
+        else {
+            NSLog(@"Error creating diagnostics instance for %@", urlString);
+        }
 	}
 }
 
-+ (BOOL)isReachable:(NSString*)urlString {
-	NSURL * url = [NSURL URLWithString:urlString];
++ (BOOL)monitor:(NSString*)urlString {
+	NSURL *url = [NSURL URLWithString:urlString];
 	SCNetworkReachabilityRef target = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, [[url host] cStringUsingEncoding:NSASCIIStringEncoding]);
 	if(NULL == target) {
+        NSLog(@"Error creating reachability instance for %@", urlString);
+	    return NO;
+	}
+    SCNetworkReachabilityContext context = {
+        .version = 0,
+        .info = (void *)CFBridgingRetain(urlString),
+        .release = CFRelease
+    };
+	if(SCNetworkReachabilitySetCallback(target, _ReachabilityCallback, &context)) {
+		if(SCNetworkReachabilityScheduleWithRunLoop(target, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)) {
+			return YES;
+		}
+        else {
+            NSLog(@"Error scheduling reachability run loop for %@", urlString);
+            SCNetworkReachabilitySetCallback(target, NULL, NULL);
+        }
+	}
+    NSLog(@"Error setting reachability callback for %@", urlString);
+	return NO;
+}
+
++ (BOOL)isReachable:(NSString*)urlString {
+	NSURL *url = [NSURL URLWithString:urlString];
+	SCNetworkReachabilityRef target = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, [[url host] cStringUsingEncoding:NSASCIIStringEncoding]);
+	if(NULL == target) {
+        NSLog(@"Error creating reachability instance for %@", urlString);
 	    return NO;
 	}
 	SCNetworkConnectionFlags flags;
 	if(!SCNetworkReachabilityGetFlags(target, &flags)) {
+        NSLog(@"Error getting reachability flags for %@", urlString);
         CFRelease(target);
         return NO;
     }

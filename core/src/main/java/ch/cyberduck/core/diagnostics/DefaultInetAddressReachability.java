@@ -45,4 +45,9 @@ public class DefaultInetAddressReachability implements Reachability {
     public void diagnose(final Host host) {
         // Not implemented
     }
+
+    @Override
+    public boolean monitor(final Host host, final Callback callback) {
+        return false;
+    }
 }

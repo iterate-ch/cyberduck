@@ -37,4 +37,13 @@ public interface Reachability {
      * @param host Hostname
      */
     void diagnose(Host host);
+
+    boolean monitor(Host host, Callback callback);
+
+    interface Callback {
+        /**
+         * Change of reachability for host address detected
+         */
+        void change();
+    }
 }
