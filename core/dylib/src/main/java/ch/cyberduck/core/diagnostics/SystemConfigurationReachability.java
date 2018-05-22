@@ -74,8 +74,7 @@ public final class SystemConfigurationReachability implements Reachability {
             final String url = notification.object().toString();
             if(StringUtils.equals(this.url, url)) {
                 this.change();
-                notificationCenter.addObserver(this.id(), Foundation.selector("notify:"),
-                    "kNetworkReachabilityChangedNotification", null);
+                notificationCenter.removeObserver(this.id());
                 listeners.remove(this);
             }
         }
