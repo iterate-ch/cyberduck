@@ -163,7 +163,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public MainController()
         {
             // Initialize WindowsFormsSynchronizationContext (sets SynchronizationContext.Current)
-            NotificationServiceFactory.get().setup();
+            SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
+
             // Execute OnStartup later
             SynchronizationContext.Current.Post(OnStartup, null);
         }
@@ -837,6 +838,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 InitStoreContext();
             }
+
+            NotificationServiceFactory.get().setup();
 
             InitializeTransfers();
             InitializeSessions();

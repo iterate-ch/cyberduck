@@ -86,7 +86,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             this.setDefault("factory.symlink.class", typeof(NullLocalSymlinkFeature).AssemblyQualifiedName);
             this.setDefault("factory.terminalservice.class", typeof(SshTerminalService).AssemblyQualifiedName);
             this.setDefault("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
-            this.setDefault("factory.notification.class", typeof(DisabledNotificationService).AssemblyQualifiedName);
+            this.setDefault("factory.notification.class", typeof(DesktopNotificationService).AssemblyQualifiedName);
             if (Cyberduck.Core.Utils.IsWin7OrLater)
             {
                 this.setDefault("factory.badgelabeler.class",
