@@ -27,13 +27,13 @@ import java.net.InetAddress;
 public class DefaultInetAddressReachability implements Reachability {
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     @Override
     public boolean isReachable(final Host host) {
         try {
             return InetAddress.getByName(host.getHostname()).isReachable(
-                    preferences.getInteger("connection.timeout.seconds") * 1000
+                preferences.getInteger("connection.timeout.seconds") * 1000
             );
         }
         catch(IOException e) {
@@ -47,7 +47,7 @@ public class DefaultInetAddressReachability implements Reachability {
     }
 
     @Override
-    public boolean monitor(final Host host, final Callback callback) {
-        return false;
+    public void monitor(final Host host, final Callback callback) {
+        // Not implemented
     }
 }

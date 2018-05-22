@@ -38,7 +38,7 @@ public interface Reachability {
      */
     void diagnose(Host host);
 
-    boolean monitor(Host host, Callback callback);
+    void monitor(Host host, Callback callback);
 
     interface Callback {
         /**

@@ -82,13 +82,13 @@ public final class SystemConfigurationReachability implements Reachability {
     }
 
     @Override
-    public boolean monitor(final Host host, final Callback callback) {
+    public void monitor(final Host host, final Callback callback) {
         final String url = new HostUrlProvider().withUsername(false).get(host);
         final UrlListener listener = new UrlListener(url, callback);
         notificationCenter.addObserver(listener.id(), Foundation.selector("notify:"),
             "kNetworkReachabilityChangedNotification", null);
         listeners.add(listener);
-        return this.monitor(url);
+        this.monitor(url);
     }
 
     private native boolean monitor(String url);
