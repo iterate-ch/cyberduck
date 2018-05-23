@@ -30,6 +30,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
@@ -46,7 +47,7 @@ public class AzureCopyFeature implements Copy {
     private final OperationContext context;
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new AzurePathContainerService();
 
     public AzureCopyFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
@@ -57,13 +58,15 @@ public class AzureCopyFeature implements Copy {
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final CloudBlob target = session.getClient().getContainerReference(containerService.getContainer(copy).getName())
-                    .getAppendBlobReference(containerService.getKey(copy));
+                .getAppendBlobReference(containerService.getKey(copy));
             final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(source).getName())
-                    .getBlobReferenceFromServer(containerService.getKey(source));
+                .getBlobReferenceFromServer(containerService.getKey(source));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setStoreBlobContentMD5(PreferencesFactory.get().getBoolean("azure.upload.md5"));
-            final String id = target.startCopy(blob.getUri(),
-                    AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, context);
+            final URI s = session.getHost().getCredentials().isTokenAuthentication() ?
+                URI.create(blob.getUri().toString() + session.getHost().getCredentials().getToken()) : blob.getUri();
+            final String id = target.startCopy(s,
+                AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, context);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
             }
