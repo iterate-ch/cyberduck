@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,15 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
-using ch.cyberduck.core.preferences;
 
 namespace Ch.Cyberduck.Core.Diagnostics
 {
@@ -44,6 +44,19 @@ namespace Ch.Cyberduck.Core.Diagnostics
         public void diagnose(Host h)
         {
             Process.Start("Rundll32.exe", "ndfapi,NdfRunDllDiagnoseIncident");
+        }
+
+        public void monitor(Host h, Reachability.Callback callback)
+        {
+            void Changed(object sender, NetworkAvailabilityEventArgs args)
+            {
+                if (args.IsAvailable && isReachable(h))
+                {
+                    callback.change();
+                    NetworkChange.NetworkAvailabilityChanged -= Changed;
+                }
+            }
+            NetworkChange.NetworkAvailabilityChanged += Changed;
         }
     }
 }
