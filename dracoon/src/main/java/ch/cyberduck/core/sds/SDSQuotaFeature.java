@@ -47,8 +47,8 @@ public class SDSQuotaFeature implements Quota {
         try {
             final Path home = new DefaultHomeFinderService(session).find();
             if(!home.isRoot()) {
-                final Node node = new NodesApi(session.getClient()).getFsNode(StringUtils.EMPTY,
-                    Long.parseLong(nodeid.getFileid(home, new DisabledListProgressListener())), null);
+                final Node node = new NodesApi(session.getClient()).getFsNode(
+                    Long.parseLong(nodeid.getFileid(home, new DisabledListProgressListener())), StringUtils.EMPTY, null);
                 if(null == node.getQuota()) {
                     log.warn(String.format("No quota set for node %s", home));
                 }

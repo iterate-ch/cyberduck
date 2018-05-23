@@ -46,7 +46,7 @@ public class SDSProtocol extends AbstractProtocol {
 
     @Override
     public String getContext() {
-        return "/api/v4";
+        return "/api";
     }
 
     @Override

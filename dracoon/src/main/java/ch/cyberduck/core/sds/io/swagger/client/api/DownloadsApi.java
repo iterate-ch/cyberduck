@@ -1,19 +1,32 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-03T10:55:56.129+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
 public class DownloadsApi {
   private ApiClient apiClient;
 
@@ -35,14 +48,14 @@ public class DownloadsApi {
 
   /**
    * Download file
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Download a file.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid download token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Range requests are supported (please cf. &lt;a href&#x3D;\&quot;https://tools.ietf.org/html/rfc7233\&quot; target&#x3D;\&quot;_blank\&quot;&gt;RCF 7233&lt;/a&gt; for details).&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
    * @param token Download token (required)
-   * @param range Range (optional)
-   * @param genericMimetype always return application/octet-stream instead of specific mimetype (optional)
-   * @return Object
+   * @param range Range e.g. &#x60;bytes&#x3D;0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
+   * @return Integer
    * @throws ApiException if fails to make API call
    */
-  public Object getFileDataByToken(String token, String range, Boolean genericMimetype) throws ApiException {
+  public Integer getFileDataByToken(String token, String range, Boolean genericMimetype) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'token' is set
@@ -51,7 +64,7 @@ public class DownloadsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/downloads/{token}"
+    String localVarPath = "/v4/downloads/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
     // query params
@@ -77,26 +90,28 @@ public class DownloadsApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<Object> localVarReturnType = new GenericType<Object>() {};
+    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get file headers
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve the header of a file transmission. Please cf. &lt;a href&#x3D;\&quot;https://tools.ietf.org/html/rfc7233\&quot; target&#x3D;\&quot;_blank\&quot;&gt;RCF 7233&lt;/a&gt; for details.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid download token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Equivalent of &lt;code&gt;HEAD nodes/files/{file_id}/downloads&lt;/code&gt;, when a client cannot set &lt;em&gt;X-Sds-Auth-Token&lt;/em&gt; header.&lt;/p&gt;&lt;/div&gt;
+   * Download file
+   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
    * @param token Download token (required)
-   * @param genericMimetype always return application/octet-stream instead of specific mimetype (optional)
+   * @param range Range e.g. &#x60;bytes&#x3D;0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
+   * @return Integer
    * @throws ApiException if fails to make API call
    */
-  public void getFileDataHeadByToken(String token, Boolean genericMimetype) throws ApiException {
+  public Integer getFileDataByToken1(String token, String range, Boolean genericMimetype) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'token' is set
     if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling getFileDataHeadByToken");
+      throw new ApiException(400, "Missing the required parameter 'token' when calling getFileDataByToken1");
     }
     
     // create path and map variables
-    String localVarPath = "/downloads/{token}"
+    String localVarPath = "/v4/downloads/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
     // query params
@@ -106,31 +121,33 @@ public class DownloadsApi {
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "generic_mimetype", genericMimetype));
 
-    
+    if (range != null)
+      localVarHeaderParams.put("Range", apiClient.parameterToString(range));
+
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/octet-stream"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] {  };
 
-
-    apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
+    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
+    return apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
   /**
    * Download ZIP file
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Download multiple files in a ZIP archive.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid download token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Create a download token with &lt;code&gt;POST /nodes/zip&lt;/code&gt;.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Download multiple files in a ZIP archive.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Create a download token with &#x60;POST /nodes/zip&#x60; API.
    * @param token Download token (required)
-   * @return Object
+   * @return Integer
    * @throws ApiException if fails to make API call
    */
-  public Object getZipFileByToken(String token) throws ApiException {
+  public Integer getZipFileByToken(String token) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'token' is set
@@ -139,7 +156,7 @@ public class DownloadsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/downloads/zip/{token}"
+    String localVarPath = "/v4/downloads/zip/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
     // query params
@@ -162,7 +179,7 @@ public class DownloadsApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<Object> localVarReturnType = new GenericType<Object>() {};
+    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
 }

@@ -25,8 +25,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.CopyNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.swagger.CopyNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,12 +49,12 @@ public class SDSCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final Node node = new NodesApi(session.getClient()).copyNodes(StringUtils.EMPTY,
+            final Node node = new NodesApi(session.getClient()).copyNodes(
                 // Target Parent Node ID
                 Long.parseLong(nodeid.getFileid(target.getParent(), new DisabledListProgressListener())),
                 new CopyNodesRequest()
                     .addNodeIdsItem(Long.parseLong(nodeid.getFileid(source, new DisabledListProgressListener())))
-                    .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), null);
+                    .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), StringUtils.EMPTY, null);
             return new Path(target.getParent(), target.getName(), target.getType(),
                 new PathAttributes(target.attributes()).withVersionId(String.valueOf(node.getId())));
         }

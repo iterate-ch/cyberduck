@@ -50,8 +50,8 @@ public class SDSDeleteFeature implements Delete {
     public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             try {
-                new NodesApi(session.getClient()).deleteNode(StringUtils.EMPTY,
-                    Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())));
+                new NodesApi(session.getClient()).deleteNode(
+                    Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY);
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService().map("Cannot delete {0}", e, file);

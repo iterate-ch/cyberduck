@@ -1,12 +1,24 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
-
-import javax.ws.rs.core.GenericType;
-
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUserRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoleList;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoomTreeDataList;
@@ -16,12 +28,13 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserGroupList;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserList;
 
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-03T10:55:56.129+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
 public class UsersApi {
   private ApiClient apiClient;
 
@@ -43,20 +56,15 @@ public class UsersApi {
 
   /**
    * Create user
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Create a new user.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Change\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; A new user is created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&lt;ul&gt;&lt;li&gt;If a user should not expire, leave expireAt empty.&lt;/li&gt;&lt;li&gt;All input fields are limited to &lt;b&gt;150&lt;/b&gt; characters&lt;/b&gt;&lt;/li&gt;&lt;li&gt;Allowed characters: &lt;b&gt;All&lt;/b&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Authentication Method Options&lt;/h4&gt;&lt;dl&gt;&lt;dt&gt;SQL&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;none&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Active Directory&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;ad_config_id\&quot;&lt;br/&gt;value: \&quot;Active Directory configuration ID\&quot;&lt;br/&gt;(optional)&lt;br/&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;Active Directory user name according to auth setting &#39;userFilter&#39;\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;RADIUS&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;Radius user name\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;OpenID Connect&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;openid_config_id\&quot;&lt;br/&gt;value: \&quot;OpenID Connect configuration ID\&quot;&lt;br/&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;OpenID Connect user name according to auth setting &#39;mappingClaim&#39;\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description: Create a new user.  ### Precondition: Right _\&quot;change users\&quot;_ required.  ### Effects: A new user is created.  ### &amp;#9432; Further Information: * If a user should not expire, leave &#x60;expireAt&#x60; empty. * All input fields are limited to **150** characters * **All** characters are allowed.  ### Authentication Method Options  | Authentication Method | Option Key | Option Value | | :--- | :--- | :--- | | **&#x60;sql&#x60;** | none | none | | **&#x60;active_directory&#x60;** | &#x60;ad_config_id&#x60; (optional) | Active Directory configuration ID | |  | &#x60;username&#x60; | Active Directory username according to authentication setting &#x60;userFilter&#x60; | | **&#x60;radius&#x60;** | &#x60;username&#x60; | RADIUS username | | **&#x60;openid&#x60;** | &#x60;openid_config_id&#x60; | OpenID Connect configuration ID | |  | &#x60;username&#x60; | OpenID Connect username according to authentication setting &#x60;mappingClaim&#x60; |
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UserData
    * @throws ApiException if fails to make API call
    */
-  public UserData createUser(String xSdsAuthToken, CreateUserRequest body, String xSdsDateFormat) throws ApiException {
+  public UserData createUser(CreateUserRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createUser");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -64,7 +72,7 @@ public class UsersApi {
     }
     
     // create path and map variables
-    String localVarPath = "/users";
+    String localVarPath = "/v4/users";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -79,34 +87,29 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UserData> localVarReturnType = new GenericType<UserData>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Delete user
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Delete a user.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Delete\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; User is deleted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; User cannot be deleted if he is the last room admin.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description: Delete a user.  ### Precondition: Right _\&quot;delete users\&quot;_ required.  ### Effects: User is deleted.  ### &amp;#9432; Further Information: User cannot be deleted if he is the last room administrator.
    * @param userId User ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteUser(String xSdsAuthToken, Long userId) throws ApiException {
+  public void deleteUser(Long userId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteUser");
-    }
     
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -114,7 +117,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/users/{user_id}"
+    String localVarPath = "/v4/users/{user_id}"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()));
 
     // query params
@@ -128,7 +131,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -137,26 +140,21 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Delete custom user attribute
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Delete custom user attribute.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Change\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Custom user attribute gets deleted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Allowed characters for keys are: [a-zA-Z0-9_-]. Characters are case-insensitive.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description: Delete custom user attribute.  ### Precondition: Right _\&quot;change users\&quot;_ required.  ### Effects: Custom user attribute gets deleted.  ### &amp;#9432; Further Information: Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   Characters are case-insensitive.
    * @param userId User ID (required)
    * @param key Key (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteUserAttributes(String xSdsAuthToken, Long userId, String key) throws ApiException {
+  public void deleteUserAttributes(Long userId, String key, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteUserAttributes");
-    }
     
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -169,7 +167,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/users/{user_id}/userAttributes/{key}"
+    String localVarPath = "/v4/users/{user_id}/userAttributes/{key}"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()))
       .replaceAll("\\{" + "key" + "\\}", apiClient.escapeString(key.toString()));
 
@@ -184,7 +182,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -193,28 +191,23 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Get user
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve detailed information about one user.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Read\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Authentication Method Options&lt;/h4&gt;&lt;dl&gt;&lt;dt&gt;SQL&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;none&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Active Directory&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;ad_config_id\&quot;&lt;br/&gt;value: \&quot;Active Directory configuration ID\&quot;&lt;br/&gt;(optional)&lt;br/&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;Active Directory user name according to auth setting &#39;userFilter&#39;\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;RADIUS&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;Radius user name\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;OpenID Connect&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;openid_config_id\&quot;&lt;br/&gt;value: \&quot;OpenID Connect configuration ID\&quot;&lt;br/&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;OpenID Connect user name according to auth setting &#39;mappingClaim&#39;\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Retrieve detailed information about single user.  ### Precondition: Right _\&quot;read users\&quot;_ required.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Authentication Method Options  | Authentication Method | Option Key | Option Value | | :--- | :--- | :--- | | **&#x60;sql&#x60;** | none | none | | **&#x60;active_directory&#x60;** | &#x60;ad_config_id&#x60; (optional) | Active Directory configuration ID | |  | &#x60;username&#x60; | Active Directory username according to authentication setting &#x60;userFilter&#x60; | | **&#x60;radius&#x60;** | &#x60;username&#x60; | RADIUS username | | **&#x60;openid&#x60;** | &#x60;openid_config_id&#x60; | OpenID Connect configuration ID | |  | &#x60;username&#x60; | OpenID Connect username according to authentication setting &#x60;mappingClaim&#x60; |
    * @param userId User ID (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param effectiveRoles Effective roles or direct roles (NO GROUPS). FALSE: Direct roles TRUE: effective roles (default:false) (optional)
+   * @param effectiveRoles Effective roles (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UserData
    * @throws ApiException if fails to make API call
    */
-  public UserData getUser(String xSdsAuthToken, Long userId, String xSdsDateFormat, Boolean effectiveRoles) throws ApiException {
+  public UserData getUser(Long userId, Boolean effectiveRoles, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getUser");
-    }
     
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -222,7 +215,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/users/{user_id}"
+    String localVarPath = "/v4/users/{user_id}"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()));
 
     // query params
@@ -239,7 +232,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -248,29 +241,24 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UserData> localVarReturnType = new GenericType<UserData>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get groups that user is a member of or/and can become a member
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieves a List of groups a user is member of and/or can become a member.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Read\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;h5&gt;Filter fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Group name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;isMember&lt;/dt&gt;&lt;dd&gt;Filter the groups which the user is or is not member of&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false|any]. Default value is &lt;code&gt;true&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;Example: &lt;samp&gt;is_member:eq:false|name:cn:searchstring&lt;/samp&gt;&lt;br/&gt;- get all groups that the user is not member of and whose name is like searchstring&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * Get groups that user is a member of or / and can become a member
+   * ### Functional Description:   Retrieves a List of groups a user is member of and / or can become a member.  ### Precondition: Right _\&quot;read users\&quot;_ required.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE&#x60;   Example: &gt; &#x60;is_member:eq:false|name:cn:searchString&#x60;   Get all groups that the user is **NOT** member of **AND** whose name is like &#x60;searchString&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;name&#x60;** | Group name filter | &#x60;cn&#x60; | Group name contains value. | &#x60;search String&#x60; | | **&#x60;isMember&#x60;** | Filter the groups which the user is (not) member of | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;true&#x60; |
    * @param userId User ID (required)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
-   * @param filter Group filter (optional)
+   * @param filter Filter string (optional)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return UserGroupList
    * @throws ApiException if fails to make API call
    */
-  public UserGroupList getUserGroups(String xSdsAuthToken, Long userId, Integer offset, Integer limit, String filter) throws ApiException {
+  public UserGroupList getUserGroups(Long userId, Integer offset, Integer limit, String filter, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getUserGroups");
-    }
     
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -278,7 +266,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/users/{user_id}/groups"
+    String localVarPath = "/v4/users/{user_id}/groups"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()));
 
     // query params
@@ -295,7 +283,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -304,26 +292,21 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UserGroupList> localVarReturnType = new GenericType<UserGroupList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get user roles
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve a list of all Roles and the role assignment rights of a user.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Read\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param userId User Id (required)
+   * ### Functional Description:   Retrieve a list of all roles and the role assignment rights of a user.  ### Precondition: Right _\&quot;read users\&quot;_ required.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param userId User ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return RoleList
    * @throws ApiException if fails to make API call
    */
-  public RoleList getUserRoles(String xSdsAuthToken, Long userId) throws ApiException {
+  public RoleList getUserRoles(Long userId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getUserRoles");
-    }
     
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -331,7 +314,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/users/{user_id}/roles"
+    String localVarPath = "/v4/users/{user_id}/roles"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()));
 
     // query params
@@ -345,7 +328,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -354,34 +337,29 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<RoleList> localVarReturnType = new GenericType<RoleList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get users
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Get users entry point. Returns a list of datapsace users.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Read\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&lt;br/&gt;Authentication with &lt;b&gt;X-Sds-Auth-Token&lt;/b&gt; required.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;p&gt;Filter string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;OPERATOR&amp;gt;:&amp;lt;VALUE&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Multiple fields are supported.&lt;/p&gt;&lt;h5&gt;Filter fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;login&lt;/dt&gt;&lt;dd&gt;Login name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (User login name contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;firstName&lt;/dt&gt;&lt;dd&gt;First name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (User first name contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;lastName&lt;/dt&gt;&lt;dd&gt;Last name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (User last name contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;lockStatus&lt;/dt&gt;&lt;dd&gt;Lock status: 0 - Locked, 1 - Web access allowed, 2 - Web and mobile access allowed,&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (User lock status)&lt;br/&gt;VALUE: [0|1|2].&lt;/dd&gt;&lt;dt&gt;effectiveRoles&lt;/dt&gt;&lt;dd&gt;Filter users with roles, effective roles or direct roles (NO GROUPS)&lt;br/&gt;FALSE: Direct roles TRUE: effective roles&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false]. Default value is &lt;code&gt;false&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;&lt;b&gt;Logical grouping:&lt;/b&gt; filtering according first three fields (login, lastName, firstName)&lt;br&gt;is intrinsically processed by the API as logical &lt;i&gt;OR&lt;/i&gt;.  In opposite, filtering according to&lt;br/&gt;last three field (lockStatus)&lt;br/&gt;is processed intrinsically as logical &lt;i&gt;AND&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Example: &lt;samp&gt;login:cn:searchString_1|firstName:cn:searchString_2|lockStatus:eq:2 &lt;/samp&gt;&lt;br/&gt;- filter by login contains searchString_1 or firstName contains searchString_2 and user are not locked&lt;/p&gt;&lt;h4&gt;Sort&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;&lt;br/&gt;Multiple fields are supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;login&lt;/dt&gt;&lt;dd&gt;Login name&lt;/dd&gt;&lt;dt&gt;firstName&lt;/dt&gt;&lt;dd&gt;First name&lt;/dd&gt;&lt;dt&gt;lastName&lt;/dt&gt;&lt;dd&gt;Last name&lt;/dd&gt;&lt;dt&gt;gender&lt;/dt&gt;&lt;dd&gt;Gender&lt;/dd&gt;&lt;dt&gt;lockStatus&lt;/dt&gt;&lt;dd&gt;User lock status&lt;/dd&gt;&lt;dt&gt;lastLoginSuccessAt&lt;/dt&gt;&lt;dd&gt;Last successful logon date&lt;/dd&gt;&lt;dt&gt;expireAt&lt;/dt&gt;&lt;dd&gt;Expiration date&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;firstName:asc|lastLoginSuccessAt:desc&lt;/samp&gt;&lt;br/&gt;- sort by firstName ascending and by lastLoginSuccessAt descending&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Get users entry point.   Returns a list of DRACOON users.  ### Precondition: Right _\&quot;read users\&quot;_ required.  ### Effects: None.  ### &amp;#9432; Further Information:   None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) ### &amp;#9888; Except for **&#x60;login&#x60;**, **&#x60;firstName&#x60;** and  **&#x60;lastName&#x60;** - these are connected via logical disjunction (**OR**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;    ### Example: &gt; &#x60;login:cn:searchString_1|firstName:cn:searchString_2|lockStatus:eq:2&#x60;   Filter users by login contains &#x60;searchString_1&#x60; **OR** firstName contains &#x60;searchString_2&#x60; **AND** those who are **NOT** locked.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;login&#x60;** | User login filter | &#x60;cn&#x60; | User login contains value. | &#x60;search String&#x60; | | **&#x60;firstName&#x60;** | User first name filter | &#x60;cn&#x60; | User first name contains value. | &#x60;search String&#x60; | | **&#x60;lastName&#x60;** | User last name filter | &#x60;cn&#x60; | User last name contains value. | &#x60;search String&#x60; | | **&#x60;lockStatus&#x60;** | (**&#x60;DEPRECATED&#x60;**) User lock status filter | &#x60;eq&#x60; | User lock status equals value. | &lt;ul&gt;&lt;li&gt;&#x60;0&#x60; - Locked&lt;/li&gt;&lt;li&gt;&#x60;1&#x60; - Web access allowed&lt;/li&gt;&lt;li&gt;&#x60;2&#x60; - Web and mobile access allowed&lt;/li&gt;&lt;/ul&gt; | | **&#x60;isLocked&#x60;** | User lock status filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | **&#x60;effectiveRoles&#x60;** | Filter users with DIRECT or DIRECT **AND** EFFECTIVE roles&lt;ul&gt;&lt;li&gt;&#x60;false&#x60;: DIRECT roles&lt;/li&gt;&lt;li&gt;&#x60;true&#x60;: DIRECT **AND** EFFECTIVE roles&lt;/li&gt;&lt;/ul&gt;DIRECT means: e.g. user gets role **directly** granted from someone with _grant permission_ right.&lt;br&gt;EFFECTIVE means: e.g. user gets role through **group membership**. | &#x60;eq&#x60; |  | &#x60;true or false&#x60;&lt;br&gt;default: &#x60;false&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported. ### Example: &gt; &#x60;firstName:asc|lastLoginSuccessAt:desc&#x60;   Sort by &#x60;firstName&#x60; ascending **AND** by &#x60;lastLoginSuccessAt&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;login&#x60;** | User login | | **&#x60;firstName&#x60;** | User first name | | **&#x60;lastName&#x60;** | User last name | | **&#x60;gender&#x60;** | Gender | | **&#x60;lockStatus&#x60;** | (**&#x60;DEPRECATED&#x60;**) User lock status | | **&#x60;isLocked&#x60;** | User lock status | | **&#x60;lastLoginSuccessAt&#x60;** | Last successful login date | | **&#x60;expireAt&#x60;** | Expiration date |
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
    * @param filter Filter string (optional)
    * @param sort Sort string (optional)
-   * @param includeAttributes Include custom user attributes. (default:false) (optional)
+   * @param includeAttributes Include custom user attributes. (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UserList
    * @throws ApiException if fails to make API call
    */
-  public UserList getUsers(String xSdsAuthToken, String xSdsDateFormat, Integer offset, Integer limit, String filter, String sort, Boolean includeAttributes) throws ApiException {
+  public UserList getUsers(Integer offset, Integer limit, String filter, String sort, Boolean includeAttributes, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getUsers");
-    }
-    
     // create path and map variables
-    String localVarPath = "/users";
+    String localVarPath = "/v4/users";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -401,7 +379,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -410,30 +388,25 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UserList> localVarReturnType = new GenericType<UserList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get rooms granted to the user or/and rooms that can be granted
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieves a List of rooms granted to the user and/or that can be granted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Read\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;h5&gt;Filter fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Room name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;isGranted&lt;/dt&gt;&lt;dd&gt;Filter the rooms which the user is or is not granted&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false|any]. Default value are &lt;code&gt;true&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;isLastAdmin&lt;/dt&gt;&lt;dd&gt;Filter the rooms which the user is last Data Room administrator. Only with connect &lt;b&gt;isGranted:eq:true&lt;/b&gt; possible.&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true].&lt;/dd&gt;&lt;dt&gt;effectivePerm&lt;/dt&gt;&lt;dd&gt;Filter room/subroom room with permissions, effective permissions or direct effective permissions(NO GROUPS)&lt;br/&gt;FALSE: Direct permissions TRUE: Direct effective permissions. ANY: Effective permissions.&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false|any]. Default value is &lt;code&gt;false&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;Example: &lt;samp&gt;isGranted:eq:false|name:cn:searchstring&lt;/samp&gt;&lt;br/&gt;- get all rooms that the user is not granted and whose name is like searchstring&lt;br&gt;&lt;br&gt;Example: &lt;samp&gt;isGranted:eq:true|isLastAdmin:eq:true|name:cn:searchstring&lt;/samp&gt;&lt;br/&gt;- get all rooms that the user is granted and is last admin and whose name is like searchstring&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param userId User Id (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * Get rooms granted to the user or / and rooms that can be granted
+   * ### Functional Description:   Retrieves a list of rooms granted to the user and / or that can be granted.  ### Precondition: Right _\&quot;read users\&quot;_ required.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE&#x60;   Example: &gt; &#x60;isGranted:eq:true|isLastAdmin:eq:true|name:cn:searchString&#x60;   Get all rooms that the user is granted **AND** is last admin **AND** whose name is like &#x60;searchString&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;name&#x60;** | Room name filter | &#x60;cn&#x60; | Room name contains value. | &#x60;search String&#x60; | | **&#x60;isGranted&#x60;** | Filter the rooms which the user is (not) granted. | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;true&#x60; | | **&#x60;isLastAdmin&#x60;** | Filter the rooms which the user is last room administrator.&lt;br&gt;Only in connection with &#x60;isGranted:eq:true&#x60; filter possible. | &#x60;eq&#x60; |  | &#x60;true&#x60; | | **&#x60;effectivePerm&#x60;** | Filter rooms with DIRECT or DIRECT **AND** EFFECTIVE permissions&lt;ul&gt;&lt;li&gt;&#x60;false&#x60;: DIRECT permissions&lt;/li&gt;&lt;li&gt;&#x60;true&#x60;: DIRECT **AND** EFFECTIVE permissions&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;: DIRECT **AND** EFFECTIVE **AND** OVER GROUP permissions&lt;/li&gt;&lt;/ul&gt;DIRECT means: e.g. room administrator grants &#x60;read&#x60; permissions to group of users **directly** on desired room.&lt;br&gt;EFFECTIVE means: e.g. group of users gets &#x60;read&#x60; permissions on desired room through **inheritance**.&lt;br&gt;OVER GROUP means: e.g. user gets &#x60;read&#x60; permissions on desired room through **group membership**. | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;false&#x60; |
+   * @param userId User ID (required)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
-   * @param filter Room filter (optional)
+   * @param filter Filter string (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return RoomTreeDataList
    * @throws ApiException if fails to make API call
    */
-  public RoomTreeDataList getUsersRooms(String xSdsAuthToken, Long userId, String xSdsDateFormat, Integer offset, Integer limit, String filter) throws ApiException {
+  public RoomTreeDataList getUsersRooms(Long userId, Integer offset, Integer limit, String filter, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getUsersRooms");
-    }
     
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -441,7 +414,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/users/{user_id}/rooms"
+    String localVarPath = "/v4/users/{user_id}/rooms"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()));
 
     // query params
@@ -460,7 +433,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -469,28 +442,23 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<RoomTreeDataList> localVarReturnType = new GenericType<RoomTreeDataList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Set custom user attributes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Set custom user attributes.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Change\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Custom user attributes gets set.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Batch function. All existing user attributes will be deleted. Allowed characters for keys are: [a-zA-Z0-9_-]. Characters are case-insensitive.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Set custom user attributes.  ### Precondition: Right _\&quot;change users\&quot;_ required.  ### Effects: Custom user attributes gets set.  ### &amp;#9432; Further Information: Batch function.   All existing user attributes will be deleted.   Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   Characters are case-insensitive.
    * @param userId User ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UserData
    * @throws ApiException if fails to make API call
    */
-  public UserData setAllUserAttributes(String xSdsAuthToken, Long userId, UserAttributes body, String xSdsDateFormat) throws ApiException {
+  public UserData setAllUserAttributes(Long userId, UserAttributes body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling setAllUserAttributes");
-    }
     
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -503,7 +471,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/users/{user_id}/userAttributes"
+    String localVarPath = "/v4/users/{user_id}/userAttributes"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()));
 
     // query params
@@ -519,37 +487,32 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UserData> localVarReturnType = new GenericType<UserData>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Add or edit custom user attributes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Set custom user attributes.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Change\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Custom user attributes get added or edited.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Batch function. If an entry exists before, it will be overwritten. Allowed characters for keys are: [a-zA-Z0-9_-]. Characters are case-insensitive.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Set custom user attributes.  ### Precondition: Right _\&quot;change users\&quot;_ required.  ### Effects: Custom user attributes get added or edited.  ### &amp;#9432; Further Information: Batch function.   If an entry exists before, it will be overwritten.   Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   Characters are case-insensitive.
    * @param userId User ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UserData
    * @throws ApiException if fails to make API call
    */
-  public UserData setUserAttributes(String xSdsAuthToken, Long userId, UserAttributes body, String xSdsDateFormat) throws ApiException {
+  public UserData setUserAttributes(Long userId, UserAttributes body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling setUserAttributes");
-    }
     
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -562,7 +525,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/users/{user_id}/userAttributes"
+    String localVarPath = "/v4/users/{user_id}/userAttributes"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()));
 
     // query params
@@ -578,37 +541,32 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UserData> localVarReturnType = new GenericType<UserData>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Update user
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Update the meta data of a user&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Change\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Meta data of a user is updated.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&lt;ul&gt;&lt;li&gt;If a user should not expire, leave expireAt empty.&lt;/li&gt;&lt;li&gt;All input fields are limited to &lt;b&gt;150&lt;/b&gt; characters&lt;/b&gt;&lt;/li&gt;&lt;li&gt;Allowed characters: &lt;b&gt;All&lt;/b&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Authentication Method Options&lt;/h4&gt;&lt;dl&gt;&lt;dt&gt;SQL&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;none&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Active Directory&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;ad_config_id\&quot;&lt;br/&gt;value: \&quot;Active Directory configuration ID\&quot;&lt;br/&gt;(optional)&lt;br/&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;Active Directory user name according to auth setting &#39;userFilter&#39;\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;RADIUS&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;Radius user name\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;OpenID Connect&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;openid_config_id\&quot;&lt;br/&gt;value: \&quot;OpenID Connect configuration ID\&quot;&lt;br/&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;OpenID Connect user name according to auth setting &#39;mappingClaim&#39;\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Update the meta data of a user  ### Precondition: Right _\&quot;change users\&quot;_ required.  ### Effects: Meta data of a user is updated.  ### &amp;#9432; Further Information: * If a user should not expire, leave &#x60;expireAt&#x60; empty. * All input fields are limited to **150** characters * **All** characters are allowed.  ### Authentication Method Options  | Authentication Method | Option Key | Option Value | | :--- | :--- | :--- | | **&#x60;sql&#x60;** | none | none | | **&#x60;active_directory&#x60;** | &#x60;ad_config_id&#x60; (optional) | Active Directory configuration ID | |  | &#x60;username&#x60; | Active Directory username according to authentication setting &#x60;userFilter&#x60; | | **&#x60;radius&#x60;** | &#x60;username&#x60; | RADIUS username | | **&#x60;openid&#x60;** | &#x60;openid_config_id&#x60; | OpenID Connect configuration ID | |  | &#x60;username&#x60; | OpenID Connect username according to authentication setting &#x60;mappingClaim&#x60; |
    * @param userId User ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UserData
    * @throws ApiException if fails to make API call
    */
-  public UserData updateUser(String xSdsAuthToken, Long userId, UpdateUserRequest body, String xSdsDateFormat) throws ApiException {
+  public UserData updateUser(Long userId, UpdateUserRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling updateUser");
-    }
     
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -621,7 +579,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/users/{user_id}"
+    String localVarPath = "/v4/users/{user_id}"
       .replaceAll("\\{" + "user_id" + "\\}", apiClient.escapeString(userId.toString()));
 
     // query params
@@ -637,16 +595,16 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UserData> localVarReturnType = new GenericType<UserData>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
