@@ -268,12 +268,12 @@ public final class TransferController extends WindowController implements Transf
         return filterField;
     }
 
-    public void setFilterField(NSTextField filterField) {
-        this.filterField = filterField;
+    public void setFilterField(NSTextField t) {
+        this.filterField = t;
         notificationCenter.addObserver(this.id(),
             Foundation.selector("filterFieldTextDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
-            this.filterField);
+            t.id());
     }
 
     public void filterFieldTextDidChange(NSNotification notification) {

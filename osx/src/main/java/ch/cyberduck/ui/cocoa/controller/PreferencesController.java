@@ -1305,7 +1305,7 @@ public class PreferencesController extends ToolbarWindowController {
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("downloadSkipRegexFieldDidChange:"),
                 NSText.TextDidChangeNotification,
-                this.downloadSkipRegexField);
+            this.downloadSkipRegexField.id());
     }
 
     public void downloadSkipRegexFieldDidChange(NSNotification sender) {
@@ -1370,7 +1370,7 @@ public class PreferencesController extends ToolbarWindowController {
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("uploadSkipRegexFieldDidChange:"),
                 NSText.TextDidChangeNotification,
-                this.uploadSkipRegexField);
+            this.uploadSkipRegexField.id());
     }
 
     public void uploadSkipRegexFieldDidChange(NSNotification sender) {

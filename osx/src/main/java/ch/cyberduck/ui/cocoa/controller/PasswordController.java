@@ -124,7 +124,7 @@ public class PasswordController extends AlertController {
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
-                inputField);
+            inputField.id());
     }
 
     @Override
