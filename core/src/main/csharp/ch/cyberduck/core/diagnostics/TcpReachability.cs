@@ -46,15 +46,36 @@ namespace Ch.Cyberduck.Core.Diagnostics
             Process.Start("Rundll32.exe", "ndfapi,NdfRunDllDiagnoseIncident");
         }
 
-        public void monitor(Host h, Reachability.Callback callback)
+        Reachability.Monitor Reachability.monitor(Host h, Reachability.Callback callback)
         {
-            void Changed(object sender, NetworkAvailabilityEventArgs args)
-            {
-                callback.change();
-                NetworkChange.NetworkAvailabilityChanged -= Changed;
-            }
+            return new NetworkChangeMonitor(h, callback);
+        }
+    }
 
+    class NetworkChangeMonitor : Reachability.Monitor
+    {
+        private readonly Reachability.Callback _callback;
+
+        public NetworkChangeMonitor(Host h, Reachability.Callback callback)
+        {
+            _callback = callback;
+        }
+
+        public Reachability.Monitor start()
+        {
             NetworkChange.NetworkAvailabilityChanged += Changed;
+            return this;
+        }
+
+        public Reachability.Monitor stop()
+        {
+            NetworkChange.NetworkAvailabilityChanged -= Changed;
+            return this;
+        }
+
+        void Changed(object sender, NetworkAvailabilityEventArgs args)
+        {
+            _callback.change();
         }
     }
 }
