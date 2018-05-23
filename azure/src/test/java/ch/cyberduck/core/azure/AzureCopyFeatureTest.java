@@ -35,11 +35,44 @@ public class AzureCopyFeatureTest {
     @Test
     public void testCopy() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
+            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
+        final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new AzureCopyFeature(session, null).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
+        assertTrue(new AzureFindFeature(session, null).find(test));
+        assertTrue(new AzureFindFeature(session, null).find(copy));
+        new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testCopySharedAccessSignature() throws Exception {
+        final Host host = new Host(new AzureProtocol() {
+            @Override
+            public boolean isUsernameConfigurable() {
+                return false;
+            }
+
+            @Override
+            public boolean isPasswordConfigurable() {
+                return false;
+            }
+
+            @Override
+            public boolean isTokenConfigurable() {
+                return true;
+            }
+        }, "kahy9boj3eib.blob.core.windows.net", new Credentials(
+            null, null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=bMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D"));
+        final AzureSession session = new AzureSession(host);
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
