@@ -50,12 +50,10 @@ namespace Ch.Cyberduck.Core.Diagnostics
         {
             void Changed(object sender, NetworkAvailabilityEventArgs args)
             {
-                if (args.IsAvailable && isReachable(h))
-                {
-                    callback.change();
-                    NetworkChange.NetworkAvailabilityChanged -= Changed;
-                }
+                callback.change();
+                NetworkChange.NetworkAvailabilityChanged -= Changed;
             }
+
             NetworkChange.NetworkAvailabilityChanged += Changed;
         }
     }
