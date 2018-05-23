@@ -6,11 +6,23 @@ import ch.cyberduck.core.TestProtocol;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Ignore
 public class SystemConfigurationReachabilityTest {
+
+    @Test
+    public void testMonitor() throws Exception {
+        final Reachability r = new SystemConfigurationReachability();
+        final Reachability.Monitor monitor = r.monitor(new Host(new TestProtocol(), "cyberduck.ch", 80),
+            new Reachability.Callback() {
+                @Override
+                public void change() {
+                }
+            }
+        ).start();
+        assertSame(monitor, monitor.stop());
+    }
 
     @Test
     public void testIsReachablePort80() throws Exception {

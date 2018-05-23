@@ -47,7 +47,20 @@ public class DefaultInetAddressReachability implements Reachability {
     }
 
     @Override
-    public void monitor(final Host host, final Callback callback) {
-        // Not implemented
+    public Monitor monitor(final Host host, final Callback callback) {
+        return new DisabledMonitor();
+    }
+
+    private static class DisabledMonitor implements Monitor {
+        @Override
+        public Monitor start() {
+            return this;
+        }
+
+        @Override
+        public Monitor stop() {
+            return this;
+
+        }
     }
 }

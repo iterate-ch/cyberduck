@@ -23,78 +23,72 @@ import ch.cyberduck.binding.Proxy;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.idna.PunycodeConverter;
-import ch.cyberduck.core.library.Native;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public final class SystemConfigurationReachability implements Reachability {
     private static final Logger log = Logger.getLogger(SystemConfigurationReachability.class);
 
-    static {
-        Native.load("core");
-    }
-
-    private final Set<UrlListener> listeners = new HashSet<>();
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
     public SystemConfigurationReachability() {
         //
     }
 
-    private final class UrlListener extends Proxy implements Callback {
-        private final String url;
+    private final class NotificationFilterCallback extends Proxy {
         private final Callback proxy;
 
-        public UrlListener(final String url, final Callback proxy) {
-            this.url = url;
+        public NotificationFilterCallback(final Callback proxy) {
             this.proxy = proxy;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        @Override
-        public void change() {
-            proxy.change();
         }
 
         public void notify(final NSNotification notification) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Received notification %s", notification));
             }
-            // Test if notification is matching hostname
-            final String url = notification.object().toString();
-            if(StringUtils.equals(this.url, url)) {
-                this.change();
-                notificationCenter.removeObserver(this.id());
-                listeners.remove(this);
-            }
+            proxy.change();
         }
     }
 
     @Override
-    public void monitor(final Host host, final Callback callback) {
-        final String url = new HostUrlProvider().withUsername(false).get(host);
-        final UrlListener listener = new UrlListener(url, callback);
-        notificationCenter.addObserver(listener.id(), Foundation.selector("notify:"),
-            "kNetworkReachabilityChangedNotification", null);
-        listeners.add(listener);
-        this.monitor(url);
+    public Monitor monitor(final Host bookmark, final Callback callback) {
+        final String url = this.toURL(bookmark);
+        return new Reachability.Monitor() {
+            private final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(url);
+            private final NotificationFilterCallback listener = new NotificationFilterCallback(callback);
+
+            @Override
+            public Monitor start() {
+                notificationCenter.addObserver(listener.id(), Foundation.selector("notify:"),
+                    "kNetworkReachabilityChangedNotification", monitor.id());
+                monitor.startReachabilityMonitor();
+                return this;
+            }
+
+            @Override
+            public Monitor stop() {
+                monitor.stopReachabilityMonitor();
+                notificationCenter.removeObserver(listener.id());
+                return this;
+            }
+        };
     }
 
-    private native boolean monitor(String url);
-
     @Override
-    public boolean isReachable(final Host host) {
-        return this.isReachable(this.toURL(host));
+    public boolean isReachable(final Host bookmark) {
+        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(this.toURL(bookmark));
+        return monitor.isReachable();
+    }
+
+    /**
+     * Opens the network configuration assistant for the URL denoting this host
+     */
+    @Override
+    public void diagnose(final Host bookmark) {
+        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(this.toURL(bookmark));
+        monitor.diagnoseInteractively();
     }
 
     private String toURL(final Host host) {
@@ -104,16 +98,4 @@ public final class SystemConfigurationReachability implements Reachability {
         url.append(":").append(host.getPort());
         return url.toString();
     }
-
-    private native boolean isReachable(String url);
-
-    /**
-     * Opens the network configuration assistant for the URL denoting this host
-     */
-    @Override
-    public void diagnose(final Host host) {
-        this.diagnose(new HostUrlProvider().withUsername(false).get(host));
-    }
-
-    private native void diagnose(String url);
 }
