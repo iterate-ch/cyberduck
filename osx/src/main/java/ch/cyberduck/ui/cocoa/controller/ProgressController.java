@@ -272,11 +272,11 @@ public class ProgressController extends BundleController implements TransferList
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("filesPopupWillShow:"),
                 NSPopUpButton.PopUpButtonWillPopUpNotification,
-                this.filesPopup);
+            this.filesPopup.id());
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("filesPopupWillHide:"),
                 "NSMenuDidEndTrackingNotification",
-                this.filesPopup.menu());
+            this.filesPopup.menu().id());
     }
 
     @Action

@@ -19,24 +19,76 @@ package ch.cyberduck.core.diagnostics;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Proxy;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.idna.PunycodeConverter;
-import ch.cyberduck.core.library.Native;
+
+import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
 public final class SystemConfigurationReachability implements Reachability {
+    private static final Logger log = Logger.getLogger(SystemConfigurationReachability.class);
 
-    static {
-        Native.load("core");
-    }
+    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
     public SystemConfigurationReachability() {
         //
     }
 
+    private final class NotificationFilterCallback extends Proxy {
+        private final Callback proxy;
+
+        public NotificationFilterCallback(final Callback proxy) {
+            this.proxy = proxy;
+        }
+
+        public void notify(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received notification %s", notification));
+            }
+            proxy.change();
+        }
+    }
+
     @Override
-    public boolean isReachable(final Host host) {
-        return this.isReachable(this.toURL(host));
+    public Monitor monitor(final Host bookmark, final Callback callback) {
+        final String url = this.toURL(bookmark);
+        return new Reachability.Monitor() {
+            private final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(url);
+            private final NotificationFilterCallback listener = new NotificationFilterCallback(callback);
+
+            @Override
+            public Monitor start() {
+                notificationCenter.addObserver(listener.id(), Foundation.selector("notify:"),
+                    "kNetworkReachabilityChangedNotification", monitor.id());
+                monitor.startReachabilityMonitor();
+                return this;
+            }
+
+            @Override
+            public Monitor stop() {
+                monitor.stopReachabilityMonitor();
+                notificationCenter.removeObserver(listener.id());
+                return this;
+            }
+        };
+    }
+
+    @Override
+    public boolean isReachable(final Host bookmark) {
+        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(this.toURL(bookmark));
+        return monitor.isReachable();
+    }
+
+    /**
+     * Opens the network configuration assistant for the URL denoting this host
+     */
+    @Override
+    public void diagnose(final Host bookmark) {
+        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(this.toURL(bookmark));
+        monitor.diagnoseInteractively();
     }
 
     private String toURL(final Host host) {
@@ -46,16 +98,4 @@ public final class SystemConfigurationReachability implements Reachability {
         url.append(":").append(host.getPort());
         return url.toString();
     }
-
-    private native boolean isReachable(String url);
-
-    /**
-     * Opens the network configuration assistant for the URL denoting this host
-     */
-    @Override
-    public void diagnose(final Host host) {
-        this.diagnose(new HostUrlProvider().withUsername(false).get(host));
-    }
-
-    private native void diagnose(String url);
 }

@@ -1274,7 +1274,7 @@ public class BrowserController extends WindowController
         }
         {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.filename.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
+            c.headerCell().setStringValue(BrowserColumn.filename.toString());
             c.setMinWidth((100));
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.filename.name())));
@@ -1696,7 +1696,7 @@ public class BrowserController extends WindowController
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("searchFieldTextDidEndEditing:"),
             NSControl.NSControlTextDidEndEditingNotification,
-            this.searchField);
+            this.searchField.id());
     }
 
     @Action

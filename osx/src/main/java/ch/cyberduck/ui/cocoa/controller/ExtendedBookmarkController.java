@@ -100,7 +100,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("commentInputDidChange:"),
             NSText.TextDidChangeNotification,
-            this.commentField);
+            field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(Host bookmark) {
@@ -250,7 +250,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         notificationCenter.addObserver(this.id(),
             Foundation.selector("webURLInputDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
-            this.webURLField);
+            field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(Host bookmark) {

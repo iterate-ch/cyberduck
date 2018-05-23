@@ -105,7 +105,7 @@ public class ConnectionController extends BookmarkController {
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("passwordFieldTextDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
-            this.passwordField);
+            field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
