@@ -1,12 +1,24 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
-
-import javax.ws.rs.core.GenericType;
-
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
@@ -14,12 +26,13 @@ import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShareList;
 import ch.cyberduck.core.sds.io.swagger.client.model.UploadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.UploadShareList;
 
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-03T10:55:56.129+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
 public class SharesApi {
   private ApiClient apiClient;
 
@@ -40,21 +53,16 @@ public class SharesApi {
   }
 
   /**
-   * Create new download share
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Create a new Download Share.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Manage download shares permission on target node.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Download Share created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;Access password:&lt;/b&gt; Passwords are limited to 150 characters.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Notes:&lt;/b&gt; Notes are limited to 255 characters.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Alias Names:&lt;/b&gt; Alias names are limited to 150 characters.&lt;/li&gt;&lt;/ul&gt;&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * Create new Download Share
+   * ### Functional Description: Create a new Download Share.  ### Precondition: User with _\&quot;manage download share\&quot;_ permissions on target node.  ### Effects: Download Share created.  ### &amp;#9432; Further Information:  * **Access password:** is limited to **150** characters. * **Notes:** are limited to **255** characters. * **Alias names:** are limited to **150** characters.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return DownloadShare
    * @throws ApiException if fails to make API call
    */
-  public DownloadShare createDownloadShare(String xSdsAuthToken, CreateDownloadShareRequest body, String xSdsDateFormat) throws ApiException {
+  public DownloadShare createDownloadShare(CreateDownloadShareRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createDownloadShare");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -62,7 +70,7 @@ public class SharesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/shares/downloads";
+    String localVarPath = "/v4/shares/downloads";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -77,36 +85,31 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<DownloadShare> localVarReturnType = new GenericType<DownloadShare>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Create new upload share
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Create a new Upload Share (aka Upload Account).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Manage Upload Shares permission on target container.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Upload Share is created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;Notes:&lt;/b&gt; Notes are limited to 255 characters.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Alias Names:&lt;/b&gt; Alias names are limited to 150 characters.&lt;/li&gt;&lt;li&gt;&lt;div&gt;&lt;b&gt;Send Mail:&lt;/b&gt; Following fields are optional, if &lt;dfn&gt;&amp;lt;sendMail&amp;gt;&lt;/dfn&gt; is set to false: &lt;dfn&gt;&amp;lt;mailRecipients&amp;gt; &amp;lt;mailSubject&amp;gt; &amp;lt;mailBody&amp;gt;&lt;/dfn&gt;.&lt;br/&gt;If &lt;dfn&gt;&amp;lt;sendMail&amp;gt;&lt;/dfn&gt; is set to true, these fields are mandatory fields:  &lt;dfn&gt;&amp;lt;mailRecipients&amp;gt; &amp;lt;mailSubject&amp;gt; &amp;lt;mailBody&amp;gt;&lt;/dfn&gt;.&lt;/div&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * Create new Upload Share
+   * ### Functional Description: Create a new Upload Share (aka Upload Account).  ### Precondition: User has _\&quot;manage upload share\&quot;_ permissions on target container.  ### Effects: Upload Share is created.  ### &amp;#9432; Further Information:  * **Notes:** are limited to **255** characters. * **Alias Names:** are limited to **150** characters. * **Send Mail:**:       * If &#x60;sendMail&#x60; is set to &#x60;false&#x60;: &#x60;mailRecipients&#x60;, &#x60;mailSubject&#x60; and &#x60;mailBody&#x60; are **optional**.       * If &#x60;sendMail&#x60; is set to &#x60;true&#x60;: &#x60;mailRecipients&#x60;, &#x60;mailSubject&#x60; and &#x60;mailBody&#x60; are **mandatory**.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UploadShare
    * @throws ApiException if fails to make API call
    */
-  public UploadShare createUploadShare(String xSdsAuthToken, CreateUploadShareRequest body, String xSdsDateFormat) throws ApiException {
+  public UploadShare createUploadShare(CreateUploadShareRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createUploadShare");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -114,7 +117,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/shares/uploads";
+    String localVarPath = "/v4/shares/uploads";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -129,34 +132,29 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UploadShare> localVarReturnType = new GenericType<UploadShare>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Delete download share
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Delete a Download Share.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Download Share is deleted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Only the Download Share is removed; the referenced file or container persists.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param shareId Share Id (required)
+   * Delete Download Share
+   * ### Functional Description: Delete a Download Share.  ### Precondition: None.  ### Effects: Download Share is deleted.  ### &amp;#9432; Further Information: Only the Download Share is removed; the referenced file or container persists.
+   * @param shareId Share ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteDownloadShare(String xSdsAuthToken, Long shareId) throws ApiException {
+  public void deleteDownloadShare(Long shareId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteDownloadShare");
-    }
     
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -164,7 +162,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/shares/downloads/{share_id}"
+    String localVarPath = "/v4/shares/downloads/{share_id}"
       .replaceAll("\\{" + "share_id" + "\\}", apiClient.escapeString(shareId.toString()));
 
     // query params
@@ -178,7 +176,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -187,25 +185,20 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Delete upload share
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Delete an Upload Share (aka Upload Account).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Upload Share is deleted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Only the Upload Share is removed; already uploaded files and the target container persist.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param shareId Share Id (required)
+   * Delete Upload Share
+   * ### Functional Description: Delete an Upload Share (aka Upload Account).  ### Precondition: None.  ### Effects: Upload Share is deleted.  ### &amp;#9432; Further Information: Only the Upload Share is removed; already uploaded files and the target container persist.
+   * @param shareId Share ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteUploadShare(String xSdsAuthToken, Long shareId) throws ApiException {
+  public void deleteUploadShare(Long shareId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteUploadShare");
-    }
     
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -213,7 +206,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/shares/uploads/{share_id}"
+    String localVarPath = "/v4/shares/uploads/{share_id}"
       .replaceAll("\\{" + "share_id" + "\\}", apiClient.escapeString(shareId.toString()));
 
     // query params
@@ -227,7 +220,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -236,27 +229,22 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Get download share
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve detailed information about one Download Share.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param shareId Share Id (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * Get Download Share
+   * ### Functional Description:   Retrieve detailed information about one Download Share.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param shareId Share ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return DownloadShare
    * @throws ApiException if fails to make API call
    */
-  public DownloadShare getDownloadShare(String xSdsAuthToken, Long shareId, String xSdsDateFormat) throws ApiException {
+  public DownloadShare getDownloadShare(Long shareId, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getDownloadShare");
-    }
     
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -264,7 +252,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/shares/downloads/{share_id}"
+    String localVarPath = "/v4/shares/downloads/{share_id}"
       .replaceAll("\\{" + "share_id" + "\\}", apiClient.escapeString(shareId.toString()));
 
     // query params
@@ -280,7 +268,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -289,43 +277,37 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<DownloadShare> localVarReturnType = new GenericType<DownloadShare>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get download shares
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve a list of Download Shares.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;h4&gt;Filters&lt;/h4&gt;&lt;p&gt;Filter string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;OPERATOR&amp;gt;:&amp;lt;VALUE&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Multiple fields is supported.&lt;/p&gt;&lt;h5&gt;Filter fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Alias Name or File Name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; ( name contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;createdBy&lt;/dt&gt;&lt;dd&gt;Creator info&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (Creator info (login, email, firstName, lastName ) contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;accessKey&lt;/dt&gt;&lt;dd&gt;Share access key&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (Share access key contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;nodeId&lt;/dt&gt;&lt;dd&gt;Source node ID&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (Source file/folder/Room/SubRoom ID)&lt;br/&gt;VALUE: &lt;code&gt;Search node ID&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;userId&lt;/dt&gt;&lt;dd&gt;Creator user ID&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Search user ID&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;name:cn:searchString_1|createdBy:cn:searchString_2|nodeId:eq:1 &lt;/samp&gt;&lt;br/&gt;- filter by file name contains searchString_1 or creator info (login, email, firstName, lastName ) contains searchString_2 or node ID is equal to 1&lt;/p&gt;&lt;h4&gt;Sorting&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;&lt;br/&gt;Multiple fields is supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Alias Name or File Name&lt;/dd&gt;&lt;dt&gt;classification&lt;/dt&gt;&lt;dd&gt;File classification&lt;/dd&gt;&lt;dt&gt;notifyCreator&lt;/dt&gt;&lt;dd&gt;Notify creator on every download&lt;/dd&gt;&lt;dt&gt;expireAt&lt;/dt&gt;&lt;dd&gt;Expiration date&lt;/dd&gt;&lt;dt&gt;createdAt&lt;/dt&gt;&lt;dd&gt;Creation date&lt;/dd&gt;&lt;dt&gt;createdBy&lt;/dt&gt;&lt;dd&gt;Creator info&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;name:asc|expireAt:desc&lt;/samp&gt;&lt;br/&gt;- sort by name ascending and by expireAt descending&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param offset Range offset (optional)
-   * @param limit Range limit (optional)
-   * @param filter Filter string (optional)
-   * @param sort Sort string (optional)
-   * @return DownloadShareList
+   * Get Download Share via QR Code
+   * ### Functional Description:   Retrieve detailed information about one Download Share.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param shareId Share ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
+   * @return DownloadShare
    * @throws ApiException if fails to make API call
    */
-  public DownloadShareList getDownloadShares(String xSdsAuthToken, String xSdsDateFormat, Integer offset, Integer limit, String filter, String sort) throws ApiException {
+  public DownloadShare getDownloadShareQr(Long shareId, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getDownloadShares");
+    // verify the required parameter 'shareId' is set
+    if (shareId == null) {
+      throw new ApiException(400, "Missing the required parameter 'shareId' when calling getDownloadShareQr");
     }
     
     // create path and map variables
-    String localVarPath = "/shares/downloads";
+    String localVarPath = "/v4/shares/downloads/{share_id}/qr"
+      .replaceAll("\\{" + "share_id" + "\\}", apiClient.escapeString(shareId.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "offset", offset));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sort", sort));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
@@ -334,7 +316,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -343,27 +325,71 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+    GenericType<DownloadShare> localVarReturnType = new GenericType<DownloadShare>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Get Download Shares
+   * ### Functional Description:   Retrieve a list of Download Shares.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical disjunction (**OR**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;name:cn:searchString_1|createdBy:cn:searchString_2|nodeId:eq:1&#x60;   Filter by file name contains &#x60;searchString_1&#x60; **OR** creator info (firstname **OR** lastname **OR** login) contains &#x60;searchString_2&#x60; **OR** node ID is equal to &#x60;1&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;name&#x60;** | Alias or node name filter | &#x60;cn&#x60; | Alias or node name contains value. | &#x60;search String&#x60; | | **&#x60;createdBy&#x60;** | Creator info filter | &#x60;cn&#x60; | Creator info (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;login&#x60;) contains value. | &#x60;search String&#x60; | | **&#x60;accessKey&#x60;** | Share access key filter | &#x60;cn&#x60; | Share access key contains values. | &#x60;search String&#x60; | | **&#x60;nodeId&#x60;** | Source node ID | &#x60;eq&#x60; | Source node (room, folder, file) ID equals value. | &#x60;positive Integer&#x60; | | **&#x60;userId&#x60;** | Creator user ID | &#x60;eq&#x60; | Creator user ID equals value. | &#x60;positive Integer&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported. Example: &gt; &#x60;name:asc|expireAt:desc&#x60;   Sort by &#x60;name&#x60; ascending **AND** by &#x60;expireAt&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;name&#x60;** | Alias or node name | | **&#x60;classification&#x60;** | Classification ID (for files only):&lt;ul&gt;&lt;li&gt;1 - public&lt;/li&gt;&lt;li&gt;2 - for internal use only&lt;/li&gt;&lt;li&gt;3 - confidential&lt;/li&gt;&lt;li&gt;4 - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | **&#x60;notifyCreator&#x60;** | Notify creator on every download | | **&#x60;expireAt&#x60;** | Expiration date | | **&#x60;createdAt&#x60;** | Creation date | | **&#x60;createdBy&#x60;** | Creator info |
+   * @param filter Filter string (optional)
+   * @param sort Sort string (optional)
+   * @param offset Range offset (optional)
+   * @param limit Range limit (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
+   * @return DownloadShareList
+   * @throws ApiException if fails to make API call
+   */
+  public DownloadShareList getDownloadShares(String filter, String sort, Integer offset, Integer limit, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4/shares/downloads";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sort", sort));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "offset", offset));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+
+    
+    final String[] localVarAccepts = {
+      "application/json;charset=UTF-8"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<DownloadShareList> localVarReturnType = new GenericType<DownloadShareList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get upload share
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve detailed information about one Upload Share (aka Upload Account).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param shareId Share Id (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * Get Upload Share
+   * ### Functional Description:   Retrieve detailed information about one Upload Share (aka Upload Account).  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param shareId Share ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UploadShare
    * @throws ApiException if fails to make API call
    */
-  public UploadShare getUploadShare(String xSdsAuthToken, Long shareId, String xSdsDateFormat) throws ApiException {
+  public UploadShare getUploadShare(Long shareId, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getUploadShare");
-    }
     
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -371,7 +397,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/shares/uploads/{share_id}"
+    String localVarPath = "/v4/shares/uploads/{share_id}"
       .replaceAll("\\{" + "share_id" + "\\}", apiClient.escapeString(shareId.toString()));
 
     // query params
@@ -387,7 +413,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -396,43 +422,37 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UploadShare> localVarReturnType = new GenericType<UploadShare>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get upload shares
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve a list of Upload Shares (aka Upload Accounts).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;h4&gt;Filters&lt;/h4&gt;&lt;p&gt;Filter string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;OPERATOR&amp;gt;:&amp;lt;VALUE&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Multiple fields is supported.&lt;/p&gt;&lt;h5&gt;Filter fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Alias name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (Alias name contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;createdBy&lt;/dt&gt;&lt;dd&gt;Creator info&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (Creator info (login, email, firstName, lastName ) contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;accessKey&lt;/dt&gt;&lt;dd&gt;Share access key&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (Share access key contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;targetId&lt;/dt&gt;&lt;dd&gt;Target node Room/SubRoom/Folder&lt;br/&gt;&lt;b style&#x3D;\&quot;color: red;\&quot;&gt; DEPRECATED&lt;/b&gt; OPERATOR: &lt;code&gt;cn&lt;/code&gt; (Target node contains value)&lt;br/&gt;&lt;b style&#x3D;\&quot;color: green;\&quot;&gt; NEW&lt;/b&gt; OPERATOR: &lt;code&gt;eq&lt;/code&gt; (Target node equal value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;userId&lt;/dt&gt;&lt;dd&gt;Creator user ID&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Search user ID&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;name:cn:searchString_1|createdBy:cn:searchString_2 &lt;/samp&gt;&lt;br/&gt;- filter by alias name contains searchString_1 or creator info (login, email, firstName, lastName ) contains searchString_2&lt;/p&gt;&lt;h4&gt;Sorting&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;&lt;br/&gt;Multiple fields is supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Alias name&lt;/dd&gt;&lt;dt&gt;expireAt&lt;/dt&gt;&lt;dd&gt;Expiration date&lt;/dd&gt;&lt;dt&gt;notifyCreator&lt;/dt&gt;&lt;dd&gt;Notify creator on every upload.&lt;/dd&gt;&lt;dt&gt;createdAt&lt;/dt&gt;&lt;dd&gt;Creation date&lt;/dd&gt;&lt;dt&gt;createdBy&lt;/dt&gt;&lt;dd&gt;Creator info&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;name:asc|expireAt:desc&lt;/samp&gt;&lt;br/&gt;- sort by name ascending and by expireAt descending&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param offset Range offset (optional)
-   * @param limit Range limit (optional)
-   * @param filter Filter string (optional)
-   * @param sort Sort string (optional)
-   * @return UploadShareList
+   * Get Upload Share via QR Code
+   * ### Functional Description:   Retrieve detailed information about one Upload Share (aka Upload Account).  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param shareId Share ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
+   * @return UploadShare
    * @throws ApiException if fails to make API call
    */
-  public UploadShareList getUploadShares(String xSdsAuthToken, String xSdsDateFormat, Integer offset, Integer limit, String filter, String sort) throws ApiException {
+  public UploadShare getUploadShareQr(Long shareId, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getUploadShares");
+    // verify the required parameter 'shareId' is set
+    if (shareId == null) {
+      throw new ApiException(400, "Missing the required parameter 'shareId' when calling getUploadShareQr");
     }
     
     // create path and map variables
-    String localVarPath = "/shares/uploads";
+    String localVarPath = "/v4/shares/uploads/{share_id}/qr"
+      .replaceAll("\\{" + "share_id" + "\\}", apiClient.escapeString(shareId.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "offset", offset));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sort", sort));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
@@ -441,7 +461,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -450,7 +470,56 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+    GenericType<UploadShare> localVarReturnType = new GenericType<UploadShare>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Get Upload Shares
+   * ### Functional Description:   Retrieve a list of Upload Shares (aka Upload Accounts).  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical disjunction (**OR**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;name:cn:searchString_1|createdBy:cn:searchString_2&#x60;   Filter by alias name contains &#x60;searchString_1&#x60; **OR** creator info (firstname **OR** lastname **OR** login) contains &#x60;searchString_2&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;name&#x60;** | Alias name filter | &#x60;cn&#x60; | Alias name contains value. | &#x60;search String&#x60; | | **&#x60;createdBy&#x60;** | Creator info filter | &#x60;cn&#x60; | Creator info (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;login&#x60;) contains value. | &#x60;search String&#x60; | | **&#x60;accessKey&#x60;** | Share access key filter | &#x60;cn&#x60; | Share access key contains values. | &#x60;search String&#x60; | | **&#x60;targetId&#x60;** | Target node ID | &lt;ul&gt;&lt;li&gt;&#x60;cn&#x60; (**&#x60;DEPRECATED&#x60;**)&lt;/li&gt;&lt;li&gt;&#x60;eq&#x60; (**&#x60;NEW&#x60;**)&lt;/li&gt;&lt;/ul&gt; | Target node (room, folder) ID equals value. | &#x60;positive Integer&#x60; | | **&#x60;userId&#x60;** | Creator user ID | &#x60;eq&#x60; | Creator user ID equals value. | &#x60;positive Integer&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported. Example: &gt; &#x60;name:asc|expireAt:desc&#x60;   Sort by &#x60;name&#x60; ascending **AND** by &#x60;expireAt&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;name&#x60;** | Alias name | | **&#x60;notifyCreator&#x60;** | Notify creator on every upload | | **&#x60;expireAt&#x60;** | Expiration date | | **&#x60;createdAt&#x60;** | Creation date | | **&#x60;createdBy&#x60;** | Creator info |
+   * @param filter Filter string (optional)
+   * @param sort Sort string (optional)
+   * @param offset Range offset (optional)
+   * @param limit Range limit (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
+   * @return UploadShareList
+   * @throws ApiException if fails to make API call
+   */
+  public UploadShareList getUploadShares(String filter, String sort, Integer offset, Integer limit, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4/shares/uploads";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sort", sort));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "offset", offset));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+
+    
+    final String[] localVarAccepts = {
+      "application/json;charset=UTF-8"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UploadShareList> localVarReturnType = new GenericType<UploadShareList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);

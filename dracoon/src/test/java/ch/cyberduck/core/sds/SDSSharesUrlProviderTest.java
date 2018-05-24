@@ -35,11 +35,11 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -211,7 +211,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
             new CreateDownloadShareRequest()
-                .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new Date(1744300800000L)))
+                .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(1744300800000L)))
                 .notifyCreator(false)
                 .sendMail(false)
                 .sendSms(false)
@@ -233,7 +233,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
             new CreateDownloadShareRequest()
-                .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new Date(17443L)))
+                .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(17443L)))
                 .notifyCreator(false)
                 .sendMail(false)
                 .sendSms(false)

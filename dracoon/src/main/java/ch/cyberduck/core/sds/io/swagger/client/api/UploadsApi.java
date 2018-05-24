@@ -1,22 +1,36 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
-
-import javax.ws.rs.core.GenericType;
-
 import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
-import java.io.File;
+import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
+import javax.ws.rs.core.GenericType;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-03T10:55:56.129+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
 public class UploadsApi {
   private ApiClient apiClient;
 
@@ -38,7 +52,7 @@ public class UploadsApi {
 
   /**
    * Cancel file upload
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Cancel file upload.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid upload token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Upload canceled, token invalidated and all already transfered chunks removed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; It is recommended to notify the API about cancelled uploads if possible.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description: Cancel file upload.  ### Precondition: Valid upload token.  ### Effects: Upload canceled, token invalidated and all already transfered chunks removed.  ### &amp;#9432; Further Information: It is recommended to notify the API about cancelled uploads if possible.
    * @param token Upload token (required)
    * @throws ApiException if fails to make API call
    */
@@ -51,7 +65,7 @@ public class UploadsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/uploads/{token}"
+    String localVarPath = "/v4/uploads/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
     // query params
@@ -63,7 +77,7 @@ public class UploadsApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -79,14 +93,14 @@ public class UploadsApi {
   }
   /**
    * Complete file upload
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Finish uploading a file.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid upload token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; File created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The provided file name might be changed in accordance with the resolution strategy:&lt;ul&gt;&lt;li&gt;&#39;autorename&#39; changes the file name and adds a number to avoid conflicts.&lt;/li&gt;&lt;li&gt;&#39;overwrite&#39; deletes any old file with the same file name.&lt;/li&gt;&lt;li&gt;&#39;fail&#39; returns an error. In this case, another PUT request with a different file name may be sent.&lt;/li&gt;&lt;/ul&gt;&lt;/br&gt;Please ensure that all chunks have been transferred correctly before finishing the upload.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description: Finish uploading a file.  ### Precondition: Valid upload token.  ### Effects: File created.  ### &amp;#9432; Further Information: The provided file name might be changed in accordance with the resolution strategy:  * **autorename**: changes the file name and adds a number to avoid conflicts. * **overwrite**: deletes any old file with the same file name. * **fail**: returns an error; in this case, another &#x60;PUT&#x60; request with a different file name may be sent.  Please ensure that all chunks have been transferred correctly before finishing the upload.  ### 200 OK is not used by this API
    * @param token Upload token (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param body The body must be empty if public upload token is used. The resolutionStrategy in that case will be always &#39;autorename&#39; (optional)
+   * @param body The body must be empty if public upload token is used. The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&#x60; (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node completeFileUploadByToken(String token, String xSdsDateFormat, ch.cyberduck.core.sds.swagger.CompleteUploadRequest body) throws ApiException {
+  public Node completeFileUploadByToken(String token, CompleteUploadRequest body, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     
     // verify the required parameter 'token' is set
@@ -95,7 +109,7 @@ public class UploadsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/uploads/{token}"
+    String localVarPath = "/v4/uploads/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
     // query params
@@ -109,12 +123,12 @@ public class UploadsApi {
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -125,10 +139,10 @@ public class UploadsApi {
       }
   /**
    * Upload file by token
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Upload a chunk of a file.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid upload token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Chunk uploaded.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Use this API if you cannot set custom headers during uploads. Range requests are supported (please cf. &lt;a href&#x3D;\&quot;https://tools.ietf.org/html/rfc7233\&quot; target&#x3D;\&quot;_blank\&quot;&gt;RCF 7233&lt;/a&gt; for details).&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Upload a chunk of a file.  ### Precondition: Valid upload token.  ### Effects: Chunk uploaded.  ### &amp;#9432; Further Information: Use this API if you cannot set custom headers during uploads.   Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
    * @param token Upload token (required)
-   * @param file  (required)
-   * @param contentRange Content Range (format: \&quot;bytes 0-999/3980\&quot;) (optional)
+   * @param file File (required)
+   * @param contentRange Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
    * @return ChunkUploadResponse
    * @throws ApiException if fails to make API call
    */
@@ -146,7 +160,7 @@ public class UploadsApi {
     }
     
     // create path and map variables
-    String localVarPath = "/uploads/{token}"
+    String localVarPath = "/v4/uploads/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
     // query params
@@ -162,7 +176,7 @@ public class UploadsApi {
       localVarFormParams.put("file", file);
 
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 

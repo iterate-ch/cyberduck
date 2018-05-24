@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -51,10 +52,13 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+
+import com.google.gson.stream.JsonReader;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements Write<Void> {
+public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> implements Write<VersionId> {
 
     private final DriveSession session;
     private final DriveFileidProvider fileid;
@@ -93,10 +97,10 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
+    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
             @Override
-            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
+            public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final String base = session.getClient().getRootUrl();
                     // Initiate a resumable upload
@@ -147,6 +151,21 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                                 switch(putResponse.getStatusLine().getStatusCode()) {
                                     case HttpStatus.SC_OK:
                                     case HttpStatus.SC_CREATED:
+                                        try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), "UTF-8"))) {
+                                            reader.beginObject();
+                                            String key = null;
+                                            String secret = null;
+                                            String token = null;
+                                            while(reader.hasNext()) {
+                                                final String name = reader.nextName();
+                                                final String value = reader.nextString();
+                                                switch(name) {
+                                                    case "id":
+                                                        return new VersionId(value);
+                                                }
+                                            }
+                                            reader.endObject();
+                                        }
                                         break;
                                     default:
                                         throw new DriveExceptionMappingService().map(new HttpResponseException(
@@ -162,7 +181,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                                 response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
-                    return null;
+                    return new VersionId(DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener()));
                 }
                 catch(IOException e) {
                     throw new DriveExceptionMappingService().map("Upload failed", e, file);

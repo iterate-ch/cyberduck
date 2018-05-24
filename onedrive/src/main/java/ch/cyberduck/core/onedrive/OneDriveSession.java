@@ -80,16 +80,13 @@ public class OneDriveSession extends GraphSession {
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
         }
-
         final String[] idParts = versionId.split("/");
-
         if(idParts.length == 1) {
             return new OneDriveDrive(getClient(), idParts[0]).getRoot();
         }
         else {
             final String driveId;
             final String itemId;
-
             if(idParts.length == 2 || !resolveLastItem) {
                 driveId = idParts[0];
                 itemId = idParts[1];
@@ -99,9 +96,8 @@ public class OneDriveSession extends GraphSession {
                 itemId = idParts[3];
             }
             else {
-                throw new NotfoundException(String.format("Did not find %s", currentPath.getAbsolute()));
+                throw new NotfoundException(currentPath.getAbsolute());
             }
-
             final OneDriveDrive drive = new OneDriveDrive(getClient(), driveId);
             if(currentPath.getType().contains(Path.Type.file)) {
                 return new OneDriveFile(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
@@ -113,8 +109,7 @@ public class OneDriveSession extends GraphSession {
                 return new OneDrivePackageItem(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
             }
         }
-
-        throw new NotfoundException(String.format("Did not find %s", currentPath.getAbsolute()));
+        throw new NotfoundException(currentPath.getAbsolute());
     }
 
     @Override

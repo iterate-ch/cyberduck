@@ -1,35 +1,34 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+import ch.cyberduck.core.sds.io.swagger.client.model.*;
 
 import javax.ws.rs.core.GenericType;
-
-import ch.cyberduck.core.sds.io.swagger.client.model.ActiveDirectoryAuthInfo;
-import ch.cyberduck.core.sds.io.swagger.client.model.BrandingServerInfo;
-import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateShareUploadChannelRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateShareUploadChannelResponse;
 import java.io.File;
-import ch.cyberduck.core.sds.io.swagger.client.model.OpenIdAuthInfo;
-import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadShare;
-import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.PublicDownloadTokenGenerateResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.PublicUploadShare;
-import ch.cyberduck.core.sds.io.swagger.client.model.PublicUploadedFileData;
-import ch.cyberduck.core.sds.io.swagger.client.model.SdsServerTime;
-import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
-import ch.cyberduck.core.sds.io.swagger.client.model.SystemInfo;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeyList;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-03T10:55:56.129+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
 public class PublicApi {
   private ApiClient apiClient;
 
@@ -51,9 +50,9 @@ public class PublicApi {
 
   /**
    * Cancel file upload
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Abort (chunked) upload via Upload Share.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid UploadID.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Aborts upload and invalidates UploadId/Token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description: Abort (chunked) upload via Upload Share.  ### Precondition: Valid Upload ID.  ### Effects: Aborts upload and invalidates upload ID / token.  ### &amp;#9432; Further Information: None.
    * @param accessKey Access key (required)
-   * @param uploadId Upload Id (required)
+   * @param uploadId Upload channel ID (required)
    * @throws ApiException if fails to make API call
    */
   public void cancelShareUpload(String accessKey, String uploadId) throws ApiException {
@@ -70,7 +69,7 @@ public class PublicApi {
     }
     
     // create path and map variables
-    String localVarPath = "/public/shares/uploads/{access_key}/{upload_id}"
+    String localVarPath = "/v4/public/shares/uploads/{access_key}/{upload_id}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()))
       .replaceAll("\\{" + "upload_id" + "\\}", apiClient.escapeString(uploadId.toString()));
 
@@ -83,7 +82,7 @@ public class PublicApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -99,15 +98,15 @@ public class PublicApi {
   }
   /**
    * Complete file upload
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Finalize (chunked) upload via Upload Share.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid UploadID.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Finalizes upload.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Chunked uploads (range requests) are supported (please cf. &lt;a href&#x3D;\&quot;https://tools.ietf.org/html/rfc7233\&quot; target&#x3D;\&quot;_blank\&quot;&gt;RCF 7233&lt;/a&gt; for details).&lt;/br&gt;Please ensure that all chunks have been transferred correctly before finishing the upload.&lt;/br&gt;If file hash has been created in time a 201 will be responded and hash will be part of Response class, otherwise it will be a 202 without it.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description: Finalize (chunked) upload via Upload Share.  ### Precondition: Valid upload ID.  ### Effects: Finalizes upload.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).    Please ensure that all chunks have been transferred correctly before finishing the upload.   If file hash has been created in time a &#x60;201 Created&#x60; will be responded and hash will be part of response, otherwise it will be a &#x60;202 Accepted&#x60; without it.  ### 200 OK is not used by this API
    * @param accessKey Access key (required)
-   * @param uploadId Upload Id (required)
-   * @param userFileKeyList Mandatory for encrypted shares (optional)
+   * @param uploadId Upload channel ID (required)
+   * @param body Mandatory for encrypted shares (optional)
    * @return PublicUploadedFileData
    * @throws ApiException if fails to make API call
    */
-  public PublicUploadedFileData completeShareUpload(String accessKey, String uploadId, UserFileKeyList userFileKeyList) throws ApiException {
-    Object localVarPostBody = userFileKeyList;
+  public PublicUploadedFileData completeShareUpload(String accessKey, String uploadId, UserFileKeyList body) throws ApiException {
+    Object localVarPostBody = body;
     
     // verify the required parameter 'accessKey' is set
     if (accessKey == null) {
@@ -120,7 +119,7 @@ public class PublicApi {
     }
     
     // create path and map variables
-    String localVarPath = "/public/shares/uploads/{access_key}/{upload_id}"
+    String localVarPath = "/v4/public/shares/uploads/{access_key}/{upload_id}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()))
       .replaceAll("\\{" + "upload_id" + "\\}", apiClient.escapeString(uploadId.toString()));
 
@@ -133,12 +132,12 @@ public class PublicApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -149,9 +148,9 @@ public class PublicApi {
       }
   /**
    * Generate download token
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Generate a download token to retrieve a shared file.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Download token is generated and returned.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; After generating the download token a download is possible with &lt;code&gt;GET /public/shares/downloads/{access_key}/{token}&lt;/code&gt;.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description: Generate a download token to retrieve a shared file.  ### Precondition: None.  ### Effects: Download token is generated and returned.  ### &amp;#9432; Further Information: After generating the download token a download is possible with:   &#x60;GET /public/shares/downloads/{access_key}/{token}&#x60; API.
    * @param accessKey Access key (required)
-   * @param body  (required)
+   * @param body body (required)
    * @return PublicDownloadTokenGenerateResponse
    * @throws ApiException if fails to make API call
    */
@@ -169,7 +168,7 @@ public class PublicApi {
     }
     
     // create path and map variables
-    String localVarPath = "/public/shares/downloads/{access_key}"
+    String localVarPath = "/v4/public/shares/downloads/{access_key}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()));
 
     // query params
@@ -181,12 +180,12 @@ public class PublicApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -197,9 +196,9 @@ public class PublicApi {
       }
   /**
    * Create new file upload channel
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Create a new upload channel.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Upload channel is created and corresponding token/uploadId returned.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The token from the response can be used at:&lt;ul&gt;&lt;li&gt;POST /uploads/{token}&lt;/li&gt;&lt;li&gt;PUT /uploads/{token}&lt;/li&gt;&lt;li&gt;DELETE /uploads/{token}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;/p&gt;Please provide the size of the intended upload so that the quota can be checked in advanced and no data is transferred unnecessarily.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Room/Folder/File name convention&lt;/h4&gt;&lt;h5&gt;Room/Folder/File names are limited to 150 characters.&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;Not allowed Room/Folder/File names&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Not allowed characters in Room/Folder/File name&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;../&#39;, &#39;\\&#39;, &#39;&amp;lt;&#39;,&#39;&amp;gt;&#39;, &#39;:&#39;, &#39;\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
+   * ### Functional Description:   Create a new upload channel.  ### Precondition: None.  ### Effects: Upload channel is created and corresponding token / upload ID returned.  ### &amp;#9432; Further Information: The token from the response can be used at:  * &#x60;POST /uploads/{token}&#x60; * &#x60;PUT /uploads/{token}&#x60; * &#x60;DELETE /uploads/{token}&#x60;  Please provide the size of the intended upload so that the quota can be checked in advanced and no data is transferred unnecessarily.  ### Node naming convention  * Node (room, folder, file) names are limited to **150** characters.  * Not allowed names:   &#x60;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&#x60;  * Not allowed characters in names:   &#x60;&#39;../&#39;, &#39;\\\\&#39;, &#39;&lt;&#39;,&#39;&gt;&#39;, &#39;:&#39;, &#39;\\\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&#x60; 
    * @param accessKey Access key (required)
-   * @param body  (required)
+   * @param body body (required)
    * @return CreateShareUploadChannelResponse
    * @throws ApiException if fails to make API call
    */
@@ -217,7 +216,7 @@ public class PublicApi {
     }
     
     // create path and map variables
-    String localVarPath = "/public/shares/uploads/{access_key}"
+    String localVarPath = "/v4/public/shares/uploads/{access_key}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()));
 
     // query params
@@ -229,12 +228,12 @@ public class PublicApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -245,26 +244,28 @@ public class PublicApi {
       }
   /**
    * Get Active Directory authentication information
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Provides information about Active Directory authentication options.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Provides information about Active Directory authentication options.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param isGlobalAvailable Show only global available items (optional)
    * @return ActiveDirectoryAuthInfo
    * @throws ApiException if fails to make API call
    */
-  public ActiveDirectoryAuthInfo getActiveDirectoryAuthInfo() throws ApiException {
+  public ActiveDirectoryAuthInfo getActiveDirectoryAuthInfo(Boolean isGlobalAvailable) throws ApiException {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/public/system/info/auth/ad";
+    String localVarPath = "/v4/public/system/info/auth/ad";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "is_global_available", isGlobalAvailable));
 
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -280,15 +281,15 @@ public class PublicApi {
       }
   /**
    * Get branding info
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Public branding information.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; If &lt;b&gt;brandingServerBrandingId&lt;/b&gt; is set, &lt;b&gt;brandingServerCustomer&lt;/b&gt; is not supplied.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @return BrandingServerInfo
+   * ### Functional Description:   Provides information about branding settings.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Branding settings  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;brandingProviderUrl&#x60;** | Access URL to to the Branding Portal | &#x60;String&#x60; | | **&#x60;brandingQualifier&#x60;** | Branding UUID | &#x60;String&#x60; | 
+   * @return BrandingConfig
    * @throws ApiException if fails to make API call
    */
-  public BrandingServerInfo getBrandingServerInfo() throws ApiException {
+  public BrandingConfig getBrandingInfo() throws ApiException {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/public/branding/info";
+    String localVarPath = "/v4/public/system/branding";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -299,7 +300,42 @@ public class PublicApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] {  };
+
+    GenericType<BrandingConfig> localVarReturnType = new GenericType<BrandingConfig>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Get branding info
+   * ### Functional Description:   Public branding information.  ### Precondition: None.  ### Effects: If &#x60;brandingServerBrandingId&#x60; is set, &#x60;brandingServerCustomer&#x60; is not supplied.  ### &amp;#9432; Further Information: None.
+   * @return BrandingServerInfo
+   * @throws ApiException if fails to make API call
+   */
+  public BrandingServerInfo getBrandingServerInfo() throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4/public/branding/info";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -315,26 +351,28 @@ public class PublicApi {
       }
   /**
    * Get OpenID Connect authentication information
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Provides information about OpenID Connect authentication options.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Provides information about OpenID Connect authentication options.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param isGlobalAvailable Show only global available items (optional)
    * @return OpenIdAuthInfo
    * @throws ApiException if fails to make API call
    */
-  public OpenIdAuthInfo getOpenIdAuthInfo() throws ApiException {
+  public OpenIdAuthInfo getOpenIdAuthInfo(Boolean isGlobalAvailable) throws ApiException {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/public/system/info/auth/openid";
+    String localVarPath = "/v4/public/system/info/auth/openid";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "is_global_available", isGlobalAvailable));
 
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -349,10 +387,10 @@ public class PublicApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get public download share info
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve the public information of a Download Share.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
+   * Get public Download Share info
+   * ### Functional Description:   Retrieve the public information of a Download Share.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @param accessKey Access key (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return PublicDownloadShare
    * @throws ApiException if fails to make API call
    */
@@ -365,7 +403,7 @@ public class PublicApi {
     }
     
     // create path and map variables
-    String localVarPath = "/public/shares/downloads/{access_key}"
+    String localVarPath = "/v4/public/shares/downloads/{access_key}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()));
 
     // query params
@@ -379,7 +417,7 @@ public class PublicApi {
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -395,15 +433,15 @@ public class PublicApi {
       }
   /**
    * Download file
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Download a file.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid download token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Range requests are supported (please cf. &lt;a href&#x3D;\&quot;https://tools.ietf.org/html/rfc7233\&quot; target&#x3D;\&quot;_blank\&quot;&gt;RCF 7233&lt;/a&gt; for details).&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
    * @param accessKey Access key (required)
    * @param token Download token (required)
-   * @param range Range (optional)
-   * @param genericMimetype always return application/octet-stream instead of specific mimetype (optional)
-   * @return Object
+   * @param range Range e.g. &#x60;bytes&#x3D;0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
+   * @return Integer
    * @throws ApiException if fails to make API call
    */
-  public Object getPublicFileData(String accessKey, String token, String range, Boolean genericMimetype) throws ApiException {
+  public Integer getPublicFileData(String accessKey, String token, String range, Boolean genericMimetype) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'accessKey' is set
@@ -417,7 +455,7 @@ public class PublicApi {
     }
     
     // create path and map variables
-    String localVarPath = "/public/shares/downloads/{access_key}/{token}"
+    String localVarPath = "/v4/public/shares/downloads/{access_key}/{token}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()))
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
@@ -444,32 +482,34 @@ public class PublicApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<Object> localVarReturnType = new GenericType<Object>() {};
+    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get download file headers
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve the header of a file transmission. Please cf. &lt;a href&#x3D;\&quot;https://tools.ietf.org/html/rfc7233\&quot; target&#x3D;\&quot;_blank\&quot;&gt;RCF 7233&lt;/a&gt; for details.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid download token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
+   * Download file
+   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
    * @param accessKey Access key (required)
    * @param token Download token (required)
-   * @param genericMimetype always return application/octet-stream instead of specific mimetype (optional)
+   * @param range Range e.g. &#x60;bytes&#x3D;0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
+   * @return Integer
    * @throws ApiException if fails to make API call
    */
-  public void getPublicFileDataHead(String accessKey, String token, Boolean genericMimetype) throws ApiException {
+  public Integer getPublicFileData1(String accessKey, String token, String range, Boolean genericMimetype) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'accessKey' is set
     if (accessKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessKey' when calling getPublicFileDataHead");
+      throw new ApiException(400, "Missing the required parameter 'accessKey' when calling getPublicFileData1");
     }
     
     // verify the required parameter 'token' is set
     if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling getPublicFileDataHead");
+      throw new ApiException(400, "Missing the required parameter 'token' when calling getPublicFileData1");
     }
     
     // create path and map variables
-    String localVarPath = "/public/shares/downloads/{access_key}/{token}"
+    String localVarPath = "/v4/public/shares/downloads/{access_key}/{token}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()))
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
@@ -480,29 +520,31 @@ public class PublicApi {
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "generic_mimetype", genericMimetype));
 
-    
+    if (range != null)
+      localVarHeaderParams.put("Range", apiClient.parameterToString(range));
+
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/octet-stream"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] {  };
 
-
-    apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
+    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
+    return apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
   /**
-   * Get public upload share info
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Provides information about the desired Upload Share.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; If no password is set, the returned information is reduced to the following attributes (if available):&lt;ul&gt;&lt;li&gt;name&lt;/li&gt;&lt;li&gt;maxSlots&lt;/li&gt;&lt;li&gt;createdAt&lt;/li&gt;&lt;li&gt;isProtected&lt;/li&gt;&lt;li&gt;isEncrypted&lt;/li&gt;&lt;li&gt;showUploadedFiles&lt;/li&gt;&lt;li&gt;userPublicKeyList (if parent is end-to-end encrypted) &lt;/li&gt;&lt;/ul&gt;&lt;br/&gt;Only if the Password is transmitted as &lt;b&gt;X-Sds-Share-Password&lt;/b&gt; header, all values are returned.&lt;/p&gt;&lt;/div&gt;
+   * Get public Upload Share info
+   * ### Functional Description:   Provides information about the desired Upload Share.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: If no password is set, the returned information is reduced to the following attributes (if available):  * **name** * **maxSlots** * **createdAt** * **isProtected** * **isEncrypted** * **showUploadedFiles** * **userUserPublicKeyList** (if parent is end-to-end encrypted)  Only if the password is transmitted as &#x60;X-Sds-Share-Password&#x60; header, all values are returned.
    * @param accessKey Access key (required)
    * @param xSdsSharePassword Upload share password (optional)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return PublicUploadShare
    * @throws ApiException if fails to make API call
    */
@@ -515,7 +557,7 @@ public class PublicApi {
     }
     
     // create path and map variables
-    String localVarPath = "/public/shares/uploads/{access_key}"
+    String localVarPath = "/v4/public/shares/uploads/{access_key}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()));
 
     // query params
@@ -531,7 +573,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -547,8 +589,8 @@ if (xSdsDateFormat != null)
       }
   /**
    * Get system time
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt; Retrieve the actual server time.&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Retrieve the actual server time.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return SdsServerTime
    * @throws ApiException if fails to make API call
    */
@@ -556,7 +598,7 @@ if (xSdsDateFormat != null)
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/public/time";
+    String localVarPath = "/v4/public/time";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -569,7 +611,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -585,8 +627,8 @@ if (xSdsDateFormat != null)
       }
   /**
    * Get software version info
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Public software version information.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The version of SDS Server consists of two components: API and Core (refered to as \&quot;server\&quot;) that are versioned individually.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Public software version information.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: The version of DRACOON Server consists of two components: * **API** * **Core** (referred to as _\&quot;Server\&quot;_)  that are versioned individually.
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return SoftwareVersionData
    * @throws ApiException if fails to make API call
    */
@@ -594,7 +636,7 @@ if (xSdsDateFormat != null)
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/public/software/version";
+    String localVarPath = "/v4/public/software/version";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -607,7 +649,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -623,26 +665,28 @@ if (xSdsDateFormat != null)
       }
   /**
    * Get system information
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Provides information about system.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Provides information about system.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: Authentication methods are sorted by priority attribute.   Smaller values have higher priority.   Authentication method with highest priority is considered as default.  ### System information  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;languageDefault&#x60;** | Defines which language should be default.&lt;br&gt;cf. [RFC 5646](https://tools.ietf.org/html/rfc5646) for ISO 639-1 codes | &#x60;ISO 639-1 code&#x60; |  ### Authentication methods  | Authentication Method | Description | | :--- | :--- | | **&#x60;basic&#x60;** | **Basic** authentication globally allowed.&lt;br&gt;This option must be activated to allow users to log in with their credentials stored in the database.&lt;br&gt;Formerly known as **&#x60;sql&#x60;**. | | **&#x60;active_directory&#x60;** | **Active Directory** authentication globally allowed.&lt;br&gt;This option must be activated to allow users to log in with their Active Directory credentials. | | **&#x60;radius&#x60;** | **RADIUS** authentication globally allowed.&lt;br&gt;This option must be activated to allow users to log in with their RADIUS username, their PIN and a token password. | | **&#x60;openid&#x60;** | **OpenID Connect** authentication globally allowed.This option must be activated to allow users to log in with their OpenID Connect identity. | 
+   * @param isEnabled Show only enabled authentication methods (optional)
    * @return SystemInfo
    * @throws ApiException if fails to make API call
    */
-  public SystemInfo getSystemInfo() throws ApiException {
+  public SystemInfo getSystemInfo(Boolean isEnabled) throws ApiException {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/public/system/info";
+    String localVarPath = "/v4/public/system/info";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "is_enabled", isEnabled));
 
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -658,16 +702,16 @@ if (xSdsDateFormat != null)
       }
   /**
    * Upload file
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Chunked upload of files via Upload Share.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Valid UploadID.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Chunk of file is uploaded.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Chunked uploads (range requests) are supported (please cf. &lt;a href&#x3D;\&quot;https://tools.ietf.org/html/rfc7233\&quot; target&#x3D;\&quot;_blank\&quot;&gt;RCF 7233&lt;/a&gt; for details).&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Chunked upload of files via Upload Share.  ### Precondition: Valid upload ID.  ### Effects: Chunk of file is uploaded.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
    * @param accessKey Access key (required)
-   * @param uploadId Upload Id (required)
-   * @param file  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param contentRange Content Range (format: \&quot;bytes 0-999/3980\&quot;) (optional)
+   * @param uploadId Upload channel ID (required)
+   * @param file File (optional)
+   * @param contentRange Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return ChunkUploadResponse
    * @throws ApiException if fails to make API call
    */
-  public ChunkUploadResponse uploadShare(String accessKey, String uploadId, File file, String xSdsDateFormat, String contentRange) throws ApiException {
+  public ChunkUploadResponse uploadShare(String accessKey, String uploadId, File file, String contentRange, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'accessKey' is set
@@ -680,13 +724,8 @@ if (xSdsDateFormat != null)
       throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadShare");
     }
     
-    // verify the required parameter 'file' is set
-    if (file == null) {
-      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadShare");
-    }
-    
     // create path and map variables
-    String localVarPath = "/public/shares/uploads/{access_key}/{upload_id}"
+    String localVarPath = "/v4/public/shares/uploads/{access_key}/{upload_id}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()))
       .replaceAll("\\{" + "upload_id" + "\\}", apiClient.escapeString(uploadId.toString()));
 
@@ -696,16 +735,16 @@ if (xSdsDateFormat != null)
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsDateFormat != null)
-      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-if (contentRange != null)
+    if (contentRange != null)
       localVarHeaderParams.put("Content-Range", apiClient.parameterToString(contentRange));
+if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
 
     if (file != null)
       localVarFormParams.put("file", file);
 
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 

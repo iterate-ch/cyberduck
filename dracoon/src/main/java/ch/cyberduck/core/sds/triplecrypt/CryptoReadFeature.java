@@ -61,8 +61,8 @@ public class CryptoReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileKey key = new NodesApi(session.getClient()).getUserFileKey(StringUtils.EMPTY,
-                Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())));
+            final FileKey key = new NodesApi(session.getClient()).getUserFileKey(
+                Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY);
             final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = session.keyPair();
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());

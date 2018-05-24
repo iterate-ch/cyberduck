@@ -1,6 +1,13 @@
 Cyberduck
 https://cyberduck.io/
 
+6.6.0
+- [Feature] Include shared items (OneDrive) (#10107)
+- [Feature] Add support to login with Shared Access Signature (SAS) Token (Azure)
+- [Feature] Support to queue transfers (#9984)
+- [Bugfix] Missing files in folders of vault (Google Drive, Cryptomator) (#10315)
+- [Bugfix] Application error when opening connection (DRACOON) (Windows Store)
+
 6.5.0
 - [Bugfix] Improved performance accessing vaults (Cryptomator)
 - [Bugfix] Improved performance accessing files (Backblaze B2, Google Drive)

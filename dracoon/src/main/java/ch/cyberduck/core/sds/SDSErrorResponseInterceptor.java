@@ -64,7 +64,7 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
                             // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
                             try {
                                 token = new AuthApi(session.getClient()).login(new LoginRequest()
-                                    .authType(session.getHost().getProtocol().getAuthorization())
+                                    .authType(LoginRequest.AuthTypeEnum.fromValue(session.getHost().getProtocol().getAuthorization()))
                                     .login(user)
                                     .password(password)).getToken();
                                 return true;

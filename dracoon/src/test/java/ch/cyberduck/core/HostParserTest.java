@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
 public class HostParserTest {
@@ -35,10 +35,10 @@ public class HostParserTest {
     public void testParseUsernameFromUrlEvent() throws Exception {
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
             new Local("../profiles/default/DRACOON (Email Address).cyberduckprofile"));
-        assertTrue(new Host(new SDSProtocol(), "duck.ssp-europe.eu", 443, "/cyberduck-test/key", new Credentials(
+        assertEquals(0, new Host(new SDSProtocol(), "duck.ssp-europe.eu", 443, "/cyberduck-test/key", new Credentials(
             System.getProperties().getProperty("sds.user")
         ))
             .compareTo(new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
-                "dracoon://post%40iterate.ch@duck.ssp-europe.eu/key")) == 0);
+                "dracoon://post%40iterate.ch@duck.ssp-europe.eu/key")));
     }
 }

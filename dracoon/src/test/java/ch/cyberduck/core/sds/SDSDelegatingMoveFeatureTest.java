@@ -244,8 +244,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         new SDSDirectoryFeature(session, nodeid).mkdir(room, null, new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest();
         encrypt.setIsEncrypted(true);
-        new NodesApi(session.getClient()).encryptRoom(StringUtils.EMPTY, Long.parseLong(new SDSNodeIdProvider(session).withCache(cache).getFileid(room,
-            new DisabledListProgressListener())), encrypt, null);
+        new NodesApi(session.getClient()).encryptRoom(Long.parseLong(new SDSNodeIdProvider(session).withCache(cache).getFileid(room,
+            new DisabledListProgressListener())), encrypt, StringUtils.EMPTY, null);
         final AttributedList<Path> list = new SDSListService(session, nodeid).list(room.getParent(), new DisabledListProgressListener());
         final Path encrypted = list.get(room);
         // create file inside encrypted room

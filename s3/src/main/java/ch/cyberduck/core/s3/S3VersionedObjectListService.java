@@ -70,7 +70,7 @@ public class S3VersionedObjectListService implements ListService {
                 // Amazon S3 returns object versions in the order in which they were
                 // stored, with the most recently stored returned first.
                 final List<BaseVersionOrDeleteMarker> items = Arrays.asList(chunk.getItems());
-                int i = 0;
+                long i = 0L;
                 for(BaseVersionOrDeleteMarker marker : items) {
                     final String key = PathNormalizer.normalize(marker.getKey());
                     if(String.valueOf(Path.DELIMITER).equals(key)) {

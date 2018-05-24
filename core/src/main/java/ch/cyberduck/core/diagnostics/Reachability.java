@@ -24,17 +24,32 @@ import ch.cyberduck.core.Host;
 public interface Reachability {
 
     /**
-     * @param host Hostname
+     * @param bookmark Hostname
      * @return True if the host is reachable. Returns false if there is a
      * network configuration error, no such host is known or the server does
      * not listing at any such port
      */
-    boolean isReachable(Host host);
+    boolean isReachable(Host bookmark);
 
     /**
      * Opens the network configuration assistant for the URL denoting this host
      *
-     * @param host Hostname
+     * @param bookmark Hostname
      */
-    void diagnose(Host host);
+    void diagnose(Host bookmark);
+
+    Monitor monitor(Host bookmark, Callback callback);
+
+    interface Callback {
+        /**
+         * Change of reachability for host address detected
+         */
+        void change();
+    }
+
+    interface Monitor {
+        Monitor start();
+
+        Monitor stop();
+    }
 }

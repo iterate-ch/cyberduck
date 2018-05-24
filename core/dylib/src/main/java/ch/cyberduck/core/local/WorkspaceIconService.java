@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.unicode.NFDNormalizer;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -38,7 +39,7 @@ public final class WorkspaceIconService implements IconService {
             // Specify 0 if you want to generate icons in all available icon representation formats
             final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
             if(workspace.setIcon_forFile_options(icon, file.getAbsolute(), new NSUInteger(0))) {
-                workspace.noteFileSystemChanged(file.getAbsolute());
+                workspace.noteFileSystemChanged(new NFDNormalizer().normalize(file.getAbsolute()).toString());
                 return true;
             }
             return false;

@@ -18,6 +18,7 @@ package ch.cyberduck.core.serializer;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
 
@@ -38,6 +39,7 @@ public class PathAttributesDictionaryTest {
     public void testGetAsDictionary() throws Exception {
         PathAttributes attributes = new PathAttributes();
         attributes.setSize(3L);
+        attributes.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
         attributes.setModificationDate(5343L);
         assertEquals(attributes, new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())));
         assertEquals(attributes.hashCode(), new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());

@@ -1,27 +1,39 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
-
-import javax.ws.rs.core.GenericType;
-
 import ch.cyberduck.core.sds.io.swagger.client.model.AuthInitResources;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.OpenIdAuthResources;
-import ch.cyberduck.core.sds.io.swagger.client.model.RadiusChallengeResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.ResetPasswordRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ResetPasswordTokenValidateResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.ResetPasswordWithTokenRequest;
 
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-03T10:55:56.129+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
 public class AuthApi {
   private ApiClient apiClient;
 
@@ -43,9 +55,9 @@ public class AuthApi {
 
   /**
    * Complete OpenID Connect authentication
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt;This is the second step of the OpenID Connect authentication. (The user hands over the Authorization Code and is logged in.)&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Existing user with activated OpenID Connect authentication that is not locked.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; User is logged in.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; See &lt;a href&#x3D;\&quot;http://openid.net/developers/specs\&quot;&gt;http://openid.net/developers/specs&lt;/a&gt; for further information.&lt;/p&gt;&lt;/div&gt;
-   * @param code Authorization code. (required)
-   * @param state Authentication state. (required)
+   * ### Functional Description:   This is the second step of the OpenID Connect authentication.   The user hands over the authorization code and is logged in.  ### Precondition: Existing user with activated OpenID Connect authentication that is not locked.  ### Effects: User is logged in.  ### &amp;#9432; Further Information: See [http://openid.net/developers/specs](http://openid.net/developers/specs) for further information.
+   * @param code Authorization code (required)
+   * @param state Authentication state (required)
    * @return LoginResponse
    * @throws ApiException if fails to make API call
    */
@@ -63,7 +75,7 @@ public class AuthApi {
     }
     
     // create path and map variables
-    String localVarPath = "/auth/openid/login";
+    String localVarPath = "/v4/auth/openid/login";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -76,12 +88,12 @@ public class AuthApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -91,8 +103,8 @@ public class AuthApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get authentication resources [DEPRECATED]
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt;Provides information about authentication options.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The server identifies the relevant customer by the passed HTTP header \&quot;Origin\&quot;. Use this call to customize the log-on form.&lt;br/&gt;&lt;u&gt;Important:&lt;/u&gt; The default language and authentication method are always provided as topmost entry.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Currently supported languages (with ISO 639-1 code):&lt;/strong&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;German (de)&lt;/li&gt;&lt;li&gt;English (en)&lt;/li&gt;&lt;li&gt;Spanish (es)&lt;/li&gt;&lt;li&gt;French (fr)&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+   * Get authentication resources
+   * ### Functional Description:   Provides information about authentication options.  ### Precondition:  None.  ### Effects:  None.  ### &amp;#9432; Further Information: The server identifies the relevant customer by the passed HTTP header &#x60;Origin&#x60;.   Use this call to customize the log-on form.    ### Important:  The default language and authentication method are always provided as topmost entry.  ### Currently supported languages (with ISO 639-1 code): * German (de) * English (en) * Spanish (es) * French (fr)
    * @return AuthInitResources
    * @throws ApiException if fails to make API call
    */
@@ -100,7 +112,7 @@ public class AuthApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/auth/resources";
+    String localVarPath = "/v4/auth/resources";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -111,7 +123,7 @@ public class AuthApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -126,8 +138,8 @@ public class AuthApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get OpenID Connect authentication resources [DEPRECATED]
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt;Provides information about OpenID Connect authentication options.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
+   * Get OpenID Connect authentication resources
+   * ### Functional Description:   Provides information about OpenID Connect authentication options.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @return OpenIdAuthResources
    * @throws ApiException if fails to make API call
    */
@@ -135,7 +147,7 @@ public class AuthApi {
     Object localVarPostBody = null;
     
     // create path and map variables
-    String localVarPath = "/auth/openid/resources";
+    String localVarPath = "/v4/auth/openid/resources";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -146,7 +158,7 @@ public class AuthApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -162,11 +174,11 @@ public class AuthApi {
       }
   /**
    * Initiate OpenID Connect authentication
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt;This is the first step of the OpenID Connect authentication. (The user is send to the OpenID Connect identity provider to authenticate himself and retrieve an Authorization Code.)&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; User is redirected to OpenID Connect identity provider to authenticate himself.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; See &lt;a href&#x3D;\&quot;http://openid.net/developers/specs\&quot;&gt;http://openid.net/developers/specs&lt;/a&gt; for further information.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Caution:&lt;/strong&gt; &lt;b style&#x3D;&#39;color: red;&#39;&gt;This API does not work with Swagger!&lt;/b&gt; Swagger can not handle the redirect to the OpenID Connect identity provider.&lt;/p&gt;&lt;/div&gt;
-   * @param issuer Issuer identifier of the OpenID Connect identity provider. (required)
-   * @param redirectUri Redirect URI to complete the OpenID Connect authentication. (required)
-   * @param language Language ID or ISO 639-1 code. (optional)
-   * @param test Flag to test the authentication parameters. (If the request is valid, the API will responde with 204.) (optional)
+   * ## CAUTION: This API does not work with Swagger! Swagger can not handle the redirect to the OpenID Connect identity provider.  ### Functional Description: This is the first step of the OpenID Connect authentication.   The user is send to the OpenID Connect identity provider to authenticate himself and retrieve an Authorization Code.  ### Precondition: None.  ### Effects: User is redirected to OpenID Connect identity provider to authenticate himself.  ### &amp;#9432; Further Information: See [http://openid.net/developers/specs](http://openid.net/developers/specs) for further information.
+   * @param issuer Issuer identifier of the OpenID Connect identity provider (required)
+   * @param redirectUri Redirect URI to complete the OpenID Connect authentication (required)
+   * @param language Language ID or ISO 639-1 code (**DEPRECATED**: will be removed) (optional)
+   * @param test Flag to test the authentication parameters. If the request is valid, the API will respond with &#x60;204 No Content&#x60;. (optional)
    * @throws ApiException if fails to make API call
    */
   public void initiateOpenIdLogin(String issuer, String redirectUri, String language, Boolean test) throws ApiException {
@@ -183,7 +195,7 @@ public class AuthApi {
     }
     
     // create path and map variables
-    String localVarPath = "/auth/openid/login";
+    String localVarPath = "/v4/auth/openid/login";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -198,7 +210,7 @@ public class AuthApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -214,7 +226,7 @@ public class AuthApi {
   }
   /**
    * Authenticate user
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt;Authenticates user and provides an authentication token that is required for most operations.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Existing user that is not locked.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; User is logged in.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The provided token is valid for &lt;em&gt;two hours&lt;/em&gt;, every usage resets this period to two full hours again. Logging off invalidates the token.&lt;br/&gt;&lt;u&gt;Important:&lt;/u&gt; If auth type \&quot;radius\&quot; is used, a token (request parameter) may be set, otherwise this parameter is ignored. If the token is set, &lt;b&gt;password&lt;/b&gt; is optional for this auth type.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Currently supported languages (with ISO 639-1 code):&lt;/strong&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;German (de)&lt;/li&gt;&lt;li&gt;English (en)&lt;/li&gt;&lt;li&gt;Spanish (es)&lt;/li&gt;&lt;li&gt;French (fr)&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+   * ### Functional Description: Authenticates user and provides an authentication token (&#x60;X-Sds-Auth-Token&#x60;) that is required for most operations.  ### Precondition: Existing user that is not locked.  ### Effects: User is logged in.  ### &amp;#9432; Further Information: The provided token is valid for **2 hours**, every usage resets this period to 2 full hours again.   Logging off invalidates the token.    Setting the language parameter has no effect.  ### Available authentication methods  | Authentication Method:&lt;br&gt;**&#x60;authType&#x60;** | Description | | :--- | :--- | | **&#x60;sql&#x60;** | Log in with credentials stored in the database | | **&#x60;active_directory&#x60;** | Log in with Active Directory credentials | | **&#x60;radius&#x60;** | Log in with RADIUS username, PIN and token password.&lt;br&gt;Token (request parameter) may be set, otherwise this parameter is ignored. If &#x60;token&#x60; is set, &#x60;password&#x60; is optional. | | **&#x60;openid&#x60;** | Please use &#x60;POST /auth/openid/login&#x60; API to login with OpenID Connect identity |  ### Deprecated: Currently supported languages (with ISO 639-1 code): * German (de) * English (en) * Spanish (es) * French (fr)
    * @param body User credentials (required)
    * @return LoginResponse
    * @throws ApiException if fails to make API call
@@ -228,7 +240,7 @@ public class AuthApi {
     }
     
     // create path and map variables
-    String localVarPath = "/auth/login";
+    String localVarPath = "/v4/auth/login";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -239,7 +251,42 @@ public class AuthApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json;charset=UTF-8"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] {  };
+
+    GenericType<LoginResponse> localVarReturnType = new GenericType<LoginResponse>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Ping
+   * ### Functional Description: Test connection to DRACOON Server.  ### Precondition: None.  ### Effects: &#x60;200 OK&#x60; with current date string is returned if successful.  ### &amp;#9432; Further Information: None.
+   * @return String
+   * @throws ApiException if fails to make API call
+   */
+  public String ping() throws ApiException {
+    Object localVarPostBody = null;
+    
+    // create path and map variables
+    String localVarPath = "/v4/auth/ping";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "text/plain"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -250,13 +297,13 @@ public class AuthApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<LoginResponse> localVarReturnType = new GenericType<LoginResponse>() {};
-    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    GenericType<String> localVarReturnType = new GenericType<String>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Request password reset
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Request an email with a request token for a certain user to reset his/her password.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Registered user account.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Provided user receives email with reset token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Currently supported languages (with ISO 639-1 code):&lt;/strong&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;German (de)&lt;/li&gt;&lt;li&gt;English (en)&lt;/li&gt;&lt;li&gt;Spanish (es)&lt;/li&gt;&lt;li&gt;French (fr)&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
-   * @param body  (required)
+   * ### Functional Description:   Request an email with a request token for a certain user to reset his / her password.  ### Precondition: Registered user account.  ### Effects: Provided user receives email with reset token.  ### &amp;#9432; Further Information: None.  ### Currently supported languages (with ISO 639-1 code): * German (de) * English (en) * Spanish (es) * French (fr)
+   * @param body body (required)
    * @throws ApiException if fails to make API call
    */
   public void requestPasswordReset(ResetPasswordRequest body) throws ApiException {
@@ -268,7 +315,7 @@ public class AuthApi {
     }
     
     // create path and map variables
-    String localVarPath = "/auth/reset_password";
+    String localVarPath = "/v4/auth/reset_password";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -279,12 +326,12 @@ public class AuthApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -295,9 +342,9 @@ public class AuthApi {
   }
   /**
    * Reset password
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Resets a user&#39;s password to a new value.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User received a password reset token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Newly transmitted password is set.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Resets a user&#39;s password to a new value.  ### Precondition: User received a password reset token.  ### Effects: Newly transmitted password is set.  ### &amp;#9432; Further Information: None.
    * @param token Password reset token (required)
-   * @param body  (required)
+   * @param body body (required)
    * @throws ApiException if fails to make API call
    */
   public void resetPassword(String token, ResetPasswordWithTokenRequest body) throws ApiException {
@@ -314,7 +361,7 @@ public class AuthApi {
     }
     
     // create path and map variables
-    String localVarPath = "/auth/reset_password/{token}"
+    String localVarPath = "/v4/auth/reset_password/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
     // query params
@@ -326,12 +373,12 @@ public class AuthApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -342,7 +389,7 @@ public class AuthApi {
   }
   /**
    * Get information for password reset
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Request all information for a password change dialogue (e.g. real name of user).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User received a password reset token.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Request all information for a password change dialogue e.g. real name of user.  ### Precondition: User received a password reset token.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @param token Password reset token (required)
    * @return ResetPasswordTokenValidateResponse
    * @throws ApiException if fails to make API call
@@ -356,7 +403,7 @@ public class AuthApi {
     }
     
     // create path and map variables
-    String localVarPath = "/auth/reset_password/{token}"
+    String localVarPath = "/v4/auth/reset_password/{token}"
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
     // query params
@@ -368,7 +415,7 @@ public class AuthApi {
     
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 

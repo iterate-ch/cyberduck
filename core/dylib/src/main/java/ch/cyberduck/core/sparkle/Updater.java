@@ -20,7 +20,7 @@ package ch.cyberduck.core.sparkle;
  */
 
 import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -32,11 +32,13 @@ public abstract class Updater extends NSObject {
 
     public static final String PROPERTY_FEED_URL = "SUFeedURL";
 
-    public static Updater create() throws FactoryException {
-        if(null == getFeed()) {
-            throw new FactoryException("Missing SUFeedURL property");
+    public static Updater create() {
+        if(null == CLASS) {
+            return null;
         }
+        final String url = getFeed();
         final Updater updater = CLASS.sharedUpdater();
+        updater.setFeedURL(NSURL.URLWithString(null == url ? PreferencesFactory.get().getProperty("update.feed.release") : url));
         updater.setUserAgentString(new PreferencesUseragentProvider().get());
         return updater;
     }
@@ -75,6 +77,8 @@ public abstract class Updater extends NSObject {
      * installation.
      */
     public abstract void checkForUpdatesInBackground();
+
+    public abstract void setFeedURL(NSURL url);
 
     public abstract void setUserAgentString(String userAgentString);
 

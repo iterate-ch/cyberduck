@@ -143,9 +143,9 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         NSImage f = NSImage.imageWithSize(icon.size());
         f.lockFocus();
         icon.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
-                NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
+            NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
         badge.drawInRect(new NSRect(new NSPoint(0, 0), badge.size()),
-                NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
+            NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
         f.unlockFocus();
         return f;
     }
@@ -278,7 +278,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             return this.documentIcon(StringUtils.lowerCase(file.getExtension()), size);
         }
         if(file.isDirectory()) {
-            if(!Permission.EMPTY.equals(file.attributes().getPermission())) {
+            if(Permission.EMPTY != file.attributes().getPermission()) {
                 if(!file.attributes().getPermission().isExecutable()) {
                     final NSImage badge = this.iconNamed("privatefolderbadge.tiff", size);
                     badge.setName("privatefolderbadge");

@@ -26,10 +26,10 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.MoveNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
-import ch.cyberduck.core.sds.swagger.MoveNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,30 +57,30 @@ public class SDSMoveFeature implements Move {
             }
             if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
                 // Change parent node
-                new NodesApi(session.getClient()).moveNodes(StringUtils.EMPTY,
+                new NodesApi(session.getClient()).moveNodes(
                     Long.parseLong(nodeid.getFileid(renamed.getParent(), new DisabledListProgressListener())),
                     new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(
                         Long.parseLong(nodeid.getFileid(file,
-                            new DisabledListProgressListener()))), null);
+                            new DisabledListProgressListener()))), StringUtils.EMPTY, null);
             }
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 if(containerService.isContainer(file)) {
-                    new NodesApi(session.getClient()).updateRoom(StringUtils.EMPTY,
+                    new NodesApi(session.getClient()).updateRoom(
                         Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())),
-                        new UpdateRoomRequest().name(renamed.getName()), null);
+                        new UpdateRoomRequest().name(renamed.getName()), StringUtils.EMPTY, null);
                 }
                 // Rename
                 else if(file.isDirectory()) {
-                    new NodesApi(session.getClient()).updateFolder(StringUtils.EMPTY,
+                    new NodesApi(session.getClient()).updateFolder(
                         Long.parseLong(nodeid.getFileid(
                             new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
-                        new UpdateFolderRequest().name(renamed.getName()), null);
+                        new UpdateFolderRequest().name(renamed.getName()), StringUtils.EMPTY, null);
                 }
                 else {
-                    new NodesApi(session.getClient()).updateFile(StringUtils.EMPTY,
+                    new NodesApi(session.getClient()).updateFile(
                         Long.parseLong(nodeid.getFileid(
                             new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
-                        new UpdateFileRequest().name(renamed.getName()), null);
+                        new UpdateFileRequest().name(renamed.getName()), StringUtils.EMPTY, null);
                 }
             }
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),

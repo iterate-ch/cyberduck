@@ -70,6 +70,7 @@ public class LinuxTerminalPreferences extends TerminalPreferences {
             this.setDefault("factory.browserlauncher.class", TerminalBrowserLauncher.class.getName());
         }
         this.setDefault("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
+        this.setDefault("factory.localsupportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
         this.setDefault("factory.applicationresourcesfinder.class", StaticApplicationResourcesFinder.class.getName());
         this.setDefault("factory.locale.class", RegexLocale.class.getName());
         this.setDefault("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());

@@ -16,7 +16,7 @@ public class HostParserTest {
     @Test
     public void testParseURLEmpty() {
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get("");
-        assertTrue(h.getHostname().equals(PreferencesFactory.get().getProperty("connection.hostname.default")));
+        assertEquals(h.getHostname(), PreferencesFactory.get().getProperty("connection.hostname.default"));
     }
 
     @Test

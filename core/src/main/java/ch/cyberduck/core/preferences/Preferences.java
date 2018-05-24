@@ -431,10 +431,6 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("queue.removeItemWhenComplete", String.valueOf(false));
         /*
-          The maximum number of concurrent transfers in transfer list
-         */
-        this.setDefault("queue.maxtransfers", String.valueOf(2));
-        /*
           Default transfer connection handling
          */
         this.setDefault("queue.transfer.type.enabled", String.format("%s %s %s",
@@ -572,7 +568,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.download.bandwidth.bytes", String.valueOf(-1));
 
         /*
-         * Concurrent connections
+         * Concurrent connections for single transfer and maximum number of concurrent transfers in transfer list
          */
         this.setDefault("queue.connections.limit", String.valueOf(2));
         {
@@ -1258,6 +1254,7 @@ public abstract class Preferences implements Locales {
             this.setDefault(String.format("factory.transferpromptcallback.%s.class", t.name()), DisabledTransferPrompt.class.getName());
         }
         this.setDefault("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
+        this.setDefault("factory.localsupportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
         this.setDefault("factory.applicationresourcesfinder.class", TemporaryApplicationResourcesFinder.class.getName());
         this.setDefault("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
         this.setDefault("factory.watchservice.class", NIOEventWatchService.class.getName());

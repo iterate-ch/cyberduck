@@ -78,7 +78,7 @@ public class DefaultBookmarkController extends BookmarkController {
         notificationCenter.addObserver(this.id(),
             Foundation.selector("nicknameFieldDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
-            this.nicknameField);
+            field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {

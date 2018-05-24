@@ -224,6 +224,7 @@ public final class HostParser {
             case googlestorage:
             case swift:
             case azure:
+            case onedrive:
                 if(StringUtils.isNotBlank(protocol.getDefaultHostname())) {
                     if(StringUtils.isNotBlank(hostname)) {
                         // Replace with static hostname and prefix path with bucket

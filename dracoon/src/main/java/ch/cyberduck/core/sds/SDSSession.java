@@ -26,6 +26,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
@@ -103,7 +104,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                             String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
                     }
                 }).build(),
-                    host).withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                    host).withRedirectUri(Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider(false, true).get(
+                    host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
+                );
                 configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
                 configuration.addInterceptorLast(authorizationService);
                 configuration.addInterceptorLast(new HttpRequestInterceptor() {
@@ -148,7 +151,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 );
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
-                    .authType(host.getProtocol().getAuthorization())
+                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
                     .login(login)
                     .password(additional.getPassword())
                 ));
@@ -156,7 +159,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             default:
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
-                    .authType(host.getProtocol().getAuthorization())
+                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
                     .login(login)
                     .password(password)
                 ));
@@ -186,7 +189,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 e.getDetail(), new LoginOptions(host.getProtocol()).user(false).keychain(false)
             );
             return this.login(controller, new LoginRequest()
-                .authType(host.getProtocol().getAuthorization())
+                .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
                 .password(additional.getPassword())
             );
         }
@@ -195,7 +198,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
-                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false)));
+                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService().map(e);

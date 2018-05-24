@@ -1,57 +1,34 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+import ch.cyberduck.core.sds.io.swagger.client.model.*;
 
 import javax.ws.rs.core.GenericType;
-
-import ch.cyberduck.core.sds.io.swagger.client.model.BulkErrorResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.ConfigRoomRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateFolderRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateRoomRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.DeleteDeletedNodesRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.DeleteNodesRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNode;
-import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNodeSummaryList;
-import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNodeVersionsList;
-import ch.cyberduck.core.sds.io.swagger.client.model.DownloadTokenGenerateResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
 import java.io.File;
-import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import org.joda.time.LocalDate;
-import ch.cyberduck.core.sds.io.swagger.client.model.LogEventList;
-import ch.cyberduck.core.sds.io.swagger.client.model.MissingKeysResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
-import ch.cyberduck.core.sds.io.swagger.client.model.NotRestoredNodeList;
-import ch.cyberduck.core.sds.io.swagger.client.model.PendingAssignmentList;
-import ch.cyberduck.core.sds.io.swagger.client.model.PendingAssignmentsRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.RestoreDeletedNodesRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.RoomGroupList;
-import ch.cyberduck.core.sds.io.swagger.client.model.RoomGroupsAddBatchRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.RoomGroupsDeleteBatchRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.RoomUserList;
-import ch.cyberduck.core.sds.io.swagger.client.model.RoomUsersAddBatchRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.RoomUsersDeleteBatchRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.SyslogEventList;
-import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetBatchRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
-import ch.cyberduck.core.sds.io.swagger.client.model.ZipDownloadRequest;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-03T10:55:56.129+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
 public class NodesApi {
   private ApiClient apiClient;
 
@@ -73,20 +50,15 @@ public class NodesApi {
 
   /**
    * Mark a node (room, folder or file) as favorite
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Marks a node (room, folder, file) as favorite.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User needs read permissions on that node.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; A node gets marked as favorite.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param nodeId Node Id (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Marks a node (room, folder, file) as favorite.  ### Precondition: User needs _\&quot;read\&quot;_ permissions on that node.  ### Effects: A node gets marked as favorite.  ### &amp;#9432; Further Information: None.
+   * @param nodeId Node ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node addFavorite(String xSdsAuthToken, Long nodeId, String xSdsDateFormat) throws ApiException {
+  public Node addFavorite(Long nodeId, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling addFavorite");
-    }
     
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -94,7 +66,7 @@ public class NodesApi {
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/{node_id}/favorite"
+    String localVarPath = "/v4/nodes/{node_id}/favorite"
       .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
 
     // query params
@@ -110,34 +82,29 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Cancel file upload
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Cancel an upload and destroy the Upload Channel.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; An Upload Channel has been created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; The Upload Channel is removed and all temporary uploaded data is purged.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; It is recommended to notify the API about cancelled uploads if possible.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param uploadId Upload channel Id (required)
+   * ### Functional Description: Cancel an upload and destroy the Upload Channel.  ### Precondition: An Upload Channel has been created.  ### Effects: The Upload Channel is removed and all temporary uploaded data is purged.  ### &amp;#9432; Further Information: It is recommended to notify the API about cancelled uploads if possible.
+   * @param uploadId Upload channel ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void cancelFileUpload(String xSdsAuthToken, String uploadId) throws ApiException {
+  public void cancelFileUpload(String uploadId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling cancelFileUpload");
-    }
     
     // verify the required parameter 'uploadId' is set
     if (uploadId == null) {
@@ -145,7 +112,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/uploads/{upload_id}"
+    String localVarPath = "/v4/nodes/files/uploads/{upload_id}"
       .replaceAll("\\{" + "upload_id" + "\\}", apiClient.escapeString(uploadId.toString()));
 
     // query params
@@ -159,7 +126,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -168,25 +135,20 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Handle user-room assignments per group that have not been accepted yet
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Handles a list of User - Room Assignments by Groups that have not been approved yet&lt;br/&gt;&lt;strong&gt;WAITING&lt;/strong&gt; or &lt;strong&gt;DENIED&lt;/strong&gt; Assignments can be &lt;strong&gt;ACCEPTED&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; User - Room Assignment is approved and the user gets access to the group.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Data Room Admins should regularly handle pending Assignments to provide access to rooms for other users.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body List of Pending Assignments (required)
+   * ### Functional Description:   Handles a list of user-room assignments by groups that have not been approved yet   **WAITING** or **DENIED** assignments can be **ACCEPTED**.  ### Precondition: None.  ### Effects: User-room assignment is approved and the user gets access to the group.  ### &amp;#9432; Further Information: Room administrators should regularly handle pending assignments to provide access to rooms for other users.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void changePendingAssignments(String xSdsAuthToken, PendingAssignmentsRequest body) throws ApiException {
+  public void changePendingAssignments(PendingAssignmentsRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling changePendingAssignments");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -194,7 +156,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/pending";
+    String localVarPath = "/v4/nodes/rooms/pending";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -207,37 +169,32 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Complete file upload
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Finishes an upload and closes the corresponding Upload Channel.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; An Upload Channel has been created and data has been transmitted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; The upload is finished and the temporary file is moved to the productive environment.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The provided file name might be changed in accordance with the resolution strategy:&lt;br/&gt;&#39;autorename&#39; changes the file name and adds a number to avoid conflicts.&lt;br/&gt;&#39;overwrite&#39; deletes any old file with the same file name.&lt;br/&gt;&#39;fail&#39; returns an error. In this case, another PUT request with a different file name may be sent.&lt;br/&gt;&lt;br/&gt;Please ensure that all chunks have been transferred correctly before finishing the upload.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param uploadId Upload channel Id (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param body  (optional)
+   * ### Functional Description: Finishes an upload and closes the corresponding Upload Channel.  ### Precondition: An Upload Channel has been created and data has been transmitted.  ### Effects: The upload is finished and the temporary file is moved to the productive environment.  ### &amp;#9432; Further Information: The provided file name might be changed in accordance with the resolution strategy:   * **autorename**: changes the file name and adds a number to avoid conflicts. * **overwrite**: deletes any old file with the same file name. * **fail**: returns an error; in this case, another &#x60;PUT&#x60; request with a different file name may be sent.  Please ensure that all chunks have been transferred correctly before finishing the upload.  ### 200 OK is not used by this API
+   * @param uploadId Upload channel ID (required)
+   * @param body body (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node completeFileUpload(String xSdsAuthToken, String uploadId, String xSdsDateFormat, ch.cyberduck.core.sds.swagger.CompleteUploadRequest body) throws ApiException {
+  public Node completeFileUpload(String uploadId, CompleteUploadRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling completeFileUpload");
-    }
     
     // verify the required parameter 'uploadId' is set
     if (uploadId == null) {
@@ -245,7 +202,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/uploads/{upload_id}"
+    String localVarPath = "/v4/nodes/files/uploads/{upload_id}"
       .replaceAll("\\{" + "upload_id" + "\\}", apiClient.escapeString(uploadId.toString()));
 
     // query params
@@ -261,37 +218,32 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Config room
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Updates a room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User needs to be Data Room Admin.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Room&#39;s configuration is changed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description: Updates a room.  ### Precondition: User needs to be a room administrator.  ### Effects: Room&#39;s configuration is changed.  ### &amp;#9432; Further Information: None.
+   * @param roomId Room ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node configRoom(String xSdsAuthToken, Long roomId, ConfigRoomRequest body, String xSdsDateFormat) throws ApiException {
+  public Node configRoom(Long roomId, ConfigRoomRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling configRoom");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -304,7 +256,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/config"
+    String localVarPath = "/v4/nodes/rooms/{room_id}/config"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -320,37 +272,32 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Copy file system nodes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt;Copies nodes (folder,file) to another parent.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Authenticated user with read permissions in the source parent and write permissions in the target parent node.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Nodes are copied to target parent.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Nodes must be in same source parent. Rooms cannot be copied.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param nodeId Target Parent Node ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description: Copies nodes (folder, file) to another parent.  ### Precondition: Authenticated user with _\&quot;read\&quot;_ permissions in the source parent and _\&quot;create\&quot;_ permissions in the target parent node.  ### Effects: Nodes are copied to target parent.  ### &amp;#9432; Further Information: Nodes must be in same source parent.   **Rooms cannot be copied.**
+   * @param nodeId Target parent node ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node copyNodes(String xSdsAuthToken, Long nodeId, ch.cyberduck.core.sds.swagger.CopyNodesRequest body, String xSdsDateFormat) throws ApiException {
+  public Node copyNodes(Long nodeId, CopyNodesRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling copyNodes");
-    }
     
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -363,7 +310,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/{node_id}/copy_to"
+    String localVarPath = "/v4/nodes/{node_id}/copy_to"
       .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
 
     // query params
@@ -379,35 +326,30 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Generate download token
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Create a download token to retrieve a file without X-Sds-Auth-Token Header.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User with read permission in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Download token is generated and returned.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The token is necessary to access /downloads ressources.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param fileId File Id (required)
+   * ### Functional Description: Create a download token to retrieve a file without &#x60;X-Sds-Auth-Token&#x60; Header.  ### Precondition: User with _\&quot;read\&quot;_ permissions in parent room.  ### Effects: Download token is generated and returned.  ### &amp;#9432; Further Information: The token is necessary to access &#x60;downloads&#x60; ressources.
+   * @param fileId File ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return DownloadTokenGenerateResponse
    * @throws ApiException if fails to make API call
    */
-  public DownloadTokenGenerateResponse createFileDownloadToken(String xSdsAuthToken, Long fileId) throws ApiException {
+  public DownloadTokenGenerateResponse createFileDownloadToken(Long fileId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createFileDownloadToken");
-    }
     
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -415,7 +357,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/{file_id}/downloads"
+    String localVarPath = "/v4/nodes/files/{file_id}/downloads"
       .replaceAll("\\{" + "file_id" + "\\}", apiClient.escapeString(fileId.toString()));
 
     // query params
@@ -429,35 +371,30 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<DownloadTokenGenerateResponse> localVarReturnType = new GenericType<DownloadTokenGenerateResponse>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Create new file upload channel
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; This endpoint creates a new upload channel which is the first step in any file upload workflow.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has create permission in the parent container (room or folder).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; A new upload channel for a file is created. Its ID and an upload token are returned.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The uploadID is used for uploads with X-Sds-Auth-Token header, the upload token can be used for uploads without authentication header.&lt;/p&gt;&lt;p&gt;Please provide the size of the intended upload so that the quota can be checked in advanced and no data is transferred unnecessarily.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Room/Folder/File name convention&lt;/h4&gt;&lt;h5&gt;Room/Folder/File names are limited to 150 characters.&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;Not allowed Room/Folder/File names&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Not allowed characters in Room/Folder/File name&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;../&#39;, &#39;\\&#39;, &#39;&amp;lt;&#39;,&#39;&amp;gt;&#39;, &#39;:&#39;, &#39;\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * ### Functional Description: This endpoint creates a new upload channel which is the first step in any file upload workflow.  ### Precondition: User has _\&quot;create\&quot;_ permissions in the parent container (room or folder).  ### Effects: A new upload channel for a file is created.   Its ID and an upload token are returned.  ### &amp;#9432; Further Information: The upload ID is used for uploads with &#x60;X-Sds-Auth-Token&#x60; header, the upload token can be used for uploads without authentication header.  Please provide the size of the intended upload so that the quota can be checked in advanced and no data is transferred unnecessarily.  Notes are limited to **255** characters.  ### Node naming convention  * Node (room, folder, file) names are limited to **150** characters.  * Not allowed names:   &#x60;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&#x60;  * Not allowed characters in names:   &#x60;&#39;../&#39;, &#39;\\\\&#39;, &#39;&lt;&#39;,&#39;&gt;&#39;, &#39;:&#39;, &#39;\\\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&#x60; 
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return CreateFileUploadResponse
    * @throws ApiException if fails to make API call
    */
-  public CreateFileUploadResponse createFileUpload(String xSdsAuthToken, CreateFileUploadRequest body) throws ApiException {
+  public CreateFileUploadResponse createFileUpload(CreateFileUploadRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createFileUpload");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -465,7 +402,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/uploads";
+    String localVarPath = "/v4/nodes/files/uploads";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -478,36 +415,31 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<CreateFileUploadResponse> localVarReturnType = new GenericType<CreateFileUploadResponse>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Create new folder
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Creates a new folder.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has create permission in current Data Room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; A new folder is created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Folders cannot be created on top level (without parent element).&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Room/Folder/File name convention&lt;/h4&gt;&lt;h5&gt;Room/Folder/File names are limited to 150 characters.&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;Not allowed Room/Folder/File names&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Not allowed characters in Room/Folder/File name&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;../&#39;, &#39;\\&#39;, &#39;&amp;lt;&#39;,&#39;&amp;gt;&#39;, &#39;:&#39;, &#39;\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description: Creates a new folder.  ### Precondition: User has _\&quot;create\&quot;_ permissions in current room.  ### Effects: A new folder is created.  ### &amp;#9432; Further Information: Folders cannot be created on top level (without parent element).  Notes are limited to **255** characters.  ### Node naming convention  * Node (room, folder, file) names are limited to **150** characters.  * Not allowed names:   &#x60;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&#x60;  * Not allowed characters in names:   &#x60;&#39;../&#39;, &#39;\\\\&#39;, &#39;&lt;&#39;,&#39;&gt;&#39;, &#39;:&#39;, &#39;\\\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&#x60; 
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node createFolder(String xSdsAuthToken, CreateFolderRequest body, String xSdsDateFormat) throws ApiException {
+  public Node createFolder(CreateFolderRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createFolder");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -515,7 +447,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/folders";
+    String localVarPath = "/v4/nodes/folders";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -530,39 +462,39 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Create new room
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt; Creates a new Data Room at the provided parent node. Creation of top level rooms provided.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has create permissions in the parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; A new room is created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&lt;br/&gt;Rooms may only have other rooms as parent.&lt;br/&gt;Rooms on top level do not have any parent.&lt;br/&gt;Rooms may have rooms as children on &lt;b&gt;n&lt;/b&gt; hierarchy levels.&lt;br/&gt;If permission inheritance is disabled, there must be at least one admin or admin group (with neither the group nor the user having an expiration date).&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param body  (optional)
+   * ### Functional Description: Creates a new room at the provided parent node.   Creation of top level rooms provided.  ### Precondition: User has _\&quot;create\&quot;_ permissions in the parent room.  ### Effects: A new room is created.  ### &amp;#9432; Further Information:   Rooms may only have other rooms as parent.   Rooms on top level do not have any parent.   Rooms may have rooms as children on n hierarchy levels.   If permission inheritance is disabled, there must be at least one admin user / group (with neither the group nor the user having an expiration date).  Notes are limited to **255** characters.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node createRoom(String xSdsAuthToken, String xSdsDateFormat, CreateRoomRequest body) throws ApiException {
+  public Node createRoom(CreateRoomRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createRoom");
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling createRoom");
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms";
+    String localVarPath = "/v4/nodes/rooms";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -577,34 +509,29 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Delete nodes from Recycle Bin
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Permanently remove a list of nodes from the recycle bin.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has \&quot;Delete Recycle Bin\&quot; permissions in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; All provided nodes are removed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The removal of deleted nodes from the recycle bin is irreversible.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * ### Functional Description: Permanently remove a list of nodes from the Recycle Bin.  ### Precondition: User has _\&quot;delete recycle bin\&quot;_ permissions in parent room.  ### Effects: All provided nodes are removed.  ### &amp;#9432; Further Information: The removal of deleted nodes from the Recycle Bin is irreversible.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteDeletedNodes(String xSdsAuthToken, DeleteDeletedNodesRequest body) throws ApiException {
+  public void deleteDeletedNodes(DeleteDeletedNodesRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteDeletedNodes");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -612,7 +539,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/deleted_nodes";
+    String localVarPath = "/v4/nodes/deleted_nodes";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -625,34 +552,29 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Delete file system node
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Delete node (room, folder, file).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Authenticated user with delete permissions on supplied nodes.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Node gets deleted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param nodeId Node id (required)
+   * ### Functional Description: Delete node (room, folder, file).  ### Precondition: Authenticated user with _\&quot;delete\&quot;_ permissions on supplied nodes.  ### Effects: Node gets deleted.  ### &amp;#9432; Further Information: None.
+   * @param nodeId Node ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteNode(String xSdsAuthToken, Long nodeId) throws ApiException {
+  public void deleteNode(Long nodeId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteNode");
-    }
     
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -660,7 +582,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/{node_id}"
+    String localVarPath = "/v4/nodes/{node_id}"
       .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
 
     // query params
@@ -674,7 +596,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -683,25 +605,20 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Delete file system nodes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Delete nodes (room, folder, file).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Authenticated user with delete permissions on supplied nodes.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Nodes are deleted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Nodes must be in same parent.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * ### Functional Description: Delete nodes (room, folder, file).  ### Precondition: Authenticated user with _\&quot;delete\&quot;_ permissions on supplied nodes.  ### Effects: Nodes are deleted.  ### &amp;#9432; Further Information: Nodes must be in same parent.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteNodes(String xSdsAuthToken, DeleteNodesRequest body) throws ApiException {
+  public void deleteNodes(DeleteNodesRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteNodes");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -709,7 +626,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes";
+    String localVarPath = "/v4/nodes";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -722,35 +639,31 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Revoke group permissions from room
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Batch function. Revoke groups from room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User needs to be Data Room Admin.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Group&#39;s permissions are revoked.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
-   * @param body  (required)
+   * ### Functional Description:   Batch function.   Revoke groups from room.  ### Precondition: User needs to be a room administrator.  ### Effects: Group&#39;s permissions are revoked.  ### &amp;#9432; Further Information: None.
+   * @param roomId Room ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteRoomGroupsBatch(String xSdsAuthToken, Long roomId, RoomGroupsDeleteBatchRequest body) throws ApiException {
+  public void deleteRoomGroupsBatch(Long roomId, RoomGroupsDeleteBatchRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteRoomGroupsBatch");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -763,168 +676,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/groups"
-      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] {  };
-
-
-    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Revoke user permissions from room
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Batch function. Revoke users from room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User needs to be Data Room Admin.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; User&#39;s permissions are revoked.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
-   * @param body  (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteRoomUsersBatch(String xSdsAuthToken, Long roomId, RoomUsersDeleteBatchRequest body) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteRoomUsersBatch");
-    }
-    
-    // verify the required parameter 'roomId' is set
-    if (roomId == null) {
-      throw new ApiException(400, "Missing the required parameter 'roomId' when calling deleteRoomUsersBatch");
-    }
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling deleteRoomUsersBatch");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/users"
-      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] {  };
-
-
-    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Empty Recycle Bin
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br /&gt;Empty a recycle bin.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has \&quot;Delete Recycle Bin \&quot; permissions in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; All files in the recycle bin are permanently removed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Actually removes the previously deleted files from the system. This action is irreversible.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param nodeId Parent node ID (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void emptyDeletedNodes(String xSdsAuthToken, Long nodeId) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling emptyDeletedNodes");
-    }
-    
-    // verify the required parameter 'nodeId' is set
-    if (nodeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'nodeId' when calling emptyDeletedNodes");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/nodes/{node_id}/deleted_nodes"
-      .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] {  };
-
-
-    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Encrypt room
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Activates the client-side encryption for a Data Room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User needs to be Data Room Admin.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Encryption of Data Room is activated.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Only empty rooms at the top level may be encrypted. This endpoint may also be used to disable encryption of an empty room.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @return Node
-   * @throws ApiException if fails to make API call
-   */
-  public Node encryptRoom(String xSdsAuthToken, Long roomId, EncryptRoomRequest body, String xSdsDateFormat) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling encryptRoom");
-    }
-    
-    // verify the required parameter 'roomId' is set
-    if (roomId == null) {
-      throw new ApiException(400, "Missing the required parameter 'roomId' when calling encryptRoom");
-    }
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling encryptRoom");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/encrypt"
+    String localVarPath = "/v4/nodes/rooms/{room_id}/groups"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -940,7 +692,101 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json;charset=UTF-8"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+
+    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
+   * Revoke user permissions from room
+   * ### Functional Description:   Batch function.   Revoke users from room.  ### Precondition: User needs to be a room administrator.  ### Effects: User&#39;s permissions are revoked.  ### &amp;#9432; Further Information: None.
+   * @param roomId Room ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteRoomUsersBatch(Long roomId, RoomUsersDeleteBatchRequest body, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    
+    // verify the required parameter 'roomId' is set
+    if (roomId == null) {
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling deleteRoomUsersBatch");
+    }
+    
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling deleteRoomUsersBatch");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/nodes/rooms/{room_id}/users"
+      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    
+    final String[] localVarAccepts = {
+      "application/json;charset=UTF-8"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json;charset=UTF-8"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+
+    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
+   * Empty Recycle Bin
+   * ### Functional Description:   Empty a Recycle Bin.  ### Precondition: User has _\&quot;delete recycle bin\&quot;_ permissions in parent room.  ### Effects: All files in the Recycle Bin are permanently removed.  ### &amp;#9432; Further Information: Actually removes the previously deleted files from the system.   This action is irreversible.
+   * @param nodeId Parent node ID. Only rooms and folders can be parents. Parent ID &#x60;0&#x60; or empty is the root node. (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void emptyDeletedNodes(Long nodeId, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    
+    // verify the required parameter 'nodeId' is set
+    if (nodeId == null) {
+      throw new ApiException(400, "Missing the required parameter 'nodeId' when calling emptyDeletedNodes");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/nodes/{node_id}/deleted_nodes"
+      .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    
+    final String[] localVarAccepts = {
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -949,26 +795,75 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+
+    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
+   * Encrypt room
+   * ### Functional Description:   Activates the client-side encryption for a room.  ### Precondition: User needs to be a room administrator.  ### Effects: Encryption of room is activated.  ### &amp;#9432; Further Information: Only empty rooms at the top level may be encrypted.   This endpoint may also be used to disable encryption of an empty room.
+   * @param roomId Room ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
+   * @return Node
+   * @throws ApiException if fails to make API call
+   */
+  public Node encryptRoom(Long roomId, EncryptRoomRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+    Object localVarPostBody = body;
+    
+    // verify the required parameter 'roomId' is set
+    if (roomId == null) {
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling encryptRoom");
+    }
+    
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling encryptRoom");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/nodes/rooms/{room_id}/encrypt"
+      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+
+    
+    final String[] localVarAccepts = {
+      "application/json;charset=UTF-8"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json;charset=UTF-8"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get Data Room Rescue file key
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Returns the fileKey for the Data Room Rescue Key of a certain file (if available).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User with read permission in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param fileId File Id (required)
+   * Get room emergency password
+   * ### Functional Description:   Returns the file key for the room emergency password of a certain file (if available).  ### Precondition: User with _\&quot;read\&quot;_ permissions in parent room.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param fileId File ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return FileKey
    * @throws ApiException if fails to make API call
    */
-  public FileKey getDataRoomFileKey(String xSdsAuthToken, Long fileId) throws ApiException {
+  public FileKey getDataRoomFileKey(Long fileId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getDataRoomFileKey");
-    }
     
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -976,7 +871,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/{file_id}/data_room_file_key"
+    String localVarPath = "/v4/nodes/files/{file_id}/data_room_file_key"
       .replaceAll("\\{" + "file_id" + "\\}", apiClient.escapeString(fileId.toString()));
 
     // query params
@@ -990,7 +885,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -999,26 +894,21 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<FileKey> localVarReturnType = new GenericType<FileKey>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get DataSpace Rescue file key
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Returns the fileKey for the Data Space Rescue Key of a certain file (if available).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User with read permission in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param fileId File Id (required)
+   * Get system emergency password
+   * ### Functional Description:   Returns the file key for the system emergency password of a certain file (if available).  ### Precondition: User with _\&quot;read\&quot;_ permissions in parent room.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param fileId File ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return FileKey
    * @throws ApiException if fails to make API call
    */
-  public FileKey getDataSpaceFileKey(String xSdsAuthToken, Long fileId) throws ApiException {
+  public FileKey getDataSpaceFileKey(Long fileId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getDataSpaceFileKey");
-    }
     
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -1026,7 +916,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/{file_id}/data_space_file_key"
+    String localVarPath = "/v4/nodes/files/{file_id}/data_space_file_key"
       .replaceAll("\\{" + "file_id" + "\\}", apiClient.escapeString(fileId.toString()));
 
     // query params
@@ -1040,7 +930,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1049,28 +939,23 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<FileKey> localVarReturnType = new GenericType<FileKey>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * &lt;b style&#x3D;&#39;color: red;&#39;&gt; DEPRECATED&lt;/b&gt; Download file
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Download a file.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User with read permission in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Range requests are supported (please cf. &lt;a href&#x3D;&#39;https://tools.ietf.org/html/rfc7233&#39; target&#x3D;&#39;_blank&#39;&gt;RFC 7233&lt;/a&gt; for details).&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param fileId File Id (required)
-   * @param range Range (optional)
-   * @param genericMimetype always return application/octet-stream instead of specific mimetype (optional)
-   * @return Object
+   * Download file
+   * ### Use &#x60;downloads&#x60; API  ### Functional Description: Download a file.  ### Precondition: User with _\&quot;read\&quot;_ permissions in parent room.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
+   * @param fileId File ID (required)
+   * @param range Range e.g. &#x60;bytes&#x3D;0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return Integer
    * @throws ApiException if fails to make API call
    */
-  public Object getFileData(String xSdsAuthToken, Long fileId, String range, Boolean genericMimetype) throws ApiException {
+  public Integer getFileData(Long fileId, String range, Boolean genericMimetype, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getFileData");
-    }
     
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -1078,7 +963,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/{file_id}/downloads"
+    String localVarPath = "/v4/nodes/files/{file_id}/downloads"
       .replaceAll("\\{" + "file_id" + "\\}", apiClient.escapeString(fileId.toString()));
 
     // query params
@@ -1088,10 +973,10 @@ if (xSdsDateFormat != null)
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "generic_mimetype", genericMimetype));
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-if (range != null)
+    if (range != null)
       localVarHeaderParams.put("Range", apiClient.parameterToString(range));
+if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     
     final String[] localVarAccepts = {
@@ -1104,34 +989,31 @@ if (range != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
-    GenericType<Object> localVarReturnType = new GenericType<Object>() {};
+    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get file headers
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Retrieve the header of a file transmission. Please cf. &lt;a href&#x3D;&#39;https://tools.ietf.org/html/rfc7233&#39; target&#x3D;&#39;_blank&#39;&gt;RFC 7233&lt;/a&gt; for details.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User with read permission in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Equivalent of &lt;code&gt;HEAD /downloads/{token}&lt;/code&gt;, when a client can set &lt;em&gt;X-Sds-Auth-Token&lt;/em&gt; header.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param fileId File Id (required)
-   * @param genericMimetype always return application/octet-stream instead of specific mimetype (optional)
+   * Download file
+   * ### Use &#x60;downloads&#x60; API  ### Functional Description: Download a file.  ### Precondition: User with _\&quot;read\&quot;_ permissions in parent room.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
+   * @param fileId File ID (required)
+   * @param range Range e.g. &#x60;bytes&#x3D;0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return Integer
    * @throws ApiException if fails to make API call
    */
-  public void getFileDataHead(String xSdsAuthToken, Long fileId, Boolean genericMimetype) throws ApiException {
+  public Integer getFileData1(Long fileId, String range, Boolean genericMimetype, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getFileDataHead");
-    }
     
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fileId' when calling getFileDataHead");
+      throw new ApiException(400, "Missing the required parameter 'fileId' when calling getFileData1");
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/{file_id}/downloads"
+    String localVarPath = "/v4/nodes/files/{file_id}/downloads"
       .replaceAll("\\{" + "file_id" + "\\}", apiClient.escapeString(fileId.toString()));
 
     // query params
@@ -1141,41 +1023,38 @@ if (range != null)
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "generic_mimetype", genericMimetype));
 
-    if (xSdsAuthToken != null)
+    if (range != null)
+      localVarHeaderParams.put("Range", apiClient.parameterToString(range));
+if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/octet-stream"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
-
-    apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
+    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
+    return apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
   /**
    * Get deleted node
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Get the meta data of one deleted node.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User can access parent room and has \&quot;Read Recycle Bin\&quot; permissions.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param deletedNodeId Deleted Node ID (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Get the meta data of one deleted node.  ### Precondition: User can access parent room and has _\&quot;read recycle bin\&quot;_ permissions.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param deletedNodeId Deleted node ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return DeletedNode
    * @throws ApiException if fails to make API call
    */
-  public DeletedNode getFsDeletedNode(String xSdsAuthToken, Long deletedNodeId, String xSdsDateFormat) throws ApiException {
+  public DeletedNode getFsDeletedNode(Long deletedNodeId, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getFsDeletedNode");
-    }
     
     // verify the required parameter 'deletedNodeId' is set
     if (deletedNodeId == null) {
@@ -1183,7 +1062,7 @@ if (range != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/deleted_nodes/{deleted_node_id}"
+    String localVarPath = "/v4/nodes/deleted_nodes/{deleted_node_id}"
       .replaceAll("\\{" + "deleted_node_id" + "\\}", apiClient.escapeString(deletedNodeId.toString()));
 
     // query params
@@ -1199,7 +1078,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1208,32 +1087,27 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<DeletedNode> localVarReturnType = new GenericType<DeletedNode>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get deleted versions
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Retrieve all deleted versions of a node.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User can access parent room and has \&quot;Read Recycle Bin\&quot; permissions.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The node is identified by three parameters: parent ID, name and type (file|folder).&lt;/p&gt;&lt;h4&gt;Sort&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;.&lt;br/&gt;Multiple fields not supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;expireAt&lt;/dt&gt;&lt;dd&gt;Expiration date&lt;/dd&gt;&lt;dt&gt;accessedAt&lt;/dt&gt;&lt;dd&gt;Last access date&lt;/dd&gt;&lt;dt&gt;size&lt;/dt&gt;&lt;dd&gt;Node size&lt;/dd&gt;&lt;dt&gt;classification&lt;/dt&gt;&lt;dd&gt;Classification ID. File only&lt;/dd&gt;&lt;dt&gt;createdAt&lt;/dt&gt;&lt;dd&gt;Creation date&lt;/dd&gt;&lt;dt&gt;createdBy&lt;/dt&gt;&lt;dd&gt;Node created by user&lt;/dd&gt;&lt;dt&gt;updatedAt&lt;/dt&gt;&lt;dd&gt;Modification date &lt;/dd&gt;&lt;dt&gt;updatedBy&lt;/dt&gt;&lt;dd&gt;Node modified by user&lt;/dd&gt;&lt;dt&gt;deletedAt&lt;/dt&gt;&lt;dd&gt;Deleted date&lt;/dd&gt;&lt;dt&gt;deletedBy&lt;/dt&gt;&lt;dd&gt;Node deleted by user&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;expireAt:desc&lt;/samp&gt;&lt;br/&gt;&amp;rarr; sort by expireAt descending&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param nodeId Parent Node ID (required)
+   * ### Functional Description:   Retrieve all deleted versions of a node.  ### Precondition: User can access parent room and has _\&quot;read recycle bin\&quot;_ permissions.  ### Effects: None.  ### &amp;#9432; Further Information: The node is identified by three parameters: * parent ID * name * type (file, folder).  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are **NOT** supported.   Example: &gt; &#x60;expireAt:desc&#x60;   Sort by &#x60;expireAt&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;expireAt&#x60;** | Expiration date | | **&#x60;accessedAt&#x60;** | Last access date | | **&#x60;size&#x60;** | Node size | | **&#x60;classification&#x60;** | Classification ID (for files only):&lt;ul&gt;&lt;li&gt;1 - public&lt;/li&gt;&lt;li&gt;2 - for internal use only&lt;/li&gt;&lt;li&gt;3 - confidential&lt;/li&gt;&lt;li&gt;4 - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | **&#x60;createdAt&#x60;** | Creation date | | **&#x60;createdBy&#x60;** | Creator user name | | **&#x60;updatedAt&#x60;** | Last modification date | | **&#x60;updatedBy&#x60;** | Last modifier user name | | **&#x60;deletedAt&#x60;** | Deleted date | | **&#x60;deletedBy&#x60;** | Node deleted by user |
+   * @param nodeId Auth parent node ID (required)
    * @param type Node type (required)
    * @param name Node name (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param sort Sorting string (optional)
+   * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return DeletedNodeVersionsList
    * @throws ApiException if fails to make API call
    */
-  public DeletedNodeVersionsList getFsDeletedNodeVersions(String xSdsAuthToken, Long nodeId, String type, String name, String xSdsDateFormat, String sort, Integer offset, Integer limit) throws ApiException {
+  public DeletedNodeVersionsList getFsDeletedNodeVersions(Long nodeId, String type, String name, String sort, Integer offset, Integer limit, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getFsDeletedNodeVersions");
-    }
     
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -1251,7 +1125,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/{node_id}/deleted_nodes/versions"
+    String localVarPath = "/v4/nodes/{node_id}/deleted_nodes/versions"
       .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
 
     // query params
@@ -1272,7 +1146,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1281,31 +1155,26 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<DeletedNodeVersionsList> localVarReturnType = new GenericType<DeletedNodeVersionsList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get deleted nodes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt;Retrieve a list of deleted nodes in a recycle bin.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User can access parent room and has \&quot;Read Recycle Bin\&quot; permissions.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Only room IDs are accepted as node ID since only rooms have recycle bins.&lt;/p&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;p&gt;Filter string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;OPERATOR&amp;gt;:&amp;lt;VALUE&amp;gt;[:&amp;lt;VALUE&amp;gt;...]&lt;/dfn&gt;&lt;/p&gt;&lt;h5&gt;Fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;type&lt;/dt&gt;&lt;dd&gt;Node type filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values allowed)&lt;br/&gt;VALUE: &lt;code&gt;folder|file&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Node name filter&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (Node name contains value, multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;parentPath&lt;/dt&gt;&lt;dd&gt;Parent path filter&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (Parent path contains value, multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;type:eq:file:folder|name:cn:searchString|parentPath:cn:searchString1&lt;/samp&gt;&lt;br/&gt;&amp;rarr; Get deleted nodes where type equals &#39;file&#39; or &#39;folder&#39; AND deleted node name contains &#39;searchString&#39; AND deleted node parent path contains &#39;searchString1&#39;.&lt;/p&gt;&lt;h4&gt;Sort&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;.&lt;br/&gt;Multiple fields not supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Node name&lt;/dd&gt;&lt;dt&gt;cntVersions&lt;/dt&gt;&lt;dd&gt;Number of deleted versions of this file&lt;/dd&gt;&lt;dt&gt;firstDeletedAt&lt;/dt&gt;&lt;dd&gt;First deleted version&lt;/dd&gt;&lt;dt&gt;lastDeletedAt&lt;/dt&gt;&lt;dd&gt;Last deleted version&lt;/dd&gt;&lt;dt&gt;parentPath&lt;/dt&gt;&lt;dd&gt;Parent path of deleted node&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;name:desc&lt;/samp&gt;&lt;br/&gt;&amp;rarr; sort by name descending&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Retrieve a list of deleted nodes in a Recycle Bin.  ### Precondition: User can access parent room and has _\&quot;read recycle bin\&quot;_ permissions.  ### Effects: None.  ### &amp;#9432; Further Information: Only room IDs are accepted as node ID since only rooms have Recycle Bins.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;type:eq:file:folder|name:cn:searchString_1|parentPath:cn:searchString_2&#x60;   Get deleted nodes where type equals (&#x60;file&#x60; **OR** &#x60;folder&#x60;) **AND** deleted node name containing &#x60;searchString_1&#x60; **AND** deleted node parent path containing &#x60;searchString 2&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;type&#x60;** | Node type filter | &#x60;eq&#x60; | Node type equals value(s).&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;type:eq:folder:file&#x60; | &lt;ul&gt;&lt;li&gt;&#x60;folder&#x60;&lt;/li&gt;&lt;li&gt;&#x60;file&#x60;&lt;/li&gt;&lt;/ul&gt; | | **&#x60;name&#x60;** | Node name filter | &#x60;cn&#x60; | Node name contains value. | &#x60;search String&#x60; | | **&#x60;parentPath&#x60;** | Parent path filter | &#x60;cn&#x60; | Parent path contains value. | &#x60;search String&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are **NOT** supported.   Example: &gt; &#x60;name:desc&#x60;   Sort by &#x60;name&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;name&#x60;** | Node name | | **&#x60;cntVersions&#x60;** | Number of deleted versions of this file | | **&#x60;firstDeletedAt&#x60;** | First deleted version | | **&#x60;lastDeletedAt&#x60;** | Last deleted version | | **&#x60;parentPath&#x60;** | Parent path of deleted node |
    * @param nodeId Auth parent node ID (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
    * @param filter Filter string (optional)
-   * @param sort Sorting string (optional)
+   * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return DeletedNodeSummaryList
    * @throws ApiException if fails to make API call
    */
-  public DeletedNodeSummaryList getFsDeletedNodesSummary(String xSdsAuthToken, Long nodeId, String xSdsDateFormat, String filter, String sort, Integer offset, Integer limit) throws ApiException {
+  public DeletedNodeSummaryList getFsDeletedNodesSummary(Long nodeId, String filter, String sort, Integer offset, Integer limit, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getFsDeletedNodesSummary");
-    }
     
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -1313,7 +1182,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/{node_id}/deleted_nodes"
+    String localVarPath = "/v4/nodes/{node_id}/deleted_nodes"
       .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
 
     // query params
@@ -1333,7 +1202,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1342,27 +1211,22 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<DeletedNodeSummaryList> localVarReturnType = new GenericType<DeletedNodeSummaryList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get node
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br /&gt;Get all file system node (Room, Folder, File)&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has read permissions in auth parent room/subroom.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param nodeId Node id (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Get node (room, folder, file).  ### Precondition: User has _\&quot;read\&quot;_ permissions in auth parent room.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param nodeId Node ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node getFsNode(String xSdsAuthToken, Long nodeId, String xSdsDateFormat) throws ApiException {
+  public Node getFsNode(Long nodeId, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getFsNode");
-    }
     
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -1370,7 +1234,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/{node_id}"
+    String localVarPath = "/v4/nodes/{node_id}"
       .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
 
     // query params
@@ -1386,7 +1250,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1395,36 +1259,31 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get file system nodes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Provides a hierarchical list of file system nodes (Rooms, Folders, Files) of a given parent that are accessible by the current user.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Authenticated user.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; EncryptionInfo is not provided.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;p&gt;Filter string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;OPERATOR&amp;gt;:&amp;lt;VALUE&amp;gt;[:&amp;lt;VALUE&amp;gt;...]&lt;/dfn&gt;&lt;/p&gt;&lt;h5&gt;Fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;type&lt;/dt&gt;&lt;dd&gt;Node type filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values allowed)&lt;br/&gt;VALUE: &lt;code&gt;room|folder|file&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;perm&lt;/dt&gt;&lt;dd&gt;Permissions filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values allowed)&lt;br/&gt;VALUE: &lt;code&gt;manage|read|change|create|delete|manageDownloadShare|manageUploadShare|&lt;br/&gt;canReadRecycleBin|canRestoreRecycleBin|canDeleteRecycleBin&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;childPerm&lt;/dt&gt;&lt;dd&gt;The same as perm, but less restrictive (applied to child nodes only)&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values allowed)&lt;br/&gt;VALUE: &lt;code&gt;manage|read|change|create|delete|manageDownloadShare|manageUploadShare|&lt;br/&gt;canReadRecycleBin|canRestoreRecycleBin|canDeleteRecycleBin&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Node name filter&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (name contains value, multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;encrypted&lt;/dt&gt;&lt;dd&gt;Node encryption status filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (Node is encrypted, multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;true|false&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;branchVersion&lt;/dt&gt;&lt;dd&gt;Node branch version&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Version Number&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;type:eq:room:folder|perm:eq:read&lt;/samp&gt;&lt;br/&gt;&amp;rarr; Get nodes where type equals &#39;room&#39; or &#39;folder&#39; AND user has read permissions.&lt;/p&gt;&lt;h4&gt;Sort&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;.&lt;br/&gt;Multiple fields not supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Node name&lt;/dd&gt;&lt;dt&gt;createdBy&lt;/dt&gt;&lt;dd&gt;Creator user name&lt;/dd&gt;&lt;dt&gt;createdAt&lt;/dt&gt;&lt;dd&gt;Creation date&lt;/dd&gt;&lt;dt&gt;updatedBy&lt;/dt&gt;&lt;dd&gt;Modifier user name&lt;/dd&gt;&lt;dt&gt;updatedAt&lt;/dt&gt;&lt;dd&gt;Modification date&lt;/dd&gt;&lt;dt&gt;fileType&lt;/dt&gt;&lt;dd&gt;File type (extension)&lt;/dd&gt;&lt;dt&gt;classification&lt;/dt&gt;&lt;dd&gt;Classification&lt;/dd&gt;&lt;dt&gt;size&lt;/dt&gt;&lt;dd&gt;Node size&lt;/dd&gt;&lt;dt&gt;cntAdmins&lt;/dt&gt;&lt;dd&gt;&lt;b style&#x3D;&#39;color: red;&#39;&gt; DEPRECATED NO EFFECT&lt;/b&gt; For rooms only: Number of admins&lt;/dd&gt;&lt;dt&gt;cntUsers&lt;/dt&gt;&lt;dd&gt;&lt;b style&#x3D;&#39;color: red;&#39;&gt; DEPRECATED NO EFFECT&lt;/b&gt; For rooms only: Number of users&lt;/dd&gt;&lt;dt&gt;nodeCntChildren&lt;/dt&gt;&lt;dd&gt;For rooms/subrooms/folder only: Number of direct children (not recursive)&lt;/dd&gt;&lt;dt&gt;cntDeletedVersions&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;For files/folder only: Number of deleted versions of this file/folder (not recursive)&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;name:desc&lt;/samp&gt;&lt;br/&gt;&amp;rarr; sort by name descending&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param depthLevel &lt;ul&gt;&lt;li&gt;0 - top-level nodes only;&lt;/li&gt;&lt;li&gt;-1 - full tree;&lt;/li&gt;&lt;li&gt;any positive N - include N levels starting from the current node&lt;/li&gt;&lt;/ul&gt; (optional, default to 0)
-   * @param parentId Parent node ID. Only rooms and folders can be parents. Parent ID 0 or empty is the root node. (optional)
-   * @param roomManager Show all data rooms for management perspective. Only posible for Room Managers. For all other users, it will be ignored. (optional)
+   * ### Functional Description:   Provides a hierarchical list of file system nodes (rooms, folders, files) of a given parent that are accessible by the current user.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: &#x60;EncryptionInfo&#x60; is not provided.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;type:eq:room:folder|perm:eq:read&#x60;   Get nodes where type equals (&#x60;room&#x60; **OR** &#x60;folder&#x60;) **AND** user has &#x60;read&#x60; permissions.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;type&#x60;** | Node type filter | &#x60;eq&#x60; | Node type equals value.&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;type:eq:room:folder&#x60; | &lt;ul&gt;&lt;li&gt;&#x60;room&#x60;&lt;/li&gt;&lt;li&gt;&#x60;folder&#x60;&lt;/li&gt;&lt;li&gt;&#x60;file&#x60;&lt;/li&gt;&lt;/ul&gt; | | **&#x60;perm&#x60;** | Permission filter | &#x60;eq&#x60; | Permission equals value.&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;perm:eq:read:create:delete&#x60; | &lt;ul&gt;&lt;li&gt;&#x60;manage&#x60;&lt;/li&gt;&lt;li&gt;&#x60;read&#x60;&lt;/li&gt;&lt;li&gt;&#x60;change&#x60;&lt;/li&gt;&lt;li&gt;&#x60;create&#x60;&lt;/li&gt;&lt;li&gt;&#x60;delete&#x60;&lt;/li&gt;&lt;li&gt;&#x60;manageDownloadShare&#x60;&lt;/li&gt;&lt;li&gt;&#x60;manageUploadShare&#x60;&lt;/li&gt;&lt;li&gt;&#x60;canReadRecycleBin&#x60;&lt;/li&gt;&lt;li&gt;&#x60;canRestoreRecycleBin&#x60;&lt;/li&gt;&lt;li&gt;&#x60;canDeleteRecycleBin&#x60;&lt;/li&gt;&lt;/ul&gt; | | **&#x60;childPerm&#x60;** | Same as **&#x60;perm&#x60;**, but less restrictive (applies to child nodes only) | &#x60;eq&#x60; | cf. **&#x60;perm&#x60;** | cf. **&#x60;perm&#x60;** | | **&#x60;name&#x60;** | Node name filter | &#x60;cn&#x60; | Node name contains value. | &#x60;search String&#x60; | | **&#x60;encrypted&#x60;** | Node encryption status filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | **&#x60;branchVersion&#x60;** | Node branch version filter | &#x60;ge, le&#x60; | Branch version is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;branchVersion:ge:1423280937404&#x60;&amp;#124;&#x60;branchVersion:le:1523280937404&#x60; | &#x60;version number&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are **NOT** supported.   Example: &gt; &#x60;name:desc&#x60;   Sort by &#x60;name&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;name&#x60;** | Node name | | **&#x60;createdAt&#x60;** | Creation date | | **&#x60;createdBy&#x60;** | Creator user name | | **&#x60;updatedAt&#x60;** | Last modification date | | **&#x60;updatedBy&#x60;** | Last modifier user name | | **&#x60;fileType&#x60;** | File type (extension) | | **&#x60;classification&#x60;** | Classification ID (for files only):&lt;ul&gt;&lt;li&gt;1 - public&lt;/li&gt;&lt;li&gt;2 - for internal use only&lt;/li&gt;&lt;li&gt;3 - confidential&lt;/li&gt;&lt;li&gt;4 - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | **&#x60;size&#x60;** | Node size | | **&#x60;cntAdmins&#x60;** | (**&#x60;DEPRECATED&#x60;**)&lt;br&gt;Number of admins (for rooms only)| | **&#x60;cntUsers&#x60;** | (**&#x60;DEPRECATED&#x60;**)&lt;br&gt;Number of users (for rooms only) | | **&#x60;nodeCntChildren&#x60;** | Number of direct children (not recursive; for rooms and folders only) | | **&#x60;cntDeletedVersions&#x60;** | Number of deleted versions of this file / folder (not recursive; for files and folders only) |
+   * @param depthLevel * &#x60;0&#x60; - top level nodes only * &#x60;n&#x60; (any positive number) - include &#x60;n&#x60; levels starting from the current node * &#x60;-1&#x60; - full tree (**DEPRECATED**: will be removed) (optional)
+   * @param parentId Parent node ID. Only rooms and folders can be parents. Parent ID &#x60;0&#x60; or empty is the root node. (optional)
+   * @param roomManager Show all rooms for management perspective. Only possible for _Rooms Managers_. For all other users, it will be ignored. (optional)
    * @param filter Filter string (optional)
-   * @param sort Sorting string (optional)
+   * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return NodeList
    * @throws ApiException if fails to make API call
    */
-  public NodeList getFsNodes(String xSdsAuthToken, String xSdsDateFormat, Integer depthLevel, Long parentId, Boolean roomManager, String filter, String sort, Integer offset, Integer limit) throws ApiException {
+  public NodeList getFsNodes(Integer depthLevel, Long parentId, Boolean roomManager, String filter, String sort, Integer offset, Integer limit, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getFsNodes");
-    }
-    
     // create path and map variables
-    String localVarPath = "/nodes";
+    String localVarPath = "/v4/nodes";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -1446,7 +1305,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1455,26 +1314,21 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<NodeList> localVarReturnType = new GenericType<NodeList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Generate download token for zip download
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Create a download token to retrieve several files in one ZIP archive.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has read permission in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Download token is generated and returned.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The token is necessary to access /downloads resources.&lt;br/&gt;ZIP download is only available for files and folders.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * ### Functional Description:   Create a download token to retrieve several files in one ZIP archive.  ### Precondition: User has _\&quot;read\&quot;_ permissions in parent room.  ### Effects: Download token is generated and returned.  ### &amp;#9432; Further Information: The token is necessary to access &#x60;downloads&#x60; resources.   ZIP download is only available for files and folders.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return DownloadTokenGenerateResponse
    * @throws ApiException if fails to make API call
    */
-  public DownloadTokenGenerateResponse getNodesAsZip(String xSdsAuthToken, ZipDownloadRequest body) throws ApiException {
+  public DownloadTokenGenerateResponse getNodesAsZip(ZipDownloadRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getNodesAsZip");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -1482,7 +1336,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/zip";
+    String localVarPath = "/v4/nodes/zip";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -1495,35 +1349,30 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<DownloadTokenGenerateResponse> localVarReturnType = new GenericType<DownloadTokenGenerateResponse>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Download files/folders as ZIP
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Download multiple files in a ZIP archive.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
-   * @return Object
+   * Download files / folders as ZIP
+   * ### Functional Description:   Download multiple files in a ZIP archive.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return Integer
    * @throws ApiException if fails to make API call
    */
-  public Object getNodesAsZipDownload(String xSdsAuthToken, ZipDownloadRequest body) throws ApiException {
+  public Integer getNodesAsZipDownload(ZipDownloadRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getNodesAsZipDownload");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -1531,7 +1380,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/zip/download";
+    String localVarPath = "/v4/nodes/zip/download";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -1549,36 +1398,31 @@ if (xSdsDateFormat != null)
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
-    GenericType<Object> localVarReturnType = new GenericType<Object>() {};
+    GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get user-room assignments per group that have not been accepted yet
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Requests a list of User - Room Assignments by Groups that have not been approved yet&lt;br/&gt;These can have the state &lt;strong&gt;WAITING&lt;/strong&gt; or &lt;strong&gt;DENIED&lt;/strong&gt;. &lt;strong&gt;ACCEPTED&lt;/strong&gt; Assignments are already removed from the list.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Data Room Admins should regularly request pending Assingments to provide access to rooms for other users.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;p&gt;Filter string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;OPERATOR&amp;gt;:&amp;lt;VALUE&amp;gt;[:&amp;lt;VALUE&amp;gt;...]&lt;/dfn&gt;&lt;/p&gt;&lt;h5&gt;Fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;userId&lt;/dt&gt;&lt;dd&gt;User ID filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Positive Integer&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;groupId&lt;/dt&gt;&lt;dd&gt;Group ID filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Positive Integer&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;roomId&lt;/dt&gt;&lt;dd&gt;Room ID filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Positive Integer&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;state&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;Assignment state&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;WAITING|DENIED&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;h4&gt;Sort&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;.&lt;br/&gt;Multiple fields not supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;userId&lt;/dt&gt;&lt;dd&gt;User ID&lt;/dd&gt;&lt;dt&gt;groupId&lt;/dt&gt;&lt;dd&gt;Group ID&lt;/dd&gt;&lt;dt&gt;roomId&lt;/dt&gt;&lt;dd&gt;Room ID&lt;/dd&gt;&lt;dt&gt;state&lt;/dt&gt;&lt;dd&gt;State&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;userId:desc&lt;/samp&gt;&lt;br/&gt;&amp;rarr; sort by User ID descending&lt;/p&gt;&lt;/div&gt; 
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Requests a list of user-room assignments by groups that have not been approved yet   These can have the state: * **WAITING**   * **DENIED**   * **ACCEPTED**    **ACCEPTED** assignments are already removed from the list.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: Room administrators should regularly request pending assingments to provide access to rooms for other users.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE&#x60;   Example: &gt; &#x60;state:eq:WAITING&#x60;   Filter assignments by state &#x60;WAITING&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;userId&#x60;** | User ID filter | &#x60;eq&#x60; | User ID equals value. | &#x60;positive Integer&#x60; | | **&#x60;groupId&#x60;** | Group ID filter | &#x60;eq&#x60; | Group ID equals value. | &#x60;positive Integer&#x60; | | **&#x60;roomId&#x60;** | Room ID filter | &#x60;eq&#x60; | Room ID equals value. | &#x60;positive Integer&#x60; | | **&#x60;state&#x60;** | Assignment state | &#x60;eq&#x60; | Assignment state equals value. | &#x60;WAITING or DENIED&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are **NOT** supported.   Example: &gt; &#x60;userId:desc&#x60;   Sort by &#x60;userId&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;userId&#x60;** | User ID | | **&#x60;groupId&#x60;** | Group ID | | **&#x60;roomId&#x60;** | Room ID | | **&#x60;state&#x60;** | State |
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
    * @param filter Filter string (optional)
    * @param sort Sort string (optional)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return PendingAssignmentList
    * @throws ApiException if fails to make API call
    */
-  public PendingAssignmentList getPendingAssignments(String xSdsAuthToken, Integer offset, Integer limit, String filter, String sort) throws ApiException {
+  public PendingAssignmentList getPendingAssignments(Integer offset, Integer limit, String filter, String sort, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getPendingAssignments");
-    }
-    
     // create path and map variables
-    String localVarPath = "/nodes/rooms/pending";
+    String localVarPath = "/v4/nodes/rooms/pending";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -1595,7 +1439,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1604,34 +1448,29 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<PendingAssignmentList> localVarReturnType = new GenericType<PendingAssignmentList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get events of a room
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve syslog (&#x3D; audit log) events related to a Room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Requires read permission on that room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Output may be limited to a certain number of entries. Please use filter criteria and paging.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Use &#x60;nodes/rooms/{room_id}/events&#x60; API  ### Functional Description: Retrieve syslog (audit log) events related to a room.  ### Precondition: Requires _\&quot;read\&quot;_ permissions on that room.  ### Effects: None.  ### &amp;#9432; Further Information: Output may be limited to a certain number of entries.   Please use filter criteria and paging.
+   * @param roomId Room ID (required)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
-   * @param dateStart Start date (2015-12-31T23:59:00) (optional)
-   * @param dateEnd End date (2015-12-31T23:59:00) (optional)
-   * @param type Operation ID type (see table LOG_OPERATIONS) (optional)
+   * @param dateStart Start date e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param dateEnd End date e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param type Operation ID cf. &#x60;GET /eventlog/operations&#x60; (optional)
    * @param userId User ID (optional)
-   * @param status Operation status: 0 &#x3D; SUCCESS, 2 &#x3D; ERROR (optional)
+   * @param status Operation status: * &#x60;0&#x60; - Success * &#x60;2&#x60; - Error (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return LogEventList
    * @throws ApiException if fails to make API call
    */
-  public LogEventList getRoomActivitiesLog(String xSdsAuthToken, Long roomId, String xSdsDateFormat, Integer offset, Integer limit, LocalDate dateStart, LocalDate dateEnd, List<Integer> type, List<Integer> userId, List<Integer> status) throws ApiException {
+  public LogEventList getRoomActivitiesLog(Long roomId, Integer offset, Integer limit, String dateStart, String dateEnd, Integer type, Long userId, Integer status, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getRoomActivitiesLog");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -1639,7 +1478,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/events"
+    String localVarPath = "/v4/nodes/rooms/{room_id}/events"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -1651,9 +1490,9 @@ if (xSdsDateFormat != null)
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "date_start", dateStart));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "date_end", dateEnd));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "type", type));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "user_id", userId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "status", status));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "type", type));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "user_id", userId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "status", status));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
@@ -1662,7 +1501,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json", "text/csv"
+      "application/json;charset=UTF-8", "text/csv"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1671,42 +1510,37 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<LogEventList> localVarReturnType = new GenericType<LogEventList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * &lt;b style&#x3D;&#39;color: red;&#39;&gt; DEPRECATED&lt;/b&gt; Get events of a room
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Retrieve syslog (&#x3D; audit log) events related to a Room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Requires read permission on that room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Output may be limited to a certain number of entries. Please use filter criteria and paging.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * Get events of a room
+   * ### Use &#x60;nodes/rooms/{room_id}/events&#x60; API  ### Functional Description: Retrieve syslog (audit log) events related to a room.  ### Precondition: Requires _\&quot;read\&quot;_ permissions on that room.  ### Effects: None.  ### &amp;#9432; Further Information: Output may be limited to a certain number of entries.   Please use filter criteria and paging.
+   * @param roomId Room ID (required)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
-   * @param dateStart Start date (2015-12-31T23:59:00) (optional)
-   * @param dateEnd End date (2015-12-31T23:59:00) (optional)
-   * @param type Operation ID type (see table LOG_OPERATIONS) (optional)
+   * @param dateStart Start date e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param dateEnd End date e.g. &#x60;2015-12-31T23:59:00&#x60; (optional)
+   * @param type Operation ID cf. &#x60;GET /eventlog/operations&#x60; (optional)
    * @param userId User ID (optional)
-   * @param status Operation status: 0 &#x3D; SUCCESS, 2 &#x3D; ERROR (optional)
+   * @param status Operation status: * &#x60;0&#x60; - Success * &#x60;2&#x60; - Error (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return SyslogEventList
    * @throws ApiException if fails to make API call
    */
-  public SyslogEventList getRoomActivitiesLog_0(String xSdsAuthToken, Long roomId, String xSdsDateFormat, Integer offset, Integer limit, LocalDate dateStart, LocalDate dateEnd, List<Integer> type, List<Integer> userId, List<Integer> status) throws ApiException {
+  public SyslogEventList getRoomActivitiesLog1(Long roomId, Integer offset, Integer limit, String dateStart, String dateEnd, Integer type, Long userId, Integer status, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getRoomActivitiesLog_0");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
-      throw new ApiException(400, "Missing the required parameter 'roomId' when calling getRoomActivitiesLog_0");
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling getRoomActivitiesLog1");
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/activities_log"
+    String localVarPath = "/v4/nodes/rooms/{room_id}/activities_log"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -1718,9 +1552,9 @@ if (xSdsDateFormat != null)
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "date_start", dateStart));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "date_end", dateEnd));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "type", type));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "user_id", userId));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "status", status));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "type", type));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "user_id", userId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "status", status));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
@@ -1729,7 +1563,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json", "text/csv"
+      "application/json;charset=UTF-8", "text/csv"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1738,29 +1572,24 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<SyslogEventList> localVarReturnType = new GenericType<SyslogEventList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get room granted groups or/and groups that can be granted
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Retrieve a list of groups that are and/or can be granted to the room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Groups Read\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;h5&gt;Filter fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Group name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;isGranted&lt;/dt&gt;&lt;dd&gt;Filter the groups that have access/no access to this room&lt;br/&gt;&lt;b&gt;Attention! This filter is only available for data room administrators.&lt;br/&gt; Other users can only look for users in their rooms, so this filter is TRUE and cannot be overridden.&lt;/b&gt;&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false|any]. Default value is &lt;code&gt;true&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;permissionsManage&lt;/dt&gt;&lt;dd&gt;Filter the groups that have/don&#39;t have manage right in this room&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false].&lt;/dd&gt;&lt;dt&gt;effectivePerm&lt;/dt&gt;&lt;dd&gt;Filter groups with permissions or effective permissions&lt;br/&gt;FALSE: Direct permissions TRUE: Effective permissions.&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false]. Default value is &lt;code&gt;true&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;groupId&lt;/dt&gt;&lt;dd&gt;Filter the groups by id&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: Positive Integer&lt;/dd&gt;&lt;/dl&gt;Example: &lt;samp&gt;isGranted:eq:false|name:cn:searchstring&lt;/samp&gt;&lt;br/&gt;- get all groups that have no rights to this room of and whose name is like searchstring&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
+   * Get room granted groups or / and groups that can be granted
+   * ### Functional Description:   Retrieve a list of groups that are and / or can be granted to the room.  ### Precondition: Any permissions on target room.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE&#x60;   Example: &gt; &#x60;isGranted:eq:false|name:cn:searchString&#x60;   Get all groups that are **NOT** granted to this room **AND** whose name is like &#x60;searchString&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;name&#x60;** | Group name filter | &#x60;cn&#x60; | Group name contains value. | &#x60;search String&#x60; | | **&#x60;groupId&#x60;** | Group ID filter | &#x60;eq&#x60; | Group ID equals value. | &#x60;positive Integer&#x60; | | **&#x60;isGranted&#x60;** | Filter the groups that have (no) access to this room.&lt;br&gt;**This filter is only available for room administrators.**&lt;br&gt;**Other users can only look for groups in their rooms, so this filter is &#x60;true&#x60; and cannot be overridden.** | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;true&#x60; | | **&#x60;permissionsManage&#x60;** | Filter the groups that do (not) have &#x60;manage&#x60; permissions in this room. | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | **&#x60;effectivePerm&#x60;** | Filter groups with DIRECT or DIRECT **AND** EFFECTIVE permissions&lt;ul&gt;&lt;li&gt;&#x60;false&#x60;: DIRECT permissions&lt;/li&gt;&lt;li&gt;&#x60;true&#x60;: DIRECT **AND** EFFECTIVE permissions&lt;/li&gt;&lt;/ul&gt;DIRECT means: e.g. room administrator grants &#x60;read&#x60; permissions to group of users **directly** on desired room.&lt;br&gt;EFFECTIVE means: e.g. group of users gets &#x60;read&#x60; permissions on desired room through **inheritance**. | &#x60;eq&#x60; |  | &#x60;true or false&#x60;&lt;br&gt;default: &#x60;true&#x60; |
+   * @param roomId Room ID (required)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
-   * @param filter Group filter (optional)
+   * @param filter Filter string (optional)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return RoomGroupList
    * @throws ApiException if fails to make API call
    */
-  public RoomGroupList getRoomGroups(String xSdsAuthToken, Long roomId, Integer offset, Integer limit, String filter) throws ApiException {
+  public RoomGroupList getRoomGroups(Long roomId, Integer offset, Integer limit, String filter, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getRoomGroups");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -1768,7 +1597,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/groups"
+    String localVarPath = "/v4/nodes/rooms/{room_id}/groups"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -1785,7 +1614,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1794,29 +1623,24 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<RoomGroupList> localVarReturnType = new GenericType<RoomGroupList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get room granted users or/and users that can be granted
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Retrieve a list of groups that are and/or can be granted to the room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Users Read\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;h5&gt;Filter fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;displayName&lt;/dt&gt;&lt;dd&gt;User display name (firstName, lastName, login)&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;isGranted&lt;/dt&gt;&lt;dd&gt;Filter the users that have access/no access to this room.&lt;br/&gt;&lt;b&gt;Attention! This filter is only available for data room administrators.&lt;br/&gt; Other users can only look for users in their rooms, so this filter is TRUE and cannot be overridden.&lt;/b&gt;&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false|any]. Default value is &lt;code&gt;true&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;permissionsManage&lt;/dt&gt;&lt;dd&gt;Filter the users that have/don&#39;t have manage right in this room&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false].&lt;/dd&gt;&lt;dt&gt;effectivePerm&lt;/dt&gt;&lt;dd&gt;Filter users with permissions, effective permissions or direct effective permissions&lt;br/&gt;FALSE: Direct permissions TRUE: Effective permissions. ANY: Direct effective.&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false|any]. Default value is &lt;code&gt;false&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;userId&lt;/dt&gt;&lt;dd&gt;Filter the users by id&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: Positive Integer&lt;/dd&gt;&lt;/dl&gt;Example: &lt;samp&gt;isGranted:eq:true|displayName:cn:searchstring|permissions_manage:eq:true&lt;/samp&gt;&lt;br/&gt;- get all users that have manage rights to this room of and whose name is like searchstring&lt;br/&gt;&lt;br/&gt;&lt;b&gt;The filters are connected by AND&lt;/b&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
+   * Get room granted users or / and users that can be granted
+   * ### Functional Description:   Retrieve a list of users that are and / or can be granted to the room.  ### Precondition: Any permissions on target room.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE&#x60;   Example: &gt; &#x60;permissionsManage:eq:true|displayName:cn:searchString&#x60;   Get all users that have &#x60;manage&#x60; permissions to this room **AND** whose (firstname **OR** lastname **OR** login) is like &#x60;searchString&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;displayName&#x60;** | User display name filter | &#x60;cn&#x60; | User display name contains value (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;login&#x60;). | &#x60;search String&#x60; | | **&#x60;userId&#x60;** | User ID filter | &#x60;eq&#x60; | User ID equals value. | &#x60;positive Integer&#x60; | | **&#x60;isGranted&#x60;** | Filter the users that have (no) access to this room.&lt;br&gt;**This filter is only available for room administrators.**&lt;br&gt;**Other users can only look for users in their rooms, so this filter is &#x60;true&#x60; and cannot be overridden.** | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;true&#x60; | | **&#x60;permissionsManage&#x60;** | Filter the users that do (not) have &#x60;manage&#x60; permissions in this room. | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | **&#x60;effectivePerm&#x60;** | Filter users with DIRECT or DIRECT **AND** EFFECTIVE permissions&lt;ul&gt;&lt;li&gt;&#x60;false&#x60;: DIRECT permissions&lt;/li&gt;&lt;li&gt;&#x60;true&#x60;: DIRECT **AND** EFFECTIVE permissions&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;: DIRECT **AND** EFFECTIVE **AND** OVER GROUP permissions&lt;/li&gt;&lt;/ul&gt;DIRECT means: e.g. room administrator grants &#x60;read&#x60; permissions to group of users **directly** on desired room.&lt;br&gt;EFFECTIVE means: e.g. group of users gets &#x60;read&#x60; permissions on desired room through **inheritance**.&lt;br&gt;OVER GROUP means: e.g. user gets &#x60;read&#x60; permissions on desired room through **group membership**. | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;false&#x60; |
+   * @param roomId Room ID (required)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
-   * @param filter User filter (optional)
+   * @param filter Filter string (optional)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return RoomUserList
    * @throws ApiException if fails to make API call
    */
-  public RoomUserList getRoomUsers(String xSdsAuthToken, Long roomId, Integer offset, Integer limit, String filter) throws ApiException {
+  public RoomUserList getRoomUsers(Long roomId, Integer offset, Integer limit, String filter, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getRoomUsers");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -1824,7 +1648,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/users"
+    String localVarPath = "/v4/nodes/rooms/{room_id}/users"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -1841,7 +1665,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1850,26 +1674,21 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<RoomUserList> localVarReturnType = new GenericType<RoomUserList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get user&#39;s file key
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Returns the FileKey for the current user (if available).&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User with read, create or manage download share permissions in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; The symmetric FileKey is encrypted with the user&#39;s PublicKey. FileKeys are generated with the Workflow \&quot;Generate FileKeys\&quot; that starts at &lt;b&gt;GET /nodes/missingFileKeys&lt;/b&gt;.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param fileId File Id (required)
+   * ### Functional Description:   Returns the file key for the current user (if available).  ### Precondition: User with _\&quot;read\&quot;_, _\&quot;create\&quot;_ or _\&quot;manage download share\&quot;_ permissions in parent room.  ### Effects: None.  ### &amp;#9432; Further Information: The symmetric file key is encrypted with the user&#39;s public key.   File keys are generated with the workflow _\&quot;Generate file keys\&quot;_ that starts at &#x60;GET /nodes/missingFileKeys&#x60;.
+   * @param fileId File ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return FileKey
    * @throws ApiException if fails to make API call
    */
-  public FileKey getUserFileKey(String xSdsAuthToken, Long fileId) throws ApiException {
+  public FileKey getUserFileKey(Long fileId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getUserFileKey");
-    }
     
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -1877,7 +1696,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/{file_id}/user_file_key"
+    String localVarPath = "/v4/nodes/files/{file_id}/user_file_key"
       .replaceAll("\\{" + "file_id" + "\\}", apiClient.escapeString(fileId.toString()));
 
     // query params
@@ -1891,7 +1710,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1900,33 +1719,28 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<FileKey> localVarReturnType = new GenericType<FileKey>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get files where the user has no filekey
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Requests a list of missing FileKeys that may be generated by the current user.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has a KeyPair.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Clients should regularly request missing FileKeys to provide access to files for other users. The returned list is ordered by priority (Rescue Keys are returned first).&lt;br/&gt;Please note: This API returns &lt;strong&gt;1024&lt;/strong&gt; entries at maximum. There might be more entries even if a total of 1024 is returned.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * Get files where the user has no file key
+   * ### Functional Description:   Requests a list of missing file keys that may be generated by the current user.  ### Precondition: User has a keypair.  ### Effects: None.  ### &amp;#9432; Further Information: Clients should regularly request missing file keys to provide access to files for other users.   The returned list is ordered by priority (emergency passwords are returned first).    ### Please note:  This API returns **1024** entries at maximum.   There might be more entries even if a total of 1024 is returned.
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
-   * @param roomId Room Id (optional)
-   * @param fileId File Id (optional)
-   * @param userId User Id (optional)
+   * @param roomId Room ID (optional)
+   * @param fileId File ID (optional)
+   * @param userId User ID (optional)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return MissingKeysResponse
    * @throws ApiException if fails to make API call
    */
-  public MissingKeysResponse missingFileKeys(String xSdsAuthToken, Integer offset, Integer limit, Long roomId, Long fileId, Long userId) throws ApiException {
+  public MissingKeysResponse missingFileKeys(Integer offset, Integer limit, Long roomId, Long fileId, Long userId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling missingFileKeys");
-    }
-    
     // create path and map variables
-    String localVarPath = "/nodes/missingFileKeys";
+    String localVarPath = "/v4/nodes/missingFileKeys";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -1944,7 +1758,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -1953,28 +1767,23 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<MissingKeysResponse> localVarReturnType = new GenericType<MissingKeysResponse>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Move file system nodes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt;Moves nodes (folder,file) to another parent.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Authenticated user with read and delete permissions in the source parent and write permissions in the target parent node.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Nodes are moved to target parent.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Nodes must be in same source parent. Rooms cannot be moved.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param nodeId Target Parent Node ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Moves nodes (folder, file) to another parent.  ### Precondition: Authenticated user with _\&quot;read\&quot;_ and _\&quot;delete\&quot;_ permissions in the source parent and _\&quot;create\&quot;_ permissions in the target parent node.  ### Effects: Nodes are moved to target parent.  ### &amp;#9432; Further Information: Nodes must be in same source parent.   **Rooms cannot be moved.**
+   * @param nodeId Target parent node ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node moveNodes(String xSdsAuthToken, Long nodeId, ch.cyberduck.core.sds.swagger.MoveNodesRequest body, String xSdsDateFormat) throws ApiException {
+  public Node moveNodes(Long nodeId, MoveNodesRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling moveNodes");
-    }
     
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -1987,7 +1796,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/{node_id}/move_to"
+    String localVarPath = "/v4/nodes/{node_id}/move_to"
       .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
 
     // query params
@@ -2003,34 +1812,29 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Restore deleted nodes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Restore a list of deleted nodes.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has write permissions in parent room and \&quot;Restore Recycle Bin\&quot; permissions.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; The selected files are moved from the recycle bin to the chosen productive container.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; If no parent ID is provided, the node is restored to its previous location.&lt;br/&gt;The default resolution strategy is &lt;code&gt;autorename&lt;/code&gt; that adds numbers to the file name until the conflict is solved. If an existing file is overwritten, it is moved to the recycle bin instead of the restored one.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * ### Functional Description:   Restore a list of deleted nodes.  ### Precondition: User has _\&quot;create\&quot;_ permissions in parent room and _\&quot;restore recycle bin\&quot;_ permissions.  ### Effects: The selected files are moved from the Recycle Bin to the chosen productive container.  ### &amp;#9432; Further Information: If no parent ID is provided, the node is restored to its previous location.   The default resolution strategy is &#x60;autorename&#x60; that adds numbers to the file name until the conflict is solved.   If an existing file is overwritten, it is moved to the Recycle Bin instead of the restored one.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void restoreNodes(String xSdsAuthToken, RestoreDeletedNodesRequest body) throws ApiException {
+  public void restoreNodes(RestoreDeletedNodesRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling restoreNodes");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -2038,7 +1842,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/deleted_nodes/actions/restore";
+    String localVarPath = "/v4/nodes/deleted_nodes/actions/restore";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -2051,35 +1855,30 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Get Data Room Rescue KeyPair
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Retrieve the Data Room Rescue Key Pair.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has read permission in that room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
+   * Get room emergency password
+   * ### Functional Description:   Retrieve the room emergency password.  ### Precondition: User has _\&quot;read\&quot;_ permissions in that room.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param roomId Room ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return UserKeyPairContainer
    * @throws ApiException if fails to make API call
    */
-  public UserKeyPairContainer roomRescueKey(String xSdsAuthToken, Long roomId) throws ApiException {
+  public UserKeyPairContainer roomRescueKey(Long roomId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling roomRescueKey");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -2087,7 +1886,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/keypair"
+    String localVarPath = "/v4/nodes/rooms/{room_id}/keypair"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -2101,7 +1900,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -2110,33 +1909,28 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<UserKeyPairContainer> localVarReturnType = new GenericType<UserKeyPairContainer>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Search file system nodes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Provides a flat list of file system nodes (Rooms, Folders, Files) of a given parent that are accessible by the current user.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Authenticated user with read permission on parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&lt;br/&gt; A maximum of 500 results is returned. For more results please use paging (offset + limit).&lt;br/&gt; EncryptionInfo is not provided.&lt;br/&gt; Wildcard character is the asterisk (*).&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;p&gt;Filter string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;OPERATOR&amp;gt;:&amp;lt;VALUE&amp;gt;[:&amp;lt;VALUE&amp;gt;...]&lt;/dfn&gt;&lt;/p&gt;&lt;h5&gt;Fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;type&lt;/dt&gt;&lt;dd&gt;Node type filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;room|folder|file&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;fileType&lt;/dt&gt;&lt;dd&gt;File type filter (file extension)&lt;br/&gt;OPERATOR: &lt;code&gt;cn|eq&lt;/code&gt; (name contains or equal value, multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;classification&lt;/dt&gt;&lt;dd&gt;File classification  filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;1|2|3|4&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;createdBy&lt;/dt&gt;&lt;dd&gt;Creation username filter&lt;br/&gt;OPERATOR: &lt;code&gt;cn|eq&lt;/code&gt; (name contains or equal value, multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;createdAt&lt;/dt&gt;&lt;dd&gt;Creation data filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Date (yyyy-MM-mm)&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;updatedBy&lt;/dt&gt;&lt;dd&gt;Last change username filter&lt;br/&gt;OPERATOR: &lt;code&gt;cn|eq&lt;/code&gt; (name contains or equal value, multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;updatedAt&lt;/dt&gt;&lt;dd&gt;Last change date filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Date (yyyy-MM-mm)&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;expireAt&lt;/dt&gt;&lt;dd&gt;Expire date filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Date (yyyy-MM-mm)&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;size&lt;/dt&gt;&lt;dd&gt;Size filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Size in bytes&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;isFavorite&lt;/dt&gt;&lt;dd&gt;Favorite filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;true|false&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;branchVersion&lt;/dt&gt;&lt;dd&gt;Node branch version&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Version Number&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;type:eq:file|createdAt:ge:2015-01-01&lt;/samp&gt;&lt;br/&gt;&amp;rarr; Get nodes where type equals file AND file was created at or after 2015-01-01&lt;/p&gt;&lt;h4&gt;Sort&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;.&lt;br/&gt;Multiple fields not supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;name&lt;/dt&gt;&lt;dd&gt;Node name&lt;/dd&gt;&lt;dt&gt;createdBy&lt;/dt&gt;&lt;dd&gt;Creator user name&lt;/dd&gt;&lt;dt&gt;createdAt&lt;/dt&gt;&lt;dd&gt;Creation date&lt;/dd&gt;&lt;dt&gt;updatedBy&lt;/dt&gt;&lt;dd&gt;Modifier user name&lt;/dd&gt;&lt;dt&gt;updatedAt&lt;/dt&gt;&lt;dd&gt;Modification date&lt;/dd&gt;&lt;dt&gt;fileType&lt;/dt&gt;&lt;dd&gt;File type (extension)&lt;/dd&gt;&lt;dt&gt;classification&lt;/dt&gt;&lt;dd&gt;Classification&lt;/dd&gt;&lt;dt&gt;size&lt;/dt&gt;&lt;dd&gt;Node size&lt;/dd&gt;&lt;dt&gt;cntAdmins&lt;/dt&gt;&lt;dd&gt;&lt;b style&#x3D;&#39;color: red;&#39;&gt; DEPRECATED NO EFFECT&lt;/b&gt; For rooms only: Number of admins&lt;/dd&gt;&lt;dt&gt;cntUsers&lt;/dt&gt;&lt;dd&gt;&lt;b style&#x3D;&#39;color: red;&#39;&gt; DEPRECATED NO EFFECT&lt;/b&gt; For rooms only: Number of users&lt;/dd&gt;&lt;dt&gt;nodeCntChildren&lt;/dt&gt;&lt;dd&gt;For rooms/subrooms/folder only: Number of direct children (not recursive)&lt;/dd&gt;&lt;dt&gt;cntDeletedVersions&lt;/dt&gt;&lt;dd&gt;For files/folder only: Number of deleted versions of this file/folder (not recursive)&lt;/dd&gt;&lt;dt&gt;type&lt;/dt&gt;&lt;dd&gt;Node Type (Room - Folder - File)&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;name:desc&lt;/samp&gt;&lt;br/&gt;&amp;rarr; sort by name descending&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Provides a flat list of file system nodes (rooms, folders, files) of a given parent that are accessible by the current user.  ### Precondition: Authenticated user with _\&quot;read\&quot;_ permissions on parent room.  ### Effects: None.  ### &amp;#9432; Further Information:   A maximum of **500** results is returned.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;).   &#x60;EncryptionInfo&#x60; is not provided.   Wildcard character is the asterisk character: **&#x60;*&#x60;**  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;type:eq:file|createdAt:ge:2015-01-01&#x60;   Get nodes where type equals &#x60;file&#x60; **AND** file creation date is **&gt;&#x3D;** &#x60;2015-01-01&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;type&#x60;** | Node type filter | &#x60;eq&#x60; | Node type equals value.&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;type:eq:room:folder&#x60; | &lt;ul&gt;&lt;li&gt;&#x60;room&#x60;&lt;/li&gt;&lt;li&gt;&#x60;folder&#x60;&lt;/li&gt;&lt;li&gt;&#x60;file&#x60;&lt;/li&gt;&lt;/ul&gt; | | **&#x60;fileType&#x60;** | File type filter (file extension) | &#x60;cn, eq&#x60; | File type contains / equals value. | &#x60;search String&#x60; | | **&#x60;classification&#x60;** | File classification filter | &#x60;eq&#x60; | Classification equals value. | &lt;ul&gt;&lt;li&gt;&#x60;1&#x60; - public&lt;/li&gt;&lt;li&gt;&#x60;2&#x60; - for internal use only&lt;/li&gt;&lt;li&gt;&#x60;3&#x60; - confidential&lt;/li&gt;&lt;li&gt;&#x60;4&#x60; - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | **&#x60;createdBy&#x60;** | Creator login filter | &#x60;cn, eq&#x60; | Creator login contains / equals value. | &#x60;search String&#x60; | | **&#x60;createdAt&#x60;** | Creation date filter | &#x60;ge, le&#x60; | Creation date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;createdAt:ge:2016-12-31&#x60;&amp;#124;&#x60;createdAt:le:2018-01-01&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | **&#x60;updatedBy&#x60;** | Last modifier login filter | &#x60;cn, eq&#x60; | Last modifier login contains / equals value. | &#x60;search String&#x60; | | **&#x60;updatedAt&#x60;** | Last modification date filter | &#x60;ge, le&#x60; | Last modification date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;updatedAt:ge:2016-12-31&#x60;&amp;#124;&#x60;updatedAt:le:2018-01-01&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | **&#x60;expireAt&#x60;** | Expiration date filter | &#x60;ge, le&#x60; | Expiration date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;expireAt:ge:2016-12-31&#x60;&amp;#124;&#x60;expireAt:le:2018-01-01&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | **&#x60;size&#x60;** | Node size filter | &#x60;ge, le&#x60; | Node size is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;size:ge:5&#x60;&amp;#124;&#x60;size:le:10&#x60; | &#x60;size in bytes&#x60; | | **&#x60;isFavorite&#x60;** | Favorite filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | **&#x60;branchVersion&#x60;** | Node branch version filter | &#x60;ge, le&#x60; | Branch version is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;branchVersion:ge:1423280937404&#x60;&amp;#124;&#x60;branchVersion:le:1523280937404&#x60; | &#x60;version number&#x60; | | **&#x60;parentPath&#x60;** | Parent path | &#x60;cn, eq&#x60; | Parent path contains / equals  value. | &#x60;search String&#x60; |   ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are **NOT** supported.   Example: &gt; &#x60;name:desc&#x60;   Sort by &#x60;name&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;name&#x60;** | Node name | | **&#x60;createdAt&#x60;** | Creation date | | **&#x60;createdBy&#x60;** | Creator user name | | **&#x60;updatedAt&#x60;** | Last modification date | | **&#x60;updatedBy&#x60;** | Last modifier user name | | **&#x60;fileType&#x60;** | File type (extension) | | **&#x60;classification&#x60;** | Classification ID (for files only):&lt;ul&gt;&lt;li&gt;1 - public&lt;/li&gt;&lt;li&gt;2 - for internal use only&lt;/li&gt;&lt;li&gt;3 - confidential&lt;/li&gt;&lt;li&gt;4 - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | **&#x60;size&#x60;** | Node size | | **&#x60;cntAdmins&#x60;** | (**&#x60;DEPRECATED&#x60;**)&lt;br&gt;Number of admins (for rooms only)| | **&#x60;cntUsers&#x60;** | (**&#x60;DEPRECATED&#x60;**)&lt;br&gt;Number of users (for rooms only) | | **&#x60;nodeCntChildren&#x60;** | Number of direct children (not recursive; for rooms and folders only) | | **&#x60;cntDeletedVersions&#x60;** | Number of deleted versions of this file / folder (not recursive; for files and folders only) | | **&#x60;type&#x60;** | Node type (room, folder, file) | | **&#x60;parentPath&#x60;** | Parent path | 
    * @param searchString Search string (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param depthLevel &lt;ul&gt;&lt;li&gt;0 - top-level nodes only;&lt;/li&gt;&lt;li&gt;-1 - full tree;&lt;/li&gt;&lt;li&gt;any positive N - include N levels starting from the current node&lt;/li&gt;&lt;/ul&gt; (optional, default to 0)
-   * @param parentId Parent node ID. Only rooms and folders can be parents. Parent ID 0 or empty is the root node. (optional)
+   * @param depthLevel * &#x60;0&#x60; - top level nodes only (default) * &#x60;-1&#x60; - full tree * &#x60;n&#x60; (any positive number) - include &#x60;n&#x60; levels starting from the current node (optional)
+   * @param parentId Parent node ID. Only rooms and folders can be parents. Parent ID &#x60;0&#x60; or empty is the root node. (optional)
    * @param filter Filter string (optional)
-   * @param sort Sorting string (optional)
+   * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return NodeList
    * @throws ApiException if fails to make API call
    */
-  public NodeList searchFsNodes(String xSdsAuthToken, String searchString, String xSdsDateFormat, Integer depthLevel, Long parentId, String filter, String sort, Integer offset, Integer limit) throws ApiException {
+  public NodeList searchFsNodes(String searchString, Integer depthLevel, Long parentId, String filter, String sort, Integer offset, Integer limit, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling searchFsNodes");
-    }
     
     // verify the required parameter 'searchString' is set
     if (searchString == null) {
@@ -2144,7 +1938,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/search";
+    String localVarPath = "/v4/nodes/search";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -2166,7 +1960,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -2175,26 +1969,21 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<NodeList> localVarReturnType = new GenericType<NodeList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Add or change room granted groups
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Batch function. All existing group permissions will be overwritten.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User needs to be Data Room Admin.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Group&#39;s permissions are changed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
-   * @param body  (required)
+   * ### Functional Description: Batch function.   All existing group permissions will be overwritten.  ### Precondition: User needs to be a room administrator.  ### Effects: Group&#39;s permissions are changed.  ### &amp;#9432; Further Information: None.
+   * @param roomId Room ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void setRoomGroupsBatch(String xSdsAuthToken, Long roomId, RoomGroupsAddBatchRequest body) throws ApiException {
+  public void setRoomGroupsBatch(Long roomId, RoomGroupsAddBatchRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling setRoomGroupsBatch");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -2207,7 +1996,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/groups"
+    String localVarPath = "/v4/nodes/rooms/{room_id}/groups"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -2221,35 +2010,30 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Add or change room granted users
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Batch function. All existing user permissions will be overwritten.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User needs to be Data Room Admin.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; User&#39;s permissions are changed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
-   * @param body  (required)
+   * ### Functional Description: Batch function.   All existing user permissions will be overwritten.  ### Precondition: User needs to be a room administrator.  ### Effects: User&#39;s permissions are changed.  ### &amp;#9432; Further Information: None.
+   * @param roomId Room ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void setRoomUsersBatch(String xSdsAuthToken, Long roomId, RoomUsersAddBatchRequest body) throws ApiException {
+  public void setRoomUsersBatch(Long roomId, RoomUsersAddBatchRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling setRoomUsersBatch");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -2262,7 +2046,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}/users"
+    String localVarPath = "/v4/nodes/rooms/{room_id}/users"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -2276,34 +2060,29 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Set FileKeys for a list of users and files
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Sets symmetric FileKeys for several users and files.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has FileKeys for the files.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Stores new FileKeys for other users.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Only users with copies of the FileKey (encrypted with their public keys) can access a certain file. This endpoint is used for the distribution of FileKeys amongst an authorized user base.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * Set file keys for a list of users and files
+   * ### Functional Description:   Sets symmetric file keys for several users and files.  ### Precondition: User has file keys for the files.  ### Effects: Stores new file keys for other users.  ### &amp;#9432; Further Information: Only users with copies of the file key (encrypted with their public keys) can access a certain file.   This endpoint is used for the distribution of file keys amongst an authorized user base.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void setUserFileKeys(String xSdsAuthToken, UserFileKeySetBatchRequest body) throws ApiException {
+  public void setUserFileKeys(UserFileKeySetBatchRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling setUserFileKeys");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -2311,7 +2090,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/keys";
+    String localVarPath = "/v4/nodes/files/keys";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -2324,34 +2103,29 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Unmark a node (room, folder or file) as favorite
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Unmarks a node (room, folder, file) as favorite.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User needs read permissions on that node.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; A node gets unmarked as favorite.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param nodeId Node Id (required)
+   * ### Functional Description: Unmarks a node (room, folder, file) as favorite.  ### Precondition: User needs _\&quot;read\&quot;_ permissions on that node.  ### Effects: A node gets unmarked as favorite.  ### &amp;#9432; Further Information: None.
+   * @param nodeId Node ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void unmarkFavorite(String xSdsAuthToken, Long nodeId) throws ApiException {
+  public void unmarkFavorite(Long nodeId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling unmarkFavorite");
-    }
     
     // verify the required parameter 'nodeId' is set
     if (nodeId == null) {
@@ -2359,7 +2133,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/{node_id}/favorite"
+    String localVarPath = "/v4/nodes/{node_id}/favorite"
       .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
 
     // query params
@@ -2373,7 +2147,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -2382,28 +2156,23 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Update file meta data
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Updates a file&#39;s meta data.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has change permissions in parent room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Meta data changed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Room/Folder/File name convention&lt;/h4&gt;&lt;h5&gt;Room/Folder/File names are limited to 150 characters.&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;Not allowed Room/Folder/File names&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Not allowed characters in Room/Folder/File name&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;../&#39;, &#39;\\&#39;, &#39;&amp;lt;&#39;,&#39;&amp;gt;&#39;, &#39;:&#39;, &#39;\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Updates a file&#39;s meta data.  ### Precondition: User has _\&quot;change\&quot;_ permissions in parent room.  ### Effects: Meta data changed.  ### &amp;#9432; Further Information: Notes are limited to **255** characters.  ### Node naming convention  * Node (room, folder, file) names are limited to **150** characters.  * Not allowed names:   &#x60;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&#x60;  * Not allowed characters in names:   &#x60;&#39;../&#39;, &#39;\\\\&#39;, &#39;&lt;&#39;,&#39;&gt;&#39;, &#39;:&#39;, &#39;\\\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&#x60; 
    * @param fileId File ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node updateFile(String xSdsAuthToken, Long fileId, UpdateFileRequest body, String xSdsDateFormat) throws ApiException {
+  public Node updateFile(Long fileId, UpdateFileRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling updateFile");
-    }
     
     // verify the required parameter 'fileId' is set
     if (fileId == null) {
@@ -2416,7 +2185,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/{file_id}"
+    String localVarPath = "/v4/nodes/files/{file_id}"
       .replaceAll("\\{" + "file_id" + "\\}", apiClient.escapeString(fileId.toString()));
 
     // query params
@@ -2432,37 +2201,32 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Update folder
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Renames an existing folder.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User has change permissions in current Data Room.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; The folder is renamed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Room/Folder/File name convention&lt;/h4&gt;&lt;h5&gt;Room/Folder/File names are limited to 150 characters.&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;Not allowed Room/Folder/File names&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Not allowed characters in Room/Folder/File name&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;../&#39;, &#39;\\&#39;, &#39;&amp;lt;&#39;,&#39;&amp;gt;&#39;, &#39;:&#39;, &#39;\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;&lt;/p&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param folderId Folder Id (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Renames an existing folder.  ### Precondition: User has _\&quot;change\&quot;_ permissions in current room.  ### Effects: The folder is renamed.  ### &amp;#9432; Further Information: Notes are limited to **255** characters.  ### Node naming convention  * Node (room, folder, file) names are limited to **150** characters.  * Not allowed names:   &#x60;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&#x60;  * Not allowed characters in names:   &#x60;&#39;../&#39;, &#39;\\\\&#39;, &#39;&lt;&#39;,&#39;&gt;&#39;, &#39;:&#39;, &#39;\\\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&#x60; 
+   * @param folderId Folder ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node updateFolder(String xSdsAuthToken, Long folderId, UpdateFolderRequest body, String xSdsDateFormat) throws ApiException {
+  public Node updateFolder(Long folderId, UpdateFolderRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling updateFolder");
-    }
     
     // verify the required parameter 'folderId' is set
     if (folderId == null) {
@@ -2475,7 +2239,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/folders/{folder_id}"
+    String localVarPath = "/v4/nodes/folders/{folder_id}"
       .replaceAll("\\{" + "folder_id" + "\\}", apiClient.escapeString(folderId.toString()));
 
     // query params
@@ -2491,37 +2255,32 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Update room
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Update a room&#39;s meta data.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; User is admin in superordinated level.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Room&#39;s meta data is changed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Room/Folder/File name convention&lt;/h4&gt;&lt;h5&gt;Room/Folder/File names are limited to 150 characters.&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;Not allowed Room/Folder/File names&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Not allowed characters in Room/Folder/File name&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;&lt;code&gt;&#39;../&#39;, &#39;\\&#39;, &#39;&amp;lt;&#39;,&#39;&amp;gt;&#39;, &#39;:&#39;, &#39;\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param roomId Room Id (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Update a room&#39;s meta data.  ### Precondition: User is a room administrator at superordinated level.  ### Effects: Room&#39;s meta data is changed.  ### &amp;#9432; Further Information: Notes are limited to **255** characters.  ### Node naming convention  * Node (room, folder, file) names are limited to **150** characters.  * Not allowed names:   &#x60;&#39;CON&#39;, &#39;PRN&#39;, &#39;AUX&#39;, &#39;NUL&#39;, &#39;COM1&#39;, &#39;COM2&#39;, &#39;COM3&#39;, &#39;COM4&#39;, &#39;COM5&#39;, &#39;COM6&#39;, &#39;COM7&#39;, &#39;COM8&#39;, &#39;COM9&#39;, &#39;LPT1&#39;, &#39;LPT2&#39;, &#39;LPT3&#39;, &#39;LPT4&#39;, &#39;LPT5&#39;, &#39;LPT6&#39;, &#39;LPT7&#39;, &#39;LPT8&#39;, &#39;LPT9&#39;,&#39;.&#39;,&#39;/&#39;&#x60;  * Not allowed characters in names:   &#x60;&#39;../&#39;, &#39;\\\\&#39;, &#39;&lt;&#39;,&#39;&gt;&#39;, &#39;:&#39;, &#39;\\\&quot;&#39;, &#39;|&#39;, &#39;?&#39;, &#39;*&#39;, &#39;/&#39;&#x60;
+   * @param roomId Room ID (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node updateRoom(String xSdsAuthToken, Long roomId, UpdateRoomRequest body, String xSdsDateFormat) throws ApiException {
+  public Node updateRoom(Long roomId, UpdateRoomRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling updateRoom");
-    }
     
     // verify the required parameter 'roomId' is set
     if (roomId == null) {
@@ -2534,7 +2293,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/rooms/{room_id}"
+    String localVarPath = "/v4/nodes/rooms/{room_id}"
       .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
 
     // query params
@@ -2550,37 +2309,32 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Upload file
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br /&gt; Uploads a file or parts of it in an active Upload Channel.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; An Upload Channel has been created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; A file or parts of it are uploaded to a temporary location.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; This endpoints supports chunked upload. Please cf. &lt;a href&#x3D;&#39;https://tools.ietf.org/html/rfc7233&#39; target&#x3D;&#39;_blank&#39;&gt;RFC 7233&lt;/a&gt; for further information.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param uploadId Upload channel Id (required)
-   * @param file  (required)
-   * @param contentRange Content Range (format: \&quot;bytes 0-999/3980\&quot;) (optional)
+   * ### Functional Description:   Uploads a file or parts of it in an active Upload Channel.  ### Precondition: An Upload Channel has been created.  ### Effects: A file or parts of it are uploaded to a temporary location.  ### &amp;#9432; Further Information: This endpoints supports chunked upload.   Please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for further information.
+   * @param uploadId Upload channel ID (required)
+   * @param file File (required)
+   * @param contentRange Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return ChunkUploadResponse
    * @throws ApiException if fails to make API call
    */
-  public ChunkUploadResponse uploadFile(String xSdsAuthToken, String uploadId, File file, String contentRange) throws ApiException {
+  public ChunkUploadResponse uploadFile(String uploadId, File file, String contentRange, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling uploadFile");
-    }
     
     // verify the required parameter 'uploadId' is set
     if (uploadId == null) {
@@ -2593,7 +2347,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/nodes/files/uploads/{upload_id}"
+    String localVarPath = "/v4/nodes/files/uploads/{upload_id}"
       .replaceAll("\\{" + "upload_id" + "\\}", apiClient.escapeString(uploadId.toString()));
 
     // query params
@@ -2602,16 +2356,16 @@ if (xSdsDateFormat != null)
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-if (contentRange != null)
+    if (contentRange != null)
       localVarHeaderParams.put("Content-Range", apiClient.parameterToString(contentRange));
+if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     if (file != null)
       localVarFormParams.put("file", file);
 
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -2620,7 +2374,7 @@ if (contentRange != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<ChunkUploadResponse> localVarReturnType = new GenericType<ChunkUploadResponse>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);

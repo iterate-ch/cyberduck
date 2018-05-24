@@ -208,7 +208,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("hostFieldDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
-            field);
+            field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -278,7 +278,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("portInputDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
-            this.portField);
+            field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -304,7 +304,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("pathInputDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
-            this.pathField);
+            field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -327,7 +327,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new HostUrlProvider().withUsername(true).withPath(true).get(bookmark)));
+                urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new HostUrlProvider().withUsername(false).withPath(true).get(bookmark)));
             }
         });
     }
@@ -337,7 +337,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("usernameInputDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
-            this.usernameField);
+            field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {

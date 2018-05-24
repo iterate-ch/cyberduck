@@ -1,12 +1,24 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
-
-import javax.ws.rs.core.GenericType;
-
 import ch.cyberduck.core.sds.io.swagger.client.model.Customer;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerAttributes;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerList;
@@ -16,12 +28,13 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UpdateCustomerRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateCustomerResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserList;
 
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-03T10:55:56.129+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
 public class ProvisioningApi {
   private ApiClient apiClient;
 
@@ -43,26 +56,26 @@ public class ProvisioningApi {
 
   /**
    * Delete customer
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br /&gt;Delete a customer.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Customer is deleted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Authentication with &lt;b&gt;X-Sds-Service-Token&lt;/b&gt; required.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsServiceToken Service Authentication token (required)
+   * ### Functional Description: Delete a customer.  ### Precondition: Authentication with &#x60;X-Sds-Service-Token&#x60; required.  ### Effects: Customer is deleted.  ### &amp;#9432; Further Information: None.
    * @param customerId Customer ID (required)
+   * @param xSdsServiceToken Service Authentication token (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteCustomer(String xSdsServiceToken, Long customerId) throws ApiException {
+  public void deleteCustomer(Long customerId, String xSdsServiceToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsServiceToken' is set
-    if (xSdsServiceToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling deleteCustomer");
-    }
     
     // verify the required parameter 'customerId' is set
     if (customerId == null) {
       throw new ApiException(400, "Missing the required parameter 'customerId' when calling deleteCustomer");
     }
     
+    // verify the required parameter 'xSdsServiceToken' is set
+    if (xSdsServiceToken == null) {
+      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling deleteCustomer");
+    }
+    
     // create path and map variables
-    String localVarPath = "/provisioning/customers/{customer_id}"
+    String localVarPath = "/v4/provisioning/customers/{customer_id}"
       .replaceAll("\\{" + "customer_id" + "\\}", apiClient.escapeString(customerId.toString()));
 
     // query params
@@ -76,7 +89,7 @@ public class ProvisioningApi {
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -91,20 +104,15 @@ public class ProvisioningApi {
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Delete customer attribute
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Delete custom customer attribute.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Customer Change\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Custom customer attribute gets deleted.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Allowed characters for keys are: [a-zA-Z0-9_-]. Characters are case-insensitive.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsServiceToken Service Authentication token (required)
+   * Delete customer attributes
+   * ### Functional Description: Delete custom customer attribute.  ### Precondition: Right _\&quot;change global config\&quot;_ required.  ### Effects: Custom customer attribute gets deleted.  ### &amp;#9432; Further Information: Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   Characters are case-insensitive.
    * @param customerId Customer ID (required)
    * @param key Key (required)
+   * @param xSdsServiceToken Service Authentication token (required)
    * @throws ApiException if fails to make API call
    */
-  public void deleteCustomerAttributes(String xSdsServiceToken, Long customerId, String key) throws ApiException {
+  public void deleteCustomerAttributes(Long customerId, String key, String xSdsServiceToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsServiceToken' is set
-    if (xSdsServiceToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling deleteCustomerAttributes");
-    }
     
     // verify the required parameter 'customerId' is set
     if (customerId == null) {
@@ -116,8 +124,13 @@ public class ProvisioningApi {
       throw new ApiException(400, "Missing the required parameter 'key' when calling deleteCustomerAttributes");
     }
     
+    // verify the required parameter 'xSdsServiceToken' is set
+    if (xSdsServiceToken == null) {
+      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling deleteCustomerAttributes");
+    }
+    
     // create path and map variables
-    String localVarPath = "/provisioning/customers/{customer_id}/customerAttributes/{key}"
+    String localVarPath = "/v4/provisioning/customers/{customer_id}/customerAttributes/{key}"
       .replaceAll("\\{" + "customer_id" + "\\}", apiClient.escapeString(customerId.toString()))
       .replaceAll("\\{" + "key" + "\\}", apiClient.escapeString(key.toString()));
 
@@ -132,7 +145,7 @@ public class ProvisioningApi {
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -148,29 +161,29 @@ public class ProvisioningApi {
   }
   /**
    * Get customer
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br /&gt;Receive details of a selected customer.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Existing customer.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; none.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Authentication with &lt;b&gt;X-Sds-Service-Token&lt;/b&gt; required.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsServiceToken Service Authentication token (required)
+   * ### Functional Description:   Receive details of a selected customer.  ### Precondition: Authentication with &#x60;X-Sds-Service-Token&#x60; required.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @param customerId Customer ID (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
-   * @param includeAttributes Include custom customer attributes. (default:false) (optional)
+   * @param xSdsServiceToken Service Authentication token (required)
+   * @param includeAttributes Include custom customer attributes. (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Customer
    * @throws ApiException if fails to make API call
    */
-  public Customer getCustomer(String xSdsServiceToken, Long customerId, String xSdsDateFormat, Boolean includeAttributes) throws ApiException {
+  public Customer getCustomer(Long customerId, String xSdsServiceToken, Boolean includeAttributes, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsServiceToken' is set
-    if (xSdsServiceToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling getCustomer");
-    }
     
     // verify the required parameter 'customerId' is set
     if (customerId == null) {
       throw new ApiException(400, "Missing the required parameter 'customerId' when calling getCustomer");
     }
     
+    // verify the required parameter 'xSdsServiceToken' is set
+    if (xSdsServiceToken == null) {
+      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling getCustomer");
+    }
+    
     // create path and map variables
-    String localVarPath = "/provisioning/customers/{customer_id}"
+    String localVarPath = "/v4/provisioning/customers/{customer_id}"
       .replaceAll("\\{" + "customer_id" + "\\}", apiClient.escapeString(customerId.toString()));
 
     // query params
@@ -187,7 +200,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -203,32 +216,32 @@ if (xSdsDateFormat != null)
       }
   /**
    * Get customer users
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br /&gt; Receive a list of users associated with a certain customer.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Authentication with &lt;b&gt;X-Sds-Service-Token&lt;/b&gt; required.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;p&gt;Filter string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;OPERATOR&amp;gt;:&amp;lt;VALUE&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Multiple fields are supported.&lt;/p&gt;&lt;h5&gt;Filter fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;login&lt;/dt&gt;&lt;dd&gt;Login name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (User login name contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;firstName&lt;/dt&gt;&lt;dd&gt;First name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (User first name contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;lastName&lt;/dt&gt;&lt;dd&gt;Last name&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (User last name contains value)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;lockStatus&lt;/dt&gt;&lt;dd&gt;Lock status: 0 - Locked, 1 - Web access allowed, 2 - Web and mobile access allowed,&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (User lock status)&lt;br/&gt;VALUE: [0|1|2].&lt;/dd&gt;&lt;dt&gt;effectiveRoles&lt;/dt&gt;&lt;dd&gt;Filter users with roles, effective roles or direct roles (NO GROUPS)&lt;br/&gt;FALSE: Direct roles TRUE: effective roles&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (multiple values not allowed)&lt;br/&gt;VALUE: [true|false]. Default value is &lt;code&gt;false&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;&lt;b&gt;Logical grouping:&lt;/b&gt; filtering according first three fields (login, lastName, firstName)&lt;br&gt;is intrinsically processed by the API as logical &lt;i&gt;OR&lt;/i&gt;.  In opposite, filtering according to&lt;br/&gt;last three field (lockStatus)&lt;br/&gt;is processed intrinsically as logical &lt;i&gt;AND&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Example: &lt;samp&gt;login:cn:searchString_1|firstName:cn:searchString_2|lockStatus:eq:2 &lt;/samp&gt;&lt;br/&gt;- filter by login contains searchString_1 or firstName contains searchString_2 and user are not locked&lt;/p&gt;&lt;h4&gt;Sort&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;&lt;br/&gt;Multiple fields are supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;login&lt;/dt&gt;&lt;dd&gt;Login name&lt;/dd&gt;&lt;dt&gt;firstName&lt;/dt&gt;&lt;dd&gt;First name&lt;/dd&gt;&lt;dt&gt;lastName&lt;/dt&gt;&lt;dd&gt;Last name&lt;/dd&gt;&lt;dt&gt;gender&lt;/dt&gt;&lt;dd&gt;Gender&lt;/dd&gt;&lt;dt&gt;lockStatus&lt;/dt&gt;&lt;dd&gt;User lock status&lt;/dd&gt;&lt;dt&gt;lastLoginSuccessAt&lt;/dt&gt;&lt;dd&gt;Last successful logon date&lt;/dd&gt;&lt;dt&gt;expireAt&lt;/dt&gt;&lt;dd&gt;Expiration date&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;firstName:asc|lastLoginSuccessAt:desc&lt;/samp&gt;&lt;br/&gt;- sort by firstName ascending and by lastLoginSuccessAt descending&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsServiceToken Service Authentication token (required)
+   * ### Functional Description:   Receive a list of users associated with a certain customer.  ### Precondition: Authentication with &#x60;X-Sds-Service-Token&#x60; required.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) ### &amp;#9888; Except for **&#x60;login&#x60;**, **&#x60;firstName&#x60;** and  **&#x60;lastName&#x60;** - these are connected via logical disjunction (**OR**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;    Example: &gt; &#x60;login:cn:searchString_1|firstName:cn:searchString_2&#x60;   Filter users by login containing &#x60;searchString_1&#x60; **OR** first name containing &#x60;searchString_2&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;login&#x60;** | User login filter | &#x60;cn&#x60; | User login contains value. | &#x60;search String&#x60; | | **&#x60;firstName&#x60;** | User first name filter | &#x60;cn&#x60; | User first name contains value. | &#x60;search String&#x60; | | **&#x60;lastName&#x60;** | User last name filter | &#x60;cn&#x60; | User last name contains value. | &#x60;search String&#x60; | | **&#x60;lockStatus&#x60;** | (**&#x60;DEPRECATED&#x60;**) User lock status filter | &#x60;eq&#x60; | User lock status equals value. | &lt;ul&gt;&lt;li&gt;&#x60;0&#x60; - Locked&lt;/li&gt;&lt;li&gt;&#x60;1&#x60; - Web access allowed&lt;/li&gt;&lt;li&gt;&#x60;2&#x60; - Web and mobile access allowed&lt;/li&gt;&lt;/ul&gt; | | **&#x60;isLocked&#x60;** | Lock status filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | **&#x60;effectiveRoles&#x60;** | Filter users with DIRECT or DIRECT **AND** EFFECTIVE roles&lt;ul&gt;&lt;li&gt;&#x60;false&#x60;: DIRECT roles&lt;/li&gt;&lt;li&gt;&#x60;true&#x60;: DIRECT **AND** EFFECTIVE roles&lt;/li&gt;&lt;/ul&gt;DIRECT means: e.g. user gets role **directly** granted from someone with _grant permission_ right.&lt;br&gt;EFFECTIVE means: e.g. user gets role through **group membership**. | &#x60;eq&#x60; |  | &#x60;true or false&#x60;&lt;br&gt;default: &#x60;false&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported.   Example: &gt; &#x60;firstName:asc|lastLoginSuccessAt:desc&#x60;   Sort by &#x60;firstName&#x60; ascending **AND** by &#x60;lastLoginSuccessAt&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;login&#x60;** | User login | | **&#x60;firstName&#x60;** | User first name | | **&#x60;lastName&#x60;** | User last name | | **&#x60;gender&#x60;** | Gender | | **&#x60;lockStatus&#x60;** | (**&#x60;DEPRECATED&#x60;**) User lock status | | **&#x60;lastLoginSuccessAt&#x60;** | Last successful login date | | **&#x60;expireAt&#x60;** | Expiration date |
    * @param customerId Customer ID (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param xSdsServiceToken Service Authentication token (required)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
    * @param filter Filter string (optional)
    * @param sort Sort string (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UserList
    * @throws ApiException if fails to make API call
    */
-  public UserList getCustomerUsers(String xSdsServiceToken, Long customerId, String xSdsDateFormat, Integer offset, Integer limit, String filter, String sort) throws ApiException {
+  public UserList getCustomerUsers(Long customerId, String xSdsServiceToken, Integer offset, Integer limit, String filter, String sort, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsServiceToken' is set
-    if (xSdsServiceToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling getCustomerUsers");
-    }
     
     // verify the required parameter 'customerId' is set
     if (customerId == null) {
       throw new ApiException(400, "Missing the required parameter 'customerId' when calling getCustomerUsers");
     }
     
+    // verify the required parameter 'xSdsServiceToken' is set
+    if (xSdsServiceToken == null) {
+      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling getCustomerUsers");
+    }
+    
     // create path and map variables
-    String localVarPath = "/provisioning/customers/{customer_id}/users"
+    String localVarPath = "/v4/provisioning/customers/{customer_id}/users"
       .replaceAll("\\{" + "customer_id" + "\\}", apiClient.escapeString(customerId.toString()));
 
     // query params
@@ -248,7 +261,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -264,18 +277,18 @@ if (xSdsDateFormat != null)
       }
   /**
    * Get customers
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Receive a list of customers.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&amp;nbsp;This list returns a maximum of 1000 entries. Please use filters or searches to specify what you are looking for.&lt;br/&gt;Authentication with &lt;b&gt;X-Sds-Service-Token&lt;/b&gt; required.&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Filter&lt;/h4&gt;&lt;p&gt;Filter string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;OPERATOR&amp;gt;:&amp;lt;VALUE&amp;gt;[:&amp;lt;VALUE&amp;gt;...]&lt;/dfn&gt;&lt;/p&gt;&lt;h5&gt;Fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;id&lt;/dt&gt;&lt;dd&gt;Customer ID filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Positive Integer&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;companyName&lt;/dt&gt;&lt;dd&gt;Company name filter&lt;br/&gt;OPERATOR: &lt;code&gt;cn&lt;/code&gt; (Company name contains value, multiple values not allowed)&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;customerContractType&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;Customer contract type filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;demo|free|pay&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;activationCode&lt;/dt&gt;&lt;dd&gt;Activation Code filter&lt;br/&gt;OPERATOR: &lt;code&gt;cn|eq&lt;/code&gt; (Activation code contains value | equals value, multiple values not allowed )&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;trialDaysLeft&lt;/dt&gt;&lt;dd&gt;Left trial days filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt; (Number of trial days is greater or equal | less or equal)&lt;br/&gt;VALUE: &lt;code&gt;Positiv Integer&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;providerCustomerId&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;Provider customer ID filter&lt;br/&gt;OPERATOR: &lt;code&gt;cn|eq&lt;/code&gt; (providerCustomerId contains value | equals value, multiple values not allowed )&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;quotaMax&lt;/dt&gt;&lt;dd&gt;Maximum quota filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt; (Quota is greater or equal | less or equal)&lt;br/&gt;VALUE: &lt;code&gt;Positive Integer&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;quotaUsed&lt;/dt&gt;&lt;dd&gt;Used quota filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt; (Quota is greater or equal | less or equal)&lt;br/&gt;VALUE: &lt;code&gt;Positive Integer&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;userMax&lt;/dt&gt;&lt;dd&gt;Maximum user filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt; (User maximum is greater or equal | less or equal)&lt;br/&gt;VALUE: &lt;code&gt;Positive Integer&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;userUsed&lt;/dt&gt;&lt;dd&gt;Used users filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt; (Number of registered users is greater or equal | less or equal)&lt;br/&gt;VALUE: &lt;code&gt;Positive Integer&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;lockStatus&lt;/dt&gt;&lt;dd&gt;Lock status filter&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;&lt;br/&gt;VALUE: &lt;code&gt;Integer (0 or 1)&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;createdAt&lt;/dt&gt;&lt;dd&gt;Creation date filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt; (Date is greater or equal | less or equal)&lt;br/&gt;VALUE: &lt;code&gt;Date&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;updatedAt&lt;/dt&gt;&lt;dd&gt;Update date filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt; (Date is greater or equal | less or equal)&lt;br/&gt;VALUE: &lt;code&gt;Date&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;lastLoginAt&lt;/dt&gt;&lt;dd&gt;Last login filter&lt;br/&gt;OPERATOR: &lt;code&gt;ge|le&lt;/code&gt; (Date is greater or equal | less or equal)&lt;br/&gt;VALUE: &lt;code&gt;Date&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;userLogin&lt;/dt&gt;&lt;dd&gt;User login&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt; (Customer user login name equal value, multiple values not allowed)&lt;br/&gt; Search user all logins.E.g. sql, active_directory, radius.&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;attributeKey&lt;/dt&gt;&lt;dd&gt;Customer Attribute Key&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;(Customer attribute_key equal value, multiple values not allowed)&lt;br/&gt; Search customers with given CustomerAttribute key.&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;attributeValue&lt;/dt&gt;&lt;dd&gt;Customer Attribute Value&lt;br/&gt;OPERATOR: &lt;code&gt;eq&lt;/code&gt;(Customer attribute_value equal value, multiple values not allowed)&lt;br/&gt; Search customers with given CustomerAttribute value.&lt;br/&gt;VALUE: &lt;code&gt;Search string&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;h4&gt;Sort&lt;/h4&gt;&lt;p&gt;Sort string syntax: &lt;dfn&gt;&amp;lt;FIELD_NAME&amp;gt;:&amp;lt;ORDER&amp;gt;&lt;/dfn&gt;&lt;br/&gt;Order can be &lt;code&gt;asc&lt;/code&gt; or &lt;code&gt;desc&lt;/code&gt;.&lt;br/&gt;Multiple fields not supported.&lt;/p&gt;&lt;h5&gt;Sort fields:&lt;/h5&gt;&lt;dl&gt;&lt;dt&gt;companyName&lt;/dt&gt;&lt;dd&gt;Company name&lt;/dd&gt;&lt;dt&gt;customerContractType&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;Customer contract type&lt;/dd&gt;&lt;dt&gt;trialDaysLeft&lt;/dt&gt;&lt;dd&gt;Number of remaining trial days (demo customers)&lt;/dd&gt;&lt;dt&gt;providerCustomerId&lt;/dt&gt;&lt;dd&gt;&lt;br/&gt;Provider customer ID (pay customers)&lt;/dd&gt;&lt;dt&gt;quotaMax&lt;/dt&gt;&lt;dd&gt;Maximum quota&lt;/dd&gt;&lt;dt&gt;quotaUsed&lt;/dt&gt;&lt;dd&gt;Currently used quota&lt;/dd&gt;&lt;dt&gt;userMax&lt;/dt&gt;&lt;dd&gt;Maximum user number&lt;/dd&gt;&lt;dt&gt;userUsed&lt;/dt&gt;&lt;dd&gt;Number of currently active users&lt;/dd&gt;&lt;dt&gt;lockStatus&lt;/dt&gt;&lt;dd&gt;Lock status of customer&lt;/dd&gt;&lt;dt&gt;createdAt&lt;/dt&gt;&lt;dd&gt;Creation date&lt;/dd&gt;&lt;dt&gt;updatedAt&lt;/dt&gt;&lt;dd&gt;Date of last update&lt;/dd&gt;&lt;dt&gt;lastLoginAt&lt;/dt&gt;&lt;dd&gt;Date of last login of any user of this customer&lt;/dd&gt;&lt;/dl&gt;&lt;p&gt;Example: &lt;samp&gt;companyName:desc&lt;/samp&gt;&lt;br/&gt;&amp;rarr; sort by company name descending&lt;/p&gt;&lt;/div&gt;
+   * ### Functional Description:   Receive a list of customers.  ### Precondition: Authentication with &#x60;X-Sds-Service-Token&#x60; required.  ### Effects: None.  ### &amp;#9432; Further Information: This list returns a maximum of **1000** entries.    ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;trialDaysLeft:le:10|userMax:le:100&#x60;   Get all customers with &#x60;10&#x60; trial days left **AND** user maximum **&lt;&#x3D;** &#x60;100&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;id&#x60;** | Customer ID filter | &#x60;eq&#x60; | Customer ID equals value. | &#x60;positive Integer&#x60; | | **&#x60;companyName&#x60;** | Company name filter | &#x60;cn&#x60; | Company name contains value. | &#x60;search String&#x60; | | **&#x60;customerContractType&#x60;** | Customer contract type filter | &#x60;eq&#x60; | Customer contract type equals value. | &lt;ul&gt;&lt;li&gt;&#x60;demo&#x60;&lt;/li&gt;&lt;li&gt;&#x60;free&#x60;&lt;/li&gt;&lt;li&gt;&#x60;pay&#x60;&lt;/li&gt;&lt;/ul&gt; | | **&#x60;activationCode&#x60;** | (**&#x60;DEPRECATED&#x60;**) Activation code filter | &#x60;cn, eq&#x60; | Activation code contains / equals value. | &#x60;search String&#x60; | | **&#x60;trialDaysLeft&#x60;** | Left trial days filter | &#x60;ge, le&#x60; | Left trial days are greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;trialDaysLeft:ge:5&#x60;&amp;#124;&#x60;trialDaysLeft:le:10&#x60; | | **&#x60;providerCustomerId&#x60;** | (**&#x60;DEPRECATED&#x60;**) Provider Customer ID filter | &#x60;cn, eq&#x60; | Provider Customer ID contains / equals value. | &#x60;search String&#x60; | | **&#x60;quotaMax&#x60;** | Maximum quota filter | &#x60;ge, le&#x60; | Maximum quota is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;quotaMax:ge:1024&#x60;&amp;#124;&#x60;quotaMax:le:1073741824&#x60; | &#x60;positive Integer&#x60; | | **&#x60;quotaUsed&#x60;** | Used quota filter | &#x60;ge, le&#x60; | Used quota is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;quotaUsed:ge:1024&#x60;&amp;#124;&#x60;quotaUsed:le:1073741824&#x60; | &#x60;positive Integer&#x60; | | **&#x60;userMax&#x60;** | User maximum filter | &#x60;ge, le&#x60; | User maxiumum is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;userMax:ge:10&#x60;&amp;#124;&#x60;userMax:le:100&#x60; | &#x60;positive Integer&#x60; | | **&#x60;userUsed&#x60;** | Number of registered users filter | &#x60;ge, le&#x60; | Number of registered users is is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;userUsed:ge:10&#x60;&amp;#124;&#x60;userUsed:le:100&#x60; | &#x60;positive Integer&#x60; | | **&#x60;lockStatus&#x60;** | (**&#x60;DEPRECATED&#x60;**) Lock status filter | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;0&#x60; - unlocked&lt;/li&gt;&lt;li&gt;&#x60;1&#x60; - locked&lt;/li&gt;&lt;/ul&gt; | | **&#x60;isLocked&#x60;** | Lock status filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | **&#x60;createdAt&#x60;** | Creation date filter | &#x60;ge, le&#x60; | Creation date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;createdAt:ge:2016-12-31&#x60;&amp;#124;&#x60;createdAt:le:2018-01-01&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | **&#x60;updatedAt&#x60;** | Last modification date filter | &#x60;ge, le&#x60; | Last modification date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;updatedAt:ge:2016-12-31&#x60;&amp;#124;&#x60;updatedAt:le:2018-01-01&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | **&#x60;lastLoginAt&#x60;** | Last login date filter | &#x60;ge, le&#x60; | Last login date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;lastLoginAt:ge:2016-12-31&#x60;&amp;#124;&#x60;lastLoginAt:le:2018-01-01&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | **&#x60;userLogin&#x60;** | User login filter | &#x60;eq&#x60; | User login name equals value.&lt;br&gt;Search user all logins e.g. &#x60;sql&#x60;, &#x60;active_directory&#x60;, &#x60;radius&#x60;. | &#x60;search String&#x60; | | **&#x60;attributeKey&#x60;** | Customer attribute key filter | &#x60;eq&#x60; | Customer attribute key equals value. | &#x60;search String&#x60; | | **&#x60;attributeValue&#x60;** | Customer attribute value filter | &#x60;eq&#x60; | Customer attribute value equals value. | &#x60;search String&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are **NOT** supported.   Example: &gt; &#x60;companyName:desc&#x60;   Sort by &#x60;companyName&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;companyName&#x60;** | Company name | | **&#x60;customerContractType&#x60;** | Customer contract type | | **&#x60;trialDaysLeft&#x60;** | Number of remaining trial days (demo customers) | | **&#x60;providerCustomerId&#x60;** | (**&#x60;DEPRECATED&#x60;**) Provider Customer ID | | **&#x60;quotaMax&#x60;** | Maximum quota | | **&#x60;quotaUsed&#x60;** | Currently used quota | | **&#x60;userMax&#x60;** | Maximum user number | | **&#x60;userUsed&#x60;** | Number of registered users | | **&#x60;lockStatus&#x60;** | (**&#x60;DEPRECATED&#x60;**) Lock status of customer | | **&#x60;isLocked&#x60;** | Lock status of customer | | **&#x60;createdAt&#x60;** | Creation date | | **&#x60;updatedAt&#x60;** | Last modification date | | **&#x60;lastLoginAt&#x60;** | Last login date of any user of this customer |
    * @param xSdsServiceToken Service Authentication token (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit (optional)
    * @param filter Filter string (optional)
    * @param sort Sort string (optional)
-   * @param includeAttributes Include custom customer attributes. (default:false) (optional)
+   * @param includeAttributes Include custom customer attributes. (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return CustomerList
    * @throws ApiException if fails to make API call
    */
-  public CustomerList getCustomers(String xSdsServiceToken, String xSdsDateFormat, Integer offset, Integer limit, String filter, String sort, Boolean includeAttributes) throws ApiException {
+  public CustomerList getCustomers(String xSdsServiceToken, Integer offset, Integer limit, String filter, String sort, Boolean includeAttributes, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'xSdsServiceToken' is set
@@ -284,7 +297,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/provisioning/customers";
+    String localVarPath = "/v4/provisioning/customers";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -304,7 +317,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -320,28 +333,28 @@ if (xSdsDateFormat != null)
       }
   /**
    * Create customer
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br /&gt;Create a new customer.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; A new customer is created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Authentication with &lt;b&gt;X-Sds-Auth-Token&lt;/b&gt; required. If no company name is set, first name of the first DSA is used. Max quota has to be at least 1 GB (&#x3D; 1073741824).&lt;/p&gt;&lt;/div&gt;&lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;h4&gt;Authentication Method Options&lt;/h4&gt;&lt;dl&gt;&lt;dt&gt;SQL&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;none&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;Active Directory&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;ad_config_id\&quot;&lt;br/&gt;value: \&quot;Active Directory configuration ID\&quot;&lt;br/&gt;(optional)&lt;br/&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;Active Directory user name according to auth setting &#39;userFilter&#39;\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;RADIUS&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;Radius user name\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;dt&gt;OpenID Connect&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;&lt;br/&gt;key: \&quot;openid_config_id\&quot;&lt;br/&gt;value: \&quot;OpenID Connect configuration ID\&quot;&lt;br/&gt;&lt;br/&gt;key: \&quot;username\&quot;&lt;br/&gt;value: \&quot;OpenID Connect user name according to auth setting &#39;mappingClaim&#39;\&quot;&lt;/code&gt;&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
+   * ### Functional Description: Create a new customer.  ### Precondition: Authentication with &#x60;X-Sds-Service-Token&#x60; required.    ### Effects: A new customer is created.  ### &amp;#9432; Further Information: If no company name is set, first name of the first administrator is used.   Max quota has to be at least 1 GB (&#x3D; 1 073 741 824 B).  ### Authentication Method Options  | Authentication Method | Option Key | Option Value | | :--- | :--- | :--- | | **&#x60;sql&#x60;** | none | none | | **&#x60;active_directory&#x60;** | &#x60;ad_config_id&#x60; (optional) | Active Directory configuration ID | |  | &#x60;username&#x60; | Active Directory username according to authentication setting &#x60;userFilter&#x60; | | **&#x60;radius&#x60;** | &#x60;username&#x60; | RADIUS username | | **&#x60;openid&#x60;** | &#x60;openid_config_id&#x60; | OpenID Connect configuration ID | |  | &#x60;username&#x60; | OpenID Connect username according to authentication setting &#x60;mappingClaim&#x60; |
+   * @param body body (required)
    * @param xSdsServiceToken Service Authentication token (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return NewCustomerResponse
    * @throws ApiException if fails to make API call
    */
-  public NewCustomerResponse newCustomerRequest(String xSdsServiceToken, NewCustomerRequest body, String xSdsDateFormat) throws ApiException {
+  public NewCustomerResponse newCustomerRequest(NewCustomerRequest body, String xSdsServiceToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsServiceToken' is set
-    if (xSdsServiceToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling newCustomerRequest");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
       throw new ApiException(400, "Missing the required parameter 'body' when calling newCustomerRequest");
     }
     
+    // verify the required parameter 'xSdsServiceToken' is set
+    if (xSdsServiceToken == null) {
+      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling newCustomerRequest");
+    }
+    
     // create path and map variables
-    String localVarPath = "/provisioning/customers";
+    String localVarPath = "/v4/provisioning/customers";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -356,12 +369,12 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -372,21 +385,16 @@ if (xSdsDateFormat != null)
       }
   /**
    * Set customer attributes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Set custom customer attributes.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Customer Change\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Custom customer attributes gets set.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Batch function. All existing customer attributes will be deleted. Allowed characters for keys are: [a-zA-Z0-9_-]. Characters are case-insensitive.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsServiceToken Service Authentication token (required)
+   * ### Functional Description:   Set custom customer attributes.  ### Precondition: Right _\&quot;change global config\&quot;_ required.  ### Effects: Custom customer attributes gets set.  ### &amp;#9432; Further Information: Batch function.   All existing customer attributes will be deleted.   Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   Characters are case-insensitive. 
    * @param customerId Customer ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param body body (required)
+   * @param xSdsServiceToken Service Authentication token (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Customer
    * @throws ApiException if fails to make API call
    */
-  public Customer setAllCustomerAttributes(String xSdsServiceToken, Long customerId, CustomerAttributes body, String xSdsDateFormat) throws ApiException {
+  public Customer setAllCustomerAttributes(Long customerId, CustomerAttributes body, String xSdsServiceToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsServiceToken' is set
-    if (xSdsServiceToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling setAllCustomerAttributes");
-    }
     
     // verify the required parameter 'customerId' is set
     if (customerId == null) {
@@ -398,8 +406,13 @@ if (xSdsDateFormat != null)
       throw new ApiException(400, "Missing the required parameter 'body' when calling setAllCustomerAttributes");
     }
     
+    // verify the required parameter 'xSdsServiceToken' is set
+    if (xSdsServiceToken == null) {
+      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling setAllCustomerAttributes");
+    }
+    
     // create path and map variables
-    String localVarPath = "/provisioning/customers/{customer_id}/customerAttributes"
+    String localVarPath = "/v4/provisioning/customers/{customer_id}/customerAttributes"
       .replaceAll("\\{" + "customer_id" + "\\}", apiClient.escapeString(customerId.toString()));
 
     // query params
@@ -415,12 +428,12 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -431,21 +444,16 @@ if (xSdsDateFormat != null)
       }
   /**
    * Add or edit customer attributes
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt;Add or edit custom customer attributes.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Right \&quot;Customer Change\&quot; required.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Custom customer attributes get added or edited.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Batch function. If an entry exists before, it will be overwritten. Allowed characters for keys are: [a-zA-Z0-9_-]. Characters are case-insensitive.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsServiceToken Service Authentication token (required)
+   * ### Functional Description:   Add or edit custom customer attributes.  ### Precondition: Right _\&quot;change global config\&quot;_ required.  ### Effects: Custom customer attributes get added or edited.  ### &amp;#9432; Further Information: Batch function.   If an entry exists before, it will be overwritten.   Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   Characters are case-insensitive.
    * @param customerId Customer ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param body body (required)
+   * @param xSdsServiceToken Service Authentication token (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Customer
    * @throws ApiException if fails to make API call
    */
-  public Customer setCustomerAttributes(String xSdsServiceToken, Long customerId, CustomerAttributes body, String xSdsDateFormat) throws ApiException {
+  public Customer setCustomerAttributes(Long customerId, CustomerAttributes body, String xSdsServiceToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsServiceToken' is set
-    if (xSdsServiceToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling setCustomerAttributes");
-    }
     
     // verify the required parameter 'customerId' is set
     if (customerId == null) {
@@ -457,8 +465,13 @@ if (xSdsDateFormat != null)
       throw new ApiException(400, "Missing the required parameter 'body' when calling setCustomerAttributes");
     }
     
+    // verify the required parameter 'xSdsServiceToken' is set
+    if (xSdsServiceToken == null) {
+      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling setCustomerAttributes");
+    }
+    
     // create path and map variables
-    String localVarPath = "/provisioning/customers/{customer_id}/customerAttributes"
+    String localVarPath = "/v4/provisioning/customers/{customer_id}/customerAttributes"
       .replaceAll("\\{" + "customer_id" + "\\}", apiClient.escapeString(customerId.toString()));
 
     // query params
@@ -474,12 +487,12 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -490,21 +503,16 @@ if (xSdsDateFormat != null)
       }
   /**
    * Update customer
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br /&gt;Change selected attributes of a customer.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Existing customer.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; Update of attributes.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; Authentication with &lt;b&gt;X-Sds-Service-Token&lt;/b&gt; required.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsServiceToken Service Authentication token (required)
+   * ### Functional Description:   Change selected attributes of a customer.  ### Precondition: Authentication with &#x60;X-Sds-Service-Token&#x60; required.  ### Effects: Update of attributes.  ### &amp;#9432; Further Information: None.
    * @param customerId Customer ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param body body (required)
+   * @param xSdsServiceToken Service Authentication token (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return UpdateCustomerResponse
    * @throws ApiException if fails to make API call
    */
-  public UpdateCustomerResponse updateCustomer(String xSdsServiceToken, Long customerId, UpdateCustomerRequest body, String xSdsDateFormat) throws ApiException {
+  public UpdateCustomerResponse updateCustomer(Long customerId, UpdateCustomerRequest body, String xSdsServiceToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsServiceToken' is set
-    if (xSdsServiceToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling updateCustomer");
-    }
     
     // verify the required parameter 'customerId' is set
     if (customerId == null) {
@@ -516,8 +524,13 @@ if (xSdsDateFormat != null)
       throw new ApiException(400, "Missing the required parameter 'body' when calling updateCustomer");
     }
     
+    // verify the required parameter 'xSdsServiceToken' is set
+    if (xSdsServiceToken == null) {
+      throw new ApiException(400, "Missing the required parameter 'xSdsServiceToken' when calling updateCustomer");
+    }
+    
     // create path and map variables
-    String localVarPath = "/provisioning/customers/{customer_id}"
+    String localVarPath = "/v4/provisioning/customers/{customer_id}"
       .replaceAll("\\{" + "customer_id" + "\\}", apiClient.escapeString(customerId.toString()));
 
     // query params
@@ -533,12 +546,12 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
