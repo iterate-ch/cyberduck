@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -60,12 +61,18 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return true;
+    public DriveDirectoryFeature withWriter(final Write<VersionId> writer) {
+        return this;
     }
 
     @Override
-    public DriveDirectoryFeature withWriter(final Write<VersionId> writer) {
-        return this;
+    public boolean isSupported(final Path workdir, final String name) {
+        if(workdir.isRoot()) {
+            return false;
+        }
+        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(new PathContainerService().getContainer(workdir))) {
+            return false;
+        }
+        return true;
     }
 }
