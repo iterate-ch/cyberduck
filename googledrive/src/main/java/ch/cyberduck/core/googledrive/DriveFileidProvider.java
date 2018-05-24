@@ -61,6 +61,15 @@ public class DriveFileidProvider implements IdProvider {
                 }
             }
         }
+        if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(file.getParent())) {
+            final Path found = new DriveTeamDrivesListService(session).withCache(cache).list(file.getParent(), listener).find(
+                new SimplePathPredicate(file)
+            );
+            if(null == found) {
+                throw new NotfoundException(file.getAbsolute());
+            }
+            return found.attributes().getVersionId();
+        }
         final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.filter(new Comparator<Path>() {
             @Override
