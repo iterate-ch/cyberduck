@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
@@ -69,6 +70,8 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
                     switch(e.getErrorCode()) {
                         case "RequestTimeout":
                             return new ConnectionTimeoutException(buffer.toString(), e);
+                        case "ExpiredToken":
+                            return new ExpiredTokenException(buffer.toString(), e);
                     }
                 }
         }

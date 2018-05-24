@@ -6,6 +6,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -105,7 +106,7 @@ public class S3SessionTest {
         assertFalse(session.isConnected());
     }
 
-    @Test
+    @Test(expected = ExpiredTokenException.class)
     public void testConnectSessionTokenStatic() throws Exception {
         final S3Protocol protocol = new S3Protocol() {
             @Override
@@ -121,14 +122,6 @@ public class S3SessionTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
     }
 
     @Test
