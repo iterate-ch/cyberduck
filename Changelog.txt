@@ -5,6 +5,7 @@ https://cyberduck.io/
 - [Feature] Include shared items (OneDrive) (#10107)
 - [Feature] Add support to login with Shared Access Signature (SAS) Token (Azure)
 - [Feature] Support to queue transfers (#9984)
+- [Feature] Create and delete team drives (Google Drive)
 - [Bugfix] Missing files in folders of vault (Google Drive, Cryptomator) (#10315)
 - [Bugfix] Application error when opening connection (DRACOON) (Windows Store)
 
