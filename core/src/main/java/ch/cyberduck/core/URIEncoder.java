@@ -58,7 +58,9 @@ public final class URIEncoder {
             }
             // Because URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
             // for proper URI percented encoding.
-            return StringUtils.replaceEach(b.toString(), new String[]{"+", "*", "%7E"}, new String[]{"%20", "%2A", "~"});
+            return StringUtils.replaceEach(b.toString(),
+                new String[]{"+", "*", "%7E", "%40"},
+                new String[]{"%20", "%2A", "~", "@"});
         }
         catch(UnsupportedEncodingException e) {
             return p;
