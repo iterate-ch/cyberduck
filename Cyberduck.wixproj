@@ -75,7 +75,7 @@
     <Assemblies Include="windows/target/*.dll" />
     <Assemblies Include="windows/target/*.exe" />
   </ItemGroup>
-  <Target Name="SignDLLs" DependsOnTargets="UsesSignTool" AfterTargets="Compile" BeforeTargets="Link">
+  <Target Name="SignDLLs" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool" AfterTargets="Compile" BeforeTargets="Link">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\%(Assemblies.Identity)'))&quot;" />
   </Target>
 </Project>
