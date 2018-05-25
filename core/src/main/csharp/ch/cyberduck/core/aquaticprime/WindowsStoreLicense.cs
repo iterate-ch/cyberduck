@@ -15,7 +15,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
         public string getName()
         {
             StoreContext storeContext = StoreContext.GetDefault();
-            StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
+            StoreAppLicense license = storeContext.GetAppLicenseAsync().GetResults();
             if (license == null)
             {
                 return LocaleFactory.localizedString("Unknown");
@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
                 }
                 else
                 {
-                    return (string)storeContext.User?.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result ?? LocaleFactory.localizedString("Unknown");
+                    return (string)storeContext.User?.GetPropertyAsync(KnownUserProperties.DisplayName).GetResults() ?? LocaleFactory.localizedString("Unknown");
                 }
             }
             else
@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
         public bool verify(LicenseVerifierCallback callback)
         {
             StoreContext storeContext = StoreContext.GetDefault();
-            StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
+            StoreAppLicense license = storeContext.GetAppLicenseAsync().GetResults();
             return true || (license?.IsActive ?? true); // HACK Windows Store Submission Process
         }
     }
