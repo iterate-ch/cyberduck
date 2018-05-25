@@ -58,6 +58,7 @@
     </PropertyGroup>
   </Target>
 <<<<<<< HEAD
+<<<<<<< HEAD
   <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
     <PropertyGroup>
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
@@ -68,6 +69,8 @@
 =======
   <Target Name="SignMsi" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool">
 >>>>>>> Fix compile
+=======
+>>>>>>> Fix compile
   <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
     <PropertyGroup>
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
@@ -75,7 +78,11 @@
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(Win10SDKVerBinPath)x86\signtool.exe')">$(Win10SDKVerBinPath)x86\signtool.exe</SignToolPath>
     </PropertyGroup>
   </Target>
+<<<<<<< HEAD
   <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
+=======
+  <Target Name="SignMsi" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool">
+>>>>>>> Fix compile
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(SignMsi.FullPath)&quot;" />
   </Target>
   <!--
