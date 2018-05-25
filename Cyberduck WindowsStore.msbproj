@@ -287,7 +287,7 @@
     <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputFilename)&quot; /v /o"/>
   </Target>
   
-  <Target Name="SignAppx" DependsOnTargets="UsesSignTool">
+  <Target Name="SignAppx" Condition="'$(Configuration)' == 'Release'" DependsOnTargets="UsesSignTool">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputFilename)&quot;"/>
   </Target>
 </Project>

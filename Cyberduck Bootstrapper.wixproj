@@ -8,16 +8,17 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>Cyberduck-Installer-$(Version)</OutputName>
     <OutputType>Bundle</OutputType>
-    <SignOutput>true</SignOutput>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <SignOutput>false</SignOutput>
     <OutputPath>windows/target/debug</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <SignOutput>true</SignOutput>
     <OutputPath>windows/target/release</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
@@ -64,10 +65,10 @@
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
     </PropertyGroup>
   </Target>
-  <Target Name="SignBundleEngine" DependsOnTargets="UsesSignTool">
+  <Target Name="SignBundleEngine" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundleEngine)&quot;" />
   </Target>
-  <Target Name="SignBundle" DependsOnTargets="UsesSignTool">
+  <Target Name="SignBundle" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundle)&quot;" />
   </Target>
   <!--
