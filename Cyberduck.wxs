@@ -270,6 +270,11 @@
           <netfx:NativeImage Id="ngen_WAPICPShell" Platform="32bit" Priority="3" />
         </File>
       </Component>
+      <Component Id="MSTKUWPNotifications">
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_MSTKUWPNotifications" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
       <Component Id="ikvm.native">
         <File Source="$(var.cyberduck.TargetDir)/ikvm-native-win32-x86.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ikvm.native" Platform="32bit" Priority="3" />
@@ -445,11 +450,13 @@
     <DirectoryRef Id="ApplicationProgramsFolder">
       <Component Id="ApplicationShortcut">
         <Shortcut Id="ApplicationStartMenuShortcut"
-             Name="Cyberduck"
-             Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
-             Target="[#product.exe]" WorkingDirectory="INSTALLLOCATION"/>
-        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\Cyberduck" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+          Name="Cyberduck"
+          Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
+          Target="[#product.exe]" WorkingDirectory="INSTALLLOCATION">
+          <ShortcutProperty Key="System.AppUserModel.ID" Value="iterate.Cyberduck" />
+        </Shortcut>
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\Cyberduck" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
