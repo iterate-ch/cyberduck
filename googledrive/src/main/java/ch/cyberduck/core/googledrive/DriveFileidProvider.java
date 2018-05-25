@@ -46,10 +46,10 @@ public class DriveFileidProvider implements IdProvider {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-        if(file.isRoot()) {
-            return DriveHomeFinderService.ROOT_FOLDER_ID;
-        }
-        if(file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)) {
+        if(file.isRoot()
+            || file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)
+            || file.equals(DriveHomeFinderService.SHARED_FOLDER_NAME)
+            || file.equals(DriveHomeFinderService.TEAM_DRIVES_NAME)) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
         if(cache.isCached(file.getParent())) {
@@ -60,6 +60,15 @@ public class DriveFileidProvider implements IdProvider {
                     return found.attributes().getVersionId();
                 }
             }
+        }
+        if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(file.getParent())) {
+            final Path found = new DriveTeamDrivesListService(session).withCache(cache).list(file.getParent(), listener).find(
+                new SimplePathPredicate(file)
+            );
+            if(null == found) {
+                throw new NotfoundException(file.getAbsolute());
+            }
+            return found.attributes().getVersionId();
         }
         final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.filter(new Comparator<Path>() {
