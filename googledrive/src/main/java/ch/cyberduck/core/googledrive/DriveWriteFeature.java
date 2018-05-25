@@ -181,7 +181,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                 response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
-                    return null;
+                    return new VersionId(DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener()));
                 }
                 catch(IOException e) {
                     throw new DriveExceptionMappingService().map("Upload failed", e, file);

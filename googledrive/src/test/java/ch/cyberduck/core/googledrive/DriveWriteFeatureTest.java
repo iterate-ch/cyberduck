@@ -56,9 +56,9 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
             final HttpResponseOutputStream<VersionId> out = new DriveWriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
-            assertNotNull(out.getStatus().id);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
+            assertNotNull(out.getStatus().id);
             test.attributes().withVersionId(out.getStatus());
             assertTrue(new DefaultFindFeature(session).find(test));
             final PathAttributes attributes = new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
@@ -80,9 +80,9 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
             final HttpResponseOutputStream<VersionId> out = new DriveWriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
-            assertNotNull(out.getStatus().id);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
+            assertNotNull(out.getStatus().id);
             final PathAttributes attributes = new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
             assertEquals(content.length, attributes.getSize());
             assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getVersionId()).execute().getMimeType());

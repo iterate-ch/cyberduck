@@ -29,5 +29,7 @@
         <false/>
         <key>Token Configurable</key>
         <true/>
+        <key>Password Placeholder</key>
+        <string>Shared Access Signature (SAS) Token</string>
     </dict>
 </plist>

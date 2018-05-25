@@ -24,6 +24,6 @@ public class HostUrlProviderTest {
     @Test
     public void testOAuth() {
         final Host h = new Host(new TestProtocol(Scheme.https), "login.microsoftonline.com", new Credentials("Microsoft OneDrive (t@domain.com) OAuth2 Access Token"));
-        assertEquals("https://Microsoft%20OneDrive%20%28t%40domain.com%29%20OAuth2%20Access%20Token@login.microsoftonline.com", new HostUrlProvider(true, true).get(h));
+        assertEquals("https://Microsoft%20OneDrive%20%28t@domain.com%29%20OAuth2%20Access%20Token@login.microsoftonline.com", new HostUrlProvider(true, true).get(h));
     }
 }

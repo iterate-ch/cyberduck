@@ -54,7 +54,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
             });
         }
         if(action.equals(connections.action())) {
-            return this.validate(new InnerTransferValidator() {
+            this.validate(new InnerTransferValidator() {
                 @Override
                 public boolean validate(final Transfer transfer) {
                     final NSPopUpButton popup = Rococoa.cast(item.view(), NSPopUpButton.class);
@@ -69,6 +69,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
                     return true;
                 }
             });
+            return true;
         }
         return this.validate(action);
     }

@@ -78,7 +78,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             final Long fileid = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
                 // get existing file key associated with the sharing user
-                final FileKey key = new NodesApi(session.getClient()).getUserFileKey(StringUtils.EMPTY, fileid);
+                final FileKey key = new NodesApi(session.getClient()).getUserFileKey(fileid, StringUtils.EMPTY);
                 final UserPrivateKey privateKey = new UserPrivateKey();
                 final UserKeyPairContainer keyPairContainer = session.keyPair();
                 privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
@@ -94,14 +94,14 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 options.setKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(pair));
                 options.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptedFileKey));
             }
-            final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(StringUtils.EMPTY,
-                options.nodeId(fileid), null);
+            final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(
+                options.nodeId(fileid), StringUtils.EMPTY, null);
             final String help;
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
             }
             else {
-                final Long expiry = share.getExpireAt().getTime();
+                final Long expiry = share.getExpireAt().getMillis();
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                     UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
                 );
@@ -129,14 +129,14 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             if(roles != null && !roles.contains(SDSPermissionsFeature.UPLOAD_SHARE_ROLE)) {
                 return DescriptiveUrl.EMPTY;
             }
-            final UploadShare share = new SharesApi(session.getClient()).createUploadShare(StringUtils.EMPTY,
-                options.targetId(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()))), null);
+            final UploadShare share = new SharesApi(session.getClient()).createUploadShare(
+                options.targetId(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
             final String help;
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
             }
             else {
-                final Long expiry = share.getExpireAt().getTime();
+                final Long expiry = share.getExpireAt().getMillis();
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                     UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
                 );

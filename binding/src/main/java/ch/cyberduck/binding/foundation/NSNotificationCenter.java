@@ -39,7 +39,7 @@ public abstract class NSNotificationCenter extends NSObject {
         return CLASS.defaultCenter();
     }
 
-    public void addObserver(org.rococoa.ID notificationObserver, Selector notificationSelector, String notificationName, NSObject notificationSender) {
+    public void addObserver(ID notificationObserver, Selector notificationSelector, String notificationName, ID notificationSender) {
         this.addObserver_selector_name_object(notificationObserver, notificationSelector, notificationName, notificationSender);
     }
 
@@ -48,7 +48,7 @@ public abstract class NSNotificationCenter extends NSObject {
      * Conversion Error : /// Original signature : <code>void addObserver(null, null, NSString*, null)</code><br>
      * - (void)addObserver:(null)observer selector:(null)aSelector name:(NSString*)aName object:(null)anObject; (Argument observer cannot be converted)
      */
-    public abstract void addObserver_selector_name_object(ID notificationObserver, Selector notificationSelector, String notificationName, NSObject notificationSender);
+    public abstract void addObserver_selector_name_object(ID notificationObserver, Selector notificationSelector, String notificationName, ID notificationSender);
 
     /**
      * Original signature : <code>void postNotification(NSNotification*)</code><br>

@@ -1,45 +1,41 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+import ch.cyberduck.core.sds.io.swagger.client.model.*;
 
 import javax.ws.rs.core.GenericType;
-
-import ch.cyberduck.core.sds.io.swagger.client.model.ActiveDirectoryConfig;
-import ch.cyberduck.core.sds.io.swagger.client.model.ActiveDirectoryConfigList;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateActiveDirectoryConfigRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateOAuthClientRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateOpenIdIdpConfigRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.OAuthClient;
-import ch.cyberduck.core.sds.io.swagger.client.model.OpenIdIdpConfig;
-import ch.cyberduck.core.sds.io.swagger.client.model.RadiusConfig;
-import ch.cyberduck.core.sds.io.swagger.client.model.RadiusConfigCreateRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.RadiusConfigUpdateRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.S3Config;
-import ch.cyberduck.core.sds.io.swagger.client.model.S3ConfigCreateRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.S3ConfigUpdateRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.TestActiveDirectoryConfigRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.TestActiveDirectoryConfigResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.UpdateActiveDirectoryConfigRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.UpdateOAuthClientRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.UpdateOpenIdIdpConfigRequest;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-03T10:55:56.129+02:00")
-public class SystemconfigApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
+public class SystemAuthConfigApi {
   private ApiClient apiClient;
 
-  public SystemconfigApi() {
+  public SystemAuthConfigApi() {
     this(Configuration.getDefaultApiClient());
   }
 
-  public SystemconfigApi(ApiClient apiClient) {
+  public SystemAuthConfigApi(ApiClient apiClient) {
     this.apiClient = apiClient;
   }
 
@@ -52,20 +48,15 @@ public class SystemconfigApi {
   }
 
   /**
-   * Create Radius Configuration
-   * 
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * Create RADIUS Configuration
+   * ### Functional Description:   Create new RADIUS configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: New RADIUS configuration is created.  ### &amp;#9432; Further Information: None.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return RadiusConfig
    * @throws ApiException if fails to make API call
    */
-  public RadiusConfig create(String xSdsAuthToken, RadiusConfigCreateRequest body) throws ApiException {
+  public RadiusConfig create(RadiusConfigCreateRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling create");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -73,7 +64,7 @@ public class SystemconfigApi {
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/radius";
+    String localVarPath = "/v4/system/config/auth/radius";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -86,36 +77,31 @@ public class SystemconfigApi {
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<RadiusConfig> localVarReturnType = new GenericType<RadiusConfig>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Create active directory configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Create a new AD configuration.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; New AD configuration created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description: Create a new Active Directory configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: New Active Directory configuration created.  ### &amp;#9432; Further Information: None.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return ActiveDirectoryConfig
    * @throws ApiException if fails to make API call
    */
-  public ActiveDirectoryConfig createAdConfig(String xSdsAuthToken, CreateActiveDirectoryConfigRequest body, String xSdsDateFormat) throws ApiException {
+  public ActiveDirectoryConfig createAdConfig(CreateActiveDirectoryConfigRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createAdConfig");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -123,7 +109,7 @@ public class SystemconfigApi {
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/ads";
+    String localVarPath = "/v4/system/config/auth/ads";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -138,35 +124,30 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<ActiveDirectoryConfig> localVarReturnType = new GenericType<ActiveDirectoryConfig>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Create OAuth client
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Create a new OAuth client.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; New OAuth client created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&lt;br/&gt;Client Secret must have:&lt;br/&gt;- at least 12 characters, at most 32 characters&lt;br/&gt;- only lower case characters, upper case characters and digits&lt;br/&gt;- at least 1 lower case character, 1 upper case character and 1 digit&lt;br/&gt;The Client Secret is optional and will be generated if it is left empty.&lt;br/&gt;&lt;br/&gt;Valid grant types are:&lt;br/&gt;- authorization_code&lt;br/&gt;- implicit&lt;br/&gt;- password&lt;br/&gt;- client_credentials&lt;br/&gt;- refresh_token&lt;br/&gt;Grant type &#39;client_credentials&#39; is actually not permitted!&lt;br/&gt;&lt;br/&gt;Standard Access Token validity: 8 hours&lt;br/&gt;Standard Refresh Token validity: 30 days&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * ### Functional Description: Create a new OAuth client.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: New OAuth client created.  ### &amp;#9432; Further Information:   Client secret must have:   * at least 12 characters, at most 32 characters   * only lower case characters, upper case characters and digits   * at least 1 lower case character, 1 upper case character and 1 digit    The client secret is optional and will be generated if it is left empty.    Valid grant types are:   * **authorization_code**   * **implicit**   * **password**   * **client_credentials**   * **refresh_token**    Grant type &#x60;client_credentials&#x60; is actually not permitted!    Default access token validity: **8 hours**   Default refresh token validity: **30 days**
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return OAuthClient
    * @throws ApiException if fails to make API call
    */
-  public OAuthClient createOAuthClient(String xSdsAuthToken, CreateOAuthClientRequest body) throws ApiException {
+  public OAuthClient createOAuthClient(CreateOAuthClientRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createOAuthClient");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -174,7 +155,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/oauth/clients";
+    String localVarPath = "/v4/system/config/oauth/clients";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -187,35 +168,30 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<OAuthClient> localVarReturnType = new GenericType<OAuthClient>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Create OpenID IDP configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Create a new OpenID Connect IDP configuration.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; New OpenID Connect IDP configuration is created.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; See &lt;a href&#x3D;\&quot;http://openid.net/developers/specs\&quot;&gt;http://openid.net/developers/specs&lt;/a&gt; for further information.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * ### Functional Description: Create a new OpenID Connect IDP configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: New OpenID Connect IDP configuration is created.  ### &amp;#9432; Further Information: See [http://openid.net/developers/specs](http://openid.net/developers/specs) for further information.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return OpenIdIdpConfig
    * @throws ApiException if fails to make API call
    */
-  public OpenIdIdpConfig createOpenIdIdpConfig(String xSdsAuthToken, CreateOpenIdIdpConfigRequest body) throws ApiException {
+  public OpenIdIdpConfig createOpenIdIdpConfig(CreateOpenIdIdpConfigRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling createOpenIdIdpConfig");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -223,7 +199,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/openid/idps";
+    String localVarPath = "/v4/system/config/auth/openid/idps";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -236,34 +212,29 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<OpenIdIdpConfig> localVarReturnType = new GenericType<OpenIdIdpConfig>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Delete active directory configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Delete an existing AD configuration.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; AD configuration removed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description: Delete an existing Active Directory configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: Active Directory configuration removed.  ### &amp;#9432; Further Information: None.
    * @param adId Active Directory ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteAdConfig(String xSdsAuthToken, Integer adId) throws ApiException {
+  public void deleteAdConfig(Integer adId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteAdConfig");
-    }
     
     // verify the required parameter 'adId' is set
     if (adId == null) {
@@ -271,7 +242,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/ads/{ad_id}"
+    String localVarPath = "/v4/system/config/auth/ads/{ad_id}"
       .replaceAll("\\{" + "ad_id" + "\\}", apiClient.escapeString(adId.toString()));
 
     // query params
@@ -285,7 +256,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -294,25 +265,20 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Delete OAuth client
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Delete an existing OAuth client.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; OAuth client removed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description: Delete an existing OAuth client.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: OAuth client removed.  ### &amp;#9432; Further Information: None.
    * @param clientId OAuth client ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteOAuthClient(String xSdsAuthToken, String clientId) throws ApiException {
+  public void deleteOAuthClient(String clientId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteOAuthClient");
-    }
     
     // verify the required parameter 'clientId' is set
     if (clientId == null) {
@@ -320,7 +286,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/oauth/clients/{client_id}"
+    String localVarPath = "/v4/system/config/oauth/clients/{client_id}"
       .replaceAll("\\{" + "client_id" + "\\}", apiClient.escapeString(clientId.toString()));
 
     // query params
@@ -334,7 +300,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -343,25 +309,20 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Delete OpenID IDP configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Delete an existing OpenID Connect IDP configuration.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; OpenID Connect IDP configuration removed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description: Delete an existing OpenID Connect IDP configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: OpenID Connect IDP configuration removed.  ### &amp;#9432; Further Information: None.
    * @param idpId OpenID IDP configuration ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteOpenIdIdpConfig(String xSdsAuthToken, Integer idpId) throws ApiException {
+  public void deleteOpenIdIdpConfig(Integer idpId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deleteOpenIdIdpConfig");
-    }
     
     // verify the required parameter 'idpId' is set
     if (idpId == null) {
@@ -369,7 +330,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/openid/idps/{idp_id}"
+    String localVarPath = "/v4/system/config/auth/openid/idps/{idp_id}"
       .replaceAll("\\{" + "idp_id" + "\\}", apiClient.escapeString(idpId.toString()));
 
     // query params
@@ -383,7 +344,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -392,27 +353,22 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Detete Radius Configuration
-   * 
-   * @param xSdsAuthToken Authentication token (required)
+   * Delete RADIUS Configuration
+   * ### Functional Description:   Delete existing RADIUS configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: RADIUS configuration is deleted.  ### &amp;#9432; Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
   public void deteteRadiusConfig(String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling deteteRadiusConfig");
-    }
-    
     // create path and map variables
-    String localVarPath = "/system/config/auth/radius";
+    String localVarPath = "/v4/system/config/auth/radius";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -425,7 +381,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -434,29 +390,24 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Get active directory configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Retrieve a list of configured ADs.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * ### Functional Description:   Retrieve a list of configured Active Directories.  ### Precondition: Right _\&quot;read global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return ActiveDirectoryConfigList
    * @throws ApiException if fails to make API call
    */
   public ActiveDirectoryConfigList getAdConfigs(String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getAdConfigs");
-    }
-    
     // create path and map variables
-    String localVarPath = "/system/config/auth/ads";
+    String localVarPath = "/v4/system/config/auth/ads";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -471,7 +422,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -480,27 +431,22 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<ActiveDirectoryConfigList> localVarReturnType = new GenericType<ActiveDirectoryConfigList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get active directory configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Retrieve the configuration of a AD.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Retrieve the configuration of a Active Directory.  ### Precondition: Right _\&quot;read global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @param adId Active Directory ID (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return ActiveDirectoryConfig
    * @throws ApiException if fails to make API call
    */
-  public ActiveDirectoryConfig getAuthAdSetting(String xSdsAuthToken, Integer adId, String xSdsDateFormat) throws ApiException {
+  public ActiveDirectoryConfig getAuthAdSetting(Integer adId, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getAuthAdSetting");
-    }
     
     // verify the required parameter 'adId' is set
     if (adId == null) {
@@ -508,7 +454,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/ads/{ad_id}"
+    String localVarPath = "/v4/system/config/auth/ads/{ad_id}"
       .replaceAll("\\{" + "ad_id" + "\\}", apiClient.escapeString(adId.toString()));
 
     // query params
@@ -524,7 +470,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -533,26 +479,21 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<ActiveDirectoryConfig> localVarReturnType = new GenericType<ActiveDirectoryConfig>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get OAuth client
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Retrieve the configuration of an OAuth client.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Retrieve the configuration of an OAuth client.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @param clientId OAuth client ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return OAuthClient
    * @throws ApiException if fails to make API call
    */
-  public OAuthClient getOAuthClient(String xSdsAuthToken, String clientId) throws ApiException {
+  public OAuthClient getOAuthClient(String clientId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getOAuthClient");
-    }
     
     // verify the required parameter 'clientId' is set
     if (clientId == null) {
@@ -560,7 +501,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/oauth/clients/{client_id}"
+    String localVarPath = "/v4/system/config/oauth/clients/{client_id}"
       .replaceAll("\\{" + "client_id" + "\\}", apiClient.escapeString(clientId.toString()));
 
     // query params
@@ -574,7 +515,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -583,41 +524,40 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<OAuthClient> localVarReturnType = new GenericType<OAuthClient>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get OAuth clients
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Retrieve a list of configured OAuth clients.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Retrieve a list of configured OAuth clients.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;isStandard:eq:true&#x60;   Get standard OAuth clients.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;isStandard&#x60;** | Standard client filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are **NOT** supported.   Example: &gt; &#x60;clientName:desc&#x60;   Sort by &#x60;clientName&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;clientName&#x60;** | Client name |
+   * @param filter Filter string (optional)
+   * @param sort Sort string (optional)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return List&lt;OAuthClient&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<OAuthClient> getOAuthClients(String xSdsAuthToken) throws ApiException {
+  public List<OAuthClient> getOAuthClients(String filter, String sort, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getOAuthClients");
-    }
-    
     // create path and map variables
-    String localVarPath = "/system/config/oauth/clients";
+    String localVarPath = "/v4/system/config/oauth/clients";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sort", sort));
 
     if (xSdsAuthToken != null)
       localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -626,26 +566,21 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<List<OAuthClient>> localVarReturnType = new GenericType<List<OAuthClient>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get OpenID IDP configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Retrieve an OpenID Connect IDP configuration.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Retrieve an OpenID Connect IDP configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @param idpId OpenID IDP configuration ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return OpenIdIdpConfig
    * @throws ApiException if fails to make API call
    */
-  public OpenIdIdpConfig getOpenIdIdpConfig(String xSdsAuthToken, Integer idpId) throws ApiException {
+  public OpenIdIdpConfig getOpenIdIdpConfig(Integer idpId, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getOpenIdIdpConfig");
-    }
     
     // verify the required parameter 'idpId' is set
     if (idpId == null) {
@@ -653,7 +588,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/openid/idps/{idp_id}"
+    String localVarPath = "/v4/system/config/auth/openid/idps/{idp_id}"
       .replaceAll("\\{" + "idp_id" + "\\}", apiClient.escapeString(idpId.toString()));
 
     // query params
@@ -667,7 +602,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -676,28 +611,23 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<OpenIdIdpConfig> localVarReturnType = new GenericType<OpenIdIdpConfig>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Get OpenID IDP configurations
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt; &lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Retrieve a list of configured OpenID Connect IDPs.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Retrieve a list of configured OpenID Connect IDPs.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
    * @return List&lt;OpenIdIdpConfig&gt;
    * @throws ApiException if fails to make API call
    */
   public List<OpenIdIdpConfig> getOpenIdIdpConfigs(String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getOpenIdIdpConfigs");
-    }
-    
     // create path and map variables
-    String localVarPath = "/system/config/auth/openid/idps";
+    String localVarPath = "/v4/system/config/auth/openid/idps";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -710,7 +640,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -719,28 +649,23 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<List<OpenIdIdpConfig>> localVarReturnType = new GenericType<List<OpenIdIdpConfig>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get Radius Configuration
-   * 
-   * @param xSdsAuthToken Authentication token (required)
+   * Get RADIUS Configuration
+   * ### Functional Description:   Retrieve RADIUS configuration.  ### Precondition: Right _\&quot;read global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
    * @return RadiusConfig
    * @throws ApiException if fails to make API call
    */
   public RadiusConfig getRadiusConfig(String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getRadiusConfig");
-    }
-    
     // create path and map variables
-    String localVarPath = "/system/config/auth/radius";
+    String localVarPath = "/v4/system/config/auth/radius";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -753,7 +678,7 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -762,167 +687,21 @@ if (xSdsDateFormat != null)
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<RadiusConfig> localVarReturnType = new GenericType<RadiusConfig>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get S3 Storage Configuration
-   * 
-   * @param xSdsAuthToken Authentication token (required)
-   * @return S3Config
-   * @throws ApiException if fails to make API call
-   */
-  public S3Config getS3Config(String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling getS3Config");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/system/config/storage/s3";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] {  };
-
-    GenericType<S3Config> localVarReturnType = new GenericType<S3Config>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Create S3 Storage Configuration
-   * 
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
-   * @return S3Config
-   * @throws ApiException if fails to make API call
-   */
-  public S3Config postS3Config(String xSdsAuthToken, S3ConfigCreateRequest body) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling postS3Config");
-    }
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling postS3Config");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/system/config/storage/s3";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] {  };
-
-    GenericType<S3Config> localVarReturnType = new GenericType<S3Config>() {};
-    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Update S3 Storage Configuration
-   * 
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
-   * @return S3Config
-   * @throws ApiException if fails to make API call
-   */
-  public S3Config putS3Config(String xSdsAuthToken, S3ConfigUpdateRequest body) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling putS3Config");
-    }
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling putS3Config");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/system/config/storage/s3";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] {  };
-
-    GenericType<S3Config> localVarReturnType = new GenericType<S3Config>() {};
-    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
    * Test active directory configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Test AD configuration.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; None.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; SDS tries to establish a connection with the provided information.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * ### Functional Description:   Test Active Directory configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: DRACOON tries to establish a connection with the provided information.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return TestActiveDirectoryConfigResponse
    * @throws ApiException if fails to make API call
    */
-  public TestActiveDirectoryConfigResponse testAdConfig(String xSdsAuthToken, TestActiveDirectoryConfigRequest body) throws ApiException {
+  public TestActiveDirectoryConfigResponse testAdConfig(TestActiveDirectoryConfigRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling testAdConfig");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -930,7 +709,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/actions/test/ad";
+    String localVarPath = "/v4/system/config/actions/test/ad";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -943,36 +722,31 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<TestActiveDirectoryConfigResponse> localVarReturnType = new GenericType<TestActiveDirectoryConfigResponse>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Test radius server availability
-   * 
-   * @param xSdsAuthToken Authentication token (required)
+   * Test RADIUS server availability
+   * ### Functional Description:   Test RADIUS configuration.  ### Precondition: Right _\&quot;read global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: DRACOON tries to establish a connection with the provided information.
+   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
   public void testRadiusConfig(String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
     
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling testRadiusConfig");
-    }
-    
     // create path and map variables
-    String localVarPath = "/system/config/actions/test/radius";
+    String localVarPath = "/v4/system/config/actions/test/radius";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -985,37 +759,32 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
 
     apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Update active directory configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Update an existing AD configuration.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; AD configuration updated.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; None.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Update an existing Active Directory configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: Active Directory configuration updated.  ### &amp;#9432; Further Information: None.
    * @param adId Active Directory ID (required)
-   * @param body  (required)
-   * @param xSdsDateFormat DateTimeFormat: LOCAL/UTC/OFFSET/EPOCH (optional)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return ActiveDirectoryConfig
    * @throws ApiException if fails to make API call
    */
-  public ActiveDirectoryConfig updateAuthAdSetting(String xSdsAuthToken, Integer adId, UpdateActiveDirectoryConfigRequest body, String xSdsDateFormat) throws ApiException {
+  public ActiveDirectoryConfig updateAuthAdSetting(Integer adId, UpdateActiveDirectoryConfigRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling updateAuthAdSetting");
-    }
     
     // verify the required parameter 'adId' is set
     if (adId == null) {
@@ -1028,7 +797,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/ads/{ad_id}"
+    String localVarPath = "/v4/system/config/auth/ads/{ad_id}"
       .replaceAll("\\{" + "ad_id" + "\\}", apiClient.escapeString(adId.toString()));
 
     // query params
@@ -1044,36 +813,31 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<ActiveDirectoryConfig> localVarReturnType = new GenericType<ActiveDirectoryConfig>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Update OAuth client
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt;&lt;br/&gt;Update an existing OAuth client.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; OAuth client updated.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt;&lt;br/&gt;Client Secret must have:&lt;br/&gt;- at least 12 characters, at most 32 characters&lt;br/&gt;- only lower case characters, upper case characters and digits&lt;br/&gt;- at least 1 lower case character, 1 upper case character and 1 digit&lt;br/&gt;The Client Secret is optional and will be generated if it is left empty.&lt;br/&gt;&lt;br/&gt;Valid grant types are:&lt;br/&gt;- authorization_code&lt;br/&gt;- implicit&lt;br/&gt;- password&lt;br/&gt;- client_credentials&lt;br/&gt;- refresh_token&lt;br/&gt;Grant type &#39;client_credentials&#39; is actually not permitted!&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Update an existing OAuth client.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: OAuth client updated.  ### &amp;#9432; Further Information:   Client secret must have:   * at least 12 characters, at most 32 characters   * only lower case characters, upper case characters and digits   * at least 1 lower case character, 1 upper case character and 1 digit    The client secret is optional and will be generated if it is left empty.    Valid grant types are:   * **authorization_code**   * **implicit**   * **password**   * **client_credentials**   * **refresh_token**    Grant type &#x60;client_credentials&#x60; is actually not permitted!   
    * @param clientId OAuth client ID (required)
-   * @param body  (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return OAuthClient
    * @throws ApiException if fails to make API call
    */
-  public OAuthClient updateOAuthClient(String xSdsAuthToken, String clientId, UpdateOAuthClientRequest body) throws ApiException {
+  public OAuthClient updateOAuthClient(String clientId, UpdateOAuthClientRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling updateOAuthClient");
-    }
     
     // verify the required parameter 'clientId' is set
     if (clientId == null) {
@@ -1086,7 +850,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/oauth/clients/{client_id}"
+    String localVarPath = "/v4/system/config/oauth/clients/{client_id}"
       .replaceAll("\\{" + "client_id" + "\\}", apiClient.escapeString(clientId.toString()));
 
     // query params
@@ -1100,36 +864,31 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<OAuthClient> localVarReturnType = new GenericType<OAuthClient>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Update OpenID IDP configuration
-   * &lt;div class&#x3D;\&quot;sds\&quot;&gt;&lt;p&gt;&lt;strong&gt;Functional Description:&lt;/strong&gt; &lt;br/&gt; Update an existing OpenID Connect IDP configuration.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Precondition:&lt;/strong&gt; Data Space Admin of the Provider Customer on SDS Dedicated or SDS for Linux/Windows.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Effects:&lt;/strong&gt; OpenID Connect IDP configuration is updated.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Further Information:&lt;/strong&gt; See &lt;a href&#x3D;\&quot;http://openid.net/developers/specs\&quot;&gt;http://openid.net/developers/specs&lt;/a&gt; for further information.&lt;/p&gt;&lt;/div&gt;
-   * @param xSdsAuthToken Authentication token (required)
+   * ### Functional Description:   Update an existing OpenID Connect IDP configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: OpenID Connect IDP configuration is updated.  ### &amp;#9432; Further Information: See [http://openid.net/developers/specs](http://openid.net/developers/specs) for further information.
    * @param idpId OpenID IDP configuration ID (required)
-   * @param body  (required)
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return OpenIdIdpConfig
    * @throws ApiException if fails to make API call
    */
-  public OpenIdIdpConfig updateOpenIdIdpConfig(String xSdsAuthToken, Integer idpId, UpdateOpenIdIdpConfigRequest body) throws ApiException {
+  public OpenIdIdpConfig updateOpenIdIdpConfig(Integer idpId, UpdateOpenIdIdpConfigRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling updateOpenIdIdpConfig");
-    }
     
     // verify the required parameter 'idpId' is set
     if (idpId == null) {
@@ -1142,7 +901,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/openid/idps/{idp_id}"
+    String localVarPath = "/v4/system/config/auth/openid/idps/{idp_id}"
       .replaceAll("\\{" + "idp_id" + "\\}", apiClient.escapeString(idpId.toString()));
 
     // query params
@@ -1156,35 +915,30 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<OpenIdIdpConfig> localVarReturnType = new GenericType<OpenIdIdpConfig>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Update Radius Configuration
-   * 
-   * @param xSdsAuthToken Authentication token (required)
-   * @param body  (required)
+   * Update RADIUS Configuration
+   * ### Functional Description:   Update existing RADIUS configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: RADIUS configuration is updated.  ### &amp;#9432; Further Information: None.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
    * @return RadiusConfig
    * @throws ApiException if fails to make API call
    */
-  public RadiusConfig updateRadiusConfig(String xSdsAuthToken, RadiusConfigUpdateRequest body) throws ApiException {
+  public RadiusConfig updateRadiusConfig(RadiusConfigUpdateRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    
-    // verify the required parameter 'xSdsAuthToken' is set
-    if (xSdsAuthToken == null) {
-      throw new ApiException(400, "Missing the required parameter 'xSdsAuthToken' when calling updateRadiusConfig");
-    }
     
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -1192,7 +946,7 @@ if (xSdsDateFormat != null)
     }
     
     // create path and map variables
-    String localVarPath = "/system/config/auth/radius";
+    String localVarPath = "/v4/system/config/auth/radius";
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -1205,16 +959,16 @@ if (xSdsDateFormat != null)
 
     
     final String[] localVarAccepts = {
-      "application/json"
+      "application/json;charset=UTF-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json;charset=UTF-8"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
     GenericType<RadiusConfig> localVarReturnType = new GenericType<RadiusConfig>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);

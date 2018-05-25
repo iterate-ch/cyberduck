@@ -339,7 +339,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_QueueSizeChangedEvent()
         {
-            _preferences.setProperty("queue.connections.limit", View.QueueSize);
+            int connections = View.QueueSize;
+            _preferences.setProperty("queue.connections.limit", connections);
+            TransferQueue queue = TransferQueueFactory.get();
+            queue.resize(connections);
         }
 
         private void View_BandwidthChangedEvent()

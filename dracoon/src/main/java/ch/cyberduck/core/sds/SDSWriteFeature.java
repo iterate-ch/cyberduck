@@ -34,11 +34,11 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.swagger.CompleteUploadRequest;
 import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -71,7 +71,8 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public static final int DEFAULT_CLASSIFICATION = 1; // public
+    public static final CreateFileUploadRequest.ClassificationEnum DEFAULT_CLASSIFICATION
+        = CreateFileUploadRequest.ClassificationEnum.NUMBER_1; // public
 
     public SDSWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this(session, nodeid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
@@ -92,7 +93,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         body.setName(file.getName());
         body.classification(DEFAULT_CLASSIFICATION);
         try {
-            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(StringUtils.EMPTY, body);
+            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
             final String uploadId = response.getUploadId();
             final DelayedHttpMultipartEntity entity = new DelayedHttpMultipartEntity(file.getName(), status);
             final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
@@ -100,7 +101,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                 public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                     try {
                         final SDSApiClient client = session.getClient();
-                        final HttpPost request = new HttpPost(String.format("%s/nodes/files/uploads/%s", client.getBasePath(), uploadId));
+                        final HttpPost request = new HttpPost(String.format("%s/v4/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                         request.setEntity(entity);
                         request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                         request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
@@ -132,7 +133,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                             );
                             body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                         }
-                        final Node upload = new NodesApi(client).completeFileUpload(StringUtils.EMPTY, uploadId, null, body);
+                        final Node upload = new NodesApi(client).completeFileUpload(uploadId, body, StringUtils.EMPTY, null);
                         return new VersionId(String.valueOf(upload.getId()));
                     }
                     catch(IOException e) {

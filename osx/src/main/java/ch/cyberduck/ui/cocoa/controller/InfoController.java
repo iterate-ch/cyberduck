@@ -512,32 +512,32 @@ public class InfoController extends ToolbarWindowController {
         this.permissionsField = permissionsField;
     }
 
-    public void setOctalField(NSTextField octalField) {
-        this.octalField = octalField;
+    public void setOctalField(NSTextField t) {
+        this.octalField = t;
         notificationCenter.addObserver(this.id(),
             Foundation.selector("octalPermissionsInputDidEndEditing:"),
             NSControl.NSControlTextDidEndEditingNotification,
-            octalField);
+            t.id());
     }
 
-    public void setOwnerField(NSTextField ownerField) {
-        this.ownerField = ownerField;
+    public void setOwnerField(NSTextField t) {
+        this.ownerField = t;
     }
 
-    public void setSizeField(NSTextField sizeField) {
-        this.sizeField = sizeField;
+    public void setSizeField(NSTextField t) {
+        this.sizeField = t;
     }
 
-    public void setChecksumField(NSTextField checksumField) {
-        this.checksumField = checksumField;
+    public void setChecksumField(NSTextField t) {
+        this.checksumField = t;
     }
 
-    public void setPathField(NSTextField pathField) {
-        this.pathField = pathField;
+    public void setPathField(NSTextField t) {
+        this.pathField = t;
     }
 
-    public void setWebUrlField(NSTextField webUrlField) {
-        this.webUrlField = webUrlField;
+    public void setWebUrlField(NSTextField t) {
+        this.webUrlField = t;
         this.webUrlField.setAllowsEditingTextAttributes(true);
         this.webUrlField.setSelectable(true);
     }
@@ -851,7 +851,7 @@ public class InfoController extends ToolbarWindowController {
         notificationCenter.addObserver(this.id(),
             Foundation.selector("distributionApplyButtonClicked:"),
             NSControl.NSControlTextDidEndEditingNotification,
-            distributionCnameField);
+            t.id());
     }
 
     public void setDistributionOriginField(NSTextField t) {

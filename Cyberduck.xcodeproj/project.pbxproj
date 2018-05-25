@@ -38,8 +38,6 @@
 		4705E00C1C037AB5002466FA /* LaunchServicesSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFF21C037AB5002466FA /* LaunchServicesSchemeHandler.m */; };
 		4705E00D1C037AB5002466FA /* SystemConfigurationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFF31C037AB5002466FA /* SystemConfigurationProxy.h */; };
 		4705E00E1C037AB5002466FA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */; };
-		4705E00F1C037AB5002466FA /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFF51C037AB5002466FA /* SystemConfigurationReachability.h */; };
-		4705E0101C037AB5002466FA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFF61C037AB5002466FA /* SystemConfigurationReachability.m */; };
 		470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.xib */; };
 		4716C5F50872BA9900938886 /* Command.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.xib */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
@@ -167,6 +165,8 @@
 		4767310616108E1300B28D35 /* upload.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476730B616108E1300B28D35 /* upload.tiff */; };
 		4778BE391E72B183001D2E7C /* onedrive.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4778BE381E72B183001D2E7C /* onedrive.tiff */; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
+		47820E3920B58426006D0501 /* CDReachabilityMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 47820E3720B58425006D0501 /* CDReachabilityMonitor.m */; };
+		47820E3A20B58426006D0501 /* CDReachabilityMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47820E3820B58426006D0501 /* CDReachabilityMonitor.h */; };
 		478426F40F9F75900068BA2E /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
 		4786AA14162F4AED006156A0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
 		478DB2681DF3418D00BEAA45 /* unlockedbadge.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478DB2671DF3418D00BEAA45 /* unlockedbadge.tiff */; };
@@ -367,8 +367,6 @@
 		4705DFF21C037AB5002466FA /* LaunchServicesSchemeHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LaunchServicesSchemeHandler.m; path = core/src/main/objc/LaunchServicesSchemeHandler.m; sourceTree = SOURCE_ROOT; };
 		4705DFF31C037AB5002466FA /* SystemConfigurationProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemConfigurationProxy.h; path = core/src/main/objc/SystemConfigurationProxy.h; sourceTree = SOURCE_ROOT; };
 		4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SystemConfigurationProxy.m; path = core/src/main/objc/SystemConfigurationProxy.m; sourceTree = SOURCE_ROOT; };
-		4705DFF51C037AB5002466FA /* SystemConfigurationReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemConfigurationReachability.h; path = core/src/main/objc/SystemConfigurationReachability.h; sourceTree = SOURCE_ROOT; };
-		4705DFF61C037AB5002466FA /* SystemConfigurationReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SystemConfigurationReachability.m; path = core/src/main/objc/SystemConfigurationReachability.m; sourceTree = SOURCE_ROOT; };
 		470912EC0C36FCE00049FBCE /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Prompt.xib; sourceTree = "<group>"; };
 		470912FB0C36FD330049FBCE /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = ca; path = i18n/src/main/resources/ca.lproj/Prompt.xib; sourceTree = "<group>"; };
 		4709130A0C36FD920049FBCE /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = cs; path = i18n/src/main/resources/cs.lproj/Prompt.xib; sourceTree = "<group>"; };
@@ -1021,6 +1019,8 @@
 		477DDC771F84DA2C0012F799 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = i18n/src/main/resources/fr.lproj/SDS.strings; sourceTree = "<group>"; };
 		477DDC781F84DA330012F799 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = i18n/src/main/resources/es.lproj/SDS.strings; sourceTree = "<group>"; };
 		4781AF400828423100B3E0FA /* download0.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download0.icns; sourceTree = "<group>"; };
+		47820E3720B58425006D0501 /* CDReachabilityMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDReachabilityMonitor.m; path = core/src/main/objc/CDReachabilityMonitor.m; sourceTree = SOURCE_ROOT; };
+		47820E3820B58426006D0501 /* CDReachabilityMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDReachabilityMonitor.h; path = core/src/main/objc/CDReachabilityMonitor.h; sourceTree = SOURCE_ROOT; };
 		478426F30F9F75900068BA2E /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = i18n/src/main/resources/en.lproj/License.strings; sourceTree = "<group>"; };
 		478427070F9F75D70068BA2E /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = i18n/src/main/resources/sv.lproj/License.strings; sourceTree = "<group>"; };
 		478427080F9F75DB0068BA2E /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = i18n/src/main/resources/zh_CN.lproj/License.strings; sourceTree = "<group>"; };
@@ -1731,10 +1731,10 @@
 				4705DFF21C037AB5002466FA /* LaunchServicesSchemeHandler.m */,
 				4705DFF31C037AB5002466FA /* SystemConfigurationProxy.h */,
 				4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */,
-				4705DFF51C037AB5002466FA /* SystemConfigurationReachability.h */,
-				4705DFF61C037AB5002466FA /* SystemConfigurationReachability.m */,
 				474B843B1C15CDD1004D562C /* CDTransmitImporter.m */,
 				474B843C1C15CDD1004D562C /* CDTransmitImporter.h */,
+				47820E3820B58426006D0501 /* CDReachabilityMonitor.h */,
+				47820E3720B58425006D0501 /* CDReachabilityMonitor.m */,
 			);
 			name = Core;
 			path = source;
@@ -1958,7 +1958,6 @@
 				4705DFF81C037AB5002466FA /* FinderSidebarService.h in Headers */,
 				474B843E1C15CDD1004D562C /* CDTransmitImporter.h in Headers */,
 				4705DFFE1C037AB5002466FA /* FinderLocal.h in Headers */,
-				4705E00F1C037AB5002466FA /* SystemConfigurationReachability.h in Headers */,
 				4705E0061C037AB5002466FA /* LaunchServicesApplicationFinder.h in Headers */,
 				4705E00D1C037AB5002466FA /* SystemConfigurationProxy.h in Headers */,
 				474B84411C15DB51004D562C /* Sandbox.h in Headers */,
@@ -1966,6 +1965,7 @@
 				47F85C1B1C0F101F00FDA856 /* UKSystemInfo.h in Headers */,
 				4705E0091C037AB5002466FA /* LaunchServicesQuarantineService.h in Headers */,
 				4705DFFA1C037AB5002466FA /* EMKeychainItem.h in Headers */,
+				47820E3A20B58426006D0501 /* CDReachabilityMonitor.h in Headers */,
 				4705E0071C037AB5002466FA /* LaunchServicesFileDescriptor.h in Headers */,
 				4705E00B1C037AB5002466FA /* LaunchServicesSchemeHandler.h in Headers */,
 			);
@@ -2372,8 +2372,8 @@
 				4705DFF71C037AB5002466FA /* FinderSidebarService.m in Sources */,
 				4705DFF91C037AB5002466FA /* LaunchServicesApplicationFinder.m in Sources */,
 				474B843D1C15CDD1004D562C /* CDTransmitImporter.m in Sources */,
-				4705E0101C037AB5002466FA /* SystemConfigurationReachability.m in Sources */,
 				4705E00E1C037AB5002466FA /* SystemConfigurationProxy.m in Sources */,
+				47820E3920B58426006D0501 /* CDReachabilityMonitor.m in Sources */,
 				4705DFFB1C037AB5002466FA /* EMKeychainItem.m in Sources */,
 				4705DFFF1C037AB5002466FA /* FinderLocal.m in Sources */,
 				4705E0031C037AB5002466FA /* IOKitSleepPreventer.m in Sources */,
