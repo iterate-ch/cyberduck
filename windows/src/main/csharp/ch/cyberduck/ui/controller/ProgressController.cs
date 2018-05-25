@@ -139,14 +139,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateOverallProgress()
         {
-            if (Utils.IsVistaOrLater)
-            {
-                TransferProgress progress = TransferCollection.defaultCollection().getProgress();
-                TransferController.Instance.View.UpdateOverallProgressState(
-                    TransferCollection.defaultCollection().numberOfRunningTransfers() == 0
-                        ? 0
-                        : progress.getTransferred().longValue(), progress.getSize().longValue());
-            }
+            TransferProgress progress = TransferCollection.defaultCollection().getProgress();
+            TransferController.Instance.View.UpdateOverallProgressState(
+                TransferCollection.defaultCollection().numberOfRunningTransfers() == 0
+                    ? 0
+                    : progress.getTransferred().longValue(), progress.getSize().longValue());
         }
 
         private void Init()

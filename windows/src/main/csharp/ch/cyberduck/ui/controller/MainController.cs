@@ -557,21 +557,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static void InitJumpList()
         {
-            if (Utils.IsWin7OrLater)
+            try
             {
-                try
+                if (_jumpListManager == null)
                 {
-                    if (_jumpListManager == null)
-                    {
-                        TaskbarManager.Instance.ApplicationId = PreferencesFactory.get().getProperty("application.name");
-                        _jumpListManager = JumpList.CreateJumpList();
-                        _jumpListManager.AddCustomCategories(bookmarkCategory = new JumpListCustomCategory("History"));
-                    }
+                    TaskbarManager.Instance.ApplicationId = PreferencesFactory.get().getProperty("application.name");
+                    _jumpListManager = JumpList.CreateJumpList();
+                    _jumpListManager.AddCustomCategories(bookmarkCategory = new JumpListCustomCategory("History"));
                 }
-                catch (Exception exception)
-                {
-                    Logger.warn("Exception while initializing jump list", exception);
-                }
+            }
+            catch (Exception exception)
+            {
+                Logger.warn("Exception while initializing jump list", exception);
             }
         }
 
@@ -859,30 +856,27 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             InitJumpList();
 
-            if (Utils.IsWin7OrLater)
+            try
             {
-                try
+                Iterator iterator = HistoryCollection.defaultCollection().iterator();
+                _jumpListManager.ClearAllUserTasks();
+                while (iterator.hasNext())
                 {
-                    Iterator iterator = HistoryCollection.defaultCollection().iterator();
-                    _jumpListManager.ClearAllUserTasks();
-                    while (iterator.hasNext())
+                    Host host = (Host)iterator.next();
+                    var file = FolderBookmarkCollection.favoritesCollection().getFile(host);
+                    if (file.exists())
                     {
-                        Host host = (Host)iterator.next();
-                        var file = FolderBookmarkCollection.favoritesCollection().getFile(host);
-                        if (file.exists())
+                        bookmarkCategory.AddJumpListItems(new JumpListLink(file.getAbsolute(), BookmarkNameProvider.toString(host))
                         {
-                            bookmarkCategory.AddJumpListItems(new JumpListLink(file.getAbsolute(), BookmarkNameProvider.toString(host))
-                            {
-                                IconReference = new IconReference(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-application.ico"), 0),
-                            });
-                        }
+                            IconReference = new IconReference(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-application.ico"), 0),
+                        });
                     }
-                    _jumpListManager.Refresh();
                 }
-                catch (Exception exception)
-                {
-                    Logger.warn("Exception while refreshing jump list", exception);
-                }
+                _jumpListManager.Refresh();
+            }
+            catch (Exception exception)
+            {
+                Logger.warn("Exception while refreshing jump list", exception);
             }
         }
 

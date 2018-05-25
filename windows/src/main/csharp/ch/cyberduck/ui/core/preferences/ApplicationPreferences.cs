@@ -86,14 +86,14 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             this.setDefault("factory.symlink.class", typeof(NullLocalSymlinkFeature).AssemblyQualifiedName);
             this.setDefault("factory.terminalservice.class", typeof(SshTerminalService).AssemblyQualifiedName);
             this.setDefault("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
-            this.setDefault("factory.notification.class", typeof(DesktopNotificationService).AssemblyQualifiedName);
-            if (Cyberduck.Core.Utils.IsWin7OrLater)
-            {
-                this.setDefault("factory.badgelabeler.class",
-                    typeof(TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
-            }
+            this.setDefault("factory.badgelabeler.class", typeof(TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
             this.setDefault("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
             this.setDefault("factory.schemehandler.class", typeof(URLSchemeHandlerConfiguration).AssemblyQualifiedName);
+
+            if (Cyberduck.Core.Utils.IsWin10FallCreatorsUpdate)
+            {
+                this.setDefault("factory.notification.class", typeof(DesktopNotificationService).AssemblyQualifiedName);
+            }
 
             if (Cyberduck.Core.Utils.IsRunningAsUWP)
             {

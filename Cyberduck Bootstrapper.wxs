@@ -28,4 +28,10 @@
             <MsiPackage SourceFile="setup\wix\Bonjour64.msi" Compressed="yes" Vital="no" InstallCondition="VersionNT64"/>
         </Chain>
     </Bundle>
+
+    <Fragment>
+        <bal:Condition Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher.">
+            <![CDATA[Installed OR (VersionNT >= 601)]]>
+        </bal:Condition>
+    </Fragment>
 </Wix>

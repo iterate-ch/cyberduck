@@ -996,7 +996,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         static BrowserRenderer()
         {
-            if (Utils.IsVistaOrLater && VisualStyleRenderer.IsSupported)
+            if (VisualStyleRenderer.IsSupported)
             {
                 ClosedGlyphRenderer =
                     new VisualStyleRenderer(VisualStyleElement.CreateElement("Explorer::TreeView", 2, 1));
@@ -1012,7 +1012,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected override void DrawExpansionGlyph(Graphics g, Rectangle r, bool isExpanded)
         {
-            if (Utils.IsVistaOrLater && VisualStyleRenderer.IsSupported)
+            if (VisualStyleRenderer.IsSupported)
             {
                 VisualStyleRenderer renderer = isExpanded ? OpenedGlyphRenderer : ClosedGlyphRenderer;
                 renderer.DrawBackground(g, r);

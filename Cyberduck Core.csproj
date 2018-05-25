@@ -149,7 +149,6 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeConstants.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeListEnumerator.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeMethods.cs" />
-    <Compile Include="core\src\main\csharp\ch\cyberduck\core\OSVersion.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\PasswordStoreFacade.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AppConfigPreferences.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\DefaultLocales.cs" />
