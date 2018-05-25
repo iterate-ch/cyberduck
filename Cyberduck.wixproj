@@ -57,6 +57,7 @@
       <Win10SDKVerBinPath>$(Win10SDKBinPath)$(Win10SDKVersion)</Win10SDKVerBinPath>
     </PropertyGroup>
   </Target>
+<<<<<<< HEAD
   <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
     <PropertyGroup>
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
@@ -64,10 +65,14 @@
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(Win10SDKVerBinPath)x86\signtool.exe')">$(Win10SDKVerBinPath)x86\signtool.exe</SignToolPath>
     </PropertyGroup>
   </Target>
+=======
+  <Target Name="SignMsi" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool">
+>>>>>>> Fix compile
   <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
     <PropertyGroup>
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
+      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(Win10SDKVerBinPath)x86\signtool.exe')">$(Win10SDKVerBinPath)x86\signtool.exe</SignToolPath>
     </PropertyGroup>
   </Target>
   <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
