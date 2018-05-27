@@ -105,7 +105,7 @@ public class CryptoVault implements Vault {
         );
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
-            keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+            keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                 new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
         }
         final String passphrase = credentials.getPassword();
@@ -151,8 +151,13 @@ public class CryptoVault implements Vault {
             throw new VaultException(String.format("Failure reading vault master key file %s", masterkey.getName()), e);
         }
         final Host bookmark = session.getHost();
-        final String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+        String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
             new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
+        if(null == passphrase) {
+            // Legacy
+            passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+                new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
+        }
         this.unlock(session, masterkey, masterKeyFileContent, passphrase, bookmark, prompt,
             MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()),
             keychain);
@@ -186,7 +191,7 @@ public class CryptoVault implements Vault {
                     log.info(String.format("Save passphrase for %s", masterKeyFile));
                 }
                 // Save password with hostname and path to masterkey.cryptomator in keychain
-                keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+                keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                     new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
                 // Save masterkey.cryptomator content in preferences
                 preferences.setProperty(new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(),
