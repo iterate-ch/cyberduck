@@ -70,13 +70,7 @@ namespace Ch.Cyberduck.Core.Preferences
 
         private bool HasEastAsianFontSupport()
         {
-            if (Utils.IsVistaOrLater)
-            {
-                return true;
-            }
-            return
-                Convert.ToBoolean(NativeMethods.IsValidLocale(CultureInfo.CreateSpecificCulture("zh").LCID,
-                    NativeConstants.LCID_INSTALLED));
+           return true;
         }
     }
 }

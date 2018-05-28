@@ -8,16 +8,17 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>Cyberduck-Installer-$(Version)</OutputName>
     <OutputType>Package</OutputType>
-    <SignOutput>true</SignOutput>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <SignOutput>false</SignOutput>
     <OutputPath>windows/target/debug</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <SignOutput>true</SignOutput>
     <OutputPath>windows/target/release</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
@@ -64,12 +65,6 @@
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(Win10SDKVerBinPath)x86\signtool.exe')">$(Win10SDKVerBinPath)x86\signtool.exe</SignToolPath>
     </PropertyGroup>
   </Target>
-  <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
-    <PropertyGroup>
-      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
-      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
-    </PropertyGroup>
-  </Target>
   <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(SignMsi.FullPath)&quot;" />
   </Target>
@@ -81,7 +76,7 @@
     <Assemblies Include="windows/target/*.dll" />
     <Assemblies Include="windows/target/*.exe" />
   </ItemGroup>
-  <Target Name="SignDLLs" DependsOnTargets="UsesSignTool" AfterTargets="Compile" BeforeTargets="Link">
+  <Target Name="SignDLLs" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool" AfterTargets="Compile" BeforeTargets="Link">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\%(Assemblies.Identity)'))&quot;" />
   </Target>
 </Project>

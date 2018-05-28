@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Contracts;
 using com.google.api.client.util;
+using DesktopNotifications;
 
 namespace Ch.Cyberduck.Ui
 {
@@ -23,6 +24,7 @@ namespace Ch.Cyberduck.Ui
             bool newInstance;
             Mutex mutex = new Mutex(true, "iterate/cyberduck.io", out newInstance);
 
+            bool toast = args.Length > 0 ? string.Equals(args[0], DesktopNotificationManagerCompat.TOAST_ACTIVATED_LAUNCH_ARG) : false;
             var argsTask = Task.Run(async () =>
             {
                 using (var channel = new ChannelFactory<ICyberduck>(new NetNamedPipeBinding(), new EndpointAddress("net.pipe://localhost/iterate/cyberduck.io")))
@@ -50,7 +52,7 @@ namespace Ch.Cyberduck.Ui
                         throw new TimeoutException();
                     }
 
-                    if (!newInstance)
+                    if (!(toast || newInstance))
                     {
                         proxy.NewInstance();
                     }

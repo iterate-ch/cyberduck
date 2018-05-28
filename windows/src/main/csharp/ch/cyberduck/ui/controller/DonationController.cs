@@ -24,7 +24,6 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.TaskDialog;
-using Ch.Cyberduck.Ui.Growl;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -40,8 +39,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public void Show()
         {
             int uses = PreferencesFactory.get().getInteger("uses");
-
-            var notify = (ToolstripNotificationService)NotificationServiceFactory.get();
 
             var result = TaskDialog.Show(
                 owner: IntPtr.Zero,
