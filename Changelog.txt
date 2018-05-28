@@ -9,6 +9,8 @@ https://cyberduck.io/
 - [Bugfix] Cannot create new vault in team drive (Google Drive, Cryptomator) (#10324)
 - [Bugfix] Missing files in folders of vault (Google Drive, Cryptomator) (#10315)
 - [Bugfix] Application error when opening connection (DRACOON) (Windows Store)
+- [Bugfix] Disabled menu item to create new container (Azure)
+- [Bugfix] Disabled menu item to create new bucket (Backblaze B2)
 
 6.5.0
 - [Bugfix] Improved performance accessing vaults (Cryptomator)
