@@ -2,6 +2,7 @@ Cyberduck
 https://cyberduck.io/
 
 6.6.0
+- [Feature] Use toast notifications (Windows) (#10268)
 - [Feature] Include shared items (OneDrive) (#10107)
 - [Feature] Add support to login with Shared Access Signature (SAS) Token (Azure)
 - [Feature] Support to queue transfers (#9984)
