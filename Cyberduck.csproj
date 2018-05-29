@@ -188,10 +188,10 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Windows.Data" />
-    <Reference Include="Windows.Foundation" />
+    <Reference Include="Windows">
+      <HintPath>$(ProgramFiles)\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
+    </Reference>
     <Reference Include="Windows.Services" />
-    <Reference Include="Windows.UI" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\DesktopNotificationService.cs" />

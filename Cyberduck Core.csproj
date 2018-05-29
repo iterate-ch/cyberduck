@@ -96,6 +96,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.WindowsRuntime" />
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -103,10 +104,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Windows.Foundation" />
+    <Reference Include="Windows">
+      <HintPath>$(ProgramFiles)\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
+    </Reference>
     <Reference Include="Windows.Services" />
-    <Reference Include="Windows.Storage" />
-    <Reference Include="Windows.System" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Bonjour">
