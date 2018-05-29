@@ -30,15 +30,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
                 }
                 else
                 {
-                    var user = storeContext.User;
-                    if (user == null)
-                    {
-                        return (string)user.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result;
-                    }
-                    else
-                    {
-                        return LocaleFactory.localizedString("Unknown");
-                    }
+                    return (string)(storeContext.User?.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result) ?? LocaleFactory.localizedString("Unknown");
                 }
             }
             else

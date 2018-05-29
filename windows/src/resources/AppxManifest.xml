@@ -11,7 +11,7 @@
   xmlns:com="http://http://schemas.microsoft.com/appx/manifest/com/windows10"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2"
-  IgnorableNamespaces="rescap rescap3 com desktop desktop2">
+  IgnorableNamespaces="uap uap2 uap3 uap4 uap5 rescap rescap3 com desktop desktop2">
   <Identity Name="iterate.37637C3DE32E5" ProcessorArchitecture="x86"
     Publisher="CN=F20B9811-19FC-4FBE-A8F6-A39E82A4FDE4" Version="$(Version)" />
   <Properties>
