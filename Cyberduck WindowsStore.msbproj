@@ -288,7 +288,7 @@
 
   <Target Name="MakeAppx">
     <MakeDir Directories="$(AppxDirectory)" />
-    <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputFilename)&quot; /v"/>
+    <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputFilename)&quot; /v /o"/>
   </Target>
   
   <Target Name="SignAppx" Condition="'$(Configuration)' == 'Release'" DependsOnTargets="UsesSignTool">
