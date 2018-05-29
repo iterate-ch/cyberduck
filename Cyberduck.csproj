@@ -12,6 +12,7 @@
     <RootNamespace>Ch.Cyberduck</RootNamespace>
     <AssemblyName>Cyberduck</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>cyberduck-application.ico</ApplicationIcon>
     <TargetZone>LocalIntranet</TargetZone>
@@ -158,6 +159,9 @@
     <Reference Include="IKVM.Runtime.JNI">
       <HintPath>windows\target\ikvm\bin\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Toolkit.Uwp.Notifications, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Toolkit.Uwp.Notifications.2.0.0\lib\dotnet\Microsoft.Toolkit.Uwp.Notifications.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -184,11 +188,13 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Windows">
-      <HintPath>$(MSBuildProgramFiles32)\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
-    </Reference>
+    <Reference Include="Windows.Data" />
+    <Reference Include="Windows.Foundation" />
+    <Reference Include="Windows.Services" />
+    <Reference Include="Windows.UI" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\DesktopNotificationService.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IDonationController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\INewVaultPromptView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IPasswordPromptView.cs" />
@@ -196,6 +202,7 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\VaultController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\contracts\ICyberduck.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\ApplicationPreferences.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\uwp\DesktopNotificationManagerCompat.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\uwp\IInitializeWithWindow.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\Program.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\controls\PasswordStrengthIndicator.cs">
@@ -402,7 +409,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\PersistentFormHandler.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\SyncPromptController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\SyncPromptModel.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\growl\ToolstripNotificationService.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\TaskbarApplicationBadgeLabeler.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\controls\ReadOnlyRichTextBox.cs">
       <SubType>Component</SubType>

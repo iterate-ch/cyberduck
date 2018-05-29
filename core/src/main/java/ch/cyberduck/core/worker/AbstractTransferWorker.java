@@ -154,6 +154,11 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     protected abstract void release(Session session, Connection type) throws BackgroundException;
 
     @Override
+    public Boolean initialize() {
+        return false;
+    }
+
+    @Override
     public void reset() {
         for(TransferStatus status : table.values()) {
             for(TransferStatus segment : status.getSegments()) {

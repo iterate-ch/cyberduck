@@ -629,6 +629,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("ftp.parser.multiline.strict", String.valueOf(false));
         this.setDefault("ftp.parser.reply.strict", String.valueOf(false));
+        this.setDefault("ftp.parser.mlsd.perm.enable", String.valueOf(false));
 
         /*
           Send LIST -a

@@ -47,7 +47,7 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPChallengeResponseAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
 
-    private static final Pattern DEFAULT_PROMPT_PATTERN = Pattern.compile(".*[pP]assword\\s?\\z", Pattern.DOTALL);
+    private static final Pattern DEFAULT_PROMPT_PATTERN = Pattern.compile(".*[pP]assword.*", Pattern.DOTALL);
 
     private final SFTPSession session;
 

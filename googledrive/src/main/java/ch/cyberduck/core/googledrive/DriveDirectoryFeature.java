@@ -18,6 +18,8 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -30,6 +32,7 @@ import java.util.Collections;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.TeamDrive;
 
 public class DriveDirectoryFeature implements Directory<VersionId> {
 
@@ -44,15 +47,24 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            // Identified by the special folder MIME type application/vnd.google-apps.folder
-            final Drive.Files.Create insert = session.getClient().files().create(new File()
+            if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(folder.getParent())) {
+                final TeamDrive execute = session.getClient().teamdrives().create(
+                    new UUIDRandomStringService().random(), new TeamDrive().setName(folder.getName())
+                ).execute();
+                return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                    new PathAttributes(folder.attributes()).withVersionId(execute.getId()));
+            }
+            else {
+                // Identified by the special folder MIME type application/vnd.google-apps.folder
+                final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(folder.getName())
                     .setMimeType("application/vnd.google-apps.folder")
-                .setParents(Collections.singletonList(fileid.getFileid(folder.getParent(), new DisabledListProgressListener()))));
-            final File execute = insert
-                .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
-            return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                new PathAttributes(folder.attributes()).withVersionId(execute.getId()));
+                    .setParents(Collections.singletonList(fileid.getFileid(folder.getParent(), new DisabledListProgressListener()))));
+                final File execute = insert
+                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                    new PathAttributes(folder.attributes()).withVersionId(execute.getId()));
+            }
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, folder);
@@ -60,12 +72,18 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return true;
+    public DriveDirectoryFeature withWriter(final Write<VersionId> writer) {
+        return this;
     }
 
     @Override
-    public DriveDirectoryFeature withWriter(final Write<VersionId> writer) {
-        return this;
+    public boolean isSupported(final Path workdir, final String name) {
+        if(workdir.isRoot()) {
+            return false;
+        }
+        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(new PathContainerService().getContainer(workdir))) {
+            return false;
+        }
+        return true;
     }
 }

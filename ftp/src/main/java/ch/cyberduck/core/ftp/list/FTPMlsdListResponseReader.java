@@ -24,6 +24,7 @@ import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -135,25 +136,27 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     parsed.attributes().setPermission(new Permission(facts.get("unix.mode")));
                 }
                 else if(facts.containsKey("perm")) {
-                    Permission.Action user = Permission.Action.none;
-                    final String flags = facts.get("perm");
-                    if(StringUtils.contains(flags, 'r') || StringUtils.contains(flags, 'l')) {
-                        // RETR command may be applied to that object
-                        // Listing commands, LIST, NLST, and MLSD may be applied
-                        user = user.or(Permission.Action.read);
-                    }
-                    if(StringUtils.contains(flags, 'w') || StringUtils.contains(flags, 'm') || StringUtils.contains(flags, 'c')) {
-                        user = user.or(Permission.Action.write);
-                    }
-                    if(StringUtils.contains(flags, 'e')) {
-                        // CWD command naming the object should succeed
-                        user = user.or(Permission.Action.execute);
-                        if(parsed.isDirectory()) {
+                    if(PreferencesFactory.get().getBoolean("ftp.parser.mlsd.perm.enable")) {
+                        Permission.Action user = Permission.Action.none;
+                        final String flags = facts.get("perm");
+                        if(StringUtils.contains(flags, 'r') || StringUtils.contains(flags, 'l')) {
+                            // RETR command may be applied to that object
+                            // Listing commands, LIST, NLST, and MLSD may be applied
                             user = user.or(Permission.Action.read);
                         }
+                        if(StringUtils.contains(flags, 'w') || StringUtils.contains(flags, 'm') || StringUtils.contains(flags, 'c')) {
+                            user = user.or(Permission.Action.write);
+                        }
+                        if(StringUtils.contains(flags, 'e')) {
+                            // CWD command naming the object should succeed
+                            user = user.or(Permission.Action.execute);
+                            if(parsed.isDirectory()) {
+                                user = user.or(Permission.Action.read);
+                            }
+                        }
+                        final Permission permission = new Permission(user, Permission.Action.none, Permission.Action.none);
+                        parsed.attributes().setPermission(permission);
                     }
-                    final Permission permission = new Permission(user, Permission.Action.none, Permission.Action.none);
-                    parsed.attributes().setPermission(permission);
                 }
                 if(facts.containsKey("modify")) {
                     // Time values are always represented in UTC
