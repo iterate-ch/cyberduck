@@ -29,9 +29,17 @@
       </Component>
       <Component Id="ProductExe">
         <File Id="product.exe" Source="$(var.cyberduck.TargetPath)" KeyPath="yes" Checksum="yes" >
+          <Shortcut Id="ApplicationStartMenuShortcut"
+            Name="Cyberduck"
+            Advertise="yes"
+            Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
+            Directory="ApplicationProgramsFolder">
+            <ShortcutProperty Key="System.AppUserModel.ID" Value="iterate.Cyberduck" />
+          </Shortcut>
           <netfx:NativeImage Id="ngen_product.exe" Platform="32bit" Priority="3" />
         </File>
-
+        <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        
         <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationDescription" Value="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationIcon" Value="[INSTALLLOCATION]Cyberduck.exe,0" Type="string" />
@@ -447,23 +455,9 @@
       </Component>
     </ComponentGroup>
 
-    <DirectoryRef Id="ApplicationProgramsFolder">
-      <Component Id="ApplicationShortcut">
-        <Shortcut Id="ApplicationStartMenuShortcut"
-          Name="Cyberduck"
-          Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
-          Target="[#product.exe]" WorkingDirectory="INSTALLLOCATION">
-          <ShortcutProperty Key="System.AppUserModel.ID" Value="iterate.Cyberduck" />
-        </Shortcut>
-        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\Cyberduck" Name="installed" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
-    </DirectoryRef>
-
     <Feature Id="ProductFeature" Title="cyberduck-WiX" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
       <ComponentGroupRef Id="Profiles" />
-      <ComponentRef Id="ApplicationShortcut" />
     </Feature>
 
     <Property Id="WixShellExecTarget" Value="[#product.exe]" />
