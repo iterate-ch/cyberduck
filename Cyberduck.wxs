@@ -38,7 +38,6 @@
             WorkingDirectory="INSTALLLOCATION"
             Icon="icon.ico">
             <ShortcutProperty Key="System.AppUserModel.ID" Value="iterate.Cyberduck" />
-            <ShortcutProperty Key="System.AppUserModel.ToastActivatorCLSID" Value="{04FAA434-8D25-4690-AF66-B63B39C1FEDE}" />
           </Shortcut>
           <netfx:NativeImage Id="ngen_product.exe" Platform="32bit" Priority="3" />
         </File>
@@ -58,46 +57,6 @@
             <Verb Id="open" Command="Open" Argument='"%1"' />
           </Extension>
         </ProgId>
-
-        <Condition>
-          <![CDATA[Installed AND (VersionNT >= 603 AND WindowsBuild >= 15063)]]>
-        </Condition>
-      </Component>
-      <Component Id="ProductExeLegacy">
-        <File Id="legacyproduct.exe" Source="$(var.cyberduck.TargetPath)" KeyPath="yes" Checksum="yes" >
-          <Shortcut Id="LegacyApplicationStartMenuShortcut"
-            Name="Cyberduck"
-            Advertise="yes"
-            Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
-            Directory="ApplicationProgramsFolder"
-            WorkingDirectory="INSTALLLOCATION"
-            Icon="icon.ico" />
-            <netfx:NativeImage Id="ngen_legacyproduct.exe" Platform="32bit" Priority="3" />
-        </File>
-
-        <ProgId Id="Cyberduck.Legacy.Bookmark" Description="Cyberduck Bookmark" Icon="cd_document.ico" Advertise="yes">
-          <Extension Id="duck.legacy">
-            <Verb Id="open" Command="Open" Argument='"%1"' />
-          </Extension>
-        </ProgId>
-        <ProgId Id="Cyberduck.Legacy Connection.Profile" Description="Cyberduck Connection Profile" Icon="cd_document.ico" Advertise="yes"> 
-          <Extension Id="cyberduckprofile.legacy">
-            <Verb Id="open" Command="Open" Argument='"%1"' />
-          </Extension>
-        </ProgId>
-        <ProgId Id="Cyberduck.Legacy.License" Description="Cyberduck License" Icon="cd_document.ico" Advertise="yes">
-          <Extension Id="cyberducklicense.legacy">
-            <Verb Id="open" Command="Open" Argument='"%1"' />
-          </Extension>
-        </ProgId>
-
-        <Condition>
-          <![CDATA[Installed AND ((VersionNT < 603) OR (VersionNT >= 603 AND WindowsBuild < 15063))]]>
-        </Condition>
-      </Component>
-
-      <Component Id="ProductCapabilities" Guid="33E4EC53-AF48-4727-8F04-D21F4CF5386B">
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck" Name="Installed" Value="1" Type="integer" KeyPath="yes" />
         <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
         
         <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
