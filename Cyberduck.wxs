@@ -11,9 +11,9 @@
         <Directory Id="INSTALLLOCATION" Name="!(bind.property.ProductName)">
           <Directory Id="PROFILES" Name="profiles"/>
         </Directory>
-        <Directory Id="ProgramMenuFolder">
-          <Directory Id="ApplicationProgramsFolder" Name="!(bind.property.ProductName)"/>
-        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="!(bind.property.ProductName)"/>
       </Directory>
     </Directory>
 
