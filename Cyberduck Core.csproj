@@ -105,9 +105,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Windows">
-      <HintPath>$(ProgramFiles)\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
+      <HintPath>$(ProgramFiles)\Windows Kits\10\UnionMetadata\10.0.15063.0\Windows.winmd</HintPath>
     </Reference>
-    <Reference Include="Windows.Services" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Bonjour">
