@@ -37,7 +37,7 @@
             WorkingDirectory="INSTALLLOCATION"
             Icon="icon.ico">
             <ShortcutProperty Key="System.AppUserModel.ID" Value="iterate.Cyberduck" />
-            <ShortcutProperty Key="System.AppUserModel.ToastActivatorCLSID" Value="04FAA434-8D25-4690-AF66-B63B39C1FEDE" />
+            <ShortcutProperty Key="System.AppUserModel.ToastActivatorCLSID" Value="{04FAA434-8D25-4690-AF66-B63B39C1FEDE}" />
           </Shortcut>
           <netfx:NativeImage Id="ngen_product.exe" Platform="32bit" Priority="3" />
         </File>
