@@ -1787,6 +1787,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     else
                     {
                         Copy();
+                        browser.CopySelectionToClipboard();
                     }
                 },
                 delegate
