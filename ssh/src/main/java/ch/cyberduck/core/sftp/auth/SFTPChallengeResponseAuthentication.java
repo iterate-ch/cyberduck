@@ -123,7 +123,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             final StringAppender title = new StringAppender().append(name).append(
                                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             );
-                            additional = callback.prompt(bookmark, credentials.getUsername(), title.toString(),
+                            additional = callback.prompt(bookmark, title.toString(),
                                 message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
                             );
                         }
