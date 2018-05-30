@@ -19,6 +19,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -56,6 +57,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,6 +164,12 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         if(host.getCredentials().isPasswordAuthentication()) {
             // Update credentials
             ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
+        }
+        else if(host.getCredentials().isTokenAuthentication()) {
+            if(!StringUtils.equals(host.getCredentials().getToken(), ((StorageCredentialsSharedAccessSignature) credentials).getToken())) {
+                this.interrupt();
+                this.open(proxy, new DisabledHostKeyCallback(), prompt);
+            }
         }
         // Fetch reference for directory to check login credentials
         try {
