@@ -152,6 +152,7 @@ public class KeychainLoginService implements LoginService {
                     LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
                 credentials.setUsername(input.getUsername());
                 credentials.setPassword(input.getPassword());
+                credentials.setSaved(input.isSaved());
                 if(input.isPublicKeyAuthentication()) {
                     credentials.setIdentity(input.getIdentity());
                 }
@@ -166,6 +167,7 @@ public class KeychainLoginService implements LoginService {
                         LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
                     if(input.isPasswordAuthentication()) {
                         credentials.setPassword(input.getPassword());
+                        credentials.setSaved(input.isSaved());
                     }
                 }
                 else if(options.token) {
@@ -173,6 +175,7 @@ public class KeychainLoginService implements LoginService {
                         LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
                     if(input.isPasswordAuthentication()) {
                         credentials.setToken(input.getPassword());
+                        credentials.setSaved(input.isSaved());
                     }
                 }
             }
