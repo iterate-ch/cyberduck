@@ -157,6 +157,9 @@
     <LayoutFile Include="$(OutputPath)\Microsoft.WindowsAPICodePack.Shell.dll">
       <PackagePath>$(PackageLayout)\Microsoft.WindowsAPICodePack.Shell.dll</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Microsoft.Toolkit.Uwp.Notifications.dll">
+      <PackagePath>$(PackageLayout)\Microsoft.Toolkit.Uwp.Notifications.dll</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\DotNetZip.dll">
       <PackagePath>$(PackageLayout)\DotNetZip.dll</PackagePath>
     </LayoutFile>

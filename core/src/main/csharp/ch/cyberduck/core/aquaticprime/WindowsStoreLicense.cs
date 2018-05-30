@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Services.Store;
@@ -16,7 +17,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
         public string getName()
         {
             StoreContext storeContext = StoreContext.GetDefault();
-            StoreAppLicense license = GetResult(storeContext.GetAppLicenseAsync());
+            StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
             if (license == null)
             {
                 return LocaleFactory.localizedString("Unknown");
@@ -29,15 +30,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
                 }
                 else
                 {
-                    var user = storeContext.User;
-                    if (user == null)
-                    {
-                        return (string)GetResult(user.GetPropertyAsync(KnownUserProperties.DisplayName));
-                    }
-                    else
-                    {
-                        return LocaleFactory.localizedString("Unknown");
-                    }
+                    return (string)(storeContext.User?.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result) ?? LocaleFactory.localizedString("Unknown");
                 }
             }
             else
@@ -64,22 +57,8 @@ namespace Ch.Cyberduck.Core.AquaticPrime
         public bool verify(LicenseVerifierCallback callback)
         {
             StoreContext storeContext = StoreContext.GetDefault();
-            StoreAppLicense license = GetResult(storeContext.GetAppLicenseAsync());
+            StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
             return true || (license?.IsActive ?? true); // HACK Windows Store Submission Process
-        }
-
-        private static T GetResult<T>(IAsyncOperation<T> operation)
-        {
-            T result;
-            try
-            {
-                result = operation.GetResults();
-            }
-            finally
-            {
-                operation.Close();
-            }
-            return result;
         }
     }
 }
