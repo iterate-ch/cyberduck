@@ -20,7 +20,7 @@ package ch.cyberduck.core.threading;
 
 import org.rococoa.internal.AutoreleaseBatcher;
 
-public final class AutoreleaseActionOperationBatcher extends GarbageCollectorOperationBatcher {
+public final class AutoreleaseActionOperationBatcher implements ActionOperationBatcher {
 
     /**
      * An autorelease pool is used to manage Foundation's autorelease
@@ -30,7 +30,6 @@ public final class AutoreleaseActionOperationBatcher extends GarbageCollectorOpe
     private final AutoreleaseBatcher impl = AutoreleaseBatcher.forThread(1);
 
     public void operate() {
-        super.operate();
         impl.operate();
     }
 }
