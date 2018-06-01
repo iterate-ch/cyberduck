@@ -134,9 +134,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     public void await() throws BackgroundException {
         while(size.get() > 0) {
             // Repeat until no new entries in queue found
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Await completion for %d submitted tasks in queue", size.get()));
-            }
             try {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Await completion for %d submitted tasks in queue", size.get()));
