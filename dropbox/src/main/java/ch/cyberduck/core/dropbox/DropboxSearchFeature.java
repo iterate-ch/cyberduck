@@ -40,7 +40,7 @@ import com.dropbox.core.v2.files.SearchMode;
 import com.dropbox.core.v2.files.SearchResult;
 
 public class DropboxSearchFeature implements Search {
-    private static final Logger log = Logger.getLogger(DropboxListService.class);
+    private static final Logger log = Logger.getLogger(DropboxSearchFeature.class);
 
     private final DropboxSession session;
     private final DropboxAttributesFinderFeature attributes;
