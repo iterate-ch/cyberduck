@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.6.1
+- [Bugfix] Crash attempting to add empty password to keychain (SFTP, macOS) (#10342)
+
 6.6.0
 - [Feature] Use toast notifications (Windows) (#10268)
 - [Feature] Include shared items (OneDrive) (#10107)
