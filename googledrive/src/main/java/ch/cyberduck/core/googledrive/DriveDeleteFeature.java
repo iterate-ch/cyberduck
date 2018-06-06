@@ -43,8 +43,13 @@ public class DriveDeleteFeature implements Delete {
             }
             callback.delete(file);
             try {
-                session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
-                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(file.getParent())) {
+                    session.getClient().teamdrives().delete(fileid.getFileid(file, new DisabledListProgressListener())).execute();
+                }
+                else {
+                    session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
+                        .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                }
             }
             catch(IOException e) {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);

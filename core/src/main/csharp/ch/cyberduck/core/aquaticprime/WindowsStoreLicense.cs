@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Services.Store;
 using Windows.System;
 
@@ -28,7 +30,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
                 }
                 else
                 {
-                    return (string)storeContext.User?.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result ?? LocaleFactory.localizedString("Unknown");
+                    return (string)(storeContext.User?.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result) ?? LocaleFactory.localizedString("Unknown");
                 }
             }
             else

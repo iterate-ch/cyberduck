@@ -93,7 +93,8 @@ public class WritePermissionWorker extends Worker<Boolean> {
     }
 
     protected void write(final Session<?> session, final UnixPermission feature, final Path file, final Permission permission) throws BackgroundException {
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"), file.getName(), permission));
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+            file.getName(), permission));
         feature.setUnixPermission(file, permission);
         if(file.isDirectory()) {
             if(callback.recurse(file, permission)) {
@@ -107,7 +108,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                this.toString(files), permissions);
+            this.toString(files), permissions.values().iterator().next());
     }
 
     @Override

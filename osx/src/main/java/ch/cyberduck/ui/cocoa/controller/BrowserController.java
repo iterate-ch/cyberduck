@@ -1356,7 +1356,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.size.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.size.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.size.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Size"));
+            c.headerCell().setStringValue(BrowserColumn.size.toString());
             c.setMinWidth(50f);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.size.name())));
@@ -1368,7 +1368,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.modified.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.modified.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.modified.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Modified"));
+            c.headerCell().setStringValue(BrowserColumn.modified.toString());
             c.setMinWidth(100f);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.modified.name())));
@@ -1380,7 +1380,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.owner.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.owner.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.owner.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Owner"));
+            c.headerCell().setStringValue(BrowserColumn.owner.toString());
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.owner.name())));
@@ -1392,7 +1392,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.group.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.group.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.group.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Group"));
+            c.headerCell().setStringValue(BrowserColumn.group.toString());
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.group.name())));
@@ -1404,7 +1404,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.permission.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.permission.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.permission.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Permissions"));
+            c.headerCell().setStringValue(BrowserColumn.permission.toString());
             c.setMinWidth(100);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.permission.name())));
@@ -1416,7 +1416,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.kind.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.kind.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.kind.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Kind"));
+            c.headerCell().setStringValue(BrowserColumn.kind.toString());
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.kind.name())));
@@ -1428,7 +1428,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.extension.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.extension.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.extension.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Extension"));
+            c.headerCell().setStringValue(BrowserColumn.extension.toString());
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.extension.name())));
@@ -1440,7 +1440,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.region.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.region.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.region.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Region"));
+            c.headerCell().setStringValue(BrowserColumn.region.toString());
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.region.name())));
@@ -1452,7 +1452,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.version.name()));
         if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.version.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.version.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Version"));
+            c.headerCell().setStringValue(BrowserColumn.version.toString());
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.version.name())));
@@ -2823,8 +2823,46 @@ public class BrowserController extends WindowController
         clipboard.declareTypes(NSArray.arrayWithObject(
             NSString.stringWithString(NSPasteboard.StringPboardType)), null);
         StringBuilder copy = new StringBuilder();
-        for(Iterator<Path> i = s.iterator(); i.hasNext(); ) {
-            copy.append(i.next().getAbsolute());
+        Iterator<Path> i = s.iterator();
+        while(i.hasNext()) {
+            final Path next = i.next();
+            copy.append(next.getAbsolute());
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.size.name()))) {
+                copy.append(",");
+                if(-1 != next.attributes().getSize()) {
+                    copy.append(String.valueOf(next.attributes().getSize()));
+                }
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.modified.name()))) {
+                copy.append(",");
+                if(-1 != next.attributes().getModificationDate()) {
+                    copy.append(String.valueOf(next.attributes().getModificationDate()));
+                }
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.owner.name()))) {
+                copy.append(",");
+                if(StringUtils.isNotBlank(next.attributes().getOwner())) {
+                    copy.append(next.attributes().getOwner());
+                }
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.group.name()))) {
+                copy.append(",");
+                if(StringUtils.isNotBlank(next.attributes().getGroup())) {
+                    copy.append(next.attributes().getGroup());
+                }
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.permission.name()))) {
+                copy.append(",");
+                if(Permission.EMPTY != next.attributes().getPermission()) {
+                    copy.append(next.attributes().getPermission().getMode());
+                }
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.region.name()))) {
+                copy.append(",").append(next.attributes().getRegion());
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.version.name()))) {
+                copy.append(",").append(next.attributes().getVersionId());
+            }
             if(i.hasNext()) {
                 copy.append("\n");
             }

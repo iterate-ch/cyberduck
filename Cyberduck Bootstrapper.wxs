@@ -13,6 +13,10 @@
         <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
         <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
 
+        <bal:Condition Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher.">
+            VersionNT >= v6.1
+        </bal:Condition>
+
         <Chain>
             <PackageGroupRef Id="NetFx45Web"/>
             <RollbackBoundary/>

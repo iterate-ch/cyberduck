@@ -11,9 +11,9 @@
         <Directory Id="INSTALLLOCATION" Name="!(bind.property.ProductName)">
           <Directory Id="PROFILES" Name="profiles"/>
         </Directory>
-        <Directory Id="ProgramMenuFolder">
-          <Directory Id="ApplicationProgramsFolder" Name="!(bind.property.ProductName)"/>
-        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="!(bind.property.ProductName)"/>
       </Directory>
     </Directory>
 
@@ -27,11 +27,38 @@
       <Component Id="InstallLocationRegistrySearch">
         <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
       </Component>
+
       <Component Id="ProductExe">
         <File Id="product.exe" Source="$(var.cyberduck.TargetPath)" KeyPath="yes" Checksum="yes" >
+          <Shortcut Id="ApplicationStartMenuShortcut"
+            Name="Cyberduck"
+            Advertise="yes"
+            Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
+            Directory="ApplicationProgramsFolder"
+            WorkingDirectory="INSTALLLOCATION"
+            Icon="icon.ico">
+            <ShortcutProperty Key="System.AppUserModel.ID" Value="iterate.Cyberduck" />
+          </Shortcut>
           <netfx:NativeImage Id="ngen_product.exe" Platform="32bit" Priority="3" />
         </File>
 
+        <ProgId Id="Cyberduck.Bookmark" Description="Cyberduck Bookmark" Icon="cd_document.ico" Advertise="yes">
+          <Extension Id="duck">
+            <Verb Id="open" Command="Open" Argument='"%1"' />
+          </Extension>
+        </ProgId>
+        <ProgId Id="Cyberduck Connection.Profile" Description="Cyberduck Connection Profile" Icon="cd_document.ico" Advertise="yes"> 
+          <Extension Id="cyberduckprofile">
+            <Verb Id="open" Command="Open" Argument='"%1"' />
+          </Extension>
+        </ProgId>
+        <ProgId Id="Cyberduck.License" Description="Cyberduck License" Icon="cd_document.ico" Advertise="yes">
+          <Extension Id="cyberducklicense">
+            <Verb Id="open" Command="Open" Argument='"%1"' />
+          </Extension>
+        </ProgId>
+        <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        
         <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationDescription" Value="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationIcon" Value="[INSTALLLOCATION]Cyberduck.exe,0" Type="string" />
@@ -44,7 +71,7 @@
         <RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="!(bind.property.ProductName)" Value="SOFTWARE\Cyberduck\Capabilities" Type="string" />
 
         <!-- App Paths to support Start,Run -> "Cyberduck" -->
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe" Value="[!product.exe]" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe" Value="Cyberduck.exe" Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe" Name="Path" Value="[APPLICATIONFOLDER]" Type="string" />
 
         <!-- Extend to the "open with" list + Win7 jump menu pinning  -->
@@ -54,23 +81,8 @@
         <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\shell\open" Name="FriendlyAppName" Value="!(bind.property.ProductName)" Type="string" />
 
         <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.Bookmark" Name="FriendlyTypeName" Value="Cyberduck Bookmark" Type="string" />
-        <ProgId Id="Cyberduck.Bookmark" Description="Cyberduck Bookmark" Icon="cd_document.ico" Advertise="yes">
-          <Extension Id="duck">
-            <Verb Id="open" Command="Open" Argument='"%1"' />
-          </Extension>
-        </ProgId>
         <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck Connection.Profile" Name="FriendlyTypeName" Value="Cyberduck Connection Profile" Type="string" />
-        <ProgId Id="Cyberduck Connection.Profile" Description="Cyberduck Connection Profile" Icon="cd_document.ico" Advertise="yes">
-          <Extension Id="cyberduckprofile">
-            <Verb Id="open" Command="Open" Argument='"%1"' />
-          </Extension>
-        </ProgId>
         <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.License" Name="FriendlyTypeName" Value="Cyberduck License" Type="string" />
-        <ProgId Id="Cyberduck.License" Description="Cyberduck License" Icon="cd_document.ico" Advertise="yes">
-          <Extension Id="cyberducklicense">
-            <Verb Id="open" Command="Open" Argument='"%1"' />
-          </Extension>
-        </ProgId>
       </Component>
       <Component Id="Cyberduck.Exe.Config">
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.exe.config" KeyPath="yes" Checksum="yes"/>
@@ -102,7 +114,7 @@
       </Component>
       <Component Id="Cyberduck.Core.Native">
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes">
-            <netfx:NativeImage Id="ngen_Cyberduck.Core.Native" Platform="32bit" Priority="3" />
+          <netfx:NativeImage Id="ngen_Cyberduck.Core.Native" Platform="32bit" Priority="3" />
         </File>
       </Component>
       <Component Id="Cyberduck.Protocols">
@@ -152,7 +164,7 @@
       </Component>
       <Component Id="ikvm.core">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes">
-           <netfx:NativeImage Id="ngen_ikvm.core" Platform="32bit" Priority="3" />
+          <netfx:NativeImage Id="ngen_ikvm.core" Platform="32bit" Priority="3" />
         </File>
       </Component>
       <Component Id="ikvm.charsets">
@@ -232,22 +244,22 @@
       </Component>
       <Component Id="ikvm.runtime.jni">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.JNI.dll" KeyPath="yes" Checksum="yes">
-           <netfx:NativeImage Id="ngen_ikvm.runtime.jni" Platform="32bit" Priority="3" />
+          <netfx:NativeImage Id="ngen_ikvm.runtime.jni" Platform="32bit" Priority="3" />
         </File>
       </Component>
       <Component Id="ikvm.jdbc">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Jdbc.dll" KeyPath="yes" Checksum="yes">
-           <netfx:NativeImage Id="ngen_ikvm.jdbc" Platform="32bit" Priority="3" />
+          <netfx:NativeImage Id="ngen_ikvm.jdbc" Platform="32bit" Priority="3" />
         </File>
       </Component>
       <Component Id="ikvm.misc" Guid="29564F63-CA76-4944-9022-D705E038DF24">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes">
-           <netfx:NativeImage Id="ngen_ikvm.misc" Platform="32bit" Priority="3" />
+          <netfx:NativeImage Id="ngen_ikvm.misc" Platform="32bit" Priority="3" />
         </File>
       </Component>
       <Component Id="Interop.Bonjour">
         <File Source="$(var.cyberduck.TargetDir)/Interop.Bonjour.dll" KeyPath="yes" Checksum="yes">
-           <netfx:NativeImage Id="ngen_Interop.Bonjour" Platform="32bit" Priority="3" />
+          <netfx:NativeImage Id="ngen_Interop.Bonjour" Platform="32bit" Priority="3" />
         </File>
       </Component>
       <Component Id="objectlistview">
@@ -268,6 +280,11 @@
       <Component Id="WAPICPShell">
         <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.Shell.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_WAPICPShell" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="MSTKUWPNotifications">
+        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_MSTKUWPNotifications" Platform="32bit" Priority="3" />
         </File>
       </Component>
       <Component Id="ikvm.native">
@@ -294,8 +311,8 @@
       <!-- protocol handlers -->
       <Component Id="ftp" Guid="B7619F7A-1CCC-451D-95D4-1AE3A267FC05">
         <RegistryKey Root="HKCR"
-                     Key="ftp"
-                     Action="createAndRemoveOnUninstall">
+          Key="ftp"
+          Action="createAndRemoveOnUninstall">
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:ftp Protocol"/>
           <RegistryKey Key="DefaultIcon">
@@ -308,8 +325,8 @@
       </Component>
       <Component Id="ftps" Guid="D6870ED1-BE4B-43E6-B405-9362DC12EB48">
         <RegistryKey Root="HKCR"
-                     Key="ftps"
-                     Action="createAndRemoveOnUninstall">
+          Key="ftps"
+          Action="createAndRemoveOnUninstall">
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:ftps Protocol"/>
           <RegistryKey Key="DefaultIcon">
@@ -322,8 +339,8 @@
       </Component>
       <Component Id="dav" Guid="300BA5DE-87BE-4F08-B78B-991E15AE3C6D">
         <RegistryKey Root="HKCR"
-                     Key="dav"
-                     Action="createAndRemoveOnUninstall">
+          Key="dav"
+          Action="createAndRemoveOnUninstall">
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:dav Protocol"/>
           <RegistryKey Key="DefaultIcon">
@@ -336,8 +353,8 @@
       </Component>
       <Component Id="davs" Guid="25ECEBD0-8F2F-4C72-8445-8466A1E799C0">
         <RegistryKey Root="HKCR"
-                     Key="davs"
-                     Action="createAndRemoveOnUninstall">
+          Key="davs"
+          Action="createAndRemoveOnUninstall">
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:davs Protocol"/>
           <RegistryKey Key="DefaultIcon">
@@ -350,8 +367,8 @@
       </Component>
       <Component Id="sftp" Guid="7C828847-5026-478C-B0C5-E7CD720A94FC">
         <RegistryKey Root="HKCR"
-                     Key="sftp"
-                     Action="createAndRemoveOnUninstall">
+          Key="sftp"
+          Action="createAndRemoveOnUninstall">
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:sftp Protocol"/>
           <RegistryKey Key="DefaultIcon">
@@ -364,8 +381,8 @@
       </Component>
       <Component Id="s3" Guid="5F33A7F5-0DBA-437C-914E-A0CF6E016C11">
         <RegistryKey Root="HKCR"
-                     Key="s3"
-                     Action="createAndRemoveOnUninstall">
+          Key="s3"
+          Action="createAndRemoveOnUninstall">
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:s3 Protocol"/>
           <RegistryKey Key="DefaultIcon">
@@ -378,8 +395,8 @@
       </Component>
       <Component Id="irods" Guid="4E5C043F-B5E3-4C6C-84C9-0D7EAF69D338">
         <RegistryKey Root="HKCR"
-                     Key="irods"
-                     Action="createAndRemoveOnUninstall">
+          Key="irods"
+          Action="createAndRemoveOnUninstall">
           <RegistryValue Type="string" Name="URL Protocol" Value=""/>
           <RegistryValue Type="string" Value="URL:irods Protocol"/>
           <RegistryKey Key="DefaultIcon">
@@ -442,28 +459,16 @@
       </Component>
     </ComponentGroup>
 
-    <DirectoryRef Id="ApplicationProgramsFolder">
-      <Component Id="ApplicationShortcut">
-        <Shortcut Id="ApplicationStartMenuShortcut"
-             Name="Cyberduck"
-             Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
-             Target="[#product.exe]" WorkingDirectory="INSTALLLOCATION"/>
-        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\Cyberduck" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-      </Component>
-    </DirectoryRef>
-
     <Feature Id="ProductFeature" Title="cyberduck-WiX" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
       <ComponentGroupRef Id="Profiles" />
-      <ComponentRef Id="ApplicationShortcut" />
     </Feature>
 
-    <Property Id="WixShellExecTarget" Value="[#product.exe]" />
+    <Property Id="WixShellExecTarget" Value="[INSTALLLOCATION]Cyberduck.exe" />
     <CustomAction Id="LaunchFile"
-                  BinaryKey="WixCA"
-                  DllEntry="WixShellExec"
-                  Impersonate="yes" />
+      BinaryKey="WixCA"
+      DllEntry="WixShellExec"
+      Impersonate="yes" />
 
     <InstallExecuteSequence>
       <Custom Action='LaunchFile' After='InstallFinalize'>AUTOSTART=1</Custom>

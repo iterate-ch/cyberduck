@@ -47,7 +47,7 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPChallengeResponseAuthentication implements AuthenticationProvider<Boolean> {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
 
-    private static final Pattern DEFAULT_PROMPT_PATTERN = Pattern.compile(".*[pP]assword\\s?\\z", Pattern.DOTALL);
+    private static final Pattern DEFAULT_PROMPT_PATTERN = Pattern.compile(".*[pP]assword.*", Pattern.DOTALL);
 
     private final SFTPSession session;
 
@@ -123,7 +123,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             final StringAppender title = new StringAppender().append(name).append(
                                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             );
-                            additional = callback.prompt(bookmark, credentials.getUsername(), title.toString(),
+                            additional = callback.prompt(bookmark, title.toString(),
                                 message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
                             );
                         }

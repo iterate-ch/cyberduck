@@ -52,21 +52,15 @@ public class DriveBatchDeleteFeature implements Delete {
         final List<BackgroundException> failures = new ArrayList<>();
         for(Path file : files) {
             try {
-                session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
-                    .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
-                    .queue(batch, new JsonBatchCallback<Void>() {
-                        @Override
-                        public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) throws IOException {
-                            log.warn(String.format("Failure deleting %s. %s", file, e.getMessage()));
-                            failures.add(new HttpResponseExceptionMappingService().map(
-                                new HttpResponseException(e.getCode(), e.getMessage())));
-                        }
-
-                        @Override
-                        public void onSuccess(final Void aVoid, final HttpHeaders responseHeaders) throws IOException {
-                            callback.delete(file);
-                        }
-                    });
+                if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(file.getParent())) {
+                    session.getClient().teamdrives().delete(fileid.getFileid(file, new DisabledListProgressListener()))
+                        .queue(batch, new DeleteBatchCallback(file, failures, callback));
+                }
+                else {
+                    session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
+                        .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                        .queue(batch, new DeleteBatchCallback(file, failures, callback));
+                }
             }
             catch(IOException e) {
                 throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -93,5 +87,29 @@ public class DriveBatchDeleteFeature implements Delete {
     @Override
     public boolean isRecursive() {
         return false;
+    }
+
+    private static class DeleteBatchCallback extends JsonBatchCallback<Void> {
+        private final Path file;
+        private final List<BackgroundException> failures;
+        private final Callback callback;
+
+        public DeleteBatchCallback(final Path file, final List<BackgroundException> failures, final Callback callback) {
+            this.file = file;
+            this.failures = failures;
+            this.callback = callback;
+        }
+
+        @Override
+        public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) throws IOException {
+            log.warn(String.format("Failure deleting %s. %s", file, e.getMessage()));
+            failures.add(new HttpResponseExceptionMappingService().map(
+                new HttpResponseException(e.getCode(), e.getMessage())));
+        }
+
+        @Override
+        public void onSuccess(final Void aVoid, final HttpHeaders responseHeaders) throws IOException {
+            callback.delete(file);
+        }
     }
 }

@@ -124,8 +124,9 @@ public class KeychainLoginService implements LoginService {
                 LocaleFactory.localizedString("Disconnect", "Credentials"),
                 String.format("connection.unsecure.%s", bookmark.getHostname()));
         }
+        final Credentials credentials = bookmark.getCredentials();
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
-            StringUtils.isEmpty(bookmark.getCredentials().getUsername()) ? LocaleFactory.localizedString("Unknown") : bookmark.getCredentials().getUsername()));
+            StringUtils.isEmpty(credentials.getUsername()) ? LocaleFactory.localizedString("Unknown") : credentials.getUsername()));
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
@@ -138,15 +139,46 @@ public class KeychainLoginService implements LoginService {
             // Write credentials to keychain
             keychain.save(bookmark);
             // Flag for successful authentication
-            bookmark.getCredentials().setPassed(true);
+            credentials.setPassed(true);
             // Nullify password.
-            bookmark.getCredentials().setPassword(null);
+            credentials.setPassword(null);
         }
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
-            bookmark.setCredentials(callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
-                new LoginOptions(bookmark.getProtocol())));
+            final LoginOptions options = new LoginOptions(bookmark.getProtocol());
+            if(options.user && options.password) {
+                // Default login prompt with username and password input
+                final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
+                    LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
+                credentials.setUsername(input.getUsername());
+                credentials.setPassword(input.getPassword());
+                credentials.setSaved(input.isSaved());
+                if(input.isPublicKeyAuthentication()) {
+                    credentials.setIdentity(input.getIdentity());
+                }
+                if(input.isCertificateAuthentication()) {
+                    credentials.setCertificate(input.getCertificate());
+                }
+            }
+            else {
+                // Password prompt
+                if(options.password) {
+                    final Credentials input = callback.prompt(bookmark,
+                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
+                    if(input.isPasswordAuthentication()) {
+                        credentials.setPassword(input.getPassword());
+                        credentials.setSaved(input.isSaved());
+                    }
+                }
+                else if(options.token) {
+                    final Credentials input = callback.prompt(bookmark,
+                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
+                    if(input.isPasswordAuthentication()) {
+                        credentials.setToken(input.getPassword());
+                        credentials.setSaved(input.isSaved());
+                    }
+                }
+            }
             throw e;
         }
     }

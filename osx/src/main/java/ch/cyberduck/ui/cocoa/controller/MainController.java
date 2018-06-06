@@ -301,15 +301,15 @@ public class MainController extends BundleController implements NSApplication.De
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
         Map<String, String> columns = new HashMap<String, String>();
-        columns.put(String.format("browser.column.%s", BrowserColumn.kind.name()), LocaleFactory.localizedString("Kind"));
-        columns.put(String.format("browser.column.%s", BrowserColumn.extension.name()), LocaleFactory.localizedString("Extension"));
-        columns.put(String.format("browser.column.%s", BrowserColumn.size.name()), LocaleFactory.localizedString("Size"));
-        columns.put(String.format("browser.column.%s", BrowserColumn.modified.name()), LocaleFactory.localizedString("Modified"));
-        columns.put(String.format("browser.column.%s", BrowserColumn.owner.name()), LocaleFactory.localizedString("Owner"));
-        columns.put(String.format("browser.column.%s", BrowserColumn.group.name()), LocaleFactory.localizedString("Group"));
-        columns.put(String.format("browser.column.%s", BrowserColumn.permission.name()), LocaleFactory.localizedString("Permissions"));
-        columns.put(String.format("browser.column.%s", BrowserColumn.region.name()), LocaleFactory.localizedString("Region"));
-        columns.put(String.format("browser.column.%s", BrowserColumn.version.name()), LocaleFactory.localizedString("Version"));
+        columns.put(String.format("browser.column.%s", BrowserColumn.kind.name()), BrowserColumn.kind.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.extension.name()), BrowserColumn.extension.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.size.name()), BrowserColumn.size.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.modified.name()), BrowserColumn.modified.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.owner.name()), BrowserColumn.owner.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.group.name()), BrowserColumn.group.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.permission.name()), BrowserColumn.permission.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.region.name()), BrowserColumn.region.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.version.name()), BrowserColumn.version.toString());
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
                 Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);

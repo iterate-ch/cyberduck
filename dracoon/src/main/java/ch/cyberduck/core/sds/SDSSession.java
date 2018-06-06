@@ -104,7 +104,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                             String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes("UTF-8"), false)));
                     }
                 }).build(),
-                    host).withRedirectUri(Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider(false, true).get(
+                    host).withRedirectUri(Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                     host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
                 );
                 configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
@@ -124,7 +124,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         final CloseableHttpClient apache = configuration.build();
         final SDSApiClient client = new SDSApiClient(apache);
-        client.setBasePath(new HostUrlProvider(false, true).get(host.getProtocol().getScheme(), host.getPort(),
+        client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
             null, host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
             .register(new InputStreamProvider())

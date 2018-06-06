@@ -20,6 +20,7 @@ using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.core.cryptomator.random;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.notification;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.AquaticPrime;
 using Ch.Cyberduck.Core.Bonjour;
@@ -32,7 +33,6 @@ using Ch.Cyberduck.Core.Proxy;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using org.apache.log4j;
@@ -86,14 +86,14 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             this.setDefault("factory.symlink.class", typeof(NullLocalSymlinkFeature).AssemblyQualifiedName);
             this.setDefault("factory.terminalservice.class", typeof(SshTerminalService).AssemblyQualifiedName);
             this.setDefault("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
-            this.setDefault("factory.notification.class", typeof(ToolstripNotificationService).AssemblyQualifiedName);
-            if (Cyberduck.Core.Utils.IsWin7OrLater)
-            {
-                this.setDefault("factory.badgelabeler.class",
-                    typeof(TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
-            }
+            this.setDefault("factory.badgelabeler.class", typeof(TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
             this.setDefault("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
             this.setDefault("factory.schemehandler.class", typeof(URLSchemeHandlerConfiguration).AssemblyQualifiedName);
+
+            if (Cyberduck.Core.Utils.IsWin10FallCreatorsUpdate)
+            {
+                this.setDefault("factory.notification.class", typeof(DesktopNotificationService).AssemblyQualifiedName);
+            }
 
             if (Cyberduck.Core.Utils.IsRunningAsUWP)
             {

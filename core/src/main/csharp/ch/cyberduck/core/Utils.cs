@@ -71,8 +71,8 @@ namespace Ch.Cyberduck.Core
             "windows-31j"
         };
 
-        public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
-        public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
+        public static readonly bool IsWin10 = Environment.OSVersion.Version.Major == 10;
+        public static readonly bool IsWin10FallCreatorsUpdate = IsWin10 && Environment.OSVersion.Version.Build >= 15063;
 
         // Original by Matteo Pagani (https://github.com/qmatteoq/DesktopBridgeHelpers) licensed under MIT
         // modified by Jöran Malek for iterate GmbH

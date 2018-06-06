@@ -17,16 +17,75 @@ package ch.cyberduck.ui.browser;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
+
+import org.apache.commons.lang3.StringUtils;
+
 public enum BrowserColumn {
-    icon,
-    filename,
-    size,
-    modified,
-    owner,
-    group,
-    permission,
-    kind,
-    extension,
-    region,
-    version
+    icon {
+        @Override
+        public String toString() {
+            return StringUtils.EMPTY;
+        }
+    },
+    filename {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Filename");
+        }
+    },
+    size {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Size");
+        }
+    },
+    modified {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Modified");
+        }
+    },
+    owner {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Owner");
+        }
+    },
+    group {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Group");
+        }
+    },
+    permission {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Permissions");
+        }
+    },
+    kind {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Kind");
+        }
+    },
+    extension {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Extension");
+        }
+    },
+    region {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Region");
+        }
+    },
+    version {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Version");
+        }
+    }
 }

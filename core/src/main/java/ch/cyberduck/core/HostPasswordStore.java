@@ -138,6 +138,10 @@ public abstract class HostPasswordStore implements PasswordStore {
             }
             return;
         }
+        if(StringUtils.isEmpty(credentials.getPassword())) {
+            log.warn(String.format("No password in credentials for bookmark %s", bookmark.getHostname()));
+            return;
+        }
         if(credentials.isAnonymousLogin()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Do not write anonymous credentials for bookmark %s", bookmark.getHostname()));

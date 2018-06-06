@@ -8,16 +8,17 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>Cyberduck-Installer-$(Version)</OutputName>
     <OutputType>Bundle</OutputType>
-    <SignOutput>true</SignOutput>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <SignOutput>false</SignOutput>
     <OutputPath>windows/target/debug</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <SignOutput>true</SignOutput>
     <OutputPath>windows/target/release</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
@@ -56,12 +57,16 @@
     <PropertyGroup>
       <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</WinSDK>
       <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</WinSDK>
+      <Win10SDKBinPath>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v10.0@InstallationFolder)bin\</Win10SDKBinPath>
+      <Win10SDKVersion>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v10.0@ProductVersion).0\</Win10SDKVersion>
+      <Win10SDKVerBinPath>$(Win10SDKBinPath)$(Win10SDKVersion)</Win10SDKVerBinPath>
     </PropertyGroup>
   </Target>
   <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
     <PropertyGroup>
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
+      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(Win10SDKVerBinPath)x86\signtool.exe')">$(Win10SDKVerBinPath)x86\signtool.exe</SignToolPath>
     </PropertyGroup>
   </Target>
   <Target Name="SignBundleEngine" DependsOnTargets="UsesSignTool">

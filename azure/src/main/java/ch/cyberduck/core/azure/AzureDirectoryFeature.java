@@ -91,15 +91,18 @@ public class AzureDirectoryFeature implements Directory<Void> {
     @Override
     public boolean isSupported(final Path workdir, final String name) {
         if(workdir.isRoot()) {
-            // Container names must be lowercase, between 3-63 characters long and must start with a letter or
-            // number. Container names may contain only letters, numbers, and the dash (-) character.
-            if(StringUtils.length(name) > 63) {
-                return false;
+            // Empty argument if not known in validation
+            if(StringUtils.isNotBlank(name)) {
+                // Container names must be lowercase, between 3-63 characters long and must start with a letter or
+                // number. Container names may contain only letters, numbers, and the dash (-) character.
+                if(StringUtils.length(name) > 63) {
+                    return false;
+                }
+                if(StringUtils.length(name) < 3) {
+                    return false;
+                }
+                return StringUtils.isAlphanumeric(StringUtils.removeAll(name, "-"));
             }
-            if(StringUtils.length(name) < 3) {
-                return false;
-            }
-            return StringUtils.isAlphanumeric(StringUtils.removeAll(name, "-"));
         }
         return true;
     }
