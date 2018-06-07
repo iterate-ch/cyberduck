@@ -18,11 +18,11 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>onedrive</string>
+        <string>sharepoint</string>
         <key>Vendor</key>
         <string>cyberduck</string>
         <key>Description</key>
-        <string>Microsoft OneDrive Business</string>
+        <string>Microsoft SharePoint</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
@@ -43,6 +43,7 @@
         <array>
             <string>sites.readwrite.all</string>
             <string>files.readwrite.all</string>
+            <string>groups.read.all</string>
             <string>offline_access</string>
         </array>
         <key>OAuth Client ID</key>
