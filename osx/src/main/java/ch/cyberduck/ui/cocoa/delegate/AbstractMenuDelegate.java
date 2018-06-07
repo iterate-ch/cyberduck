@@ -130,7 +130,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     /**
      * Menu needs revalidation before being displayed the next time
      */
-    protected void setNeedsUpdate(boolean u) {
+    public void setNeedsUpdate(boolean u) {
         if(log.isTraceEnabled()) {
             log.trace("setNeedsUpdate:" + u);
         }
