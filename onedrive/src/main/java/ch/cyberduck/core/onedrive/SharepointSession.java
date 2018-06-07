@@ -30,6 +30,12 @@ import org.nuxeo.onedrive.client.OneDriveItem;
 import java.util.EnumSet;
 
 public class SharepointSession extends GraphSession {
+    public static final String DEFAULT_ID = "DEFAULT_NAME";
+    public static final String GROUPS_ID = "GROUPS_NAME";
+
+    public static final Path DEFAULT_NAME = new Path("/Default", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
+    public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
+
     public SharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -37,5 +43,13 @@ public class SharepointSession extends GraphSession {
     @Override
     public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
         return null;
+    }
+
+    @Override
+    public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new SharepointListService(this);
+        }
+        return super._getFeature(type);
     }
 }
