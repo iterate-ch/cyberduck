@@ -63,8 +63,6 @@ public class OneDriveSession extends GraphSession {
     private final PathContainerService containerService
         = new PathContainerService();
 
-    private OAuth2RequestInterceptor authorizationService;
-
     private final OneDriveFileIdProvider fileIdProvider = new OneDriveFileIdProvider(this);
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -110,69 +108,6 @@ public class OneDriveSession extends GraphSession {
             }
         }
         throw new NotfoundException(currentPath.getAbsolute());
-    }
-
-    @Override
-    protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol()) {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
-                    super.process(request, context);
-                }
-            }
-        }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
-        final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(configuration.build()) {
-            @Override
-            public void addAuthorizationHeader(final Set<RequestHeader> headers) {
-                // Placeholder
-                headers.add(new RequestHeader(HttpHeaders.AUTHORIZATION, "Bearer"));
-            }
-        };
-        return new OneDriveAPI() {
-            @Override
-            public RequestExecutor getExecutor() {
-                return executor;
-            }
-
-            @Override
-            public boolean isBusinessConnection() {
-                return false;
-            }
-
-            @Override
-            public boolean isGraphConnection() {
-                return StringUtils.equals("graph.microsoft.com", host.getHostname());
-            }
-
-            @Override
-            public String getBaseURL() {
-                return String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext());
-            }
-
-            @Override
-            public String getEmailURL() {
-                return null;
-            }
-        };
-    }
-
-    @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
-    }
-
-    @Override
-    protected void logout() throws BackgroundException {
-        try {
-            client.getExecutor().close();
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
     }
 
     @Override
