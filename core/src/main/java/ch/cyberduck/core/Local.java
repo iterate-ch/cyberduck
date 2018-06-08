@@ -302,7 +302,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             path = renamed.getAbsolute();
         }
         catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Rename failed for %s", renamed), e);
+            throw new LocalAccessDeniedException(String.format("Rename to %s failed for %s", renamed, this), e);
         }
     }
 
