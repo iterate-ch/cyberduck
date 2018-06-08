@@ -43,7 +43,13 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try {
-            final FileAttributes stat = session.sftp().stat(file.getAbsolute());
+            final FileAttributes stat;
+            if(file.isSymbolicLink()) {
+                stat = session.sftp().lstat(file.getAbsolute());
+            }
+            else {
+                stat = session.sftp().stat(file.getAbsolute());
+            }
             switch(stat.getType()) {
                 case BLOCK_SPECIAL:
                 case CHAR_SPECIAL:
