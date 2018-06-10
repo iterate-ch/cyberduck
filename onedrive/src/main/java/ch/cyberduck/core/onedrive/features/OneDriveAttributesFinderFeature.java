@@ -23,8 +23,8 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -38,12 +38,12 @@ import java.net.URISyntaxException;
 public class OneDriveAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(OneDriveAttributesFinderFeature.class);
 
-    private final OneDriveSession session;
+    private final GraphSession session;
 
     private final PathContainerService containerService
         = new PathContainerService();
 
-    public OneDriveAttributesFinderFeature(final OneDriveSession session) {
+    public OneDriveAttributesFinderFeature(final GraphSession session) {
         this.session = session;
     }
 

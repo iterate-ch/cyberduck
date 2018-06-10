@@ -43,10 +43,10 @@ public class OneDriveItemListService implements ListService {
     private final PathContainerService containerService
         = new PathContainerService();
 
-    private final OneDriveSession session;
+    private final GraphSession session;
     private final OneDriveAttributesFinderFeature attributes;
 
-    public OneDriveItemListService(final OneDriveSession session) {
+    public OneDriveItemListService(final GraphSession session) {
         this.session = session;
         this.attributes = new OneDriveAttributesFinderFeature(session);
     }
