@@ -16,6 +16,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
@@ -158,7 +159,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()).run(session, null);
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()).run(session, null);
         assertEquals(1, c.get());
     }
 
@@ -219,7 +220,7 @@ public class UploadTransferTest {
                 return TransferAction.rename;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()).run(session, null);
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()).run(session, null);
         assertEquals(1, c.get());
     }
 
@@ -253,7 +254,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty(), table);
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty(), table);
         worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
                 TransferAction.overwrite);
         assertEquals(new TransferStatus().exists(true), table.get(test));
@@ -300,7 +301,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty(), table);
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty(), table);
         worker.prepare(test, directory, new TransferStatus().exists(true),
                 TransferAction.resume);
         assertEquals(new TransferStatus().exists(true), table.get(test));
@@ -439,7 +440,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty(), table);
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty(), table);
         worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.overwrite);
         assertNotNull(table.get(test));
         assertNotNull(table.get(test).getRename());

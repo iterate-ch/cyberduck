@@ -36,6 +36,8 @@ import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -77,19 +79,17 @@ public abstract class AbstractEditor implements Editor {
      * Session for transfers
      */
     private final SessionPool session;
-
     private final ProgressListener listener;
-
     private final ApplicationLauncher applicationLauncher;
-
     private final ApplicationFinder applicationFinder;
+    private final NotificationService notification = NotificationServiceFactory.get();
 
     public AbstractEditor(final Application application,
                           final SessionPool session,
                           final Path file,
                           final ProgressListener listener) {
         this(application, session, file, ApplicationLauncherFactory.get(), ApplicationFinderFactory.get(),
-                listener);
+            listener);
     }
 
     public AbstractEditor(final Application application,
@@ -152,13 +152,13 @@ public abstract class AbstractEditor implements Editor {
     public Worker<Transfer> open(final ApplicationQuitCallback quit, final TransferErrorCallback error,
                                  final FileWatcherListener listener) {
         final Worker<Transfer> worker = new EditOpenWorker(session.getHost(), this, error,
-                new ApplicationQuitCallback() {
-                    @Override
-                    public void callback() {
-                        quit.callback();
-                        delete();
-                    }
-                }, this.listener, listener) {
+            new ApplicationQuitCallback() {
+                @Override
+                public void callback() {
+                    quit.callback();
+                    delete();
+                }
+            }, this.listener, listener, notification) {
             @Override
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
@@ -190,7 +190,7 @@ public abstract class AbstractEditor implements Editor {
             }
             else {
                 throw new IOException(String.format("Failed to open default application for %s",
-                        local.getName()));
+                    local.getName()));
             }
         }
         else if(applicationLauncher.open(local, application, quit)) {
@@ -198,7 +198,7 @@ public abstract class AbstractEditor implements Editor {
         }
         else {
             throw new IOException(String.format("Failed to open application %s for %s",
-                    application.getName(), local.getName()));
+                application.getName(), local.getName()));
         }
     }
 
@@ -213,7 +213,7 @@ public abstract class AbstractEditor implements Editor {
         final Checksum current;
         try {
             listener.message(MessageFormat.format(
-                    LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
+                LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
             current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), new TransferStatus());
         }
         catch(BackgroundException e) {
@@ -231,7 +231,7 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker<Transfer> worker = new EditSaveWorker(session.getHost(), this, error, listener);
+            final Worker<Transfer> worker = new EditSaveWorker(session.getHost(), this, error, listener, notification);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local));
             }

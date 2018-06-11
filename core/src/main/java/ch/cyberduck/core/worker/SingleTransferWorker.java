@@ -26,6 +26,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -48,8 +49,8 @@ public class SingleTransferWorker extends AbstractTransferWorker {
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error,
                                 final ProgressListener listener, final StreamListener streamListener,
-                                final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) {
-        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, passwordCallback);
+                                final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback, final NotificationService notification) {
+        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, passwordCallback, notification);
         this.source = source;
         this.destination = destination;
     }
@@ -59,8 +60,9 @@ public class SingleTransferWorker extends AbstractTransferWorker {
                                 final TransferErrorCallback error,
                                 final ProgressListener listener, final StreamListener streamListener,
                                 final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
+                                final NotificationService notification,
                                 final Cache<TransferItem> cache) {
-        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, passwordCallback, cache);
+        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, passwordCallback, notification, cache);
         this.source = source;
         this.destination = destination;
     }
@@ -70,8 +72,9 @@ public class SingleTransferWorker extends AbstractTransferWorker {
                                 final TransferErrorCallback error,
                                 final ProgressListener progress, final StreamListener stream,
                                 final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
+                                final NotificationService notification,
                                 final Cache<TransferItem> cache, final Map<Path, TransferStatus> table) {
-        super(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, cache, table);
+        super(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, table);
         this.source = source;
         this.destination = destination;
     }
