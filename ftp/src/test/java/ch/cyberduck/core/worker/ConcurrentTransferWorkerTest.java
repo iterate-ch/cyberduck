@@ -19,6 +19,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
@@ -158,7 +159,7 @@ public class ConcurrentTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         pool.withMaxTotal(connections);
         final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);

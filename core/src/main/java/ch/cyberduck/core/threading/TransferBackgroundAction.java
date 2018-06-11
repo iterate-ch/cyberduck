@@ -26,6 +26,7 @@ import ch.cyberduck.core.TransferPromptControllerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -124,7 +125,8 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        super(controller, source, destination, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, password, progress, stream));
+        super(controller, source, destination, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, password, progress, stream,
+            NotificationServiceFactory.get()));
         this.options = options;
         this.meter = meter;
         this.transfer = transfer;

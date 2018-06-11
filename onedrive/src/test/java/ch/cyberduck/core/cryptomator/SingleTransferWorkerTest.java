@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
+import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
@@ -99,7 +100,7 @@ public class SingleTransferWorkerTest extends AbstractOneDriveTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
         }.run(session, session));
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(dir1));
