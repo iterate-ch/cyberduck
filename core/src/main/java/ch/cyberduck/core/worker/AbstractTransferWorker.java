@@ -36,7 +36,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
-import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.threading.TransferBackgroundActionState;
 import ch.cyberduck.core.transfer.SynchronizingTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
@@ -64,7 +63,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
 
     private final SleepPreventer sleep = SleepPreventerFactory.get();
-    private final NotificationService notification = NotificationServiceFactory.get();
+    private final NotificationService notification;
     private final Transfer transfer;
     /**
      * Overwrite prompt
@@ -130,6 +129,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         this.stream = stream;
         this.connectionCallback = connectionCallback;
         this.passwordCallback = passwordCallback;
+        this.notification = notification;
         this.cache = cache;
         this.table = table;
     }
