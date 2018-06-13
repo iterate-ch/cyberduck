@@ -51,7 +51,7 @@ import java.util.Map;
 public class UserDefaultsPreferences extends DefaultPreferences {
     private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
 
-    public final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
+    private final BundleApplicationResourcesFinder bundleFinder = new BundleApplicationResourcesFinder();
 
     private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty,
         PreferencesFactory.get().getLong("preferences.cache.size"));
@@ -72,7 +72,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         final String value = super.getDefault(property);
         if(null == value) {
             // Missing in default. Lookup in Info.plist
-            NSObject plist = bundle.infoDictionary().objectForKey(property);
+            NSObject plist = bundleFinder.bundle().infoDictionary().objectForKey(property);
             if(null == plist) {
                 log.warn(String.format("No default value for property %s", property));
                 return null;
@@ -181,7 +181,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
         this.setDefault("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
 
-        final NSBundle bundle = this.bundle;
+        final NSBundle bundle = bundleFinder.bundle();
         if(null != bundle) {
             if(bundle.objectForInfoDictionaryKey("CFBundleName") != null) {
                 this.setDefault("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
@@ -283,7 +283,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
     @Override
     public List<String> applicationLocales() {
-        return this.toList(bundle.localizations());
+        return this.toList(bundleFinder.bundle().localizations());
     }
 
     @Override
