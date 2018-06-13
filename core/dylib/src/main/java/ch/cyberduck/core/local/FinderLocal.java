@@ -48,10 +48,7 @@ public class FinderLocal extends Local {
         Native.load("core");
     }
 
-    private static final NSFileManager manager
-        = NSFileManager.defaultManager();
-
-    private static final FilesystemBookmarkResolver<NSURL> resolver
+    private final FilesystemBookmarkResolver<NSURL> resolver
         = FilesystemBookmarkResolverFactory.get();
 
     /**
@@ -62,15 +59,15 @@ public class FinderLocal extends Local {
     private final FinderLocalAttributes attributes
         = new FinderLocalAttributes(this);
 
-    public FinderLocal(final Local parent, final String name) throws LocalAccessDeniedException {
+    public FinderLocal(final Local parent, final String name) {
         super(parent, name);
     }
 
-    public FinderLocal(final String parent, final String name) throws LocalAccessDeniedException {
+    public FinderLocal(final String parent, final String name) {
         super(parent, name);
     }
 
-    public FinderLocal(final String path) throws LocalAccessDeniedException {
+    public FinderLocal(final String path) {
         super(resolveAlias(new TildeExpander().expand(path)));
     }
 
@@ -90,7 +87,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public String getDisplayName() {
-        return manager.displayNameAtPath(this.getName());
+        return NSFileManager.defaultManager().displayNameAtPath(this.getName());
     }
 
     /**
