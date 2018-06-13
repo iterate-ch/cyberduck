@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>swift</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>swauth-http</string>
         <key>Description</key>
         <string>OpenStack Swift (Swauth HTTP)</string>
         <key>Scheme</key>

@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>swift</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>legacy</string>
         <key>Context</key>
         <string>/v1.0</string>
         <key>Description</key>

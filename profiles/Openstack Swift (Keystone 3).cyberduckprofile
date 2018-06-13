@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>swift</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>keystone3</string>
         <key>Context</key>
         <string>/v3/auth/tokens</string>
         <key>Description</key>

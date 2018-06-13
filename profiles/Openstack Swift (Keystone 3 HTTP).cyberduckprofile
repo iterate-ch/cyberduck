@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>swift</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>keystone3-http</string>
         <key>Context</key>
         <string>/v3/auth/tokens</string>
         <key>Description</key>
