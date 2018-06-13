@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.6.2
+- [Bugfix] Cannot write to shared folders (Google Drive)
+
 6.6.1
 - [Bugfix] Crash attempting to add empty password to keychain (SFTP, macOS) (#10342)
 
