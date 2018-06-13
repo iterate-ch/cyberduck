@@ -48,6 +48,8 @@ public class FinderLocal extends Local {
         Native.load("core");
     }
 
+    private final FilesystemBookmarkResolver<NSURL> resolver;
+
     /**
      * Application scoped bookmark to access outside of sandbox
      */
@@ -57,15 +59,30 @@ public class FinderLocal extends Local {
         = new FinderLocalAttributes(this);
 
     public FinderLocal(final Local parent, final String name) {
+        this(parent, name, FilesystemBookmarkResolverFactory.get());
+    }
+
+    public FinderLocal(final Local parent, final String name, final FilesystemBookmarkResolver<NSURL> resolver) {
         super(parent, name);
+        this.resolver = resolver;
     }
 
     public FinderLocal(final String parent, final String name) {
+        this(parent, name, FilesystemBookmarkResolverFactory.get());
+    }
+
+    public FinderLocal(final String parent, final String name, final FilesystemBookmarkResolver<NSURL> resolver) {
         super(parent, name);
+        this.resolver = resolver;
     }
 
     public FinderLocal(final String path) {
-        super(resolveAlias(new TildeExpander().expand(path)));
+        this(resolveAlias(new TildeExpander().expand(path)), FilesystemBookmarkResolverFactory.get());
+    }
+
+    public FinderLocal(final String name, final FilesystemBookmarkResolver<NSURL> resolver) {
+        super(name);
+        this.resolver = resolver;
     }
 
     @Override
@@ -113,7 +130,7 @@ public class FinderLocal extends Local {
     public String getBookmark() {
         if(StringUtils.isBlank(bookmark)) {
             try {
-                bookmark = FilesystemBookmarkResolverFactory.get().create(this);
+                bookmark = resolver.create(this);
             }
             catch(AccessDeniedException e) {
                 log.warn(String.format("Failure resolving bookmark for %s. %s", this, e.getDetail()));
@@ -159,7 +176,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public NSURL lock(final boolean interactive) throws AccessDeniedException {
-        final NSURL resolved = FilesystemBookmarkResolverFactory.get().resolve(this, interactive);
+        final NSURL resolved = resolver.resolve(this, interactive);
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             if(!resolved.startAccessingSecurityScopedResource()) {
                 throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
