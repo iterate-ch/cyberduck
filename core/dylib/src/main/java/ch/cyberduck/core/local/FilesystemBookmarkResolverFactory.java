@@ -17,7 +17,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
 
 import org.apache.log4j.Logger;
 
@@ -31,12 +30,6 @@ public class FilesystemBookmarkResolverFactory extends Factory<FilesystemBookmar
     }
 
     public static FilesystemBookmarkResolver<NSURL> get() {
-        try {
-            return factory.create();
-        }
-        catch(FactoryException e) {
-            log.warn("No filesystem bookmark resolver configured");
-            return new AliasFilesystemBookmarkResolver();
-        }
+        return new FilesystemBookmarkResolverFactory().create();
     }
 }
