@@ -48,9 +48,6 @@ public class FinderLocal extends Local {
         Native.load("core");
     }
 
-    private final FilesystemBookmarkResolver<NSURL> resolver
-        = FilesystemBookmarkResolverFactory.get();
-
     /**
      * Application scoped bookmark to access outside of sandbox
      */
@@ -116,7 +113,7 @@ public class FinderLocal extends Local {
     public String getBookmark() {
         if(StringUtils.isBlank(bookmark)) {
             try {
-                bookmark = resolver.create(this);
+                bookmark = FilesystemBookmarkResolverFactory.get().create(this);
             }
             catch(AccessDeniedException e) {
                 log.warn(String.format("Failure resolving bookmark for %s. %s", this, e.getDetail()));
@@ -162,7 +159,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public NSURL lock(final boolean interactive) throws AccessDeniedException {
-        final NSURL resolved = resolver.resolve(this, interactive);
+        final NSURL resolved = FilesystemBookmarkResolverFactory.get().resolve(this, interactive);
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             if(!resolved.startAccessingSecurityScopedResource()) {
                 throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
