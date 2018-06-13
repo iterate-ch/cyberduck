@@ -22,7 +22,7 @@ import org.junit.Test;
 import java.io.File;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class FinderLocalAttributesFinderTest {
 
@@ -47,7 +47,7 @@ public class FinderLocalAttributesFinderTest {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        Assert.assertTrue(a.getCreationDate() > 0);
+        assertTrue(a.getCreationDate() > 0);
         f.delete();
     }
 
@@ -57,7 +57,7 @@ public class FinderLocalAttributesFinderTest {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        Assert.assertTrue(a.getAccessedDate() > 0);
+        assertTrue(a.getAccessedDate() > 0);
         f.delete();
     }
 
@@ -67,7 +67,7 @@ public class FinderLocalAttributesFinderTest {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        Assert.assertTrue(a.getModificationDate() > 0);
+        assertTrue(a.getModificationDate() > 0);
         f.delete();
     }
 
@@ -95,26 +95,26 @@ public class FinderLocalAttributesFinderTest {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
-        Assert.assertTrue(a.getInode() > 0);
+        assertTrue(a.getInode() > 0);
         f.delete();
     }
 
     @Test
     public void testIsBundle() throws Exception {
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString()));
-        Assert.assertFalse(a.isBundle());
+        assertFalse(a.isBundle());
     }
 
     @Test
     public void testPermission() throws Exception {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
-        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
-        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
-        Assert.assertFalse(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
+        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
+        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
+        assertFalse(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
         f.delete();
-        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
-        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
-        Assert.assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
+        assertFalse(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
+        assertFalse(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
+        assertFalse(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
     }
 }
