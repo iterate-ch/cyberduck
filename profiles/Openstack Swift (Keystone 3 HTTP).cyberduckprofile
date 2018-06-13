@@ -24,7 +24,7 @@
         <key>Context</key>
         <string>/v3/auth/tokens</string>
         <key>Description</key>
-        <string>OpenStack Swift (Keystone 3)</string>
+        <string>OpenStack Swift (Keystone 3, HTTP)</string>
         <key>Username Placeholder</key>
         <string>Project:Username</string>
         <key>Password Placeholder</key>
