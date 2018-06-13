@@ -20,12 +20,11 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 
 public class FileManagerWorkingDirectoryFinder implements WorkingDirectoryFinder {
 
     @Override
     public Local find() {
-        return LocalFactory.get(NSFileManager.defaultManager().currentDirectoryPath());
+        return new FinderLocal(NSFileManager.defaultManager().currentDirectoryPath());
     }
 }

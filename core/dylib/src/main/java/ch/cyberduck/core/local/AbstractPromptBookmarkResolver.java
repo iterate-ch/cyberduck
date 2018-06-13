@@ -24,7 +24,6 @@ import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -137,7 +136,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
                     final NSEnumerator enumerator = filenames.objectEnumerator();
                     NSObject next;
                     while((next = enumerator.nextObject()) != null) {
-                        selected.set(LocalFactory.get(next.toString()));
+                        selected.set(new FinderLocal(next.toString()));
                     }
                 }
                 panel.orderOut(null);
