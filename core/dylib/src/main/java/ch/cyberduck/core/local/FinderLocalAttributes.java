@@ -25,6 +25,7 @@ import ch.cyberduck.binding.foundation.NSNumber;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LocalNotfoundException;
@@ -59,7 +60,7 @@ public class FinderLocalAttributes extends LocalAttributes {
         // if the link points to a nonexistent file, this method returns null. If flag is false,
         // the attributes of the symbolic link are returned.
         final NSDictionary dict = NSFileManager.defaultManager().attributesOfItemAtPath_error(
-                local.getAbsolute(), error);
+            local.getAbsolute(), error);
         if(null == dict) {
             final NSError f = error.getValueAs(NSError.class);
             if(null == f) {
@@ -115,6 +116,11 @@ public class FinderLocalAttributes extends LocalAttributes {
         catch(AccessDeniedException | NotfoundException e) {
             return null;
         }
+    }
+
+    @Override
+    public Permission getPermission() {
+        return new FinderLocalPermission(super.getPermission().getMode());
     }
 
     /**
