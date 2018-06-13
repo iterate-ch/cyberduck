@@ -18,7 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -67,9 +66,6 @@ public class DriveTouchFeature implements Touch<VersionId> {
     @Override
     public boolean isSupported(final Path workdir) {
         if(workdir.isRoot()) {
-            return false;
-        }
-        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(new PathContainerService().getContainer(workdir))) {
             return false;
         }
         return true;
