@@ -9,7 +9,7 @@
         <key>Scheme</key>
         <string>http</string>
         <key>Description</key>
-        <string>Openstack Swift (HTTP)</string>
+        <string>OpenStack Swift (HTTP)</string>
         <key>Default Port</key>
         <string>80</string>
     </dict>

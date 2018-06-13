@@ -9,7 +9,7 @@
         <key>Context</key>
         <string>/v2.0/tokens</string>
         <key>Description</key>
-        <string>Openstack Swift (Keystone 2.0)</string>
+        <string>OpenStack Swift (Keystone 2.0)</string>
         <key>Username Placeholder</key>
         <string>Tenant ID:Access Key</string>
         <key>Password Placeholder</key>
