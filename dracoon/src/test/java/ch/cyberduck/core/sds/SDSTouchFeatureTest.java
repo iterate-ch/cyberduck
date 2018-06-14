@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -42,7 +43,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         assertFalse(new SDSTouchFeature(session, nodeid).isSupported(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test(expected = BackgroundException.class)
     public void testTouchFileRoot() throws Exception {
         try {
             final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
