@@ -44,6 +44,11 @@ public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
     }
 
     @Override
+    public boolean isSupported(final Path file, final Type type) {
+        return file.isFile();
+    }
+
+    @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Object o, final PasswordCallback callback) throws BackgroundException {
         try {
             final OneDriveItem item = session.toItem(file);
