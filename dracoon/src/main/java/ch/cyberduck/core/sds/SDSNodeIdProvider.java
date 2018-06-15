@@ -104,11 +104,11 @@ public class SDSNodeIdProvider implements IdProvider {
             return false;
         }
         final Path container = containerService.getContainer(file);
-        if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+        if(cache.isCached(container.getParent())) {
+            final AttributedList<Path> list = cache.get(container.getParent());
+            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(container));
             if(null != found) {
-                if(file.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
+                if(found.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
                     return true;
                 }
             }
