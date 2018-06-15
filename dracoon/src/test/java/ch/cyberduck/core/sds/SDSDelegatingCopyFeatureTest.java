@@ -120,7 +120,6 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
         final Path copy = new Path(folder, test.getName(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(copy, new TransferStatus());
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertFalse(feature.isSupported(test, copy));
         new SDSDelegatingCopyFeature(session, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
