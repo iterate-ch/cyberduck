@@ -37,14 +37,16 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class SDSDelegatingCopyFeature implements Copy {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final SDSCopyFeature proxy;
     private final DefaultCopyFeature copy;
 
     private final PathContainerService containerService
         = new SDSPathContainerService();
 
-    public SDSDelegatingCopyFeature(final SDSSession session, final SDSCopyFeature proxy) {
+    public SDSDelegatingCopyFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSCopyFeature proxy) {
         this.session = session;
+        this.nodeid = nodeid;
         this.proxy = proxy;
         this.copy = new DefaultCopyFeature(session);
     }

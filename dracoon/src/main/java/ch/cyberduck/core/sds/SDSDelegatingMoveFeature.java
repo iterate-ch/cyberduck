@@ -33,13 +33,15 @@ public class SDSDelegatingMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SDSDelegatingMoveFeature.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final SDSMoveFeature proxy;
 
     private final PathContainerService containerService
         = new SDSPathContainerService();
 
-    public SDSDelegatingMoveFeature(final SDSSession session, final SDSMoveFeature proxy) {
+    public SDSDelegatingMoveFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSMoveFeature proxy) {
         this.session = session;
+        this.nodeid = nodeid;
         this.proxy = proxy;
     }
 
@@ -52,8 +54,8 @@ public class SDSDelegatingMoveFeature implements Move {
                 return proxy.move(source, target, status, callback, connectionCallback);
             }
         }
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
-            containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+        if(nodeid.isEncrypted(source) ^
+            nodeid.isEncrypted(target)) {
             // Moving into or from an encrypted room
             final Copy copy = session.getFeature(Copy.class);
             if(log.isDebugEnabled()) {

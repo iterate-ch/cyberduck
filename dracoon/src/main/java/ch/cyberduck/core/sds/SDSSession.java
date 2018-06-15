@@ -238,10 +238,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Write.class) {
-            return (T) new SDSDelegatingWriteFeature(this, new SDSWriteFeature(this, nodeid));
+            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSWriteFeature(this, nodeid));
         }
         if(type == MultipartWrite.class) {
-            return (T) new SDSDelegatingWriteFeature(this, new SDSMultipartWriteFeature(this, nodeid));
+            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
         }
         if(type == Directory.class) {
             return (T) new SDSDirectoryFeature(this, nodeid);
@@ -262,10 +262,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSAttributesFinderFeature(this, nodeid);
         }
         if(type == Move.class) {
-            return (T) new SDSDelegatingMoveFeature(this, new SDSMoveFeature(this, nodeid));
+            return (T) new SDSDelegatingMoveFeature(this, nodeid, new SDSMoveFeature(this, nodeid));
         }
         if(type == Copy.class) {
-            return (T) new SDSDelegatingCopyFeature(this, new SDSCopyFeature(this, nodeid));
+            return (T) new SDSDelegatingCopyFeature(this, nodeid, new SDSCopyFeature(this, nodeid));
         }
         if(type == Bulk.class) {
             return (T) new SDSEncryptionBulkFeature(this, nodeid);

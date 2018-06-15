@@ -58,7 +58,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 default:
                     if(session.userAccount().isEncryptionEnabled()) {
                         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-                            if(containerService.getContainer(entry.getKey()).getType().contains(Path.Type.vault)) {
+                            if(nodeid.isEncrypted(entry.getKey())) {
                                 final TransferStatus status = entry.getValue();
                                 final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                                 final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
@@ -86,7 +86,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                     if(session.userAccount().isEncryptionEnabled()) {
                         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
                         for(Path file : files.keySet()) {
-                            if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+                            if(nodeid.isEncrypted(file)) {
                                 background.operate(callback, file);
                             }
                         }
