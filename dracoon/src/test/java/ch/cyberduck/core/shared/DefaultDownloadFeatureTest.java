@@ -63,7 +63,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {
-            final TransferStatus status = new TransferStatus().length(content.length);
+            final TransferStatus status = new TransferStatus().length(content.length).exists(true);
             final StatusOutputStream<VersionId> out = new SDSWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
@@ -80,7 +80,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
                 new DisabledConnectionCallback(), new DisabledPasswordCallback());
         }
         {
-            final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
+            final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true).exists(true);
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
