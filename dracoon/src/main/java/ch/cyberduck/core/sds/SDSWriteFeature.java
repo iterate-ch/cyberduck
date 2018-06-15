@@ -88,10 +88,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final CreateFileUploadRequest body = new CreateFileUploadRequest();
-        body.setParentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())));
-        body.setName(file.getName());
-        body.classification(DEFAULT_CLASSIFICATION);
+        final CreateFileUploadRequest body = new CreateFileUploadRequest()
+            .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
+            .name(file.getName())
+            .classification(DEFAULT_CLASSIFICATION);
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
             final String uploadId = response.getUploadId();
@@ -122,8 +122,8 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         finally {
                             EntityUtils.consume(response.getEntity());
                         }
-                        final CompleteUploadRequest body = new CompleteUploadRequest();
-                        body.setResolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                        final CompleteUploadRequest body = new CompleteUploadRequest()
+                            .resolutionStrategy(status.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
                         if(status.getFilekey() != null) {
                             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                             final FileKey fileKey = reader.readValue(status.getFilekey().array());
