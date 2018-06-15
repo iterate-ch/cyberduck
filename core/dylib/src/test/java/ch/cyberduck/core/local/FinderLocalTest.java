@@ -119,7 +119,7 @@ public class FinderLocalTest {
 
     @Test
     public void testBookmark() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver());
         assertNull(l.getBookmark());
         new DefaultLocalTouchFeature().touch(l);
         assertNotNull(l.getBookmark());
@@ -177,7 +177,8 @@ public class FinderLocalTest {
     @Test
     public void testReleaseSecurityScopeBookmarkInputStreamClose() throws Exception {
         final AtomicBoolean released = new AtomicBoolean(false);
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()) {
+        final FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(),
+            new AliasFilesystemBookmarkResolver()) {
             @Override
             public void release(final Object lock) {
                 released.set(true);
@@ -199,7 +200,7 @@ public class FinderLocalTest {
 
     @Test
     public void testLock() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver());
         new DefaultLocalTouchFeature().touch(l);
         try {
             final NSURL lock = l.lock(false);

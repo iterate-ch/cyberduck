@@ -60,24 +60,23 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * Absolute path in local file system
      */
     private String path;
-
     private final LocalAttributes attributes;
 
-    public Local(final String parent, final String name) throws LocalAccessDeniedException {
+    public Local(final String parent, final String name) {
         this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
     }
 
-    public Local(final String parent, final String name, final String delimiter) throws LocalAccessDeniedException {
+    public Local(final String parent, final String name, final String delimiter) {
         this(parent.endsWith(delimiter) ?
             String.format("%s%s", parent, name) :
             String.format("%s%c%s", parent, CharUtils.toChar(delimiter), name));
     }
 
-    public Local(final Local parent, final String name) throws LocalAccessDeniedException {
+    public Local(final Local parent, final String name) {
         this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
     }
 
-    public Local(final Local parent, final String name, final String delimiter) throws LocalAccessDeniedException {
+    public Local(final Local parent, final String name, final String delimiter) {
         this(parent.isRoot() ?
             String.format("%s%s", parent.getAbsolute(), name) :
             String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(delimiter), name));
@@ -86,7 +85,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     /**
      * @param name Absolute path
      */
-    public Local(final String name) throws LocalAccessDeniedException {
+    public Local(final String name) {
         String path = name;
         if(PreferencesFactory.get().getBoolean("local.normalize.unicode")) {
             path = new NFCNormalizer().normalize(path).toString();
@@ -101,7 +100,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             this.path = Paths.get(path).toString();
         }
         catch(InvalidPathException e) {
-            throw new LocalAccessDeniedException(String.format("The name %s is not a valid path for the filesystem", path), e);
+            log.error(String.format("The name %s is not a valid path for the filesystem", path), e);
+            this.path = path;
         }
         this.attributes = new LocalAttributes(path);
     }

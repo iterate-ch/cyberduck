@@ -1,12 +1,12 @@
 package ch.cyberduck.core.local;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,12 +15,11 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
-public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
+public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkResolver<Void> {
 
     @Override
     public String create(final Local file) throws AccessDeniedException {
@@ -28,7 +27,7 @@ public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkRes
     }
 
     @Override
-    public NSURL resolve(final Local file, final boolean interactive) throws AccessDeniedException {
+    public Void resolve(final Local file, final boolean interactive) throws AccessDeniedException {
         throw new LocalAccessDeniedException("Filesystem bookmark resolver disabled");
     }
 }
