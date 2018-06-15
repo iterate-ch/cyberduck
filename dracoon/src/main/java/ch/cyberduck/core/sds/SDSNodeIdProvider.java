@@ -100,6 +100,9 @@ public class SDSNodeIdProvider implements IdProvider {
     }
 
     public boolean isEncrypted(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return false;
+        }
         final Path container = containerService.getContainer(file);
         try {
             if(container.getType().contains(Path.Type.vault)) {
