@@ -112,7 +112,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * Current remote attributes of existing file including UNIX permissions, timestamp and ACL
      */
-    private PathAttributes remote = new PathAttributes();
+    private PathAttributes remote = PathAttributes.EMPTY;
 
     /**
      * Target UNIX permissions to set when transfer is complete
