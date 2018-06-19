@@ -79,7 +79,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     SessionPoolFactory.create(cache, session.getHost(), keychain, callback, key, listener, transcript), cache, listener, callback).run(session);
                 for(Map.Entry<Path, Path> r : files.entrySet()) {
                     // Delete source files recursively after copy is complete
-                    new DeleteWorker(callback, Collections.singletonList(r.getKey()), cache, listener).run(session);
+                    new DeleteWorker(callback, Collections.singletonList(r.getKey()), listener).run(session);
                 }
                 result.putAll(copy);
             }

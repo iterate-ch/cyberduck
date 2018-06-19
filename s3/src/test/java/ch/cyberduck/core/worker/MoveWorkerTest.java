@@ -85,7 +85,7 @@ public class MoveWorkerTest {
                 new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers"), new Acl.Role(Acl.Role.READ)
             )
         ));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(target), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(target), new DisabledProgressListener()).run(session);
         session.close();
     }
 }

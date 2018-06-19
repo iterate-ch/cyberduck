@@ -59,7 +59,7 @@ public class CopyWorkerTest extends AbstractSDSTest {
         worker.run(session);
         assertTrue(new SDSFindFeature(nodeid).find(source));
         assertTrue(new SDSFindFeature(nodeid).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class CopyWorkerTest extends AbstractSDSTest {
         worker.run(session);
         assertTrue(new SDSFindFeature(nodeid).find(sourceFile));
         assertTrue(new SDSFindFeature(nodeid).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class CopyWorkerTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(nodeid).find(targetFile));
         assertTrue(new SDSFindFeature(nodeid).find(folder));
         assertTrue(new SDSFindFeature(nodeid).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
     }
 
     private static class TestSessionPool implements SessionPool {

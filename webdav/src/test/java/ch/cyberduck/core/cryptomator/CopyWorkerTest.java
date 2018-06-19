@@ -105,7 +105,7 @@ public class CopyWorkerTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
     }
 
@@ -135,7 +135,7 @@ public class CopyWorkerTest {
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
     }
 
@@ -165,7 +165,7 @@ public class CopyWorkerTest {
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
     }
 
@@ -202,7 +202,7 @@ public class CopyWorkerTest {
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
     }
@@ -238,7 +238,7 @@ public class CopyWorkerTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(encryptedFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
     }
@@ -273,7 +273,7 @@ public class CopyWorkerTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         assertTrue(new DAVFindFeature(session).find(cleartextFolder));
         assertTrue(new DAVFindFeature(session).find(cleartextFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
     }
@@ -313,7 +313,7 @@ public class CopyWorkerTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new DAVReadFeature(session).read(cleartextFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
     }
@@ -348,7 +348,7 @@ public class CopyWorkerTest {
         assertTrue(new DAVFindFeature(session).find(cleartextFolder));
         final Path fileRenamed = new Path(cleartextFolder, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new DAVFindFeature(session).find(fileRenamed));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
     }
