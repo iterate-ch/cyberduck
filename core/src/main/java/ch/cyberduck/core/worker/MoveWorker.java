@@ -127,13 +127,6 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
     }
 
     @Override
-    public void cleanup(final Map<Path, Path> result) {
-        for(Path f : result.keySet()) {
-            cache.invalidate(f.getParent());
-        }
-    }
-
-    @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Renaming {0} to {1}", "Status"),
             files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
