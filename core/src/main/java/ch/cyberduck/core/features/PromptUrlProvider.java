@@ -21,7 +21,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface PromptUrlProvider<Download, Upload> {
+    boolean isSupported(Path file, Type type);
+
     DescriptiveUrl toDownloadUrl(Path file, Download options, PasswordCallback callback) throws BackgroundException;
 
     DescriptiveUrl toUploadUrl(Path file, Upload options, PasswordCallback callback) throws BackgroundException;
+
+    enum Type {
+        download,
+        upload
+    }
 }
