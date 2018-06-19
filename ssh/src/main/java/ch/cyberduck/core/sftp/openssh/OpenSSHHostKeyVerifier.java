@@ -176,7 +176,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         @Override
         protected boolean hostKeyUnverifiableAction(final String hostname, final PublicKey key) {
             try {
-                return isUnknownKeyAccepted(hostname, key);
+                return OpenSSHHostKeyVerifier.this.isUnknownKeyAccepted(hostname, key);
             }
             catch(ConnectionCanceledException | ChecksumException e) {
                 return false;
@@ -184,19 +184,9 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         }
 
         @Override
-        protected boolean hostKeyChangedAction(final KnownHostEntry entry, final String hostname, final PublicKey key) {
+        protected boolean hostKeyChangedAction(final String hostname, final PublicKey key) {
             try {
-                final boolean accepted = isChangedKeyAccepted(hostname, key);
-                if(accepted) {
-                    database.entries().remove(entry);
-                    try {
-                        database.write();
-                    }
-                    catch(IOException e) {
-                        log.error(String.format("Failure removing host key from database: %s", e.getMessage()));
-                    }
-                }
-                return accepted;
+                return OpenSSHHostKeyVerifier.this.isChangedKeyAccepted(hostname, key);
             }
             catch(ConnectionCanceledException | ChecksumException e) {
                 return false;
