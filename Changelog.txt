@@ -4,6 +4,7 @@ https://cyberduck.io/
 6.6.2
 - [Bugfix] Cannot write to shared folders (Google Drive)
 - [Bugfix] Repeated prompt for private key (SFTP, Mac App Store)
+- [Bugfix] Authenticating with password protected ed25519 private key (SFTP) (#10130)
 
 6.6.1
 - [Bugfix] Crash attempting to add empty password to keychain (SFTP, macOS) (#10342)
