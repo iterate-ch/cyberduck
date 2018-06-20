@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -298,12 +299,17 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public void rename(final Local renamed) throws AccessDeniedException {
         try {
-            Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING);
-            path = renamed.getAbsolute();
+            try {
+                Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            }
+            catch(AtomicMoveNotSupportedException e) {
+                Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING);
+            }
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(String.format("Rename to %s failed for %s", renamed, this), e);
         }
+        path = renamed.getAbsolute();
     }
 
     public void copy(final Local copy) throws AccessDeniedException {
