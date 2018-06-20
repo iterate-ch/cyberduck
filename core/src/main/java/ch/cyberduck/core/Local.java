@@ -115,14 +115,14 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     @Override
     public EnumSet<Type> getType() {
         final EnumSet<Type> set = EnumSet.noneOf(Type.class);
-        if(this.isFile()) {
-            set.add(Type.file);
-        }
-        else {
+        if(this.isDirectory()) {
             set.add(Type.directory);
             if(this.isVolume()) {
                 set.add(Type.volume);
             }
+        }
+        else {
+            set.add(Type.file);
         }
         if(this.isSymbolicLink()) {
             set.add(Type.symboliclink);
