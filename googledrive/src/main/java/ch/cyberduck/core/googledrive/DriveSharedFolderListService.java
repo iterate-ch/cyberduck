@@ -21,12 +21,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public class DriveSharedFolderListService extends AbstractDriveListService {
 
-    public DriveSharedFolderListService(final DriveSession session) {
-        super(session);
+    public DriveSharedFolderListService(final DriveSession session, final DriveFileidProvider fileid) {
+        super(session, fileid);
     }
 
-    public DriveSharedFolderListService(final DriveSession session, final int pagesize) {
-        super(session, pagesize);
+    public DriveSharedFolderListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize) {
+        super(session, fileid, pagesize);
     }
 
     @Override
