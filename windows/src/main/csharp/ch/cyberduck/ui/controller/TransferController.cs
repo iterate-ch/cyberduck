@@ -632,7 +632,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ProgressController progressController;
             _transferMap.TryGetValue(transfer, out progressController);
             PathCache cache = new PathCache(_preferences.getInteger("transfer.cache.size"));
-            background(new TransferBackgroundAction(this, transfer.withCache(cache), options, callback, cache));
+            background(new TransferBackgroundAction(this, transfer.withCache(cache), options, callback, cache, progressController));
         }
 
         public void TaskbarOverlayIcon(Icon icon, string description)
@@ -673,10 +673,10 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Transfer _transfer;
 
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
-                TransferCallback callback, PathCache cache)
+                TransferCallback callback, PathCache cache, ProgressListener listener)
                 : base(controller,
-                    null == transfer.getSource() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getSource()),
-                    null == transfer.getDestination() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getDestination()),
+                    null == transfer.getSource() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getSource(), listener),
+                    null == transfer.getDestination() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getDestination(), listener),
                     controller.GetController(transfer),
                     controller.GetController(transfer), 
                     transfer, options)
