@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -40,9 +39,6 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-
-    private final PathContainerService containerService
-        = new SDSPathContainerService();
 
     public SDSEncryptionBulkFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
