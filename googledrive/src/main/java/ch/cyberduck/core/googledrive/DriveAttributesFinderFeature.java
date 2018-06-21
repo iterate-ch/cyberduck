@@ -17,14 +17,28 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.webloc.UrlFileWriterFactory;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.text.MessageFormat;
+
+import com.google.api.services.drive.model.File;
+
+import static ch.cyberduck.core.googledrive.AbstractDriveListService.DRIVE_FOLDER;
+import static ch.cyberduck.core.googledrive.AbstractDriveListService.GOOGLE_APPS_PREFIX;
 
 public class DriveAttributesFinderFeature implements AttributesFinder {
 
@@ -45,6 +59,40 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         }
         return found.attributes();
 
+    }
+
+    protected PathAttributes toAttributes(final File f) {
+        final PathAttributes attributes = new PathAttributes();
+        if(null != f.getExplicitlyTrashed()) {
+            if(f.getExplicitlyTrashed()) {
+                // Mark as hidden
+                attributes.setDuplicate(true);
+            }
+        }
+        if(null != f.getSize()) {
+            if(!DRIVE_FOLDER.equals(f.getMimeType())
+                && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+                attributes.setSize(f.getSize());
+            }
+        }
+        attributes.setVersionId(f.getId());
+        if(f.getModifiedTime() != null) {
+            attributes.setModificationDate(f.getModifiedTime().getValue());
+        }
+        if(f.getCreatedTime() != null) {
+            attributes.setCreationDate(f.getCreatedTime().getValue());
+        }
+        attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
+        if(StringUtils.isNotBlank(f.getWebViewLink())) {
+            attributes.setLink(new DescriptiveUrl(URI.create(f.getWebViewLink()),
+                DescriptiveUrl.Type.http,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
+            if(!DRIVE_FOLDER.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+                attributes.setSize(UrlFileWriterFactory.get().write(new DescriptiveUrl(URI.create(f.getWebViewLink())))
+                    .getBytes(Charset.defaultCharset()).length);
+            }
+        }
+        return attributes;
     }
 
     @Override

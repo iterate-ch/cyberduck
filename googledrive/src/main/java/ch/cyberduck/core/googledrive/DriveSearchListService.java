@@ -23,8 +23,8 @@ public class DriveSearchListService extends AbstractDriveListService {
 
     private final String query;
 
-    public DriveSearchListService(final DriveSession session, final String query) {
-        super(session);
+    public DriveSearchListService(final DriveSession session, final DriveFileidProvider fileid, final String query) {
+        super(session, fileid);
         this.query = query;
     }
 

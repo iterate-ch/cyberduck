@@ -145,7 +145,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveMetadataFeature(this, fileid);
         }
         if(type == Search.class) {
-            return (T) new DriveSearchFeature(this);
+            return (T) new DriveSearchFeature(this, fileid);
         }
         if(type == Find.class) {
             return (T) new DriveFindFeature(this, fileid);
