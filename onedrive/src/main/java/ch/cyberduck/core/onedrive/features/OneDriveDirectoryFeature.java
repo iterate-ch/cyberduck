@@ -43,6 +43,8 @@ public class OneDriveDirectoryFeature implements Directory<Void> {
         final OneDriveFolder.Metadata metadata;
         try {
             metadata = folder.create(directory.getName());
+            return new Path(directory.getParent(), directory.getName(), directory.getType(),
+                new OneDriveAttributesFinderFeature(session).toAttributes(metadata));
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot create folder {0}", e, directory);
@@ -50,8 +52,6 @@ public class OneDriveDirectoryFeature implements Directory<Void> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, directory);
         }
-        // attributes.annotate(directory.attributes(), metadata);
-        return directory;
     }
 
     @Override

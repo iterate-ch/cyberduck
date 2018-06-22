@@ -56,7 +56,7 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         final OneDriveItem item = session.toItem(file);
         try {
             final OneDriveItem.Metadata metadata = item.getMetadata();
-            return this.convert(metadata);
+            return this.toAttributes(metadata);
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -66,13 +66,8 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    public PathAttributes convert(final OneDriveItem.Metadata metadata) {
+    public PathAttributes toAttributes(final OneDriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
-        this.annotate(attributes, metadata);
-        return attributes;
-    }
-
-    public void annotate(final PathAttributes attributes, final OneDriveItem.Metadata metadata) {
         attributes.setETag(metadata.getETag());
         attributes.setSize(metadata.getSize());
         if(metadata instanceof OneDriveRemoteItem.Metadata) {
@@ -100,6 +95,7 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
             attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
             attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
         }
+        return attributes;
     }
 
     @Override
