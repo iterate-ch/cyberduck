@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
@@ -55,7 +56,7 @@ public class SharepointGroupListService implements ListService {
             }
             final PathAttributes attributes = new PathAttributes();
             attributes.setVersionId(metadata.getId());
-            children.add(new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
+            children.add(new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.placeholder), attributes));
             listener.chunk(directory, children);
         }
 

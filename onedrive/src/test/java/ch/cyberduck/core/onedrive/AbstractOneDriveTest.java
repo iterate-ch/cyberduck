@@ -30,6 +30,8 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -53,6 +55,9 @@ public abstract class AbstractOneDriveTest {
 
     @Before
     public void setup() throws Exception {
+        final Preferences preferences = PreferencesFactory.get();
+        preferences.setDefault("connection.ssl.securerandom.algorithm", "Windows-PRNG");
+        preferences.setDefault("connection.ssl.securerandom.provider", "SunMSCAPI");
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile"));

@@ -25,11 +25,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 public class SharepointItemListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return null;
+        return AttributedList.emptyList();
     }
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
-        return null;
+        return this;
     }
 }

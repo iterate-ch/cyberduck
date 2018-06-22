@@ -21,40 +21,33 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.onedrive.features.SharepointFileIdProvider;
 
-public class SharepointListService implements ListService {
-    private final SharepointSession session;
-    private final SharepointFileIdProvider idProvider;
+import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.GroupDrivesIterator;
+import org.nuxeo.onedrive.client.resources.GroupItem;
 
-    public SharepointListService(final SharepointSession session, final SharepointFileIdProvider idProvider) {
+public class SharepointGroupDrivesListService extends AbstractDriveListService {
+    private static final Logger log = Logger.getLogger(SharepointGroupDrivesListService.class);
+
+    private final GraphSession session;
+
+    public SharepointGroupDrivesListService(final GraphSession session) {
         this.session = session;
-        this.idProvider = idProvider;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            final AttributedList<Path> list = new AttributedList<>();
-            list.add(SharepointSession.DEFAULT_NAME);
-            list.add(SharepointSession.GROUPS_NAME);
-            listener.chunk(directory, list);
-            return list;
-        }
-        else {
-            if(SharepointSession.DEFAULT_NAME.equals(directory)) {
-                return new GraphDrivesListService(session).list(directory, listener);
-            }
-            else if(SharepointSession.GROUPS_NAME.equals(directory)) {
-                return new SharepointGroupListService(session).list(directory, listener);
-            }
-            return new SharepointItemListService().list(directory, listener);
-        }
+        final AttributedList<Path> children = new AttributedList<>();
+
+        final GroupItem group = new GroupItem(session.getClient(), directory.attributes().getVersionId());
+        final GroupDrivesIterator iterator = new GroupDrivesIterator(session.getClient(), group);
+        run(iterator, directory, children, listener);
+
+        return children;
     }
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
-        idProvider.withCache(cache);
         return this;
     }
 }
