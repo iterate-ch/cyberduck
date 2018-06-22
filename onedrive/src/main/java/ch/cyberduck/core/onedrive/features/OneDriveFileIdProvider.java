@@ -48,20 +48,28 @@ public class OneDriveFileIdProvider implements IdProvider {
             return file.attributes().getVersionId();
         }
 
-        final AttributedList<Path> list;
-        if(!cache.isCached(file.getParent())) {
-            list = new OneDriveListService(session, this).list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getParent(), list);
+        if(cache.isCached(file.getParent())) {
+            final AttributedList<Path> cached = cache.get(file.getParent());
+            final String cachedVersionId = findVersionId(cached, file);
+            if(StringUtils.isNotBlank(cachedVersionId)) {
+                return cachedVersionId;
+            }
         }
-        else {
-            list = cache.get(file.getParent());
-        }
-        final Path found = list.find(new SimplePathPredicate(file));
-        if(null == found) {
+        final AttributedList<Path> list = new OneDriveListService(session, this).list(file.getParent(), new DisabledListProgressListener());
+        cache.put(file.getParent(), list); // overwrite cache because file does not have versionId (it may have been created recently)
+        final String versionId = findVersionId(list, file);
+        if(StringUtils.isBlank(versionId)) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return found.attributes().getVersionId();
+        return versionId;
+    }
 
+    private static String findVersionId(final AttributedList<Path> list, final Path file) {
+        final Path found = list.find(new SimplePathPredicate(file));
+        if(null == found) {
+            return null;
+        }
+        return found.attributes().getVersionId();
     }
 
     @Override
