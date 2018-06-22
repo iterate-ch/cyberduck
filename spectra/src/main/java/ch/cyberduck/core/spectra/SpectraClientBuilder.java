@@ -15,6 +15,7 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -25,9 +26,9 @@ import java.net.URI;
 
 import com.spectralogic.ds3client.Ds3Client;
 import com.spectralogic.ds3client.Ds3ClientImpl;
-import com.spectralogic.ds3client.NetworkClientImpl;
-import com.spectralogic.ds3client.models.Credentials;
+import com.spectralogic.ds3client.models.common.Credentials;
 import com.spectralogic.ds3client.networking.ConnectionDetails;
+import com.spectralogic.ds3client.networking.NetworkClientImpl;
 
 public class SpectraClientBuilder {
     public Ds3Client wrap(final RestStorageService client, final Host bookmark) {
@@ -40,7 +41,7 @@ public class SpectraClientBuilder {
             @Override
             public Credentials getCredentials() {
                 return new Credentials(client.getProviderCredentials().getAccessKey(),
-                        client.getProviderCredentials().getSecretKey());
+                    client.getProviderCredentials().getSecretKey());
             }
 
             @Override
@@ -64,8 +65,24 @@ public class SpectraClientBuilder {
             }
 
             @Override
+            public int getConnectionTimeout() {
+                //TODO same as socket timeout?
+                return PreferencesFactory.get().getInteger("connection.timeout.seconds");
+            }
+
+            @Override
+            public int getSocketTimeout() {
+                return PreferencesFactory.get().getInteger("connection.timeout.seconds");
+            }
+
+            @Override
             public boolean isCertificateVerification() {
                 return true;
+            }
+
+            @Override
+            public String getUserAgent() {
+                return new PreferencesUseragentProvider().get();
             }
         }, (CloseableHttpClient) client.getHttpClient()));
     }
