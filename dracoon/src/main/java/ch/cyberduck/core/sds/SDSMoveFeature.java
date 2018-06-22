@@ -55,31 +55,26 @@ public class SDSMoveFeature implements Move {
             if(status.isExists()) {
                 new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
+            final long nodeId = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
                 // Change parent node
                 new NodesApi(session.getClient()).moveNodes(
                     Long.parseLong(nodeid.getFileid(renamed.getParent(), new DisabledListProgressListener())),
-                    new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE).addNodeIdsItem(
-                        Long.parseLong(nodeid.getFileid(file,
-                            new DisabledListProgressListener()))), StringUtils.EMPTY, null);
+                    new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.AUTORENAME).addNodeIdsItem(
+                        nodeId), StringUtils.EMPTY, null);
             }
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 if(containerService.isContainer(file)) {
-                    new NodesApi(session.getClient()).updateRoom(
-                        Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())),
+                    new NodesApi(session.getClient()).updateRoom(nodeId,
                         new UpdateRoomRequest().name(renamed.getName()), StringUtils.EMPTY, null);
                 }
                 // Rename
                 else if(file.isDirectory()) {
-                    new NodesApi(session.getClient()).updateFolder(
-                        Long.parseLong(nodeid.getFileid(
-                            new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
+                    new NodesApi(session.getClient()).updateFolder(nodeId,
                         new UpdateFolderRequest().name(renamed.getName()), StringUtils.EMPTY, null);
                 }
                 else {
-                    new NodesApi(session.getClient()).updateFile(
-                        Long.parseLong(nodeid.getFileid(
-                            new Path(renamed.getParent(), file.getName(), file.getType()), new DisabledListProgressListener())),
+                    new NodesApi(session.getClient()).updateFile(nodeId,
                         new UpdateFileRequest().name(renamed.getName()), StringUtils.EMPTY, null);
                 }
             }
