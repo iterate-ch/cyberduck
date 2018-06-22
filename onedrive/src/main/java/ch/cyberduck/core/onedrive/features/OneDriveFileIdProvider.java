@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -32,8 +31,6 @@ import ch.cyberduck.core.onedrive.OneDriveSession;
 import org.apache.commons.lang3.StringUtils;
 
 public class OneDriveFileIdProvider implements IdProvider {
-    private final PathContainerService containerService
-        = new PathContainerService();
 
     private final OneDriveSession session;
     private Cache<Path> cache = PathCache.empty();
@@ -47,7 +44,6 @@ public class OneDriveFileIdProvider implements IdProvider {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> cached = cache.get(file.getParent());
             final String cachedVersionId = findVersionId(cached, file);
