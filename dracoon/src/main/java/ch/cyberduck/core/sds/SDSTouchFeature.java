@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class SDSTouchFeature implements Touch<VersionId> {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private Write<VersionId> writer;
 
     private final PathContainerService containerService
@@ -46,14 +47,14 @@ public class SDSTouchFeature implements Touch<VersionId> {
 
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
-        this.writer = new SDSDelegatingWriteFeature(session, new SDSWriteFeature(session, nodeid));
+        this.nodeid = nodeid;
+        this.writer = new SDSDelegatingWriteFeature(session, nodeid, new SDSWriteFeature(session, nodeid));
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            if(session.userAccount().isEncryptionEnabled() &&
-                containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+            if(session.userAccount().isEncryptionEnabled() && nodeid.isEncrypted(file)) {
                 final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                 final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();

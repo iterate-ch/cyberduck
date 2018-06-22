@@ -48,11 +48,7 @@ public class FinderLocal extends Local {
         Native.load("core");
     }
 
-    private static final NSFileManager manager
-        = NSFileManager.defaultManager();
-
-    private static final FilesystemBookmarkResolver<NSURL> resolver
-        = FilesystemBookmarkResolverFactory.get();
+    private final FilesystemBookmarkResolver<NSURL> resolver;
 
     /**
      * Application scoped bookmark to access outside of sandbox
@@ -62,16 +58,31 @@ public class FinderLocal extends Local {
     private final FinderLocalAttributes attributes
         = new FinderLocalAttributes(this);
 
-    public FinderLocal(final Local parent, final String name) throws LocalAccessDeniedException {
-        super(parent, name);
+    public FinderLocal(final Local parent, final String name) {
+        this(parent, name, FilesystemBookmarkResolverFactory.get());
     }
 
-    public FinderLocal(final String parent, final String name) throws LocalAccessDeniedException {
+    public FinderLocal(final Local parent, final String name, final FilesystemBookmarkResolver<NSURL> resolver) {
         super(parent, name);
+        this.resolver = resolver;
     }
 
-    public FinderLocal(final String path) throws LocalAccessDeniedException {
-        super(resolveAlias(new TildeExpander().expand(path)));
+    public FinderLocal(final String parent, final String name) {
+        this(parent, name, FilesystemBookmarkResolverFactory.get());
+    }
+
+    public FinderLocal(final String parent, final String name, final FilesystemBookmarkResolver<NSURL> resolver) {
+        super(parent, name);
+        this.resolver = resolver;
+    }
+
+    public FinderLocal(final String path) {
+        this(resolveAlias(new TildeExpander().expand(path)), FilesystemBookmarkResolverFactory.get());
+    }
+
+    public FinderLocal(final String name, final FilesystemBookmarkResolver<NSURL> resolver) {
+        super(name);
+        this.resolver = resolver;
     }
 
     @Override
@@ -90,7 +101,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public String getDisplayName() {
-        return manager.displayNameAtPath(this.getName());
+        return NSFileManager.defaultManager().displayNameAtPath(this.getName());
     }
 
     /**

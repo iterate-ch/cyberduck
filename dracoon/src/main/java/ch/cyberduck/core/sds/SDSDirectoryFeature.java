@@ -69,7 +69,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
                 folderRequest.setName(folder.getName());
                 final Node f = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                    new PathAttributes(folder.attributes()).withVersionId(String.valueOf(f.getId())));
+                    new SDSAttributesFinderFeature(session, nodeid).toAttributes(f));
             }
         }
         catch(ApiException e) {

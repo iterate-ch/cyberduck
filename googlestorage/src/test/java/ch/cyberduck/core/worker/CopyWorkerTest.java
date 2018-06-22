@@ -58,7 +58,7 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         worker.run(session);
         assertTrue(new S3FindFeature(session).find(source));
         assertTrue(new S3FindFeature(session).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         worker.run(session);
         assertTrue(new S3FindFeature(session).find(sourceFile));
         assertTrue(new S3FindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         assertTrue(new S3FindFeature(session).find(targetFile));
         assertTrue(new S3FindFeature(session).find(folder));
         assertTrue(new S3FindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), new DisabledProgressListener()).run(session);
         session.close();
     }
 

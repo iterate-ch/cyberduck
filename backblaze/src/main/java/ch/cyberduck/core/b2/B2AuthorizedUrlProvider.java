@@ -54,10 +54,12 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
     }
 
     @Override
+    public boolean isSupported(final Path file, final Type type) {
+        return file.isFile();
+    }
+
+    @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void none, final PasswordCallback callback) throws BackgroundException {
-        if(file.isVolume()) {
-            return DescriptiveUrl.EMPTY;
-        }
         if(file.isFile()) {
             final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
                 URIEncoder.encode(containerService.getContainer(file).getName()),

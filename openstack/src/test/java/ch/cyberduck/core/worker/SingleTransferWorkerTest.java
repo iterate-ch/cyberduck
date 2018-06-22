@@ -31,6 +31,7 @@ import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.openstack.SwiftAttributesFinderFeature;
 import ch.cyberduck.core.openstack.SwiftDeleteFeature;
 import ch.cyberduck.core.openstack.SwiftLargeObjectUploadFeature;
@@ -124,7 +125,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), TransferItemCache.empty()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty()) {
 
         }.run(session, session));
         local.delete();

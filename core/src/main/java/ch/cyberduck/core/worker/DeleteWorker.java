@@ -18,7 +18,6 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -43,7 +42,6 @@ import java.util.Set;
 
 public class DeleteWorker extends Worker<List<Path>> {
 
-    private final Cache<Path> cache;
     /**
      * Selected files.
      */
@@ -52,16 +50,15 @@ public class DeleteWorker extends Worker<List<Path>> {
     private final ProgressListener listener;
     private final Filter<Path> filter;
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener) {
-        this(prompt, files, cache, new NullFilter<Path>(), listener);
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
+        this(prompt, files, new NullFilter<Path>(), listener);
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final Filter<Path> filter, final ProgressListener listener) {
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Filter<Path> filter, final ProgressListener listener) {
         this.files = files;
         this.prompt = prompt;
         this.listener = listener;
         this.filter = filter;
-        this.cache = cache;
     }
 
     @Override
@@ -110,13 +107,6 @@ public class DeleteWorker extends Worker<List<Path>> {
             recursive.add(file);
         }
         return recursive;
-    }
-
-    @Override
-    public void cleanup(final List<Path> deleted) {
-        for(Path f : deleted) {
-            cache.invalidate(f.getParent());
-        }
     }
 
     @Override

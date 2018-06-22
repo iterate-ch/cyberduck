@@ -38,6 +38,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     public static final String KEY_CNT_DOWNLOADSHARES = "count_downloadshares";
     public static final String KEY_CNT_UPLOADSHARES = "count_uploadshares";
+    public static final String KEY_ENCRYPTED = "encrypted";
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -77,6 +78,9 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
         if(null != node.getCntUploadShares()) {
             custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
+        }
+        if(node.getIsEncrypted()) {
+            custom.put(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(true));
         }
         attributes.setCustom(custom);
         return attributes;

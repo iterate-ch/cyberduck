@@ -25,7 +25,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
     private static final Logger log = Logger.getLogger(SparklePeriodicUpdateChecker.class);
 
     @Outlet
-    private Updater updater = Updater.create();
+    private final Updater updater = Updater.create();
 
     public SparklePeriodicUpdateChecker(final Controller controller) {
         super(controller);

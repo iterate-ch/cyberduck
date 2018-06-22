@@ -15,6 +15,7 @@ package ch.cyberduck.core.cache;
  * GNU General Public License for more details.
  */
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -26,20 +27,28 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 public class LRUCache<Key, Value> {
 
     public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader, final long maximumSize) {
-        return new LRUCache<>(loader, maximumSize);
+        return usingLoader(loader, maximumSize, -1L);
+    }
+
+    public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader, final long maximumSize, final long expireDuration) {
+        return new LRUCache<>(loader, maximumSize, expireDuration);
     }
 
     private final LoadingCache<Key, Value> delegate;
 
-    private LRUCache(final Function<Key, Value> loader, final long maximumSize) {
-        delegate = CacheBuilder.newBuilder()
-            .maximumSize(maximumSize)
-            .build(new CacheLoader<Key, Value>() {
-                @Override
-                public Value load(Key key) {
-                    return loader.apply(key);
-                }
-            });
+    private LRUCache(final Function<Key, Value> loader, final long maximumSize, final long expireDuration) {
+        final CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
+        builder
+            .maximumSize(maximumSize);
+        if(expireDuration > 0) {
+            builder.expireAfterAccess(expireDuration, TimeUnit.MILLISECONDS);
+        }
+        delegate = builder.build(new CacheLoader<Key, Value>() {
+            @Override
+            public Value load(Key key) {
+                return loader.apply(key);
+            }
+        });
     }
 
     public Value get(final Key key) throws UncheckedExecutionException {

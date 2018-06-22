@@ -93,7 +93,7 @@ public class CopyWorkerTest {
                 new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers"), new Acl.Role(Acl.Role.READ)
             )
         ));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
         session.close();
     }
 
@@ -118,7 +118,7 @@ public class CopyWorkerTest {
         worker.run(session);
         assertTrue(new S3FindFeature(session).find(sourceFile));
         assertTrue(new S3FindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
         session.close();
     }
 
@@ -146,7 +146,7 @@ public class CopyWorkerTest {
         assertTrue(new S3FindFeature(session).find(targetFile));
         assertTrue(new S3FindFeature(session).find(folder));
         assertTrue(new S3FindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), new DisabledProgressListener()).run(session);
         session.close();
     }
 

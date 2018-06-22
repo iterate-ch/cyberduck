@@ -45,15 +45,13 @@ public class LocalAttributes extends Attributes {
 
     @Override
     public long getModificationDate() {
-        if(Files.exists(Paths.get(path))) {
-            try {
-                return Files.getLastModifiedTime(Paths.get(path)).toMillis();
-            }
-            catch(IOException e) {
-                log.warn(String.format("Failure getting timestamp of %s. %s", path, e.getMessage()));
-            }
+        try {
+            return Files.getLastModifiedTime(Paths.get(path)).toMillis();
         }
-        return -1;
+        catch(IOException e) {
+            log.warn(String.format("Failure getting timestamp of %s. %s", path, e.getMessage()));
+            return -1L;
+        }
     }
 
     /**
@@ -86,15 +84,13 @@ public class LocalAttributes extends Attributes {
 
     @Override
     public long getSize() {
-        if(Files.exists(Paths.get(path))) {
-            try {
-                return Files.size(Paths.get(path));
-            }
-            catch(IOException e) {
-                log.warn(String.format("Failure getting size of %s. %s", path, e.getMessage()));
-            }
+        try {
+            return Files.size(Paths.get(path));
         }
-        return -1;
+        catch(IOException e) {
+            log.warn(String.format("Failure getting size of %s. %s", path, e.getMessage()));
+            return -1L;
+        }
     }
 
     @Override

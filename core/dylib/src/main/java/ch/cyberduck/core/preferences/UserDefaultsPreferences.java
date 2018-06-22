@@ -28,9 +28,9 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSUserDefaults;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cache.LRUCache;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sparkle.Updater;
 
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +51,7 @@ import java.util.Map;
 public class UserDefaultsPreferences extends DefaultPreferences {
     private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
 
-    public final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
+    private final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
 
     private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty,
         PreferencesFactory.get().getLong("preferences.cache.size"));
@@ -181,7 +181,6 @@ public class UserDefaultsPreferences extends DefaultPreferences {
 
         this.setDefault("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
 
-        final NSBundle bundle = this.bundle;
         if(null != bundle) {
             if(bundle.objectForInfoDictionaryKey("CFBundleName") != null) {
                 this.setDefault("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
@@ -222,7 +221,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("bookmark.import.expandrive4.location", "~/Library/Application Support/ExpanDrive/expandrive4.favorites.js");
         this.setDefault("bookmark.import.expandrive5.location", "~/Library/Application Support/ExpanDrive/expandrive5.favorites.js");
         this.setDefault("bookmark.import.expandrive6.location", "~/Library/Application Support/ExpanDrive/expandrive6.favorites.js");
-        if(LocalFactory.get("~/Downloads").exists()) {
+        if(new FinderLocal("~/Downloads").exists()) {
             // For 10.5+ this usually exists and should be preferrred
             this.setDefault("queue.download.folder", "~/Downloads");
         }

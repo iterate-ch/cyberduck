@@ -75,20 +75,17 @@ public class ProfilePlistReaderTest {
 
     @Test
     public void testEquals() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.s3;
             }
-        }))).read(
+        })));
+        final Profile profile = reader.read(
             new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         );
-        assertEquals(profile, new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
-            @Override
-            public Type getType() {
-                return Type.s3;
-            }
-        }))).read(
+        assertNotNull(profile);
+        assertEquals(profile, reader.read(
             new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
@@ -100,52 +97,55 @@ public class ProfilePlistReaderTest {
 
     @Test
     public void testEqualsDifferentScheme() throws Exception {
-        final Profile https = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
-            public Scheme getScheme() {
-                return Scheme.https;
+            public Type getType() {
+                return Type.swift;
             }
-        }))).read(
+        })));
+        final Profile https = reader.read(
             new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
         );
-        final Profile http = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }))).read(
+        assertNotNull(https);
+        final Profile http = reader.read(
             new Local("src/test/resources/Openstack Swift (Swauth HTTP).cyberduckprofile")
         );
+        assertNotNull(http);
         assertNotEquals(https, http);
     }
 
     @Test
     public void testEqualsContexts() throws Exception {
-        final Profile keystone = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol()))).read(
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.swift;
+            }
+        })));
+        final Profile keystone = reader.read(
             new Local("src/test/resources/Openstack Swift (Keystone).cyberduckprofile")
         );
-        final Profile swauth = new ProfilePlistReader().read(
+        assertNotNull(keystone);
+        final Profile swauth = reader.read(
             new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
         );
+        assertNotNull(swauth);
         assertNotEquals(keystone, swauth);
     }
 
     @Test
     public void testProviderProfileS3HTTP() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.s3;
             }
-        }))).read(
+        })));
+        final Profile profile = reader.read(
             new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
         );
-        assertEquals(profile, new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
-            @Override
-            public Type getType() {
-                return Type.s3;
-            }
-        }))).read(
+        assertNotNull(profile);
+        assertEquals(profile, reader.read(
             new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
@@ -158,26 +158,23 @@ public class ProfilePlistReaderTest {
         assertEquals(profile.icon(), profile.disk());
         assertEquals(80, profile.getDefaultPort());
         assertEquals(new TestProtocol().getDefaultHostname(), profile.getDefaultHostname());
-        assertTrue(profile.disk().equals(new TestProtocol().disk()));
+        assertEquals(profile.disk(), new TestProtocol().disk());
         assertNotNull(profile.getProvider());
     }
 
     @Test
     public void testProviderProfileS3HTTPS() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.s3;
             }
-        }))).read(
+        })));
+        final Profile profile = reader.read(
             new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
         );
-        assertEquals(profile, new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
-            @Override
-            public Type getType() {
-                return Type.s3;
-            }
-        }))).read(
+        assertNotNull(profile);
+        assertEquals(profile, reader.read(
             new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
@@ -190,7 +187,7 @@ public class ProfilePlistReaderTest {
         assertEquals(profile.icon(), profile.disk());
         assertEquals(443, profile.getDefaultPort());
         assertEquals(new TestProtocol().getDefaultHostname(), profile.getDefaultHostname());
-        assertTrue(profile.disk().equals(new TestProtocol().disk()));
+        assertEquals(profile.disk(), new TestProtocol().disk());
         assertNotNull(profile.getProvider());
     }
 }

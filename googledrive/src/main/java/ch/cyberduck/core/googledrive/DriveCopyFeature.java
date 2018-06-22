@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -64,9 +63,6 @@ public class DriveCopyFeature implements Copy {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         if(target.isRoot()) {
-            return false;
-        }
-        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(new PathContainerService().getContainer(target))) {
             return false;
         }
         return !source.getType().contains(Path.Type.placeholder);

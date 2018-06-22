@@ -22,7 +22,7 @@ import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.FinderLocal;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -41,14 +41,14 @@ public class ApplicationSupportDirectoryFinder implements SupportDirectoryFinder
         final String application = preferences.getProperty("application.name");
         if(directories.count().intValue() == 0) {
             log.error("Failed searching for application support directory");
-            return LocalFactory.get("~/Library/Application Support", application);
+            return new FinderLocal("~/Library/Application Support", application);
         }
         else {
             final String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found application support directory in %s", directory));
             }
-            final Local folder = LocalFactory.get(directory, application);
+            final Local folder = new FinderLocal(directory, application);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Use folder %s for application support directory", folder));
             }

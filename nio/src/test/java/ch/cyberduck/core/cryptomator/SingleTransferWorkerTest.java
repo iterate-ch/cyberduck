@@ -32,6 +32,7 @@ import ch.cyberduck.core.nio.LocalHomeFinderFeature;
 import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.nio.LocalReadFeature;
 import ch.cyberduck.core.nio.LocalSession;
+import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -107,7 +108,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
         }.run(session, session));
         assertTrue(new CryptoFindFeature(session, new LocalFindFeature(session), cryptomator).find(dir1));

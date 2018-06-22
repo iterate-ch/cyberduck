@@ -44,7 +44,7 @@ public class DriveListService implements ListService {
         }
         else {
             if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory)) {
-                return new DriveSharedFolderListService(session).list(directory, listener);
+                return new DriveSharedFolderListService(session, fileid).list(directory, listener);
             }
             if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(directory)) {
                 return new DriveTeamDrivesListService(session).list(directory, listener);

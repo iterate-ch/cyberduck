@@ -73,6 +73,12 @@ public class DefaultBookmarkController extends BookmarkController {
         window.makeFirstResponder(hostField);
     }
 
+    @Override
+    public boolean validate() {
+        options.password(false);
+        return super.validate();
+    }
+
     public void setNicknameField(final NSTextField field) {
         this.nicknameField = field;
         notificationCenter.addObserver(this.id(),

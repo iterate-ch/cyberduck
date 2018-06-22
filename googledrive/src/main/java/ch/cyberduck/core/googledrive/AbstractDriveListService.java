@@ -18,15 +18,12 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.webloc.UrlFileWriter;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
@@ -35,9 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.text.MessageFormat;
 import java.util.EnumSet;
 
 import com.google.api.services.drive.model.File;
@@ -54,19 +48,23 @@ public abstract class AbstractDriveListService implements ListService {
     private final int pagesize;
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
     private final String fields;
+    private final DriveAttributesFinderFeature attributes;
+    private final DriveFileidProvider fileid;
 
-    public AbstractDriveListService(final DriveSession session) {
-        this(session, PreferencesFactory.get().getInteger("googledrive.list.limit"));
+    public AbstractDriveListService(final DriveSession session, final DriveFileidProvider fileid) {
+        this(session, fileid, PreferencesFactory.get().getInteger("googledrive.list.limit"));
     }
 
-    public AbstractDriveListService(final DriveSession session, final int pagesize) {
-        this(session, pagesize, DEFAULT_FIELDS);
+    public AbstractDriveListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize) {
+        this(session, fileid, pagesize, DEFAULT_FIELDS);
     }
 
-    public AbstractDriveListService(final DriveSession session, final int pagesize, final String fields) {
+    public AbstractDriveListService(final DriveSession session, final DriveFileidProvider fileid, final int pagesize, final String fields) {
         this.session = session;
+        this.fileid = fileid;
         this.pagesize = pagesize;
         this.fields = fields;
+        this.attributes = new DriveAttributesFinderFeature(session, fileid);
     }
 
     @Override
@@ -90,7 +88,7 @@ public abstract class AbstractDriveListService implements ListService {
                     log.debug(String.format("Chunk of %d retrieved", list.getFiles().size()));
                 }
                 for(File f : list.getFiles()) {
-                    final PathAttributes properties = this.toAttributes(f);
+                    final PathAttributes properties = attributes.toAttributes(f);
                     final String filename;
                     if(!DRIVE_FOLDER.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                         filename = String.format("%s.%s", PathNormalizer.name(f.getName()), urlFileWriter.getExtension());
@@ -123,44 +121,11 @@ public abstract class AbstractDriveListService implements ListService {
         }
     }
 
-    protected PathAttributes toAttributes(final File f) {
-        final PathAttributes attributes = new PathAttributes();
-        if(null != f.getExplicitlyTrashed()) {
-            if(f.getExplicitlyTrashed()) {
-                // Mark as hidden
-                attributes.setDuplicate(true);
-            }
-        }
-        if(null != f.getSize()) {
-            if(!DRIVE_FOLDER.equals(f.getMimeType())
-                && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
-                attributes.setSize(f.getSize());
-            }
-        }
-        attributes.setVersionId(f.getId());
-        if(f.getModifiedTime() != null) {
-            attributes.setModificationDate(f.getModifiedTime().getValue());
-        }
-        if(f.getCreatedTime() != null) {
-            attributes.setCreationDate(f.getCreatedTime().getValue());
-        }
-        attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
-        if(StringUtils.isNotBlank(f.getWebViewLink())) {
-            attributes.setLink(new DescriptiveUrl(URI.create(f.getWebViewLink()),
-                DescriptiveUrl.Type.http,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
-            if(!DRIVE_FOLDER.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
-                attributes.setSize(UrlFileWriterFactory.get().write(new DescriptiveUrl(URI.create(f.getWebViewLink())))
-                    .getBytes(Charset.defaultCharset()).length);
-            }
-        }
-        return attributes;
-    }
-
     protected abstract String query(final Path directory, final ListProgressListener listener) throws BackgroundException;
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
+        fileid.withCache(cache);
         return this;
     }
 }

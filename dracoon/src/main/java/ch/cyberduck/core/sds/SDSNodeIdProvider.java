@@ -99,6 +99,40 @@ public class SDSNodeIdProvider implements IdProvider {
         }
     }
 
+    public boolean isEncrypted(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return false;
+        }
+        final Path container = containerService.getContainer(file);
+        if(cache.isCached(container.getParent())) {
+            final AttributedList<Path> list = cache.get(container.getParent());
+            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(container));
+            if(null != found) {
+                if(found.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
+                    return true;
+                }
+            }
+        }
+        try {
+            if(container.getType().contains(Path.Type.vault)) {
+                return true;
+            }
+            // Top-level nodes only
+            final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(0,
+                Long.parseLong(ROOT_NODE_ID), null, String.format("type:eq:%s|name:cn:%s", "room", container.getName()),
+                null, null, null, StringUtils.EMPTY, null);
+            for(Node node : nodes.getItems()) {
+                if(node.getName().equals(container.getName())) {
+                    return node.getIsEncrypted();
+                }
+            }
+            throw new NotfoundException(file.getAbsolute());
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
+    }
+
     @Override
     public SDSNodeIdProvider withCache(final Cache<Path> cache) {
         this.cache = cache;

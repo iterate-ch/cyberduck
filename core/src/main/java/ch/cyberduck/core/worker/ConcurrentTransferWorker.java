@@ -26,6 +26,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -67,8 +68,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final ConnectionCallback connectionCallback,
                                     final PasswordCallback passwordCallback,
                                     final ProgressListener progressListener,
-                                    final StreamListener streamListener) {
-        super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback, passwordCallback);
+                                    final StreamListener streamListener,
+                                    final NotificationService notification) {
+        super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback, passwordCallback, notification);
         this.source = source;
         this.destination = destination;
         this.pool = ThreadPoolFactory.get("transfer",

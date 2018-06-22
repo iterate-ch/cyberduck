@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -52,7 +51,6 @@ public class DefaultAttributesFinderFeature extends ListFilteringFeature impleme
         }
         try {
             final Path found = this.search(file);
-            final AttributedList<Path> list;
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }

@@ -17,24 +17,19 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
 
 import org.apache.log4j.Logger;
 
 public class FilesystemBookmarkResolverFactory extends Factory<FilesystemBookmarkResolver<NSURL>> {
     private static final Logger log = Logger.getLogger(FilesystemBookmarkResolverFactory.class);
 
+    private static final FilesystemBookmarkResolverFactory factory = new FilesystemBookmarkResolverFactory();
+
     public FilesystemBookmarkResolverFactory() {
         super("factory.bookmarkresolver.class");
     }
 
     public static FilesystemBookmarkResolver<NSURL> get() {
-        try {
-            return new FilesystemBookmarkResolverFactory().create();
-        }
-        catch(FactoryException e) {
-            log.warn("No filesystem bookmark resolver configured");
-            return new AliasFilesystemBookmarkResolver();
-        }
+        return new FilesystemBookmarkResolverFactory().create();
     }
 }
