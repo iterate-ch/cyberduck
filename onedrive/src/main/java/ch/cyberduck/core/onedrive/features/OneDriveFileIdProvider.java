@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -51,7 +50,7 @@ public class OneDriveFileIdProvider implements IdProvider {
                 return cachedVersionId;
             }
         }
-        final AttributedList<Path> list = new OneDriveListService(session, this).list(file.getParent(), new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(session, this).list(file.getParent(), listener);
         cache.put(file.getParent(), list); // overwrite cache because file does not have versionId (it may have been created recently)
         final String versionId = findVersionId(list, file);
         if(StringUtils.isBlank(versionId)) {
