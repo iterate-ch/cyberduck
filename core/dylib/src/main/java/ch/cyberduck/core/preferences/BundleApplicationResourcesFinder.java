@@ -20,10 +20,10 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.local.FinderLocal;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -40,7 +40,7 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
             log.warn("No main bundle found");
             return new TemporarySupportDirectoryFinder().find();
         }
-        final Local folder = LocalFactory.get(b.resourcePath());
+        final Local folder = new FinderLocal(b.resourcePath());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use folder %s for application resources directory", folder));
         }
@@ -59,7 +59,7 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
             cached = null;
         }
         else {
-            final Local executable = LocalFactory.get(main.executablePath());
+            final Local executable = new FinderLocal(main.executablePath());
             cached = this.bundle(main, executable);
         }
         return cached;

@@ -42,7 +42,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
@@ -50,6 +52,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -60,24 +63,23 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * Absolute path in local file system
      */
     private String path;
-
     private final LocalAttributes attributes;
 
-    public Local(final String parent, final String name) throws LocalAccessDeniedException {
+    public Local(final String parent, final String name) {
         this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
     }
 
-    public Local(final String parent, final String name, final String delimiter) throws LocalAccessDeniedException {
+    public Local(final String parent, final String name, final String delimiter) {
         this(parent.endsWith(delimiter) ?
             String.format("%s%s", parent, name) :
             String.format("%s%c%s", parent, CharUtils.toChar(delimiter), name));
     }
 
-    public Local(final Local parent, final String name) throws LocalAccessDeniedException {
+    public Local(final Local parent, final String name) {
         this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
     }
 
-    public Local(final Local parent, final String name, final String delimiter) throws LocalAccessDeniedException {
+    public Local(final Local parent, final String name, final String delimiter) {
         this(parent.isRoot() ?
             String.format("%s%s", parent.getAbsolute(), name) :
             String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(delimiter), name));
@@ -86,7 +88,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     /**
      * @param name Absolute path
      */
-    public Local(final String name) throws LocalAccessDeniedException {
+    public Local(final String name) {
         String path = name;
         if(PreferencesFactory.get().getBoolean("local.normalize.unicode")) {
             path = new NFCNormalizer().normalize(path).toString();
@@ -101,7 +103,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             this.path = Paths.get(path).toString();
         }
         catch(InvalidPathException e) {
-            throw new LocalAccessDeniedException(String.format("The name %s is not a valid path for the filesystem", path), e);
+            log.error(String.format("The name %s is not a valid path for the filesystem", path), e);
+            this.path = path;
         }
         this.attributes = new LocalAttributes(path);
     }
@@ -115,14 +118,14 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     @Override
     public EnumSet<Type> getType() {
         final EnumSet<Type> set = EnumSet.noneOf(Type.class);
-        if(this.isFile()) {
-            set.add(Type.file);
-        }
-        else {
+        if(this.isDirectory()) {
             set.add(Type.directory);
             if(this.isVolume()) {
                 set.add(Type.volume);
             }
+        }
+        else {
+            set.add(Type.file);
         }
         if(this.isSymbolicLink()) {
             set.add(Type.symboliclink);
@@ -175,7 +178,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             }
         }
         catch(InvalidPathException | IOException e) {
-            throw new LocalNotfoundException(String.format("Resolving symlink target for %s failed", path), e);
+            throw new LocalNotfoundException(MessageFormat.format("Failure to read attributes of {0}", this.getName()), e);
         }
     }
 
@@ -203,7 +206,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             throw new LocalNotfoundException(String.format("Delete %s failed", path), e);
         }
         catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Delete %s failed", path), e);
+            throw new LocalAccessDeniedException(MessageFormat.format(
+                LocaleFactory.localizedString("Cannot delete {0}", "Error"), this.getName()), e);
         }
     }
 
@@ -223,7 +227,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             }
         }
         catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Error listing files in directory %s", path), e);
+            throw new LocalAccessDeniedException(MessageFormat.format(
+                LocaleFactory.localizedString("Listing directory {0} failed", "Error"), this.getName()), e);
         }
         return children;
     }
@@ -298,12 +303,20 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public void rename(final Local renamed) throws AccessDeniedException {
         try {
-            Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING);
-            path = renamed.getAbsolute();
+            try {
+                Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            }
+            catch(AtomicMoveNotSupportedException | FileAlreadyExistsException e) {
+                // Copying file to different disk is not possible with atomic move.
+                // Moving directory to an already existing target will throw exists exception with atomic move flag.
+                Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING);
+            }
         }
         catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Rename failed for %s", renamed), e);
+            throw new LocalAccessDeniedException(MessageFormat.format(
+                LocaleFactory.localizedString("Cannot rename {0}", "Error"), this.getName()), e);
         }
+        path = renamed.getAbsolute();
     }
 
     public void copy(final Local copy) throws AccessDeniedException {
@@ -326,7 +339,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
                 IOUtils.copy(in, out);
             }
             catch(IOException e) {
-                throw new LocalAccessDeniedException(e.getMessage(), e);
+                throw new LocalAccessDeniedException(MessageFormat.format(
+                    LocaleFactory.localizedString("Cannot copy {0}", "Error"), this.getName()), e);
             }
             finally {
                 IOUtils.closeQuietly(in);

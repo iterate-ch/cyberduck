@@ -99,7 +99,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
     }
 
@@ -124,7 +124,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -204,7 +204,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
         Assert.assertTrue(new DriveFindFeature(session, fileid).find(cleartextFile));
         Assert.assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session, fileid), cryptomator).find(encryptedFile));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -232,7 +232,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
         Assert.assertTrue(new DriveFindFeature(session, fileid).find(cleartextFolder));
         Assert.assertTrue(new DriveFindFeature(session, fileid).find(cleartextFile));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -259,7 +259,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
         Assert.assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session, fileid), cryptomator).find(encryptedFile));
         Assert.assertTrue(new DriveFindFeature(session, fileid).find(cleartextFile));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -287,7 +287,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
         final Path fileRenamed = new Path(cleartextFolder, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         Assert.assertTrue(new DriveFindFeature(session, fileid).find(fileRenamed));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), new DisabledProgressListener()).run(session);
     }
 
     private static class TestSessionPool implements SessionPool {

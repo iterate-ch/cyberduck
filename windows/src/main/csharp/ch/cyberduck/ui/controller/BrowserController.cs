@@ -1702,7 +1702,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDelete()
         {
-            return IsMounted() && SelectedPaths.Count > 0;
+            if (IsMounted() && SelectedPaths.Count > 0)
+            {
+                if (null == SelectedPath)
+                {
+                    return false;
+                }
+                return ((Delete) Session.getFeature(typeof(Delete))).isSupported(SelectedPath);
+            }
+            return false;
         }
 
         private bool View_ValidateSynchronize()
@@ -3239,7 +3247,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly List _files;
 
                 public InnerDeleteWorker(BrowserController controller, LoginCallback prompt, List files)
-                    : base(prompt, files, controller.Cache, controller)
+                    : base(prompt, files, controller)
                 {
                     _controller = controller;
                     _files = files;

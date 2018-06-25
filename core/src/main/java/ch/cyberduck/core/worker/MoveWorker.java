@@ -79,7 +79,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     SessionPoolFactory.create(cache, session.getHost(), keychain, callback, key, listener, transcript), cache, listener, callback).run(session);
                 for(Map.Entry<Path, Path> r : files.entrySet()) {
                     // Delete source files recursively after copy is complete
-                    new DeleteWorker(callback, Collections.singletonList(r.getKey()), cache, listener).run(session);
+                    new DeleteWorker(callback, Collections.singletonList(r.getKey()), listener).run(session);
                 }
                 result.putAll(copy);
             }
@@ -124,13 +124,6 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             recursive.put(source, target);
         }
         return recursive;
-    }
-
-    @Override
-    public void cleanup(final Map<Path, Path> result) {
-        for(Path f : result.keySet()) {
-            cache.invalidate(f.getParent());
-        }
     }
 
     @Override

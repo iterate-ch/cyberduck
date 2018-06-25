@@ -44,6 +44,7 @@ import ch.cyberduck.core.local.DisabledApplicationBadgeLabeler;
 import ch.cyberduck.core.local.DisabledApplicationFinder;
 import ch.cyberduck.core.local.DisabledApplicationLauncher;
 import ch.cyberduck.core.local.DisabledBrowserLauncher;
+import ch.cyberduck.core.local.DisabledFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.DisabledIconService;
 import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NativeLocalTrashFeature;
@@ -1258,6 +1259,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("factory.localsupportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
         this.setDefault("factory.applicationresourcesfinder.class", TemporaryApplicationResourcesFinder.class.getName());
         this.setDefault("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
+        this.setDefault("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
         this.setDefault("factory.watchservice.class", NIOEventWatchService.class.getName());
         this.setDefault("factory.proxy.class", DisabledProxyFinder.class.getName());
         this.setDefault("factory.passwordstore.class", DisabledPasswordStore.class.getName());

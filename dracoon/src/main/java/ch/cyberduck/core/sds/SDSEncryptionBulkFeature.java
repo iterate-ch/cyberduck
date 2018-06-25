@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -41,9 +40,6 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
 
-    private final PathContainerService containerService
-        = new SDSPathContainerService();
-
     public SDSEncryptionBulkFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
         this.nodeid = nodeid;
@@ -58,7 +54,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 default:
                     if(session.userAccount().isEncryptionEnabled()) {
                         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-                            if(containerService.getContainer(entry.getKey()).getType().contains(Path.Type.vault)) {
+                            if(nodeid.isEncrypted(entry.getKey())) {
                                 final TransferStatus status = entry.getValue();
                                 final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                                 final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
@@ -86,7 +82,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                     if(session.userAccount().isEncryptionEnabled()) {
                         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
                         for(Path file : files.keySet()) {
-                            if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+                            if(nodeid.isEncrypted(file)) {
                                 background.operate(callback, file);
                             }
                         }

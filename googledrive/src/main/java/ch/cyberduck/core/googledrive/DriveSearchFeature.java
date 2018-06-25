@@ -26,15 +26,17 @@ import ch.cyberduck.core.features.Search;
 
 public class DriveSearchFeature implements Search {
     private DriveSession session;
+    private final DriveFileidProvider fileid;
 
-    public DriveSearchFeature(final DriveSession session) {
+    public DriveSearchFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         try {
-            return new DriveSearchListService(session, regex.toPattern().pattern()).list(workdir, listener);
+            return new DriveSearchListService(session, fileid, regex.toPattern().pattern()).list(workdir, listener);
         }
         catch(NotfoundException e) {
             return AttributedList.emptyList();

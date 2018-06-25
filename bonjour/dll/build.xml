@@ -43,6 +43,10 @@
                 <exclude name="*-sources.jar"/>
                 <exclude name="*-tests.jar"/>
             </fileset>
+            <outputfilter>
+                <contains>IKVMC0109</contains>
+                <contains>class is already available in referenced assembly</contains>
+            </outputfilter>
         </ikvmc>
     </target>
 

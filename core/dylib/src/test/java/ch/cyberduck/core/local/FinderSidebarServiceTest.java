@@ -20,7 +20,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -36,7 +35,7 @@ public class FinderSidebarServiceTest {
     @Test
     public void testAddNotFound() throws Exception {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
-        final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
+        final Local file = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"));
         f.add(file);
         f.remove(file);
     }
@@ -44,7 +43,7 @@ public class FinderSidebarServiceTest {
     @Test(expected = LocalAccessDeniedException.class)
     public void testRemoveNotfound() throws Exception {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
-        final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"));
+        final Local file = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"));
         f.remove(file);
     }
 
@@ -53,7 +52,7 @@ public class FinderSidebarServiceTest {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
         final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
         for(int i = 0; i < volumes.count().intValue(); i++) {
-            final Local volume = LocalFactory.get(volumes.objectAtIndex(new NSUInteger(i)).toString());
+            final Local volume = new FinderLocal(volumes.objectAtIndex(new NSUInteger(i)).toString());
             f.add(volume);
             f.remove(volume);
         }
@@ -65,7 +64,7 @@ public class FinderSidebarServiceTest {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.volume);
         final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
         for(int i = 0; i < volumes.count().intValue(); i++) {
-            final Local volume = LocalFactory.get(volumes.objectAtIndex(new NSUInteger(i)).toString());
+            final Local volume = new FinderLocal(volumes.objectAtIndex(new NSUInteger(i)).toString());
             f.add(volume);
             f.remove(volume);
         }
@@ -77,7 +76,7 @@ public class FinderSidebarServiceTest {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.server);
         final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
         for(int i = 0; i < volumes.count().intValue(); i++) {
-            final Local volume = LocalFactory.get(volumes.objectAtIndex(new NSUInteger(i)).toString());
+            final Local volume = new FinderLocal(volumes.objectAtIndex(new NSUInteger(i)).toString());
             f.add(volume);
             f.remove(volume);
         }
@@ -134,6 +133,6 @@ public class FinderSidebarServiceTest {
     @Test(expected = LocalAccessDeniedException.class)
     public void testRemove() throws Exception {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
-        f.remove(LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir")));
+        f.remove(new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir")));
     }
 }

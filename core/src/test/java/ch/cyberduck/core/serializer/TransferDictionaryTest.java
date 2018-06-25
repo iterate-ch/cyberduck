@@ -31,6 +31,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -167,7 +168,7 @@ public class TransferDictionaryTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()).run(session, session);
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()).run(session, session);
         assertTrue(t.isComplete());
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);

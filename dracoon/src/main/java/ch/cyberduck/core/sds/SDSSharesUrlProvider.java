@@ -33,6 +33,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.KeyValueEntry;
 import ch.cyberduck.core.sds.io.swagger.client.model.UploadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
@@ -44,6 +45,7 @@ import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Set;
 
 import com.dracoon.sdk.crypto.Crypto;
@@ -68,6 +70,43 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
+    public boolean isSupported(final Path file, final Type type) {
+        if(file.isRoot()) {
+            return false;
+        }
+        final List<KeyValueEntry> configuration = session.configuration();
+        switch(type) {
+            case download:
+                for(KeyValueEntry entry : configuration) {
+                    if("manageDownloadShare".equals(entry.getKey())) {
+                        if("false".equalsIgnoreCase(entry.getValue())) {
+                            return false;
+                        }
+                    }
+                }
+                if(file.isDirectory() && containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+                    // In encrypted rooms only files can be shared
+                    return false;
+                }
+                return true;
+            case upload:
+                // An upload account can be created for directories and rooms only
+                if(!file.isDirectory()) {
+                    return false;
+                }
+                for(KeyValueEntry entry : configuration) {
+                    if("manageUploadShare".equals(entry.getKey())) {
+                        if("false".equalsIgnoreCase(entry.getValue())) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+        }
+        return false;
+    }
+
+    @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final CreateDownloadShareRequest options,
                                         final PasswordCallback callback) throws BackgroundException {
         try {
@@ -76,7 +115,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 return DescriptiveUrl.EMPTY;
             }
             final Long fileid = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
-            if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+            if(nodeid.isEncrypted(file)) {
                 // get existing file key associated with the sharing user
                 final FileKey key = new NodesApi(session.getClient()).getUserFileKey(fileid, StringUtils.EMPTY);
                 final UserPrivateKey privateKey = new UserPrivateKey();

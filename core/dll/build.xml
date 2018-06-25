@@ -45,6 +45,10 @@
                 <exclude name="*-sources.jar"/>
                 <exclude name="*-tests.jar"/>
             </fileset>
+            <outputfilter>
+                <contains>IKVMC0109</contains>
+                <contains>class is already available in referenced assembly</contains>
+            </outputfilter>
             <resource name="/com/sun/jna/win32-x86/jnidispatch.dll" path="${build}/jnidispatch.dll"/>
         </ikvmc>
     </target>

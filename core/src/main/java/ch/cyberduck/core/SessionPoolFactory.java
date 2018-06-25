@@ -40,14 +40,23 @@ public class SessionPoolFactory {
     }
 
     public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark) {
-        return create(controller, cache, bookmark, Usage.transfer);
+        return create(controller, cache, bookmark, controller);
+    }
+
+    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
+                                     final ProgressListener listener) {
+        return create(controller, cache, bookmark, listener, Usage.transfer);
     }
 
     public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
                                      final Usage... usage) {
+        return create(controller, cache, bookmark, controller, usage);
+    }
+
+    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
+                                     final ProgressListener listener, final Usage... usage) {
         return create(cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
-            bookmark.getProtocol()), controller, controller,
-            usage);
+            bookmark.getProtocol()), listener, controller, usage);
     }
 
     public static SessionPool create(final Cache<Path> cache, final Host bookmark,

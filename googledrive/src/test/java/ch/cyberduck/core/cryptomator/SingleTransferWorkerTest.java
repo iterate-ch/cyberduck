@@ -39,6 +39,7 @@ import ch.cyberduck.core.googledrive.DriveReadFeature;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
+import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -99,7 +100,7 @@ public class SingleTransferWorkerTest extends AbstractDriveTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
         }.run(session, session));
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(dir1));

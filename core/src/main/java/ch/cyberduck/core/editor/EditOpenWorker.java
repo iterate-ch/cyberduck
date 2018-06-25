@@ -31,6 +31,7 @@ import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -51,25 +52,22 @@ public class EditOpenWorker extends TransferWorker<Transfer> {
     private static final Logger log = Logger.getLogger(EditOpenWorker.class);
 
     private final AbstractEditor editor;
-
     private final Transfer download;
-
     private final TransferErrorCallback callback;
-
     private final ApplicationQuitCallback quit;
-
+    private final NotificationService notification;
     private final ProgressListener listener;
-
     private final FileWatcherListener watcher;
 
     public EditOpenWorker(final Host bookmark, final AbstractEditor editor,
                           final TransferErrorCallback callback,
                           final ApplicationQuitCallback quit,
                           final ProgressListener listener,
-                          final FileWatcherListener watcher) {
+                          final FileWatcherListener watcher, final NotificationService notification) {
         this.editor = editor;
         this.callback = callback;
         this.quit = quit;
+        this.notification = notification;
         this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(),
                 new DownloadDuplicateFilter()) {
             @Override
@@ -100,7 +98,7 @@ public class EditOpenWorker extends TransferWorker<Transfer> {
         final SingleTransferWorker worker
                 = new SingleTransferWorker(source, destination, download, options, new TransferSpeedometer(download),
                 new DisabledTransferPrompt(), callback,
-                listener, new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback());
+            listener, new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), notification);
         worker.run(source, destination);
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));

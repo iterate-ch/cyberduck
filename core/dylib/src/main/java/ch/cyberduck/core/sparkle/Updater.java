@@ -36,9 +36,7 @@ public abstract class Updater extends NSObject {
         if(null == CLASS) {
             return null;
         }
-        final String url = getFeed();
         final Updater updater = CLASS.sharedUpdater();
-        updater.setFeedURL(NSURL.URLWithString(null == url ? PreferencesFactory.get().getProperty("update.feed.release") : url));
         updater.setUserAgentString(new PreferencesUseragentProvider().get());
         return updater;
     }

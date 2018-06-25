@@ -39,8 +39,12 @@ static void _ReachabilityCallbackFunction(SCNetworkReachabilityRef target, SCNet
 }
 
 -(void)dealloc {
-    [url release];
-    CFRelease(target);
+    if(url != nil) {
+        [url release];
+    }
+    if(target != NULL) {
+        CFRelease(target);
+    }
     [super dealloc];
 }
 

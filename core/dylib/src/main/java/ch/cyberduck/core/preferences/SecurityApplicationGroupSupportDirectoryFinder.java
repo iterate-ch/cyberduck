@@ -21,10 +21,10 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.features.Symlink;
@@ -62,7 +62,7 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
             else {
                 // You should organize the contents of this directory in the same way that any other Library folder is organized
                 final String application = PreferencesFactory.get().getProperty("application.container.name");
-                final Local folder = LocalFactory.get(String.format("%s/Library/Application Support", group.path()), application);
+                final Local folder = new FinderLocal(String.format("%s/Library/Application Support", group.path()), application);
                 try {
                     // In previous versions of OS X, although the group container directory is part of your sandbox,
                     // the directory itself is not created automatically.

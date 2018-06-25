@@ -42,7 +42,7 @@ public class SDSDelegatingReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+        if(nodeid.isEncrypted(file)) {
             return new CryptoReadFeature(session, nodeid, proxy).read(file, status, callback);
         }
         else {
@@ -52,7 +52,7 @@ public class SDSDelegatingReadFeature implements Read {
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+        if(nodeid.isEncrypted(file)) {
             return new CryptoReadFeature(session, nodeid, proxy).offset(file);
         }
         else {

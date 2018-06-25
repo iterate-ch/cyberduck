@@ -36,7 +36,7 @@ public class SFTPAttributesFinderFeatureTest {
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -47,7 +47,7 @@ public class SFTPAttributesFinderFeatureTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -67,9 +67,26 @@ public class SFTPAttributesFinderFeatureTest {
     }
 
     @Test
+    public void testFindSymbolicLink() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path file = new SFTPTouchFeature(session).touch(new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path symlink = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SFTPSymlinkFeature(session).symlink(symlink, file.getAbsolute());
+        final SFTPAttributesFinderFeature f = new SFTPAttributesFinderFeature(session);
+        final PathAttributes attributes = f.find(symlink);
+        assertNotNull(attributes);
+        session.close();
+    }
+
+    @Test
     public void testAttributesDirectoryListingAccessDenied() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host) {
             @Override

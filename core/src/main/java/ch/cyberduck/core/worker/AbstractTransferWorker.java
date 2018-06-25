@@ -36,7 +36,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
-import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.threading.TransferBackgroundActionState;
 import ch.cyberduck.core.transfer.SynchronizingTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
@@ -64,40 +63,29 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
 
     private final SleepPreventer sleep = SleepPreventerFactory.get();
-
-    private final NotificationService growl = NotificationServiceFactory.get();
-
+    private final NotificationService notification;
     private final Transfer transfer;
-
     /**
      * Overwrite prompt
      */
     private final TransferPrompt prompt;
-
     /**
      * Error prompt
      */
     private final TransferErrorCallback error;
-
     private final ConnectionCallback connectionCallback;
     private final PasswordCallback passwordCallback;
-
     private final TransferOptions options;
-
     private final TransferSpeedometer meter;
-
     /**
      * Transfer status determined by filters
      */
     private final Map<Path, TransferStatus> table;
-
     /**
      * Workload
      */
     private final Cache<TransferItem> cache;
-
     private final ProgressListener progress;
-
     private final StreamListener stream;
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -106,8 +94,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final ProgressListener progress,
                                   final StreamListener stream,
                                   final ConnectionCallback connectionCallback,
-                                  final PasswordCallback passwordCallback) {
-        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, new TransferItemCache(Integer.MAX_VALUE));
+                                  final PasswordCallback passwordCallback,
+                                  final NotificationService notification) {
+        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, new TransferItemCache(Integer.MAX_VALUE));
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -116,8 +105,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final ProgressListener progress,
                                   final StreamListener stream,
                                   final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
+                                  final NotificationService notification,
                                   final Cache<TransferItem> cache) {
-        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, cache, new HashMap<Path, TransferStatus>());
+        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, new HashMap<Path, TransferStatus>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -127,6 +117,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final StreamListener stream,
                                   final ConnectionCallback connectionCallback,
                                   final PasswordCallback passwordCallback,
+                                  final NotificationService notification,
                                   final Cache<TransferItem> cache,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
@@ -138,6 +129,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         this.stream = stream;
         this.connectionCallback = connectionCallback;
         this.passwordCallback = passwordCallback;
+        this.notification = notification;
         this.cache = cache;
         this.table = table;
     }
@@ -190,12 +182,12 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             final TransferAction action;
             // Determine the filter to match files against
             action = transfer.action(source, destination, options.resumeRequested, options.reloadRequested, prompt,
-                    new DisabledListProgressListener() {
-                        @Override
-                        public void message(final String message) {
-                            progress.message(message);
-                        }
-                    });
+                new DisabledListProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        progress.message(message);
+                    }
+                });
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Selected transfer action %s", action));
             }
@@ -228,7 +220,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         finally {
             transfer.post(source, destination, table, connectionCallback);
             if(transfer.isReset()) {
-                growl.notify(transfer.isComplete() ?
+                notification.notify(transfer.isComplete() ?
                         String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
                         "Transfer incomplete", transfer.getName());
             }
@@ -277,7 +269,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             }
                             // Transfer
                             progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"),
-                                    file.getName(), action.getTitle()));
+                                file.getName(), action.getTitle()));
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent, progress);
                             table.put(file, status);
@@ -387,9 +379,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             source = borrow(Connection.source);
                             destination = borrow(Connection.destination);
                             item.remote = transfer.transfer(source, destination,
-                                    segment.getRename().remote != null ? segment.getRename().remote : item.remote,
-                                    segment.getRename().local != null ? segment.getRename().local : item.local,
-                                    options, segment, connectionCallback, passwordCallback, progress, stream);
+                                segment.getRename().remote != null ? segment.getRename().remote : item.remote,
+                                segment.getRename().local != null ? segment.getRename().local : item.local,
+                                options, segment, connectionCallback, passwordCallback, progress, stream);
                             // Recursive
                             if(item.remote.isDirectory()) {
                                 if(!cache.isCached(item)) {
@@ -405,9 +397,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
                             // Post process of file.
                             filter.complete(
-                                    segment.getRename().remote != null ? segment.getRename().remote : item.remote,
-                                    segment.getRename().local != null ? segment.getRename().local : item.local,
-                                    options, segment, progress);
+                                segment.getRename().remote != null ? segment.getRename().remote : item.remote,
+                                segment.getRename().local != null ? segment.getRename().local : item.local,
+                                options, segment, progress);
 
                             if(!iter.hasNext()) {
                                 // Free memory when no more segments to transfer
@@ -484,9 +476,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
                                 // Concatenate segments with completed status set
                                 filter.complete(
-                                        status.getRename().remote != null ? status.getRename().remote : item.remote,
-                                        status.getRename().local != null ? status.getRename().local : item.local,
-                                        options, status.complete(), progress);
+                                    status.getRename().remote != null ? status.getRename().remote : item.remote,
+                                    status.getRename().local != null ? status.getRename().local : item.local,
+                                    options, status.complete(), progress);
                             }
                             finally {
                                 // Return session to pool

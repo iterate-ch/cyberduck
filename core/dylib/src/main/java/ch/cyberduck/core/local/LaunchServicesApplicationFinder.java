@@ -23,7 +23,6 @@ import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.collections4.map.LRUMap;
@@ -181,7 +180,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                 if(null == app) {
                     log.error(String.format("Loading bundle %s failed", path));
                     identifier = search;
-                    name = FilenameUtils.removeExtension(LocalFactory.get(path).getDisplayName());
+                    name = FilenameUtils.removeExtension(new FinderLocal(path).getDisplayName());
                 }
                 else {
                     NSDictionary dict = app.infoDictionary();
@@ -194,7 +193,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                         final NSObject bundlename = dict.objectForKey("CFBundleName");
                         if(null == bundlename) {
                             log.warn(String.format("No CFBundleName in bundle %s", path));
-                            name = FilenameUtils.removeExtension(LocalFactory.get(path).getDisplayName());
+                            name = FilenameUtils.removeExtension(new FinderLocal(path).getDisplayName());
                         }
                         else {
                             name = bundlename.toString();

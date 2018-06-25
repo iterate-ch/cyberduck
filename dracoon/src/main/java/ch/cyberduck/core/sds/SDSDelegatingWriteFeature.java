@@ -31,19 +31,21 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final Write<VersionId> proxy;
 
     private final PathContainerService containerService
             = new SDSPathContainerService();
 
-    public SDSDelegatingWriteFeature(final SDSSession session, final Write<VersionId> proxy) {
+    public SDSDelegatingWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<VersionId> proxy) {
         this.session = session;
+        this.nodeid = nodeid;
         this.proxy = proxy;
     }
 
     @Override
     public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+        if(nodeid.isEncrypted(file)) {
             return new CryptoWriteFeature(session, proxy).write(file, status, callback);
         }
         return proxy.write(file, status, callback);
@@ -51,7 +53,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+        if(nodeid.isEncrypted(file)) {
             return new CryptoWriteFeature(session, proxy).append(file, length, cache);
         }
         return proxy.append(file, length, cache);
