@@ -28,12 +28,12 @@ import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
+import ch.cyberduck.core.googledrive.DriveAttributesFinderFeature;
 import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFileidProvider;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.googledrive.DriveWriteFeature;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -65,7 +65,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         final String versionId = test.attributes().getVersionId();
         assertNotNull(versionId);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertEquals(versionId, attributes.getVersionId());
         new CryptoDeleteFeature(session, new DriveDeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -83,7 +83,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         final String versionId = test.attributes().getVersionId();
         assertNotNull(versionId);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertEquals(versionId, attributes.getVersionId());
         new CryptoDeleteFeature(session, new DriveDeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
