@@ -20,11 +20,14 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
+import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
@@ -42,6 +45,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -51,12 +55,15 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
     public void testMakeDirectoryEncrypted() throws Exception {
         final Path home = new OneDriveHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new OneDriveWriteFeature(session), cryptomator).mkdir(test, null, new TransferStatus());
+        final Path test = new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new OneDriveWriteFeature(session), cryptomator).mkdir(
+            new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final String versionId = test.attributes().getVersionId();
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(test);
+        assertEquals(versionId, attributes.getVersionId());
         new CryptoDeleteFeature(session, new OneDriveDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -64,12 +71,15 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
     public void testMakeDirectoryLongFilenameEncrypted() throws Exception {
         final Path home = new OneDriveHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new OneDriveWriteFeature(session), cryptomator).mkdir(test, null, new TransferStatus());
+        final Path test = new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new OneDriveWriteFeature(session), cryptomator).mkdir(
+            new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final String versionId = test.attributes().getVersionId();
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(test);
+        assertEquals(versionId, attributes.getVersionId());
         new CryptoDeleteFeature(session, new OneDriveDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
