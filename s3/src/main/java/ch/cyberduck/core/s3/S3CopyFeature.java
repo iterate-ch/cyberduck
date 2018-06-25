@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
+import java.util.HashMap;
+
 public class S3CopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(S3CopyFeature.class);
 
@@ -75,6 +77,7 @@ public class S3CopyFeature implements Copy {
             final S3Object destination = new S3WriteFeature(session).getDetails(target, status);
             destination.setAcl(accessControlListFeature.convert(status.getAcl()));
             destination.setBucketName(containerService.getContainer(target).getName());
+            destination.replaceAllMetadata(new HashMap<String, Object>(new S3MetadataFeature(session, accessControlListFeature).getMetadata(source)));
             this.copy(source, destination, status);
         }
         return target;
