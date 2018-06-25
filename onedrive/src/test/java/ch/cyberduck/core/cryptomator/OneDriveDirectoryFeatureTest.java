@@ -45,8 +45,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
@@ -60,6 +59,7 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new OneDriveWriteFeature(session), cryptomator).mkdir(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertNotNull(test.attributes().getVault());
         final String versionId = test.attributes().getVersionId();
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(test);
@@ -76,6 +76,7 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new OneDriveWriteFeature(session), cryptomator).mkdir(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertNotNull(test.attributes().getVault());
         final String versionId = test.attributes().getVersionId();
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(test);
