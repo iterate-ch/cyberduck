@@ -1702,7 +1702,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDelete()
         {
-            return IsMounted() && SelectedPaths.Count > 0;
+            if (IsMounted() && SelectedPaths.Count > 0)
+            {
+                if (null == SelectedPath)
+                {
+                    return false;
+                }
+                return ((Delete) Session.getFeature(typeof(Delete))).isSupported(SelectedPath);
+            }
+            return false;
         }
 
         private bool View_ValidateSynchronize()
