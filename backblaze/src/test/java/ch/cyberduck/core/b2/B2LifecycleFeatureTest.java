@@ -35,14 +35,15 @@ import static org.junit.Assert.assertEquals;
 public class B2LifecycleFeatureTest extends AbstractB2Test {
 
     @Test
-    public void setConfiguration() throws Exception {
+    public void testSetConfiguration() throws Exception {
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2DirectoryFeature(session, fileid).mkdir(bucket, null, new TransferStatus());
         assertEquals(LifecycleConfiguration.empty(), new B2LifecycleFeature(session, fileid).getConfiguration(bucket));
         new B2LifecycleFeature(session, fileid).setConfiguration(bucket, new LifecycleConfiguration(1, null, 30));
-        assertEquals(30, new B2LifecycleFeature(session, fileid).getConfiguration(bucket).getExpiration(), 0L);
-        assertEquals(1, new B2LifecycleFeature(session, fileid).getConfiguration(bucket).getTransition(), 0L);
+        final LifecycleConfiguration configuration = new B2LifecycleFeature(session, fileid).getConfiguration(bucket);
+        assertEquals(30, configuration.getExpiration(), 0L);
+        assertEquals(1, configuration.getTransition(), 0L);
         new B2LifecycleFeature(session, fileid).setConfiguration(bucket, LifecycleConfiguration.empty());
         assertEquals(LifecycleConfiguration.empty(), new B2LifecycleFeature(session, fileid).getConfiguration(bucket));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
