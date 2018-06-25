@@ -52,6 +52,8 @@ public class DAVReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final List<Header> headers = new ArrayList<Header>();
+        // request the source of the URI not the processed resource - https://docs.oracle.com/cd/E19146-01/821-1828/gczya/index.html
+        headers.add(new BasicHeader("Translate", "f"));
         if(status.isAppend()) {
             final HttpRange range = HttpRange.withStatus(status);
             final String header;
