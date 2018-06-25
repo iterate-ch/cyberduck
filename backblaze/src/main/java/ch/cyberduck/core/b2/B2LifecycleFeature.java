@@ -36,7 +36,7 @@ import synapticloop.b2.response.B2BucketResponse;
 public class B2LifecycleFeature implements Lifecycle {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
     private final B2FileidProvider fileid;
@@ -55,9 +55,9 @@ public class B2LifecycleFeature implements Lifecycle {
                     final List<LifecycleRule> lifecycleRules = response.getLifecycleRules();
                     for(LifecycleRule rule : lifecycleRules) {
                         return new LifecycleConfiguration(
-                                null == rule.getDaysFromUploadingToHiding() ? null : rule.getDaysFromUploadingToHiding().intValue(),
-                                null,
-                                null == rule.getDaysFromHidingToDeleting() ? null : rule.getDaysFromHidingToDeleting().intValue());
+                            null == rule.getDaysFromUploadingToHiding() ? null : rule.getDaysFromUploadingToHiding().intValue(),
+                            null,
+                            null == rule.getDaysFromHidingToDeleting() ? null : rule.getDaysFromHidingToDeleting().intValue());
                     }
                     return LifecycleConfiguration.empty();
                 }
@@ -75,13 +75,22 @@ public class B2LifecycleFeature implements Lifecycle {
     @Override
     public void setConfiguration(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
         try {
-            session.getClient().updateBucket(
-                fileid.getFileid(containerService.getContainer(container), new DisabledListProgressListener()),
-                new B2BucketTypeFeature(session, fileid).convert(container.attributes().getAcl()),
+            if(LifecycleConfiguration.empty().equals(configuration)) {
+                session.getClient().updateBucket(
+                    fileid.getFileid(containerService.getContainer(container), new DisabledListProgressListener()),
+                    new B2BucketTypeFeature(session, fileid).convert(container.attributes().getAcl())
+                );
+            }
+            else {
+                session.getClient().updateBucket(
+                    fileid.getFileid(containerService.getContainer(container), new DisabledListProgressListener()),
+                    new B2BucketTypeFeature(session, fileid).convert(container.attributes().getAcl()),
                     new LifecycleRule(
-                            null == configuration.getExpiration() ? null : configuration.getExpiration().longValue(),
-                            null == configuration.getTransition() ? null : configuration.getTransition().longValue(),
-                            StringUtils.EMPTY));
+                        null == configuration.getExpiration() ? null : configuration.getExpiration().longValue(),
+                        null == configuration.getTransition() ? null : configuration.getTransition().longValue(),
+                        StringUtils.EMPTY)
+                );
+            }
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService().map("Failure to write attributes of {0}", e, container);
