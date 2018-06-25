@@ -61,9 +61,12 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(test.attributes().getVault());
         final String versionId = test.attributes().getVersionId();
+        final Long timestamp = test.attributes().getModificationDate();
+        assertNotEquals(-1L, timestamp, 0L);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(test);
         assertEquals(versionId, attributes.getVersionId());
+        assertEquals(timestamp, attributes.getModificationDate(), 0L);
         new CryptoDeleteFeature(session, new OneDriveDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
