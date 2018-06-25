@@ -329,6 +329,7 @@ public class CryptoVault implements Vault {
                 filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
             }
             final PathAttributes attributes = new PathAttributes(file.attributes());
+            attributes.setDirectoryId(null);
             if(metadata) {
                 // The directory is different from the metadata file used to resolve the actual folder
                 attributes.setVersionId(null);
