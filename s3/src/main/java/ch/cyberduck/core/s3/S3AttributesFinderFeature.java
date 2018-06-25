@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -128,7 +127,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setStorageClass(object.getMetadataMap().get("storage-class").toString());
         }
         if(StringUtils.isNotBlank(object.getETag())) {
-            attributes.setChecksum(Checksum.parse(object.getETag()));
             attributes.setETag(object.getETag());
         }
         if(object instanceof S3Object) {
