@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -167,8 +168,20 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
-        // Bulk operation is in transfer implementation
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        final Map<TransferItem, TransferStatus> downloads = new HashMap<>();
+        final Map<TransferItem, TransferStatus> uploads = new HashMap<>();
+        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+            final Comparison compare = comparison.compare(entry.getKey().remote, entry.getKey().local);
+            if(compare.equals(Comparison.remote)) {
+                downloads.put(entry.getKey(), entry.getValue());
+            }
+            else if(compare.equals(Comparison.local)) {
+                uploads.put(entry.getKey(), entry.getValue());
+            }
+        }
+        download.pre(source, destination, downloads, callback);
+        upload.pre(source, destination, uploads, callback);
     }
 
     @Override
@@ -213,11 +226,9 @@ public class SyncTransfer extends Transfer {
         }
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            download.pre(source, destination, Collections.singletonMap(new TransferItem(file, local), status), connectionCallback);
             download.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
         }
         else if(compare.equals(Comparison.local)) {
-            upload.pre(source, destination, Collections.singletonMap(new TransferItem(file, local), status), connectionCallback);
             upload.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
         }
         return file;
