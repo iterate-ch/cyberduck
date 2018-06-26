@@ -18,7 +18,6 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
@@ -55,15 +54,18 @@ public class B2FileidProvider implements IdProvider {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
+        if(cache.isCached(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            if(null != found) {
+                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
+                    return found.attributes().getVersionId();
+                }
+            }
+        }
         if(containerService.isContainer(file)) {
-            final AttributedList<Path> list;
-            if(!cache.isCached(file.getParent())) {
-                list = new B2ListService(session, this).list(file.getParent(), new DisabledListProgressListener());
-                cache.put(file.getParent(), list);
-            }
-            else {
-                list = cache.get(file.getParent());
-            }
+            final AttributedList<Path> list = new B2ListService(session, this).list(file.getParent(), listener);
+            cache.put(file.getParent(), list);
             final Path found = list.find(new SimplePathPredicate(file));
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());

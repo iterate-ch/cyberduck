@@ -38,6 +38,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -59,16 +60,19 @@ public class CryptoVaultTest {
                     return (T) new Read() {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                            final String masterKey = "{\n" +
-                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                "  \"scryptCostParam\": 16384,\n" +
-                                "  \"scryptBlockSize\": 8,\n" +
-                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                "  \"version\": 5\n" +
-                                "}";
-                            return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
+                            if("masterkey.cryptomator".equals(file.getName())) {
+                                final String masterKey = "{\n" +
+                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                    "  \"scryptCostParam\": 16384,\n" +
+                                    "  \"scryptBlockSize\": 8,\n" +
+                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                    "  \"version\": 5\n" +
+                                    "}";
+                                return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
+                            }
+                            return new NullInputStream(0L);
                         }
 
                         @Override
@@ -101,13 +105,24 @@ public class CryptoVaultTest {
         assertTrue(vault.encrypt(session, placeholder, true).getType().contains(Path.Type.placeholder));
         assertTrue(vault.decrypt(session, vault.encrypt(session, placeholder, true)).getType().contains(Path.Type.placeholder));
         assertEquals(new Path(home, placeholder.getName(), EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.decrypted)), vault.decrypt(session, vault.encrypt(session, placeholder, true)));
-        assertNotEquals(vault.encrypt(session, directory), vault.encrypt(session, directory, true));
-        assertEquals(vault.encrypt(session, directory).attributes().getDirectoryId(), vault.encrypt(session, directory).attributes().getDirectoryId());
-        assertEquals(vault.encrypt(session, vault.encrypt(session, directory)).attributes().getDirectoryId(), vault.encrypt(session, vault.encrypt(session, directory)).attributes().getDirectoryId());
-        assertNull(vault.encrypt(session, directory, true).attributes().getDirectoryId());
-        assertNull(vault.encrypt(session, vault.encrypt(session, directory), true).attributes().getDirectoryId());
-        assertNotEquals(vault.encrypt(session, directory).attributes().getDirectoryId(), vault.encrypt(session, directory, true).attributes().getDirectoryId());
-
+        assertNotEquals(
+            vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))),
+            vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)), true)
+        );
+        assertEquals(
+            vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))).attributes().getDirectoryId(),
+            vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))).attributes().getDirectoryId()
+        );
+        assertEquals(
+            vault.encrypt(session, vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)))).attributes().getDirectoryId(),
+            vault.encrypt(session, vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)))).attributes().getDirectoryId()
+        );
+        assertNull(vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)), true).attributes().getDirectoryId());
+        assertNull(vault.encrypt(session, vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))), true).attributes().getDirectoryId());
+        assertNotEquals(
+            vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory))).attributes().getDirectoryId(),
+            vault.encrypt(session, new Path(home, "dir", EnumSet.of(Path.Type.directory)), true).attributes().getDirectoryId()
+        );
         vault.close();
         assertEquals(Vault.State.closed, vault.getState());
     }

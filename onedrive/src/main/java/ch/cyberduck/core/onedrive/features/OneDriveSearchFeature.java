@@ -63,7 +63,7 @@ public class OneDriveSearchFeature implements Search {
             }
             list.add(new Path(String.format("/%s/%s/%s", metadata.getParentReference().getDriveId(), StringUtils.removeStart(metadata.getParentReference().getPath(), "/drive/root:"), metadata.getName()),
                 metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
-                attributes.convert(metadata)));
+                attributes.toAttributes(metadata)));
         }
         return list;
     }
