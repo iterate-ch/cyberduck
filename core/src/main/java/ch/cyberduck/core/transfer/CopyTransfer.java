@@ -203,9 +203,9 @@ public class CopyTransfer extends Transfer {
         }
         final Bulk upload = destination.getFeature(Bulk.class);
         {
-            final Map<Path, TransferStatus> targets = new HashMap<>();
+            final Map<TransferItem, TransferStatus> targets = new HashMap<>();
             for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                targets.put(mapping.get(entry.getKey().remote), entry.getValue());
+                targets.put(new TransferItem(mapping.get(entry.getKey().remote)), entry.getValue());
             }
             final Object id = upload.pre(Type.upload, targets, callback);
             if(log.isDebugEnabled()) {
@@ -222,9 +222,9 @@ public class CopyTransfer extends Transfer {
         }
         final Bulk upload = destination.getFeature(Bulk.class);
         {
-            final Map<Path, TransferStatus> targets = new HashMap<>();
+            final Map<TransferItem, TransferStatus> targets = new HashMap<>();
             for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                targets.put(mapping.get(entry.getKey().remote), entry.getValue());
+                targets.put(new TransferItem(mapping.get(entry.getKey().remote)), entry.getValue());
             }
             upload.post(Type.upload, targets, callback);
         }
