@@ -66,13 +66,12 @@ public class SpectraClientBuilder {
 
             @Override
             public int getConnectionTimeout() {
-                //TODO same as socket timeout?
-                return PreferencesFactory.get().getInteger("connection.timeout.seconds");
+                return PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
             }
 
             @Override
             public int getSocketTimeout() {
-                return PreferencesFactory.get().getInteger("connection.timeout.seconds");
+                return PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
             }
 
             @Override
