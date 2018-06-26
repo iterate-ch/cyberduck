@@ -54,7 +54,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -225,6 +224,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         "Transfer incomplete", transfer.getName());
             }
             sleep.release(lock);
+            table.clear();
+            cache.clear();
         }
         return true;
     }
@@ -311,6 +312,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             return call();
                         }
                         if(table.size() == 0) {
+                            // Fail fast when first item in queue fails preparing
                             throw e;
                         }
                         // Prompt to continue or abort for application errors
@@ -364,8 +366,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             final TransferStatus status = table.get(item.remote);
             // Handle submit of one or more segments
             final List<TransferStatus> segments = status.getSegments();
-            for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
-                final TransferStatus segment = iter.next();
+            for(final TransferStatus segment : segments) {
                 this.submit(new RetryTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
@@ -400,11 +401,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
                                 options, segment, progress);
-
-                            if(!iter.hasNext()) {
-                                // Free memory when no more segments to transfer
-                                table.remove(item.remote);
-                            }
                         }
                         catch(ConnectionCanceledException e) {
                             segment.setFailure();
@@ -420,6 +416,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             }
                             segment.setFailure();
                             if(table.size() == 1) {
+                                // Fail fast when transferring single file
                                 throw e;
                             }
                             // Prompt to continue or abort for application errors
