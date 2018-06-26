@@ -80,7 +80,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     /**
      * Transfer status determined by filters
      */
-    private final Map<Path, TransferStatus> table;
+    private final Map<TransferItem, TransferStatus> table;
     /**
      * Workload
      */
@@ -107,7 +107,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
                                   final NotificationService notification,
                                   final Cache<TransferItem> cache) {
-        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, new HashMap<Path, TransferStatus>());
+        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, new HashMap<TransferItem, TransferStatus>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -119,7 +119,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final PasswordCallback passwordCallback,
                                   final NotificationService notification,
                                   final Cache<TransferItem> cache,
-                                  final Map<Path, TransferStatus> table) {
+                                  final Map<TransferItem, TransferStatus> table) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
@@ -272,7 +272,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 file.getName(), action.getTitle()));
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent, progress);
-                            table.put(file, status);
+                            table.put(new TransferItem(file, local), status);
                             final TransferItem item = new TransferItem(
                                 status.getRename().remote != null ? status.getRename().remote : file,
                                 status.getRename().local != null ? status.getRename().local : local
@@ -360,8 +360,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             throw new ConnectionCanceledException();
         }
         // Only transfer if accepted by filter and stored in table with transfer status
-        if(table.containsKey(item.remote)) {
-            final TransferStatus status = table.get(item.remote);
+        if(table.containsKey(item)) {
+            final TransferStatus status = table.get(item);
             // Handle submit of one or more segments
             final List<TransferStatus> segments = status.getSegments();
             for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
@@ -403,7 +403,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
                             if(!iter.hasNext()) {
                                 // Free memory when no more segments to transfer
-                                table.remove(item.remote);
+                                table.remove(item);
                             }
                         }
                         catch(ConnectionCanceledException e) {

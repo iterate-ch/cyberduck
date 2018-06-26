@@ -31,6 +31,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetRequest;
 import ch.cyberduck.core.sds.triplecrypt.CryptoWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
@@ -60,7 +61,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);

@@ -46,6 +46,7 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -63,6 +64,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -177,8 +179,8 @@ public class S3MultipartUploadServiceTest {
         final TransferStatus writeStatus = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         writeStatus.setLength(content.length);
-        final CryptoBulkFeature<Void> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new S3DefaultDeleteFeature(session), cryptomator);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus), new DisabledConnectionCallback());
+        final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new S3DefaultDeleteFeature(session), cryptomator);
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
                 new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
                 new S3WriteFeature(session), cryptomator);

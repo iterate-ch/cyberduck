@@ -28,19 +28,18 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -68,24 +67,22 @@ public class SpectraBulkServiceTest {
             new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Map<Path, TransferStatus> files = new HashMap<>();
+        final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
         final Path file = new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        files.put(file,
-            status.length(1L)
-        );
+        files.put(new TransferItem(file), status.length(1L));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         bulk.query(Transfer.Type.upload, file, status);
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -103,24 +100,26 @@ public class SpectraBulkServiceTest {
             new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Map<Path, TransferStatus> files = new HashMap<>();
+        final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final Path directory = new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory));
         final TransferStatus directoryStatus = new TransferStatus().length(0L);
-        files.put(directory, directoryStatus);
+        files.put(new TransferItem(directory), directoryStatus);
         final TransferStatus fileStatus = new TransferStatus().length(1L);
-        files.put(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), fileStatus);
+        files.put(new TransferItem(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))), fileStatus);
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final Set<UUID> set = bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertEquals(1, set.size());
         assertEquals(1, bulk.query(Transfer.Type.upload, directory, directoryStatus).size());
         assertEquals(1, bulk.query(Transfer.Type.upload, directory, fileStatus).size());
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        for(TransferItem item : files.keySet()) {
+            new SpectraDeleteFeature(session).delete(Collections.singletonList(item.remote), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
         session.close();
     }
 
@@ -138,14 +137,14 @@ public class SpectraBulkServiceTest {
             new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
-            new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().length(1L)
+            new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))), new TransferStatus().length(1L)
         ), new DisabledConnectionCallback());
         session.close();
     }
@@ -164,14 +163,14 @@ public class SpectraBulkServiceTest {
             new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Set<UUID> keys = new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
-            new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus()
+            new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory))), new TransferStatus()
         ), new DisabledConnectionCallback());
         assertTrue(keys.isEmpty());
         session.close();
@@ -191,19 +190,18 @@ public class SpectraBulkServiceTest {
             new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Map<Path, TransferStatus> files = new HashMap<>();
+        final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
         final Path file = new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        files.put(file,
+        files.put(new TransferItem(file),
             // 11GB
-            status.length(112640000000L)
-        );
+            status.length(112640000000L));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
@@ -223,7 +221,7 @@ public class SpectraBulkServiceTest {
         catch(BackgroundException e) {
             //
         }
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -241,19 +239,19 @@ public class SpectraBulkServiceTest {
             new DefaultX509KeyManager());
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Map<Path, TransferStatus> files = new HashMap<>();
+        final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        files.put(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)),
+        files.put(new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))),
             // 11GB
             status.length(118111600640L)
         );
-        files.put(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)),
+        files.put(new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))),
             // 11GB
             status.length(118111600640L)
         );
@@ -261,8 +259,8 @@ public class SpectraBulkServiceTest {
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
-        for(Path file : files.keySet()) {
-            final List<TransferStatus> list = bulk.query(Transfer.Type.upload, file, status);
+        for(TransferItem file : files.keySet()) {
+            final List<TransferStatus> list = bulk.query(Transfer.Type.upload, file.remote, status);
             assertFalse(list.isEmpty());
             long offset = 0;
             for(TransferStatus s : list) {
@@ -271,7 +269,9 @@ public class SpectraBulkServiceTest {
                 assertTrue(s.getLength() > 0);
             }
         }
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        for(TransferItem item : files.keySet()) {
+            new SpectraDeleteFeature(session).delete(Collections.singletonList(item.remote), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
         session.close();
     }
 
@@ -289,9 +289,9 @@ public class SpectraBulkServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), "SPECTRA-67", EnumSet.of(Path.Type.directory));
-        final HashMap<Path, TransferStatus> files = new HashMap<>();
+        final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         for(int i = 1; i < 100; i++) {
-            files.put(new Path(container, String.format("test-%d.f", i), EnumSet.of(Path.Type.file)), new TransferStatus());
+            files.put(new TransferItem(new Path(container, String.format("test-%d.f", i), EnumSet.of(Path.Type.file))), new TransferStatus());
         }
         final SpectraBulkService bulk = new SpectraBulkService(session);
         // Clear cache

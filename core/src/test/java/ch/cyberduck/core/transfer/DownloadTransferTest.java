@@ -143,9 +143,9 @@ public class DownloadTransferTest {
             }
         };
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
-        final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, new NullLocal(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
-        final Map<Path, TransferStatus> table
-                = new HashMap<Path, TransferStatus>();
+        final Local testLocal = new NullLocal(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, testLocal);
+        final Map<TransferItem, TransferStatus> table = new HashMap<>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
@@ -160,13 +160,13 @@ public class DownloadTransferTest {
         );
         final TransferStatus status = new TransferStatus();
         status.setExists(false);
-        assertEquals(status, table.get(test));
+        assertEquals(status, table.get(new TransferItem(test, testLocal)));
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(false);
         expected.setLength(5L);
         expected.setOffset(0L);
         expected.setExists(false);
-        assertEquals(expected, table.get(new Path("/transfer/test", EnumSet.of(Path.Type.file))));
+        assertEquals(expected, table.get(new TransferItem(new Path("/transfer/test", EnumSet.of(Path.Type.file)), new NullLocal(testLocal, "test"))));
     }
 
     @Test
@@ -192,8 +192,7 @@ public class DownloadTransferTest {
                 });
             }
         };
-        final Map<Path, TransferStatus> table
-                = new HashMap<Path, TransferStatus>();
+        final Map<TransferItem, TransferStatus> table = new HashMap<>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
@@ -212,7 +211,7 @@ public class DownloadTransferTest {
         expected.setOffset("test".getBytes().length);
         // Transfer length
         expected.setLength(5L - "test".getBytes().length);
-        assertEquals(expected, table.get(test));
+        assertEquals(expected, table.get(new TransferItem(test, local)));
         local.delete();
     }
 
