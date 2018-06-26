@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -151,6 +152,10 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     }
                 });
             }
+            // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted
+            // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
+            // not the MD5 of the object data.
+            attributes.setChecksum(Checksum.parse(object.getETag()));
         }
         final HashMap<String, String> metadata = new HashMap<String, String>();
         final Map<String, Object> source = object.getModifiableMetadata();
