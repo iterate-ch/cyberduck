@@ -103,7 +103,8 @@ public class SDSNodeIdProvider implements IdProvider {
         if(file.isRoot()) {
             return false;
         }
-        final Path container = containerService.getContainer(file);
+        // Get top level share
+        final Path container = new PathContainerService().getContainer(file);
         if(cache.isCached(container.getParent())) {
             final AttributedList<Path> list = cache.get(container.getParent());
             final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(container));
