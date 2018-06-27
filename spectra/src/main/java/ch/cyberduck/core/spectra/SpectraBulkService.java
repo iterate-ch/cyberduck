@@ -31,6 +31,7 @@ import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -95,7 +96,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         //
     }
 
@@ -109,11 +110,11 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      * @return Job status identifier list
      */
     @Override
-    public Set<UUID> pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public Set<UUID> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session.getClient(), session.getHost()));
         final Map<Path, List<Ds3Object>> objects = new HashMap<Path, List<Ds3Object>>();
-        for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
-            final Path file = item.getKey();
+        for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
+            final Path file = item.getKey().remote;
             final Path container = containerService.getContainer(file);
             if(!objects.containsKey(container)) {
                 objects.put(container, new ArrayList<Ds3Object>());
@@ -161,8 +162,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         throw new NotfoundException(String.format("Unsupported transfer type %s", type));
                 }
                 jobs.add(job.getJobId());
-                for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
-                    if(container.getKey().equals(containerService.getContainer(item.getKey()))) {
+                for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
+                    if(container.getKey().equals(containerService.getContainer(item.getKey().remote))) {
                         final TransferStatus status = item.getValue();
                         final Map<String, String> parameters = new HashMap<>(status.getParameters());
                         parameters.put(REQUEST_PARAMETER_JOBID_IDENTIFIER, job.getJobId().toString());
