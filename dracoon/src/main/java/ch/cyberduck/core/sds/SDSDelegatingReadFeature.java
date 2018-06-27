@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.sds.triplecrypt.CryptoReadFeature;
@@ -30,9 +29,6 @@ public class SDSDelegatingReadFeature implements Read {
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
     private final SDSReadFeature proxy;
-
-    private final PathContainerService containerService
-            = new SDSPathContainerService();
 
     public SDSDelegatingReadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSReadFeature proxy) {
         this.session = session;

@@ -19,7 +19,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -41,9 +40,6 @@ public class SDSTouchFeature implements Touch<VersionId> {
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
     private Write<VersionId> writer;
-
-    private final PathContainerService containerService
-        = new SDSPathContainerService();
 
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
