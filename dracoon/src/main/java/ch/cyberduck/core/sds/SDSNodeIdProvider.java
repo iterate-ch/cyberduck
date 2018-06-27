@@ -44,9 +44,6 @@ public class SDSNodeIdProvider implements IdProvider {
 
     private Cache<Path> cache = PathCache.empty();
 
-    private final PathContainerService containerService
-        = new SDSPathContainerService();
-
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
     }
