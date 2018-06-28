@@ -36,7 +36,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -45,7 +44,6 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
 import java.io.IOException;
-import java.security.SignatureException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,19 +55,18 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.spectralogic.ds3client.Ds3Client;
-import com.spectralogic.ds3client.commands.GetAvailableJobChunksRequest;
-import com.spectralogic.ds3client.commands.GetAvailableJobChunksResponse;
+import com.spectralogic.ds3client.commands.spectrads3.GetJobChunksReadyForClientProcessingSpectraS3Request;
+import com.spectralogic.ds3client.commands.spectrads3.GetJobChunksReadyForClientProcessingSpectraS3Response;
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
 import com.spectralogic.ds3client.helpers.options.ReadJobOptions;
 import com.spectralogic.ds3client.helpers.options.WriteJobOptions;
-import com.spectralogic.ds3client.models.Checksum;
-import com.spectralogic.ds3client.models.bulk.BulkObject;
+import com.spectralogic.ds3client.models.BulkObject;
+import com.spectralogic.ds3client.models.ChecksumType;
+import com.spectralogic.ds3client.models.JobNode;
+import com.spectralogic.ds3client.models.MasterObjectList;
+import com.spectralogic.ds3client.models.Objects;
 import com.spectralogic.ds3client.models.bulk.Ds3Object;
-import com.spectralogic.ds3client.models.bulk.MasterObjectList;
-import com.spectralogic.ds3client.models.bulk.Node;
-import com.spectralogic.ds3client.models.bulk.Objects;
 import com.spectralogic.ds3client.networking.FailedRequestException;
-import com.spectralogic.ds3client.networking.Headers;
 import com.spectralogic.ds3client.serializer.XmlProcessingException;
 
 public class SpectraBulkService implements Bulk<Set<UUID>> {
@@ -79,7 +76,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private Delete delete;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private static final String REQUEST_PARAMETER_JOBID_IDENTIFIER = "job";
     private static final String REQUEST_PARAMETER_OFFSET = "offset";
@@ -150,13 +147,13 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 switch(type) {
                     case download:
                         job = helper.startReadJob(
-                                container.getKey().getName(), container.getValue(), ReadJobOptions.create());
+                            container.getKey().getName(), container.getValue(), ReadJobOptions.create());
                         break;
                     case upload:
                         job = helper.startWriteJob(
-                                container.getKey().getName(), container.getValue(), WriteJobOptions.create()
-                                        .withMaxUploadSize(Integer.MAX_VALUE)
-                                        .withChecksumType(Checksum.Type.CRC32));
+                            container.getKey().getName(), container.getValue(), WriteJobOptions.create()
+                                .withMaxUploadSize(Integer.MAX_VALUE)
+                                .withChecksumType(ChecksumType.Type.CRC_32));
                         break;
                     default:
                         throw new NotfoundException(String.format("Unsupported transfer type %s", type));
@@ -173,7 +170,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
             return jobs;
         }
-        catch(XmlProcessingException | SignatureException e) {
+        catch(XmlProcessingException e) {
             throw new DefaultExceptionMappingService().map(e);
         }
         catch(FailedRequestException e) {
@@ -219,10 +216,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 // For PUT, This will allocate a working window of job chunks, if possible, and return a list of
                 // the job chunks that the client can upload. The client should PUT all of the object parts
                 // from the list of job chunks returned and repeat this process until all chunks are transferred
-                final GetAvailableJobChunksResponse response =
-                        // GetJobChunksReadyForClientProcessing
-                        client.getAvailableJobChunks(new GetAvailableJobChunksRequest(UUID.fromString(job))
-                                .withPreferredNumberOfChunks(Integer.MAX_VALUE));
+
+                final GetJobChunksReadyForClientProcessingSpectraS3Response response = client.getJobChunksReadyForClientProcessingSpectraS3(
+                    new GetJobChunksReadyForClientProcessingSpectraS3Request(UUID.fromString(job)).withPreferredNumberOfChunks(Integer.MAX_VALUE));
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Job status %s for job %s", response.getStatus(), job));
                 }
@@ -232,7 +228,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
                     }
                 }
-                final MasterObjectList master = response.getMasterObjectList();
+                final MasterObjectList master = response.getMasterObjectListResult();
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Master object list with %d objects for %s", master.getObjects().size(), file));
                     log.info(String.format("Master object list status %s for %s", master.getStatus(), file));
@@ -243,13 +239,10 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 }
                 if(chunks.isEmpty()) {
                     log.error(String.format("File %s not found in object list for job %s", file.getName(), job));
-                    // Still look for Retry-Afer header for non empty master object list
-                    final Headers headers = response.getResponse().getHeaders();
-                    for(String header : headers.keys()) {
-                        if(HttpHeaders.RETRY_AFTER.equalsIgnoreCase(header)) {
-                            final Duration delay = Duration.ofSeconds(Integer.parseInt(headers.get(header).get(0)));
-                            throw new RetriableAccessDeniedException(String.format("Cache is full for job %s", job), delay);
-                        }
+                    // Still look for Retry-After header for non empty master object list
+                    if(response.getStatus() == GetJobChunksReadyForClientProcessingSpectraS3Response.Status.RETRYLATER) {
+                        final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
+                        throw new RetriableAccessDeniedException(String.format("Cache is full for job %s", job), delay);
                     }
                 }
             }
@@ -260,9 +253,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
-        }
-        catch(SignatureException e) {
-            throw new DefaultExceptionMappingService().map(e);
         }
     }
 
@@ -279,24 +269,24 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     log.info(String.format("Determined node %s for %s", nodeId, file));
                 }
             }
-            for(Node node : master.getNodes()) {
+            for(JobNode node : master.getNodes()) {
                 if(node.getId().equals(nodeId)) {
                     final Host host = session.getHost();
                     // The IP address or DNS name of the BlackPearl node.
-                    if(StringUtils.equals(node.getEndpoint(), host.getHostname())) {
+                    if(StringUtils.equals(node.getEndPoint(), host.getHostname())) {
                         break;
                     }
-                    if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname(),
-                            new DisabledCancelCallback()).getHostAddress())) {
+                    if(StringUtils.equals(node.getEndPoint(), new Resolver().resolve(host.getHostname(),
+                        new DisabledCancelCallback()).getHostAddress())) {
                         break;
                     }
-                    log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));
+                    log.warn(String.format("Redirect to %s for file %s", node.getEndPoint(), file));
                 }
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Object list with %d objects for job %s", objects.getObjects().size(), job));
             }
-            for(BulkObject object : objects) {
+            for(BulkObject object : objects.getObjects()) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Found object %s looking for %s", object, file));
                 }
@@ -305,9 +295,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         log.info(String.format("Found chunk %s matching file %s", object, file));
                     }
                     final TransferStatus chunk = new TransferStatus()
-                            .exists(status.isExists())
-                            .withMetadata(status.getMetadata())
-                            .withParameters(status.getParameters());
+                        .exists(status.isExists())
+                        .withMetadata(status.getMetadata())
+                        .withParameters(status.getParameters());
                     // Server sends multiple chunks with offsets
                     if(object.getOffset() > 0L) {
                         chunk.setAppend(true);
