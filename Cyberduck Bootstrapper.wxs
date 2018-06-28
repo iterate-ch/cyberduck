@@ -14,11 +14,14 @@
         <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
 
         <bal:Condition Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher.">
-            VersionNT >= v6.1
+            <![CDATA[VersionNT >= v6.1]]>
+        </bal:Condition>
+        <bal:Condition Message="Installation on Windows 8 is not supported.">
+            <![CDATA[VersionNT <> v6.2]]>
         </bal:Condition>
 
         <Chain>
-            <PackageGroupRef Id="NetFx45Web"/>
+            <PackageGroupRef Id="NetFx47Web"/>
             <RollbackBoundary/>
             <MsiPackage
                     Id="Setup"

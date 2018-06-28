@@ -6,6 +6,13 @@
     <MajorUpgrade AllowDowngrades="yes" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
+    <Condition Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher.">
+        <![CDATA[Installed OR VersionNT >= 601]]>
+    </Condition>
+    <Condition Message="Installation on Windows 8 is not supported.">
+        <![CDATA[Installed OR VersionNT <> 602]]>
+    </Condition>
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLLOCATION" Name="!(bind.property.ProductName)">
