@@ -19,9 +19,6 @@
         <bal:Condition Message="Installation on Windows 8 is not supported.">
             <![CDATA[VersionNT <> v6.2]]>
         </bal:Condition>
-        <bal:Condition Message="Windows 10 Anniversary Update (14393) is required to run this application.">
-            <![CDATA[VersionNT < v10.0 OR VersionNT >= v10.0.14393]]>
-        </bal:Condition>
 
         <Chain>
             <PackageGroupRef Id="NetFx47Web"/>
