@@ -10,7 +10,7 @@
         <![CDATA[VersionNT >= 601 AND (VersionNT <> 601 OR (ServicePackLevel >= 1 OR MsiNTProductType <> 1))]]>
     </Condition>
     <Condition Message="Installation on Windows 8 is not supported.">
-        <![CDATA[VersionNT <> 602]]>
+        <![CDATA[VersionNT <> 602 OR MsiNTProductType <> 1]]>
     </Condition>
     <Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
         <![CDATA[VersionNT < 1000 OR WindowsBuild >= 14393]]>
