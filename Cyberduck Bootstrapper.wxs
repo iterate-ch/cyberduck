@@ -10,6 +10,7 @@
         </BootstrapperApplicationRef>
         <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck"/>
         <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
+        <util:RegistrySearch Id="CurrentBuild" Variable="CBNumber" Result="value" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Value="CurrentBuildNumber"/>
         <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
         <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
 
@@ -18,6 +19,9 @@
         </bal:Condition>
         <bal:Condition Message="Installation on Windows 8 is not supported.">
             <![CDATA[VersionNT <> v6.2]]>
+        </bal:Condition>
+        <bal:Condition Message="Windows 10 Anniversary Update (14393) is required to run this application.">
+            <![CDATA[VersionNT < v10.0 OR CBNumber >= 14393]]>
         </bal:Condition>
 
         <Chain>
