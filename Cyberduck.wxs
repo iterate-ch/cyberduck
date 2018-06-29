@@ -12,7 +12,7 @@
     <Condition Message="Installation on Windows 8 is not supported.">
         <![CDATA[VersionNT <> 602]]>
     </Condition>
-    <Condition Message="Atleast Windows 10 Anniversary Update (14393) is required to run this application.">
+    <Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
         <![CDATA[VersionNT < 1000 OR WindowsBuild >= 14393]]>
     </Condition>
 
