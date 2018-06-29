@@ -34,6 +34,14 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="WindowsVersionCustomAction.vcxproj">
+      <Name>WindowsVersionCustomAction</Name>
+      <Project>{fba5efe2-362b-4bad-a748-3248f79468ac}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixNetFxExtension">
@@ -73,8 +81,8 @@
 	Other similar extension points exist, see Wix.targets.
   -->
   <ItemGroup>
-    <Assemblies Include="windows/target/*.dll" />
-    <Assemblies Include="windows/target/*.exe" />
+    <!-- <Assemblies Include="windows/target/*.dll" />
+    <Assemblies Include="windows/target/*.exe" /> -->
   </ItemGroup>
   <Target Name="SignDLLs" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool" AfterTargets="Compile" BeforeTargets="Link">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\%(Assemblies.Identity)'))&quot;" />

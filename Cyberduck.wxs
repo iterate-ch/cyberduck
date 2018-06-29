@@ -7,10 +7,13 @@
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
     <Condition Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher.">
-        <![CDATA[Installed OR VersionNT >= 601]]>
+        <![CDATA[VersionNT >= 601]]>
     </Condition>
     <Condition Message="Installation on Windows 8 is not supported.">
-        <![CDATA[Installed OR VersionNT <> 602]]>
+        <![CDATA[VersionNT <> 602]]>
+    </Condition>
+    <Condition Message="Atleast Windows 10 Anniversary Update (14393) is required to run this application.">
+        <![CDATA[VersionNT < 1000 OR WindowsBuild >= 14393]]>
     </Condition>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -471,13 +474,19 @@
       <ComponentGroupRef Id="Profiles" />
     </Feature>
 
+    <Binary Id="WindowsVersionCustomAction.dll" SourceFile="$(var.WindowsVersionCustomAction.TargetDir)$(var.WindowsVersionCustomAction.TargetName).dll" />
+    <CustomAction Id="WindowsVersion" BinaryKey="WindowsVersionCustomAction.dll" DllEntry="CustomAction1" Execute="immediate" />
     <Property Id="WixShellExecTarget" Value="[INSTALLLOCATION]Cyberduck.exe" />
     <CustomAction Id="LaunchFile"
       BinaryKey="WixCA"
       DllEntry="WixShellExec"
       Impersonate="yes" />
 
+    <InstallUISequence>
+      <Custom Action="WindowsVersion" Before="LaunchConditions" />
+    </InstallUISequence>
     <InstallExecuteSequence>
+      <Custom Action="WindowsVersion" Before="LaunchConditions" />
       <Custom Action='LaunchFile' After='InstallFinalize'>AUTOSTART=1</Custom>
     </InstallExecuteSequence>
   </Product>

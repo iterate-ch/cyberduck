@@ -1,0 +1,4 @@
+LIBRARY "WindowsVersionCustomAction"
+
+EXPORTS
+	CustomAction1
