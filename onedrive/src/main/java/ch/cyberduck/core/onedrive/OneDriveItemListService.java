@@ -70,7 +70,7 @@ public class OneDriveItemListService implements ListService {
                     log.warn(e.getMessage());
                     continue;
                 }
-                final PathAttributes attributes = this.attributes.convert(metadata);
+                final PathAttributes attributes = this.attributes.toAttributes(metadata);
 
                 children.add(new Path(directory, metadata.getName(), resolveType(metadata), attributes));
                 listener.chunk(directory, children);

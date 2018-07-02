@@ -155,6 +155,7 @@ public class PathAttributes extends Attributes implements Serializable {
         displayname = copy.displayname;
         link = copy.link;
         metadata = copy.metadata;
+        custom = copy.custom;
         vault = copy.vault;
         decrypted = copy.decrypted;
         encrypted = copy.encrypted;

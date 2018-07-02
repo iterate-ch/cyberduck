@@ -73,9 +73,9 @@ public class DAVListServiceTest {
         assertFalse(list.contains(new Path(directory, "trunk", EnumSet.of(Path.Type.directory))));
         for(Path p : list) {
             assertEquals(directory, p.getParent());
-            assertNotNull(p.attributes().getModificationDate());
-            assertNotNull(p.attributes().getCreationDate());
-            assertNotNull(p.attributes().getSize());
+            assertNotEquals(-1L, p.attributes().getModificationDate());
+            assertNotEquals(-1L, p.attributes().getCreationDate());
+            assertNotEquals(-1L, p.attributes().getSize());
             assertEquals(Checksum.NONE, p.attributes().getChecksum());
             assertNotNull(p.attributes().getETag());
         }

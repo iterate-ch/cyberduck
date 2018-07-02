@@ -41,7 +41,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     private final Directory<Reply> proxy;
     private final CryptoVault vault;
     private final RandomStringService random
-            = new UUIDRandomStringService();
+        = new UUIDRandomStringService();
 
     public CryptoDirectoryFeature(final Session<?> session, final Directory<Reply> delegate, final Write<Reply> writer, final CryptoVault cryptomator) {
         this.session = session;
@@ -69,6 +69,10 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
         final Path target = proxy.mkdir(encrypt, region, status);
+        // Implementation may return new copy of attributes without encryption attributes
+        target.attributes().setDirectoryId(directoryId);
+        target.attributes().setDecrypted(encrypt.attributes().getDecrypted());
+        // Make reference of encrypted path in attributes of decrypted file point to metadata file
         final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));
         decrypt.attributes().setVersionId(target.attributes().getVersionId());
         return decrypt;

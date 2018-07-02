@@ -16,8 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -28,6 +26,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
 import ch.cyberduck.core.sds.triplecrypt.CryptoReadFeature;
 import ch.cyberduck.core.sds.triplecrypt.CryptoWriteFeature;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.worker.MoveWorker;
@@ -83,6 +82,26 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     }
 
     @Test
+    public void testMoveWithRenameDifferentDataRoomSameFilename() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room1 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test1 = new Path(room1, "A", EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session, nodeid).touch(test1, new TransferStatus());
+        final Path test2 = new Path(room2, "A", EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session, nodeid).touch(test2, new TransferStatus());
+        final Path target = new Path(room2, "A (2)", EnumSet.of(Path.Type.file));
+        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test1, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new SDSFindFeature(nodeid).find(test1));
+        assertTrue(new SDSFindFeature(nodeid).find(test2));
+        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertEquals(0, session.getMetrics().get(Copy.class));
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testMoveFromEncryptedDataRoom() throws Exception {
         final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
@@ -94,7 +113,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -102,12 +121,12 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().length(content.length), new Delete.DisabledCallback(), new ConnectionCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
                 //
             }
 
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
@@ -117,12 +136,12 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SDSReadFeature(session, nodeid).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
                 //
             }
 
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
@@ -155,12 +174,12 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
                 //
             }
 
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
@@ -181,7 +200,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -194,12 +213,12 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
                 //
             }
 
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
@@ -264,6 +283,21 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testMoveOverride() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
+        final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new SDSTouchFeature(session, nodeid).touch(target, new TransferStatus());
+        new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(nodeid).find(target));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveToDifferentParentAndRename() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());

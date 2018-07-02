@@ -31,6 +31,7 @@ import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -63,16 +64,16 @@ public class SpectraReadFeatureTest {
                 return Scheme.http;
             }
         }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
+            new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "nosuchname", EnumSet.of(Path.Type.file));
-        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
     }
 
@@ -84,10 +85,10 @@ public class SpectraReadFeatureTest {
                 return Scheme.http;
             }
         }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
+            new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -99,7 +100,7 @@ public class SpectraReadFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status), new DisabledConnectionCallback());
+        new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
@@ -118,10 +119,10 @@ public class SpectraReadFeatureTest {
                 return Scheme.http;
             }
         }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
+            new DefaultX509KeyManager());
         assertFalse(new SpectraReadFeature(session).offset(null));
     }
 
@@ -133,23 +134,23 @@ public class SpectraReadFeatureTest {
                 return Scheme.http;
             }
         }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), "SPECTRA-67", EnumSet.of(Path.Type.directory));
-        final HashMap<Path, TransferStatus> files = new HashMap<>();
+        final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         for(int i = 1; i < 100; i++) {
-            files.put(new Path(container, String.format("test-%d.f", i), EnumSet.of(Path.Type.file)), new TransferStatus());
+            files.put(new TransferItem(new Path(container, String.format("test-%d.f", i), EnumSet.of(Path.Type.file))), new TransferStatus());
         }
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final Set<UUID> uuid = bulk.pre(Transfer.Type.download, files, new DisabledConnectionCallback());
         assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
         assertEquals(1, uuid.size());
-        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-            final InputStream in = new SpectraReadFeature(session).read(entry.getKey(), entry.getValue(), new DisabledConnectionCallback());
+        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+            final InputStream in = new SpectraReadFeature(session).read(entry.getKey().remote, entry.getValue(), new DisabledConnectionCallback());
             assertNotNull(in);
             IOUtils.closeQuietly(in);
         }

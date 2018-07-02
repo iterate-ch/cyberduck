@@ -48,7 +48,9 @@ public class OneDriveTouchFeature implements Touch<Void> {
             final OneDriveFolder folder = session.toFolder(file.getParent());
             final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), folder,
                 URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
-            oneDriveFile.create(StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
+            final OneDriveFile.Metadata metadata = oneDriveFile.create(StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
+            return new Path(file.getParent(), file.getName(), file.getType(),
+                new OneDriveAttributesFinderFeature(session).toAttributes(metadata));
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot create file {0}", e, file);
@@ -56,7 +58,6 @@ public class OneDriveTouchFeature implements Touch<Void> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
         }
-        return file;
     }
 
     @Override

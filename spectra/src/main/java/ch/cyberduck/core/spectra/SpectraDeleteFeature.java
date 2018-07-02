@@ -23,22 +23,21 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import java.io.IOException;
-import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import com.spectralogic.ds3client.Ds3Client;
-import com.spectralogic.ds3client.commands.DeleteFolderRequest;
+import com.spectralogic.ds3client.commands.DeleteBucketRequest;
+import com.spectralogic.ds3client.commands.spectrads3.DeleteFolderRecursivelySpectraS3Request;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final SpectraSession session;
 
@@ -50,15 +49,21 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
     @Override
     public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
-            final ArrayList<Path> filtered = new ArrayList<Path>(files);
+            final ArrayList<Path> filtered = new ArrayList<>(files);
             for(Iterator<Path> iter = filtered.iterator(); iter.hasNext(); ) {
                 final Path file = iter.next();
-                if(file.isVolume()) {
-                    continue;
-                }
-                if(file.isDirectory()) {
+                if(containerService.isContainer(file)) {
                     final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
-                    client.deleteFolder(new DeleteFolderRequest(containerService.getContainer(file).getName(), containerService.getKey(file)));
+                    // TODO recursive?
+                    client.deleteBucket(new DeleteBucketRequest(file.getName()));
+                    iter.remove();
+                }
+                else if(file.isDirectory()) {
+                    final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+                    client.deleteFolderRecursivelySpectraS3(
+                        new DeleteFolderRecursivelySpectraS3Request(
+                            containerService.getContainer(file).getName(),
+                            containerService.getKey(file)));
                     iter.remove();
                 }
             }
@@ -70,13 +75,10 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        catch(SignatureException e) {
-            throw new DefaultExceptionMappingService().map(e);
-        }
     }
 
     @Override
     public boolean isRecursive() {
-        return false;
+        return true;
     }
 }

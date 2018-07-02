@@ -52,9 +52,9 @@ public class IRODSListServiceTest {
     public void testList() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+            new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+            System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -67,8 +67,8 @@ public class IRODSListServiceTest {
         assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(new IRODSHomeFinderService(session).find(), p.getParent());
-            assertNotNull(p.attributes().getModificationDate());
-            assertNotNull(p.attributes().getSize());
+            assertNotEquals(-1L, p.attributes().getModificationDate());
+            assertNotEquals(-1L, p.attributes().getSize());
         }
         session.close();
     }
@@ -77,9 +77,9 @@ public class IRODSListServiceTest {
     public void testListNotfound() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+            new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+            System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);

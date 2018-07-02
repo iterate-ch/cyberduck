@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -61,7 +60,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
                 roomRequest.setName(folder.getName());
                 final Node r = new NodesApi(session.getClient()).createRoom(roomRequest, StringUtils.EMPTY, null);
                 return new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                    new PathAttributes(folder.attributes()).withVersionId(String.valueOf(r.getId())));
+                    new SDSAttributesFinderFeature(session, nodeid).toAttributes(r));
             }
             else {
                 final CreateFolderRequest folderRequest = new CreateFolderRequest();

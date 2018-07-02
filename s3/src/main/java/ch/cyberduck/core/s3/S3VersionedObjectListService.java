@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -93,7 +92,6 @@ public class S3VersionedObjectListService implements ListService {
                         final S3Version object = (S3Version) marker;
                         attributes.setSize(object.getSize());
                         if(StringUtils.isNotBlank(object.getEtag())) {
-                            attributes.setChecksum(Checksum.parse(object.getEtag()));
                             attributes.setETag(object.getEtag());
                         }
                         if(StringUtils.isNotBlank(object.getStorageClass())) {

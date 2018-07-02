@@ -43,7 +43,7 @@ public interface TransferAcceleration {
             throws BackgroundException;
 
     /**
-     * Configure connectino to use transfer accelerated endpoint
+     * Configure connection to use transfer accelerated endpoint
      */
     void configure(boolean enable, Path file) throws BackgroundException;
 }

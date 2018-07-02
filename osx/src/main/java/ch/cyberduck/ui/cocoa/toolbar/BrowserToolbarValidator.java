@@ -27,6 +27,7 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
@@ -259,7 +260,14 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return false;
         }
         else if(action.equals(delete.action())) {
-            return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0;
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
+                final Path selected = controller.getSelectedPath();
+                if(null == selected) {
+                    return false;
+                }
+                return controller.getSession().getFeature(Delete.class).isSupported(selected);
+            }
+            return false;
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
