@@ -124,7 +124,7 @@ public class SDSNodeIdProvider implements IdProvider {
                     return node.getIsEncrypted();
                 }
             }
-            throw new NotfoundException(file.getAbsolute());
+            throw new NotfoundException(container.getName());
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
