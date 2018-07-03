@@ -21,6 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -55,7 +56,8 @@ public class SwiftCopyFeature implements Copy {
             session.getClient().copyObject(regionService.lookup(source),
                     containerService.getContainer(source).getName(), containerService.getKey(source),
                     containerService.getContainer(target).getName(), containerService.getKey(target));
-            return target;
+            // Copy original file attributes
+            return new Path(target.getParent(), target.getName(), target.getType(), new PathAttributes(source.attributes()));
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot copy {0}", e, source);

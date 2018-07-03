@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -44,7 +45,8 @@ public class DropboxMoveFeature implements Move {
                 delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
             new DbxUserFilesRequests(session.getClient()).move(file.getAbsolute(), renamed.getAbsolute());
-            return renamed;
+            // Copy original file attributes
+            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new PathAttributes(file.attributes()));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot move {0}", e, file);

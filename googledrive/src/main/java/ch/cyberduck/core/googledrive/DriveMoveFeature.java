@@ -18,7 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -84,7 +83,7 @@ public class DriveMoveFeature implements Move {
                 .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                 .execute();
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-                new PathAttributes(renamed.attributes()).withVersionId(fileid));
+                new DriveAttributesFinderFeature(session, this.fileid).find(renamed));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);

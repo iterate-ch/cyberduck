@@ -48,7 +48,7 @@ public class SFTPTouchFeature implements Touch<Void> {
                 throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, file);
             }
         }
-        return file;
+        return new Path(file.getParent(), file.getName(), file.getType(), new SFTPAttributesFinderFeature(session).find(file));
     }
 
     @Override
