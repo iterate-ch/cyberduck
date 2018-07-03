@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -64,11 +65,17 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
                 // Create container at top level
                 session.getClient().createContainer(regionService.lookup(
                     new SwiftLocationFeature.SwiftRegion(region)), folder.getName());
+                return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                    new SwiftAttributesFinderFeature(session, regionService).find(folder));
             }
             else {
                 status.setMime("application/directory");
                 status.setLength(0L);
-                new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
+                final StatusOutputStream<StorageObject> out = writer.write(folder, status, new DisabledConnectionCallback());
+                new DefaultStreamCloser().close(out);
+                final StorageObject metadata = out.getStatus();
+                return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                    new SwiftAttributesFinderFeature(session, regionService).toAttributes(metadata));
             }
         }
         catch(GenericException e) {
@@ -77,7 +84,6 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
-        return folder;
     }
 
     @Override
