@@ -96,6 +96,6 @@ public class DropboxListService implements ListService {
             log.warn(String.format("Skip file %s", metadata));
             return null;
         }
-        return new Path(directory, PathNormalizer.name(metadata.getName()), type, attributes.convert(metadata));
+        return new Path(directory, PathNormalizer.name(metadata.getName()), type, attributes.toAttributes(metadata));
     }
 }

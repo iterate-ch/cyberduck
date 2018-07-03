@@ -33,14 +33,15 @@ import com.microsoft.azure.storage.OperationContext;
 
 public class AzureTouchFeature implements Touch<Void> {
 
+    private final AzureSession session;
+    private final OperationContext context;
+
     private Write<Void> writer;
 
     public AzureTouchFeature(final AzureSession session, final OperationContext context) {
-        this(new AzureWriteFeature(session, context));
-    }
-
-    public AzureTouchFeature(final Write<Void> write) {
-        this.writer = write;
+        this.session = session;
+        this.context = context;
+        this.writer = new AzureWriteFeature(session, context);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class AzureTouchFeature implements Touch<Void> {
             status.setChecksum(writer.checksum(file).compute(new NullInputStream(0L), status));
         }
         new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
-        return file;
+        return new Path(file.getParent(), file.getName(), file.getType(), new AzureAttributesFinderFeature(session, context).find(file));
     }
 
     @Override

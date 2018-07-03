@@ -18,7 +18,8 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 public class DropboxTouchFeature extends DefaultTouchFeature<String> {
+
     public DropboxTouchFeature(final DropboxSession session) {
-        super(new DropboxUploadFeature(new DropboxWriteFeature(session)));
+        super(new DropboxUploadFeature(new DropboxWriteFeature(session)), new DropboxAttributesFinderFeature(session));
     }
 }
