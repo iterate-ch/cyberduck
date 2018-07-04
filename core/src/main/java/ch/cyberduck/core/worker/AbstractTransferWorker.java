@@ -443,8 +443,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
                     @Override
                     public String toString() {
-                        final StringBuilder sb = new StringBuilder("TransferCallable{");
-                        sb.append("status=").append(segment);
+                        final StringBuilder sb = new StringBuilder("RetryTransferCallable{");
+                        sb.append("item=").append(item);
+                        sb.append(", status=").append(segment);
                         sb.append('}');
                         return sb.toString();
                     }
@@ -494,7 +495,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 @Override
                 public String toString() {
                     final StringBuilder sb = new StringBuilder("TransferCallable{");
-                    sb.append("status=").append(status);
+                    sb.append("item=").append(item);
+                    sb.append(", status=").append(status);
                     sb.append('}');
                     return sb.toString();
                 }
