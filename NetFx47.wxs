@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) .NET Foundation and contributors. All rights reserved. Licensed under the Microsoft Reciprocal License. See LICENSE.TXT file in the project root for full license information. -->
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+  <!--
+        .NET Framework installation state properties
+
+        Official documentation can be found at the following location:
+
+           .NET Framework 4.5/4.5.1/4.5.2/4.6/4.6.1/4.6.2/4.7 - http://msdn.microsoft.com/en-us/library/w0x726c2(v=vs.110).aspx
+    -->
+
+  <?define NetFx47MinRelease = 460798 ?>
+  <?define NetFx472WebLink = http://go.microsoft.com/fwlink/?LinkId=863262 ?>
+  <?define NetFx472RedistLink = http://go.microsoft.com/fwlink/?LinkId=863265 ?>
+  <?define NetFx472EulaLink = http://referencesource.microsoft.com/license.html ?>
+
+  <Fragment>
+    <PropertyRef Id="WIXNETFX4RELEASEINSTALLED" />
+    <Property Id="WIX_IS_NETFRAMEWORK_47_OR_LATER_INSTALLED" Secure="yes" />
+    <SetProperty Id="WIX_IS_NETFRAMEWORK_47_OR_LATER_INSTALLED" Value="1" After="AppSearch">
+      WIXNETFX4RELEASEINSTALLED >= "#$(var.NetFx47MinRelease)"
+    </SetProperty>
+  </Fragment>
+
+  <Fragment>
+    <util:RegistrySearchRef Id="NETFRAMEWORK45"/>
+
+    <WixVariable Id="WixMbaPrereqPackageId" Value="NetFx472Web" />
+    <WixVariable Id="WixMbaPrereqLicenseUrl" Value="$(var.NetFx472EulaLink)" Overridable="yes" />
+    <WixVariable Id="NetFx472WebDetectCondition" Value="NETFRAMEWORK45 &gt;= $(var.NetFx47MinRelease)" Overridable="yes" />
+    <WixVariable Id="NetFx472WebInstallCondition" Value="" Overridable="yes" />
+    <WixVariable Id="NetFx472WebPackageDirectory" Value="redist\" Overridable="yes" />
+
+    <PackageGroup Id="NetFx472Web">
+      <ExePackage
+          InstallCommand="/q /norestart /ChainingPackage &quot;[WixBundleName]&quot; /log &quot;[NetFx472FullLog].html&quot;"
+          RepairCommand="/q /norestart /repair /ChainingPackage &quot;[WixBundleName]&quot; /log &quot;[NetFx472FullLog].html&quot;"
+          UninstallCommand="/uninstall /q /norestart /ChainingPackage &quot;[WixBundleName]&quot; /log &quot;[NetFx472FullLog].html&quot;"
+          PerMachine="yes"
+          DetectCondition="!(wix.NetFx472WebDetectCondition)"
+          InstallCondition="!(wix.NetFx472WebInstallCondition)"
+          Id="NetFx472Web"
+          Vital="yes"
+          Permanent="yes"
+          Protocol="netfx4"
+          DownloadUrl="$(var.NetFx472WebLink)"
+          LogPathVariable="NetFx472FullLog"
+          Compressed="no"
+          Name="!(wix.NetFx472WebPackageDirectory)NDP472-KB4054531-Web.exe">
+        <RemotePayload
+          CertificatePublicKey="C090C1A2CAFA9B967D9C87C7FE02F7C01FBDE4F2"
+          CertificateThumbprint="5EAD300DC7E4D637948ECB0ED829A072BD152E17"
+          Description="Microsoft .NET Framework 4.7.2 Setup"
+          Hash="507ECDADC23A27C2283BA130A2AA51650E6BC05B"
+          ProductName="Microsoft .NET Framework 4.7.2"
+          Size="1447320"
+          Version="4.7.3062.0" />
+      </ExePackage>
+    </PackageGroup>
+  </Fragment>
+
+  <Fragment>
+    <util:RegistrySearchRef Id="NETFRAMEWORK45"/>
+
+    <WixVariable Id="WixMbaPrereqPackageId" Value="NetFx472Redist" />
+    <WixVariable Id="WixMbaPrereqLicenseUrl" Value="$(var.NetFx472EulaLink)" Overridable="yes" />
+    <WixVariable Id="NetFx472RedistDetectCondition" Value="NETFRAMEWORK45 &gt;= $(var.NetFx47MinRelease)" Overridable="yes" />
+    <WixVariable Id="NetFx472RedistInstallCondition" Value="" Overridable="yes" />
+    <WixVariable Id="NetFx472RedistPackageDirectory" Value="redist\" Overridable="yes" />
+
+    <PackageGroup Id="NetFx472Redist">
+      <ExePackage
+          InstallCommand="/q /norestart /ChainingPackage &quot;[WixBundleName]&quot; /log &quot;[NetFx472FullLog].html&quot;"
+          RepairCommand="/q /norestart /repair /ChainingPackage &quot;[WixBundleName]&quot; /log &quot;[NetFx472FullLog].html&quot;"
+          UninstallCommand="/uninstall /q /norestart /ChainingPackage &quot;[WixBundleName]&quot; /log &quot;[NetFx472FullLog].html&quot;"
+          PerMachine="yes"
+          DetectCondition="!(wix.NetFx472RedistDetectCondition)"
+          InstallCondition="!(wix.NetFx472RedistInstallCondition)"
+          Id="NetFx472Redist"
+          Vital="yes"
+          Permanent="yes"
+          Protocol="netfx4"
+          DownloadUrl="$(var.NetFx472RedistLink)"
+          LogPathVariable="NetFx472FullLog"
+          Compressed="no"
+          Name="!(wix.NetFx472RedistPackageDirectory)NDP472-KB4054530-x86-x64-AllOS-ENU.exe">
+        <RemotePayload
+          CertificatePublicKey="C090C1A2CAFA9B967D9C87C7FE02F7C01FBDE4F2"
+          CertificateThumbprint="5EAD300DC7E4D637948ECB0ED829A072BD152E17"
+          Description="Microsoft .NET Framework 4.7.2 Setup"
+          Hash="D3A416DC5FC75758D41B4C0158ACA69270D2A904"
+          ProductName="Microsoft .NET Framework 4.7.2"
+          Size="71607232"
+          Version="4.7.3062.0" />
+      </ExePackage>
+    </PackageGroup>
+  </Fragment>
+</Wix>
