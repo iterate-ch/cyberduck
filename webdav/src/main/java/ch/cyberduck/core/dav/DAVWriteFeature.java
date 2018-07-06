@@ -20,6 +20,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -78,14 +79,19 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
             final HttpRange range = HttpRange.withStatus(status);
-            // Content-Range entity-header is sent with a partial entity-body to specify where
-            // in the full entity-body the partial body should be applied.
-            final String header = String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
-                    status.getOffset() + status.getLength());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Add range header %s for file %s", header, file));
+            if(-1L == range.getEnd()) {
+                throw new UnsupportedException("Content-Range with unknown file size is not supported");
             }
-            headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
+            else {
+                // Content-Range entity-header is sent with a partial entity-body to specify where
+                // in the full entity-body the partial body should be applied.
+                final String header = String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
+                    status.getOffset() + status.getLength());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Add range header %s for file %s", header, file));
+                }
+                headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
+            }
         }
         if(expect) {
             if(status.getLength() > 0L) {
@@ -96,7 +102,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     }
 
     private HttpResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status)
-            throws BackgroundException {
+        throws BackgroundException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             /**
@@ -106,7 +112,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
             public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     return session.getClient().put(new DAVPathEncoder().encode(file), entity,
-                            headers, new ETagResponseHandler());
+                        headers, new ETagResponseHandler());
                 }
                 catch(SardineException e) {
                     throw new DAVExceptionMappingService().map("Upload {0} failed", e, file);
