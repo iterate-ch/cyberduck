@@ -187,16 +187,9 @@ public class HttpConnectionPoolBuilder {
             .setSoTimeout(timeout)
             .build());
         configuration.setDefaultRequestConfig(this.createRequestConfig(timeout));
-        final String encoding;
-        if(null == host.getEncoding()) {
-            encoding = preferences.getProperty("browser.charset.encoding");
-        }
-        else {
-            encoding = host.getEncoding();
-        }
         configuration.setDefaultConnectionConfig(ConnectionConfig.custom()
             .setBufferSize(preferences.getInteger("http.socket.buffer"))
-            .setCharset(Charset.forName(encoding))
+            .setCharset(Charset.forName(host.getEncoding()))
             .build());
         if(preferences.getBoolean("http.connections.reuse")) {
             configuration.setConnectionReuseStrategy(new DefaultClientConnectionReuseStrategy());

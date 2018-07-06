@@ -218,7 +218,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk feature = source.getFeature(Bulk.class);
         final Object id = feature.pre(Type.download, files, callback);
         if(log.isDebugEnabled()) {
@@ -227,7 +227,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void post(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk feature = source.getFeature(Bulk.class);
         feature.post(Type.download, files, callback);
     }

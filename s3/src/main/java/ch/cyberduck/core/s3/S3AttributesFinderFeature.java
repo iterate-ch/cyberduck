@@ -128,7 +128,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setStorageClass(object.getMetadataMap().get("storage-class").toString());
         }
         if(StringUtils.isNotBlank(object.getETag())) {
-            attributes.setChecksum(Checksum.parse(object.getETag()));
             attributes.setETag(object.getETag());
         }
         if(object instanceof S3Object) {
@@ -153,6 +152,10 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     }
                 });
             }
+            // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted
+            // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
+            // not the MD5 of the object data.
+            attributes.setChecksum(Checksum.parse(object.getETag()));
         }
         final HashMap<String, String> metadata = new HashMap<String, String>();
         final Map<String, Object> source = object.getModifiableMetadata();

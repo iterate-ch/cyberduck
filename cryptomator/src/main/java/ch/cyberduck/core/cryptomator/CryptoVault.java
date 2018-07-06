@@ -307,19 +307,6 @@ public class CryptoVault implements Vault {
     }
 
     public Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
-        if(file.getType().contains(Path.Type.encrypted)) {
-            final Path decrypted = file.attributes().getDecrypted();
-            if(decrypted == null) {
-                log.warn(String.format("Skip file %s because it is already marked as an encrypted path", file));
-                return file;
-            }
-            final EnumSet<Path.Type> type = decrypted.getType();
-            type.addAll(file.getType());
-            type.add(Path.Type.decrypted);
-            type.remove(Path.Type.encrypted);
-            decrypted.setType(type);
-            return this.encrypt(session, decrypted, directoryId, metadata);
-        }
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {
@@ -330,9 +317,19 @@ public class CryptoVault implements Vault {
                 log.warn(String.format("Skip vault home %s because the root has no metadata file", file));
                 return file;
             }
-            final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
-            final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
+            final Path parent;
+            final String filename;
+            if(file.getType().contains(Path.Type.encrypted)) {
+                final Path decrypted = file.attributes().getDecrypted();
+                parent = directoryProvider.toEncrypted(session, decrypted.getParent().attributes().getDirectoryId(), decrypted.getParent());
+                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), decrypted.getName(), decrypted.getType());
+            }
+            else {
+                parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
+                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
+            }
             final PathAttributes attributes = new PathAttributes(file.attributes());
+            attributes.setDirectoryId(null);
             if(metadata) {
                 // The directory is different from the metadata file used to resolve the actual folder
                 attributes.setVersionId(null);
@@ -347,6 +344,10 @@ public class CryptoVault implements Vault {
             encrypted = new Path(parent, filename, type, attributes);
         }
         else {
+            if(file.getType().contains(Path.Type.encrypted)) {
+                log.warn(String.format("Skip file %s because it is already marked as an encrypted path", file));
+                return file;
+            }
             if(file.getType().contains(Path.Type.vault)) {
                 return directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
             }
@@ -363,16 +364,8 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         if(file.getType().contains(Path.Type.decrypted)) {
-            final Path encrypted = file.attributes().getEncrypted();
-            if(encrypted == null) {
-                log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
-                return file;
-            }
-            final EnumSet<Path.Type> type = encrypted.getType();
-            type.addAll(file.getType());
-            type.remove(Path.Type.decrypted);
-            encrypted.setType(type);
-            return this.decrypt(session, encrypted);
+            log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
+            return file;
         }
         if(file.getType().contains(Path.Type.vault)) {
             log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));

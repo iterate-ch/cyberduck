@@ -53,10 +53,9 @@ import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
 public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
@@ -80,7 +79,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     /**
      * Transfer status determined by filters
      */
-    private final Map<Path, TransferStatus> table;
+    private final Map<TransferItem, TransferStatus> table;
     /**
      * Workload
      */
@@ -107,7 +106,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
                                   final NotificationService notification,
                                   final Cache<TransferItem> cache) {
-        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, new HashMap<Path, TransferStatus>());
+        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, new ConcurrentHashMap<TransferItem, TransferStatus>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -119,7 +118,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final PasswordCallback passwordCallback,
                                   final NotificationService notification,
                                   final Cache<TransferItem> cache,
-                                  final Map<Path, TransferStatus> table) {
+                                  final Map<TransferItem, TransferStatus> table) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
@@ -221,10 +220,12 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             transfer.post(source, destination, table, connectionCallback);
             if(transfer.isReset()) {
                 notification.notify(transfer.isComplete() ?
-                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
-                        "Transfer incomplete", transfer.getName());
+                    String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
+                    "Transfer incomplete", transfer.getName());
             }
             sleep.release(lock);
+            table.clear();
+            cache.clear();
         }
         return true;
     }
@@ -272,7 +273,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 file.getName(), action.getTitle()));
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent, progress);
-                            table.put(file, status);
+                            table.put(new TransferItem(file, local), status);
                             final TransferItem item = new TransferItem(
                                 status.getRename().remote != null ? status.getRename().remote : file,
                                 status.getRename().local != null ? status.getRename().local : local
@@ -311,6 +312,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             return call();
                         }
                         if(table.size() == 0) {
+                            // Fail fast when first item in queue fails preparing
                             throw e;
                         }
                         // Prompt to continue or abort for application errors
@@ -360,12 +362,11 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             throw new ConnectionCanceledException();
         }
         // Only transfer if accepted by filter and stored in table with transfer status
-        if(table.containsKey(item.remote)) {
-            final TransferStatus status = table.get(item.remote);
+        if(table.containsKey(item)) {
+            final TransferStatus status = table.get(item);
             // Handle submit of one or more segments
             final List<TransferStatus> segments = status.getSegments();
-            for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
-                final TransferStatus segment = iter.next();
+            for(final TransferStatus segment : segments) {
                 this.submit(new RetryTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
@@ -400,11 +401,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
                                 options, segment, progress);
-
-                            if(!iter.hasNext()) {
-                                // Free memory when no more segments to transfer
-                                table.remove(item.remote);
-                            }
                         }
                         catch(ConnectionCanceledException e) {
                             segment.setFailure();
@@ -420,6 +416,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             }
                             segment.setFailure();
                             if(table.size() == 1) {
+                                // Fail fast when transferring single file
                                 throw e;
                             }
                             // Prompt to continue or abort for application errors
@@ -446,8 +443,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
                     @Override
                     public String toString() {
-                        final StringBuilder sb = new StringBuilder("TransferCallable{");
-                        sb.append("status=").append(segment);
+                        final StringBuilder sb = new StringBuilder("RetryTransferCallable{");
+                        sb.append("item=").append(item);
+                        sb.append(", status=").append(segment);
                         sb.append('}');
                         return sb.toString();
                     }
@@ -497,7 +495,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 @Override
                 public String toString() {
                     final StringBuilder sb = new StringBuilder("TransferCallable{");
-                    sb.append("status=").append(status);
+                    sb.append("item=").append(item);
+                    sb.append(", status=").append(status);
                     sb.append('}');
                     return sb.toString();
                 }

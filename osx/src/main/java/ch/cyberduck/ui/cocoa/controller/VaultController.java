@@ -95,7 +95,9 @@ public class VaultController extends FolderController {
         view.addSubview(confirmField);
 
         strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
-        strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
+        if(strengthIndicator.respondsToSelector(Foundation.selector("setLevelIndicatorStyle:"))) {
+            strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
+        }
         strengthIndicator.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(strengthIndicator);
 

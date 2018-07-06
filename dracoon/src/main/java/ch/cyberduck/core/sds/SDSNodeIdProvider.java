@@ -44,9 +44,6 @@ public class SDSNodeIdProvider implements IdProvider {
 
     private Cache<Path> cache = PathCache.empty();
 
-    private final PathContainerService containerService
-        = new SDSPathContainerService();
-
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
     }
@@ -103,7 +100,8 @@ public class SDSNodeIdProvider implements IdProvider {
         if(file.isRoot()) {
             return false;
         }
-        final Path container = containerService.getContainer(file);
+        // Get top level share
+        final Path container = new PathContainerService().getContainer(file);
         if(cache.isCached(container.getParent())) {
             final AttributedList<Path> list = cache.get(container.getParent());
             final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(container));
@@ -126,7 +124,7 @@ public class SDSNodeIdProvider implements IdProvider {
                     return node.getIsEncrypted();
                 }
             }
-            throw new NotfoundException(file.getAbsolute());
+            throw new NotfoundException(container.getName());
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);

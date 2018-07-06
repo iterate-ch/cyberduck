@@ -21,6 +21,7 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.commons.io.FilenameUtils;
@@ -65,6 +66,16 @@ public class DonationKeyFactory extends LicenseFactory {
                 final ReceiptVerifier verifier = new ReceiptVerifier(file);
                 if(verifier.verify(new DisabledLicenseVerifierCallback())) {
                     keys.add(new Receipt(file, verifier.getGuid()));
+                }
+            }
+        }
+        if(keys.isEmpty()) {
+            final Local bundle = ApplicationResourcesFinderFactory.get().find();
+            if(bundle.exists()) {
+                for(Local key : bundle.list().filter(new LicenseFilter())) {
+                    log.info(String.format("Add bundled registration key %s", key));
+                    final License registration = this.open(key);
+                    keys.add(registration);
                 }
             }
         }

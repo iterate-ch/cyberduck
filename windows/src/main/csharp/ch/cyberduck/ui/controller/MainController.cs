@@ -141,7 +141,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 new MantaProtocol(),
                 new SDSProtocol());
 
-            if (!Debugger.IsAttached)
+            if (!(Debugger.IsAttached || Utils.IsRunningAsUWP))
             {
                 // Add the event handler for handling UI thread exceptions to the event.
                 System.Windows.Forms.Application.ThreadException += ExceptionHandler;
