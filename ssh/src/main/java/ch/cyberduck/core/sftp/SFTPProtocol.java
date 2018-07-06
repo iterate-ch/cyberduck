@@ -68,6 +68,11 @@ public class SFTPProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isEncodingConfigurable() {
+        return true;
+    }
+
+    @Override
     public CredentialsConfigurator getCredentialsFinder() {
         return credentials;
     }
