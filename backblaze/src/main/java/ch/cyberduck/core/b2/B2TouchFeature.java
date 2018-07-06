@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -33,9 +32,13 @@ import synapticloop.b2.response.BaseB2Response;
 
 public class B2TouchFeature implements Touch<BaseB2Response> {
 
+    private final B2Session session;
+    private final B2FileidProvider fileid;
     private Write<BaseB2Response> writer;
 
     public B2TouchFeature(final B2Session session, final B2FileidProvider fileid) {
+        this.session = session;
+        this.fileid = fileid;
         this.writer = new B2WriteFeature(session, fileid);
     }
 
@@ -48,7 +51,7 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
         return new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
+            new B2AttributesFinderFeature(session, fileid).toAttributes((B2FileResponse) out.getStatus()));
     }
 
     @Override
