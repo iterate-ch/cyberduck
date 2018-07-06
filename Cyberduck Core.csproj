@@ -133,6 +133,7 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\credentialmanager\CriticalCredentialHandle.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\credentialmanager\NativeCode.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\DataProtector.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\date\UserDefaultsDateFormatter.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemEditorFactory.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemWatchEditor.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\editor\SystemWatchEditorFactory.cs" />
