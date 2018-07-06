@@ -30,8 +30,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,9 +39,6 @@ public class ConnectionController extends BookmarkController {
 
     private final HostPasswordStore keychain
         = PasswordStoreFactory.get();
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
 
     @Outlet
     private NSTextField passwordField;
