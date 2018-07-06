@@ -299,6 +299,8 @@ public class Credentials implements Comparable<Credentials> {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Credentials{");
         sb.append("user='").append(user).append('\'');
+        sb.append(", token='").append(token).append('\'');
+        sb.append(", identity=").append(identity);
         sb.append('}');
         return sb.toString();
     }
