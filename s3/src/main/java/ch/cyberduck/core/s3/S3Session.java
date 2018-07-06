@@ -22,6 +22,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
+import ch.cyberduck.core.auth.AWSProfileCredentialsConfigurator;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -199,7 +200,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(host.getProtocol().isTokenConfigurable()) {
-            final String sessionToken;
             if(Scheme.isURL(host.getProtocol().getContext())) {
                 try {
                     final Credentials temporary = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
@@ -213,47 +213,61 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
             else {
                 if(StringUtils.isBlank(host.getCredentials().getToken())) {
-                    // Not obtained from config in ~/.aws/config
-                    final ClientConfiguration configuration = new ClientConfiguration();
-                    final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
-                    configuration.setConnectionTimeout(timeout);
-                    configuration.setSocketTimeout(timeout);
-                    final UseragentProvider ua = new PreferencesUseragentProvider();
-                    configuration.setUserAgentPrefix(ua.get());
-                    configuration.setMaxErrorRetry(0);
-                    configuration.setMaxConnections(1);
-                    configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
-                    switch(proxy.getType()) {
-                        case HTTP:
-                        case HTTPS:
-                            configuration.setProxyHost(proxy.getHostname());
-                            configuration.setProxyPort(proxy.getPort());
+                    final String profile = host.getCredentials().getUsername();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Load credentials from configuration using profile %s", profile));
                     }
-                    final AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.standard()
-                        .withCredentials(new AWSStaticCredentialsProvider(new com.amazonaws.auth.AWSCredentials() {
-                            @Override
-                            public String getAWSAccessKeyId() {
-                                return host.getCredentials().getUsername();
-                            }
+                    final Credentials credentials = new AWSProfileCredentialsConfigurator(profile).configure(host);
+                    if(credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Obtained temporary credentials %s from AWS profile configuration", credentials));
+                        }
+                        client.setProviderCredentials(new AWSSessionCredentials(credentials.getUsername(),
+                            credentials.getPassword(), credentials.getToken()));
+                    }
+                    else {
+                        // Not obtained from config in ~/.aws/config
+                        final ClientConfiguration configuration = new ClientConfiguration();
+                        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+                        configuration.setConnectionTimeout(timeout);
+                        configuration.setSocketTimeout(timeout);
+                        final UseragentProvider ua = new PreferencesUseragentProvider();
+                        configuration.setUserAgentPrefix(ua.get());
+                        configuration.setMaxErrorRetry(0);
+                        configuration.setMaxConnections(1);
+                        configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
+                        switch(proxy.getType()) {
+                            case HTTP:
+                            case HTTPS:
+                                configuration.setProxyHost(proxy.getHostname());
+                                configuration.setProxyPort(proxy.getPort());
+                        }
+                        final AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.standard()
+                            .withCredentials(new AWSStaticCredentialsProvider(new com.amazonaws.auth.AWSCredentials() {
+                                @Override
+                                public String getAWSAccessKeyId() {
+                                    return host.getCredentials().getUsername();
+                                }
 
-                            @Override
-                            public String getAWSSecretKey() {
-                                return host.getCredentials().getPassword();
-                            }
-                        }))
-                        .withClientConfiguration(configuration)
-                        .withRegion(Regions.DEFAULT_REGION).build();
-                    // Obtain token from MFA
-                    //final Credentials token = versioning.getToken(prompt);
-                    final GetSessionTokenResult result = sts.getSessionToken(new GetSessionTokenRequest()
-                        // Specify this value if the IAM user has a policy that requires MFA authentication
-                        .withSerialNumber(null)
-                        // The value provided by the MFA device, if MFA is required
-                        .withTokenCode(null)
-                        .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds")));
-                    client.setProviderCredentials(new AWSSessionCredentials(result.getCredentials().getAccessKeyId(),
-                        result.getCredentials().getSecretAccessKey(),
-                        result.getCredentials().getSessionToken()));
+                                @Override
+                                public String getAWSSecretKey() {
+                                    return host.getCredentials().getPassword();
+                                }
+                            }))
+                            .withClientConfiguration(configuration)
+                            .withRegion(Regions.DEFAULT_REGION).build();
+                        // Obtain token from MFA
+                        //final Credentials token = versioning.getToken(prompt);
+                        final GetSessionTokenResult result = sts.getSessionToken(new GetSessionTokenRequest()
+                            // Specify this value if the IAM user has a policy that requires MFA authentication
+                            .withSerialNumber(null)
+                            // The value provided by the MFA device, if MFA is required
+                            .withTokenCode(null)
+                            .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds")));
+                        client.setProviderCredentials(new AWSSessionCredentials(result.getCredentials().getAccessKeyId(),
+                            result.getCredentials().getSecretAccessKey(),
+                            result.getCredentials().getSessionToken()));
+                    }
                 }
                 else {
                     client.setProviderCredentials(new AWSSessionCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),

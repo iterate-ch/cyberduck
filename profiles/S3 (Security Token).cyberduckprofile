@@ -24,7 +24,9 @@
         <key>Description</key>
         <string>S3 (Security Token)</string>
         <key>Username Configurable</key>
-        <false/>
+        <true/>
+        <key>Username Placeholder</key>
+        <string>Profile Name</string>
         <key>Password Configurable</key>
         <false/>
         <key>Token Configurable</key>
