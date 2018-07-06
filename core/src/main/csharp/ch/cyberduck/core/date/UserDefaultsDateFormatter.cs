@@ -1,26 +1,8 @@
-﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// 
-// Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
-// 
-
-using System;
-using ch.cyberduck.core;
+﻿using ch.cyberduck.core;
 using ch.cyberduck.core.date;
+using System;
 
-namespace Ch.Cyberduck.Ui.Winforms
+namespace Ch.Cybreduck.Core.Date
 {
     public class UserDefaultsDateFormatter : AbstractUserDateFormatter
     {
@@ -66,21 +48,21 @@ namespace Ch.Cyberduck.Ui.Winforms
         public static DateTime ConvertJavaMillisecondsToDateTime(long javaMS)
         {
             DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS*TimeSpan.TicksPerMillisecond)).ToLocalTime();
+            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS * TimeSpan.TicksPerMillisecond)).ToLocalTime();
             return dt;
         }
 
         public static long ConvertDateTimeToJavaMilliseconds(DateTime dateTime)
         {
             TimeSpan timeSpan = dateTime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));
-            return timeSpan.Ticks/TimeSpan.TicksPerMillisecond;
+            return timeSpan.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
         public static long ConvertJavaMillisecondsToDotNetMillis(long javaMS)
         {
             DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS*TimeSpan.TicksPerMillisecond)).ToLocalTime();
-            return dt.Ticks/TimeSpan.TicksPerMillisecond;
+            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS * TimeSpan.TicksPerMillisecond)).ToLocalTime();
+            return dt.Ticks / TimeSpan.TicksPerMillisecond;
         }
     }
 }

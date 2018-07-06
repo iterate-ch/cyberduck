@@ -283,7 +283,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogAlertCallback.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogRecursiveCallback.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogTransferErrorCallback.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\UserDefaultsDateFormatter.cs" />
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>
