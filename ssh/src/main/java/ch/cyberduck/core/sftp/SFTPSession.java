@@ -60,6 +60,7 @@ import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.PublicKey;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -172,6 +173,7 @@ public class SFTPSession extends Session<SSHClient> {
                 return true;
             }
         });
+        connection.setRemoteCharset(Charset.forName(host.getEncoding()));
         disconnectListener = new StateDisconnectListener();
         final Transport transport = connection.getTransport();
         transport.setDisconnectListener(disconnectListener);
