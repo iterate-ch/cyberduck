@@ -2,7 +2,7 @@
 using ch.cyberduck.core.date;
 using System;
 
-namespace Ch.Cybreduck.Core.Date
+namespace Ch.Cyberduck.Core.Date
 {
     public class UserDefaultsDateFormatter : AbstractUserDateFormatter
     {
