@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -52,13 +53,13 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     }
 
     @Override
-    public Void pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public Void pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         this.configure(files, callback, true);
         return null;
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         this.configure(files, callback, false);
     }
 
@@ -67,10 +68,10 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
         return this;
     }
 
-    private void configure(final Map<Path, TransferStatus> files, final ConnectionCallback callback, final boolean enabled) throws BackgroundException {
+    private void configure(final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback, final boolean enabled) throws BackgroundException {
         final Set<Path> buckets = new HashSet<>();
-        for(Path file : files.keySet()) {
-            buckets.add(new S3PathContainerService().getContainer(file));
+        for(TransferItem file : files.keySet()) {
+            buckets.add(new S3PathContainerService().getContainer(file.remote));
         }
         for(Path bucket : buckets) {
             if(enabled) {

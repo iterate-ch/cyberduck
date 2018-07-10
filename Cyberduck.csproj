@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ch.Cyberduck</RootNamespace>
     <AssemblyName>Cyberduck</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>cyberduck-application.ico</ApplicationIcon>
@@ -283,7 +283,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogAlertCallback.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogRecursiveCallback.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogTransferErrorCallback.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\UserDefaultsDateFormatter.cs" />
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>

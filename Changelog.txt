@@ -1,6 +1,14 @@
 Cyberduck
 https://cyberduck.io/
 
+6.7.0
+- [Feature] Support display scaling (Windows) (#8961)
+- [Bugfix] Allow configuration of charset in bookmark (SFTP)
+- [Bugfix] Incomplete transfers (#10347)
+- [Bugfix] Skip checksum validation for files encrypted with SSE-KMS (S3) (#10371)
+- [Bugfix] Retain metadata on server side copy of file (S3) (#10341)
+- [Bugfix] Failure creating new vault (Cryptomator, OneDrive)
+
 6.6.2
 - [Bugfix] Cannot write to shared folders (Google Drive)
 - [Bugfix] Repeated prompt for private key (SFTP, Mac App Store)

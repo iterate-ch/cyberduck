@@ -77,17 +77,7 @@ public abstract class LicenseFactory extends Factory<License> {
     }
 
     protected LicenseFactory(final Local folder) {
-        this(folder, new Filter<Local>() {
-            @Override
-            public boolean accept(final Local file) {
-                return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
-            }
-
-            @Override
-            public Pattern toPattern() {
-                return Pattern.compile(".*\\.cyberducklicense");
-            }
-        });
+        this(folder, new LicenseFilter());
     }
 
     protected LicenseFactory(final Local folder, final Filter<Local> filter) {
@@ -198,4 +188,16 @@ public abstract class LicenseFactory extends Factory<License> {
             return LocaleFactory.localizedString("Not a valid registration key", "License");
         }
     };
+
+    protected static final class LicenseFilter implements Filter<Local> {
+        @Override
+        public boolean accept(final Local file) {
+            return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
+        }
+
+        @Override
+        public Pattern toPattern() {
+            return Pattern.compile(".*\\.cyberducklicense");
+        }
+    }
 }

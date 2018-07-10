@@ -31,6 +31,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -76,13 +77,13 @@ public class SpectraUploadFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus writeStatus = new TransferStatus().length(content.length);
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, writeStatus), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final SpectraUploadFeature upload = new SpectraUploadFeature(new SpectraWriteFeature(session), new SpectraBulkService(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 writeStatus, new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
         final TransferStatus readStatus = new TransferStatus().length(content.length);
-        bulk.pre(Transfer.Type.download, Collections.singletonMap(test, readStatus), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), readStatus), new DisabledConnectionCallback());
         final InputStream in = new SpectraReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
@@ -130,9 +131,9 @@ public class SpectraUploadFeatureTest {
         final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path test2 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        final HashMap<Path, TransferStatus> files = new HashMap<>();
-        files.put(test1, status1);
-        files.put(test2, status2);
+        final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
+        files.put(new TransferItem(test1), status1);
+        files.put(new TransferItem(test2), status2);
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         final SpectraUploadFeature upload = new SpectraUploadFeature(new SpectraWriteFeature(session), new SpectraBulkService(session));
         upload.upload(test1, local1, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
