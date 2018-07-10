@@ -43,7 +43,7 @@ public class DropboxMoveFeature implements Move {
             if(status.isExists()) {
                 delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
-            new DbxUserFilesRequests(session.getClient()).move(file.getAbsolute(), renamed.getAbsolute());
+            new DbxUserFilesRequests(session.getClient()).moveV2(file.getAbsolute(), renamed.getAbsolute());
             return renamed;
         }
         catch(DbxException e) {
