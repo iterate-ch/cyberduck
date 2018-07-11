@@ -21,14 +21,10 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.BundleController;
-import ch.cyberduck.binding.application.NSColor;
-import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -46,13 +42,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public abstract class URLMenuDelegate extends AbstractMenuDelegate {
-
-    protected static final NSDictionary URL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor(),
-                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
-            NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName)
-    );
 
     protected abstract SessionPool getSession();
 
@@ -108,7 +97,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                 // Dummy menu item to preview URL only
                 final List<DescriptiveUrl> target = this.getURLs(index, selected);
                 item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.join(target, '\n'), URL_FONT_ATTRIBUTES));
+                    StringUtils.join(target, '\n'), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
         }
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
