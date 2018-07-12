@@ -29,6 +29,7 @@ public class MD5ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
-        return new Checksum(HashAlgorithm.md5, Hex.encodeHexString(this.digest("MD5", in)));
+        return new Checksum(HashAlgorithm.md5, Hex.encodeHexString(this.digest("MD5",
+            this.normalize(in, status))));
     }
 }
