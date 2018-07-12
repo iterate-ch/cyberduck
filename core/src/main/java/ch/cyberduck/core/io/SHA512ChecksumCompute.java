@@ -26,6 +26,7 @@ public class SHA512ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
-        return new Checksum(HashAlgorithm.sha512, Hex.encodeHexString(this.digest("SHA-512", in)));
+        return new Checksum(HashAlgorithm.sha512, Hex.encodeHexString(this.digest("SHA-512",
+            this.normalize(in, status))));
     }
 }

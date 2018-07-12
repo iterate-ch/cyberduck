@@ -32,7 +32,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.Preferences;
@@ -43,7 +42,6 @@ import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -67,12 +65,12 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3DefaultMultipartService multipartService;
 
@@ -86,7 +84,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer) {
         this(session, writer, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
-                PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
+            PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
     }
 
     public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer, final Long partsize, final Integer concurrency) {
@@ -190,7 +188,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Completed multipart upload for %s with %d parts and checksum %s",
-                            complete.getObjectKey(), completed.size(), complete.getEtag()));
+                        complete.getObjectKey(), completed.size(), complete.getEtag()));
                 }
                 if(file.getType().contains(Path.Type.encrypted)) {
                     log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
@@ -202,7 +200,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         concat.append(part.getEtag());
                     }
                     final String expected = String.format("%s-%d",
-                            new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
+                        new MD5ChecksumCompute().compute(concat.toString(), new TransferStatus()), completed.size());
                     final String reference;
                     if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
                         reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
@@ -213,8 +211,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     if(!expected.equals(reference)) {
                         if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                            expected, reference));
+                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                    expected, reference));
                         }
                         else {
                             log.warn(String.format("Mismatch between MD5 hash %s of uploaded data and ETag %s returned by the server", expected, reference));
@@ -254,41 +252,40 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
                 final TransferStatus status = new TransferStatus()
-                        .length(length)
-                        .skip(offset)
-                        .withParameters(requestParameters);
+                    .length(length)
+                    .skip(offset)
+                    .withParameters(requestParameters);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
-                        status.setChecksum(writer.checksum(file)
-                                .compute(StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
+                        status.setChecksum(writer.checksum(file).compute(local.getInputStream(), status)
                         );
                         break;
                 }
                 status.setSegment(true);
                 final StorageObject part = S3MultipartUploadService.super.upload(
-                        file, local, throttle, listener, status, overall, new StreamProgress() {
-                            @Override
-                            public void progress(final long bytes) {
-                                status.progress(bytes);
-                                // Discard sent bytes in overall progress if there is an error reply for segment.
-                                overall.progress(bytes);
-                            }
+                    file, local, throttle, listener, status, overall, new StreamProgress() {
+                        @Override
+                        public void progress(final long bytes) {
+                            status.progress(bytes);
+                            // Discard sent bytes in overall progress if there is an error reply for segment.
+                            overall.progress(bytes);
+                        }
 
-                            @Override
-                            public void setComplete() {
-                                status.setComplete();
-                            }
-                        }, callback);
+                        @Override
+                        public void setComplete() {
+                            status.setComplete();
+                        }
+                    }, callback);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response %s for part number %d", part, partNumber));
                 }
                 // Populate part with response data that is accessible via the object's metadata
                 return new MultipartPart(partNumber,
-                        null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
-                        null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
-                        part.getContentLength());
+                    null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                    null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                    part.getContentLength());
 
             }
         }, overall));

@@ -21,7 +21,6 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
@@ -47,7 +46,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class CryptoChecksumCompute extends AbstractChecksumCompute implements ChecksumCompute {
+public class CryptoChecksumCompute implements ChecksumCompute {
     private static final Logger log = Logger.getLogger(CryptoChecksumCompute.class);
 
     private final CryptoVault cryptomator;
@@ -81,7 +80,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), cryptomator.getCryptor(),
-                    cryptomator.getCryptor().fileHeaderCryptor().decryptHeader(header), nonces, cryptomator.numberOfChunks(offset));
+                cryptomator.getCryptor().fileHeaderCryptor().decryptHeader(header), nonces, cryptomator.numberOfChunks(offset));
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
             final ThreadPool pool = ThreadPoolFactory.get("checksum", 1);
             try {
