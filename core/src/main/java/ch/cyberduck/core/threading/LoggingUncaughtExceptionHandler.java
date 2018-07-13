@@ -23,7 +23,6 @@ public class LoggingUncaughtExceptionHandler implements Thread.UncaughtException
     @Override
     public void uncaughtException(final Thread t, final Throwable e) {
         // Swallow the exception
-        log.error(String.format("Thread %s has thrown uncaught exception:%s",
-                t.getName(), e.getMessage()), e);
+        log.error(String.format("Thread %s has thrown uncaught exception: %s", t, e.getMessage()), e);
     }
 }
