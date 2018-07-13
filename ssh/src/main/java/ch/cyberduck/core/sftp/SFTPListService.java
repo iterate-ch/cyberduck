@@ -61,7 +61,7 @@ public class SFTPListService implements ListService {
                     return true;
                 }
             })) {
-                final PathAttributes attributes = this.attributes.convert(f.getAttributes());
+                final PathAttributes attributes = this.attributes.toAttributes(f.getAttributes());
                 final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
                 if(f.getAttributes().getType().equals(FileMode.Type.DIRECTORY)) {
                     type.add(Path.Type.directory);

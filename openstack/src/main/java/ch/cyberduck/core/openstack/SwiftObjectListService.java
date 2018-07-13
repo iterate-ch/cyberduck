@@ -28,10 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.date.ISO8601DateParser;
-import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,10 +47,7 @@ public class SwiftObjectListService implements ListService {
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
-
-    private final ISO8601DateParser dateParser
-            = new ISO8601DateParser();
+        = new PathContainerService();
 
     private final SwiftRegionService regionService;
 
@@ -76,29 +70,12 @@ public class SwiftObjectListService implements ListService {
             do {
                 final Path container = containerService.getContainer(directory);
                 list = session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
-                        containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER,
-                        null, limit, marker, Path.DELIMITER);
+                    containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER,
+                    null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setOwner(container.attributes().getOwner());
-                    attributes.setRegion(container.attributes().getRegion());
-                    if(StringUtils.isNotBlank(object.getMd5sum())) {
-                        // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
-                        // the concatenated string of ETags for each of the segments in the manifest.
-                        attributes.setChecksum(Checksum.parse(object.getMd5sum()));
-                    }
-                    attributes.setSize(object.getSize());
-                    final String lastModified = object.getLastModified();
-                    if(lastModified != null) {
-                        try {
-                            attributes.setModificationDate(dateParser.parse(lastModified).getTime());
-                        }
-                        catch(InvalidDateException e) {
-                            log.warn(String.format("%s is not ISO 8601 format %s", lastModified, e.getMessage()));
-                        }
-                    }
+                    final PathAttributes attributes = new SwiftAttributesFinderFeature(session, regionService).toAttributes(object);
                     final EnumSet<AbstractPath.Type> types = "application/directory"
-                            .equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                        .equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
                         if(children.contains(new Path(directory, PathNormalizer.name(object.getName()), EnumSet.of(Path.Type.directory), attributes))) {
                             // There is already a real placeholder file with application/directory MIME type. Only
@@ -106,6 +83,8 @@ public class SwiftObjectListService implements ListService {
                             continue;
                         }
                     }
+                    attributes.setOwner(container.attributes().getOwner());
+                    attributes.setRegion(container.attributes().getRegion());
                     children.add(new Path(directory, PathNormalizer.name(object.getName()), types, attributes));
                     marker = object.getName();
                 }

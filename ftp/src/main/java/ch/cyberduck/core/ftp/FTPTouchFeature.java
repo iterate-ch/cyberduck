@@ -1,12 +1,12 @@
-package ch.cyberduck.core.dropbox;
+package ch.cyberduck.core.ftp;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,11 +15,13 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 
-public class DropboxTouchFeature extends DefaultTouchFeature<String> {
+public class FTPTouchFeature extends DefaultTouchFeature<Integer> {
 
-    public DropboxTouchFeature(final DropboxSession session) {
-        super(new DropboxUploadFeature(new DropboxWriteFeature(session)), new DropboxAttributesFinderFeature(session));
+    public FTPTouchFeature(final FTPSession session) {
+        super(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)), new DefaultAttributesFinderFeature(session));
     }
 }

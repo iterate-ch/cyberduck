@@ -54,7 +54,7 @@ public class SFTPDirectoryFeature implements Directory<Void> {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
-        return folder;
+        return new Path(folder.getParent(), folder.getName(), folder.getType(), new SFTPAttributesFinderFeature(session).find(folder));
     }
 
     @Override

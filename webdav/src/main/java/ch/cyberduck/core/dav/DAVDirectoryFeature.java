@@ -47,7 +47,7 @@ public class DAVDirectoryFeature implements Directory<String> {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e, folder);
         }
-        return folder;
+        return new Path(folder.getParent(), folder.getName(), folder.getType(), new DAVAttributesFinderFeature(session).find(folder));
     }
 
     @Override

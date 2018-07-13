@@ -39,8 +39,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SwiftDirectoryFeatureTest {
@@ -53,11 +52,10 @@ public class SwiftDirectoryFeatureTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
-        assertTrue(feature.isSupported(container.getParent(), container.getName()));
-        feature.mkdir(container, "ORD", new TransferStatus());
+        final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), "ORD", new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(container));
+        assertEquals(container.attributes(), new SwiftAttributesFinderFeature(session).find(container));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(container));
         session.close();
@@ -86,13 +84,13 @@ public class SwiftDirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
-        final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
-        feature.mkdir(placeholder, null, new TransferStatus());
+        final Path placeholder = feature.mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         Thread.sleep(1000L);
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));
+        assertEquals(placeholder.attributes(), new SwiftAttributesFinderFeature(session).find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
         session.close();
