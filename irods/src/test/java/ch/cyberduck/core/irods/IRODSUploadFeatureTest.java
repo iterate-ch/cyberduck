@@ -61,9 +61,9 @@ public class IRODSUploadFeatureTest {
     public void testAppend() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+            new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+            System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -81,17 +81,17 @@ public class IRODSUploadFeatureTest {
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
             checksumPart1 = new IRODSUploadFeature(session).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                    status,
-                    new DisabledConnectionCallback());
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status,
+                new DisabledConnectionCallback());
             assertEquals(content.length / 2, status.getOffset());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
             checksumPart2 = new IRODSUploadFeature(session).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                    status,
-                    new DisabledConnectionCallback());
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status,
+                new DisabledConnectionCallback());
             assertEquals(content.length / 2, status.getOffset());
         }
         assertNotEquals(checksumPart1, checksumPart2);
@@ -109,9 +109,9 @@ public class IRODSUploadFeatureTest {
     public void testWrite() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+            new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+            System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -126,13 +126,14 @@ public class IRODSUploadFeatureTest {
         final Checksum checksum;
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().length(content.length);
+        final TransferStatus copy = new TransferStatus(status);
         checksum = new IRODSUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
+            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            status,
+            new DisabledConnectionCallback());
         assertTrue(status.isComplete());
         assertEquals(content.length, status.getOffset());
-        assertEquals(checksum, new MD5ChecksumCompute().compute(new FileInputStream(local.getAbsolute()), status));
+        assertEquals(checksum, new MD5ChecksumCompute().compute(new FileInputStream(local.getAbsolute()), copy));
         final byte[] buffer = new byte[content.length];
         final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -146,9 +147,9 @@ public class IRODSUploadFeatureTest {
     public void testInterruptStatus() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+            new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+            System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -163,15 +164,15 @@ public class IRODSUploadFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().length(content.length);
         final Checksum checksum = new IRODSUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
-                    @Override
-                    public void sent(final long bytes) {
-                        super.sent(bytes);
-                        status.setCanceled();
-                    }
-                },
-                status,
-                new DisabledConnectionCallback());
+            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+                @Override
+                public void sent(final long bytes) {
+                    super.sent(bytes);
+                    status.setCanceled();
+                }
+            },
+            status,
+            new DisabledConnectionCallback());
         assertTrue(status.isCanceled());
         assertFalse(status.isComplete());
         session.close();

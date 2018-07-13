@@ -70,18 +70,19 @@ public class IRODSUploadFeature implements Upload<Checksum> {
             final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
-                    preferences.getInteger("connection.retry"));
+                preferences.getInteger("connection.retry"));
             final TransferOptions options = new DefaultTransferOptionsConfigurer().configure(new TransferOptions());
             options.setUseParallelTransfer(session.getHost().getTransferType().equals(Host.TransferType.concurrent));
             block.setTransferOptions(options);
+            final TransferStatus copy = new TransferStatus(status);
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory().getDataTransferOperations(fs.getIRODSAccount());
             transfer.putOperation(new File(local.getAbsolute()), f, new DefaultTransferStatusCallbackListener(
-                    status, listener, block
+                status, listener, block
             ), block);
             if(status.isComplete()) {
                 final DataObjectChecksumUtilitiesAO checksum = fs
-                        .getIRODSAccessObjectFactory()
-                        .getDataObjectChecksumUtilitiesAO(fs.getIRODSAccount());
+                    .getIRODSAccessObjectFactory()
+                    .getDataObjectChecksumUtilitiesAO(fs.getIRODSAccount());
                 final ChecksumValue value = checksum.computeChecksumOnDataObject(f);
                 final Checksum fingerprint = Checksum.parse(value.getChecksumStringValue());
                 if(null == fingerprint) {
@@ -92,11 +93,11 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                         log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                     }
                     else {
-                        final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream(), status);
+                        final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream(), copy);
                         if(!expected.equals(fingerprint)) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                            fingerprint.algorithm.toString(), expected, fingerprint.hash));
+                                MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                    fingerprint.algorithm.toString(), expected, fingerprint.hash));
                         }
                     }
                 }
