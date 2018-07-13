@@ -23,6 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.vault.VaultRegistry;
 
+import java.util.EnumSet;
+
 public class VaultRegistryUnixPermissionFeature implements UnixPermission {
 
     private final Session<?> session;
@@ -58,6 +60,11 @@ public class VaultRegistryUnixPermissionFeature implements UnixPermission {
     @Override
     public Permission getDefault(final Local file) {
         return proxy.getDefault(file);
+    }
+
+    @Override
+    public Permission getDefault(final EnumSet<Path.Type> type) {
+        return proxy.getDefault(type);
     }
 
     @Override

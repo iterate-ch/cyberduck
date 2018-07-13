@@ -16,23 +16,34 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import java.util.EnumSet;
+
 public abstract class DefaultUnixPermissionFeature implements UnixPermission {
+
+    @Override
+    public Permission getDefault(final EnumSet<Path.Type> type) {
+        if(PreferencesFactory.get().getBoolean("queue.upload.permissions.change")) {
+            if(type.contains(Path.Type.file)) {
+                return new Permission(
+                    PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
+            }
+            else {
+                return new Permission(
+                    PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
+            }
+        }
+        return Permission.EMPTY;
+    }
 
     @Override
     public Permission getDefault(final Local file) {
         if(PreferencesFactory.get().getBoolean("queue.upload.permissions.default")) {
-            if(file.isFile()) {
-                return new Permission(
-                        PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
-            }
-            else {
-                return new Permission(
-                        PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
-            }
+            return this.getDefault(file.getType());
         }
         else {
             // Read permissions from local file

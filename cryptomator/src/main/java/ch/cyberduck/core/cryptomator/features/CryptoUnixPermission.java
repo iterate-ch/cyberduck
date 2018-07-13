@@ -23,6 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Vault;
 
+import java.util.EnumSet;
+
 public class CryptoUnixPermission implements UnixPermission {
 
     private final Session<?> session;
@@ -43,6 +45,11 @@ public class CryptoUnixPermission implements UnixPermission {
     @Override
     public Permission getDefault(final Local file) {
         return delegate.getDefault(file);
+    }
+
+    @Override
+    public Permission getDefault(final EnumSet<Path.Type> type) {
+        return delegate.getDefault(type);
     }
 
     @Override
