@@ -28,13 +28,15 @@ public abstract class DefaultUnixPermissionFeature implements UnixPermission {
     @Override
     public Permission getDefault(final EnumSet<Path.Type> type) {
         if(PreferencesFactory.get().getBoolean("queue.upload.permissions.change")) {
-            if(type.contains(Path.Type.file)) {
-                return new Permission(
-                    PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
-            }
-            else {
-                return new Permission(
-                    PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
+            if(PreferencesFactory.get().getBoolean("queue.upload.permissions.default")) {
+                if(type.contains(Path.Type.file)) {
+                    return new Permission(
+                        PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
+                }
+                else {
+                    return new Permission(
+                        PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
+                }
             }
         }
         return Permission.EMPTY;
