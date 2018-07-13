@@ -21,6 +21,7 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
@@ -46,7 +47,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class CryptoChecksumCompute implements ChecksumCompute {
+public class CryptoChecksumCompute extends AbstractChecksumCompute {
     private static final Logger log = Logger.getLogger(CryptoChecksumCompute.class);
 
     private final CryptoVault cryptomator;
@@ -59,7 +60,7 @@ public class CryptoChecksumCompute implements ChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
-        if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
+        if(Checksum.NONE == delegate.compute(new NullInputStream(0L), new TransferStatus())) {
             return Checksum.NONE;
         }
         if(null == status.getHeader()) {
@@ -70,7 +71,7 @@ public class CryptoChecksumCompute implements ChecksumCompute {
         }
         // Make nonces reusable in case we need to compute a checksum
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
-        return this.compute(in, status.getOffset(), status.getHeader(), status.getNonces());
+        return this.compute(this.normalize(in, status), status.getOffset(), status.getHeader(), status.getNonces());
     }
 
     protected Checksum compute(final InputStream in, final long offset, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
