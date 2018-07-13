@@ -241,7 +241,6 @@ namespace Ch.Cyberduck.Core.Preferences
 
             this.setDefault("queue.download.folder", DefaultDownloadPath);
             this.setDefault("queue.upload.permissions.default", true.ToString());
-            this.setDefault("queue.upload.permissions.change", true.ToString());
 
             this.setDefault("queue.dock.badge", true.ToString());
 
