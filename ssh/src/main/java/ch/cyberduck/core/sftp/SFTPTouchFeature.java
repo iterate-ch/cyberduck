@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -26,6 +27,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.util.EnumSet;
 
+import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
@@ -41,7 +43,14 @@ public class SFTPTouchFeature implements Touch<Void> {
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isFile()) {
             try {
-                final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC));
+                final FileAttributes attrs;
+                if(Permission.EMPTY != status.getPermission()) {
+                    attrs = new FileAttributes.Builder().withPermissions(Integer.parseInt(status.getPermission().getMode(), 8)).build();
+                }
+                else {
+                    attrs = FileAttributes.EMPTY;
+                }
+                final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC), attrs);
                 handle.close();
             }
             catch(IOException e) {

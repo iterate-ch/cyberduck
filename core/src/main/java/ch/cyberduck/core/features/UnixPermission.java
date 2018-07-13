@@ -20,6 +20,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.EnumSet;
+
 public interface UnixPermission {
 
     void setUnixOwner(Path file, String owner) throws BackgroundException;
@@ -31,4 +33,6 @@ public interface UnixPermission {
     void setUnixPermission(Path file, Permission permission) throws BackgroundException;
 
     Permission getDefault(Local file);
+
+    Permission getDefault(EnumSet<Path.Type> type);
 }
