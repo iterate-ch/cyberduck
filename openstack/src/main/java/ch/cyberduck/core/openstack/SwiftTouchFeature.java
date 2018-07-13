@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import ch.iterate.openstack.swift.model.StorageObject;
@@ -32,19 +33,27 @@ import ch.iterate.openstack.swift.model.StorageObject;
 public class SwiftTouchFeature implements Touch<StorageObject> {
 
     final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
-    private Write writer;
+    private final SwiftSession session;
+    private final SwiftRegionService regionService;
+
+    private Write<StorageObject> writer;
 
     public SwiftTouchFeature(final SwiftSession session, final SwiftRegionService regionService) {
+        this.session = session;
+        this.regionService = regionService;
         this.writer = new SwiftWriteFeature(session, regionService);
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         status.setLength(0L);
-        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
-        return file;
+        final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
+        new DefaultStreamCloser().close(out);
+        final StorageObject metadata = out.getStatus();
+        return new Path(file.getParent(), file.getName(), file.getType(),
+            new SwiftAttributesFinderFeature(session, regionService).toAttributes(metadata));
     }
 
     @Override
@@ -54,7 +63,7 @@ public class SwiftTouchFeature implements Touch<StorageObject> {
     }
 
     @Override
-    public Touch<StorageObject> withWriter(final Write writer) {
+    public Touch<StorageObject> withWriter(final Write<StorageObject> writer) {
         this.writer = writer;
         return this;
     }

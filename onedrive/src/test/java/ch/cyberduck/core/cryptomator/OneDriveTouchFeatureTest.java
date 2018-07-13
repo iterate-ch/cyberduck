@@ -47,8 +47,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
@@ -60,12 +59,14 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new OneDriveWriteFeature(session))), new OneDriveWriteFeature(session), cryptomator).touch(
+        final Path test = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new OneDriveWriteFeature(session)),
+            new OneDriveAttributesFinderFeature(session)), new OneDriveWriteFeature(session), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(test);
         assertNotNull(attributes.getVersionId());
+        assertEquals(test.attributes(), attributes);
         new CryptoDeleteFeature(session, new OneDriveDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -76,12 +77,14 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new OneDriveWriteFeature(session))), new OneDriveWriteFeature(session), cryptomator).touch(
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new OneDriveWriteFeature(session)),
+            new OneDriveAttributesFinderFeature(session)), new OneDriveWriteFeature(session), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(test);
         assertNotNull(attributes.getVersionId());
+        assertEquals(test.attributes(), attributes);
         new CryptoDeleteFeature(session, new OneDriveDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

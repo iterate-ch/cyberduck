@@ -33,7 +33,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -73,8 +72,9 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             final StatusOutputStream<StorageObject> out = writer.write(new Path(folder.getParent(), folder.getName(), type,
                 new PathAttributes(folder.attributes())), status, new DisabledConnectionCallback());
             new DefaultStreamCloser().close(out);
+            final StorageObject metadata = out.getStatus();
             return new Path(folder.getParent(), folder.getName(), type,
-                new PathAttributes(folder.attributes()).withVersionId(((S3Object) out.getStatus()).getVersionId()));
+                new S3AttributesFinderFeature(session).toAttributes(metadata));
         }
     }
 

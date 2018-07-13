@@ -26,14 +26,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.ftp.FTPWorkdirService;
-import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -63,7 +61,7 @@ public class FTPDefaultListServiceTest {
                 FTPListService.Command.list);
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        session.getFeature(Touch.class).touch(file, new TransferStatus());
         assertTrue(list.list(directory, new DisabledListProgressListener()).contains(file));
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -82,7 +80,7 @@ public class FTPDefaultListServiceTest {
                 FTPListService.Command.lista);
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        session.getFeature(Touch.class).touch(file, new TransferStatus());
         assertTrue(list.list(directory, new DisabledListProgressListener()).contains(file));
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

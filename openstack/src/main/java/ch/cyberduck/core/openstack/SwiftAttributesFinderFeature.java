@@ -40,6 +40,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.ObjectMetadata;
 import ch.iterate.openstack.swift.model.Region;
+import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(SwiftAttributesFinderFeature.class);
@@ -78,7 +79,6 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
                 attributes.setRegion(info.getRegion().getRegionId());
                 return attributes;
             }
-            final PathAttributes attributes = new PathAttributes();
             final ObjectMetadata metadata = session.getClient().getObjectMetaData(region,
                     containerService.getContainer(file).getName(), containerService.getKey(file));
             if(file.isDirectory()) {
@@ -91,26 +91,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
                     throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
                 }
             }
-            attributes.setSize(Long.valueOf(metadata.getContentLength()));
-            try {
-                attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());
-            }
-            catch(InvalidDateException e) {
-                log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
-            }
-            if(StringUtils.isNotBlank(metadata.getETag())) {
-                final String etag = StringUtils.removePattern(metadata.getETag(), "\"");
-                attributes.setETag(etag);
-                if(metadata.getMetaData().containsKey(Constants.X_STATIC_LARGE_OBJECT)) {
-                    // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
-                    // the concatenated string of ETags for each of the segments in the manifest.
-                    attributes.setChecksum(Checksum.NONE);
-                }
-                else {
-                    attributes.setChecksum(Checksum.parse(etag));
-                }
-            }
-            return attributes;
+            return this.toAttributes(metadata);
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -118,6 +99,50 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+    }
+
+    protected PathAttributes toAttributes(final StorageObject object) {
+        final PathAttributes attributes = new PathAttributes();
+        if(StringUtils.isNotBlank(object.getMd5sum())) {
+            // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
+            // the concatenated string of ETags for each of the segments in the manifest.
+            attributes.setChecksum(Checksum.parse(object.getMd5sum()));
+        }
+        attributes.setSize(object.getSize());
+        final String lastModified = object.getLastModified();
+        if(lastModified != null) {
+            try {
+                attributes.setModificationDate(dateParser.parse(lastModified).getTime());
+            }
+            catch(InvalidDateException e) {
+                log.warn(String.format("%s is not ISO 8601 format %s", lastModified, e.getMessage()));
+            }
+        }
+        return attributes;
+    }
+
+    protected PathAttributes toAttributes(final ObjectMetadata metadata) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setSize(Long.valueOf(metadata.getContentLength()));
+        try {
+            attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());
+        }
+        catch(InvalidDateException e) {
+            log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
+        }
+        if(StringUtils.isNotBlank(metadata.getETag())) {
+            final String etag = StringUtils.removePattern(metadata.getETag(), "\"");
+            attributes.setETag(etag);
+            if(metadata.getMetaData().containsKey(Constants.X_STATIC_LARGE_OBJECT)) {
+                // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
+                // the concatenated string of ETags for each of the segments in the manifest.
+                attributes.setChecksum(Checksum.NONE);
+            }
+            else {
+                attributes.setChecksum(Checksum.parse(etag));
+            }
+        }
+        return attributes;
     }
 
     @Override

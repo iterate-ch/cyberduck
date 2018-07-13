@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -35,9 +34,11 @@ import org.jets3t.service.model.StorageObject;
 
 public class S3TouchFeature implements Touch<StorageObject> {
 
+    private final S3Session session;
     private Write<StorageObject> writer;
 
     public S3TouchFeature(final S3Session session) {
+        this.session = session;
         this.writer = new S3WriteFeature(session, new S3DisabledMultipartService());
     }
 
@@ -49,8 +50,9 @@ public class S3TouchFeature implements Touch<StorageObject> {
         status.setLength(0L);
         final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
+        final S3Object metadata = (S3Object) out.getStatus();
         return new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributes(file.attributes()).withVersionId(((S3Object) out.getStatus()).getVersionId()));
+            new S3AttributesFinderFeature(session).toAttributes(metadata));
     }
 
     @Override

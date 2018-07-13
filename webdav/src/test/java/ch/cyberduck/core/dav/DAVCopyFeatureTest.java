@@ -51,14 +51,15 @@ public class DAVCopyFeatureTest {
     @Test
     public void testCopyFile() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(test, new TransferStatus());
+        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)),
+            new DAVAttributesFinderFeature(session)).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new DAVFindFeature(session).find(test));
@@ -80,9 +81,9 @@ public class DAVCopyFeatureTest {
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(test, new TransferStatus());
+        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(copy, new TransferStatus());
+        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(copy, new TransferStatus());
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new DAVListService(session).list(folder, new DisabledListProgressListener());
@@ -94,7 +95,7 @@ public class DAVCopyFeatureTest {
     @Test
     public void testCopyDirectory() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -104,7 +105,7 @@ public class DAVCopyFeatureTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
         new DAVDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
-        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(file, new TransferStatus());
+        new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new DAVFindFeature(session).find(file));

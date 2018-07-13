@@ -23,8 +23,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class AzureDirectoryFeatureTest {
@@ -37,11 +36,10 @@ public class AzureDirectoryFeatureTest {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory));
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session, null);
-        assertTrue(feature.isSupported(container.getParent(), container.getName()));
-        feature.mkdir(container, null, new TransferStatus());
+        final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(container));
+        assertEquals(container.attributes(), new AzureAttributesFinderFeature(session, null).find(container));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(container));
     }
@@ -76,6 +74,7 @@ public class AzureDirectoryFeatureTest {
                 EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(placeholder.getType().contains(Path.Type.placeholder));
         assertTrue(new AzureFindFeature(session, null).find(placeholder));
+        assertEquals(placeholder.attributes(), new AzureAttributesFinderFeature(session, null).find(placeholder));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(placeholder));
     }

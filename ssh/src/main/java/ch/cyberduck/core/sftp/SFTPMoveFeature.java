@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -55,7 +56,8 @@ public class SFTPMoveFeature implements Move {
                 delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
             session.sftp().rename(file.getAbsolute(), renamed.getAbsolute());
-            return renamed;
+            // Copy original file attributes
+            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new PathAttributes(file.attributes()));
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot rename {0}", e, file);

@@ -20,6 +20,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -70,7 +71,8 @@ public class AzureCopyFeature implements Copy {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
             }
-            return copy;
+            // Copy original file attributes
+            return new Path(copy.getParent(), copy.getName(), copy.getType(), new PathAttributes(source.attributes()));
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);
