@@ -53,7 +53,7 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
                 // Call default constructor for disabled implementations
                 return name.newInstance();
             }
-            return constructor.newInstance(prefix, size, handler);
+            return constructor.newInstance(prefix, size, priority, handler);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
