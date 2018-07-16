@@ -84,4 +84,8 @@ public class LRUCache<Key, Value> {
     public void remove(final Key key) {
         delegate.invalidate(key);
     }
+
+    public boolean contains(final Key key) {
+        return null != delegate.getIfPresent(key);
+    }
 }
