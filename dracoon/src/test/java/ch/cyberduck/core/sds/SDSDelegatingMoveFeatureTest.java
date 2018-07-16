@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -56,8 +57,9 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertEquals(new SDSAttributesFinderFeature(session, nodeid).find(test),
-            new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes());
+        assertEquals(new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId(),
+            new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes().getVersionId());
+        test.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -243,6 +245,58 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
+    @Test(expected = InteroperabilityException.class)
+    public void testMoveDirectoryToRoot() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new SDSDirectoryFeature(session, nodeid).mkdir(test, null, new TransferStatus());
+        final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
+        assertFalse(move.isSupported(test, target));
+        move.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertEquals(0, session.getMetrics().get(Copy.class));
+        assertFalse(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(nodeid).find(target));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testMoveRoomToDirectory() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
+        assertFalse(move.isSupported(test, target));
+        move.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertEquals(0, session.getMetrics().get(Copy.class));
+        assertFalse(new SDSFindFeature(nodeid).find(test));
+        assertTrue(new SDSFindFeature(nodeid).find(target));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveSubroom() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room,
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
+        assertTrue(move.isSupported(subroom, target));
+        move.move(subroom, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertEquals(0, session.getMetrics().get(Copy.class));
+        subroom.attributes().setVersionId(null);
+        assertFalse(new SDSFindFeature(nodeid).find(subroom));
+        assertTrue(new SDSFindFeature(nodeid).find(target));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
     @Test
     public void testMoveDataRoom() throws Exception {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -271,7 +325,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path folder = new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.directory));
         new SDSDirectoryFeature(session, nodeid).mkdir(folder, null, new TransferStatus());
         final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), PathCache.empty(), PasswordStoreFactory.get(), new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), PathCache.empty(), new DisabledPasswordStore(),
+            new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener());
         worker.run(session);
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertFalse(new SDSFindFeature(nodeid).find(room));

@@ -106,6 +106,9 @@ public class SDSMoveFeature implements Move {
                 return false;
             }
         }
+        if(target.getParent().isRoot()) {
+            return false;
+        }
         return true;
     }
 
