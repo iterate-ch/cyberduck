@@ -63,7 +63,6 @@ public abstract class HostPasswordStore implements PasswordStore {
             log.warn("No hostname given");
             return null;
         }
-        final Credentials credentials = bookmark.getCredentials();
         if(log.isInfoEnabled()) {
             log.info(String.format("Fetching login token from keychain for %s", bookmark));
         }
