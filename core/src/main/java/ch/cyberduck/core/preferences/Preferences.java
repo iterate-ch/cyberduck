@@ -690,8 +690,6 @@ public abstract class Preferences implements Locales {
          */
         this.setDefault("s3.url.expire.seconds", String.valueOf(24 * 60 * 60));
 
-        this.setDefault("s3.mfa.serialnumber", StringUtils.EMPTY);
-
         this.setDefault("s3.listing.chunksize", String.valueOf(1000));
 
         this.setDefault("s3.upload.md5", String.valueOf(true));

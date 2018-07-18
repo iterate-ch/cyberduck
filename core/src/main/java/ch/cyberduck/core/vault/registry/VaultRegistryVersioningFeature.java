@@ -61,8 +61,8 @@ public class VaultRegistryVersioningFeature implements Versioning {
     }
 
     @Override
-    public Credentials getToken(final PasswordCallback prompt) throws ConnectionCanceledException {
-        return proxy.getToken(prompt);
+    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
+        return proxy.getToken(mfaSerial, callback);
     }
 
     @Override
