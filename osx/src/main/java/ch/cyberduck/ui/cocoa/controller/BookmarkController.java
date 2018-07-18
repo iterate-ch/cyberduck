@@ -224,13 +224,13 @@ public class BookmarkController extends SheetController implements CollectionLis
         final String input = hostField.stringValue();
         if(Scheme.isURL(input)) {
             final Host parsed = HostParser.parse(input);
-            bookmark.setHostname(parsed.getHostname());
+            bookmark.setHostname(parsed.getHostname(), true);
             bookmark.setProtocol(parsed.getProtocol());
             bookmark.setPort(parsed.getPort());
             bookmark.setDefaultPath(parsed.getDefaultPath());
         }
         else {
-            bookmark.setHostname(input);
+            bookmark.setHostname(input, true);
         }
         this.update();
     }

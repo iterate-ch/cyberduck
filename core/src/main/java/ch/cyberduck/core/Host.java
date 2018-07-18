@@ -214,7 +214,7 @@ public class Host implements Serializable, Comparable<Host> {
         final int port = hostnameConfigurator.getPort(hostname);
         if(port != -1) {
             // External configuration found
-            this.setPort(port);
+            this.port = port;
         }
         credentials = credentialsConfigurator.configure(this);
     }
@@ -393,7 +393,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param hostname Server
      */
     public void setHostname(final String hostname) {
-        this.setHostname(hostname, true);
+        this.setHostname(hostname, false);
     }
 
     /**

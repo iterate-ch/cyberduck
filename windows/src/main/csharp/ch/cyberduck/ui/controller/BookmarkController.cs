@@ -268,14 +268,14 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Scheme.isURL(input))
             {
                 Host parsed = HostParser.parse(input);
-                _host.setHostname(parsed.getHostname());
+                _host.setHostname(parsed.getHostname(), true);
                 _host.setProtocol(parsed.getProtocol());
                 _host.setPort(parsed.getPort());
                 _host.setDefaultPath(parsed.getDefaultPath());
             }
             else
             {
-                _host.setHostname(input);
+                _host.setHostname(input, true);
             }
             ItemChanged();
             Update();
