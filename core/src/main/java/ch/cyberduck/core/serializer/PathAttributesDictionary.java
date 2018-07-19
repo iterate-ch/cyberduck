@@ -19,10 +19,14 @@ package ch.cyberduck.core.serializer;
  */
 
 import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collections;
+import java.util.EnumSet;
 
 public class PathAttributesDictionary {
 
@@ -39,6 +43,15 @@ public class PathAttributesDictionary {
     public <T> PathAttributes deserialize(T serialized) {
         final Deserializer dict = deserializer.create(serialized);
         final PathAttributes attributes = new PathAttributes();
+        final String typeObj = dict.stringForKey("Types");
+        if(typeObj != null) {
+            final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
+            for(String t : StringUtils.splitByWholeSeparator(StringUtils.replaceEach(typeObj,
+                new String[]{"[", "]"}, new String[]{"", ""}), ", ")) {
+                type.add(Path.Type.valueOf(t));
+            }
+            attributes.setType(type);
+        }
         final String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
             attributes.setSize(Long.parseLong(sizeObj));

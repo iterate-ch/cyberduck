@@ -41,11 +41,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * An absolute reference here the symbolic link is pointing to
      */
     private Path symlink;
-    /**
-     * The file type
-     */
-    private EnumSet<Type> type
-        = EnumSet.noneOf(Type.class);
 
     /**
      * Attributes denoting this path
@@ -58,8 +53,8 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @param type   File type
      */
     public Path(final Path parent, final String name, final EnumSet<Type> type) {
-        this.type = type;
         this.attributes = new PathAttributes();
+        this.attributes.setType(type);
         this.attributes.setRegion(parent.attributes.getRegion());
         this._setPath(parent, name);
     }
@@ -69,8 +64,8 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @param type     File type
      */
     public Path(final String absolute, final EnumSet<Type> type) {
-        this.type = type;
         this.attributes = new PathAttributes();
+        this.attributes.setType(type);
         this.setPath(absolute);
     }
 
@@ -79,8 +74,8 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @param attributes File type
      */
     public Path(final String absolute, final EnumSet<Type> type, final PathAttributes attributes) {
-        this.type = type;
         this.attributes = attributes;
+        this.attributes.setType(type);
         this.setPath(absolute);
     }
 
@@ -90,14 +85,14 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @param attributes Attributes
      */
     public Path(final Path parent, final String name, final EnumSet<Type> type, final PathAttributes attributes) {
-        this.type = type;
         this.attributes = attributes;
+        this.attributes.setType(type);
         this._setPath(parent, name);
     }
 
     @Override
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(type), "Type");
+        dict.setStringForKey(String.valueOf(attributes.getType()), "Type");
         dict.setStringForKey(this.getAbsolute(), "Remote");
         if(symlink != null) {
             dict.setObjectForKey(symlink, "Symbolic Link");
@@ -143,31 +138,31 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
 
     @Override
     public EnumSet<Type> getType() {
-        return type;
+        return attributes.getType();
     }
 
     public void setType(final EnumSet<Type> type) {
-        this.type = type;
+        attributes.setType(type);
     }
 
     public boolean isVolume() {
-        return type.contains(Type.volume);
+        return attributes.getType().contains(Type.volume);
     }
 
     public boolean isDirectory() {
-        return type.contains(Type.directory);
+        return attributes.getType().contains(Type.directory);
     }
 
     public boolean isPlaceholder() {
-        return type.contains(Type.placeholder);
+        return attributes.getType().contains(Type.placeholder);
     }
 
     public boolean isFile() {
-        return type.contains(Type.file);
+        return attributes.getType().contains(Type.file);
     }
 
     public boolean isSymbolicLink() {
-        return type.contains(Type.symboliclink);
+        return attributes.getType().contains(Type.symboliclink);
     }
 
     @Override
@@ -259,7 +254,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Path{");
         sb.append("path='").append(path).append('\'');
-        sb.append(", type=").append(type);
+        sb.append(", type=").append(attributes.getType());
         sb.append('}');
         return sb.toString();
     }
