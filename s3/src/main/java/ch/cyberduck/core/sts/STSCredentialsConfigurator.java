@@ -1,4 +1,4 @@
-package ch.cyberduck.core.auth;
+package ch.cyberduck.core.sts;
 
 /*
  * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
@@ -51,8 +51,8 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
 
-public class AWSBasicProfileCredentialsConfigurator implements CredentialsConfigurator {
-    private static final Logger log = Logger.getLogger(AWSBasicProfileCredentialsConfigurator.class);
+public class STSCredentialsConfigurator implements CredentialsConfigurator {
+    private static final Logger log = Logger.getLogger(STSCredentialsConfigurator.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
