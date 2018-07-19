@@ -50,7 +50,6 @@ public class OpenSSHCredentialsConfiguratorTest {
                         new Local("src/test/resources", "openssh/config")));
         final Host host = new Host(new TestProtocol(Scheme.sftp), "alias");
         final Credentials credentials = c.configure(host, new DisabledLoginCallback());
-        assertSame(host.getCredentials(), credentials);
         assertNotNull(credentials.getIdentity());
         assertEquals(new Local("~/.ssh/version.cyberduck.ch-rsa"), credentials.getIdentity());
         assertEquals("root", credentials.getUsername());
