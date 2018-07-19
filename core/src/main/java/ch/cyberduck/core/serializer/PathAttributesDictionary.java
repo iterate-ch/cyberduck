@@ -43,7 +43,7 @@ public class PathAttributesDictionary {
     public <T> PathAttributes deserialize(T serialized) {
         final Deserializer dict = deserializer.create(serialized);
         final PathAttributes attributes = new PathAttributes();
-        final String typeObj = dict.stringForKey("Type");
+        final String typeObj = dict.stringForKey("Types");
         if(typeObj != null) {
             final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
             for(String t : StringUtils.splitByWholeSeparator(StringUtils.replaceEach(typeObj,
