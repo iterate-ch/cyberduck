@@ -22,7 +22,7 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.auth.AWSTokenCredentialsConfigurator;
+import ch.cyberduck.core.auth.AWSBasicProfileCredentialsConfigurator;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -148,6 +148,6 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public CredentialsConfigurator getCredentialsFinder() {
-        return new AWSTokenCredentialsConfigurator();
+        return new AWSBasicProfileCredentialsConfigurator();
     }
 }
