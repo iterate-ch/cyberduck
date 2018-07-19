@@ -3,6 +3,7 @@ https://cyberduck.io/
 
 6.7.0
 - [Feature] Support display scaling (Windows) (#8961)
+- [Feature] Authentication using AssumeRole and GetSessionToken with AWS Security Token Service (STS) (S3) (#8880)
 - [Bugfix] Allow configuration of charset in bookmark (SFTP)
 - [Bugfix] Incomplete transfers (#10347)
 - [Bugfix] Skip checksum validation for files encrypted with SSE-KMS (S3) (#10371)
