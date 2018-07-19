@@ -18,15 +18,17 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginFailureException;
+
 public interface CredentialsConfigurator {
 
     /**
      * Configure default credentials from system settings.
      *
      * @param host Hostname
-     * @param callback
+     * @param callback Prompt
      */
-    Credentials configure(Host host, final LoginCallback callback);
+    Credentials configure(Host host, final LoginCallback callback) throws LoginFailureException;
 
     void reload();
 }

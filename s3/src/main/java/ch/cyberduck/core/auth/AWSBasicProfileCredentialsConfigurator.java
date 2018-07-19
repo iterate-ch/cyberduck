@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
@@ -44,6 +45,7 @@ import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
@@ -55,7 +57,7 @@ public class AWSBasicProfileCredentialsConfigurator implements CredentialsConfig
     private final Preferences preferences = PreferencesFactory.get();
 
     @Override
-    public Credentials configure(final Host host, final LoginCallback prompt) {
+    public Credentials configure(final Host host, final LoginCallback prompt) throws LoginFailureException {
         final Credentials credentials = new Credentials(host.getCredentials());
         // Only for AWS
         if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
@@ -93,10 +95,10 @@ public class AWSBasicProfileCredentialsConfigurator implements CredentialsConfig
                             log.debug(String.format("Configure credentials from role based profile %s", basicProfile.getProfileName()));
                         }
                         if(StringUtils.isBlank(basicProfile.getRoleSourceProfile())) {
-                            log.error(String.format("Missing source profile reference in profile %s", basicProfile.getProfileName()));
+                            throw new LoginFailureException(String.format("Missing source profile reference in profile %s", basicProfile.getProfileName()));
                         }
                         else if(!profiles.containsKey(basicProfile.getRoleSourceProfile())) {
-                            log.error(String.format("Missing source profile with name %s", basicProfile.getRoleSourceProfile()));
+                            throw new LoginFailureException(String.format("Missing source profile with name %s", basicProfile.getRoleSourceProfile()));
                         }
                         else {
                             final BasicProfile sourceProfile = profiles.get(basicProfile.getRoleSourceProfile());
@@ -133,13 +135,18 @@ public class AWSBasicProfileCredentialsConfigurator implements CredentialsConfig
                                 if(log.isDebugEnabled()) {
                                     log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
                                 }
-                                final AssumeRoleResult assumeRoleResult = service.assumeRole(assumeRoleRequest);
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Set credentials from %s", assumeRoleResult));
+                                try {
+                                    final AssumeRoleResult assumeRoleResult = service.assumeRole(assumeRoleRequest);
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Set credentials from %s", assumeRoleResult));
+                                    }
+                                    credentials.setUsername(assumeRoleResult.getCredentials().getAccessKeyId());
+                                    credentials.setPassword(assumeRoleResult.getCredentials().getSecretAccessKey());
+                                    credentials.setToken(assumeRoleResult.getCredentials().getSessionToken());
                                 }
-                                credentials.setUsername(assumeRoleResult.getCredentials().getAccessKeyId());
-                                credentials.setPassword(assumeRoleResult.getCredentials().getSecretAccessKey());
-                                credentials.setToken(assumeRoleResult.getCredentials().getSessionToken());
+                                catch(AWSSecurityTokenServiceException e) {
+                                    throw new LoginFailureException(e.getErrorMessage(), e);
+                                }
                             }
                             catch(LoginCanceledException e) {
                                 log.warn(String.format("Canceled MFA token prompt for bookmark %s", host));
@@ -173,13 +180,18 @@ public class AWSBasicProfileCredentialsConfigurator implements CredentialsConfig
                                 if(log.isDebugEnabled()) {
                                     log.debug(String.format("Request %s from %s", sessionTokenRequest, service));
                                 }
-                                final GetSessionTokenResult sessionTokenResult = service.getSessionToken(sessionTokenRequest);
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Set credentials from %s", sessionTokenResult));
+                                try {
+                                    final GetSessionTokenResult sessionTokenResult = service.getSessionToken(sessionTokenRequest);
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Set credentials from %s", sessionTokenResult));
+                                    }
+                                    credentials.setUsername(sessionTokenResult.getCredentials().getAccessKeyId());
+                                    credentials.setPassword(sessionTokenResult.getCredentials().getSecretAccessKey());
+                                    credentials.setToken(sessionTokenResult.getCredentials().getSessionToken());
                                 }
-                                credentials.setUsername(sessionTokenResult.getCredentials().getAccessKeyId());
-                                credentials.setPassword(sessionTokenResult.getCredentials().getSecretAccessKey());
-                                credentials.setToken(sessionTokenResult.getCredentials().getSessionToken());
+                                catch(AWSSecurityTokenServiceException e) {
+                                    throw new LoginFailureException(e.getErrorMessage(), e);
+                                }
                             }
                             else {
                                 if(log.isDebugEnabled()) {

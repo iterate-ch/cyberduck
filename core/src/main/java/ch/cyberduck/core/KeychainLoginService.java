@@ -40,7 +40,7 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException {
+    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }
@@ -54,11 +54,9 @@ public class KeychainLoginService implements LoginService {
         if(!credentials.validate(bookmark.getProtocol(), options)) {
             // Try auto-configure
             final Credentials auto = CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark, callback);
-            if(options.password) {
-                credentials.setUsername(auto.getUsername());
-                credentials.setPassword(auto.getPassword());
-                credentials.setToken(auto.getToken());
-            }
+            credentials.setUsername(auto.getUsername());
+            credentials.setPassword(auto.getPassword());
+            credentials.setToken(auto.getToken());
         }
         if(options.keychain) {
             if(options.password) {

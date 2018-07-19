@@ -18,17 +18,20 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
 public class Host implements Serializable, Comparable<Host> {
+    private static final Logger log = Logger.getLogger(Host.class);
 
     /**
      * The credentials to authenticate with for the CDN
@@ -216,7 +219,12 @@ public class Host implements Serializable, Comparable<Host> {
             // External configuration found
             this.port = port;
         }
-        credentials = credentialsConfigurator.configure(this, new DisabledLoginCallback());
+        try {
+            credentials = credentialsConfigurator.configure(this, new DisabledLoginCallback());
+        }
+        catch(LoginFailureException e) {
+            log.warn(String.format("Failure configuring credentials. %s", e.getDetail()));
+        }
     }
 
     @Override
