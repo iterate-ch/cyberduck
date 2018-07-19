@@ -66,6 +66,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
@@ -197,7 +198,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) {
-        return new RequestEntityRestStorageService(this, this.configure(), builder.build(proxy, this, prompt));
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this, prompt));
+        return new RequestEntityRestStorageService(this, this.configure(), configuration);
     }
 
     @Override
