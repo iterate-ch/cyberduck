@@ -216,7 +216,7 @@ public class Host implements Serializable, Comparable<Host> {
             // External configuration found
             this.port = port;
         }
-        credentials = credentialsConfigurator.configure(this);
+        credentials = credentialsConfigurator.configure(this, new DisabledLoginCallback());
     }
 
     @Override

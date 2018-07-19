@@ -20,6 +20,7 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -48,7 +49,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public Credentials configure(final Host host) {
+    public Credentials configure(final Host host, final LoginCallback callback) {
         final Credentials credentials = new Credentials(host.getCredentials());
         if(StringUtils.isNotBlank(host.getHostname())) {
             // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config

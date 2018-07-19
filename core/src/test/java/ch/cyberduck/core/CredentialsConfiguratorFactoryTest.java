@@ -28,6 +28,6 @@ public class CredentialsConfiguratorFactoryTest {
     public void testGet() throws Exception {
         final Host host = new Host(new TestProtocol());
         final Credentials credentials = host.getCredentials();
-        assertSame(credentials, CredentialsConfiguratorFactory.get(new TestProtocol()).configure(host));
+        assertSame(credentials, CredentialsConfiguratorFactory.get(new TestProtocol()).configure(host, new DisabledLoginCallback()));
     }
 }

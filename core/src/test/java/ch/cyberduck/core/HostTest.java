@@ -78,7 +78,7 @@ public class HostTest {
             }
                            }, new CredentialsConfigurator() {
                                @Override
-                               public Credentials configure(Host host) {
+                               public Credentials configure(Host host, final LoginCallback callback) {
                                    final Credentials c = host.getCredentials();
                                    c.setUsername("uu");
                                    return c;
