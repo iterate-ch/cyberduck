@@ -115,7 +115,8 @@ public class S3SessionTest {
             }
         };
         final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials(
-            "ASIAIC6CF2VDONWYBSHQ", "1hkFZkHaPZcm+2OKDQqZlqK4WbTrli7OCyHsfzCc", "FQoDYXdzEOr//////////wEaDFXkGOEUH1n2rMFPYyKsAeI8hr1vZa9l8yZSQdSmW0y/5fIzHlP7TOwXUBLsyZziLiB5cy8OLoagmgWTApoX02N5CouhczOn7TrHcFaGwBVxIe0o4OAZAKhl6/wJR3AH9O9LVr6DiukP8HgRzptP1uafVK3n/hOssSF+/5AQVFALWG7RPzFAny+G4RqUGN3VAW4lkd9zX2mJeDTQD9lKeOOlq3KH4p4y2juo9zJWOX29dkfMkNfgrJqU7MUo55jQ1wU="
+            "ASIA5RMYTHDIR37CTCXI", "TsnhChH4FlBt7hql2KnzrwNizmktJnO8YzDQwFqx",
+            "FQoDYXdzEN3//////////wEaDLAz85HLZTQ7zu6/OSKrAfwLewUMHKaswh5sXv50BgMwbeKfCoMATjagvM+KV9++z0I6rItmMectuYoEGCOcnWHKZxtvpZAGcjlvgEDPw1KRYu16riUnd2Yo3doskqAoH0dlL2nH0eoj0d81H5e6IjdlGCm1E3K3zQPFLfMbvn1tdDQR1HV8o9eslmxo54hWMY2M14EpZhcXQMlns0mfYLYHLEVvgpz/8xYjR0yKDxJlXSATEpXtowHtqSi8tL7aBQ=="
         ));
         final S3Session session = new S3Session(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
