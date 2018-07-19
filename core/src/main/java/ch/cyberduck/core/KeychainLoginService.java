@@ -20,8 +20,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -33,11 +31,7 @@ import java.text.MessageFormat;
 public class KeychainLoginService implements LoginService {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
     private final LoginCallback callback;
-
     private final HostPasswordStore keychain;
 
     public KeychainLoginService(final LoginCallback prompt, final HostPasswordStore keychain) {
@@ -55,6 +49,15 @@ public class KeychainLoginService implements LoginService {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
                 log.warn(String.format("Prompt to select identity file not readable %s", credentials.getIdentity()));
                 credentials.setIdentity(callback.select(credentials.getIdentity()));
+            }
+        }
+        if(!credentials.validate(bookmark.getProtocol(), options)) {
+            // Try auto-configure
+            final Credentials auto = CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark, callback);
+            if(options.password) {
+                credentials.setUsername(auto.getUsername());
+                credentials.setPassword(auto.getPassword());
+                credentials.setToken(auto.getToken());
             }
         }
         if(options.keychain) {
