@@ -718,7 +718,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("s3.accelerate.prompt", String.valueOf(false));
 
 
-        this.setDefault("sts.token.duration.seconds", String.valueOf(129600));
+        // Less than or equal to 43200
+        this.setDefault("sts.token.duration.seconds", String.valueOf(43200));
 
         /*
           A prefix to apply to log file names
