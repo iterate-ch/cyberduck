@@ -312,9 +312,9 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testMoveEncryptedDataRoom() throws Exception {
-        final Path room = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        new SDSDirectoryFeature(session, nodeid).mkdir(room, null, new TransferStatus());
+        final String roomName = new AlphanumericRandomStringService().random();
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest();
         encrypt.setIsEncrypted(true);
         new NodesApi(session.getClient()).encryptRoom(Long.parseLong(new SDSNodeIdProvider(session).withCache(cache).getFileid(room,
@@ -322,14 +322,14 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final AttributedList<Path> list = new SDSListService(session, nodeid).list(room.getParent(), new DisabledListProgressListener());
         final Path encrypted = list.get(room);
         // create file inside encrypted room
-        final Path folder = new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.directory));
-        new SDSDirectoryFeature(session, nodeid).mkdir(folder, null, new TransferStatus());
+        final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.directory)), null, new TransferStatus());
         final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), PathCache.empty(), new DisabledPasswordStore(),
             new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener());
         worker.run(session);
         assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(room));
+        assertFalse(new SDSFindFeature(nodeid).find(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(new SDSFindFeature(nodeid).find(renamed));
         assertTrue(new SDSFindFeature(nodeid).find(new Path(renamed, folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.directory))));
         assertTrue(renamed.getType().contains(Path.Type.vault));
