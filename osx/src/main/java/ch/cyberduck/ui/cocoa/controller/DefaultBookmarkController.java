@@ -60,11 +60,11 @@ public class DefaultBookmarkController extends BookmarkController {
     }
 
     public DefaultBookmarkController(final Host bookmark, final LoginOptions options) {
-        super(bookmark, bookmark.getCredentials(), options.password(false));
+        super(bookmark, options.password(false));
     }
 
     public DefaultBookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
-        super(bookmark, bookmark.getCredentials(), validator, options.password(false));
+        super(bookmark, validator, options.password(false));
     }
 
     @Override

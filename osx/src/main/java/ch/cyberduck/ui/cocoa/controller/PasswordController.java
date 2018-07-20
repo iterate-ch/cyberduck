@@ -76,6 +76,7 @@ public class PasswordController extends AlertController {
         alert.setInformativeText(reason);
         alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
+        alert.setShowsSuppressionButton(false);
         this.loadBundle(alert);
     }
 
