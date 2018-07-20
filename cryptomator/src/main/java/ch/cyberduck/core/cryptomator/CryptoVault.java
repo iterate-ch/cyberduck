@@ -93,7 +93,7 @@ public class CryptoVault implements Vault {
         // New vault home with vault flag set for internal use
         final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(home.getType());
         type.add(Path.Type.vault);
-        final Path vault = new Path(home.getAbsolute(), type, home.attributes());
+        final Path vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
         this.filenameProvider = new CryptoFilenameProvider(vault);
         this.directoryProvider = new CryptoDirectoryProvider(vault, this);
     }
