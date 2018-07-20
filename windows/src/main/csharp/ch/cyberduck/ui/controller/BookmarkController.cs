@@ -61,7 +61,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Log = Logger.getLogger(typeof(BookmarkController<>).FullName);
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
-        protected readonly Credentials _credentials;
         private readonly Host _host;
         private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
         protected readonly LoginOptions _options;
@@ -69,11 +68,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Timer _ticklerReachability;
         protected readonly LoginInputValidator _validator;
 
-        private BookmarkController(T view, Host host, Credentials credentials, LoginInputValidator validator,
+        private BookmarkController(T view, Host host, LoginInputValidator validator,
             LoginOptions options) : base(validator)
         {
             _host = host;
-            _credentials = credentials;
             _validator = validator;
             _options = options;
             View = view;
@@ -87,23 +85,19 @@ namespace Ch.Cyberduck.Ui.Controller
             Init();
         }
 
-        protected BookmarkController(Host host) : this(host, host.getCredentials())
-        {
-        }
-
-        protected BookmarkController(Host host, Credentials credentials) : this(host, credentials,
+        protected BookmarkController(Host host) : this(host,
             new LoginOptions(host.getProtocol()))
         {
         }
 
-        protected BookmarkController(Host host, Credentials credentials,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host, credentials,
-            new LoginInputValidator(credentials, host.getProtocol(), options), options)
+        protected BookmarkController(Host host,
+            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
+            new LoginInputValidator(host.getCredentials(), host.getProtocol(), options), options)
         {
         }
 
-        protected BookmarkController(Host host, Credentials credentials, LoginInputValidator validator,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host, credentials,
+        protected BookmarkController(Host host, LoginInputValidator validator,
+            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
             validator, options)
         {
             _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
@@ -200,9 +194,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_OpenPrivateKeyBrowserEvent()
         {
             string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
-            if (null != _credentials.getIdentity())
+            if (null != _host.getCredentials().getIdentity())
             {
-                selectedKeyFile = Path.GetDirectoryName(_credentials.getIdentity().getAbsolute());
+                selectedKeyFile = Path.GetDirectoryName(_host.getCredentials().getIdentity().getAbsolute());
             }
             View.ShowPrivateKeyBrowser(selectedKeyFile);
         }
@@ -369,7 +363,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         internal void View_ChangedUsernameEvent()
         {
-            _credentials.setUsername(View.Username);
+            _host.getCredentials().setUsername(View.Username);
             ItemChanged();
             Update();
         }
@@ -412,7 +406,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedClientCertificateEvent()
         {
-            _credentials.setCertificate(View.SelectedClientCertificate);
+            _host.getCredentials().setCertificate(View.SelectedClientCertificate);
             ItemChanged();
         }
 
@@ -431,7 +425,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPrivateKeyEvent(object sender, PrivateKeyArgs e)
         {
-            _credentials
+            _host.getCredentials()
                 .setIdentity(null == e.KeyFile || e.KeyFile.Equals(LocaleFactory.localizedString("None"))
                     ? null
                     : LocalFactory.get(e.KeyFile));
@@ -566,11 +560,11 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PortFieldEnabled = _host.getProtocol().isPortConfigurable();
             View.PathFieldEnabled = _host.getProtocol().isPathConfigurable();
             View.Path = _host.getDefaultPath();
-            View.Username = _credentials.getUsername();
-            View.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
+            View.Username = _host.getCredentials().getUsername();
+            View.UsernameEnabled = _options.user() && !_host.getCredentials().isAnonymousLogin();
             View.UsernameLabel = _host.getProtocol().getUsernamePlaceholder() + ":";
             View.AnonymousEnabled = _options.anonymous();
-            View.AnonymousChecked = _credentials.isAnonymousLogin();
+            View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
             View.SelectedProtocol = _host.getProtocol();
             View.SelectedTransferMode = _host.getTransferType();
             View.SelectedEncoding = _host.getEncoding() == null ? Default : _host.getEncoding();
@@ -582,9 +576,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.PrivateKeyFieldEnabled = _options.publickey();
 
-            if (_credentials.isPublicKeyAuthentication())
+            if (_host.getCredentials().isPublicKeyAuthentication())
             {
-                String key = _credentials.getIdentity().getAbsolute();
+                String key = _host.getCredentials().getIdentity().getAbsolute();
                 if (!_keys.Contains(key))
                 {
                     _keys.Add(key);
@@ -606,9 +600,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             View.PopulateClientCertificates(keys);
-            if (_credentials.isCertificateAuthentication())
+            if (_host.getCredentials().isCertificateAuthentication())
             {
-                View.SelectedClientCertificate = _credentials.getCertificate();
+                View.SelectedClientCertificate = _host.getCredentials().getCertificate();
             }
             else
             {
