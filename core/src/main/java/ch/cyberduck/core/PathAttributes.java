@@ -526,7 +526,8 @@ public class PathAttributes extends Attributes implements Serializable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("PathAttributes{");
-        sb.append("accessed=").append(accessed);
+        sb.append("type=").append(type);
+        sb.append(", accessed=").append(accessed);
         sb.append(", size=").append(size);
         sb.append(", modified=").append(modified);
         sb.append(", created=").append(created);
