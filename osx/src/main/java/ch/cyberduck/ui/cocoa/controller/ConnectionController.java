@@ -104,6 +104,7 @@ public class ConnectionController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
+                updateField(passwordField, bookmark.getCredentials().getPassword());
                 passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
                 passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
                 if(options.keychain) {

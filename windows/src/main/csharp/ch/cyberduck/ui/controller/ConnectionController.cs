@@ -99,6 +99,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected override void Update()
         {
             base.Update();
+            View.Password = _credentials.getPassword();
             View.PasswordEnabled = _options.password() && !_credentials.isAnonymousLogin();
         }
 
