@@ -235,8 +235,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SDSDirectoryFeature(session, nodeid).mkdir(test, null, new TransferStatus());
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -250,8 +249,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SDSDirectoryFeature(session, nodeid).mkdir(test, null, new TransferStatus());
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
         assertFalse(move.isSupported(test, target));
@@ -299,9 +297,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testMoveDataRoom() throws Exception {
-        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        new SDSDirectoryFeature(session, nodeid).mkdir(test, null, new TransferStatus());
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -341,8 +338,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
+        final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(target, new TransferStatus());
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -356,8 +352,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
+        final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(target, new TransferStatus());
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
