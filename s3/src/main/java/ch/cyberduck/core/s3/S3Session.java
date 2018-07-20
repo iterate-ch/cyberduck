@@ -202,12 +202,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         // Only for AWS
         if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
-            // Try auto-configure
-            final Credentials auto = new STSCredentialsConfigurator(prompt).configure(host);
-            host.setCredentials(auto);
-            if(auto.isTokenAuthentication()) {
-                configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this, prompt));
-            }
+            configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this, prompt));
         }
         return new RequestEntityRestStorageService(this, this.configure(), configuration);
     }
@@ -224,17 +219,25 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
                 throw new LoginFailureException(e.getDetail(false), e);
             }
-            return;
         }
         else {
-            if(StringUtils.isNotBlank(host.getCredentials().getToken())) {
-                client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
-                    new AWSSessionCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                        host.getCredentials().getToken()));
+            final Credentials credentials;
+            // Only for AWS
+            if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+                // Try auto-configure
+                credentials = new STSCredentialsConfigurator(prompt).configure(host);
             }
             else {
-                client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
-                    new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+                credentials = host.getCredentials();
+            }
+            if(StringUtils.isNotBlank(credentials.getToken())) {
+                client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                    new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
+                        credentials.getToken()));
+            }
+            else {
+                client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                    new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
             }
         }
         if(host.getCredentials().isPassed()) {
