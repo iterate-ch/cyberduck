@@ -164,7 +164,6 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public CredentialsConfigurator getCredentialsFinder() {
-
         return credentials;
     }
 }
