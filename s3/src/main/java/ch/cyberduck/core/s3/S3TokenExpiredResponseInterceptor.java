@@ -57,7 +57,7 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                             EntityUtils.toString(response.getEntity()));
                         if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
                             try {
-                                host.setCredentials(new STSCredentialsConfigurator().configure(host, prompt));
+                                host.setCredentials(new STSCredentialsConfigurator(prompt).configure(host));
                                 return true;
                             }
                             catch(LoginFailureException e) {

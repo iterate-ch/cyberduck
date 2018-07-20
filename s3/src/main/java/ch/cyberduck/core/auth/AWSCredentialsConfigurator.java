@@ -18,7 +18,6 @@ package ch.cyberduck.core.auth;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -39,7 +38,7 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public Credentials configure(final Host host, final LoginCallback callback) {
+    public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
         // Only for AWS
         if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {

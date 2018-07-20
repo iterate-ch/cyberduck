@@ -20,8 +20,8 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -55,9 +55,14 @@ public class STSCredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = Logger.getLogger(STSCredentialsConfigurator.class);
 
     private final Preferences preferences = PreferencesFactory.get();
+    private final PasswordCallback prompt;
+
+    public STSCredentialsConfigurator(final PasswordCallback prompt) {
+        this.prompt = prompt;
+    }
 
     @Override
-    public Credentials configure(final Host host, final LoginCallback prompt) throws LoginFailureException {
+    public Credentials configure(final Host host) throws LoginFailureException {
         final Credentials credentials = new Credentials(host.getCredentials());
         // Find matching profile name or AWS access key in ~/.aws/credentials
         final String profile = host.getCredentials().getUsername();

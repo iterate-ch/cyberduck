@@ -18,7 +18,7 @@ package ch.cyberduck.core;
 public final class DisabledCredentialsConfigurator implements CredentialsConfigurator {
 
     @Override
-    public Credentials configure(final Host host, final LoginCallback callback) {
+    public Credentials configure(final Host host) {
         return host.getCredentials();
     }
 

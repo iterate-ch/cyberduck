@@ -26,9 +26,8 @@ public interface CredentialsConfigurator {
      * Configure default credentials from system settings.
      *
      * @param host     Hostname
-     * @param callback Prompt
      */
-    Credentials configure(Host host, LoginCallback callback) throws LoginFailureException;
+    Credentials configure(Host host) throws LoginFailureException;
 
     void reload();
 }

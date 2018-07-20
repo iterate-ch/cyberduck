@@ -203,7 +203,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         // Only for AWS
         if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
             // Try auto-configure
-            final Credentials auto = new STSCredentialsConfigurator().configure(host, prompt);
+            final Credentials auto = new STSCredentialsConfigurator(prompt).configure(host);
             host.setCredentials(auto);
             if(auto.isTokenAuthentication()) {
                 configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this, prompt));
