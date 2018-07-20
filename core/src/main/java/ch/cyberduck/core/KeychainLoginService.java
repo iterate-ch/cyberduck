@@ -51,13 +51,6 @@ public class KeychainLoginService implements LoginService {
                 credentials.setIdentity(callback.select(credentials.getIdentity()));
             }
         }
-        if(!credentials.validate(bookmark.getProtocol(), options)) {
-            // Try auto-configure
-            final Credentials auto = CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark, callback);
-            credentials.setUsername(auto.getUsername());
-            credentials.setPassword(auto.getPassword());
-            credentials.setToken(auto.getToken());
-        }
         if(options.keychain) {
             if(options.password) {
                 if(StringUtils.isBlank(credentials.getPassword())) {

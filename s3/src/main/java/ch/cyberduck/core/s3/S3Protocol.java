@@ -22,10 +22,10 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sts.STSCredentialsConfigurator;
 
 import org.apache.log4j.Logger;
 
@@ -33,8 +33,19 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.amazonaws.auth.AWSCredentialsProviderChain;
+import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+
 public class S3Protocol extends AbstractProtocol {
     private static final Logger log = Logger.getLogger(S3Protocol.class);
+
+    private final AWSCredentialsConfigurator credentials = new AWSCredentialsConfigurator(
+        new AWSCredentialsProviderChain(
+            new ProfileCredentialsProvider(),
+            new EnvironmentVariableCredentialsProvider()
+        )
+    );
 
     @Override
     public String getName() {
@@ -153,6 +164,7 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public CredentialsConfigurator getCredentialsFinder() {
-        return new STSCredentialsConfigurator();
+
+        return credentials;
     }
 }

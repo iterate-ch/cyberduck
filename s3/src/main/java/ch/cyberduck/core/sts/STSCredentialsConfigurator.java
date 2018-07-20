@@ -59,148 +59,143 @@ public class STSCredentialsConfigurator implements CredentialsConfigurator {
     @Override
     public Credentials configure(final Host host, final LoginCallback prompt) throws LoginFailureException {
         final Credentials credentials = new Credentials(host.getCredentials());
-        // Only for AWS
-        if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
-            if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
-                // Find matching profile name or AWS access key in ~/.aws/credentials
-                final String profile = host.getCredentials().getUsername();
-                // Profile can be null – the default profile from the configuration will be loaded
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Look for profile name %s in ~/.aws/credentials", profile));
-                }
-                // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
-                final ProfilesConfigFile config = new ProfilesConfigFile();
-                final Map<String, BasicProfile> profiles = config.getAllBasicProfiles();
-                final Optional<Map.Entry<String, BasicProfile>> optional = profiles.entrySet().stream().filter(new Predicate<Map.Entry<String, BasicProfile>>() {
-                    @Override
-                    public boolean test(final Map.Entry<String, BasicProfile> entry) {
-                        final String profileName = entry.getKey();
-                        final BasicProfile basicProfile = entry.getValue();
-                        final String awsAccessIdKey = basicProfile.getAwsAccessIdKey();
-                        // Matching access key or profile name
-                        if(StringUtils.equals(profileName, profile) || StringUtils.equals(awsAccessIdKey, profile)) {
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Found matching profile %s", profile));
-                            }
-                            return true;
-                        }
-                        return false;
+        // Find matching profile name or AWS access key in ~/.aws/credentials
+        final String profile = host.getCredentials().getUsername();
+        // Profile can be null – the default profile from the configuration will be loaded
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Look for profile name %s in ~/.aws/credentials", profile));
+        }
+        // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
+        final ProfilesConfigFile config = new ProfilesConfigFile();
+        final Map<String, BasicProfile> profiles = config.getAllBasicProfiles();
+        final Optional<Map.Entry<String, BasicProfile>> optional = profiles.entrySet().stream().filter(new Predicate<Map.Entry<String, BasicProfile>>() {
+            @Override
+            public boolean test(final Map.Entry<String, BasicProfile> entry) {
+                final String profileName = entry.getKey();
+                final BasicProfile basicProfile = entry.getValue();
+                final String awsAccessIdKey = basicProfile.getAwsAccessIdKey();
+                // Matching access key or profile name
+                if(StringUtils.equals(profileName, profile) || StringUtils.equals(awsAccessIdKey, profile)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Found matching profile %s", profile));
                     }
-                }).findFirst();
-                if(optional.isPresent()) {
-                    final Map.Entry<String, BasicProfile> entry = optional.get();
-                    final BasicProfile basicProfile = entry.getValue();
-                    if(basicProfile.isRoleBasedProfile()) {
+                    return true;
+                }
+                return false;
+            }
+        }).findFirst();
+        if(optional.isPresent()) {
+            final Map.Entry<String, BasicProfile> entry = optional.get();
+            final BasicProfile basicProfile = entry.getValue();
+            if(basicProfile.isRoleBasedProfile()) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Configure credentials from role based profile %s", basicProfile.getProfileName()));
+                }
+                if(StringUtils.isBlank(basicProfile.getRoleSourceProfile())) {
+                    throw new LoginFailureException(String.format("Missing source profile reference in profile %s", basicProfile.getProfileName()));
+                }
+                else if(!profiles.containsKey(basicProfile.getRoleSourceProfile())) {
+                    throw new LoginFailureException(String.format("Missing source profile with name %s", basicProfile.getRoleSourceProfile()));
+                }
+                else {
+                    final BasicProfile sourceProfile = profiles.get(basicProfile.getRoleSourceProfile());
+                    // If a profile defines the role_arn property then the profile is treated as an assume role profile
+                    final AWSSecurityTokenService service = this.getTokenService(ProxyFactory.get().find(host),
+                        host.getRegion(),
+                        sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey());
+                    // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
+                    // Role using the long lived AWS credentials
+                    final AssumeRoleRequest assumeRoleRequest;
+                    try {
+                        assumeRoleRequest = new AssumeRoleRequest()
+                            .withRoleArn(basicProfile.getRoleArn())
+                            // Specify this value if the IAM user has a policy that requires MFA authentication
+                            .withSerialNumber(basicProfile.getProperties().getOrDefault("mfa_serial", null))
+                            // The value provided by the MFA device, if MFA is required
+                            .withTokenCode(basicProfile.getProperties().containsKey("mfa_serial") ?
+                                // mfa_serial - The identification number of the MFA device to use when assuming a role. This is an optional parameter.
+                                // Specify this value if the trust policy of the role being assumed includes a condition that requires MFA authentication.
+                                // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
+                                // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
+                                prompt.prompt(
+                                    host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                    String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                                        basicProfile.getProperties().get("mfa_serial")),
+                                    new LoginOptions(host.getProtocol())
+                                        .password(true)
+                                        .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                                        .keychain(false)
+                                ).getPassword() : null
+                            )
+                            .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds"))
+                            .withRoleSessionName(String.format("%s-%s", preferences.getProperty("application.name"), new AsciiRandomStringService().random()));
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Configure credentials from role based profile %s", basicProfile.getProfileName()));
+                            log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
                         }
-                        if(StringUtils.isBlank(basicProfile.getRoleSourceProfile())) {
-                            throw new LoginFailureException(String.format("Missing source profile reference in profile %s", basicProfile.getProfileName()));
-                        }
-                        else if(!profiles.containsKey(basicProfile.getRoleSourceProfile())) {
-                            throw new LoginFailureException(String.format("Missing source profile with name %s", basicProfile.getRoleSourceProfile()));
-                        }
-                        else {
-                            final BasicProfile sourceProfile = profiles.get(basicProfile.getRoleSourceProfile());
-                            // If a profile defines the role_arn property then the profile is treated as an assume role profile
-                            final AWSSecurityTokenService service = this.getTokenService(ProxyFactory.get().find(host),
-                                host.getRegion(),
-                                sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey());
-                            // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
-                            // Role using the long lived AWS credentials
-                            final AssumeRoleRequest assumeRoleRequest;
-                            try {
-                                assumeRoleRequest = new AssumeRoleRequest()
-                                    .withRoleArn(basicProfile.getRoleArn())
-                                    // Specify this value if the IAM user has a policy that requires MFA authentication
-                                    .withSerialNumber(basicProfile.getProperties().getOrDefault("mfa_serial", null))
-                                    // The value provided by the MFA device, if MFA is required
-                                    .withTokenCode(basicProfile.getProperties().containsKey("mfa_serial") ?
-                                        // mfa_serial - The identification number of the MFA device to use when assuming a role. This is an optional parameter.
-                                        // Specify this value if the trust policy of the role being assumed includes a condition that requires MFA authentication.
-                                        // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
-                                        // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
-                                        prompt.prompt(
-                                            host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                                            String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                                                basicProfile.getProperties().get("mfa_serial")),
-                                            new LoginOptions(host.getProtocol())
-                                                .password(true)
-                                                .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                                                .keychain(false)
-                                        ).getPassword() : null
-                                    )
-                                    .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds"))
-                                    .withRoleSessionName(String.format("%s-%s", preferences.getProperty("application.name"), new AsciiRandomStringService().random()));
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
-                                }
-                                try {
-                                    final AssumeRoleResult assumeRoleResult = service.assumeRole(assumeRoleRequest);
-                                    if(log.isDebugEnabled()) {
-                                        log.debug(String.format("Set credentials from %s", assumeRoleResult));
-                                    }
-                                    credentials.setUsername(assumeRoleResult.getCredentials().getAccessKeyId());
-                                    credentials.setPassword(assumeRoleResult.getCredentials().getSecretAccessKey());
-                                    credentials.setToken(assumeRoleResult.getCredentials().getSessionToken());
-                                }
-                                catch(AWSSecurityTokenServiceException e) {
-                                    throw new LoginFailureException(e.getErrorMessage(), e);
-                                }
+                        try {
+                            final AssumeRoleResult assumeRoleResult = service.assumeRole(assumeRoleRequest);
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Set credentials from %s", assumeRoleResult));
                             }
-                            catch(LoginCanceledException e) {
-                                log.warn(String.format("Canceled MFA token prompt for bookmark %s", host));
+                            credentials.setUsername(assumeRoleResult.getCredentials().getAccessKeyId());
+                            credentials.setPassword(assumeRoleResult.getCredentials().getSecretAccessKey());
+                            credentials.setToken(assumeRoleResult.getCredentials().getSessionToken());
+                        }
+                        catch(AWSSecurityTokenServiceException e) {
+                            throw new LoginFailureException(e.getErrorMessage(), e);
+                        }
+                    }
+                    catch(LoginCanceledException e) {
+                        log.warn(String.format("Canceled MFA token prompt for bookmark %s", host));
+                    }
+                }
+            }
+            else {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Configure credentials from basic profile %s", basicProfile.getProfileName()));
+                }
+                if(StringUtils.isNotBlank(basicProfile.getAwsSessionToken())) {
+                    // No need to obtain session token if preconfigured in profile
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Set session token credentials from profile %s", profile));
+                    }
+                    credentials.setUsername(basicProfile.getAwsAccessIdKey());
+                    credentials.setPassword(basicProfile.getAwsSecretAccessKey());
+                    credentials.setToken(basicProfile.getAwsSessionToken());
+                }
+                else {
+                    if(host.getProtocol().isTokenConfigurable()) {
+                        // Obtain session token
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Get session token from credentials in profile %s", basicProfile.getProfileName()));
+                        }
+                        final AWSSecurityTokenService service = this.getTokenService(ProxyFactory.get().find(host),
+                            host.getRegion(),
+                            basicProfile.getAwsAccessIdKey(), basicProfile.getAwsSecretAccessKey());
+                        final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest()
+                            .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds"));
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Request %s from %s", sessionTokenRequest, service));
+                        }
+                        try {
+                            final GetSessionTokenResult sessionTokenResult = service.getSessionToken(sessionTokenRequest);
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Set credentials from %s", sessionTokenResult));
                             }
+                            credentials.setUsername(sessionTokenResult.getCredentials().getAccessKeyId());
+                            credentials.setPassword(sessionTokenResult.getCredentials().getSecretAccessKey());
+                            credentials.setToken(sessionTokenResult.getCredentials().getSessionToken());
+                        }
+                        catch(AWSSecurityTokenServiceException e) {
+                            throw new LoginFailureException(e.getErrorMessage(), e);
                         }
                     }
                     else {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Configure credentials from basic profile %s", basicProfile.getProfileName()));
+                            log.debug(String.format("Set static credentials from profile %s", basicProfile.getProfileName()));
                         }
-                        if(StringUtils.isNotBlank(basicProfile.getAwsSessionToken())) {
-                            // No need to obtain session token if preconfigured in profile
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Set session token credentials from profile %s", profile));
-                            }
-                            credentials.setUsername(basicProfile.getAwsAccessIdKey());
-                            credentials.setPassword(basicProfile.getAwsSecretAccessKey());
-                            credentials.setToken(basicProfile.getAwsSessionToken());
-                        }
-                        else {
-                            if(host.getProtocol().isTokenConfigurable()) {
-                                // Obtain session token
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Get session token from credentials in profile %s", basicProfile.getProfileName()));
-                                }
-                                final AWSSecurityTokenService service = this.getTokenService(ProxyFactory.get().find(host),
-                                    host.getRegion(),
-                                    basicProfile.getAwsAccessIdKey(), basicProfile.getAwsSecretAccessKey());
-                                final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest()
-                                    .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds"));
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Request %s from %s", sessionTokenRequest, service));
-                                }
-                                try {
-                                    final GetSessionTokenResult sessionTokenResult = service.getSessionToken(sessionTokenRequest);
-                                    if(log.isDebugEnabled()) {
-                                        log.debug(String.format("Set credentials from %s", sessionTokenResult));
-                                    }
-                                    credentials.setUsername(sessionTokenResult.getCredentials().getAccessKeyId());
-                                    credentials.setPassword(sessionTokenResult.getCredentials().getSecretAccessKey());
-                                    credentials.setToken(sessionTokenResult.getCredentials().getSessionToken());
-                                }
-                                catch(AWSSecurityTokenServiceException e) {
-                                    throw new LoginFailureException(e.getErrorMessage(), e);
-                                }
-                            }
-                            else {
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Set static credentials from profile %s", basicProfile.getProfileName()));
-                                }
-                                credentials.setUsername(basicProfile.getAwsAccessIdKey());
-                                credentials.setPassword(basicProfile.getAwsSecretAccessKey());
-                            }
-                        }
+                        credentials.setUsername(basicProfile.getAwsAccessIdKey());
+                        credentials.setPassword(basicProfile.getAwsSecretAccessKey());
                     }
                 }
             }

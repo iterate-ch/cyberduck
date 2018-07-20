@@ -62,6 +62,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.sts.STSCredentialsConfigurator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -197,9 +198,17 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) {
+    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this, prompt));
+        // Only for AWS
+        if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+            // Try auto-configure
+            final Credentials auto = new STSCredentialsConfigurator().configure(host, prompt);
+            host.setCredentials(auto);
+            if(auto.isTokenAuthentication()) {
+                configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this, prompt));
+            }
+        }
         return new RequestEntityRestStorageService(this, this.configure(), configuration);
     }
 
