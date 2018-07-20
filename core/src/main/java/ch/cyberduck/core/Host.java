@@ -220,7 +220,7 @@ public class Host implements Serializable, Comparable<Host> {
             this.port = port;
         }
         try {
-            credentials = credentialsConfigurator.configure(this, new DisabledLoginCallback());
+            credentials = credentialsConfigurator.configure(this);
         }
         catch(LoginFailureException e) {
             log.warn(String.format("Failure configuring credentials. %s", e.getDetail()));
