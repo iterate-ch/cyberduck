@@ -19,7 +19,6 @@ package ch.cyberduck.core.sftp.openssh;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
@@ -36,20 +35,20 @@ public class OpenSSHCredentialsConfiguratorTest {
     @Test
     public void testNoConfigure() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
-                new OpenSshConfig(
-                        new Local("src/main/test/resources", "openssh/config")));
+            new OpenSshConfig(
+                new Local("src/main/test/resources", "openssh/config")));
         Credentials credentials = new Credentials("user", " ");
         credentials.setIdentity(new NullLocal("t"));
-        assertEquals("t", c.configure(new Host(new TestProtocol(Scheme.sftp), "t", credentials), new DisabledLoginCallback()).getIdentity().getName());
+        assertEquals("t", c.configure(new Host(new TestProtocol(Scheme.sftp), "t", credentials)).getIdentity().getName());
     }
 
     @Test
     public void testConfigureKnownHost() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
-                new OpenSshConfig(
-                        new Local("src/test/resources", "openssh/config")));
+            new OpenSshConfig(
+                new Local("src/test/resources", "openssh/config")));
         final Host host = new Host(new TestProtocol(Scheme.sftp), "alias");
-        final Credentials credentials = c.configure(host, new DisabledLoginCallback());
+        final Credentials credentials = c.configure(host);
         assertNotNull(credentials.getIdentity());
         assertEquals(new Local("~/.ssh/version.cyberduck.ch-rsa"), credentials.getIdentity());
         assertEquals("root", credentials.getUsername());
@@ -58,9 +57,9 @@ public class OpenSSHCredentialsConfiguratorTest {
     @Test
     public void testConfigureDefaultKey() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
-                new OpenSshConfig(
-                        new Local("src/main/test/resources", "openssh/config")));
-        final Credentials credentials = c.configure(new Host(new TestProtocol(Scheme.sftp), "t"), new DisabledLoginCallback());
+            new OpenSshConfig(
+                new Local("src/main/test/resources", "openssh/config")));
+        final Credentials credentials = c.configure(new Host(new TestProtocol(Scheme.sftp), "t"));
         // ssh.authentication.publickey.default.enable
         assertNull(credentials.getIdentity());
     }
@@ -68,8 +67,8 @@ public class OpenSSHCredentialsConfiguratorTest {
     @Test
     public void testNullHostname() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
-                new OpenSshConfig(
-                        new Local("src/main/test/resources", "openssh/config")));
-        assertNotNull(c.configure(new Host(new TestProtocol(Scheme.sftp), null), new DisabledLoginCallback()));
+            new OpenSshConfig(
+                new Local("src/main/test/resources", "openssh/config")));
+        assertNotNull(c.configure(new Host(new TestProtocol(Scheme.sftp), null)));
     }
 }
