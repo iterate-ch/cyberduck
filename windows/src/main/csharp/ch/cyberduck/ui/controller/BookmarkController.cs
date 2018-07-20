@@ -269,7 +269,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Host parsed = HostParser.parse(input);
                 _host.setHostname(parsed.getHostname(), true);
-                _host.setProtocol(parsed.getProtocol());
+                _host.setProtocol(parsed.getProtocol(), true);
                 _host.setPort(parsed.getPort());
                 _host.setDefaultPath(parsed.getDefaultPath());
             }
@@ -341,7 +341,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _host.setDefaultPath(selected.getDefaultPath());
             }
-            _host.setProtocol(selected);
+            _host.setProtocol(selected, true);
             _options.configure(selected);
             _validator.configure(selected);
             ItemChanged();

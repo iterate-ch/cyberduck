@@ -347,7 +347,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param protocol Connection profile
      */
     public void setProtocol(final Protocol protocol) {
-        this.setProtocol(protocol, true);
+        this.setProtocol(protocol, false);
     }
 
     /**

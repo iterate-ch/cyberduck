@@ -191,7 +191,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             !selected.isPathConfigurable()) {
             bookmark.setDefaultPath(selected.getDefaultPath());
         }
-        bookmark.setProtocol(selected);
+        bookmark.setProtocol(selected, true);
         options.configure(selected);
         validator.configure(selected);
         this.update();
@@ -219,7 +219,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         if(Scheme.isURL(input)) {
             final Host parsed = HostParser.parse(input);
             bookmark.setHostname(parsed.getHostname(), true);
-            bookmark.setProtocol(parsed.getProtocol());
+            bookmark.setProtocol(parsed.getProtocol(), true);
             bookmark.setPort(parsed.getPort());
             bookmark.setDefaultPath(parsed.getDefaultPath());
         }
