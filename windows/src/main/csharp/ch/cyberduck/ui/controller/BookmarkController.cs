@@ -61,12 +61,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Log = Logger.getLogger(typeof(BookmarkController<>).FullName);
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
-        private readonly Host _host;
         private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
+
+        protected readonly Host _host;
         protected readonly LoginOptions _options;
+        protected readonly LoginInputValidator _validator;
+
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
-        protected readonly LoginInputValidator _validator;
 
         private BookmarkController(T view, Host host, LoginInputValidator validator,
             LoginOptions options) : base(validator)
