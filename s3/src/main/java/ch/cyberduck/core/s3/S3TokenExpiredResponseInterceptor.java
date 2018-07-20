@@ -15,7 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -37,11 +37,11 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
 
     private static final int MAX_RETRIES = 1;
 
-    private final S3Session session;
     private final LoginCallback prompt;
+    private final Host host;
 
     public S3TokenExpiredResponseInterceptor(final S3Session session, final LoginCallback prompt) {
-        this.session = session;
+        this.host = session.getHost();
         this.prompt = prompt;
     }
 
@@ -57,11 +57,7 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                             EntityUtils.toString(response.getEntity()));
                         if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
                             try {
-                                final Credentials auto = new STSCredentialsConfigurator().configure(session.getHost(), prompt);
-                                final Credentials credentials = session.getHost().getCredentials();
-                                credentials.setUsername(auto.getUsername());
-                                credentials.setPassword(auto.getPassword());
-                                credentials.setToken(auto.getToken());
+                                host.setCredentials(new STSCredentialsConfigurator().configure(host, prompt));
                                 return true;
                             }
                             catch(LoginFailureException e) {
