@@ -130,12 +130,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             else {
                 // Look if there is directory or file that clashes with this upload
                 if(file.getType().contains(Path.Type.file)) {
-                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory), file.attributes()))) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)))) {
                         throw new AccessDeniedException(String.format("Cannot replace folder %s with file %s", file.getAbsolute(), local.getName()));
                     }
                 }
                 if(file.getType().contains(Path.Type.directory)) {
-                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file), file.attributes()))) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)))) {
                         throw new AccessDeniedException(String.format("Cannot replace file %s with folder %s", file.getAbsolute(), local.getName()));
                     }
                 }
