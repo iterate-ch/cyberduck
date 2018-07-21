@@ -62,8 +62,7 @@ public class SpectraSession extends S3Session {
             return null;
         }
         if(type == Versioning.class) {
-            // Disable operation not supported
-            return null;
+            return (T) new SpectraVersioningFeature(this);
         }
         if(type == Redundancy.class) {
             return null;
