@@ -26,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Map;
 
 /**
@@ -37,11 +36,6 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public static final PathAttributes EMPTY = new PathAttributes();
 
-    /**
-     * The file type
-     */
-    private EnumSet<Path.Type> type
-        = EnumSet.noneOf(Path.Type.class);
     /**
      * The file length
      */
@@ -142,7 +136,6 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     public PathAttributes(final PathAttributes copy) {
-        type = copy.type;
         size = copy.size;
         modified = copy.modified;
         accessed = copy.accessed;
@@ -171,7 +164,6 @@ public class PathAttributes extends Attributes implements Serializable {
 
     @Override
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(type), "Types");
         if(size != -1) {
             dict.setStringForKey(String.valueOf(size), "Size");
         }
@@ -205,14 +197,6 @@ public class PathAttributes extends Attributes implements Serializable {
             }
         }
         return dict.getSerialized();
-    }
-
-    public EnumSet<Path.Type> getType() {
-        return type;
-    }
-
-    public void setType(final EnumSet<Path.Type> type) {
-        this.type = type;
     }
 
     /**
@@ -526,8 +510,7 @@ public class PathAttributes extends Attributes implements Serializable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("PathAttributes{");
-        sb.append("type=").append(type);
-        sb.append(", accessed=").append(accessed);
+        sb.append("accessed=").append(accessed);
         sb.append(", size=").append(size);
         sb.append(", modified=").append(modified);
         sb.append(", created=").append(created);
