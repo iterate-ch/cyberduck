@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -222,7 +223,7 @@ public class Host implements Serializable, Comparable<Host> {
         try {
             credentials = credentialsConfigurator.configure(this);
         }
-        catch(LoginFailureException e) {
+        catch(LoginFailureException | LoginCanceledException e) {
             log.warn(String.format("Failure configuring credentials. %s", e.getDetail()));
         }
     }

@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 
 public interface CredentialsConfigurator {
@@ -25,9 +26,9 @@ public interface CredentialsConfigurator {
     /**
      * Configure default credentials from system settings.
      *
-     * @param host     Hostname
+     * @param host Hostname
      */
-    Credentials configure(Host host) throws LoginFailureException;
+    Credentials configure(Host host) throws LoginFailureException, LoginCanceledException;
 
     void reload();
 }

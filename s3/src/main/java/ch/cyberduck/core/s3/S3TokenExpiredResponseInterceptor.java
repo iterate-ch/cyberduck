@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.ExpiredTokenException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.sts.STSCredentialsConfigurator;
@@ -60,7 +61,7 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                                 host.setCredentials(new STSCredentialsConfigurator(prompt).configure(host));
                                 return true;
                             }
-                            catch(LoginFailureException e) {
+                            catch(LoginFailureException | LoginCanceledException e) {
                                 log.warn("Attempt to renew expired token failed");
                             }
                         }

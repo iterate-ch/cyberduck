@@ -62,7 +62,7 @@ public class STSCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public Credentials configure(final Host host) throws LoginFailureException {
+    public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
         final Credentials credentials = new Credentials(host.getCredentials());
         // Find matching profile name or AWS access key in ~/.aws/credentials
         final String profile = host.getCredentials().getUsername();
@@ -110,47 +110,41 @@ public class STSCredentialsConfigurator implements CredentialsConfigurator {
                         sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey());
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
                     // Role using the long lived AWS credentials
-                    final AssumeRoleRequest assumeRoleRequest;
-                    try {
-                        assumeRoleRequest = new AssumeRoleRequest()
-                            .withRoleArn(basicProfile.getRoleArn())
-                            // Specify this value if the IAM user has a policy that requires MFA authentication
-                            .withSerialNumber(basicProfile.getProperties().getOrDefault("mfa_serial", null))
-                            // The value provided by the MFA device, if MFA is required
-                            .withTokenCode(basicProfile.getProperties().containsKey("mfa_serial") ?
-                                // mfa_serial - The identification number of the MFA device to use when assuming a role. This is an optional parameter.
-                                // Specify this value if the trust policy of the role being assumed includes a condition that requires MFA authentication.
-                                // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
-                                // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
-                                prompt.prompt(
-                                    host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                                    String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                                        basicProfile.getProperties().get("mfa_serial")),
-                                    new LoginOptions(host.getProtocol())
-                                        .password(true)
-                                        .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                                        .keychain(false)
-                                ).getPassword() : null
-                            )
-                            .withRoleSessionName(String.format("%s-%s", preferences.getProperty("application.name"), new AsciiRandomStringService().random()));
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
-                        }
-                        try {
-                            final AssumeRoleResult assumeRoleResult = service.assumeRole(assumeRoleRequest);
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Set credentials from %s", assumeRoleResult));
-                            }
-                            credentials.setUsername(assumeRoleResult.getCredentials().getAccessKeyId());
-                            credentials.setPassword(assumeRoleResult.getCredentials().getSecretAccessKey());
-                            credentials.setToken(assumeRoleResult.getCredentials().getSessionToken());
-                        }
-                        catch(AWSSecurityTokenServiceException e) {
-                            throw new LoginFailureException(e.getErrorMessage(), e);
-                        }
+                    final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
+                        .withRoleArn(basicProfile.getRoleArn())
+                        // Specify this value if the IAM user has a policy that requires MFA authentication
+                        .withSerialNumber(basicProfile.getProperties().getOrDefault("mfa_serial", null))
+                        // The value provided by the MFA device, if MFA is required
+                        .withTokenCode(basicProfile.getProperties().containsKey("mfa_serial") ?
+                            // mfa_serial - The identification number of the MFA device to use when assuming a role. This is an optional parameter.
+                            // Specify this value if the trust policy of the role being assumed includes a condition that requires MFA authentication.
+                            // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
+                            // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
+                            prompt.prompt(
+                                host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                                    basicProfile.getProperties().get("mfa_serial")),
+                                new LoginOptions(host.getProtocol())
+                                    .password(true)
+                                    .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                                    .keychain(false)
+                            ).getPassword() : null
+                        )
+                        .withRoleSessionName(String.format("%s-%s", preferences.getProperty("application.name"), new AsciiRandomStringService().random()));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
                     }
-                    catch(LoginCanceledException e) {
-                        log.warn(String.format("Canceled MFA token prompt for bookmark %s", host));
+                    try {
+                        final AssumeRoleResult assumeRoleResult = service.assumeRole(assumeRoleRequest);
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Set credentials from %s", assumeRoleResult));
+                        }
+                        credentials.setUsername(assumeRoleResult.getCredentials().getAccessKeyId());
+                        credentials.setPassword(assumeRoleResult.getCredentials().getSecretAccessKey());
+                        credentials.setToken(assumeRoleResult.getCredentials().getSessionToken());
+                    }
+                    catch(AWSSecurityTokenServiceException e) {
+                        throw new LoginFailureException(e.getErrorMessage(), e);
                     }
                 }
             }
