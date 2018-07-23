@@ -67,7 +67,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
                     }
                     break;
             }
-            return this.convert(stat);
+            return this.toAttributes(stat);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -79,7 +79,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
         return this;
     }
 
-    public PathAttributes convert(final FileAttributes stat) {
+    public PathAttributes toAttributes(final FileAttributes stat) {
         final PathAttributes attributes = new PathAttributes();
         switch(stat.getType()) {
             case REGULAR:

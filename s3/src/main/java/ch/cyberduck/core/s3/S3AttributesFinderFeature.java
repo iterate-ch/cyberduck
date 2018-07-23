@@ -66,7 +66,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
         }
-        return this.convert(this.details(file));
+        return this.toAttributes(this.details(file));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes convert(final StorageObject object) {
+    protected PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(object.getContentLength());
         final Date lastmodified = object.getLastModifiedDate();

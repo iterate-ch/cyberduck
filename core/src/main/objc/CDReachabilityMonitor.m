@@ -73,7 +73,7 @@ static void _ReachabilityCallbackFunction(SCNetworkReachabilityRef target, SCNet
         .release = CFRelease
     };
 	if(SCNetworkReachabilitySetCallback(target, _ReachabilityCallbackFunction, &context)) {
-		if(SCNetworkReachabilityScheduleWithRunLoop(target, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)) {
+		if(SCNetworkReachabilityScheduleWithRunLoop(target, CFRunLoopGetMain(), kCFRunLoopDefaultMode)) {
 			return YES;
 		}
         else {
@@ -90,7 +90,7 @@ static void _ReachabilityCallbackFunction(SCNetworkReachabilityRef target, SCNet
     if(!SCNetworkReachabilitySetCallback(target, NULL, NULL)) {
         return NO;
     }
-    if(!SCNetworkReachabilityUnscheduleFromRunLoop(target, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)) {
+    if(!SCNetworkReachabilityUnscheduleFromRunLoop(target, CFRunLoopGetMain(), kCFRunLoopDefaultMode)) {
         return NO;
     }
     return YES;

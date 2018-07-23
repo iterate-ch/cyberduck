@@ -27,10 +27,10 @@ public class NamedThreadFactory implements ThreadFactory {
     private static final Logger log = Logger.getLogger(NamedThreadFactory.class);
 
     private final AtomicInteger threadNumber
-            = new AtomicInteger(1);
+        = new AtomicInteger(1);
 
     private final String name;
-
+    private final ThreadPool.Priority priority;
     private final Thread.UncaughtExceptionHandler handler;
 
     public NamedThreadFactory(final String name) {
@@ -38,7 +38,12 @@ public class NamedThreadFactory implements ThreadFactory {
     }
 
     public NamedThreadFactory(final String name, final Thread.UncaughtExceptionHandler handler) {
+        this(name, ThreadPool.Priority.norm, handler);
+    }
+
+    public NamedThreadFactory(final String name, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
         this.name = name;
+        this.priority = priority;
         this.handler = handler;
     }
 
@@ -58,6 +63,7 @@ public class NamedThreadFactory implements ThreadFactory {
         });
         thread.setDaemon(true);
         thread.setName(String.format("%s-%d", name, threadNumber.getAndIncrement()));
+        thread.setPriority(priority.toInteger());
         thread.setUncaughtExceptionHandler(handler);
         return thread;
     }

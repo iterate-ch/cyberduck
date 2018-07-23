@@ -69,6 +69,9 @@ public class CryptoReadFeature implements Read {
             privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
             final UserKeyPair userKeyPair = new UserKeyPair();
             userKeyPair.setUserPrivateKey(privateKey);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Attempt to unlock private key %s", privateKey));
+            }
             final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
             final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
             return new CryptoInputStream(proxy.read(file, status, callback),

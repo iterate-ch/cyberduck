@@ -50,6 +50,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
         = new B2PathContainerService();
 
     private final B2Session session;
+    private final B2FileidProvider fileid;
     private Write<BaseB2Response> writer;
 
     public B2DirectoryFeature(final B2Session session, final B2FileidProvider fileid) {
@@ -58,6 +59,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
 
     public B2DirectoryFeature(final B2Session session, final B2FileidProvider fileid, final B2WriteFeature writer) {
         this.session = session;
+        this.fileid = fileid;
         this.writer = writer;
     }
 
@@ -84,7 +86,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 return new Path(folder.getParent(), folder.getName(), type,
-                    new PathAttributes(folder.attributes()).withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
+                    new B2AttributesFinderFeature(session, fileid).toAttributes((B2FileResponse) out.getStatus()));
             }
         }
         catch(B2ApiException e) {

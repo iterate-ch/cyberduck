@@ -68,16 +68,16 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private final SymlinkResolver<Path> symlinkResolver;
 
     private final QuarantineService quarantine
-            = QuarantineServiceFactory.get();
+        = QuarantineServiceFactory.get();
 
     private final ApplicationLauncher launcher
-            = ApplicationLauncherFactory.get();
+        = ApplicationLauncherFactory.get();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final IconService icon
-            = IconServiceFactory.get();
+        = IconServiceFactory.get();
 
     private final Session<?> session;
 
@@ -181,11 +181,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(preferences.getBoolean("queue.download.permissions.default")) {
                 if(file.isFile()) {
                     permission = new Permission(
-                            preferences.getInteger("queue.download.permissions.file.default"));
+                        preferences.getInteger("queue.download.permissions.file.default"));
                 }
                 if(file.isDirectory()) {
                     permission = new Permission(
-                            preferences.getInteger("queue.download.permissions.folder.default"));
+                        preferences.getInteger("queue.download.permissions.folder.default"));
                 }
             }
             else {
@@ -198,7 +198,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 // Make segments
                 if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
-                        && status.getLength() > preferences.getLong("queue.download.segments.size")) {
+                    && status.getLength() > preferences.getLong("queue.download.segments.size")) {
                     final Download read = session.getFeature(Download.class);
                     if(read.offset(file)) {
                         if(log.isInfoEnabled()) {
@@ -208,23 +208,23 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         long offset = 0;
                         // Part size from default setting of size divided by maximum number of connections
                         long partsize = Math.max(
-                                preferences.getLong("queue.download.segments.size"),
-                                status.getLength() / preferences.getInteger("queue.connections.limit"));
+                            preferences.getLong("queue.download.segments.size"),
+                            status.getLength() / preferences.getInteger("queue.connections.limit"));
                         // Sorted list
                         final List<TransferStatus> segments = new ArrayList<TransferStatus>();
                         final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
                         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
                             final Local segmentFile = LocalFactory.get(
-                                    segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                                segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
                             boolean skip = false;
                             // Last part can be less than 5 MB. Adjust part size.
                             Long length = Math.min(partsize, remaining);
                             final TransferStatus segmentStatus = new TransferStatus()
-                                    .segment(true)
-                                    .append(true)
-                                    .skip(offset)
-                                    .length(length)
-                                    .rename(segmentFile);
+                                .segment(true)
+                                .append(true)
+                                .skip(offset)
+                                .length(length)
+                                .rename(segmentFile);
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
                             }
@@ -313,7 +313,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         if(options.quarantine) {
                             // Set quarantine attributes
                             quarantine.setQuarantine(local, new HostUrlProvider().withUsername(false).get(session.getHost()),
-                                    provider.getUrl());
+                                provider.getUrl());
                         }
                         if(this.options.wherefrom) {
                             // Set quarantine attributes
@@ -366,12 +366,12 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         final Checksum checksum = status.getChecksum();
                         if(Checksum.NONE != checksum) {
                             final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
-                            final Checksum download = compute.compute(local.getInputStream(), status);
+                            final Checksum download = compute.compute(local.getInputStream(), new TransferStatus());
                             if(!checksum.equals(download)) {
                                 throw new ChecksumException(
-                                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of downloaded data and checksum {2} returned by the server", "Error"),
-                                                download.algorithm.toString(), download.hash, checksum.hash));
+                                    MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of downloaded data and checksum {2} returned by the server", "Error"),
+                                        download.algorithm.toString(), download.hash, checksum.hash));
                             }
                         }
                     }

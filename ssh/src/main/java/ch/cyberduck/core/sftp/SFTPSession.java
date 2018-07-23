@@ -37,6 +37,7 @@ import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfigurat
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -265,6 +266,9 @@ public class SFTPSession extends Session<SSHClient> {
                 log.warn(String.format("Server disconnected with %s while trying authentication method %s",
                     disconnectListener.getFailure(), auth));
                 try {
+                    if(null == disconnectListener.getFailure()) {
+                        throw new ConnectionRefusedException(LocaleFactory.localizedString("Login failed", "Credentials"), ignored);
+                    }
                     throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
                         disconnectListener.getFailure());
                 }

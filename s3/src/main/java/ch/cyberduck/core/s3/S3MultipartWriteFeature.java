@@ -214,7 +214,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                             concat.append(part.getEtag());
                         }
                         final String expected = String.format("%s-%d",
-                            new MD5ChecksumCompute().compute(concat.toString(), overall), completed.size());
+                            new MD5ChecksumCompute().compute(concat.toString(), new TransferStatus()), completed.size());
                         final String reference;
                         if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
                             reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);

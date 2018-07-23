@@ -21,9 +21,8 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -39,9 +38,11 @@ public class DefaultTouchFeature<T> implements Touch<T> {
     private static final Logger log = Logger.getLogger(DefaultTouchFeature.class);
 
     private final Upload<T> feature;
+    private final AttributesFinder attributes;
 
-    public DefaultTouchFeature(final Upload<T> upload) {
+    public DefaultTouchFeature(final Upload<T> upload, final AttributesFinder attributes) {
         this.feature = upload;
+        this.attributes = attributes;
     }
 
     @Override
@@ -49,21 +50,18 @@ public class DefaultTouchFeature<T> implements Touch<T> {
         final Local temp = TemporaryFileServiceFactory.get().create(file);
         LocalTouchFactory.get().touch(temp);
         try {
+
             final T reply = feature.upload(file, temp,
-                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledConnectionCallback());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Received reply %s for creating file %s", reply, file));
             }
-            if(reply instanceof VersionId) {
-                return new Path(file.getParent(), file.getName(), file.getType(),
-                    new PathAttributes(file.attributes()).withVersionId(((VersionId) reply)));
-            }
+            return new Path(file.getParent(), file.getName(), file.getType(), attributes.find(file));
         }
         finally {
             temp.delete();
         }
-        return file;
     }
 
     @Override

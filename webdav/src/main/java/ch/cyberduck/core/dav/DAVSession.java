@@ -45,7 +45,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -311,7 +310,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVLockFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(new DAVUploadFeature(new DAVWriteFeature(this)));
+            return (T) new DAVTouchFeature(this);
         }
         return super._getFeature(type);
     }
