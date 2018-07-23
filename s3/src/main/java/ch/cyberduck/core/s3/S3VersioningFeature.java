@@ -31,9 +31,9 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.collections4.map.LRUMap;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
@@ -74,7 +74,7 @@ public class S3VersioningFeature implements Versioning {
             final VersioningConfiguration current = this.getConfiguration(container);
             if(current.isMultifactor()) {
                 // The bucket is already MFA protected.
-                final Credentials factor = this.getToken(prompt);
+                final Credentials factor = this.getToken(StringUtils.EMPTY, prompt);
                 if(configuration.isEnabled()) {
                     if(current.isEnabled()) {
                         log.debug(String.format("Versioning already enabled for bucket %s", container));
@@ -94,7 +94,7 @@ public class S3VersioningFeature implements Versioning {
                 if(configuration.isEnabled() && !configuration.isMultifactor()) {
                     log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), container));
                     // User has choosen to disable MFA
-                    final Credentials factor2 = this.getToken(prompt);
+                    final Credentials factor2 = this.getToken(StringUtils.EMPTY, prompt);
                     session.getClient().disableMFAForVersionedBucket(container.getName(),
                         factor2.getUsername(), factor2.getPassword());
                 }
@@ -102,7 +102,7 @@ public class S3VersioningFeature implements Versioning {
             else {
                 if(configuration.isEnabled()) {
                     if(configuration.isMultifactor()) {
-                        final Credentials factor = this.getToken(prompt);
+                        final Credentials factor = this.getToken(StringUtils.EMPTY, prompt);
                         log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
                         session.getClient().enableBucketVersioningWithMFA(container.getName(),
                             factor.getUsername(), factor.getPassword());
@@ -197,19 +197,22 @@ public class S3VersioningFeature implements Versioning {
     /**
      * Prompt for MFA credentials
      *
-     * @param callback Prompt controller
+     * @param mfaSerial Serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
+     *                  a virtual device (such as arn:aws:iam::123456789012:mfa/user)
+     * @param callback  Prompt controller
      * @return MFA one time authentication password.
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Prompt dismissed
      */
     @Override
-    public Credentials getToken(final PasswordCallback callback) throws ConnectionCanceledException {
+    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
         // Prompt for multi factor authentication credentials.
-        final Credentials credentials = callback.prompt(
+        return callback.prompt(
             session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-            LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(session.getHost().getProtocol())
+            String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), mfaSerial),
+            new LoginOptions(session.getHost().getProtocol())
+                .password(true)
+                .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
                 .keychain(false)
-                .user(false));
-        PreferencesFactory.get().setProperty("s3.mfa.serialnumber", credentials.getUsername());
-        return credentials;
+        );
     }
 }

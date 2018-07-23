@@ -75,7 +75,7 @@ public class Profile implements Protocol, Serializable {
     @Override
     public boolean isEnabled() {
         return StringUtils.isNotBlank(this.value("Protocol"))
-                && StringUtils.isNotBlank(this.value("Vendor"));
+            && StringUtils.isNotBlank(this.value("Vendor"));
     }
 
     @Override
@@ -107,6 +107,15 @@ public class Profile implements Protocol, Serializable {
         final String v = this.value("Password Placeholder");
         if(StringUtils.isBlank(v)) {
             return parent.getPasswordPlaceholder();
+        }
+        return LocaleFactory.localizedString(v, "Credentials");
+    }
+
+    @Override
+    public String getTokenPlaceholder() {
+        final String v = this.value("Token Placeholder");
+        if(StringUtils.isBlank(v)) {
+            return parent.getTokenPlaceholder();
         }
         return LocaleFactory.localizedString(v, "Credentials");
     }

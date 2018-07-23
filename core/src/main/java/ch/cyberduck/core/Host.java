@@ -18,17 +18,21 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
 public class Host implements Serializable, Comparable<Host> {
+    private static final Logger log = Logger.getLogger(Host.class);
 
     /**
      * The credentials to authenticate with for the CDN
@@ -214,9 +218,14 @@ public class Host implements Serializable, Comparable<Host> {
         final int port = hostnameConfigurator.getPort(hostname);
         if(port != -1) {
             // External configuration found
-            this.setPort(port);
+            this.port = port;
         }
-        credentials = credentialsConfigurator.configure(this);
+        try {
+            credentials = credentialsConfigurator.configure(this);
+        }
+        catch(LoginFailureException | LoginCanceledException e) {
+            log.warn(String.format("Failure configuring credentials. %s", e.getDetail()));
+        }
     }
 
     @Override
@@ -339,7 +348,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param protocol Connection profile
      */
     public void setProtocol(final Protocol protocol) {
-        this.setProtocol(protocol, true);
+        this.setProtocol(protocol, false);
     }
 
     /**
@@ -393,7 +402,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param hostname Server
      */
     public void setHostname(final String hostname) {
-        this.setHostname(hostname, true);
+        this.setHostname(hostname, false);
     }
 
     /**

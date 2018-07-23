@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -61,15 +62,18 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.sts.STSCredentialsConfigurator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.security.AWSSessionCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 
 import java.util.Collections;
@@ -194,15 +198,22 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
-        return new RequestEntityRestStorageService(this, this.configure(), builder.build(proxy, this, prompt));
+    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) throws BackgroundException {
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        // Only for AWS
+        if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+            configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this, prompt));
+        }
+        return new RequestEntityRestStorageService(this, this.configure(), configuration);
     }
 
     @Override
     public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(Scheme.isURL(host.getProtocol().getContext())) {
             try {
-                client.setProviderCredentials(new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get());
+                final Credentials temporary = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
+                client.setProviderCredentials(new AWSSessionCredentials(temporary.getUsername(), temporary.getPassword(),
+                    temporary.getToken()));
             }
             catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException | InteroperabilityException e) {
                 log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
@@ -210,8 +221,24 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
         }
         else {
-            client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
-                new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+            final Credentials credentials;
+            // Only for AWS
+            if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+                // Try auto-configure
+                credentials = new STSCredentialsConfigurator(prompt).configure(host);
+            }
+            else {
+                credentials = host.getCredentials();
+            }
+            if(StringUtils.isNotBlank(credentials.getToken())) {
+                client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                    new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
+                        credentials.getToken()));
+            }
+            else {
+                client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                    new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
+            }
         }
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));

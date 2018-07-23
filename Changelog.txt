@@ -3,6 +3,8 @@ https://cyberduck.io/
 
 6.7.0
 - [Feature] Support display scaling (Windows) (#8961)
+- [Feature] Transparently support role­based access, including cross­account using AWS Security Token Service (STS), configured in the standard AWS SDK credentials file (S3) (#8880)
+- [Feature] Prompt for an MFA token during authentication when specified in the profile from the standard AWS SDK credentials file (S3)
 - [Bugfix] Allow configuration of charset in bookmark (SFTP)
 - [Bugfix] Incomplete transfers (#10347)
 - [Bugfix] Skip checksum validation for files encrypted with SSE-KMS (S3) (#10371)

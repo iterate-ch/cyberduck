@@ -67,6 +67,16 @@ public class Credentials implements Comparable<Credentials> {
         //
     }
 
+    public Credentials(final Credentials copy) {
+        this.user = copy.user;
+        this.password = copy.password;
+        this.token = copy.token;
+        this.identity = copy.identity;
+        this.certificate = copy.certificate;
+        this.persist = copy.persist;
+        this.passed = copy.passed;
+    }
+
     public Credentials(final String user) {
         this.user = user;
     }
@@ -289,6 +299,8 @@ public class Credentials implements Comparable<Credentials> {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Credentials{");
         sb.append("user='").append(user).append('\'');
+        sb.append(", token='").append(token).append('\'');
+        sb.append(", identity=").append(identity);
         sb.append('}');
         return sb.toString();
     }
