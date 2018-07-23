@@ -71,7 +71,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new OneDriveMoveFeature(session), new OneDriveDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(file.attributes().getModificationDate(), fileRenamed.attributes().getModificationDate());
+        assertEquals(file.attributes().getVersionId(), fileRenamed.attributes().getVersionId());
         assertFalse(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(file));
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(fileRenamed));
         assertEquals(fileRenamed.attributes().getModificationDate(), new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(fileRenamed).getModificationDate());
