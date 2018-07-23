@@ -717,12 +717,6 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("s3.accelerate.prompt", String.valueOf(false));
 
-
-        // Less than or equal to 43200. The maximum session duration (in seconds) that you want to set for the specified role.
-        // If you do not specify a value for this setting, the default maximum of one hour is applied.
-        // This setting can have a value from 1 hour to 12 hours
-        this.setDefault("sts.token.duration.seconds", String.valueOf(3600));
-
         /*
           A prefix to apply to log file names
          */

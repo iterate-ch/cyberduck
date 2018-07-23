@@ -132,7 +132,6 @@ public class STSCredentialsConfigurator implements CredentialsConfigurator {
                                         .keychain(false)
                                 ).getPassword() : null
                             )
-                            .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds"))
                             .withRoleSessionName(String.format("%s-%s", preferences.getProperty("application.name"), new AsciiRandomStringService().random()));
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
@@ -177,8 +176,7 @@ public class STSCredentialsConfigurator implements CredentialsConfigurator {
                         final AWSSecurityTokenService service = this.getTokenService(ProxyFactory.get().find(host),
                             host.getRegion(),
                             basicProfile.getAwsAccessIdKey(), basicProfile.getAwsSecretAccessKey());
-                        final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest()
-                            .withDurationSeconds(preferences.getInteger("sts.token.duration.seconds"));
+                        final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest();
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Request %s from %s", sessionTokenRequest, service));
                         }
