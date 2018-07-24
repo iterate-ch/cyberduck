@@ -38,7 +38,7 @@ public class S3DefaultDeleteFeature implements Delete {
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3MultipartService multipartService;
 
@@ -63,7 +63,7 @@ public class S3DefaultDeleteFeature implements Delete {
                     // In-progress multipart upload
                     try {
                         multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
-                                containerService.getContainer(file).getName(), containerService.getKey(file)));
+                            containerService.getContainer(file).getName(), containerService.getKey(file)));
                     }
                     catch(NotfoundException ignored) {
                         log.warn(String.format("Ignore failure deleting multipart upload %s", file));
@@ -73,7 +73,7 @@ public class S3DefaultDeleteFeature implements Delete {
                     try {
                         // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
                         session.getClient().deleteVersionedObject(
-                            file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : null,
+                            file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : file.attributes().getVersionId(),
                                 containerService.getContainer(file).getName(), containerService.getKey(file));
                     }
                     catch(NotfoundException e) {
