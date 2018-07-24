@@ -41,7 +41,10 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.Lists;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
 
@@ -113,7 +116,9 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         }
         else if(source.isDirectory()) {
             if(!move.isRecursive(source, target)) {
-                for(Path child : list.list(source, new WorkerListProgressListener(this, listener))) {
+                // reverse list to move older versions first
+                final List<Path> reverse = Lists.reverse(list.list(source, new WorkerListProgressListener(this, listener)).toList());
+                for(Path child : reverse) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }

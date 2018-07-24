@@ -38,7 +38,10 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.Lists;
 
 public class CopyWorker extends Worker<Map<Path, Path>> {
 
@@ -114,7 +117,9 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
             // Add parent before children
             recursive.put(source, target);
             if(!copy.isRecursive(source, target)) {
-                for(Path child : list.list(source, new WorkerListProgressListener(this, listener))) {
+                // reverse list to move older versions first
+                final List<Path> reverse = Lists.reverse(list.list(source, new WorkerListProgressListener(this, listener)).toList());
+                for(Path child : reverse) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
