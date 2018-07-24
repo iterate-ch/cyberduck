@@ -481,9 +481,9 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("queue.upload.skip.enable", String.valueOf(true));
         this.setDefault("queue.upload.skip.regex.default",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
         this.setDefault("queue.upload.skip.regex",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
 
         this.setDefault("queue.upload.priority.regex", "");
 
