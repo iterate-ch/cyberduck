@@ -10,6 +10,7 @@ https://cyberduck.io/
 - [Bugfix] Skip checksum validation for files encrypted with SSE-KMS (S3) (#10371)
 - [Bugfix] Retain metadata on server side copy of file (S3) (#10341)
 - [Bugfix] Failure creating new vault (Cryptomator, OneDrive)
+- [Bugfix] Missing links in copy URL menu (CloudFront) (#10402)
 
 6.6.2
 - [Bugfix] Cannot write to shared folders (Google Drive)
