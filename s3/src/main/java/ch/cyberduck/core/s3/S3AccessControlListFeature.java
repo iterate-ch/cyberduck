@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
@@ -69,7 +70,13 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             return Acl.EMPTY;
         }
         catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            try {
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            }
+            catch(InteroperabilityException ignored) {
+                // The specified method is not allowed against this resource. The case for delete markers in versioned buckets.
+                return Acl.EMPTY;
+            }
         }
     }
 
