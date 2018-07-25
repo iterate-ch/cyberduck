@@ -29,6 +29,8 @@ import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 
 import com.dracoon.sdk.crypto.Crypto;
@@ -37,6 +39,7 @@ import com.dracoon.sdk.crypto.InvalidFileKeyException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class CryptoWriteFeature implements Write<VersionId> {
+    private static final Logger log = Logger.getLogger(CryptoWriteFeature.class);
 
     private final SDSSession session;
     private final Write<VersionId> proxy;
@@ -50,6 +53,9 @@ public class CryptoWriteFeature implements Write<VersionId> {
     public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Read file key for file %s", file));
+            }
             final FileKey fileKey = reader.readValue(status.getFilekey().array());
             return new CryptoOutputStream<VersionId>(session, proxy.write(file, status, callback),
                     Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status

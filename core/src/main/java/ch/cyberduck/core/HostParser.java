@@ -247,9 +247,7 @@ public final class HostParser {
                 hostname = protocol.getDefaultHostname();
             }
         }
-        final Host host = new Host(protocol, hostname, port, path, new Credentials(username, password));
-        host.configure();
-        return host;
+        return new Host(protocol, hostname, port, path, new Credentials(username, password));
     }
 
     private static final Pattern IPV6_STD_PATTERN = Pattern.compile(

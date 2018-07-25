@@ -481,9 +481,9 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("queue.upload.skip.enable", String.valueOf(true));
         this.setDefault("queue.upload.skip.regex.default",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
         this.setDefault("queue.upload.skip.regex",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
 
         this.setDefault("queue.upload.priority.regex", "");
 
@@ -689,8 +689,6 @@ public abstract class Preferences implements Locales {
           Validity for public S3 URLs
          */
         this.setDefault("s3.url.expire.seconds", String.valueOf(24 * 60 * 60));
-
-        this.setDefault("s3.mfa.serialnumber", StringUtils.EMPTY);
 
         this.setDefault("s3.listing.chunksize", String.valueOf(1000));
 

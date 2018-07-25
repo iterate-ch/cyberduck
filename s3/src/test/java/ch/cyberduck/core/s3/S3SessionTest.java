@@ -6,6 +6,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -88,6 +89,51 @@ public class S3SessionTest {
     @Test
     public void testConnectUnsecured() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+        assertEquals(Session.State.closed, session.getState());
+        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+    }
+
+    @Test(expected = ExpiredTokenException.class)
+    public void testConnectSessionTokenStatic() throws Exception {
+        final S3Protocol protocol = new S3Protocol() {
+            @Override
+            public boolean isTokenConfigurable() {
+                return true;
+            }
+        };
+        final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials(
+            "ASIA5RMYTHDIR37CTCXI", "TsnhChH4FlBt7hql2KnzrwNizmktJnO8YzDQwFqx",
+            "FQoDYXdzEN3//////////wEaDLAz85HLZTQ7zu6/OSKrAfwLewUMHKaswh5sXv50BgMwbeKfCoMATjagvM+KV9++z0I6rItmMectuYoEGCOcnWHKZxtvpZAGcjlvgEDPw1KRYu16riUnd2Yo3doskqAoH0dlL2nH0eoj0d81H5e6IjdlGCm1E3K3zQPFLfMbvn1tdDQR1HV8o9eslmxo54hWMY2M14EpZhcXQMlns0mfYLYHLEVvgpz/8xYjR0yKDxJlXSATEpXtowHtqSi8tL7aBQ=="
+        ));
+        final S3Session session = new S3Session(host);
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+    }
+
+    @Test
+    public void testConnectSessionTokenFromService() throws Exception {
+        final S3Protocol protocol = new S3Protocol() {
+            @Override
+            public boolean isTokenConfigurable() {
+                return true;
+            }
+        };
+        final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);

@@ -20,8 +20,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -33,11 +31,7 @@ import java.text.MessageFormat;
 public class KeychainLoginService implements LoginService {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
     private final LoginCallback callback;
-
     private final HostPasswordStore keychain;
 
     public KeychainLoginService(final LoginCallback prompt, final HostPasswordStore keychain) {
@@ -46,7 +40,7 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException {
+    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }

@@ -138,8 +138,8 @@ public class S3MultipleDeleteFeature implements Delete {
         throws BackgroundException {
         try {
             if(versioningService != null
-                && versioningService.getConfiguration(container).isMultifactor()) {
-                final Credentials factor = versioningService.getToken(prompt);
+                    && versioningService.getConfiguration(container).isMultifactor()) {
+                final Credentials factor = versioningService.getToken(StringUtils.EMPTY, prompt);
                 final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
                     keys.toArray(new ObjectKeyAndVersion[keys.size()]),
                     factor.getUsername(),

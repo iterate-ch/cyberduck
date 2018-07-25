@@ -15,6 +15,7 @@ package ch.cyberduck.core.auth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.dav.DAVProtocol;
@@ -23,8 +24,6 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.commons.io.IOUtils;
-import org.jets3t.service.security.AWSCredentials;
-import org.jets3t.service.security.AWSSessionCredentials;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ public class AWSSessionCredentialsRetrieverTest {
 
     @Test
     public void testParse() throws Exception {
-        final AWSCredentials c = new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener(),
+        final Credentials c = new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener(),
                 "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
                 .parse(IOUtils.toInputStream("{\n" +
                         "  \"Code\" : \"Success\",\n" +
@@ -48,9 +47,9 @@ public class AWSSessionCredentialsRetrieverTest {
                         "  \"Token\" : \"token\",\n" +
                         "  \"Expiration\" : \"2012-04-27T22:39:16Z\"\n" +
                         "}", Charset.defaultCharset()));
-        assertEquals("AKIAIOSFODNN7EXAMPLE", c.getAccessKey());
-        assertEquals("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", c.getSecretKey());
-        assertEquals("token", ((AWSSessionCredentials) c).getSessionToken());
+        assertEquals("AKIAIOSFODNN7EXAMPLE", c.getUsername());
+        assertEquals("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", c.getPassword());
+        assertEquals("token", c.getToken());
     }
 
     @Test(expected = ConnectionTimeoutException.class)

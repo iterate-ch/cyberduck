@@ -15,6 +15,7 @@ package ch.cyberduck.core.auth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -32,8 +33,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.jets3t.service.security.AWSCredentials;
-import org.jets3t.service.security.AWSSessionCredentials;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +64,7 @@ public class AWSSessionCredentialsRetriever {
         this.url = url;
     }
 
-    public AWSCredentials get() throws BackgroundException {
+    public Credentials get() throws BackgroundException {
         final Host address = new HostParser(factory).get(url);
         final Path access = new Path(address.getDefaultPath(), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));
@@ -72,7 +72,7 @@ public class AWSSessionCredentialsRetriever {
         connection.withListener(transcript).open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final InputStream in = new DAVReadFeature(connection).read(access, new TransferStatus(), new DisabledConnectionCallback());
         try {
-            final AWSCredentials credentials = this.parse(in);
+            final Credentials credentials = this.parse(in);
             connection.close();
             return credentials;
         }
@@ -81,7 +81,7 @@ public class AWSSessionCredentialsRetriever {
         }
     }
 
-    protected AWSCredentials parse(final InputStream in) throws BackgroundException {
+    protected Credentials parse(final InputStream in) throws BackgroundException {
         try {
             final JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
             reader.beginObject();
@@ -104,7 +104,11 @@ public class AWSSessionCredentialsRetriever {
                 }
             }
             reader.endObject();
-            return new AWSSessionCredentials(key, secret, token);
+            final Credentials credentials = new Credentials(key, secret);
+            if(StringUtils.isNotBlank(token)) {
+                credentials.setToken(token);
+            }
+            return credentials;
         }
         catch(UnsupportedEncodingException e) {
             throw new DefaultIOExceptionMappingService().map(e);

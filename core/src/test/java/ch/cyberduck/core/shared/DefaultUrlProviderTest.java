@@ -33,9 +33,9 @@ public class DefaultUrlProviderTest {
                 "u", "p"
         ));
         assertEquals("http://test.cyberduck.ch/f",
-                new DefaultUrlProvider(host).toUrl(new Path("/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+            new DefaultUrlProvider(host).toUrl(new Path("/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl());
         assertEquals("http://test.cyberduck.ch/f/f",
-                new DefaultUrlProvider(host).toUrl(new Path("/f/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
+            new DefaultUrlProvider(host).toUrl(new Path("/f/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl());
     }
 
     @Test
@@ -81,9 +81,8 @@ public class DefaultUrlProviderTest {
     public void testDefaultPathRoot() {
         Host host = new Host(new TestProtocol(), "localhost");
         host.setDefaultPath("/");
-        Path path = new Path(
-                "/file", EnumSet.of(Path.Type.directory));
-        assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
+        Path path = new Path("/file", EnumSet.of(Path.Type.directory));
+        assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.provider).getUrl());
         host.setWebURL("http://127.0.0.1/~dkocher");
         assertEquals("http://127.0.0.1/~dkocher/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
     }

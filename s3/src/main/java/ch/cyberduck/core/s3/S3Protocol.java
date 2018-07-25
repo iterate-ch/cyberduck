@@ -114,6 +114,11 @@ public class S3Protocol extends AbstractProtocol {
     }
 
     @Override
+    public String getTokenPlaceholder() {
+        return LocaleFactory.localizedString("MFA Authentication Code", "S3");
+    }
+
+    @Override
     public String favicon() {
         // Return static icon as endpoint has no favicon configured
         return this.icon();

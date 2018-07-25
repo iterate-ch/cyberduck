@@ -22,4 +22,8 @@ public class AWSProfileCredentialsConfigurator extends AWSCredentialsConfigurato
     public AWSProfileCredentialsConfigurator() {
         super(new ProfileCredentialsProvider());
     }
+
+    public AWSProfileCredentialsConfigurator(final String profile) {
+        super(new ProfileCredentialsProvider(profile));
+    }
 }
