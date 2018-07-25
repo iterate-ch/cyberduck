@@ -59,16 +59,16 @@ public class MoveWorkerTest {
                         @Override
                         public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
                             if(count.get() == 0) {
-                                assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), file);
-                                assertEquals(new Path("/t2/a", EnumSet.of(Path.Type.file)), renamed);
-                            }
-                            if(count.get() == 1) {
                                 assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), file);
                                 assertEquals(new Path("/t2/d/b", EnumSet.of(Path.Type.file)), renamed);
                             }
-                            if(count.get() == 2) {
+                            if(count.get() == 1) {
                                 assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), file);
                                 assertEquals(new Path("/t2/d", EnumSet.of(Path.Type.directory)), renamed);
+                            }
+                            if(count.get() == 2) {
+                                assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), file);
+                                assertEquals(new Path("/t2/a", EnumSet.of(Path.Type.file)), renamed);
                             }
                             if(count.get() == 3) {
                                 assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), file);
