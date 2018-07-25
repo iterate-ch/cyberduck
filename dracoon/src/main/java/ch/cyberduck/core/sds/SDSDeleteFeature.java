@@ -61,28 +61,29 @@ public class SDSDeleteFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path node) {
-        try {
-            if(containerService.isContainer(node)) {
-                // you need the manage permission on the parent data room to delete it
-                final Path parent = containerService.getContainer(node.getParent());
-                if(parent.equals(node)) {
-                    // top-level data room
-                    return this.getRoles(node).contains(SDSPermissionsFeature.MANAGE_ROLE);
-                }
-                // sub data room
-                return this.getRoles(parent).contains(SDSPermissionsFeature.MANAGE_ROLE);
+        if(containerService.isContainer(node)) {
+            // you need the manage permission on the parent data room to delete it
+            final Path parent = containerService.getContainer(node.getParent());
+            if(parent.equals(node)) {
+                // top-level data room
+                return this.getRoles(node).contains(SDSPermissionsFeature.MANAGE_ROLE);
             }
-            return this.getRoles(node).contains(SDSPermissionsFeature.DELETE_ROLE);
+            // sub data room
+            return this.getRoles(parent).contains(SDSPermissionsFeature.MANAGE_ROLE);
+        }
+        return this.getRoles(node).contains(SDSPermissionsFeature.DELETE_ROLE);
+    }
+
+    private Set<Acl.Role> getRoles(final Path file) {
+        final Acl acl = file.attributes().getAcl();
+        final Set<Acl.Role> roles;
+        try {
+            roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
         }
         catch(BackgroundException e) {
             log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
-            return true;
+            return Collections.emptySet();
         }
-    }
-
-    private Set<Acl.Role> getRoles(final Path file) throws BackgroundException {
-        final Acl acl = new SDSPermissionsFeature(session, nodeid).getPermission(containerService.getContainer(file));
-        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
         return roles != null ? roles : Collections.emptySet();
     }
 

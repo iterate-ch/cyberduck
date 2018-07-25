@@ -21,7 +21,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
@@ -44,9 +43,6 @@ public class CreateDirectoryWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
-        if(!feature.isSupported(folder.getParent(), folder.getName())) {
-            throw new UnsupportedException();
-        }
         final TransferStatus status = new TransferStatus();
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {

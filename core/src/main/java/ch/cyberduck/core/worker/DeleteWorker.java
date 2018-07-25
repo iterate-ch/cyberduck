@@ -72,9 +72,6 @@ public class DeleteWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            if(!delete.isSupported(file)) {
-                throw new UnsupportedException();
-            }
             recursive.addAll(this.compile(delete, list, new WorkerListProgressListener(this, listener), file));
         }
         delete.delete(recursive, prompt, new Delete.Callback() {
