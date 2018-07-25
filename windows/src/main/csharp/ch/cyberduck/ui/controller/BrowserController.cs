@@ -1058,7 +1058,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted() && SelectedPaths.Count == 1)
             {
-                return Session.getFeature(typeof(Versioning)) != null;
+                return Session.getFeature(typeof(Versioning)) != null && SelectedPath.attributes().isDuplicate();
             }
             return false;
         }

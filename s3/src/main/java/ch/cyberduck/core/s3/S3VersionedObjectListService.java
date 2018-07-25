@@ -23,7 +23,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -32,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
+import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.S3Version;
 
 import java.util.Arrays;
@@ -57,6 +60,7 @@ public class S3VersionedObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final String prefix = this.createPrefix(directory);
         final Path bucket = containerService.getContainer(directory);
+        final VersioningConfiguration versioning = session.getFeature(Versioning.class).getConfiguration(bucket);
         final AttributedList<Path> children = new AttributedList<Path>();
         try {
             String priorLastKey = null;
@@ -80,8 +84,7 @@ public class S3VersionedObjectListService implements ListService {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    if(!StringUtils.equals("null", marker.getVersionId())) {
-                        // If you have not enabled versioning, then S3 sets the version ID value to null.
+                    if(versioning.isEnabled()) {
                         attributes.setVersionId(marker.getVersionId());
                     }
                     attributes.setRevision(++i);
@@ -113,6 +116,25 @@ public class S3VersionedObjectListService implements ListService {
                     }
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setRegion(bucket.attributes().getRegion());
+                    if(versioning.isEnabled()) {
+                        final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
+                            bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
+                            null, null, false);
+                        if(versions.getItems().length == 1) {
+                            final BaseVersionOrDeleteMarker version = versions.getItems()[0];
+                            if(version.getKey().equals(common)) {
+                                attributes.setVersionId(version.getVersionId());
+                                attributes.setDuplicate(version.isDeleteMarker());
+                            }
+                            else {
+                                // no placeholder but objects inside - need to check if all of them are deleted
+                                final S3Object[] unversioned = session.getClient().listObjects(bucket.getName(), common, String.valueOf(Path.DELIMITER), 1);
+                                if(unversioned.length == 0) {
+                                    attributes.setDuplicate(true);
+                                }
+                            }
+                        }
+                    }
                     final Path file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                     children.add(file);
                 }

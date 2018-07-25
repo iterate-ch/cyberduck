@@ -25,8 +25,10 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -89,7 +91,15 @@ public class DeleteWorker extends Worker<List<Path>> {
         // Compile recursive list
         final Set<Path> recursive = new LinkedHashSet<>();
         if(file.isFile() || file.isSymbolicLink()) {
-            recursive.add(file);
+            final PathAttributes version = new PathAttributes(file.attributes());
+            if(file.attributes().isDuplicate()) {
+                // Explicitly delete versioned file
+            }
+            else {
+                // Add delete marker
+                version.withVersionId(new VersionId(null));
+            }
+            recursive.add(new Path(file.getParent(), file.getName(), file.getType(), version));
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {
