@@ -187,6 +187,12 @@ public class S3VersioningFeature implements Versioning {
                 destination.setAcl(accessControlListFeature.convert(acl));
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                     containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
+                if(file.getParent().attributes().isDuplicate()) {
+                    // revert placeholder
+                    session.getClient().deleteVersionedObject(
+                        file.attributes().getVersionId(),
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
+                }
             }
             catch(ServiceException e) {
                 throw new S3ExceptionMappingService().map("Cannot revert file", e, file);

@@ -41,7 +41,7 @@ public class S3CopyFeature implements Copy {
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3AccessControlListFeature accessControlListFeature;
 
@@ -86,9 +86,9 @@ public class S3CopyFeature implements Copy {
     protected void copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {
         try {
             // Copying object applying the metadata of the original
-            session.getClient().copyObject(containerService.getContainer(source).getName(),
-                    containerService.getKey(source),
-                    destination.getBucketName(), destination, false);
+            session.getClient().copyVersionedObject(source.attributes().getVersionId(), containerService.getContainer(source).getName(),
+                containerService.getKey(source),
+                destination.getBucketName(), destination, false);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
