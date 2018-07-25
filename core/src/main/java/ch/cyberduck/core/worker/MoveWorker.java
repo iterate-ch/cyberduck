@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -36,15 +37,13 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
 
@@ -116,9 +115,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         }
         else if(source.isDirectory()) {
             if(!move.isRecursive(source, target)) {
-                // reverse list to move older versions first
-                final List<Path> reverse = Lists.reverse(list.list(source, new WorkerListProgressListener(this, listener)).toList());
-                for(Path child : reverse) {
+                // sort ascending by timestamp to move older versions first
+                final AttributedList<Path> children = list.list(source, new WorkerListProgressListener(this, listener)).
+                    filter(new TimestampComparator(true));
+                for(Path child : children) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
