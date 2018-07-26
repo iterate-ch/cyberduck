@@ -94,7 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected BookmarkController(Host host,
             LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
-            new LoginInputValidator(host.getCredentials(), host.getProtocol(), options), options)
+            new LoginInputValidator(host, options), options)
         {
         }
 

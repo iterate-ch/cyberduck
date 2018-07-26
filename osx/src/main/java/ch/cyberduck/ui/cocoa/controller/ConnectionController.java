@@ -56,7 +56,7 @@ public class ConnectionController extends BookmarkController {
     }
 
     public ConnectionController(final Host bookmark, final Credentials credentials, final LoginOptions options) {
-        super(bookmark, new LoginInputValidator(credentials, bookmark.getProtocol(), options), options);
+        super(bookmark, new LoginInputValidator(bookmark, options), options);
     }
 
     @Override
