@@ -34,7 +34,7 @@ public class S3MoveFeature implements Move {
     private static final Logger log = Logger.getLogger(S3MoveFeature.class);
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3Session session;
     private final S3AccessControlListFeature accessControlListFeature;
@@ -53,7 +53,18 @@ public class S3MoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
+        //TODO handle placeholders as they also have a size of -1 (cannot differentiate placeholder or a delete marker for a placeholder
+        final Path copy;
+        if(source.attributes().isDuplicate() &&
+            source.isFile() &&
+            source.attributes().getSize() == -1) {
+            // delete marker, copy not supported but we have to retain the delete marker on the target
+            delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+            copy = renamed; //TODO müsste delete marker sein
+        }
+        else {
+            copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
+        }
         delete.delete(Collections.singletonList(source), connectionCallback, callback);
         return copy;
     }
