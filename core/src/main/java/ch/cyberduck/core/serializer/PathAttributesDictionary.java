@@ -51,6 +51,10 @@ public class PathAttributesDictionary {
         if(permissionObj != null) {
             attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));
         }
+        final Object aclObj = dict.objectForKey("Acl");
+        if(aclObj != null) {
+            attributes.setAcl(new AclDictionary().deserialize(aclObj));
+        }
         attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
         attributes.setVersionId(dict.stringForKey("Version"));
         final String duplicateObj = dict.stringForKey("Duplicate");

@@ -120,4 +120,9 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         log.warn(String.format("Unexpected value type for serialized key %s", key));
         return null;
     }
+
+    @Override
+    public List<String> keys() {
+        return new ArrayList<>(dict.keySet());
+    }
 }
