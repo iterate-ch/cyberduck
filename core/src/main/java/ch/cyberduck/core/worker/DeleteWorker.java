@@ -87,15 +87,15 @@ public class DeleteWorker extends Worker<List<Path>> {
     protected Set<Path> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
         final Set<Path> recursive = new LinkedHashSet<>();
+        final PathAttributes version = new PathAttributes(file.attributes());
+        if(file.attributes().isDuplicate()) {
+            // Explicitly delete versioned file
+        }
+        else {
+            // Add delete marker
+            version.withVersionId(new VersionId(null));
+        }
         if(file.isFile() || file.isSymbolicLink()) {
-            final PathAttributes version = new PathAttributes(file.attributes());
-            if(file.attributes().isDuplicate()) {
-                // Explicitly delete versioned file
-            }
-            else {
-                // Add delete marker
-                version.withVersionId(new VersionId(null));
-            }
             recursive.add(new Path(file.getParent(), file.getName(), file.getType(), version));
         }
         else if(file.isDirectory()) {
@@ -111,7 +111,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                 }
             }
             // Add parent after children
-            recursive.add(file);
+            recursive.add(new Path(file.getParent(), file.getName(), file.getType(), version));
         }
         return recursive;
     }
