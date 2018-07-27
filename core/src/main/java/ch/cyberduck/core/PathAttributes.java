@@ -170,7 +170,7 @@ public class PathAttributes extends Attributes implements Serializable {
         if(modified != -1) {
             dict.setStringForKey(String.valueOf(modified), "Modified");
         }
-        if(revision != -1) {
+        if(revision != null) {
             dict.setStringForKey(String.valueOf(revision), "Revision");
         }
         if(permission != Permission.EMPTY) {
