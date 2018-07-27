@@ -27,8 +27,15 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.ServiceException;
+import org.jets3t.service.VersionOrDeleteMarkersChunk;
+import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 
 import java.util.Collections;
+
+import com.google.common.collect.ImmutableMap;
+
+import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 
 public class S3MoveFeature implements Move {
     private static final Logger log = Logger.getLogger(S3MoveFeature.class);
@@ -53,14 +60,21 @@ public class S3MoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        //TODO handle placeholders as they also have a size of -1 (cannot differentiate placeholder or a delete marker for a placeholder
         final Path copy;
-        if(source.attributes().isDuplicate() &&
-            source.isFile() &&
-            source.attributes().getSize() == -1) {
+        if(source.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {
             // delete marker, copy not supported but we have to retain the delete marker on the target
             delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
-            copy = renamed; //TODO müsste delete marker sein
+            try {
+                // find version id of moved delete marker
+                final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(containerService.getContainer(renamed).getName(), containerService.getKey(renamed),
+                    String.valueOf(Path.DELIMITER), 1, null, null, false);
+                final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
+                renamed.attributes().withVersionId(markerObject.getVersionId()).setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                copy = new Path(renamed.getParent(), renamed.getName(), renamed.getType(), renamed.attributes());
+            }
+            catch(ServiceException e) {
+                throw new S3ExceptionMappingService().map("Finding delete marker {0} failed", e, renamed);
+            }
         }
         else {
             copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
