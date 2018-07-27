@@ -59,6 +59,11 @@ public class IRODSProtocolTest {
             public boolean booleanForKey(final String key) {
                 return false;
             }
+
+            @Override
+            public List<String> keys() {
+                return null;
+            }
         }) {
             @Override
             public String getRegion() {
@@ -93,6 +98,11 @@ public class IRODSProtocolTest {
             @Override
             public boolean booleanForKey(final String key) {
                 return false;
+            }
+
+            @Override
+            public List<String> keys() {
+                return null;
             }
         }) {
             @Override

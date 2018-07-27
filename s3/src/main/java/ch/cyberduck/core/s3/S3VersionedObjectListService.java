@@ -32,9 +32,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
-import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.S3Version;
 
 import java.util.Arrays;
@@ -128,8 +128,9 @@ public class S3VersionedObjectListService implements ListService {
                             }
                             else {
                                 // no placeholder but objects inside - need to check if all of them are deleted
-                                final S3Object[] unversioned = session.getClient().listObjects(bucket.getName(), common, String.valueOf(Path.DELIMITER), 1);
-                                if(unversioned.length == 0) {
+                                final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
+                                    StringUtils.EMPTY, 1, null, false);
+                                if(unversioned.getObjects().length == 0) {
                                     attributes.setDuplicate(true);
                                 }
                             }

@@ -109,7 +109,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     }
 
     public BookmarkController(final Host bookmark, final LoginOptions options) {
-        this(bookmark, new LoginInputValidator(bookmark.getCredentials(), bookmark.getProtocol(), options), options);
+        this(bookmark, new LoginInputValidator(bookmark, options), options);
     }
 
     public BookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
