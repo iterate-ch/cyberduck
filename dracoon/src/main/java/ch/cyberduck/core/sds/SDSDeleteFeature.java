@@ -28,7 +28,6 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -60,31 +59,38 @@ public class SDSDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path node) {
-        if(containerService.isContainer(node)) {
+    public boolean isSupported(final Path file) {
+        if(containerService.isContainer(file)) {
             // you need the manage permission on the parent data room to delete it
-            final Path parent = containerService.getContainer(node.getParent());
-            if(parent.equals(node)) {
+            final Path parent = containerService.getContainer(file.getParent());
+            if(parent.equals(file)) {
                 // top-level data room
-                return this.getRoles(node).contains(SDSPermissionsFeature.MANAGE_ROLE);
+                return this.containsRole(file, file.attributes().getAcl(), SDSPermissionsFeature.MANAGE_ROLE);
             }
             // sub data room
-            return this.getRoles(parent).contains(SDSPermissionsFeature.MANAGE_ROLE);
+            return this.containsRole(file, parent.attributes().getAcl(), SDSPermissionsFeature.MANAGE_ROLE);
         }
-        return this.getRoles(node).contains(SDSPermissionsFeature.DELETE_ROLE);
+        return this.containsRole(file, file.attributes().getAcl(), SDSPermissionsFeature.DELETE_ROLE);
     }
 
-    private Set<Acl.Role> getRoles(final Path file) {
-        final Acl acl = file.attributes().getAcl();
-        final Set<Acl.Role> roles;
+    private boolean containsRole(final Path file, final Acl acl, final Acl.Role role) {
+        if(acl.isEmpty()) {
+            log.warn(String.format("Missing ACL on file %s", file));
+            return true;
+        }
+        final UserAccountWrapper account;
         try {
-            roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+            account = session.userAccount();
         }
         catch(BackgroundException e) {
             log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
-            return Collections.emptySet();
+            return true;
         }
-        return roles != null ? roles : Collections.emptySet();
+        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(account.getId())));
+        if(null == roles) {
+            return false;
+        }
+        return roles.contains(role);
     }
 
     @Override
