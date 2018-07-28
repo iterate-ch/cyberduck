@@ -28,7 +28,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -87,15 +86,12 @@ public class DeleteWorker extends Worker<List<Path>> {
     protected Set<Path> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
         final Set<Path> recursive = new LinkedHashSet<>();
-        final PathAttributes version = new PathAttributes(file.attributes());
-        if(file.attributes().isDuplicate()) {
-            // Explicitly delete versioned file
-        }
-        else {
-            // Add delete marker
-            version.withVersionId(new VersionId(null));
-        }
         if(file.isFile() || file.isSymbolicLink()) {
+            final PathAttributes version = new PathAttributes(file.attributes());
+            if(!file.attributes().isDuplicate()) {
+                // Add delete marker
+                version.setVersionId(null);
+            }
             recursive.add(new Path(file.getParent(), file.getName(), file.getType(), version));
         }
         else if(file.isDirectory()) {
@@ -107,11 +103,18 @@ public class DeleteWorker extends Worker<List<Path>> {
                     if(!delete.isSupported(child)) {
                         throw new UnsupportedException();
                     }
-                    recursive.addAll(this.compile(delete, list, listener, child));
+                    if(child.attributes().isDuplicate() && child.isFile()) {
+                        // Delete latest version only, skip this duplicate
+                        continue;
+                    }
+                    final PathAttributes version = new PathAttributes(file.attributes());
+                    version.setVersionId(null); // Add delete marker
+                    final Path c = new Path(child.getParent(), child.getName(), child.getType(), version);
+                    recursive.addAll(this.compile(delete, list, listener, c));
                 }
             }
             // Add parent after children
-            recursive.add(new Path(file.getParent(), file.getName(), file.getType(), version));
+            recursive.add(new Path(file.getParent(), file.getName(), file.getType(), file.attributes()));
         }
         return recursive;
     }

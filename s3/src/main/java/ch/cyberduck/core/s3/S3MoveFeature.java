@@ -22,7 +22,9 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -60,26 +62,38 @@ public class S3MoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy;
+        Path copy;
         if(source.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {
-            // delete marker, copy not supported but we have to retain the delete marker on the target
+            // Delete marker, copy not supported but we have to retain the delete marker at the target
             delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             try {
-                // find version id of moved delete marker
+                // Find version id of moved delete marker
                 final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(containerService.getContainer(renamed).getName(), containerService.getKey(renamed),
                     String.valueOf(Path.DELIMITER), 1, null, null, false);
                 final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
                 renamed.attributes().withVersionId(markerObject.getVersionId()).setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                 copy = new Path(renamed.getParent(), renamed.getName(), renamed.getType(), renamed.attributes());
+                delete.delete(Collections.singletonList(source), connectionCallback, callback);
             }
             catch(ServiceException e) {
                 throw new S3ExceptionMappingService().map("Finding delete marker {0} failed", e, renamed);
             }
         }
         else {
-            copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
+            try {
+                copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
+                delete.delete(Collections.singletonList(source), connectionCallback, callback);
+            }
+            catch(NotfoundException e) {
+                if(source.getType().contains(Path.Type.placeholder)) {
+                    // No placeholder object to copy, create a new one at the target
+                    copy = session.getFeature(Directory.class).mkdir(renamed, renamed.attributes().getRegion(), new TransferStatus());
+                }
+                else {
+                    throw e;
+                }
+            }
         }
-        delete.delete(Collections.singletonList(source), connectionCallback, callback);
         return copy;
     }
 
