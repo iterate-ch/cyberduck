@@ -47,6 +47,10 @@ public class PathAttributesDictionary {
         if(modifiedObj != null) {
             attributes.setModificationDate(Long.parseLong(modifiedObj));
         }
+        final String revisionObj = dict.stringForKey("Revision");
+        if(revisionObj != null) {
+            attributes.setRevision(Long.parseLong(revisionObj));
+        }
         final Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
             attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));

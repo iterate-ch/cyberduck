@@ -34,6 +34,7 @@ import ch.cyberduck.core.proxy.ProxyFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -42,6 +43,7 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.profile.ProfilesConfigFile;
 import com.amazonaws.auth.profile.internal.BasicProfile;
+import com.amazonaws.profile.path.AwsProfileFileLocationProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
@@ -70,8 +72,13 @@ public class STSCredentialsConfigurator implements CredentialsConfigurator {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Look for profile name %s in ~/.aws/credentials", profile));
         }
+        final File file = AwsProfileFileLocationProvider.DEFAULT_CREDENTIALS_LOCATION_PROVIDER.getLocation();
+        if(null == file) {
+            log.warn("Missing configuration file ~/.aws/ccredentials. Skip auto configuration");
+            return host.getCredentials();
+        }
         // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
-        final ProfilesConfigFile config = new ProfilesConfigFile();
+        final ProfilesConfigFile config = new ProfilesConfigFile(file);
         final Map<String, BasicProfile> profiles = config.getAllBasicProfiles();
         final Optional<Map.Entry<String, BasicProfile>> optional = profiles.entrySet().stream().filter(new Predicate<Map.Entry<String, BasicProfile>>() {
             @Override

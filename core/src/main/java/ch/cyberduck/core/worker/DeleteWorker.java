@@ -25,7 +25,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -92,7 +91,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                 // Add delete marker
                 version.setVersionId(null);
             }
-            recursive.add(new Path(file.getParent(), file.getName(), file.getType(), version));
+            recursive.add(file);
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {
