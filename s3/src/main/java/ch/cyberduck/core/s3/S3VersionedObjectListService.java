@@ -133,6 +133,7 @@ public class S3VersionedObjectListService implements ListService {
                                 attributes.setVersionId(version.getVersionId());
                                 if(version.isDeleteMarker()) {
                                     attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                    attributes.setDuplicate(true);
                                 }
                             }
                             else {
