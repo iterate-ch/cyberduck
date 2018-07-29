@@ -38,6 +38,7 @@ import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.S3Version;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -94,7 +95,7 @@ public class S3VersionedObjectListService implements ListService {
                     attributes.setRevision(++i);
                     attributes.setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
                     if(marker.isDeleteMarker()) {
-                        attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                        attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                     }
                     attributes.setModificationDate(marker.getLastModified().getTime());
                     attributes.setRegion(bucket.attributes().getRegion());

@@ -35,8 +35,6 @@ import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 
 import java.util.Collections;
 
-import com.google.common.collect.ImmutableMap;
-
 import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 
 public class S3MoveFeature implements Move {
@@ -71,7 +69,7 @@ public class S3MoveFeature implements Move {
                 final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(containerService.getContainer(renamed).getName(), containerService.getKey(renamed),
                     String.valueOf(Path.DELIMITER), 1, null, null, false);
                 final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
-                renamed.attributes().withVersionId(markerObject.getVersionId()).setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                renamed.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                 copy = new Path(renamed.getParent(), renamed.getName(), renamed.getType(), renamed.attributes());
                 delete.delete(Collections.singletonList(source), connectionCallback, callback);
             }
