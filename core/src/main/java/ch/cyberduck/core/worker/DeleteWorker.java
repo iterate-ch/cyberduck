@@ -110,7 +110,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                 }
             }
             // Add parent after children
-            recursive.add(new Path(file.getParent(), file.getName(), file.getType(), file.attributes()));
+            recursive.add(file);
         }
         return recursive;
     }
