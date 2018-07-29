@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 
@@ -61,14 +62,17 @@ public class SDSDeleteFeature implements Delete {
     @Override
     public boolean isSupported(final Path file) {
         if(containerService.isContainer(file)) {
-            // you need the manage permission on the parent data room to delete it
-            final Path parent = containerService.getContainer(file.getParent());
-            if(parent.equals(file)) {
-                // top-level data room
-                return this.containsRole(file, file.attributes().getAcl(), SDSPermissionsFeature.MANAGE_ROLE);
+            if(PreferencesFactory.get().getBoolean("sds.delete.dataroom.enable")) {
+                // Need the manage permission on the parent data room to delete it
+                final Path parent = containerService.getContainer(file.getParent());
+                if(parent.equals(file)) {
+                    // Top-level data room
+                    return this.containsRole(file, file.attributes().getAcl(), SDSPermissionsFeature.MANAGE_ROLE);
+                }
+                // Sub data room
+                return this.containsRole(file, parent.attributes().getAcl(), SDSPermissionsFeature.MANAGE_ROLE);
             }
-            // sub data room
-            return this.containsRole(file, parent.attributes().getAcl(), SDSPermissionsFeature.MANAGE_ROLE);
+            return false;
         }
         return this.containsRole(file, file.attributes().getAcl(), SDSPermissionsFeature.DELETE_ROLE);
     }
