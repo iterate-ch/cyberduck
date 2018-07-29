@@ -68,13 +68,18 @@ public class S3MoveFeature implements Move {
                 // Find version id of moved delete marker
                 final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(containerService.getContainer(renamed).getName(), containerService.getKey(renamed),
                     String.valueOf(Path.DELIMITER), 1, null, null, false);
-                final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
-                renamed.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                copy = new Path(renamed.getParent(), renamed.getName(), renamed.getType(), renamed.attributes());
-                delete.delete(Collections.singletonList(source), connectionCallback, callback);
+                if(marker.getItems().length == 1) {
+                    final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
+                    renamed.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                    copy = new Path(renamed.getParent(), renamed.getName(), renamed.getType(), renamed.attributes());
+                    delete.delete(Collections.singletonList(source), connectionCallback, callback);
+                }
+                else {
+                    throw new NotfoundException(String.format("Unable to find delete marker %s", renamed));
+                }
             }
             catch(ServiceException e) {
-                throw new S3ExceptionMappingService().map("Finding delete marker {0} failed", e, renamed);
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, renamed);
             }
         }
         else {
