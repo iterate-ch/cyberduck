@@ -63,6 +63,7 @@ public class S3MoveFeature implements Move {
         Path copy;
         if(source.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {
             // Delete marker, copy not supported but we have to retain the delete marker at the target
+            renamed.attributes().setVersionId(null);
             delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             try {
                 // Find version id of moved delete marker
