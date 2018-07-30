@@ -30,7 +30,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 
 import java.text.MessageFormat;
@@ -101,9 +100,6 @@ public class DeleteWorker extends Worker<List<Path>> {
                 for(Path child : list.list(file, listener).filter(filter)) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
-                    }
-                    if(!delete.isSupported(child)) {
-                        throw new UnsupportedException();
                     }
                     recursive.addAll(this.compile(delete, list, listener, child));
                 }
