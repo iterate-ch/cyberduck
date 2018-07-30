@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>onedrive</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>office365</string>
         <key>Description</key>
         <string>Microsoft Office 365 Deutschland</string>
         <key>Scheme</key>
