@@ -75,7 +75,7 @@ public class S3MoveFeature implements Move {
                     delete.delete(Collections.singletonList(source), connectionCallback, callback);
                 }
                 else {
-                    throw new NotfoundException(String.format("Unable to find delete marker %s", renamed));
+                    throw new NotfoundException(String.format("Unable to find delete marker %s", renamed.getName()));
                 }
             }
             catch(ServiceException e) {
