@@ -72,6 +72,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
     public Map<Path, Path> run(final Session<?> session) throws BackgroundException {
         final Move move = session.getFeature(Move.class);
         final ListService list = session.getFeature(ListService.class);
+        // sort ascending by timestamp to move older versions first
         final Map<Path, Path> sorted = new TreeMap<>(new TimestampComparator(true));
         sorted.putAll(files);
         final Map<Path, Path> result = new HashMap<>();
