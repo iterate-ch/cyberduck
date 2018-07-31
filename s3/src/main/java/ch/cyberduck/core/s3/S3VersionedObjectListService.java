@@ -89,7 +89,7 @@ public class S3VersionedObjectListService implements ListService {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    if(versioning.isEnabled()) {
+                    if(versioning != null && versioning.isEnabled()) {
                         attributes.setVersionId(marker.getVersionId());
                     }
                     attributes.setRevision(++i);
@@ -124,7 +124,7 @@ public class S3VersionedObjectListService implements ListService {
                     }
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setRegion(bucket.attributes().getRegion());
-                    if(versioning.isEnabled()) {
+                    if(versioning != null && versioning.isEnabled()) {
                         final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
                             bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
                             null, null, false);
