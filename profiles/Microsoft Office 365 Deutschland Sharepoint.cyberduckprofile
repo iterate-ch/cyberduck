@@ -22,7 +22,7 @@
         <key>Vendor</key>
         <string>office365</string>
         <key>Description</key>
-        <string>Microsoft Office 365 Deutschland</string>
+        <string>Microsoft Office 365 Deutschland Sharepoint</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>

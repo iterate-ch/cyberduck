@@ -22,7 +22,7 @@
         <key>Vendor</key>
         <string>office365-onedrive</string>
         <key>Description</key>
-        <string>Microsoft Office 365 Deutschland - OneDrive</string>
+        <string>Microsoft Office 365 Deutschland OneDrive</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
