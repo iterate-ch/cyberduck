@@ -27,10 +27,11 @@ import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
+
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class DeleteWorker extends Worker<List<Path>> {
+
+    private static final Logger log = Logger.getLogger(DeleteWorker.class);
 
     /**
      * Selected files.
@@ -86,12 +89,10 @@ public class DeleteWorker extends Worker<List<Path>> {
         // Compile recursive list
         final Set<Path> recursive = new LinkedHashSet<>();
         if(file.isFile() || file.isSymbolicLink()) {
-            if(file.attributes().isDuplicate()) {
-                // Explicitly delete versioned file
-            }
-            else {
+            if(!file.attributes().isDuplicate()) {
                 // Add delete marker
-                file.attributes().withVersionId(new VersionId(null));
+                log.debug(String.format("Nullify version to add delete marker for %s", file));
+                file.attributes().setVersionId(null);
             }
             recursive.add(file);
         }
@@ -101,6 +102,12 @@ public class DeleteWorker extends Worker<List<Path>> {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
+                    if(child.attributes().isDuplicate() && child.isFile()) {
+                        // Delete latest version only, skip this duplicate
+                        log.debug(String.format("Skip duplicate %s", child));
+                        continue;
+                    }
+                    child.attributes().setVersionId(null);
                     recursive.addAll(this.compile(delete, list, listener, child));
                 }
             }

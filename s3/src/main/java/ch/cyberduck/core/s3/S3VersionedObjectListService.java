@@ -38,11 +38,16 @@ import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.S3Version;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.google.common.collect.ImmutableMap;
+
 public class S3VersionedObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(S3VersionedObjectListService.class);
+
+    public static final String KEY_DELETE_MARKER = "delete_marker";
 
     private final Preferences preferences
         = PreferencesFactory.get();
@@ -89,6 +94,9 @@ public class S3VersionedObjectListService implements ListService {
                     }
                     attributes.setRevision(++i);
                     attributes.setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
+                    if(marker.isDeleteMarker()) {
+                        attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                    }
                     attributes.setModificationDate(marker.getLastModified().getTime());
                     attributes.setRegion(bucket.attributes().getRegion());
                     if(marker instanceof S3Version) {
@@ -124,7 +132,10 @@ public class S3VersionedObjectListService implements ListService {
                             final BaseVersionOrDeleteMarker version = versions.getItems()[0];
                             if(version.getKey().equals(common)) {
                                 attributes.setVersionId(version.getVersionId());
-                                attributes.setDuplicate(version.isDeleteMarker());
+                                if(version.isDeleteMarker()) {
+                                    attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                    attributes.setDuplicate(true);
+                                }
                             }
                             else {
                                 // no placeholder but objects inside - need to check if all of them are deleted

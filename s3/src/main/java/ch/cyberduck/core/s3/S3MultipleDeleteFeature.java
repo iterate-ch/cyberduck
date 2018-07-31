@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -87,19 +86,7 @@ public class S3MultipleDeleteFeature implements Delete {
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                try {
-                    keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
-                        file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : file.attributes().getVersionId()
-                    ));
-                }
-                catch(NotfoundException e) {
-                    if(file.isDirectory()) {
-                        log.warn(String.format("Ignore missing placeholder object %s", file));
-                    }
-                    else {
-                        throw e;
-                    }
-                }
+                keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
                 if(map.containsKey(container)) {
                     map.get(container).addAll(keys);
                 }
@@ -138,7 +125,7 @@ public class S3MultipleDeleteFeature implements Delete {
         throws BackgroundException {
         try {
             if(versioningService != null
-                    && versioningService.getConfiguration(container).isMultifactor()) {
+                && versioningService.getConfiguration(container).isMultifactor()) {
                 final Credentials factor = versioningService.getToken(StringUtils.EMPTY, prompt);
                 final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
                     keys.toArray(new ObjectKeyAndVersion[keys.size()]),

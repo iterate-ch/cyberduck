@@ -187,11 +187,11 @@ public class S3VersioningFeature implements Versioning {
                 destination.setAcl(accessControlListFeature.convert(acl));
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                     containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
-                if(file.getParent().attributes().isDuplicate()) {
+                if(file.getParent().attributes().getCustom().containsKey(S3VersionedObjectListService.KEY_DELETE_MARKER)) {
                     // revert placeholder
                     session.getClient().deleteVersionedObject(
-                        file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
+                        file.getParent().attributes().getVersionId(),
+                        containerService.getContainer(file).getName(), containerService.getKey(file.getParent()));
                 }
             }
             catch(ServiceException e) {

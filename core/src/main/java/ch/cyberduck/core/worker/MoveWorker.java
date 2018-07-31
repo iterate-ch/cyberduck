@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
 
@@ -71,15 +72,18 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
     public Map<Path, Path> run(final Session<?> session) throws BackgroundException {
         final Move move = session.getFeature(Move.class);
         final ListService list = session.getFeature(ListService.class);
+        // sort ascending by timestamp to move older versions first
+        final Map<Path, Path> sorted = new TreeMap<>(new TimestampComparator(true));
+        sorted.putAll(files);
         final Map<Path, Path> result = new HashMap<>();
-        for(Map.Entry<Path, Path> entry : files.entrySet()) {
+        for(Map.Entry<Path, Path> entry : sorted.entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             if(!move.isSupported(entry.getKey(), entry.getValue())) {
                 final Map<Path, Path> copy = new CopyWorker(Collections.singletonMap(entry.getKey(), entry.getValue()),
                     SessionPoolFactory.create(cache, session.getHost(), keychain, callback, key, listener, transcript), cache, listener, callback).run(session);
-                for(Map.Entry<Path, Path> r : files.entrySet()) {
+                for(Map.Entry<Path, Path> r : sorted.entrySet()) {
                     // Delete source files recursively after copy is complete
                     new DeleteWorker(callback, Collections.singletonList(r.getKey()), listener).run(session);
                 }
