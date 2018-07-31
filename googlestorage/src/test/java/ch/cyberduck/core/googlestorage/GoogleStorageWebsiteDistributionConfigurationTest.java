@@ -67,15 +67,10 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
                 new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
         assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", EnumSet.of(Path.Type.file))).find(
                 DescriptiveUrl.Type.origin).getUrl());
-        assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", EnumSet.of(Path.Type.file))).find(
-                DescriptiveUrl.Type.cdn).getUrl());
     }
 
     @Test
     public void testRead() throws Exception {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        ));
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Distribution website = configuration.read(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), Distribution.WEBSITE,
