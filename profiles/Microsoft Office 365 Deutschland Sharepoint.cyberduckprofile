@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>onedrive</string>
         <key>Vendor</key>
-        <string>office365</string>
+        <string>office365-de-sharepoint</string>
         <key>Description</key>
         <string>Microsoft Office 365 Deutschland Sharepoint</string>
         <key>Scheme</key>

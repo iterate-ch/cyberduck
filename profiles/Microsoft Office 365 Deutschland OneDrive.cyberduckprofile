@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>onedrive</string>
         <key>Vendor</key>
-        <string>office365-onedrive</string>
+        <string>office365-de-onedrive</string>
         <key>Description</key>
         <string>Microsoft Office 365 Deutschland OneDrive</string>
         <key>Scheme</key>
