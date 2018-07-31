@@ -224,6 +224,11 @@ public class RequestEntityRestStorageService extends RestS3Service {
     }
 
     @Override
+    public boolean isAuthenticatedConnection() {
+        return true;
+    }
+
+    @Override
     protected boolean isXmlContentType(final String contentType) {
         if(null == contentType) {
             return false;
