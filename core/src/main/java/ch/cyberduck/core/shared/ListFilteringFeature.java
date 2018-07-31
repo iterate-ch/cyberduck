@@ -36,7 +36,7 @@ public abstract class ListFilteringFeature {
     private final Session<?> session;
 
     private Cache<Path> cache
-            = PathCache.empty();
+        = PathCache.empty();
 
     public ListFilteringFeature(final Session<?> session) {
         this.session = session;
@@ -52,7 +52,6 @@ public abstract class ListFilteringFeature {
         else {
             list = cache.get(file.getParent());
         }
-        final Predicate<Path> predicate;
         final Predicate<Path> simple = session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file);
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             // Look for exact match
