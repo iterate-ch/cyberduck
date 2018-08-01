@@ -28,6 +28,7 @@ public class LoginInputValidator implements InputValidator {
     public LoginInputValidator(final Host bookmark, final LoginOptions options) {
         this.bookmark = bookmark;
         this.options = options;
+        this.protocol = bookmark.getProtocol();
     }
 
     @Override
