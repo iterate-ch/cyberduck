@@ -57,28 +57,28 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
                 if(executionCount <= MAX_RETRIES) {
                     final ApiException failure;
                     try {
-                        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                        failure = new ApiException(response.getStatusLine().getStatusCode(), Collections.emptyMap(),
-                            EntityUtils.toString(response.getEntity()));
-                        if(new SDSExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
-                            // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
-                            try {
-                                token = new AuthApi(session.getClient()).login(new LoginRequest()
-                                    .authType(LoginRequest.AuthTypeEnum.fromValue(session.getHost().getProtocol().getAuthorization()))
-                                    .login(user)
-                                    .password(password)).getToken();
-                                return true;
-                            }
-                            catch(ApiException e) {
-                                // {"code":401,"message":"Unauthorized","debugInfo":"Wrong username or password","errorCode":-10011}
-                                log.warn(String.format("Attempt to renew expired auth token failed. %s", e.getMessage()));
-                                return false;
+                        if(null != response.getEntity()) {
+                            EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+                            failure = new ApiException(response.getStatusLine().getStatusCode(), Collections.emptyMap(),
+                                EntityUtils.toString(response.getEntity()));
+                            if(new SDSExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
+                                // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
+                                try {
+                                    token = new AuthApi(session.getClient()).login(new LoginRequest()
+                                        .authType(LoginRequest.AuthTypeEnum.fromValue(session.getHost().getProtocol().getAuthorization()))
+                                        .login(user)
+                                        .password(password)).getToken();
+                                    return true;
+                                }
+                                catch(ApiException e) {
+                                    // {"code":401,"message":"Unauthorized","debugInfo":"Wrong username or password","errorCode":-10011}
+                                    log.warn(String.format("Attempt to renew expired auth token failed. %s", e.getMessage()));
+                                }
                             }
                         }
                     }
                     catch(IOException e) {
                         log.warn(String.format("Failure parsing response entity from %s", response));
-                        return false;
                     }
                 }
         }

@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         private ConnectionController(Host bookmark, LoginOptions options) : this(bookmark,
-            new LoginInputValidator(bookmark, options), options)
+            new LoginInputValidator(bookmark.getCredentials(), bookmark.getProtocol(), options), options)
         {
         }
 

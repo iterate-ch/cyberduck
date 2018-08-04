@@ -184,8 +184,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         catch(PartialLoginFailureException e) {
-            final String username = host.getCredentials().getUsername();
-            final Credentials additional = controller.prompt(host, username, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+            final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                 e.getDetail(), new LoginOptions(host.getProtocol()).user(false).keychain(false)
             );
             return this.login(controller, new LoginRequest()
