@@ -63,8 +63,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
         final AtomicBoolean canceled = new AtomicBoolean();
         final AtomicBoolean publickey = new AtomicBoolean();
         try {
-            final Credentials credentials = bookmark.getCredentials();
-            session.getClient().auth(credentials.getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
+            session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
                 private String name = StringUtils.EMPTY;
                 private String instruction = StringUtils.EMPTY;
 
@@ -89,22 +88,22 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                         log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
                     }
                     if(DEFAULT_PROMPT_PATTERN.matcher(prompt).matches()) {
-                        if(StringUtils.isBlank(credentials.getPassword())) {
+                        if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
                             try {
-                                final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
+                                final Credentials input = callback.prompt(bookmark, bookmark.getCredentials().getUsername(),
                                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                                     MessageFormat.format(LocaleFactory.localizedString(
                                         "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
                                     // Change of username or service not allowed
                                     new LoginOptions(bookmark.getProtocol()).user(false));
                                 if(input.isPublicKeyAuthentication()) {
-                                    credentials.setIdentity(input.getIdentity());
+                                    bookmark.getCredentials().setIdentity(input.getIdentity());
                                     publickey.set(true);
                                     // Return null to cancel if user wants to use public key auth
                                     return StringUtils.EMPTY.toCharArray();
                                 }
-                                credentials.setSaved(input.isSaved());
-                                credentials.setPassword(input.getPassword());
+                                bookmark.getCredentials().setSaved(input.isSaved());
+                                bookmark.getCredentials().setPassword(input.getPassword());
                             }
                             catch(LoginCanceledException e) {
                                 canceled.set(true);
@@ -112,7 +111,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                 return StringUtils.EMPTY.toCharArray();
                             }
                         }
-                        return credentials.getPassword().toCharArray();
+                        return bookmark.getCredentials().getPassword().toCharArray();
                     }
                     else {
                         final StringAppender message = new StringAppender().append(instruction).append(prompt);
