@@ -53,16 +53,18 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                 if(executionCount <= MAX_RETRIES) {
                     final S3ServiceException failure;
                     try {
-                        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                        failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
-                            EntityUtils.toString(response.getEntity()));
-                        if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
-                            try {
-                                host.setCredentials(new STSCredentialsConfigurator(prompt).configure(host));
-                                return true;
-                            }
-                            catch(LoginFailureException | LoginCanceledException e) {
-                                log.warn("Attempt to renew expired token failed");
+                        if(null != response.getEntity()) {
+                            EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+                            failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
+                                EntityUtils.toString(response.getEntity()));
+                            if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
+                                try {
+                                    host.setCredentials(new STSCredentialsConfigurator(prompt).configure(host));
+                                    return true;
+                                }
+                                catch(LoginFailureException | LoginCanceledException e) {
+                                    log.warn("Attempt to renew expired token failed");
+                                }
                             }
                         }
                     }
