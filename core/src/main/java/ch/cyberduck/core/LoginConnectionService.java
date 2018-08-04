@@ -19,7 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
@@ -161,10 +160,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     private void authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
-        try {
-            login.authenticate(proxy, session, cache, listener, callback);
-        }
-        catch(LoginFailureException e) {
+        if(!login.authenticate(proxy, session, cache, listener, callback)) {
             if(session.isConnected()) {
                 // Next attempt with updated credentials
                 this.authenticate(proxy, session, cache, callback);

@@ -105,7 +105,7 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public void authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
+    public boolean authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         if(session.alert(callback)) {
             // Warning if credentials are sent plaintext.
@@ -136,6 +136,7 @@ public class KeychainLoginService implements LoginService {
             credentials.setPassed(true);
             // Nullify password.
             credentials.setPassword(null);
+            return true;
         }
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
@@ -153,6 +154,8 @@ public class KeychainLoginService implements LoginService {
                 if(input.isCertificateAuthentication()) {
                     credentials.setCertificate(input.getCertificate());
                 }
+                // Retry
+                return false;
             }
             else {
                 // Password prompt
@@ -163,6 +166,8 @@ public class KeychainLoginService implements LoginService {
                         credentials.setPassword(input.getPassword());
                         credentials.setSaved(input.isSaved());
                     }
+                    // Retry
+                    return false;
                 }
                 else if(options.token) {
                     final Credentials input = callback.prompt(bookmark,
@@ -171,6 +176,8 @@ public class KeychainLoginService implements LoginService {
                         credentials.setToken(input.getPassword());
                         credentials.setSaved(input.isSaved());
                     }
+                    // Retry
+                    return false;
                 }
             }
             throw e;
