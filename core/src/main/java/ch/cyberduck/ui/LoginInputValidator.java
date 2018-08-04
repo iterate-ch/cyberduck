@@ -15,25 +15,25 @@ package ch.cyberduck.ui;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 
 public class LoginInputValidator implements InputValidator {
-    private final Host bookmark;
+    private final Credentials credentials;
     private final LoginOptions options;
 
     private Protocol protocol;
 
-    public LoginInputValidator(final Host bookmark, final LoginOptions options) {
-        this.bookmark = bookmark;
+    public LoginInputValidator(final Credentials credentials, final Protocol protocol, final LoginOptions options) {
+        this.credentials = credentials;
+        this.protocol = protocol;
         this.options = options;
-        this.protocol = bookmark.getProtocol();
     }
 
     @Override
     public boolean validate() {
-        return bookmark.getCredentials().validate(protocol, options);
+        return credentials.validate(protocol, options);
     }
 
     public void configure(final Protocol protocol) {

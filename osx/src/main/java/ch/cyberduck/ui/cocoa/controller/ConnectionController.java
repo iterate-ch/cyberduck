@@ -56,7 +56,7 @@ public class ConnectionController extends BookmarkController {
     }
 
     public ConnectionController(final Host bookmark, final Credentials credentials, final LoginOptions options) {
-        super(bookmark, new LoginInputValidator(bookmark, options), options);
+        super(bookmark, credentials, new LoginInputValidator(credentials, bookmark.getProtocol(), options), options);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ConnectionController extends BookmarkController {
         if(options.user) {
             window.makeFirstResponder(usernameField);
         }
-        if(options.password && !StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+        if(options.password && !StringUtils.isBlank(credentials.getUsername())) {
             window.makeFirstResponder(passwordField);
         }
     }
@@ -83,20 +83,20 @@ public class ConnectionController extends BookmarkController {
     @Override
     public void callback(final int returncode) {
         if(SheetCallback.CANCEL_OPTION == returncode) {
-            bookmark.getCredentials().setPassword(null);
+            credentials.setPassword(null);
         }
     }
 
     @Override
     public void windowDidBecomeKey(final NSNotification notification) {
-        // Reset bookmark.getCredentials()
-        this.updateField(usernameField, bookmark.getCredentials().getUsername());
-        this.updateField(passwordField, bookmark.getCredentials().getPassword());
+        // Reset credentials
+        this.updateField(usernameField, credentials.getUsername());
+        this.updateField(passwordField, credentials.getPassword());
     }
 
     public void setPasswordField(NSSecureTextField field) {
         this.passwordField = field;
-        this.updateField(this.passwordField, bookmark.getCredentials().getPassword());
+        this.updateField(this.passwordField, credentials.getPassword());
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("passwordFieldTextDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
@@ -104,22 +104,22 @@ public class ConnectionController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                updateField(passwordField, bookmark.getCredentials().getPassword());
+                updateField(passwordField, credentials.getPassword());
                 passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
-                passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
+                passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
                 if(options.keychain) {
                     if(StringUtils.isBlank(bookmark.getHostname())) {
                         return;
                     }
-                    if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                    if(StringUtils.isBlank(credentials.getUsername())) {
                         return;
                     }
                     final String password = keychain.getPassword(bookmark.getProtocol().getScheme(),
                         bookmark.getPort(),
                         bookmark.getHostname(),
-                        bookmark.getCredentials().getUsername());
+                        credentials.getUsername());
                     if(StringUtils.isNotBlank(password)) {
-                        bookmark.getCredentials().setPassword(password);
+                        credentials.setPassword(password);
                         updateField(passwordField, password);
                     }
                 }
@@ -129,7 +129,7 @@ public class ConnectionController extends BookmarkController {
 
     @Action
     public void passwordFieldTextDidChange(NSNotification notification) {
-        bookmark.getCredentials().setPassword(passwordField.stringValue());
+        credentials.setPassword(passwordField.stringValue());
     }
 
     public void setPasswordLabel(NSTextField passwordLabel) {
@@ -153,13 +153,13 @@ public class ConnectionController extends BookmarkController {
             @Override
             public void change(final Host bookmark) {
                 keychainCheckbox.setEnabled(options.keychain);
-                keychainCheckbox.setState(bookmark.getCredentials().isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
+                keychainCheckbox.setState(credentials.isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
             }
         });
     }
 
     @Action
     public void keychainCheckboxClicked(final NSButton sender) {
-        bookmark.getCredentials().setSaved(sender.state() == NSCell.NSOnState);
+        credentials.setSaved(sender.state() == NSCell.NSOnState);
     }
 }
