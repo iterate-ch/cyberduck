@@ -37,8 +37,8 @@ public class SwiftTouchFeatureTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(test);

@@ -54,8 +54,8 @@ public class SwiftWriteFeatureTest {
         status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         status.setMetadata(Collections.singletonMap("C", "duck"));
@@ -90,8 +90,8 @@ public class SwiftWriteFeatureTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final AtomicBoolean list = new AtomicBoolean();
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
@@ -113,8 +113,8 @@ public class SwiftWriteFeatureTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SwiftSegmentService segments = new SwiftSegmentService(session, ".test");
         final AtomicBoolean list = new AtomicBoolean();
@@ -141,8 +141,8 @@ public class SwiftWriteFeatureTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();
         final AtomicBoolean find = new AtomicBoolean();
@@ -188,8 +188,8 @@ public class SwiftWriteFeatureTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();
         final AtomicBoolean find = new AtomicBoolean();

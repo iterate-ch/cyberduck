@@ -51,14 +51,14 @@ public class SwiftMoveFeatureTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        test.attributes().setRegion("DFW");
+        test.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        target.attributes().setRegion("DFW");
+        target.attributes().setRegion("IAD");
         new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
@@ -74,13 +74,13 @@ public class SwiftMoveFeatureTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        test.attributes().setRegion("DFW");
+        test.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        target.attributes().setRegion("DFW");
+        target.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(target, new TransferStatus());
         new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new SwiftFindFeature(session).find(test));
@@ -97,10 +97,10 @@ public class SwiftMoveFeatureTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        test.attributes().setRegion("DFW");
+        test.attributes().setRegion("IAD");
         new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 

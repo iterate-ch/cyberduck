@@ -50,8 +50,8 @@ public class SwiftMetadataFeatureTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(container);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("X-Container-Meta-Web-Index"));
@@ -67,8 +67,8 @@ public class SwiftMetadataFeatureTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus().withMime("text/plain"));
         final String v = UUID.randomUUID().toString();

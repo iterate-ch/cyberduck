@@ -67,8 +67,8 @@ public class SwiftDistributionConfigurationTest {
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
             new SwiftDistributionConfigurationLoader(session).operate(new DisabledPasswordCallback(),
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))));
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        container.attributes().setRegion("IAD");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
         assertNotNull(test);
         assertEquals(Distribution.DOWNLOAD, test.getMethod());
@@ -81,7 +81,7 @@ public class SwiftDistributionConfigurationTest {
         assertTrue(test.isEnabled());
         assertTrue(test.isDeployed());
         assertTrue(test.isLogging());
-        assertEquals("test.cyberduck.ch", test.getId());
+        assertEquals("test-iad-cyberduck", test.getId());
         assertEquals(1, test.getContainers().size());
         assertEquals(".CDN_ACCESS_LOGS", test.getLoggingContainer());
         assertEquals("storage101.dfw1.clouddrive.com", test.getOrigin().getHost());

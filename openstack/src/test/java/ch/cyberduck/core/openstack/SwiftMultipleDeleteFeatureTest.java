@@ -32,7 +32,7 @@ public class SwiftMultipleDeleteFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume));
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))

@@ -32,8 +32,8 @@ public class SwiftContainerListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final AttributedList<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion(null)
         ).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        container.attributes().setRegion("IAD");
         assertTrue(list.contains(container));
         container.attributes().setRegion("ORD");
         assertTrue(list.contains(container));
@@ -52,8 +52,8 @@ public class SwiftContainerListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final AttributedList<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion("ORD")
         ).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        container.attributes().setRegion("IAD");
         assertFalse(list.contains(container));
         container.attributes().setRegion("ORD");
         assertTrue(list.contains(container));
