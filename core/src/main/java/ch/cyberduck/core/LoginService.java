@@ -42,6 +42,5 @@ public interface LoginService {
      * @param listener Authentication message callback
      * @param cancel   Cancel callback while authentication is in progress
      */
-    void authenticate(final Proxy proxy, Session session, Cache<Path> cache, ProgressListener listener,
-                      CancelCallback cancel) throws BackgroundException;
+    boolean authenticate(Proxy proxy, Session session, Cache<Path> cache, ProgressListener listener, CancelCallback cancel) throws BackgroundException;
 }
