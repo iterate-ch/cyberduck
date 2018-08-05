@@ -50,6 +50,7 @@ public class SwiftObjectListService implements ListService {
         = new PathContainerService();
 
     private final SwiftRegionService regionService;
+    private final SwiftAttributesFinderFeature attributes;
 
     public SwiftObjectListService(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
@@ -58,6 +59,7 @@ public class SwiftObjectListService implements ListService {
     public SwiftObjectListService(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
         this.regionService = regionService;
+        this.attributes = new SwiftAttributesFinderFeature(session, regionService);
     }
 
     @Override
@@ -73,7 +75,7 @@ public class SwiftObjectListService implements ListService {
                     containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER,
                     null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
-                    final PathAttributes attributes = new SwiftAttributesFinderFeature(session, regionService).toAttributes(object);
+                    final PathAttributes attributes = this.attributes.toAttributes(object);
                     final EnumSet<AbstractPath.Type> types = "application/directory"
                         .equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
