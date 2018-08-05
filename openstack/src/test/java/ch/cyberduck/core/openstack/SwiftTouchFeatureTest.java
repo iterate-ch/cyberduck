@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -40,7 +41,9 @@ public class SwiftTouchFeatureTest {
         container.attributes().setRegion("DFW");
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(test.attributes().getChecksum(), new SwiftAttributesFinderFeature(session).find(test).getChecksum());
+        final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(test);
+        assertEquals(test.attributes().getChecksum(), attributes.getChecksum());
+        assertNotEquals(-1L, attributes.getModificationDate());
         session.close();
     }
 }
