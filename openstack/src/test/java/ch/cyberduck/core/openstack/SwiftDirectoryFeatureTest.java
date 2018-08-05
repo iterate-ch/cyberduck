@@ -90,7 +90,7 @@ public class SwiftDirectoryFeatureTest {
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));
-        assertEquals(placeholder.attributes(), new SwiftAttributesFinderFeature(session).find(placeholder));
+        assertEquals(placeholder.attributes().getChecksum(), new SwiftAttributesFinderFeature(session).find(placeholder).getChecksum());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
         session.close();
