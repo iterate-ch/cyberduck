@@ -108,8 +108,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    final HashMap<String, String> headers = new HashMap<>();
-                    headers.putAll(status.getMetadata()); // Previous
+                    // Previous
+                    final HashMap<String, String> headers = new HashMap<>(status.getMetadata());
                     final String checksum = session.getClient().storeObject(
                             regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
@@ -142,7 +142,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(length >= preferences.getLong("openstack.upload.largeobject.threshold")) {
             if(preferences.getBoolean("openstack.upload.largeobject")) {
-                Long size = 0L;
+                long size = 0L;
                 final List<Path> segments = listService.list(segmentService.getSegmentsDirectory(file, length), new DisabledListProgressListener()).toList();
                 if(segments.isEmpty()) {
                     return Write.notfound;
