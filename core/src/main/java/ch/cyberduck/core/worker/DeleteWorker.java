@@ -89,12 +89,13 @@ public class DeleteWorker extends Worker<List<Path>> {
         // Compile recursive list
         final Set<Path> recursive = new LinkedHashSet<>();
         if(file.isFile() || file.isSymbolicLink()) {
+            final Path copy = new Path(file);
             if(!file.attributes().isDuplicate()) {
                 // Add delete marker
                 log.debug(String.format("Nullify version to add delete marker for %s", file));
-                file.attributes().setVersionId(null);
+                copy.attributes().setVersionId(null);
             }
-            recursive.add(file);
+            recursive.add(copy);
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {
@@ -107,8 +108,9 @@ public class DeleteWorker extends Worker<List<Path>> {
                         log.debug(String.format("Skip duplicate %s", child));
                         continue;
                     }
-                    child.attributes().setVersionId(null);
-                    recursive.addAll(this.compile(delete, list, listener, child));
+                    final Path copy = new Path(child);
+                    copy.attributes().setVersionId(null);
+                    recursive.addAll(this.compile(delete, list, listener, copy));
                 }
             }
             // Add parent after children

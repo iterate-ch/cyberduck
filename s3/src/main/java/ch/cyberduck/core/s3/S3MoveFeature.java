@@ -63,16 +63,16 @@ public class S3MoveFeature implements Move {
         Path copy;
         if(source.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {
             // Delete marker, copy not supported but we have to retain the delete marker at the target
-            renamed.attributes().setVersionId(null);
-            delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+            copy = new Path(renamed);
+            copy.attributes().setVersionId(null);
+            delete.delete(Collections.singletonList(copy), connectionCallback, callback);
             try {
                 // Find version id of moved delete marker
                 final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(containerService.getContainer(renamed).getName(), containerService.getKey(renamed),
                     String.valueOf(Path.DELIMITER), 1, null, null, false);
                 if(marker.getItems().length == 1) {
                     final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
-                    renamed.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                    copy = new Path(renamed.getParent(), renamed.getName(), renamed.getType(), renamed.attributes());
+                    copy.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                     delete.delete(Collections.singletonList(source), connectionCallback, callback);
                 }
                 else {
