@@ -108,7 +108,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                         log.debug(String.format("Skip duplicate %s", child));
                         continue;
                     }
-                    final Path copy = new Path(file);
+                    final Path copy = new Path(child);
                     copy.attributes().setVersionId(null);
                     recursive.addAll(this.compile(delete, list, listener, copy));
                 }
