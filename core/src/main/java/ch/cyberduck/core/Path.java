@@ -53,7 +53,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     private PathAttributes attributes;
 
     public Path(final Path copy) {
-        this.parent = new Path(copy.parent);
+        this.parent = copy.parent;
         this.path = copy.path;
         this.symlink = copy.symlink;
         this.type = EnumSet.copyOf(copy.type);
