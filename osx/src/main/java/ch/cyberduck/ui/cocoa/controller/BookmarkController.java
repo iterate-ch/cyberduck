@@ -125,10 +125,6 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.options = options;
     }
 
-    public Host getBookmark() {
-        return bookmark;
-    }
-
     public void setProtocolPopup(final NSPopUpButton button) {
         this.protocolPopup = button;
         this.protocolPopup.setEnabled(true);
@@ -197,7 +193,12 @@ public class BookmarkController extends SheetController implements CollectionLis
             !selected.isPathConfigurable()) {
             bookmark.setDefaultPath(selected.getDefaultPath());
         }
-        bookmark.setProtocol(selected, true);
+        bookmark.setProtocol(selected);
+        final int port = HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname());
+        if(port != -1) {
+            // External configuration found
+            bookmark.setPort(port);
+        }
         options.configure(selected);
         validator.configure(selected);
         this.update();
@@ -224,13 +225,20 @@ public class BookmarkController extends SheetController implements CollectionLis
         final String input = hostField.stringValue();
         if(Scheme.isURL(input)) {
             final Host parsed = HostParser.parse(input);
-            bookmark.setHostname(parsed.getHostname(), true);
-            bookmark.setProtocol(parsed.getProtocol(), true);
+            bookmark.setHostname(parsed.getHostname());
+            bookmark.setProtocol(parsed.getProtocol());
             bookmark.setPort(parsed.getPort());
             bookmark.setDefaultPath(parsed.getDefaultPath());
         }
         else {
-            bookmark.setHostname(input, true);
+            bookmark.setHostname(input);
+            final Credentials auto = CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark);
+            final Credentials credentials = bookmark.getCredentials();
+            credentials.setUsername(auto.getUsername());
+            credentials.setPassword(auto.getPassword());
+            credentials.setIdentity(auto.getIdentity());
+            credentials.setToken(auto.getToken());
+            credentials.setCertificate(auto.getCertificate());
         }
         this.update();
     }
@@ -416,6 +424,11 @@ public class BookmarkController extends SheetController implements CollectionLis
         super.awakeFromNib();
         if(bookmark.getProtocol().isHostnameConfigurable()) {
             window.makeFirstResponder(hostField);
+        }
+        else {
+            if(options.user) {
+                window.makeFirstResponder(usernameField);
+            }
         }
         this.update();
     }

@@ -264,14 +264,21 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Scheme.isURL(input))
             {
                 Host parsed = HostParser.parse(input);
-                _host.setHostname(parsed.getHostname(), true);
-                _host.setProtocol(parsed.getProtocol(), true);
+                _host.setHostname(parsed.getHostname());
+                _host.setProtocol(parsed.getProtocol());
                 _host.setPort(parsed.getPort());
                 _host.setDefaultPath(parsed.getDefaultPath());
             }
             else
             {
-                _host.setHostname(input, true);
+                _host.setHostname(input);
+                Credentials auto = CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host);
+                Credentials credentials = _host.getCredentials();
+                credentials.setUsername(auto.getUsername());
+                credentials.setPassword(auto.getPassword());
+                credentials.setIdentity(auto.getIdentity());
+                credentials.setToken(auto.getToken());
+                credentials.setCertificate(auto.getCertificate());
             }
             ItemChanged();
             Update();
@@ -337,7 +344,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _host.setDefaultPath(selected.getDefaultPath());
             }
-            _host.setProtocol(selected, true);
+            _host.setProtocol(selected);
+            int port = HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname());
+            if(port != -1) {
+                // External configuration found
+                _host.setPort(port);
+            }
             _options.configure(selected);
             _validator.configure(selected);
             ItemChanged();

@@ -41,7 +41,7 @@ public class ConnectionController extends BookmarkController {
         = PasswordStoreFactory.get();
 
     @Outlet
-    private NSTextField passwordField;
+    protected NSTextField passwordField;
     @Outlet
     private NSTextField passwordLabel;
     @Outlet
@@ -57,17 +57,6 @@ public class ConnectionController extends BookmarkController {
 
     public ConnectionController(final Host bookmark, final Credentials credentials, final LoginOptions options) {
         super(bookmark, credentials, new LoginInputValidator(credentials, bookmark.getProtocol(), options), options);
-    }
-
-    @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        if(options.user) {
-            window.makeFirstResponder(usernameField);
-        }
-        if(options.password && !StringUtils.isBlank(credentials.getUsername())) {
-            window.makeFirstResponder(passwordField);
-        }
     }
 
     @Override

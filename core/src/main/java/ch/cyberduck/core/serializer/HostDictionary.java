@@ -77,7 +77,7 @@ public class HostDictionary {
             final Host bookmark = new Host(protocol);
             final Object hostnameObj = dict.stringForKey("Hostname");
             if(hostnameObj != null) {
-                bookmark.setHostname(hostnameObj.toString(), false);
+                bookmark.setHostname(hostnameObj.toString());
             }
             final Object uuidObj = dict.stringForKey("UUID");
             if(uuidObj != null) {

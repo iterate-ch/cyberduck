@@ -17,7 +17,6 @@ package ch.cyberduck.core.sts;
 
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
@@ -53,7 +52,7 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
 
-public class STSCredentialsConfigurator implements CredentialsConfigurator {
+public class STSCredentialsConfigurator {
     private static final Logger log = Logger.getLogger(STSCredentialsConfigurator.class);
 
     private final Preferences preferences = PreferencesFactory.get();
@@ -63,7 +62,6 @@ public class STSCredentialsConfigurator implements CredentialsConfigurator {
         this.prompt = prompt;
     }
 
-    @Override
     public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
         final Credentials credentials = new Credentials(host.getCredentials());
         // Find matching profile name or AWS access key in ~/.aws/credentials
@@ -205,11 +203,6 @@ public class STSCredentialsConfigurator implements CredentialsConfigurator {
             }
         }
         return credentials;
-    }
-
-    @Override
-    public void reload() {
-        //
     }
 
     protected AWSSecurityTokenService getTokenService(final Proxy proxy, final String region, final String accessKey, final String secretKey) {
