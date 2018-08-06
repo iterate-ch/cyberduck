@@ -50,6 +50,17 @@ public class LoginController extends ConnectionController {
     }
 
     @Override
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        if(options.user) {
+            window.makeFirstResponder(usernameField);
+        }
+        if(options.password && !org.apache.commons.lang3.StringUtils.isBlank(credentials.getUsername())) {
+            window.makeFirstResponder(passwordField);
+        }
+    }
+
+    @Override
     protected String getBundleName() {
         return "Login";
     }

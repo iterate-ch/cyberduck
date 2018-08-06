@@ -417,6 +417,11 @@ public class BookmarkController extends SheetController implements CollectionLis
         if(bookmark.getProtocol().isHostnameConfigurable()) {
             window.makeFirstResponder(hostField);
         }
+        else {
+            if(options.user) {
+                window.makeFirstResponder(usernameField);
+            }
+        }
         this.update();
     }
 
