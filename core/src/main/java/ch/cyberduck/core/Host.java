@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -206,28 +204,6 @@ public class Host implements Serializable, Comparable<Host> {
         this.credentials = credentials;
     }
 
-    /**
-     * Auto configuration
-     */
-    protected void configure() {
-        this.configure(HostnameConfiguratorFactory.get(protocol), CredentialsConfiguratorFactory.get(protocol));
-    }
-
-    protected void configure(final HostnameConfigurator hostnameConfigurator,
-                             final CredentialsConfigurator credentialsConfigurator) {
-        final int port = hostnameConfigurator.getPort(hostname);
-        if(port != -1) {
-            // External configuration found
-            this.port = port;
-        }
-        try {
-            credentials = credentialsConfigurator.configure(this);
-        }
-        catch(LoginFailureException | LoginCanceledException e) {
-            log.warn(String.format("Failure configuring credentials. %s", e.getDetail()));
-        }
-    }
-
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(protocol.getIdentifier(), "Protocol");
@@ -348,18 +324,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param protocol Connection profile
      */
     public void setProtocol(final Protocol protocol) {
-        this.setProtocol(protocol, false);
-    }
-
-    /**
-     * @param protocol  Connection profile
-     * @param configure Auto configure hostname and credentials
-     */
-    public void setProtocol(final Protocol protocol, final boolean configure) {
         this.protocol = protocol;
-        if(configure) {
-            this.configure();
-        }
     }
 
     public String getUuid() {
@@ -402,18 +367,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param hostname Server
      */
     public void setHostname(final String hostname) {
-        this.setHostname(hostname, false);
-    }
-
-    /**
-     * @param hostname  Server
-     * @param configure Auto configure credentials according to new hostname.
-     */
-    public void setHostname(final String hostname, boolean configure) {
         this.hostname = hostname.trim();
-        if(configure) {
-            this.configure();
-        }
     }
 
     /**
