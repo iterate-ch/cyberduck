@@ -71,7 +71,12 @@ public class PageantAuthenticator extends AgentAuthenticator {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Found %d identities", identities.size()));
         }
-        Collections.addAll(identities, proxy.getIdentities());
+        try {
+            Collections.addAll(identities, proxy.getIdentities());
+        }
+        catch(Exception e) {
+            log.warn(String.format("Ignore failure reading identities from %s", proxy));
+        }
         return identities;
     }
 }
