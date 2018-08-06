@@ -52,6 +52,14 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      */
     private PathAttributes attributes;
 
+    public Path(final Path copy) {
+        this.parent = copy.parent;
+        this.path = copy.path;
+        this.symlink = copy.symlink;
+        this.type = EnumSet.copyOf(copy.type);
+        this.attributes = new PathAttributes(copy.attributes);
+    }
+
     /**
      * @param parent the absolute directory
      * @param name   the file relative to param path
