@@ -123,7 +123,7 @@ public class SwiftDeleteFeatureTest {
             public void log(final Type request, final String message) {
                 switch(request) {
                     case request:
-                        if(("DELETE /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + name + " HTTP/1.1").equals(message)) {
+                        if(("DELETE /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test-iad-cyberduck/" + name + " HTTP/1.1").equals(message)) {
                             delete.set(true);
                         }
                 }

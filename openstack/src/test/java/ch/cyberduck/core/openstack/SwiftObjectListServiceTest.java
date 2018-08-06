@@ -95,7 +95,7 @@ public class SwiftObjectListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("SYD");
+        container.attributes().setRegion("IAD");
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
@@ -113,7 +113,7 @@ public class SwiftObjectListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("ORD");
+        container.attributes().setRegion("IAD");
         final String name = UUID.randomUUID().toString();
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
@@ -134,7 +134,7 @@ public class SwiftObjectListServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("SYD");
+        container.attributes().setRegion("IAD");
         final String basename = UUID.randomUUID().toString();
         final String childname = String.format("%s/%s", basename, UUID.randomUUID().toString());
         final Path base = new Path(container, basename, EnumSet.of(Path.Type.file));

@@ -133,7 +133,7 @@ public class SwiftReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(182L);
         final Path container = new Path(".ACCESS_LOGS", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
+        container.attributes().setRegion("DFW");
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final InputStream in = new SwiftReadFeature(session, regionService).read(new Path(container,
                 "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
@@ -156,7 +156,7 @@ public class SwiftReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path(".ACCESS_LOGS", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("IAD");
+        container.attributes().setRegion("DFW");
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final CountingInputStream in = new CountingInputStream(new SwiftReadFeature(session, regionService).read(new Path(container,
                 "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",

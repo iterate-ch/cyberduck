@@ -16,7 +16,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -35,10 +34,6 @@ public class SwiftContainerListServiceTest {
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
         assertTrue(list.contains(container));
-        container.attributes().setRegion("ORD");
-        assertTrue(list.contains(container));
-        container.attributes().setRegion("ORD1");
-        assertFalse(list.contains(container));
         session.close();
     }
 
@@ -50,12 +45,10 @@ public class SwiftContainerListServiceTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion("ORD")
+        final AttributedList<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion("IAD")
         ).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
-        assertFalse(list.contains(container));
-        container.attributes().setRegion("ORD");
         assertTrue(list.contains(container));
         session.close();
     }

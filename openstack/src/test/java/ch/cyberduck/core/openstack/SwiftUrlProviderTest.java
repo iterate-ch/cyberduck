@@ -61,7 +61,7 @@ public class SwiftUrlProviderTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        assertEquals("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f",
+        assertEquals("https://storage101.iad3.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test-iad-cyberduck/f",
                 new SwiftUrlProvider(session).toUrl(new Path(container, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider).getUrl());
         session.close();
     }

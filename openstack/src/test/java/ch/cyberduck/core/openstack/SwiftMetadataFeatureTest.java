@@ -54,8 +54,6 @@ public class SwiftMetadataFeatureTest {
         container.attributes().setRegion("IAD");
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(container);
         assertFalse(metadata.isEmpty());
-        assertTrue(metadata.containsKey("X-Container-Meta-Web-Index"));
-        assertEquals("index.html", metadata.get("X-Container-Meta-Web-Index"));
         session.close();
     }
 
