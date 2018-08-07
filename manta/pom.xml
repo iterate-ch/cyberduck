@@ -22,6 +22,9 @@
         <version>6.6.3-SNAPSHOT</version>
     </parent>
     <artifactId>manta</artifactId>
+    <properties>
+        <manta-client-version>3.2.3</manta-client-version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -43,7 +46,7 @@
         <dependency>
             <groupId>com.joyent.manta</groupId>
             <artifactId>java-manta-client-unshaded</artifactId>
-            <version>3.2.1</version>
+            <version>${manta-client-version}</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
