@@ -89,7 +89,9 @@ public class SwiftDistributionConfigurationTest {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
         new SwiftDirectoryFeature(session).mkdir(container, "ORD", new TransferStatus());
-        configuration.write(container, new Distribution(Distribution.WEBSITE, true), new DisabledLoginCallback());
+        final Distribution config = new Distribution(Distribution.WEBSITE, true);
+        config.setIndexDocument("index.html");
+        configuration.write(container, config, new DisabledLoginCallback());
         final Distribution distribution = configuration.read(container, Distribution.WEBSITE, new DisabledLoginCallback());
         assertTrue(distribution.isEnabled());
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(container);
