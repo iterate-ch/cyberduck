@@ -241,7 +241,7 @@
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
-                <version>1.23.0</version>
+                <version>1.24.1</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.google.http-client</groupId>
@@ -274,7 +274,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>23.0</version>
+                <version>26.0-jre</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
