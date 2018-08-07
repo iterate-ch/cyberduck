@@ -65,7 +65,7 @@ public class S3VersionedObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final String prefix = this.createPrefix(directory);
         final Path bucket = containerService.getContainer(directory);
-        final VersioningConfiguration versioning = session.getFeature(Versioning.class).getConfiguration(bucket);
+        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(bucket) : null;
         final AttributedList<Path> children = new AttributedList<Path>();
         try {
             String priorLastKey = null;
