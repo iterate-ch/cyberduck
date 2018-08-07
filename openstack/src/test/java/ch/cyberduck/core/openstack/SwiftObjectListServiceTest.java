@@ -58,7 +58,6 @@ public class SwiftObjectListServiceTest {
         for(Path p : list) {
             assertEquals(container, p.getParent());
             if(p.isFile()) {
-                assertNotEquals(-1L, p.attributes().getModificationDate());
                 assertNotEquals(-1L, p.attributes().getSize());
                 assertNotNull(p.attributes().getChecksum().hash);
                 assertNull(p.attributes().getETag());
