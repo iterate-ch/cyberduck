@@ -129,7 +129,7 @@ public class SpectraVersioningFeature implements Versioning {
     }
 
     @Override
-    public Credentials getToken(final PasswordCallback prompt) throws ConnectionCanceledException {
+    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
         return null;
     }
 }
