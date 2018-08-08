@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +43,7 @@ public class TerminalLoginService extends KeychainLoginService {
     }
 
     @Override
-    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException {
+    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
         final Credentials credentials = bookmark.getCredentials();
         if(input.hasOption(TerminalOptionsBuilder.Params.username.name())) {
             credentials.setUsername(input.getOptionValue(TerminalOptionsBuilder.Params.username.name()));

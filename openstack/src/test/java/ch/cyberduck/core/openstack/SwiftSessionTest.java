@@ -50,7 +50,7 @@ public class SwiftSessionTest {
             new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("DFW");
+        container.attributes().setRegion("IAD");
         assertEquals(DescriptiveUrl.EMPTY, session.getFeature(UrlProvider.class).toUrl(new Path(container, "d/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.cdn));
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         assertNotNull(cdn);

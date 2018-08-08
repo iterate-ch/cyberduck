@@ -38,7 +38,7 @@ public class LocalWriteFeature extends AppendWriteFeature<Void> {
 
     private final LocalSession session;
 
-    protected LocalWriteFeature(final LocalSession session) {
+    public LocalWriteFeature(final LocalSession session) {
         super(session);
         this.session = session;
     }

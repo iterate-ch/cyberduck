@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -48,7 +47,7 @@ public class S3MultipleDeleteFeature implements Delete {
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3MultipartService multipartService;
 
@@ -77,7 +76,7 @@ public class S3MultipleDeleteFeature implements Delete {
                 // In-progress multipart upload
                 try {
                     multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
-                            containerService.getContainer(file).getName(), containerService.getKey(file)));
+                        containerService.getContainer(file).getName(), containerService.getKey(file)));
                 }
                 catch(NotfoundException ignored) {
                     log.warn(String.format("Ignore failure deleting multipart upload %s", file));
@@ -87,19 +86,7 @@ public class S3MultipleDeleteFeature implements Delete {
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                try {
-                    keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
-                        file.isDirectory() ? new S3VersionIdProvider(session).getFileid(file, new DisabledListProgressListener()) : null
-                    ));
-                }
-                catch(NotfoundException e) {
-                    if(file.isDirectory()) {
-                        log.warn(String.format("Ignore missing placeholder object %s", file));
-                    }
-                    else {
-                        throw e;
-                    }
-                }
+                keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
                 if(map.containsKey(container)) {
                     map.get(container).addAll(keys);
                 }
@@ -135,17 +122,17 @@ public class S3MultipleDeleteFeature implements Delete {
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Authentication canceled for MFA delete
      */
     public void delete(final Path container, final List<ObjectKeyAndVersion> keys, final PasswordCallback prompt)
-            throws BackgroundException {
+        throws BackgroundException {
         try {
             if(versioningService != null
-                    && versioningService.getConfiguration(container).isMultifactor()) {
-                final Credentials factor = versioningService.getToken(prompt);
+                && versioningService.getConfiguration(container).isMultifactor()) {
+                final Credentials factor = versioningService.getToken(StringUtils.EMPTY, prompt);
                 final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
-                        keys.toArray(new ObjectKeyAndVersion[keys.size()]),
-                        factor.getUsername(),
-                        factor.getPassword(),
-                        // Only include errors in response
-                        true);
+                    keys.toArray(new ObjectKeyAndVersion[keys.size()]),
+                    factor.getUsername(),
+                    factor.getPassword(),
+                    // Only include errors in response
+                    true);
                 if(result.hasErrors()) {
                     for(MultipleDeleteResult.ErrorResult error : result.getErrorResults()) {
                         if(StringUtils.equals("ObjectNotFound", error.getErrorCode())) {
@@ -156,7 +143,7 @@ public class S3MultipleDeleteFeature implements Delete {
                         failure.setErrorCode(error.getErrorCode());
                         failure.setErrorMessage(error.getMessage());
                         throw new S3ExceptionMappingService().map("Cannot delete {0}", failure,
-                                new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
+                            new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
                     }
                 }
             }
@@ -164,9 +151,9 @@ public class S3MultipleDeleteFeature implements Delete {
                 // Request contains a list of up to 1000 keys that you want to delete
                 for(List<ObjectKeyAndVersion> partition : new Partition<ObjectKeyAndVersion>(keys, PreferencesFactory.get().getInteger("s3.delete.multiple.partition"))) {
                     final MultipleDeleteResult result = session.getClient().deleteMultipleObjects(container.getName(),
-                            partition.toArray(new ObjectKeyAndVersion[partition.size()]),
-                            // Only include errors in response
-                            true);
+                        partition.toArray(new ObjectKeyAndVersion[partition.size()]),
+                        // Only include errors in response
+                        true);
                     if(result.hasErrors()) {
                         for(MultipleDeleteResult.ErrorResult error : result.getErrorResults()) {
                             if(StringUtils.equals("ObjectNotFound", error.getErrorCode())) {
@@ -177,7 +164,7 @@ public class S3MultipleDeleteFeature implements Delete {
                             failure.setErrorCode(error.getErrorCode());
                             failure.setErrorMessage(error.getMessage());
                             throw new S3ExceptionMappingService().map("Cannot delete {0}", failure,
-                                    new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
+                                new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
                         }
                     }
                 }

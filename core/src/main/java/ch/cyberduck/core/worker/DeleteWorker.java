@@ -29,8 +29,9 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
+
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class DeleteWorker extends Worker<List<Path>> {
+
+    private static final Logger log = Logger.getLogger(DeleteWorker.class);
 
     /**
      * Selected files.
@@ -70,9 +73,6 @@ public class DeleteWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            if(!delete.isSupported(file)) {
-                throw new UnsupportedException();
-            }
             recursive.addAll(this.compile(delete, list, new WorkerListProgressListener(this, listener), file));
         }
         delete.delete(recursive, prompt, new Delete.Callback() {
@@ -89,7 +89,13 @@ public class DeleteWorker extends Worker<List<Path>> {
         // Compile recursive list
         final Set<Path> recursive = new LinkedHashSet<>();
         if(file.isFile() || file.isSymbolicLink()) {
-            recursive.add(file);
+            final Path copy = new Path(file);
+            if(!file.attributes().isDuplicate()) {
+                // Add delete marker
+                log.debug(String.format("Nullify version to add delete marker for %s", file));
+                copy.attributes().setVersionId(null);
+            }
+            recursive.add(copy);
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {
@@ -97,10 +103,14 @@ public class DeleteWorker extends Worker<List<Path>> {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
-                    if(!delete.isSupported(child)) {
-                        throw new UnsupportedException();
+                    if(child.attributes().isDuplicate() && child.isFile()) {
+                        // Delete latest version only, skip this duplicate
+                        log.debug(String.format("Skip duplicate %s", child));
+                        continue;
                     }
-                    recursive.addAll(this.compile(delete, list, listener, child));
+                    final Path copy = new Path(child);
+                    copy.attributes().setVersionId(null);
+                    recursive.addAll(this.compile(delete, list, listener, copy));
                 }
             }
             // Add parent after children

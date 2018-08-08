@@ -64,6 +64,20 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
     }
 
     @Override
+    public List<String> keys() {
+        final NSArray array = dict.allKeys();
+        final NSEnumerator enumerator = array.objectEnumerator();
+        NSObject next;
+        final List<String> keys = new ArrayList<>();
+        while((next = enumerator.nextObject()) != null) {
+            if(next.isKindOfClass(Rococoa.createClass("NSString", NSString._Class.class))) {
+                keys.add(Rococoa.cast(next, NSString.class).toString());
+            }
+        }
+        return keys;
+    }
+
+    @Override
     public NSDictionary objectForKey(final String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {

@@ -64,15 +64,16 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new OneDriveWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
+        final String filename = new AlphanumericRandomStringService().random();
         final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new OneDriveWriteFeature(session)),
             new OneDriveAttributesFinderFeature(session)), new OneDriveWriteFeature(session), cryptomator).touch(
-            new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+            new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new OneDriveMoveFeature(session), new OneDriveDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(file.attributes().getModificationDate(), fileRenamed.attributes().getModificationDate());
-        assertFalse(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(file));
+        assertEquals(file.attributes().getVersionId(), fileRenamed.attributes().getVersionId());
+        assertFalse(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(new Path(folder, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(fileRenamed));
         assertEquals(fileRenamed.attributes().getModificationDate(), new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(fileRenamed).getModificationDate());
         // rename folder

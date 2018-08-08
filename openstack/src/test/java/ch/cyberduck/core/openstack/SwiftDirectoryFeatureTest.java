@@ -74,7 +74,7 @@ public class SwiftDirectoryFeatureTest {
             public void log(final Type request, final String message) {
                 switch(request) {
                     case request:
-                        if(("PUT /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + name + " HTTP/1.1").equals(message)) {
+                        if(("PUT /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test-iad-cyberduck/" + name + " HTTP/1.1").equals(message)) {
                             put.set(true);
                         }
                 }
@@ -82,15 +82,15 @@ public class SwiftDirectoryFeatureTest {
         });
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("ORD");
+        final Path container = new Path("/test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        container.attributes().setRegion("IAD");
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
         final Path placeholder = feature.mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         Thread.sleep(1000L);
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));
-        assertEquals(placeholder.attributes(), new SwiftAttributesFinderFeature(session).find(placeholder));
+        assertEquals(placeholder.attributes().getChecksum(), new SwiftAttributesFinderFeature(session).find(placeholder).getChecksum());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
         session.close();

@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
@@ -46,7 +47,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     public S3AccessControlListFeature(final S3Session session) {
         this.session = session;
@@ -64,12 +65,18 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             }
             else if(file.isFile() || file.isPlaceholder()) {
                 return this.convert(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file)));
+                    containerService.getContainer(file).getName(), containerService.getKey(file)));
             }
             return Acl.EMPTY;
         }
         catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            try {
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            }
+            catch(InteroperabilityException ignored) {
+                // The specified method is not allowed against this resource. The case for delete markers in versioned buckets.
+                return Acl.EMPTY;
+            }
         }
     }
 
@@ -122,26 +129,26 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             }
             if(userAndRole.getUser() instanceof Acl.EmailUser) {
                 list.grantPermission(new EmailAddressGrantee(userAndRole.getUser().getIdentifier()),
-                        Permission.parsePermission(userAndRole.getRole().getName()));
+                    Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else if(userAndRole.getUser() instanceof Acl.GroupUser) {
                 if(userAndRole.getUser().getIdentifier().equals(GroupGrantee.ALL_USERS.getIdentifier())
-                        || userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                    || userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
                     list.grantPermission(GroupGrantee.ALL_USERS,
-                            Permission.parsePermission(userAndRole.getRole().getName()));
+                        Permission.parsePermission(userAndRole.getRole().getName()));
                 }
                 else if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.AUTHENTICATED)) {
                     list.grantPermission(GroupGrantee.AUTHENTICATED_USERS,
-                            Permission.parsePermission(userAndRole.getRole().getName()));
+                        Permission.parsePermission(userAndRole.getRole().getName()));
                 }
                 else {
                     list.grantPermission(new GroupGrantee(userAndRole.getUser().getIdentifier()),
-                            Permission.parsePermission(userAndRole.getRole().getName()));
+                        Permission.parsePermission(userAndRole.getRole().getName()));
                 }
             }
             else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
                 list.grantPermission(new CanonicalGrantee(userAndRole.getUser().getIdentifier()),
-                        Permission.parsePermission(userAndRole.getRole().getName()));
+                    Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else {
                 log.warn(String.format("Unsupported user %s", userAndRole.getUser()));
@@ -177,7 +184,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             Acl.Role role = new Acl.Role(grant.getPermission().toString());
             if(grant.getGrantee() instanceof CanonicalGrantee) {
                 acl.addAll(new Acl.CanonicalUser(grant.getGrantee().getIdentifier(),
-                        ((CanonicalGrantee) grant.getGrantee()).getDisplayName(), false), role);
+                    ((CanonicalGrantee) grant.getGrantee()).getDisplayName(), false), role);
             }
             else if(grant.getGrantee() instanceof EmailAddressGrantee) {
                 acl.addAll(new Acl.EmailUser(grant.getGrantee().getIdentifier()), role);
@@ -192,23 +199,23 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         return Arrays.asList(new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()),
-                new Acl.Role(Permission.PERMISSION_READ.toString()),
-                new Acl.Role(Permission.PERMISSION_WRITE.toString()),
-                new Acl.Role(Permission.PERMISSION_READ_ACP.toString()),
-                new Acl.Role(Permission.PERMISSION_WRITE_ACP.toString()));
+            new Acl.Role(Permission.PERMISSION_READ.toString()),
+            new Acl.Role(Permission.PERMISSION_WRITE.toString()),
+            new Acl.Role(Permission.PERMISSION_READ_ACP.toString()),
+            new Acl.Role(Permission.PERMISSION_WRITE_ACP.toString()));
     }
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
         return new ArrayList<Acl.User>(Arrays.asList(
-                new Acl.CanonicalUser(),
-                new Acl.GroupUser(Acl.GroupUser.EVERYONE, false),
-                new Acl.EmailUser() {
-                    @Override
-                    public String getPlaceholder() {
-                        return LocaleFactory.localizedString("Amazon Customer Email Address", "S3");
-                    }
-                })
+            new Acl.CanonicalUser(),
+            new Acl.GroupUser(Acl.GroupUser.EVERYONE, false),
+            new Acl.EmailUser() {
+                @Override
+                public String getPlaceholder() {
+                    return LocaleFactory.localizedString("Amazon Customer Email Address", "S3");
+                }
+            })
         );
     }
 }

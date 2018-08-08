@@ -15,6 +15,7 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
@@ -25,7 +26,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -33,6 +33,7 @@ import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -77,9 +78,6 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                if(!copy.isSupported(entry.getKey(), entry.getValue())) {
-                    throw new UnsupportedException();
-                }
                 final ListService list = session.getFeature(ListService.class);
                 final Map<Path, Path> recursive = this.compile(copy, list, entry.getKey(), entry.getValue());
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
@@ -114,7 +112,10 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
             // Add parent before children
             recursive.put(source, target);
             if(!copy.isRecursive(source, target)) {
-                for(Path child : list.list(source, new WorkerListProgressListener(this, listener))) {
+                // sort ascending by timestamp to copy older versions first
+                final AttributedList<Path> children = list.list(source, new WorkerListProgressListener(this, listener)).
+                    filter(new TimestampComparator(true));
+                for(Path child : children) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }

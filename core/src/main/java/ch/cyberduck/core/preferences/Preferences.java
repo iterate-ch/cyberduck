@@ -481,9 +481,9 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("queue.upload.skip.enable", String.valueOf(true));
         this.setDefault("queue.upload.skip.regex.default",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
         this.setDefault("queue.upload.skip.regex",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+            ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
 
         this.setDefault("queue.upload.priority.regex", "");
 
@@ -690,8 +690,6 @@ public abstract class Preferences implements Locales {
          */
         this.setDefault("s3.url.expire.seconds", String.valueOf(24 * 60 * 60));
 
-        this.setDefault("s3.mfa.serialnumber", StringUtils.EMPTY);
-
         this.setDefault("s3.listing.chunksize", String.valueOf(1000));
 
         this.setDefault("s3.upload.md5", String.valueOf(true));
@@ -797,6 +795,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("sds.encryption.missingkeys.upload", String.valueOf(true));
         this.setDefault("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
         this.setDefault("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
+        this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
 
         /*
           NTLM Windows Domain

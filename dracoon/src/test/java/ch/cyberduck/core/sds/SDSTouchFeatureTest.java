@@ -50,7 +50,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
             new SDSTouchFeature(session, nodeid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("Error -80001. Parent ID must be positive. See API doc. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Error -80001. Parent ID must be positive. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }

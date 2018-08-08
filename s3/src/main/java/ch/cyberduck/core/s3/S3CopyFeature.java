@@ -30,10 +30,12 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.Constants;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class S3CopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(S3CopyFeature.class);
@@ -41,7 +43,7 @@ public class S3CopyFeature implements Copy {
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3AccessControlListFeature accessControlListFeature;
 
@@ -78,17 +80,20 @@ public class S3CopyFeature implements Copy {
             destination.setAcl(accessControlListFeature.convert(status.getAcl()));
             destination.setBucketName(containerService.getContainer(target).getName());
             destination.replaceAllMetadata(new HashMap<String, Object>(new S3MetadataFeature(session, accessControlListFeature).getMetadata(source)));
-            this.copy(source, destination, status);
+            final String version = this.copy(source, destination, status);
+            target.attributes().setVersionId(version);
         }
         return target;
     }
 
-    protected void copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {
+    protected String copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {
         try {
             // Copying object applying the metadata of the original
-            session.getClient().copyObject(containerService.getContainer(source).getName(),
-                    containerService.getKey(source),
-                    destination.getBucketName(), destination, false);
+            final Map<String, Object> stringObjectMap = session.getClient().copyVersionedObject(source.attributes().getVersionId(), containerService.getContainer(source).getName(),
+                containerService.getKey(source),
+                destination.getBucketName(), destination, false);
+            final Map complete = (Map) stringObjectMap.get(Constants.KEY_FOR_COMPLETE_METADATA);
+            return (String) complete.get(Constants.AMZ_VERSION_ID);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);

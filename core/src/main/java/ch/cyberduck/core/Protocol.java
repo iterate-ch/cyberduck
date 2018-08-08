@@ -219,6 +219,8 @@ public interface Protocol extends Comparable<Protocol> {
      */
     String getPasswordPlaceholder();
 
+    String getTokenPlaceholder();
+
     /**
      * @return OAuth 2 Authorization Server URL
      */

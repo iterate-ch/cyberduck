@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
-import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -27,8 +26,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.function.Predicate;
 
 public abstract class ListFilteringFeature {
@@ -36,7 +33,7 @@ public abstract class ListFilteringFeature {
     private final Session<?> session;
 
     private Cache<Path> cache
-            = PathCache.empty();
+        = PathCache.empty();
 
     public ListFilteringFeature(final Session<?> session) {
         this.session = session;
@@ -52,15 +49,7 @@ public abstract class ListFilteringFeature {
         else {
             list = cache.get(file.getParent());
         }
-        final Predicate<Path> predicate;
-        final Predicate<Path> simple = session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file);
-        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            // Look for exact match
-            return list.find(new PredicateChain<Path>(simple, new DefaultPathPredicate(file)));
-        }
-        else {
-            return list.find(simple);
-        }
+        return list.find(session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file));
     }
 
     public ListFilteringFeature withCache(final Cache<Path> cache) {

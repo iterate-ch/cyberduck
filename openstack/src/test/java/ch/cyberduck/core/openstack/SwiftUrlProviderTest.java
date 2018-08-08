@@ -59,9 +59,9 @@ public class SwiftUrlProviderTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
-        assertEquals("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f",
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
+        assertEquals("https://storage101.iad3.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test-iad-cyberduck/f",
                 new SwiftUrlProvider(session).toUrl(new Path(container, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider).getUrl());
         session.close();
     }
@@ -77,10 +77,10 @@ public class SwiftUrlProviderTest {
         final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).operate(new DisabledPasswordCallback(),
             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         final UrlProvider provider = new SwiftUrlProvider(session, accounts);
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        container.attributes().setRegion("DFW");
+        container.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
         final DescriptiveUrlBag list = provider.toUrl(file);
         final DescriptiveUrl signed = list.find(DescriptiveUrl.Type.signed);

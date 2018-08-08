@@ -106,7 +106,8 @@ public class SDSMoveFeature implements Move {
                 return false;
             }
         }
-        if(target.getParent().isRoot()) {
+        if(target.getParent().isRoot() && !source.getParent().isRoot()) {
+            // Cannot move file or directory to root but only rename data rooms
             return false;
         }
         return true;

@@ -1801,9 +1801,21 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {pasteToolStripMenuItem}, new[] {pasteMainMenuItem},
                 (sender, args) => Paste(), () => ValidatePaste() && !browser.IsCellEditing);
             Commands.Add(new ToolStripItem[] {selectAllToolStripMenuItem}, new[] {selectAllMainMenuItem},
-                (o, eventArgs) => { }, () => true); // Tree component handles the selectAll command
+                (o, eventArgs) => SelectAll(), () => true);
             Commands.Add(new ToolStripItem[] {preferencesToolStripMenuItem}, new[] {preferencesMainMenuItem},
                 (o, eventArgs) => ShowPreferences(), () => true);
+        }
+
+        private void SelectAll()
+        {
+            if (CurrentView == BrowserView.File)
+            {
+                browser.SelectAll();
+            }
+            else
+            {
+                bookmarkListView.SelectAll();
+            }
         }
 
         private void ConfigureShortcut(ToolStripMenuItem toolstripItem, MenuItem menuItem, Keys keys)

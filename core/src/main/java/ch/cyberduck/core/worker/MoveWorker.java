@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -36,12 +37,14 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
 
@@ -69,15 +72,18 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
     public Map<Path, Path> run(final Session<?> session) throws BackgroundException {
         final Move move = session.getFeature(Move.class);
         final ListService list = session.getFeature(ListService.class);
+        // sort ascending by timestamp to move older versions first
+        final Map<Path, Path> sorted = new TreeMap<>(new TimestampComparator(true));
+        sorted.putAll(files);
         final Map<Path, Path> result = new HashMap<>();
-        for(Map.Entry<Path, Path> entry : files.entrySet()) {
+        for(Map.Entry<Path, Path> entry : sorted.entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             if(!move.isSupported(entry.getKey(), entry.getValue())) {
                 final Map<Path, Path> copy = new CopyWorker(Collections.singletonMap(entry.getKey(), entry.getValue()),
                     SessionPoolFactory.create(cache, session.getHost(), keychain, callback, key, listener, transcript), cache, listener, callback).run(session);
-                for(Map.Entry<Path, Path> r : files.entrySet()) {
+                for(Map.Entry<Path, Path> r : sorted.entrySet()) {
                     // Delete source files recursively after copy is complete
                     new DeleteWorker(callback, Collections.singletonList(r.getKey()), listener).run(session);
                 }
@@ -113,7 +119,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         }
         else if(source.isDirectory()) {
             if(!move.isRecursive(source, target)) {
-                for(Path child : list.list(source, new WorkerListProgressListener(this, listener))) {
+                // sort ascending by timestamp to move older versions first
+                final AttributedList<Path> children = list.list(source, new WorkerListProgressListener(this, listener)).
+                    filter(new TimestampComparator(true));
+                for(Path child : children) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }

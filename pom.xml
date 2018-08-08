@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>6.6.3-SNAPSHOT</version>
+    <version>6.7.1-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -151,7 +151,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
-                <version>4.1</version>
+                <version>4.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -241,7 +241,7 @@
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
-                <version>1.23.0</version>
+                <version>1.24.1</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.google.http-client</groupId>
@@ -262,7 +262,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.364</version>
+                <version>1.11.381</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -274,7 +274,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>23.0</version>
+                <version>26.0-jre</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

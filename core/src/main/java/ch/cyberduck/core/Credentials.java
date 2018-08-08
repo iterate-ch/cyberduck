@@ -67,6 +67,16 @@ public class Credentials implements Comparable<Credentials> {
         //
     }
 
+    public Credentials(final Credentials copy) {
+        this.user = copy.user;
+        this.password = copy.password;
+        this.token = copy.token;
+        this.identity = copy.identity;
+        this.certificate = copy.certificate;
+        this.persist = copy.persist;
+        this.passed = copy.passed;
+    }
+
     public Credentials(final String user) {
         this.user = user;
     }
@@ -276,19 +286,22 @@ public class Credentials implements Comparable<Credentials> {
         final Credentials that = (Credentials) o;
         return Objects.equals(user, that.user) &&
             Objects.equals(password, that.password) &&
+            Objects.equals(token, that.token) &&
             Objects.equals(identity, that.identity) &&
             Objects.equals(certificate, that.certificate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, password, identity, certificate);
+        return Objects.hash(user, password, token, identity, certificate);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Credentials{");
         sb.append("user='").append(user).append('\'');
+        sb.append(", token='").append(token).append('\'');
+        sb.append(", identity=").append(identity);
         sb.append('}');
         return sb.toString();
     }

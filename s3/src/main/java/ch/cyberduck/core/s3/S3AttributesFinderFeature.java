@@ -81,10 +81,12 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 container, containerService.getKey(file));
         }
         catch(ServiceException e) {
-            if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
-                final S3Object marker = new S3Object();
-                marker.addMetadata(S3_VERSION_ID, e.getResponseHeaders().get(AMZ_VERSION_ID));
-                return marker;
+            if(null != e.getResponseHeaders()) {
+                if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
+                    final S3Object marker = new S3Object();
+                    marker.addMetadata(S3_VERSION_ID, e.getResponseHeaders().get(AMZ_VERSION_ID));
+                    return marker;
+                }
             }
             switch(session.getSignatureVersion()) {
                 case AWS4HMACSHA256:

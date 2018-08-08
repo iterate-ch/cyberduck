@@ -157,6 +157,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getTokenPlaceholder() {
+        return this.getPasswordPlaceholder();
+    }
+
+    @Override
     public String getOAuthClientId() {
         return null;
     }
