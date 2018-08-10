@@ -145,7 +145,13 @@ public class OneDriveSession extends GraphSession {
 
             @Override
             public boolean isGraphConnection() {
-                return true;
+                if (StringUtils.equals("graph.microsoft.com", host.getHostname())) {
+                    return true;
+                }
+                else if (StringUtils.equals("graph.microsoft.de", host.getHostname())) {
+                    return true;
+                }
+                return false;
             }
 
             @Override
