@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -39,7 +39,7 @@
                                     <action selector="aboutMenuClicked:" target="-2" id="366"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Перевірити Поновлення…" id="229">
+                            <menuItem title="Перевірка оновлення…" id="229">
                                 <connections>
                                     <action selector="updateMenuClicked:" target="-2" id="367"/>
                                 </connections>
@@ -96,7 +96,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="243">
+                <menuItem title="Файл" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
@@ -107,7 +107,7 @@
                     </attributedString>
                     <menu key="submenu" title="Файл" id="244">
                         <items>
-                            <menuItem title="Новий Браузер" tag="1" keyEquivalent="n" id="245">
+                            <menuItem title="Новий Оглядач" tag="1" keyEquivalent="n" id="245">
                                 <attributedString key="attributedTitle"/>
                                 <connections>
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
@@ -146,7 +146,7 @@
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Symbolic Link…" id="252">
+                            <menuItem title="Нове символьне посилання…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
@@ -205,7 +205,7 @@
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Відвантажити…" keyEquivalent="" id="266">
+                            <menuItem title="Надіслати…" keyEquivalent="" id="266">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" target="-1" id="387"/>
@@ -217,7 +217,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="268"/>
-                            <menuItem title="Видалити" id="269">
+                            <menuItem title="Вилучити" id="269">
                                 <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
@@ -368,7 +368,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="309">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Йти до папки…" keyEquivalent="g" id="310">
+                            <menuItem title="Перейти до теки…" keyEquivalent="g" id="310">
                                 <connections>
                                     <action selector="gotoButtonClicked:" target="-1" id="407"/>
                                 </connections>
@@ -383,7 +383,7 @@ CA
                                     <action selector="forwardButtonClicked:" target="-1" id="409"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Вкладена папка" keyEquivalent="" id="313">
+                            <menuItem title="Вкладена тека" keyEquivalent="" id="313">
                                 <connections>
                                     <action selector="upButtonClicked:" target="-1" id="410"/>
                                 </connections>
@@ -407,7 +407,7 @@ CA
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Відкрити в Терміналі" id="318">
+                            <menuItem title="Open in Terminal" id="318">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openTerminalButtonClicked:" target="-1" id="414"/>
@@ -437,11 +437,11 @@ CA
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Sort By" id="325">
+                            <menuItem title="Сортувати за" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Sort By" id="326">
+                                <menu key="submenu" title="Сортувати за" id="326">
                                     <items>
-                                        <menuItem title="Nickname" keyEquivalent="1" id="327">
+                                        <menuItem title="Псевдонім" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>
@@ -561,7 +561,7 @@ CA
         </menu>
         <menu title="Меню" id="351">
             <items>
-                <menuItem title="Новий Браузер" keyEquivalent="n" id="352">
+                <menuItem title="Новий Оглядач" keyEquivalent="n" id="352">
                     <connections>
                         <action selector="newBrowserMenuClicked:" target="-2" id="433"/>
                     </connections>
