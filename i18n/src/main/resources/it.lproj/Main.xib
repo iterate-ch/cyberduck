@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -27,7 +27,7 @@
                 <outlet property="menu" destination="225" id="365"/>
             </connections>
         </customObject>
-        <menu title="Menù Principale" systemMenu="main" id="225">
+        <menu title="Menù principale" systemMenu="main" id="225">
             <items>
                 <menuItem title="Cyberduck" id="226">
                     <menu key="submenu" title="Cyberduck" systemMenu="apple" id="227">
@@ -39,7 +39,7 @@
                                     <action selector="aboutMenuClicked:" target="-2" id="366"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Cerca Aggiornamenti…" id="229">
+                            <menuItem title="Cerca aggiornamenti…" id="229">
                                 <connections>
                                     <action selector="updateMenuClicked:" target="-2" id="367"/>
                                 </connections>
@@ -52,7 +52,7 @@
                                     <action selector="preferencesMenuClicked:" target="-2" id="368"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Donazioni…" id="232">
+                            <menuItem title="Dona…" id="232">
                                 <connections>
                                     <action selector="donateMenuClicked:" target="-2" id="369"/>
                                 </connections>
@@ -74,13 +74,13 @@
                                     <action selector="hide:" target="224" id="370"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nascondi Altri" keyEquivalent="h" id="239">
+                            <menuItem title="Nascondi altri" keyEquivalent="h" id="239">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="hideOtherApplications:" target="224" id="371"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Mostra Tutte" id="240">
+                            <menuItem title="Visualizza tutti" id="240">
                                 <connections>
                                     <action selector="unhideAllApplications:" target="224" id="372"/>
                                 </connections>
@@ -107,13 +107,13 @@
                     </attributedString>
                     <menu key="submenu" title="File" id="244">
                         <items>
-                            <menuItem title="Nuova Finestra" tag="1" keyEquivalent="n" id="245">
+                            <menuItem title="Nuova finestra" tag="1" keyEquivalent="n" id="245">
                                 <attributedString key="attributedTitle"/>
                                 <connections>
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Apri Connessione…" keyEquivalent="o" id="246">
+                            <menuItem title="Apri connessione…" keyEquivalent="o" id="246">
                                 <connections>
                                     <action selector="connectButtonClicked:" target="-1" id="375"/>
                                 </connections>
@@ -121,7 +121,7 @@
                             <menuItem isSeparatorItem="YES" id="247">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Nuovo Download" keyEquivalent="" id="248">
+                            <menuItem title="Nuovo download" keyEquivalent="" id="248">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="newDownloadMenuClicked:" target="-2" id="376"/>
@@ -130,34 +130,34 @@
                             <menuItem isSeparatorItem="YES" id="249">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Nuova Cartella…" keyEquivalent="N" id="250">
+                            <menuItem title="Nuova cartella…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="Nuova cassaforte criptata..." keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nuovo File…" keyEquivalent="f" id="251">
+                            <menuItem title="Nuovo file…" keyEquivalent="f" id="251">
                                 <connections>
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nuovo Link Simbolico…" id="252">
+                            <menuItem title="Nuovo collegamento simbolico…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Rinomina File…" id="253">
+                            <menuItem title="Rinomina file…" id="253">
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Duplica File…" keyEquivalent="d" id="254">
+                            <menuItem title="Duplica file…" keyEquivalent="d" id="254">
                                 <connections>
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
@@ -167,13 +167,13 @@
                             </menuItem>
                             <menuItem title="Apri URL Web" id="256">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Apri URL Web" id="257"/>
+                                <menu key="submenu" title="Apri URL" id="257"/>
                             </menuItem>
                             <menuItem title="Modifica con" id="258">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Modifica con" id="259"/>
                             </menuItem>
-                            <menuItem title="Occhiata rapida" image="NSQuickLookTemplate" id="260">
+                            <menuItem title="Vista rapida" image="NSQuickLookTemplate" id="260">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -194,7 +194,7 @@
                                     <action selector="downloadButtonClicked:" target="-1" id="384"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Download col Nome…" keyEquivalent="" id="264">
+                            <menuItem title="Download come…" keyEquivalent="" id="264">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
                                 <connections>
                                     <action selector="downloadAsButtonClicked:" target="-1" id="385"/>
@@ -233,10 +233,10 @@ CA
                             <menuItem isSeparatorItem="YES" id="271">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Crea un archivio" id="272">
-                                <menu key="submenu" title="Crea un archivio" id="273"/>
+                            <menuItem title="Crea archivio" id="272">
+                                <menu key="submenu" title="Crea archivio" id="273"/>
                             </menuItem>
-                            <menuItem title="Espandi Archivio" id="274">
+                            <menuItem title="Espandi archivio" id="274">
                                 <connections>
                                     <action selector="unarchiveButtonClicked:" target="-1" id="391"/>
                                 </connections>
@@ -252,7 +252,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="277">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Chiudi Finestra" keyEquivalent="w" id="278">
+                            <menuItem title="Chiudi finestra" keyEquivalent="w" id="278">
                                 <connections>
                                     <action selector="performClose:" target="-1" id="393"/>
                                 </connections>
@@ -295,7 +295,7 @@ CA
                                     <action selector="paste:" target="-1" id="398"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Seleziona Tutto" keyEquivalent="a" id="289">
+                            <menuItem title="Seleziona tutto" keyEquivalent="a" id="289">
                                 <connections>
                                     <action selector="selectAll:" target="-1" id="399"/>
                                 </connections>
@@ -303,8 +303,8 @@ CA
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Vista" id="290">
-                    <menu key="submenu" title="Vista" id="291">
+                <menuItem title="Visualizza" id="290">
+                    <menu key="submenu" title="Visualizza" id="291">
                         <items>
                             <menuItem title="Elenco" keyEquivalent="1" id="292">
                                 <connections>
@@ -325,12 +325,12 @@ CA
                             <menuItem isSeparatorItem="YES" id="297">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Nascondi Barra Strumenti" id="298">
+                            <menuItem title="Nascondi barra strumenti" id="298">
                                 <connections>
                                     <action selector="toggleToolbarShown:" target="-1" id="402"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Personalizza Barra Strumenti…" tag="1" id="299">
+                            <menuItem title="Personalizza barra strumenti…" tag="1" id="299">
                                 <connections>
                                     <action selector="runToolbarCustomizationPalette:" target="-1" id="403"/>
                                 </connections>
@@ -338,18 +338,18 @@ CA
                             <menuItem isSeparatorItem="YES" id="300">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Mostra Files Nascosti" keyEquivalent="R" id="301">
+                            <menuItem title="Visualizza file nascosti" keyEquivalent="R" id="301">
                                 <connections>
                                     <action selector="showHiddenFilesClicked:" target="-1" id="404"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Codifica" id="302">
-                                <menu key="submenu" title="Codifica" id="303"/>
+                            <menuItem title="Codifica testo" id="302">
+                                <menu key="submenu" title="Codifica testo" id="303"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" tag="2" id="304">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Mostra/Nascondi Pannello Log" keyEquivalent="l" id="305">
+                            <menuItem title="Visualizza/nascondi pannello registro" keyEquivalent="l" id="305">
                                 <connections>
                                     <action selector="toggleLogDrawer:" target="-1" id="405"/>
                                 </connections>
@@ -368,7 +368,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="309">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Vai alla Cartella" keyEquivalent="g" id="310">
+                            <menuItem title="Vai alla cartella" keyEquivalent="g" id="310">
                                 <connections>
                                     <action selector="gotoButtonClicked:" target="-1" id="407"/>
                                 </connections>
@@ -383,7 +383,7 @@ CA
                                     <action selector="forwardButtonClicked:" target="-1" id="409"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Cartella Superiore" keyEquivalent="" id="313">
+                            <menuItem title="Cartella superiore" keyEquivalent="" id="313">
                                 <connections>
                                     <action selector="upButtonClicked:" target="-1" id="410"/>
                                 </connections>
@@ -401,13 +401,13 @@ CA
                             <menuItem isSeparatorItem="YES" id="316">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Invia Comando…" keyEquivalent="c" id="317">
+                            <menuItem title="Invia comando…" keyEquivalent="c" id="317">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Apri in Terminal" id="318">
+                            <menuItem title="Apri nel terminale" id="318">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openTerminalButtonClicked:" target="-1" id="414"/>
@@ -432,7 +432,7 @@ CA
                 <menuItem title="Preferiti" id="322">
                     <menu key="submenu" title="Preferiti" id="323">
                         <items>
-                            <menuItem title="Mostra/Nascondi Preferiti" keyEquivalent="b" id="324">
+                            <menuItem title="Visualizza/nascondi preferiti" keyEquivalent="b" id="324">
                                 <connections>
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
@@ -447,7 +447,7 @@ CA
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Hostname" keyEquivalent="2" id="328">
+                                        <menuItem title="Nome host" keyEquivalent="2" id="328">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByHostname:" target="-1" id="419"/>
@@ -465,23 +465,23 @@ CA
                             <menuItem isSeparatorItem="YES" id="330">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Aggiungi Preferito" keyEquivalent="B" id="331">
+                            <menuItem title="Aggiungi preferito" keyEquivalent="B" id="331">
                                 <connections>
                                     <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Elimina Preferito" id="332">
+                            <menuItem title="Elimina preferito" id="332">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="deleteBookmarkButtonClicked:" target="-1" id="422"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Modifica Preferito" keyEquivalent="e" id="333">
+                            <menuItem title="Modifica preferito" keyEquivalent="e" id="333">
                                 <connections>
                                     <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Duplica Preferito" id="334">
+                            <menuItem title="Duplica preferito" id="334">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
@@ -548,7 +548,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="349">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Segnala un Errore" id="350">
+                            <menuItem title="Segnala un errore" id="350">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="bugreportMenuClicked:" target="-2" id="432"/>
@@ -561,7 +561,7 @@ CA
         </menu>
         <menu title="Menu" id="351">
             <items>
-                <menuItem title="Nuova Finestra" keyEquivalent="n" id="352">
+                <menuItem title="Nuova finestra" keyEquivalent="n" id="352">
                     <connections>
                         <action selector="newBrowserMenuClicked:" target="-2" id="433"/>
                     </connections>
