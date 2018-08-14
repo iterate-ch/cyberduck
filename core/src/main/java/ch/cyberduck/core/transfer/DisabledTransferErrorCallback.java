@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 public class DisabledTransferErrorCallback implements TransferErrorCallback {
 
     @Override
-    public boolean prompt(final BackgroundException failure) throws BackgroundException {
+    public boolean prompt(final TransferItem item, final BackgroundException failure) throws BackgroundException {
         // Abort
         throw failure;
     }

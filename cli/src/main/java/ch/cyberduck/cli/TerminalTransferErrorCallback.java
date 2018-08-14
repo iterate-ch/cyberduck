@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
+import ch.cyberduck.core.transfer.TransferItem;
 
 public class TerminalTransferErrorCallback implements TransferErrorCallback {
 
@@ -39,7 +40,7 @@ public class TerminalTransferErrorCallback implements TransferErrorCallback {
     }
 
     @Override
-    public boolean prompt(final BackgroundException failure) throws BackgroundException {
+    public boolean prompt(final TransferItem item, final BackgroundException failure) throws BackgroundException {
         final StringAppender appender = new StringAppender();
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());
