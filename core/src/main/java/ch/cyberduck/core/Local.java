@@ -63,7 +63,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * Absolute path in local file system
      */
     private String path;
-    private final LocalAttributes attributes;
+    private LocalAttributes attributes;
 
     public Local(final String parent, final String name) {
         this(parent, name, PreferencesFactory.get().getProperty("local.delimiter"));
@@ -317,6 +317,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
                 LocaleFactory.localizedString("Cannot rename {0}", "Error"), this.getName()), e);
         }
         path = renamed.getAbsolute();
+        attributes = new LocalAttributes(path);
     }
 
     public void copy(final Local copy) throws AccessDeniedException {
