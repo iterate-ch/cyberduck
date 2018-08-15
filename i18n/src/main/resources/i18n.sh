@@ -40,7 +40,7 @@ usage() {
 
 init() {
 	mkdir -p $language
-	for n in `ls $base_language | grep .$extension | grep -v ~.$extension`; do
+	for n in `ls $base_language | grep $extension | grep -v ~$extension`; do
 	{
 		echo "Copying $n"
 		cp -R $base_language/$n $language/$n
@@ -85,30 +85,30 @@ import_strings() {
 		# force update
 		echo "*** Updating $nib... (force) in $language..."
 		$nibtool    --reference-external-strings-file \
-                    --write $language/$nibfile \
+                    --write $language/$nib$extension \
                     --import-strings-file $language/$nib.strings \
-                    $base_language/$nibfile
+                    $base_language/$nib$extension
 	}
     else
 	{
-	    # Checkout previous version from base language
-        git show `git log -2 --format="%H" $base_language/$nibfile | tail -n 1`:./$base_language/$nibfile > $base_language/$nibfile.prev.xib
 		# incremental update
 		echo "*** Updating $nib... (incremental) in $language..."
-		$nibtool    --write $language/$nibfile \
-                    --incremental-file $language/$nibfile \
-                    --previous-file $base_language/$nibfile.prev.xib \
+	    # Checkout previous version from base language
+        git show `git log -2 --format="%H" $base_language/$nib$extension | tail -n 1`:./$base_language/$nib$extension > $base_language/$nib$extension.prev.xib
+		$nibtool    --write $language/$nib$extension \
+                    --incremental-file $language/$nib$extension \
+                    --previous-file $base_language/$nib$extension.prev.xib \
                     --import-strings-file $language/$nib.strings \
                     --localize-incremental \
-                    $base_language/$nibfile
-        rm $base_language/$nibfile.prev.xib
+                    $base_language/$nib$extension
+        rm $base_language/$nib$extension.prev.xib
 	}
     fi;
 }
 
 export_strings() {
 	echo "*** Updating $nib.strings in $language..."
-	$nibtool --export-strings-file $language/$nib.strings $language/$nibfile
+	$nibtool --export-strings-file $language/$nib.strings $language/$nib$extension
 }
 
 export_strings_legacy() {
