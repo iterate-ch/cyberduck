@@ -389,6 +389,11 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
         },
         log {
             @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Transfer");
+            }
+
+            @Override
             public String tooltip() {
                 return LocaleFactory.localizedString("Toggle Log Drawer");
             }
