@@ -1767,7 +1767,7 @@
                             <button misplaced="YES" id="Tzo-pv-NCb">
                                 <rect key="frame" x="10" y="22" width="253" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Detectar automáticamente y abrir la caja de seguridad en el navegador" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
+                                <buttonCell key="cell" type="check" title="Detectar automáticamente y abrir la caja de seguridad en el navegador " bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
