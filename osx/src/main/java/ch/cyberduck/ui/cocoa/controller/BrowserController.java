@@ -919,7 +919,7 @@ public class BrowserController extends WindowController
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(4);
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
-        cell.setToolTip_forSegment(LocaleFactory.localizedString("Browser"), BookmarkSwitchSegement.browser.ordinal());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Browser", "Preferences"), BookmarkSwitchSegement.browser.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.browser.image(), BookmarkSwitchSegement.browser.ordinal());
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Bookmarks"), BookmarkSwitchSegement.bookmarks.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.bookmarks.image(), BookmarkSwitchSegement.bookmarks.ordinal());
