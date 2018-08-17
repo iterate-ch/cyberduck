@@ -379,7 +379,7 @@
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Nouveau coffre chiffré..." keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="Nouveau coffre chiffré…" keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
