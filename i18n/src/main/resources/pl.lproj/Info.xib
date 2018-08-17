@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="InfoController">
@@ -561,7 +561,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="143">
                     <rect key="frame" x="18" y="476" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Location" id="144">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Lokalizacja" id="144">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -591,7 +591,7 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="rGT-5o-1kv">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="uYp-L3-jMv"/>
+                        <menu key="menu" title="Inne widoki" id="uYp-L3-jMv"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" misplaced="YES" id="iWf-nx-XP9">
@@ -724,7 +724,7 @@
                 <button misplaced="YES" id="160">
                     <rect key="frame" x="140" y="73" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Delete files" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="161">
+                    <buttonCell key="cell" type="check" title="Usuń Pliki" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="161">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
