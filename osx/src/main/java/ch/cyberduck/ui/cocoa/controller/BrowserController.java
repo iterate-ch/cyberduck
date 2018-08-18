@@ -919,7 +919,7 @@ public class BrowserController extends WindowController
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(4);
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
-        cell.setToolTip_forSegment(LocaleFactory.localizedString("Browser"), BookmarkSwitchSegement.browser.ordinal());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Browser", "Preferences"), BookmarkSwitchSegement.browser.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.browser.image(), BookmarkSwitchSegement.browser.ordinal());
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Bookmarks"), BookmarkSwitchSegement.bookmarks.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.bookmarks.image(), BookmarkSwitchSegement.bookmarks.ordinal());
@@ -2675,12 +2675,13 @@ public class BrowserController extends WindowController
 
     @Action
     public void connectButtonClicked(final ID sender) {
-        final ConnectionController controller = ConnectionControllerFactory.create(this);
+        final Host bookmark = new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")));
+        final ConnectionController controller = ConnectionControllerFactory.create(this, bookmark);
         final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
             @Override
             public void callback(final int returncode) {
                 if(returncode == SheetCallback.DEFAULT_OPTION) {
-                    mount(controller.getBookmark());
+                    mount(bookmark);
                 }
                 controller.callback(returncode);
             }

@@ -1,6 +1,23 @@
 Cyberduck
 https://cyberduck.io/
 
+6.7.1
+- [Bugfix] Failure uploading to OneDrive Deutschland (OneDrive)
+- [Bugfix] Updated localizations
+
+6.7.0
+- [Feature] Support display scaling (Windows) (#8961)
+- [Feature] Improve user experience for versioned buckets, e.g. properly hide folders with a delete marker (S3) (#10357)
+- [Feature] Transparently support role­based access, including cross­account using AWS Security Token Service (STS), configured in the standard AWS SDK credentials file (S3) (#8880)
+- [Feature] Prompt for an MFA token during authentication when specified in the profile from the standard AWS SDK credentials file (S3)
+- [Feature] Interoperability with Microsoft Office 365 Deutschland (OneDrive) (#10291)
+- [Bugfix] Allow configuration of charset in bookmark (SFTP)
+- [Bugfix] Incomplete transfers (#10347)
+- [Bugfix] Skip checksum validation for files encrypted with SSE-KMS (S3) (#10371)
+- [Bugfix] Retain metadata on server side copy of file (S3) (#10341)
+- [Bugfix] Failure creating new vault (Cryptomator, OneDrive)
+- [Bugfix] Missing links in copy URL menu (CloudFront) (#10402)
+
 6.6.2
 - [Bugfix] Cannot write to shared folders (Google Drive)
 - [Bugfix] Repeated prompt for private key (SFTP, Mac App Store)

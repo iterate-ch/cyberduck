@@ -23,12 +23,14 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
 public class Host implements Serializable, Comparable<Host> {
+    private static final Logger log = Logger.getLogger(Host.class);
 
     /**
      * The credentials to authenticate with for the CDN
@@ -202,23 +204,6 @@ public class Host implements Serializable, Comparable<Host> {
         this.credentials = credentials;
     }
 
-    /**
-     * Auto configuration
-     */
-    protected void configure() {
-        this.configure(HostnameConfiguratorFactory.get(protocol), CredentialsConfiguratorFactory.get(protocol));
-    }
-
-    protected void configure(final HostnameConfigurator hostnameConfigurator,
-                             final CredentialsConfigurator credentialsConfigurator) {
-        final int port = hostnameConfigurator.getPort(hostname);
-        if(port != -1) {
-            // External configuration found
-            this.setPort(port);
-        }
-        credentials = credentialsConfigurator.configure(this);
-    }
-
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(protocol.getIdentifier(), "Protocol");
@@ -339,18 +324,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param protocol Connection profile
      */
     public void setProtocol(final Protocol protocol) {
-        this.setProtocol(protocol, true);
-    }
-
-    /**
-     * @param protocol  Connection profile
-     * @param configure Auto configure hostname and credentials
-     */
-    public void setProtocol(final Protocol protocol, final boolean configure) {
         this.protocol = protocol;
-        if(configure) {
-            this.configure();
-        }
     }
 
     public String getUuid() {
@@ -393,18 +367,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param hostname Server
      */
     public void setHostname(final String hostname) {
-        this.setHostname(hostname, true);
-    }
-
-    /**
-     * @param hostname  Server
-     * @param configure Auto configure credentials according to new hostname.
-     */
-    public void setHostname(final String hostname, boolean configure) {
         this.hostname = hostname.trim();
-        if(configure) {
-            this.configure();
-        }
     }
 
     /**

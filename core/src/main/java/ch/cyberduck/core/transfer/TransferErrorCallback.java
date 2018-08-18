@@ -23,8 +23,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 public interface TransferErrorCallback {
 
     /**
+     * @param item    Transfer
      * @param failure Failure transferring file
      * @return True to continue regardless of the failure
      */
-    boolean prompt(BackgroundException failure) throws BackgroundException;
+    boolean prompt(final TransferItem item, BackgroundException failure) throws BackgroundException;
 }

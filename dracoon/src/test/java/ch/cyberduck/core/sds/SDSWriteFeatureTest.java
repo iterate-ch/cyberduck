@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -79,5 +80,14 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
             assertNotEquals(version, out.getStatus());
         }
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testWriteRoot() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path test = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus();
+        final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
     }
 }

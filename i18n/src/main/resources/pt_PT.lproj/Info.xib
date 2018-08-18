@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="InfoController">
@@ -111,7 +111,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Metadados" identifier="metadata" id="10">
+                            <tabViewItem label="Meta-dados" identifier="metadata" id="10">
                                 <view key="view" id="11">
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="346"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -259,7 +259,7 @@
                 <textField verticalHuggingPriority="750" id="46">
                     <rect key="frame" x="17" y="53" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Outros" id="47">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Outras" id="47">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -292,7 +292,7 @@
                 <textField verticalHuggingPriority="750" id="53">
                     <rect key="frame" x="139" y="227" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Open the URL to setup log analytics with Qloudstat." id="54">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Abra o URL para configurar o serviço em Qloudstat." id="54">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -322,7 +322,7 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="60">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="61"/>
+                        <menu key="menu" title="Outras vistas" id="61"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" id="62">
@@ -346,7 +346,7 @@
                 <textField verticalHuggingPriority="750" id="66">
                     <rect key="frame" x="17" y="110" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Ficheiro root predefinido" id="67">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Ficheiro de índice" id="67">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -364,7 +364,7 @@
                 <textField verticalHuggingPriority="750" id="70">
                     <rect key="frame" x="17" y="368" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Registo de acções" id="71">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Registos" id="71">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -391,7 +391,7 @@
                 <button id="76">
                     <rect key="frame" x="139" y="283" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <buttonCell key="cell" type="check" title="Read Access for Qloudstat" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="77">
+                    <buttonCell key="cell" type="check" title="Acesso de leitura para Qloudstat" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="77">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -426,7 +426,7 @@
                 <textField verticalHuggingPriority="750" id="84">
                     <rect key="frame" x="139" y="332" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Escrever registos de acesso no container seleccionado." id="85">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Escrever registos de acesso no 'container' selecionado." id="85">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -435,7 +435,7 @@
                 <textField verticalHuggingPriority="750" id="86">
                     <rect key="frame" x="139" y="47" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Remover ficheiros seleccionados da cache de distribuição" id="87">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Remover ficheiros selecionados da cache de distribuição" id="87">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -484,7 +484,7 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="97">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="98"/>
+                        <menu key="menu" title="Outras vistas" id="98"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" id="99">
@@ -502,7 +502,7 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="102">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="103"/>
+                        <menu key="menu" title="Outras vistas" id="103"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" id="104">
@@ -529,7 +529,7 @@
                 <button id="109">
                     <rect key="frame" x="139" y="366" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <buttonCell key="cell" type="check" title="Registo de acessos à distribuição CDN" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="110">
+                    <buttonCell key="cell" type="check" title="Registo de acesso à distribuição" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="110">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -543,7 +543,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="120">
                     <rect key="frame" x="18" y="429" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Cifra" id="121">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Encriptação" id="121">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -573,7 +573,7 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="171">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="172"/>
+                        <menu key="menu" title="Outras vistas" id="172"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" misplaced="YES" id="173">
@@ -591,13 +591,13 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="rGT-5o-1kv">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="uYp-L3-jMv"/>
+                        <menu key="menu" title="Outras vistas" id="uYp-L3-jMv"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" misplaced="YES" id="iWf-nx-XP9">
                     <rect key="frame" x="18" y="406" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Transfer" id="o7m-4i-54g">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Transferências" id="o7m-4i-54g">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -606,7 +606,7 @@
                 <button misplaced="YES" id="LxZ-su-Bo8">
                     <rect key="frame" x="140" y="404" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Transfer Acceleration" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="Hhf-CN-RAy">
+                    <buttonCell key="cell" type="check" title="Aceleração de transferências" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="Hhf-CN-RAy">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -618,7 +618,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="112">
                     <rect key="frame" x="140" y="244" width="243" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Open the URL to setup log analytics with Qloudstat." id="113">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Abra o URL para configurar o serviço em Qloudstat." id="113">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -645,7 +645,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="126">
                     <rect key="frame" x="140" y="170" width="243" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Pode visualizar todas as revisões de um ficheiro no navegador ao activar Visualização → Mostrar ficheiros invisíveis." id="127">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Pode ver todas as revisões de um ficheiro no navegador ativando Ver → Mostrar ficheiros ocultos." id="127">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -654,7 +654,7 @@
                 <button misplaced="YES" id="128">
                     <rect key="frame" x="140" y="146" width="243" height="19"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Eliminação com Autenticação multi-factor (MFA)" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="129">
+                    <buttonCell key="cell" type="check" title="Eliminação com autenticação multi-fator (MFA)" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="129">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -662,7 +662,7 @@
                 <button misplaced="YES" id="130">
                     <rect key="frame" x="140" y="220" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Controlo de versões do bucket" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="131">
+                    <buttonCell key="cell" type="check" title="Controlo de versões Bucket" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="131">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -673,7 +673,7 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="133">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="134"/>
+                        <menu key="menu" title="Outras vistas" id="134"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <popUpButton verticalHuggingPriority="750" misplaced="YES" id="135">
@@ -682,7 +682,7 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="136">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="137"/>
+                        <menu key="menu" title="Outras vistas" id="137"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <popUpButton verticalHuggingPriority="750" misplaced="YES" id="138">
@@ -691,13 +691,13 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="139">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="140"/>
+                        <menu key="menu" title="Outras vistas" id="140"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" misplaced="YES" id="149">
                     <rect key="frame" x="18" y="122" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Lifecycle" id="150">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Ciclo de vida" id="150">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -715,7 +715,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="153">
                     <rect key="frame" x="18" y="383" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Registo de acções" id="154">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Registos" id="154">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -724,7 +724,7 @@
                 <button misplaced="YES" id="160">
                     <rect key="frame" x="140" y="73" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Delete files" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="161">
+                    <buttonCell key="cell" type="check" title="Apagar ficheiros" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="161">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -732,7 +732,7 @@
                 <button misplaced="YES" id="162">
                     <rect key="frame" x="140" y="120" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Transition to Glacier" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="163">
+                    <buttonCell key="cell" type="check" title="Transição para Glacier" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="163">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -740,7 +740,7 @@
                 <button misplaced="YES" id="164">
                     <rect key="frame" x="140" y="300" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Read Access for Qloudstat" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="165">
+                    <buttonCell key="cell" type="check" title="Acesso de leitura para Qloudstat" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="165">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -748,7 +748,7 @@
                 <button misplaced="YES" id="166">
                     <rect key="frame" x="140" y="383" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Registo de acessos ao bucket" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="167">
+                    <buttonCell key="cell" type="check" title="Registo de acessos ao 'bucket'" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="167">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -756,7 +756,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="168">
                     <rect key="frame" x="140" y="349" width="243" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Escrever registos de acesso no container seleccionado." id="169">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Escrever registos de acesso no 'container' selecionado." id="169">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -794,7 +794,7 @@
                 <textField verticalHuggingPriority="750" id="178">
                     <rect key="frame" x="57" y="206" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="URL web" id="179">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Web URL" id="179">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -905,7 +905,7 @@
                 <textField verticalHuggingPriority="750" id="203">
                     <rect key="frame" x="57" y="52" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Soma de verificação" id="204">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Checksum" id="204">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1091,7 +1091,7 @@
                     <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="229">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
-                        <menu key="menu" title="Metadados" id="230"/>
+                        <menu key="menu" title="Meta-dados" id="230"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <button verticalHuggingPriority="750" id="231">
@@ -1214,7 +1214,7 @@
                     <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="254">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
-                        <menu key="menu" title="Metadados" id="255"/>
+                        <menu key="menu" title="Meta-dados" id="255"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <button verticalHuggingPriority="750" id="256">

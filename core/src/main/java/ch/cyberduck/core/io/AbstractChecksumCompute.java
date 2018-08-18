@@ -19,12 +19,14 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -65,5 +67,16 @@ public abstract class AbstractChecksumCompute implements ChecksumCompute {
             IOUtils.closeQuietly(in);
         }
         return md.digest();
+    }
+
+    protected InputStream normalize(final InputStream in, final TransferStatus status) throws ChecksumException {
+        try {
+            final InputStream bounded = status.getLength() > 0 ?
+                new BoundedInputStream(in, status.getOffset() + status.getLength()) : in;
+            return status.getOffset() > 0 ? StreamCopier.skip(bounded, status.getOffset()) : bounded;
+        }
+        catch(BackgroundException e) {
+            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
+        }
     }
 }

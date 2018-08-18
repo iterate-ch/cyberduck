@@ -36,20 +36,21 @@ public class MantaDirectoryFeature implements Directory {
     }
 
     @Override
-    public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            session.getClient().putDirectory(directory.getAbsolute());
+            session.getClient().putDirectory(folder.getAbsolute());
         }
         catch(MantaException e) {
-            throw new MantaExceptionMappingService().map("Cannot create folder {0}", e, directory);
+            throw new MantaExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         catch(MantaClientHttpResponseException e) {
-            throw new MantaHttpExceptionMappingService().map("Cannot create folder {0}", e, directory);
+            throw new MantaHttpExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, directory);
+            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
-        return directory;
+        return new Path(folder.getParent(), folder.getName(), folder.getType(),
+            new MantaAttributesFinderFeature(session).find(folder));
     }
 
     @Override

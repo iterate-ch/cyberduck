@@ -38,6 +38,7 @@ import ch.cyberduck.core.ftp.FTPDirectoryFeature;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -78,7 +79,8 @@ public class MoveWorkerTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))), new FTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)),
+            new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), PathCache.empty(), PasswordStoreFactory.get(), new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener());
         worker.run(session);
@@ -104,7 +106,8 @@ public class MoveWorkerTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))), new FTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)),
+            new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<Integer>(session, new FTPDirectoryFeature(session), new FTPWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
@@ -134,7 +137,8 @@ public class MoveWorkerTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoDirectoryFeature<Integer>(session, new FTPDirectoryFeature(session), new FTPWriteFeature(session), cryptomator).mkdir(sourceFolder, null, new TransferStatus());
-        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))), new FTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)),
+            new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<Integer>(session, new FTPDirectoryFeature(session), new FTPWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
@@ -163,7 +167,8 @@ public class MoveWorkerTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoDirectoryFeature<Integer>(session, new FTPDirectoryFeature(session), new FTPWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
-        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))), new FTPWriteFeature(session), cryptomator).touch(file, new TransferStatus());
+        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)),
+            new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
@@ -191,7 +196,8 @@ public class MoveWorkerTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(clearFile, new TransferStatus());
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)),
+            new DefaultAttributesFinderFeature(session)).touch(clearFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(clearFile));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -224,7 +230,7 @@ public class MoveWorkerTest {
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(clearFile, new TransferStatus());
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)), new DefaultAttributesFinderFeature(session)).touch(clearFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(clearFolder));
         assertTrue(new DefaultFindFeature(session).find(clearFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -265,7 +271,8 @@ public class MoveWorkerTest {
         session.withRegistry(registry);
         new CryptoDirectoryFeature<Integer>(session, new FTPDirectoryFeature(session), new FTPWriteFeature(session), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
-        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))), new FTPWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)),
+            new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // move file outside vault
         final Path fileRenamed = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -297,7 +304,8 @@ public class MoveWorkerTest {
         session.withRegistry(registry);
         new CryptoDirectoryFeature<Integer>(session, new FTPDirectoryFeature(session), new FTPWriteFeature(session), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
-        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))), new FTPWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)),
+            new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // move directory outside vault
         final Path directoryRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

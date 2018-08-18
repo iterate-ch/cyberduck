@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -107,7 +107,7 @@
                     </attributedString>
                     <menu key="submenu" title="Файл" id="244">
                         <items>
-                            <menuItem title="Новый браузер" tag="1" keyEquivalent="n" id="245">
+                            <menuItem title="Новый обозреватель" tag="1" keyEquivalent="n" id="245">
                                 <attributedString key="attributedTitle"/>
                                 <connections>
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
@@ -135,7 +135,7 @@
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="Новое зашифрованное хранилище…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -146,18 +146,18 @@
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Symbolic Link…" id="252">
+                            <menuItem title="Новая символическая ссылка…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Rename File…" id="253">
+                            <menuItem title="Переименовать…" id="253">
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Дублировать файл…" keyEquivalent="d" id="254">
+                            <menuItem title="Дублировать…" keyEquivalent="d" id="254">
                                 <connections>
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
@@ -165,15 +165,15 @@
                             <menuItem isSeparatorItem="YES" id="255">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Open Web URL" id="256">
+                            <menuItem title="Открыть WEB-ссылку" id="256">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Open Web URL" id="257"/>
+                                <menu key="submenu" title="Открыть WEB-ссылку" id="257"/>
                             </menuItem>
-                            <menuItem title="Открывать в" id="258">
+                            <menuItem title="Редактировать в" id="258">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Открывать в" id="259"/>
+                                <menu key="submenu" title="Редактировать в" id="259"/>
                             </menuItem>
-                            <menuItem title="Quick Look" image="NSQuickLookTemplate" id="260">
+                            <menuItem title="Быстрый просмотр" image="NSQuickLookTemplate" id="260">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -200,7 +200,7 @@
                                     <action selector="downloadAsButtonClicked:" target="-1" id="385"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Download To…" id="265">
+                            <menuItem title="Скачать в…" id="265">
                                 <connections>
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
                                 </connections>
@@ -233,8 +233,8 @@ CA
                             <menuItem isSeparatorItem="YES" id="271">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Create Archive" id="272">
-                                <menu key="submenu" title="Create Archive" id="273"/>
+                            <menuItem title="Создать архив" id="272">
+                                <menu key="submenu" title="Создать архив" id="273"/>
                             </menuItem>
                             <menuItem title="Expand Archive" id="274">
                                 <connections>
@@ -263,12 +263,12 @@ CA
                 <menuItem title="Правка" id="279">
                     <menu key="submenu" title="Правка" id="280">
                         <items>
-                            <menuItem title="Undo" keyEquivalent="z" id="281">
+                            <menuItem title="Отменить" keyEquivalent="z" id="281">
                                 <connections>
                                     <action selector="undo:" target="-1" id="394"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Redo" keyEquivalent="Z" id="282">
+                            <menuItem title="Повторить" keyEquivalent="Z" id="282">
                                 <connections>
                                     <action selector="redo:" target="-1" id="395"/>
                                 </connections>
@@ -343,8 +343,8 @@ CA
                                     <action selector="showHiddenFilesClicked:" target="-1" id="404"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Кодировка" id="302">
-                                <menu key="submenu" title="Кодировка" id="303"/>
+                            <menuItem title="Кодировка текста" id="302">
+                                <menu key="submenu" title="Кодировка текста" id="303"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" tag="2" id="304">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
@@ -368,7 +368,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="309">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Перейти к папке" keyEquivalent="g" id="310">
+                            <menuItem title="Перейти к папке…" keyEquivalent="g" id="310">
                                 <connections>
                                     <action selector="gotoButtonClicked:" target="-1" id="407"/>
                                 </connections>
@@ -393,7 +393,7 @@ CA
                                     <action selector="insideButtonClicked:" target="-1" id="411"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Search…" keyEquivalent="/" id="315">
+                            <menuItem title="Поиск…" keyEquivalent="/" id="315">
                                 <connections>
                                     <action selector="searchButtonClicked:" target="-1" id="412"/>
                                 </connections>
@@ -407,7 +407,7 @@ CA
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Open in Terminal" id="318">
+                            <menuItem title="Открыть в терминале" id="318">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openTerminalButtonClicked:" target="-1" id="414"/>
@@ -432,28 +432,28 @@ CA
                 <menuItem title="Закладка" id="322">
                     <menu key="submenu" title="Закладка" id="323">
                         <items>
-                            <menuItem title="Toggle Bookmarks" keyEquivalent="b" id="324">
+                            <menuItem title="Переключить закладки" keyEquivalent="b" id="324">
                                 <connections>
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Sort By" id="325">
+                            <menuItem title="Сортировать" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Sort By" id="326">
+                                <menu key="submenu" title="Сортировать" id="326">
                                     <items>
-                                        <menuItem title="Nickname" keyEquivalent="1" id="327">
+                                        <menuItem title="Псевдоним" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Hostname" keyEquivalent="2" id="328">
+                                        <menuItem title="Хост" keyEquivalent="2" id="328">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByHostname:" target="-1" id="419"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Protocol" keyEquivalent="3" id="329">
+                                        <menuItem title="Протокол" keyEquivalent="3" id="329">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByProtocol:" target="-1" id="420"/>
@@ -481,7 +481,7 @@ CA
                                     <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Duplicate Bookmark" id="334">
+                            <menuItem title="Дублировать закладку" id="334">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
@@ -509,7 +509,7 @@ CA
                                     <action selector="showTransferQueueClicked:" target="-1" id="426"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Activity" keyEquivalent="0" id="341">
+                            <menuItem title="Активность" keyEquivalent="0" id="341">
                                 <connections>
                                     <action selector="showActivityWindowClicked:" target="-1" id="427"/>
                                 </connections>
@@ -548,7 +548,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="349">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Report a Bug" id="350">
+                            <menuItem title="Сообщить о проблеме" id="350">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="bugreportMenuClicked:" target="-2" id="432"/>
@@ -561,7 +561,7 @@ CA
         </menu>
         <menu title="Меню" id="351">
             <items>
-                <menuItem title="Новый браузер" keyEquivalent="n" id="352">
+                <menuItem title="Новый обозреватель" keyEquivalent="n" id="352">
                     <connections>
                         <action selector="newBrowserMenuClicked:" target="-2" id="433"/>
                     </connections>

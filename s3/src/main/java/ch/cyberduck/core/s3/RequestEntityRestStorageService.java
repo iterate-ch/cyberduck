@@ -41,7 +41,6 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
-import org.jets3t.service.security.AWSCredentials;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -52,24 +51,12 @@ public class RequestEntityRestStorageService extends RestS3Service {
     private final S3Session session;
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     public RequestEntityRestStorageService(final S3Session session,
                                            final Jets3tProperties properties,
                                            final HttpClientBuilder configuration) {
-        super(session.getHost().getCredentials().isAnonymousLogin() ? null :
-                        new AWSCredentials(null, null) {
-                            @Override
-                            public String getAccessKey() {
-                                return session.getHost().getCredentials().getUsername();
-                            }
-
-                            @Override
-                            public String getSecretKey() {
-                                return session.getHost().getCredentials().getPassword();
-                            }
-                        },
-                new PreferencesUseragentProvider().get(), null, properties);
+        super(null, new PreferencesUseragentProvider().get(), null, properties);
         this.session = session;
         configuration.disableContentCompression();
         configuration.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
@@ -80,8 +67,8 @@ public class RequestEntityRestStorageService extends RestS3Service {
                     final String host = ((HttpUriRequest) request).getURI().getHost();
                     if(!StringUtils.equals(session.getHost().getHostname(), host)) {
                         regionEndpointCache.putRegionForBucketName(
-                                StringUtils.split(StringUtils.removeEnd(((HttpUriRequest) request).getURI().getHost(), session.getHost().getHostname()), ".")[0],
-                                response.getFirstHeader("x-amz-bucket-region").getValue());
+                            StringUtils.split(StringUtils.removeEnd(((HttpUriRequest) request).getURI().getHost(), session.getHost().getHostname()), ".")[0],
+                            response.getFirstHeader("x-amz-bucket-region").getValue());
                     }
                 }
                 return super.getRedirect(request, response, context);
@@ -109,7 +96,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
     @Override
     protected HttpUriRequest setupConnection(final HTTP_METHOD method, final String bucketName,
                                              final String objectKey, final Map<String, String> requestParameters)
-            throws S3ServiceException {
+        throws S3ServiceException {
         final HttpUriRequest request = super.setupConnection(method, bucketName, objectKey, requestParameters);
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             if("PUT".equals(request.getMethod())) {
@@ -155,7 +142,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                        Map<String, Object> requestHeaders,
                                        Map<String, String> requestParameters) throws ServiceException {
         return super.getObjectImpl(headOnly, bucketName, objectKey, ifModifiedSince, ifUnmodifiedSince, ifMatchTags, ifNoneMatchTags, byteRangeStart, byteRangeEnd,
-                versionId, requestHeaders, requestParameters);
+            versionId, requestHeaders, requestParameters);
     }
 
     @Override
@@ -226,7 +213,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                      final String forceRequestSignatureVersion) throws ServiceException {
         if(forceRequestSignatureVersion != null) {
             final S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
-                    = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(StringUtils.remove(forceRequestSignatureVersion, "-"));
+                = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(StringUtils.remove(forceRequestSignatureVersion, "-"));
             log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
             session.setSignatureVersion(authenticationHeaderSignatureVersion);
         }
@@ -234,6 +221,11 @@ public class RequestEntityRestStorageService extends RestS3Service {
             return;
         }
         super.authorizeHttpRequest(httpMethod, context, forceRequestSignatureVersion);
+    }
+
+    @Override
+    public boolean isAuthenticatedConnection() {
+        return true;
     }
 
     @Override

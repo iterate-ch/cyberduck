@@ -52,7 +52,7 @@ public class SwiftRegionService {
         if(Location.unknown.equals(new SwiftLocationFeature.SwiftRegion(container.attributes().getRegion()))) {
             return this.lookup(location.getLocation(container));
         }
-        return this.lookup(new SwiftLocationFeature.SwiftRegion(file.attributes().getRegion()));
+        return this.lookup(new SwiftLocationFeature.SwiftRegion(container.attributes().getRegion()));
     }
 
     public Region lookup(final Location.Name location) throws InteroperabilityException {

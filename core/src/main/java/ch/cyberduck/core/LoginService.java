@@ -19,6 +19,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -30,7 +31,7 @@ public interface LoginService {
      * @param message  Prompt message
      * @param options  Login mechanism features
      */
-    void validate(Host bookmark, String message, LoginOptions options) throws LoginCanceledException;
+    void validate(Host bookmark, String message, LoginOptions options) throws LoginCanceledException, LoginFailureException;
 
     /**
      * Login and prompt on failure
@@ -41,6 +42,5 @@ public interface LoginService {
      * @param listener Authentication message callback
      * @param cancel   Cancel callback while authentication is in progress
      */
-    void authenticate(final Proxy proxy, Session session, Cache<Path> cache, ProgressListener listener,
-                      CancelCallback cancel) throws BackgroundException;
+    boolean authenticate(Proxy proxy, Session session, Cache<Path> cache, ProgressListener listener, CancelCallback cancel) throws BackgroundException;
 }

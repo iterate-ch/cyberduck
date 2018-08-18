@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>6.6.3-SNAPSHOT</version>
+        <version>6.7.3-SNAPSHOT</version>
     </parent>
     <artifactId>backblaze</artifactId>
     <packaging>jar</packaging>
@@ -34,6 +34,16 @@
             <url>http://jcenter.bintray.com</url>
         </repository>
     </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>20180130</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>

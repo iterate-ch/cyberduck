@@ -38,14 +38,14 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
             final Metadata metadata = new DbxUserFilesRequests(session.getClient()).getMetadata(file.getAbsolute());
-            return this.convert(metadata);
+            return this.toAttributes(metadata);
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
-    protected PathAttributes convert(final Metadata metadata) {
+    protected PathAttributes toAttributes(final Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         if(metadata instanceof FileMetadata) {
             final FileMetadata fm = (FileMetadata) metadata;

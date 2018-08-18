@@ -46,7 +46,7 @@ public class PathDictionary {
         if(typeObj != null) {
             for(String t : StringUtils.splitByWholeSeparator(StringUtils.replaceEach(typeObj,
                 new String[]{"[", "]"}, new String[]{"", ""}), ", ")) {
-                type.add(AbstractPath.Type.valueOf(t));
+                type.add(Path.Type.valueOf(t));
             }
         }
         final Path path;

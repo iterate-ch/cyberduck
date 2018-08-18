@@ -25,15 +25,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.CRC32;
 
-public class CRC32ChecksumCompute implements ChecksumCompute {
+public class CRC32ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+        final InputStream normalized = this.normalize(in, status);
         final CRC32 crc32 = new CRC32();
         try {
             byte[] buffer = new byte[16384];
             int bytesRead;
-            while((bytesRead = in.read(buffer, 0, buffer.length)) != -1) {
+            while((bytesRead = normalized.read(buffer, 0, buffer.length)) != -1) {
                 crc32.update(buffer, 0, bytesRead);
             }
         }
@@ -41,7 +42,7 @@ public class CRC32ChecksumCompute implements ChecksumCompute {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
         }
         finally {
-            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(normalized);
         }
         return new Checksum(HashAlgorithm.crc32, Long.toHexString(crc32.getValue()));
     }

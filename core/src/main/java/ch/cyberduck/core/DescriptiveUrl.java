@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
+import java.util.Objects;
 
 public class DescriptiveUrl {
 
@@ -89,20 +90,12 @@ public class DescriptiveUrl {
             return false;
         }
         final DescriptiveUrl that = (DescriptiveUrl) o;
-        if(type != that.type) {
-            return false;
-        }
-        if(url != null ? !url.equals(that.url) : that.url != null) {
-            return false;
-        }
-        return true;
+        return Objects.equals(url, that.url);
     }
 
     @Override
     public int hashCode() {
-        int result = url != null ? url.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
+        return Objects.hash(url);
     }
 
     @Override

@@ -8,6 +8,8 @@
     <property name="bundle.runtime.lib"
               value="@executable_path/../PlugIns/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
 
+    <property name="build.lipo.binaries" value="**/Contents/Frameworks/*.dylib"/>
+
     <target name="runtime">
         <mkdir dir="${bundle}/${bundle.runtime}"/>
         <!-- Copy runtime -->
@@ -27,6 +29,21 @@
                 <include name="*.dylib"/>
             </fileset>
             <srcfile/>
+        </apply>
+    </target>
+
+    <target name="lipo">
+        <echo message="Remove ${arch} slice from ${build.lipo.binaries}"/>
+        <apply executable="/usr/bin/lipo" failonerror="false" dest="${bundle}"
+               parallel="false" spawn="false" force="true">
+            <!--Remove from executables-->
+            <!--Remove from frameworks-->
+            <!--Remove from shared libraries-->
+            <fileset dir="${bundle}" includes="${build.lipo.binaries}"/>
+            <arg line="-remove ${arch} -output"/>
+            <srcfile/>
+            <targetfile/>
+            <identitymapper/>
         </apply>
     </target>
 </project>

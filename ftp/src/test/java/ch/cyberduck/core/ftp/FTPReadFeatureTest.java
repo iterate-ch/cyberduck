@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -144,7 +145,7 @@ public class FTPReadFeatureTest {
         status.setLength(5L);
         final Path workdir = new FTPWorkdirService(session).find();
         final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)), new DefaultAttributesFinderFeature(session)).touch(file, new TransferStatus());
         final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         // Send ABOR because stream was not read completly
@@ -193,7 +194,7 @@ public class FTPReadFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)), new DefaultAttributesFinderFeature(session)).touch(file, new TransferStatus());
         final TransferStatus status = new TransferStatus();
         status.setLength(5L);
         final Path workdir = new FTPWorkdirService(session).find();

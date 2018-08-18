@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="InfoController">
@@ -111,7 +111,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Metadata" identifier="metadata" id="10">
+                            <tabViewItem label="中繼資料" identifier="metadata" id="10">
                                 <view key="view" id="11">
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="346"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -157,7 +157,7 @@
                 <textField verticalHuggingPriority="750" id="21">
                     <rect key="frame" x="17" y="111" width="124" height="28"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="UNIX Permissions" id="22">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="UNIX 使用權限" id="22">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -179,7 +179,7 @@
                 <button verticalHuggingPriority="750" id="26">
                     <rect key="frame" x="208" y="13" width="177" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                    <buttonCell key="cell" type="push" title="套用於內含所有的檔案夾和檔案" bezelStyle="rounded" alignment="center" controlSize="small" lineBreakMode="truncatingMiddle" borderStyle="border" inset="2" id="27">
+                    <buttonCell key="cell" type="push" title="套用於內含所有的資料夾和檔案" bezelStyle="rounded" alignment="center" controlSize="small" lineBreakMode="truncatingMiddle" borderStyle="border" inset="2" id="27">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -310,7 +310,7 @@
                 <textField verticalHuggingPriority="750" id="57">
                     <rect key="frame" x="17" y="285" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Analytics" id="58">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="分析" id="58">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -591,13 +591,13 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="rGT-5o-1kv">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="uYp-L3-jMv"/>
+                        <menu key="menu" title="其它顯示方式" id="uYp-L3-jMv"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" misplaced="YES" id="iWf-nx-XP9">
                     <rect key="frame" x="18" y="406" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Transfer" id="o7m-4i-54g">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="傳輸" id="o7m-4i-54g">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -606,7 +606,7 @@
                 <button misplaced="YES" id="LxZ-su-Bo8">
                     <rect key="frame" x="140" y="404" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Transfer Acceleration" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="Hhf-CN-RAy">
+                    <buttonCell key="cell" type="check" title="傳輸加速" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="Hhf-CN-RAy">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -794,7 +794,7 @@
                 <textField verticalHuggingPriority="750" id="178">
                     <rect key="frame" x="57" y="206" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Web URL" id="179">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="網址" id="179">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -905,7 +905,7 @@
                 <textField verticalHuggingPriority="750" id="203">
                     <rect key="frame" x="57" y="52" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Checksum" id="204">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="總和檢查碼" id="204">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -914,7 +914,7 @@
                 <textField verticalHuggingPriority="750" id="205">
                     <rect key="frame" x="57" y="96" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Created" id="206">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="建立日期" id="206">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -977,7 +977,7 @@
                 <textField verticalHuggingPriority="750" id="219">
                     <rect key="frame" x="57" y="140" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="持有人" id="220">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="擁有者" id="220">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1030,7 +1030,7 @@
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
                                     <tableColumn identifier="NAME" width="176" minWidth="40" maxWidth="300" id="236">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Name">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="名稱">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -1043,7 +1043,7 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                     </tableColumn>
                                     <tableColumn identifier="VALUE" width="176" minWidth="40" maxWidth="300" id="238">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Value">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="數值">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -1079,7 +1079,7 @@
                 <textField verticalHuggingPriority="750" id="244">
                     <rect key="frame" x="17" y="194" width="342" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Headers" id="245">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="標頭" id="245">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1091,7 +1091,7 @@
                     <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="229">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
-                        <menu key="menu" title="Metadata" id="230"/>
+                        <menu key="menu" title="中繼資料" id="230"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <button verticalHuggingPriority="750" id="231">
@@ -1120,7 +1120,7 @@
                 <textField verticalHuggingPriority="750" id="249">
                     <rect key="frame" x="17" y="204" width="342" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Authenticated URL" id="250">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="驗證網址" id="250">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1153,7 +1153,7 @@
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
                                     <tableColumn identifier="GRANTEE" width="176" minWidth="40" maxWidth="300" id="261">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Grantee">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="被授與者">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -1166,7 +1166,7 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                     </tableColumn>
                                     <tableColumn identifier="PERMISSION" width="176" minWidth="40" maxWidth="300" id="263">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Permission">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="使用權限">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -1202,7 +1202,7 @@
                 <textField verticalHuggingPriority="750" id="269">
                     <rect key="frame" x="17" y="160" width="342" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Access Control List (ACL)" id="270">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="存取控制清單 (ACL)" id="270">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1214,7 +1214,7 @@
                     <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="254">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
-                        <menu key="menu" title="Metadata" id="255"/>
+                        <menu key="menu" title="中繼資料" id="255"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <button verticalHuggingPriority="750" id="256">

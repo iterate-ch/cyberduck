@@ -30,8 +30,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,11 +40,8 @@ public class ConnectionController extends BookmarkController {
     private final HostPasswordStore keychain
         = PasswordStoreFactory.get();
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
     @Outlet
-    private NSTextField passwordField;
+    protected NSTextField passwordField;
     @Outlet
     private NSTextField passwordLabel;
     @Outlet
@@ -62,17 +57,6 @@ public class ConnectionController extends BookmarkController {
 
     public ConnectionController(final Host bookmark, final Credentials credentials, final LoginOptions options) {
         super(bookmark, credentials, new LoginInputValidator(credentials, bookmark.getProtocol(), options), options);
-    }
-
-    @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        if(options.user) {
-            window.makeFirstResponder(usernameField);
-        }
-        if(options.password && !StringUtils.isBlank(credentials.getUsername())) {
-            window.makeFirstResponder(passwordField);
-        }
     }
 
     @Override
@@ -109,6 +93,7 @@ public class ConnectionController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
+                updateField(passwordField, credentials.getPassword());
                 passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
                 passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
                 if(options.keychain) {

@@ -26,6 +26,8 @@
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="cli"/>
 
+    <property name="build.lipo.arch.remove" value="i386"/>
+
     <import file="../../runtime.xml"/>
     <import file="../../codesign.xml"/>
     <import file="../../archive.xml"/>
@@ -55,6 +57,10 @@
             <param name="newname" value="${bundle.runtime.lib}"/>
             <param name="directory" value="${cli.bundle}/${bundle.frameworks}"/>
         </antcall>
+        <!-- Remove architectures -->
+        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
+            <param name="bundle" value="${cli.bundle}"/>
+        </foreach>
     </target>
 
     <target name="package" depends="build">

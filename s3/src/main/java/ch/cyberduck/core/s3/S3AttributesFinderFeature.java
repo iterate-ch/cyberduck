@@ -66,7 +66,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
         }
-        return this.convert(this.details(file));
+        return this.toAttributes(this.details(file));
     }
 
     @Override
@@ -81,10 +81,12 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 container, containerService.getKey(file));
         }
         catch(ServiceException e) {
-            if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
-                final S3Object marker = new S3Object();
-                marker.addMetadata(S3_VERSION_ID, e.getResponseHeaders().get(AMZ_VERSION_ID));
-                return marker;
+            if(null != e.getResponseHeaders()) {
+                if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
+                    final S3Object marker = new S3Object();
+                    marker.addMetadata(S3_VERSION_ID, e.getResponseHeaders().get(AMZ_VERSION_ID));
+                    return marker;
+                }
             }
             switch(session.getSignatureVersion()) {
                 case AWS4HMACSHA256:
@@ -114,7 +116,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes convert(final StorageObject object) {
+    protected PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(object.getContentLength());
         final Date lastmodified = object.getLastModifiedDate();

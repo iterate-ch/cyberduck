@@ -73,7 +73,7 @@ public class DropboxSearchFeature implements Search {
                         log.warn(String.format("Skip file %s", metadata));
                         return null;
                     }
-                    list.add(new Path(metadata.getPathDisplay(), type, attributes.convert(metadata)));
+                    list.add(new Path(metadata.getPathDisplay(), type, attributes.toAttributes(metadata)));
                     listener.chunk(workdir, list);
                 }
                 start = result.getStart();

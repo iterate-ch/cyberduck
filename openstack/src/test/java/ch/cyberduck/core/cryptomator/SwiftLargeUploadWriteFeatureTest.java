@@ -74,8 +74,8 @@ public class SwiftLargeUploadWriteFeatureTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        home.attributes().setRegion("DFW");
+        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        home.attributes().setRegion("IAD");
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);

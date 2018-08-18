@@ -53,9 +53,9 @@ import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
 public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
@@ -106,7 +106,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
                                   final NotificationService notification,
                                   final Cache<TransferItem> cache) {
-        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, new HashMap<TransferItem, TransferStatus>());
+        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, new ConcurrentHashMap<TransferItem, TransferStatus>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -220,8 +220,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             transfer.post(source, destination, table, connectionCallback);
             if(transfer.isReset()) {
                 notification.notify(transfer.isComplete() ?
-                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
-                        "Transfer incomplete", transfer.getName());
+                    String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
+                    "Transfer incomplete", transfer.getName());
             }
             sleep.release(lock);
             table.clear();
@@ -316,7 +316,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             throw e;
                         }
                         // Prompt to continue or abort for application errors
-                        else if(error.prompt(e)) {
+                        else if(error.prompt(new TransferItem(file, local), e)) {
                             // Continue
                             log.warn(String.format("Ignore transfer failure %s", e));
                             return null;
@@ -420,7 +420,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 throw e;
                             }
                             // Prompt to continue or abort for application errors
-                            else if(error.prompt(e)) {
+                            else if(error.prompt(item, e)) {
                                 // Continue
                                 log.warn(String.format("Ignore transfer failure %s", e));
                             }
@@ -443,8 +443,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
                     @Override
                     public String toString() {
-                        final StringBuilder sb = new StringBuilder("TransferCallable{");
-                        sb.append("status=").append(segment);
+                        final StringBuilder sb = new StringBuilder("RetryTransferCallable{");
+                        sb.append("item=").append(item);
+                        sb.append(", status=").append(segment);
                         sb.append('}');
                         return sb.toString();
                     }
@@ -494,7 +495,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 @Override
                 public String toString() {
                     final StringBuilder sb = new StringBuilder("TransferCallable{");
-                    sb.append("status=").append(status);
+                    sb.append("item=").append(item);
+                    sb.append(", status=").append(status);
                     sb.append('}');
                     return sb.toString();
                 }

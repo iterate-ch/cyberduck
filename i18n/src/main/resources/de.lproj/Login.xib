@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDLoginController">
@@ -28,7 +28,7 @@
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="242" y="431" width="502" height="266"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1366" height="745"/>
-            <view key="contentView" misplaced="YES" id="4">
+            <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="502" height="266"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
@@ -63,7 +63,7 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" id="11">
-                        <rect key="frame" x="101" y="179" width="384" height="42"/>
+                        <rect key="frame" x="101" y="179" width="302" height="42"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="12">
                             <font key="font" metaFont="smallSystem"/>
@@ -148,6 +148,17 @@ Gw
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                     </button>
+                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" id="31">
+                        <rect key="frame" x="260" y="18" width="25" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="32">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="helpButtonClicked:" target="-2" id="50"/>
+                        </connections>
+                    </button>
                     <button verticalHuggingPriority="750" misplaced="YES" tag="1" id="13">
                         <rect key="frame" x="392" y="14" width="97" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
@@ -162,23 +173,11 @@ DQ
                             <action selector="closeSheet:" target="-2" id="48"/>
                         </connections>
                     </button>
-                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" id="31">
-                        <rect key="frame" x="260" y="18" width="25" height="25"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="32">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="helpButtonClicked:" target="-2" id="50"/>
-                        </connections>
-                    </button>
                 </subviews>
             </view>
             <connections>
                 <outlet property="initialFirstResponder" destination="17" id="45"/>
             </connections>
-            <point key="canvasLocation" x="44" y="169"/>
         </window>
     </objects>
     <resources>

@@ -26,6 +26,7 @@ import java.util.Collections;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.RelocationResult;
 
 public class DropboxMoveFeature implements Move {
 
@@ -43,8 +44,10 @@ public class DropboxMoveFeature implements Move {
             if(status.isExists()) {
                 delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
-            new DbxUserFilesRequests(session.getClient()).move(file.getAbsolute(), renamed.getAbsolute());
-            return renamed;
+            final RelocationResult result = new DbxUserFilesRequests(session.getClient()).moveV2(file.getAbsolute(), renamed.getAbsolute());
+            // Copy original file attributes
+            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
+                new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot move {0}", e, file);

@@ -18,12 +18,13 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>6.6.3-SNAPSHOT</version>
+        <version>6.7.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>googledrive</artifactId>
-
+    <properties>
+        <google-api-services-drive-version>v3-rev124-1.24.1</google-api-services-drive-version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -38,7 +39,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-drive</artifactId>
-            <version>v3-rev89-1.23.0</version>
+            <version>${google-api-services-drive-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.http-client</groupId>

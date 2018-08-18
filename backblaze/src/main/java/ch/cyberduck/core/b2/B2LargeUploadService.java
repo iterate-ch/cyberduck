@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -38,7 +37,6 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -68,7 +66,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
     private final B2FileidProvider fileid;
@@ -121,7 +119,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
                     fileid = session.getClient().startLargeFileUpload(this.fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                            containerService.getKey(file), status.getMime(), fileinfo).getFileId();
+                        containerService.getKey(file), status.getMime(), fileinfo).getFileId();
                 }
                 else {
                     fileid = uploads.iterator().next().getFileId();
@@ -130,7 +128,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             else {
                 fileid = session.getClient().startLargeFileUpload(this.fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                        containerService.getKey(file), status.getMime(), fileinfo).getFileId();
+                    containerService.getKey(file), status.getMime(), fileinfo).getFileId();
             }
             // Full size of file
             final long size = status.getLength() + status.getOffset();
@@ -227,13 +225,11 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                     throw new ConnectionCanceledException();
                 }
                 final TransferStatus status = new TransferStatus()
-                        .length(length)
-                        .skip(offset);
+                    .length(length)
+                    .skip(offset);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
-                status.setChecksum(writer.checksum(file).compute(
-                        StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset),
-                        status));
+                status.setChecksum(writer.checksum(file).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 status.setPart(partNumber);
                 return (B2UploadPartResponse) B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, new StreamProgress() {

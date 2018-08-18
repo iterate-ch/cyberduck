@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -135,7 +135,7 @@
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="Novo cofre cifrado…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -146,13 +146,13 @@
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nova ligação simbólica..." id="252">
+                            <menuItem title="Nova ligação simbólica…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Renomear..." id="253">
+                            <menuItem title="Renomear…" id="253">
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
@@ -205,7 +205,7 @@
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Carregar..." keyEquivalent="" id="266">
+                            <menuItem title="Carregar…" keyEquivalent="" id="266">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" target="-1" id="387"/>
@@ -407,7 +407,7 @@ CA
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Abrir com Terminal" id="318">
+                            <menuItem title="Abrir no terminal" id="318">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openTerminalButtonClicked:" target="-1" id="414"/>

@@ -48,4 +48,9 @@ public interface Deserializer<T> {
      * @return True if key exists and is enabled
      */
     boolean booleanForKey(String key);
+
+    /**
+     * @return All keys
+     */
+    List<String> keys();
 }

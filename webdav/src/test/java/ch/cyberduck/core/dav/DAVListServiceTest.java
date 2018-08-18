@@ -75,7 +75,12 @@ public class DAVListServiceTest {
             assertEquals(directory, p.getParent());
             assertNotEquals(-1L, p.attributes().getModificationDate());
             assertNotEquals(-1L, p.attributes().getCreationDate());
-            assertNotEquals(-1L, p.attributes().getSize());
+            if(p.isDirectory()) {
+                assertEquals(-1L, p.attributes().getSize());
+            }
+            else {
+                assertNotEquals(-1L, p.attributes().getSize());
+            }
             assertEquals(Checksum.NONE, p.attributes().getChecksum());
             assertNotNull(p.attributes().getETag());
         }

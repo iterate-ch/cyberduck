@@ -21,9 +21,11 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.dropbox.DropboxAttributesFinderFeature;
 import ch.cyberduck.core.dropbox.DropboxDeleteFeature;
 import ch.cyberduck.core.dropbox.DropboxFindFeature;
 import ch.cyberduck.core.dropbox.DropboxUploadFeature;
@@ -44,6 +46,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -53,12 +56,14 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
     public void testTouchLongFilenameEncrypted() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DropboxUploadFeature(new DropboxWriteFeature(session))), new DropboxWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        final Path test = new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DropboxUploadFeature(new DropboxWriteFeature(session)),
+            new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(
+            new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(test));
+        assertEquals(test.attributes(), new CryptoAttributesFeature(session, new DropboxAttributesFinderFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -66,12 +71,14 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
     public void testTouchLongFilenameEncryptedDefaultFeature() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DropboxUploadFeature(new DropboxWriteFeature(session))), new DropboxWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        final Path test = new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DropboxUploadFeature(new DropboxWriteFeature(session)),
+            new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(
+            new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
+        assertEquals(test.attributes(), new CryptoAttributesFeature(session, new DropboxAttributesFinderFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

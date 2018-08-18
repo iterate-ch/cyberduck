@@ -19,6 +19,9 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.Serializer;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
+public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Serializable {
     private static final long serialVersionUID = 372192161904802600L;
 
     public static final Acl EMPTY = new Acl();
@@ -105,6 +108,15 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         return false;
     }
 
+    @Override
+    public <T> T serialize(final Serializer dict) {
+        for(Entry<User, Set<Role>> entry : this.entrySet()) {
+            final List<Role> roles = new ArrayList<>(entry.getValue());
+            dict.setListForKey(roles, entry.getKey().getIdentifier());
+        }
+        return dict.getSerialized();
+    }
+
     public static class UserAndRole implements Comparable<UserAndRole> {
         private final Acl.User user;
         private final Acl.Role role;
@@ -126,7 +138,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         public boolean equals(Object obj) {
             if(obj instanceof UserAndRole) {
                 return user.equals(((UserAndRole) obj).user)
-                        && role.equals(((UserAndRole) obj).role);
+                    && role.equals(((UserAndRole) obj).role);
             }
             return false;
         }
@@ -351,7 +363,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     /**
      * The permission.
      */
-    public static class Role implements Comparable<Role> {
+    public static class Role implements Comparable<Role>, Serializable {
 
         public static final String FULL = "FULL_CONTROL";
         public static final String READ = "READ";
@@ -416,6 +428,30 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public boolean isModified() {
             return modified;
+        }
+
+        @Override
+        public <T> T serialize(final Serializer dict) {
+            dict.setStringForKey(name, "Name");
+            return dict.getSerialized();
+        }
+    }
+
+    public static class RoleDictionary {
+
+        private final DeserializerFactory deserializer;
+
+        public RoleDictionary() {
+            this.deserializer = new DeserializerFactory();
+        }
+
+        public RoleDictionary(final DeserializerFactory deserializer) {
+            this.deserializer = deserializer;
+        }
+
+        public <T> Acl.Role deserialize(T serialized) {
+            final Deserializer dict = deserializer.create(serialized);
+            return new Role(dict.stringForKey("Name"));
         }
     }
 }

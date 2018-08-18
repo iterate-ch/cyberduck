@@ -49,8 +49,8 @@ public class SwiftLargeObjectUploadFeatureTest {
                                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 2 * 1024 * 1024;
@@ -108,8 +108,8 @@ public class SwiftLargeObjectUploadFeatureTest {
                                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final String name = UUID.randomUUID().toString();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -165,8 +165,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(
                         System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

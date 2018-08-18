@@ -22,13 +22,14 @@ import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 public class TouchWorker extends Worker<Path> {
 
@@ -41,9 +42,6 @@ public class TouchWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
-        if(!feature.isSupported(file.getParent())) {
-            throw new UnsupportedException();
-        }
         final TransferStatus status = new TransferStatus()
             .exists(false)
             .length(0L)
@@ -57,6 +55,10 @@ public class TouchWorker extends Worker<Path> {
             status.setStorageClass(redundancy.getDefault());
         }
         status.setTimestamp(System.currentTimeMillis());
+        final UnixPermission permission = session.getFeature(UnixPermission.class);
+        if(permission != null) {
+            status.setPermission(permission.getDefault(EnumSet.of(Path.Type.file)));
+        }
         return feature.touch(file, status);
     }
 
@@ -68,7 +70,7 @@ public class TouchWorker extends Worker<Path> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-                file.getName());
+            file.getName());
     }
 
     @Override

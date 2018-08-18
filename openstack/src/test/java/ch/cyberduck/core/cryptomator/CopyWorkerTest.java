@@ -36,6 +36,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.openstack.SwiftAttributesFinderFeature;
 import ch.cyberduck.core.openstack.SwiftDeleteFeature;
 import ch.cyberduck.core.openstack.SwiftDirectoryFeature;
 import ch.cyberduck.core.openstack.SwiftFindFeature;
@@ -88,7 +89,7 @@ public class CopyWorkerTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -120,7 +121,7 @@ public class CopyWorkerTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -129,7 +130,8 @@ public class CopyWorkerTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session)))), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+            new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
@@ -149,7 +151,7 @@ public class CopyWorkerTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory));
@@ -158,7 +160,8 @@ public class CopyWorkerTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session)))), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+            new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
@@ -178,7 +181,7 @@ public class CopyWorkerTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -188,7 +191,8 @@ public class CopyWorkerTest {
         session.withRegistry(registry);
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(folder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
-        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session)))), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(file, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+            new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         // copy file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
@@ -215,7 +219,7 @@ public class CopyWorkerTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SwiftWriteFeature write = new SwiftWriteFeature(session, new SwiftRegionService(session));
@@ -251,7 +255,7 @@ public class CopyWorkerTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -285,7 +289,7 @@ public class CopyWorkerTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
@@ -297,7 +301,8 @@ public class CopyWorkerTest {
         session.withRegistry(registry);
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
-        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session)))), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+            new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // move file outside vault
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -318,7 +323,7 @@ public class CopyWorkerTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -328,7 +333,8 @@ public class CopyWorkerTest {
         session.withRegistry(registry);
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
-        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session)))), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+            new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // copy directory outside vault
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

@@ -40,8 +40,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -58,11 +56,9 @@ import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.http.HttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
+import com.dropbox.core.v2.common.PathRoot;
 
 public class DropboxSession extends HttpSession<DbxRawClientV2> {
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
 
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
@@ -81,14 +77,33 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
         final CloseableHttpClient client = configuration.build();
-        return new DbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
+        return new CustomDbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
             .withAutoRetryDisabled()
-            .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(), DbxHost.DEFAULT, null) {
-            @Override
-            protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
-                // OAuth Bearer added in interceptor
-            }
-        };
+            .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(),
+            DbxHost.DEFAULT, null, null);
+    }
+
+    private final class CustomDbxRawClientV2 extends DbxRawClientV2 {
+        /**
+         * @param requestConfig Configuration controlling How requests should be issued to Dropbox
+         *                      servers.
+         * @param host          Dropbox server hostnames (primarily for internal use)
+         * @param userId        The user ID of the current Dropbox account. Used for multi-Dropbox account use-case.
+         * @param pathRoot      We will send this value in Dropbox-API-Path-Root header if it presents.
+         */
+        protected CustomDbxRawClientV2(final DbxRequestConfig requestConfig, final DbxHost host, final String userId, final PathRoot pathRoot) {
+            super(requestConfig, host, userId, pathRoot);
+        }
+
+        @Override
+        protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
+            // OAuth Bearer added in interceptor
+        }
+
+        @Override
+        protected DbxRawClientV2 withPathRoot(final PathRoot pathRoot) {
+            return null;
+        }
     }
 
     @Override

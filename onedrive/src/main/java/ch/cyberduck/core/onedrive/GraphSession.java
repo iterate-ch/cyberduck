@@ -117,7 +117,13 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
             @Override
             public boolean isGraphConnection() {
-                return StringUtils.equals("graph.microsoft.com", host.getHostname());
+                if (StringUtils.equals("graph.microsoft.com", host.getHostname())) {
+                    return true;
+                }
+                else if (StringUtils.equals("graph.microsoft.de", host.getHostname())) {
+                    return true;
+                }
+                return false;
             }
 
             @Override

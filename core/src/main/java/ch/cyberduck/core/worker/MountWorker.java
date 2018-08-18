@@ -66,7 +66,9 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of default path
-            list = new SessionListWorker(cache, home, listener).run(session);
+            final SessionListWorker worker = new SessionListWorker(cache, home, listener);
+            listener.message(worker.getActivity());
+            list = worker.run(session);
         }
         catch(NotfoundException e) {
             log.warn(String.format("Mount failed with %s", e.getMessage()));
@@ -76,7 +78,9 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of working directory
-            list = new SessionListWorker(cache, home, listener).run(session);
+            final SessionListWorker worker = new SessionListWorker(cache, home, listener);
+            listener.message(worker.getActivity());
+            list = worker.run(session);
         }
         cache.put(home, list);
         return home;

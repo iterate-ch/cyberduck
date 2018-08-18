@@ -28,15 +28,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.ftp.FTPDirectoryFeature;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
@@ -65,7 +63,7 @@ public class CopyWorkerTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(source, new TransferStatus());
+        session.getFeature(Touch.class).touch(source, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(source));
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -88,7 +86,7 @@ public class CopyWorkerTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(sourceFile, new TransferStatus());
+        session.getFeature(Touch.class).touch(sourceFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -118,7 +116,7 @@ public class CopyWorkerTest {
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(sourceFile, new TransferStatus());
+        session.getFeature(Touch.class).touch(sourceFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         // move directory into vault

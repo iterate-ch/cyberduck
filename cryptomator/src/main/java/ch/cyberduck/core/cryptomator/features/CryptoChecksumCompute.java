@@ -47,7 +47,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class CryptoChecksumCompute extends AbstractChecksumCompute implements ChecksumCompute {
+public class CryptoChecksumCompute extends AbstractChecksumCompute {
     private static final Logger log = Logger.getLogger(CryptoChecksumCompute.class);
 
     private final CryptoVault cryptomator;
@@ -60,7 +60,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
-        if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
+        if(Checksum.NONE == delegate.compute(new NullInputStream(0L), new TransferStatus())) {
             return Checksum.NONE;
         }
         if(null == status.getHeader()) {
@@ -71,7 +71,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         }
         // Make nonces reusable in case we need to compute a checksum
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
-        return this.compute(in, status.getOffset(), status.getHeader(), status.getNonces());
+        return this.compute(this.normalize(in, status), status.getOffset(), status.getHeader(), status.getNonces());
     }
 
     protected Checksum compute(final InputStream in, final long offset, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
@@ -81,7 +81,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), cryptomator.getCryptor(),
-                    cryptomator.getCryptor().fileHeaderCryptor().decryptHeader(header), nonces, cryptomator.numberOfChunks(offset));
+                cryptomator.getCryptor().fileHeaderCryptor().decryptHeader(header), nonces, cryptomator.numberOfChunks(offset));
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
             final ThreadPool pool = ThreadPoolFactory.get("checksum", 1);
             try {

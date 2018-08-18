@@ -2,9 +2,11 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -23,7 +25,7 @@ public class S3BucketListServiceTest {
     @Test
     public void testGetContainer() throws Exception {
         assertEquals("bucketname", new S3BucketListService(new S3Session(new Host(new S3Protocol()))).getContainer(new Host(new S3Protocol(), "bucketname.s3.amazonaws.com")));
-        assertEquals(null, new S3BucketListService(new S3Session(new Host(new S3Protocol()))).getContainer(new Host(new TestProtocol(), "bucketname.s3.amazonaws.com")));
+        assertNull(new S3BucketListService(new S3Session(new Host(new S3Protocol()))).getContainer(new Host(new TestProtocol(), "bucketname.s3.amazonaws.com")));
     }
 
     @Test
@@ -34,6 +36,7 @@ public class S3BucketListServiceTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final AttributedList<Path> list = new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
@@ -49,6 +52,7 @@ public class S3BucketListServiceTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final AttributedList<Path> list = new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
@@ -64,6 +68,7 @@ public class S3BucketListServiceTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final AttributedList<Path> list = new S3BucketListService(session, new S3LocationFeature.S3Region("eu-central-1")).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());

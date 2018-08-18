@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -30,7 +31,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import com.google.api.services.drive.model.File;
 
@@ -48,7 +48,7 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
 
     @Test
     public void testGetFileid() throws Exception {
-        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
         assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -56,14 +56,17 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
 
     @Test
     public void testGetFileidSameName() throws Exception {
-        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Path p1 = new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
-        assertEquals(p1.attributes().getVersionId(), new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
+        final String filename = new AlphanumericRandomStringService().random();
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final Path p1 = new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        assertEquals(p1.attributes().getVersionId(), fileid.getFileid(test, new DisabledListProgressListener()));
         final File body = new File();
         body.set("trashed", true);
         session.getClient().files().update(p1.attributes().getVersionId(), body).execute();
-        final Path p2 = new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
-        assertEquals(p2.attributes().getVersionId(), new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
+        cache.remove(p1);
+        final Path p2 = new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        assertEquals(p2.attributes().getVersionId(), fileid.getFileid(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         session.getClient().files().delete(p1.attributes().getVersionId());
         session.getClient().files().delete(p2.attributes().getVersionId());
     }

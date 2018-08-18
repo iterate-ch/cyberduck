@@ -33,23 +33,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static readonly Logger Log = Logger.getLogger(typeof(ConnectionController).FullName);
 
-        private ConnectionController(Host bookmark) : this(bookmark, bookmark.getCredentials())
-        {
-        }
-
-        private ConnectionController(Host bookmark, Credentials credentials) : this(bookmark, credentials,
+        private ConnectionController(Host bookmark) : this(bookmark,
             new LoginOptions(bookmark.getProtocol()))
         {
         }
 
-        private ConnectionController(Host bookmark, Credentials credentials, LoginOptions options) : this(bookmark,
-            credentials,
-            new LoginInputValidator(credentials, bookmark.getProtocol(), options), options)
+        private ConnectionController(Host bookmark, LoginOptions options) : this(bookmark,
+            new LoginInputValidator(bookmark.getCredentials(), bookmark.getProtocol(), options), options)
         {
         }
 
-        private ConnectionController(Host bookmark, Credentials credentials,
-            LoginInputValidator validator, LoginOptions options) : base(bookmark, credentials, validator, options)
+        private ConnectionController(Host bookmark,
+            LoginInputValidator validator, LoginOptions options) : base(bookmark, validator, options)
         {
             Init();
         }
@@ -83,7 +78,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedServerEvent += ReadPasswordFromKeychain;
             View.ChangedUsernameEvent += ReadPasswordFromKeychain;
             View.ChangedProtocolEvent += ReadPasswordFromKeychain;
-            View.ChangedPasswordEvent += delegate { _credentials.setPassword(View.Password); };
+            View.ChangedPasswordEvent += delegate { _host.getCredentials().setPassword(View.Password); };
         }
 
         private void View_ChangedSavePasswordCheckboxEvent()
@@ -99,7 +94,8 @@ namespace Ch.Cyberduck.Ui.Controller
         protected override void Update()
         {
             base.Update();
-            View.PasswordEnabled = _options.password() && !_credentials.isAnonymousLogin();
+            View.Password = _host.getCredentials().getPassword();
+            View.PasswordEnabled = _options.password() && !_host.getCredentials().isAnonymousLogin();
         }
 
         public void ReadPasswordFromKeychain()

@@ -37,8 +37,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SFTPMoveFeatureTest {
@@ -52,12 +51,13 @@ public class SFTPMoveFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new SFTPHomeDirectoryService(session).find();
-        final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test, new TransferStatus());
-        final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path test = new SFTPTouchFeature(session).touch(new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(0L, test.attributes().getSize());
+        final Path target = new SFTPMoveFeature(session).move(test,
+            new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
+        assertEquals(test.attributes(), target.attributes());
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

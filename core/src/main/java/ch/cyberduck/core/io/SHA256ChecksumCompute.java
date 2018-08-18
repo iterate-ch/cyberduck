@@ -29,6 +29,7 @@ public class SHA256ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
-        return new Checksum(HashAlgorithm.sha256, Hex.encodeHexString(this.digest("SHA-256", in)));
+        return new Checksum(HashAlgorithm.sha256, Hex.encodeHexString(this.digest("SHA-256",
+            this.normalize(in, status))));
     }
 }

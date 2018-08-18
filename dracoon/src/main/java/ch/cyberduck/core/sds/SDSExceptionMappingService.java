@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
@@ -57,6 +58,10 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
             }
             if(cause instanceof IOException) {
                 return new DefaultIOExceptionMappingService().map((IOException) cause);
+            }
+            if(cause instanceof IllegalStateException) {
+                // Caused by: ch.cyberduck.core.sds.io.swagger.client.ApiException: javax.ws.rs.ProcessingException: java.lang.IllegalStateException: Connection pool shut down
+                return new ConnectionCanceledException(cause);
             }
         }
         final StringBuilder buffer = new StringBuilder();

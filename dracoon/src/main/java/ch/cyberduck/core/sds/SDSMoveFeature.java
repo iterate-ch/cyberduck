@@ -65,19 +65,26 @@ public class SDSMoveFeature implements Move {
             }
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 if(containerService.isContainer(file)) {
-                    new NodesApi(session.getClient()).updateRoom(nodeId,
-                        new UpdateRoomRequest().name(renamed.getName()), StringUtils.EMPTY, null);
+                    return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new SDSAttributesFinderFeature(session, nodeid).toAttributes(
+                        new NodesApi(session.getClient()).updateRoom(nodeId,
+                            new UpdateRoomRequest().name(renamed.getName()), StringUtils.EMPTY, null)
+                    ));
                 }
                 // Rename
                 else if(file.isDirectory()) {
-                    new NodesApi(session.getClient()).updateFolder(nodeId,
-                        new UpdateFolderRequest().name(renamed.getName()), StringUtils.EMPTY, null);
+                    return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new SDSAttributesFinderFeature(session, nodeid).toAttributes(
+                        new NodesApi(session.getClient()).updateFolder(nodeId,
+                            new UpdateFolderRequest().name(renamed.getName()), StringUtils.EMPTY, null)
+                    ));
                 }
                 else {
-                    new NodesApi(session.getClient()).updateFile(nodeId,
-                        new UpdateFileRequest().name(renamed.getName()), StringUtils.EMPTY, null);
+                    return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new SDSAttributesFinderFeature(session, nodeid).toAttributes(
+                        new NodesApi(session.getClient()).updateFile(nodeId,
+                            new UpdateFileRequest().name(renamed.getName()), StringUtils.EMPTY, null)
+                    ));
                 }
             }
+            // Copy original file attributes
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
                 new PathAttributes(renamed.attributes()).withVersionId(file.attributes().getVersionId()));
         }
@@ -98,6 +105,10 @@ public class SDSMoveFeature implements Move {
                 // Cannot move data room but only rename
                 return false;
             }
+        }
+        if(target.getParent().isRoot() && !source.getParent().isRoot()) {
+            // Cannot move file or directory to root but only rename data rooms
+            return false;
         }
         return true;
     }

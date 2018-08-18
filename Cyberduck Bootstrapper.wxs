@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-    <Bundle Name="Cyberduck" Version="!(bind.packageVersion.Setup)" Manufacturer="iterate GmbH"
-            UpgradeCode="69C1D059-4B45-4220-A82C-DAE80C9CD8E0" IconSourceFile="cyberduck-application.ico">
-        <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
-            <bal:WixStandardBootstrapperApplication LicenseUrl=""
-                                                    LogoFile="setup\wix\banner.png"
-                                                    LogoSideFile="setup\wix\welcome.bmp"/>
-        </BootstrapperApplicationRef>
-        <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck"/>
-        <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
-        <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
-        <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
+  <Bundle Name="Cyberduck" Version="!(bind.packageVersion.Setup)" Manufacturer="iterate GmbH"
+          UpgradeCode="69C1D059-4B45-4220-A82C-DAE80C9CD8E0" IconSourceFile="cyberduck-application.ico">
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
+      <bal:WixStandardBootstrapperApplication LicenseUrl=""
+                                              LogoFile="setup\wix\banner.png"
+                                              LogoSideFile="setup\wix\welcome.bmp"/>
+    </BootstrapperApplicationRef>
+    <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck"/>
+    <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
+    <util:RegistrySearch Id="CurrentBuild" Variable="CBNumber" Result="value" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Value="CurrentBuildNumber"/>
+    <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
+    <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
 
-        <bal:Condition Message="This application is only supported on Windows 7, Windows Server 2008 R2, or higher.">
-            VersionNT >= v6.1
-        </bal:Condition>
+    <bal:Condition Message="Windows 7 SP1, Windows Server 2008 R2 or later is required to run this application.">
+      <![CDATA[VersionNT >= v6.1 AND (VersionNT <> v6.1 OR ServicePackLevel >= 1 OR MsiNTProductType <> 1)]]>
+    </bal:Condition>
+    <bal:Condition Message="Installation on Windows 8 is not supported.">
+      <![CDATA[VersionNT <> v6.2 OR MsiNTProductType <> 1]]>
+    </bal:Condition>
+    <bal:Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
+      <![CDATA[VersionNT < v10.0 OR CBNumber >= 14393]]>
+    </bal:Condition>
 
-        <Chain>
-            <PackageGroupRef Id="NetFx45Web"/>
-            <RollbackBoundary/>
-            <MsiPackage
-                    Id="Setup"
-                    Compressed="yes"
-                    SourceFile="$(var.cyberduck-installer-msi.TargetPath)"
-                    Vital="yes">
-                <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]"/>
-                <MsiProperty Name="AUTOSTART" Value="0"/>
-            </MsiPackage>
-            <MsiPackage SourceFile="setup\wix\Bonjour.msi" Compressed="yes" Vital="no" InstallCondition="NOT VersionNT64"/>
-            <MsiPackage SourceFile="setup\wix\Bonjour64.msi" Compressed="yes" Vital="no" InstallCondition="VersionNT64"/>
-        </Chain>
-    </Bundle>
+    <Chain>
+      <PackageGroupRef Id="NetFx472Web" />
+      <RollbackBoundary/>
+      <MsiPackage
+              Id="Setup"
+              Compressed="yes"
+              SourceFile="$(var.cyberduck-installer-msi.TargetPath)"
+              Vital="yes">
+        <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]"/>
+        <MsiProperty Name="AUTOSTART" Value="0"/>
+      </MsiPackage>
+      <MsiPackage SourceFile="setup\wix\Bonjour.msi" Compressed="yes" Vital="no" InstallCondition="NOT VersionNT64"/>
+      <MsiPackage SourceFile="setup\wix\Bonjour64.msi" Compressed="yes" Vital="no" InstallCondition="VersionNT64"/>
+    </Chain>
+  </Bundle>
 </Wix>

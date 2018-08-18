@@ -36,4 +36,27 @@ public interface ThreadPool {
     void shutdown(boolean gracefully);
 
     AbstractExecutorService executor();
+
+    enum Priority {
+        low {
+            @Override
+            int toInteger() {
+                return Thread.MIN_PRIORITY;
+            }
+        },
+        norm {
+            @Override
+            int toInteger() {
+                return Thread.NORM_PRIORITY;
+            }
+        },
+        max {
+            @Override
+            int toInteger() {
+                return Thread.MAX_PRIORITY;
+            }
+        };
+
+        abstract int toInteger();
+    }
 }

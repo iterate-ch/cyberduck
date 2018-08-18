@@ -117,8 +117,8 @@ public class DefaultBookmarkController extends BookmarkController {
                         certificatePopup.lastItem().setRepresentedObject(certificate);
                     }
                 }
-                if(bookmark.getCredentials().isCertificateAuthentication()) {
-                    certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getCertificate()));
+                if(credentials.isCertificateAuthentication()) {
+                    certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(credentials.getCertificate()));
                 }
                 else {
                     certificatePopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
@@ -129,7 +129,7 @@ public class DefaultBookmarkController extends BookmarkController {
 
     @Action
     public void certificateSelectionChanged(final NSPopUpButton sender) {
-        bookmark.getCredentials().setCertificate(sender.selectedItem().representedObject());
+        credentials.setCertificate(sender.selectedItem().representedObject());
         this.update();
     }
 

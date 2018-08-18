@@ -27,6 +27,8 @@
         <string>DigitalOcean Spaces (nyc3)</string>
         <key>Default Hostname</key>
         <string>nyc3.digitaloceanspaces.com</string>
+        <key>Hostname Configurable</key>
+        <false/>
         <key>Default Port</key>
         <string>443</string>
         <key>Username Placeholder</key>

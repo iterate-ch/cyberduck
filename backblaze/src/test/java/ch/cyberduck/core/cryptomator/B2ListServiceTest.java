@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.b2.AbstractB2Test;
+import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2ListService;
@@ -64,7 +65,8 @@ public class B2ListServiceTest extends AbstractB2Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         assertTrue(new CryptoListService(session, new B2ListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        final Path test = new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new DefaultUploadFeature<BaseB2Response>(new B2WriteFeature(session, fileid))), new B2WriteFeature(session, fileid), cryptomator).touch(
+        final Path test = new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new DefaultUploadFeature<BaseB2Response>(new B2WriteFeature(session, fileid)),
+            new B2AttributesFinderFeature(session, fileid)), new B2WriteFeature(session, fileid), cryptomator).touch(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         test.attributes().setVersionId(new CryptoIdProvider(session, fileid, cryptomator).getFileid(test, new DisabledListProgressListener()));
         assertEquals(test, new CryptoListService(session, new B2ListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
@@ -84,7 +86,8 @@ public class B2ListServiceTest extends AbstractB2Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new DefaultUploadFeature<>(new B2WriteFeature(session, fileid))), new B2WriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new DefaultUploadFeature<>(new B2WriteFeature(session, fileid)),
+            new B2AttributesFinderFeature(session, fileid)), new B2WriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
         assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
         new CryptoDeleteFeature(session, new B2DeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

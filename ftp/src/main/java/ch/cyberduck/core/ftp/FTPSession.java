@@ -49,8 +49,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -335,7 +333,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) new FTPWorkdirService(this);
         }
         if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(new DefaultUploadFeature(new FTPWriteFeature(this)));
+            return (T) new FTPTouchFeature(this);
         }
         if(type == Copy.class) {
             return (T) new DefaultCopyFeature(this);

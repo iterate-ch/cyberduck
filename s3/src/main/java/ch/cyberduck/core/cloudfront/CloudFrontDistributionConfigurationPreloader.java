@@ -55,11 +55,19 @@ public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedul
         final Map<Path, Distribution> distributions = new ConcurrentHashMap<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {
-                final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Cache distribution %s", distribution));
+                if(Distribution.WEBSITE.equals(method)) {
+                    continue;
                 }
-                distributions.put(container, distribution);
+                if(Distribution.WEBSITE_CDN.equals(method)) {
+                    continue;
+                }
+                final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
+                if(distribution.isEnabled()) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Cache distribution %s", distribution));
+                    }
+                    distributions.put(container, distribution);
+                }
             }
         }
         return distributions;

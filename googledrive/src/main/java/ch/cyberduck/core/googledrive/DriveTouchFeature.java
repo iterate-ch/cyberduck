@@ -47,8 +47,7 @@ public class DriveTouchFeature implements Touch<VersionId> {
                 .setName(file.getName())
                 .setMimeType(status.getMime())
                 .setParents(Collections.singletonList(fileid.getFileid(file.getParent(), new DisabledListProgressListener()))));
-            final File execute = insert.
-                setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+            final File execute = insert.setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
             return new Path(file.getParent(), file.getName(), file.getType(),
                 new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
         }

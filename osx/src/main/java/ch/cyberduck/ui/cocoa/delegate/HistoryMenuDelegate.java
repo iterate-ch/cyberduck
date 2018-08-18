@@ -20,14 +20,10 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.BundleController;
-import ch.cyberduck.binding.application.NSColor;
-import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.HistoryCollection;
@@ -48,13 +44,6 @@ import java.util.Date;
 
 public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(HistoryMenuDelegate.class);
-
-    protected static final NSDictionary TIMESTAMP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor(),
-                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
-            NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName)
-    );
 
     private final AbstractHostCollection collection
             = HistoryCollection.defaultCollection();
@@ -132,11 +121,11 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                 final Date timestamp = h.getTimestamp();
                 if(null != timestamp) {
                     item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
-                            UserDateFormatterFactory.get().getLongFormat(timestamp.getTime()), TIMESTAMP_FONT_ATTRIBUTES));
+                        UserDateFormatterFactory.get().getLongFormat(timestamp.getTime()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
                 }
                 else {
                     item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
-                            LocaleFactory.localizedString("Unknown"), TIMESTAMP_FONT_ATTRIBUTES));
+                        LocaleFactory.localizedString("Unknown"), BundleController.MENU_HELP_FONT_ATTRIBUTES));
                 }
             }
         }

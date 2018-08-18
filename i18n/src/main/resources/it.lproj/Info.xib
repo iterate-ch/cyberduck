@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="InfoController">
@@ -179,7 +179,7 @@
                 <button verticalHuggingPriority="750" id="26">
                     <rect key="frame" x="208" y="13" width="177" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                    <buttonCell key="cell" type="push" title="Applica a tutti gli elementi inclusi" bezelStyle="rounded" alignment="center" controlSize="small" lineBreakMode="truncatingMiddle" borderStyle="border" inset="2" id="27">
+                    <buttonCell key="cell" type="push" title="Applica modifiche ricorsivamente" bezelStyle="rounded" alignment="center" controlSize="small" lineBreakMode="truncatingMiddle" borderStyle="border" inset="2" id="27">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -187,7 +187,7 @@
                 <button id="28">
                     <rect key="frame" x="309" y="51" width="80" height="18"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="check" title="Esegui" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="29">
+                    <buttonCell key="cell" type="check" title="Esecuzione" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="29">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -195,7 +195,7 @@
                 <button id="30">
                     <rect key="frame" x="309" y="69" width="80" height="18"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="check" title="Esegui" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="31">
+                    <buttonCell key="cell" type="check" title="Esecuzione" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="31">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -203,7 +203,7 @@
                 <button id="32">
                     <rect key="frame" x="309" y="87" width="80" height="18"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="check" title="Esegui" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="33">
+                    <buttonCell key="cell" type="check" title="Esecuzione" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="33">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -211,7 +211,7 @@
                 <button id="34">
                     <rect key="frame" x="226" y="51" width="80" height="18"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="check" title="Scrivi" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="35">
+                    <buttonCell key="cell" type="check" title="Scrittura" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="35">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -219,7 +219,7 @@
                 <button id="36">
                     <rect key="frame" x="226" y="69" width="80" height="18"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="check" title="Scrivi" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="37">
+                    <buttonCell key="cell" type="check" title="Scrittura" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="37">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -227,7 +227,7 @@
                 <button id="38">
                     <rect key="frame" x="226" y="87" width="80" height="18"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="check" title="Scrivi" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="39">
+                    <buttonCell key="cell" type="check" title="Scrittura" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="39">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -292,7 +292,7 @@
                 <textField verticalHuggingPriority="750" id="53">
                     <rect key="frame" x="139" y="227" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Open the URL to setup log analytics with Qloudstat." id="54">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Apri l'URL per impostare il registro delle statistiche con Qloudstat." id="54">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -346,7 +346,7 @@
                 <textField verticalHuggingPriority="750" id="66">
                     <rect key="frame" x="17" y="110" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Root File predefinito" id="67">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="File indice" id="67">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -382,7 +382,7 @@
                 <textField verticalHuggingPriority="750" id="74">
                     <rect key="frame" x="17" y="407" width="120" height="39"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Modalità Consegna" id="75">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Modalità consegna" id="75">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -391,7 +391,7 @@
                 <button id="76">
                     <rect key="frame" x="139" y="283" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <buttonCell key="cell" type="check" title="Read Access for Qloudstat" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="77">
+                    <buttonCell key="cell" type="check" title="Accesso lettura per Qloudstat" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="77">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -426,7 +426,7 @@
                 <textField verticalHuggingPriority="750" id="84">
                     <rect key="frame" x="139" y="332" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Scrivere i logs d'accesso per il container selezionato." id="85">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Registri accesso scrittura nel contenitore selezionato." id="85">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -435,7 +435,7 @@
                 <textField verticalHuggingPriority="750" id="86">
                     <rect key="frame" x="139" y="47" width="244" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Rimuovi i files selezionati dalla cache di distribuzione" id="87">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Rimuovi i file selezionati dalla cache di distribuzione" id="87">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -529,7 +529,7 @@
                 <button id="109">
                     <rect key="frame" x="139" y="366" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <buttonCell key="cell" type="check" title="Abilita Registro Accesso" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="110">
+                    <buttonCell key="cell" type="check" title="Registro accesso distribuzione" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="110">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -543,7 +543,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="120">
                     <rect key="frame" x="18" y="429" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Cifratura" id="121">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Criptazione" id="121">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -561,7 +561,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="143">
                     <rect key="frame" x="18" y="476" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Ubicazione" id="144">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Percorso" id="144">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -579,7 +579,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="173">
                     <rect key="frame" x="18" y="454" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Classe di archiviazione" id="174">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Classe archiviazione" id="174">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -591,7 +591,7 @@
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="rGT-5o-1kv">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" title="OtherViews" id="uYp-L3-jMv"/>
+                        <menu key="menu" title="Altre viste" id="uYp-L3-jMv"/>
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" misplaced="YES" id="iWf-nx-XP9">
@@ -606,7 +606,7 @@
                 <button misplaced="YES" id="LxZ-su-Bo8">
                     <rect key="frame" x="140" y="404" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Accelerazione del trasferimento" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="Hhf-CN-RAy">
+                    <buttonCell key="cell" type="check" title="Accelerazione trasferimento" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="Hhf-CN-RAy">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -618,7 +618,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="112">
                     <rect key="frame" x="140" y="244" width="243" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Open the URL to setup log analytics with Qloudstat." id="113">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Apri l'URL per impostare registro statistiche con Qloudstat." id="113">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -645,7 +645,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="126">
                     <rect key="frame" x="140" y="170" width="243" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Puoi vedere tutte le revisioni del file dal browser scegliendo Vista → Mostra file nascosti." id="127">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Puoi visualizzare tutte le revisioni del file dal browser scegliendo Vista → Visualizza file nascosti." id="127">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -654,7 +654,7 @@
                 <button misplaced="YES" id="128">
                     <rect key="frame" x="140" y="146" width="243" height="19"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Multi-Factor Authentication (MFA) Delete" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="129">
+                    <buttonCell key="cell" type="check" title="Elimina Multi-Factor Authentication (MFA)" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="129">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -724,7 +724,7 @@
                 <button misplaced="YES" id="160">
                     <rect key="frame" x="140" y="73" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Cancella file" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="161">
+                    <buttonCell key="cell" type="check" title="Elimina file" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="161">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -740,7 +740,7 @@
                 <button misplaced="YES" id="164">
                     <rect key="frame" x="140" y="300" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Read Access for Qloudstat" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="165">
+                    <buttonCell key="cell" type="check" title="Accesso lettura per Qloudstat" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="165">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -748,7 +748,7 @@
                 <button misplaced="YES" id="166">
                     <rect key="frame" x="140" y="383" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Registra Accesso Bucket" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="167">
+                    <buttonCell key="cell" type="check" title="Registrazione accesso Bucket" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="167">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -756,7 +756,7 @@
                 <textField verticalHuggingPriority="750" misplaced="YES" id="168">
                     <rect key="frame" x="140" y="349" width="243" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Scrivere i logs d'accesso per il container selezionato." id="169">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Registri acecsso scrittura per il contenitore selezionato." id="169">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -794,7 +794,7 @@
                 <textField verticalHuggingPriority="750" id="178">
                     <rect key="frame" x="57" y="206" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="URL Web" id="179">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="URL web" id="179">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1079,7 +1079,7 @@
                 <textField verticalHuggingPriority="750" id="244">
                     <rect key="frame" x="17" y="194" width="342" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Headers" id="245">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Intestazioni" id="245">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1202,7 +1202,7 @@
                 <textField verticalHuggingPriority="750" id="269">
                     <rect key="frame" x="17" y="160" width="342" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Access Control List (ACL)" id="270">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Elenco controllo accessi (ACL)" id="270">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

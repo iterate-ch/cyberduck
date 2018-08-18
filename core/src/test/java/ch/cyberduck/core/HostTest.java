@@ -58,45 +58,6 @@ public class HostTest {
     }
 
     @Test
-    public void testConfigure() {
-        final Credentials credentials = new Credentials("u", "p");
-        final Host bookmark = new Host(new TestProtocol(Scheme.sftp), "h", credentials);
-        bookmark.configure(new HostnameConfigurator() {
-                               @Override
-                               public String getHostname(String alias) {
-                                   return "c";
-                               }
-
-                               @Override
-                               public int getPort(String alias) {
-                                   return 444;
-                               }
-
-            @Override
-            public void reload() {
-                //
-            }
-                           }, new CredentialsConfigurator() {
-                               @Override
-                               public Credentials configure(Host host) {
-                                   final Credentials c = host.getCredentials();
-                                   c.setUsername("uu");
-                                   return c;
-                               }
-
-            @Override
-            public void reload() {
-                //
-            }
-                           }
-        );
-        assertEquals(444, bookmark.getPort());
-        // Hostname should not be changed
-        assertEquals("h", bookmark.getHostname());
-        assertEquals("uu", bookmark.getCredentials().getUsername());
-    }
-
-    @Test
     public void testTrim() {
         final Host bookmark = new Host(new TestProtocol(Scheme.sftp));
         bookmark.setHostname("h ");

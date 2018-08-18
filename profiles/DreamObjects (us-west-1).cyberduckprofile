@@ -5,11 +5,11 @@
 	<key>Protocol</key>
 	<string>s3</string>
 	<key>Vendor</key>
-	<string>dreamhost</string>
+    <string>dreamhost-us-east-1</string>
 	<key>Description</key>
 	<string>DreamObjects Cloud Storage (S3)</string>
 	<key>Default Hostname</key>
-    <string>objects-us-west-1.dream.io</string>
+    <string>objects-us-east-1.dream.io</string>
 	<key>Default Port</key>
 	<string>443</string>
 	<key>Username Placeholder</key>

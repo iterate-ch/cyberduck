@@ -58,8 +58,8 @@ public class SwiftLargeUploadWriteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus();
@@ -110,7 +110,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftLargeUploadWriteFeature feature = new SwiftLargeUploadWriteFeature(session, regionService,
             new SwiftSegmentService(session, ".segments-test/"));
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

@@ -21,13 +21,14 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 public class CreateDirectoryWorker extends Worker<Path> {
 
@@ -42,9 +43,6 @@ public class CreateDirectoryWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
-        if(!feature.isSupported(folder.getParent(), folder.getName())) {
-            throw new UnsupportedException();
-        }
         final TransferStatus status = new TransferStatus();
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
@@ -55,6 +53,10 @@ public class CreateDirectoryWorker extends Worker<Path> {
             status.setStorageClass(redundancy.getDefault());
         }
         status.setTimestamp(System.currentTimeMillis());
+        final UnixPermission permission = session.getFeature(UnixPermission.class);
+        if(permission != null) {
+            status.setPermission(permission.getDefault(EnumSet.of(Path.Type.directory)));
+        }
         return feature.mkdir(folder, region, status);
     }
 
@@ -66,7 +68,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                folder.getName());
+            folder.getName());
     }
 
 

@@ -70,12 +70,29 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final ProgressListener progressListener,
                                     final StreamListener streamListener,
                                     final NotificationService notification) {
+        this(source, destination, transfer, ThreadPool.Priority.norm, options, meter, prompt, error,
+            connectionCallback, passwordCallback, progressListener, streamListener, notification);
+    }
+
+    public ConcurrentTransferWorker(final SessionPool source,
+                                    final SessionPool destination,
+                                    final Transfer transfer,
+                                    final ThreadPool.Priority priority,
+                                    final TransferOptions options,
+                                    final TransferSpeedometer meter,
+                                    final TransferPrompt prompt,
+                                    final TransferErrorCallback error,
+                                    final ConnectionCallback connectionCallback,
+                                    final PasswordCallback passwordCallback,
+                                    final ProgressListener progressListener,
+                                    final StreamListener streamListener,
+                                    final NotificationService notification) {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback, passwordCallback, notification);
         this.source = source;
         this.destination = destination;
         this.pool = ThreadPoolFactory.get("transfer",
             transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
-                1 : PreferencesFactory.get().getInteger("queue.connections.limit"));
+                1 : PreferencesFactory.get().getInteger("queue.connections.limit"), priority);
         this.completion = new ExecutorCompletionService<TransferStatus>(pool.executor());
     }
 

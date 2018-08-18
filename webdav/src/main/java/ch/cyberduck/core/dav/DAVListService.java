@@ -42,9 +42,11 @@ public class DAVListService implements ListService {
     private static final Logger log = Logger.getLogger(DAVListService.class);
 
     private final DAVSession session;
+    private final DAVAttributesFinderFeature attributes;
 
     public DAVListService(final DAVSession session) {
         this.session = session;
+        this.attributes = new DAVAttributesFinderFeature(session);
     }
 
     @Override
@@ -64,7 +66,7 @@ public class DAVListService implements ListService {
                     }
                     throw new NotfoundException(directory.getAbsolute());
                 }
-                final PathAttributes attributes = new DAVAttributesFinderFeature(session).toAttributes(resource);
+                final PathAttributes attributes = this.attributes.toAttributes(resource);
                 final Path file = new Path(directory, PathNormalizer.name(href),
                     resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
                     attributes);

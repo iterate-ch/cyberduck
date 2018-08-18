@@ -17,17 +17,11 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 public abstract class HostPasswordStore implements PasswordStore {
     private static final Logger log = Logger.getLogger(HostPasswordStore.class);
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
 
     /**
      * Find password for login
@@ -63,13 +57,12 @@ public abstract class HostPasswordStore implements PasswordStore {
             log.warn("No hostname given");
             return null;
         }
-        final Credentials credentials = bookmark.getCredentials();
         if(log.isInfoEnabled()) {
             log.info(String.format("Fetching login token from keychain for %s", bookmark));
         }
         // Find token named like "Shared Access Signature (SAS) Token"
         final String token = this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-            bookmark.getHostname(), bookmark.getProtocol().getPasswordPlaceholder());
+            bookmark.getHostname(), bookmark.getProtocol().getTokenPlaceholder());
         if(null == token) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Token not found in keychain for %s", bookmark));
@@ -165,7 +158,7 @@ public abstract class HostPasswordStore implements PasswordStore {
         }
         if(credentials.isTokenAuthentication()) {
             this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                bookmark.getHostname(), bookmark.getProtocol().getPasswordPlaceholder(), credentials.getToken());
+                bookmark.getHostname(), bookmark.getProtocol().getTokenPlaceholder(), credentials.getToken());
         }
     }
 }

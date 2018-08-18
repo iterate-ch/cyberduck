@@ -55,6 +55,7 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
+import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 
@@ -170,7 +171,8 @@ public class OAuth2AuthorizationService {
             }
             // Swap the given authorization token for access/refresh tokens
             final TokenResponse response = flow.newTokenRequest(credentials.getPassword())
-                .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
+                .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes)
+                .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             // Save access key and refresh key
             final Tokens tokens = new Tokens(
                 response.getAccessToken(), response.getRefreshToken(),
@@ -204,7 +206,8 @@ public class OAuth2AuthorizationService {
         try {
             final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                 tokens.getRefreshToken())
-                .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret)).execute();
+                .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
+                .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
             if(StringUtils.isBlank(response.getRefreshToken())) {
                 return new Tokens(response.getAccessToken(), tokens.getRefreshToken(), expiryInMilliseconds);
@@ -315,6 +318,59 @@ public class OAuth2AuthorizationService {
             sb.append(", refreshToken='").append(refreshToken).append('\'');
             sb.append('}');
             return sb.toString();
+        }
+    }
+
+    public static final class PermissiveTokenResponse extends GenericJson {
+        private String accessToken;
+        private String tokenType;
+        private Long expiresInSeconds;
+        private String refreshToken;
+        private String scope;
+
+        @Override
+        public PermissiveTokenResponse set(final String fieldName, final Object value) {
+            if("access_token".equals(fieldName)) {
+                accessToken = (String) value;
+            }
+            else if("refresh_token".equals(fieldName)) {
+                refreshToken = (String) value;
+            }
+            else if("token_type".equals(fieldName)) {
+                tokenType = (String) value;
+            }
+            else if("scope".equals(fieldName)) {
+                scope = (String) value;
+            }
+            else if("expires_in".equals(fieldName)) {
+                if(value instanceof String) {
+                    try {
+                        expiresInSeconds = Long.parseLong((String) value);
+                    }
+                    catch(NumberFormatException e) {
+                        throw new IllegalArgumentException("Value of expires_in is not a number: " + value);
+                    }
+                }
+                else if(value instanceof Number) {
+                    expiresInSeconds = ((Number) value).longValue();
+                }
+                else {
+                    throw new IllegalArgumentException("Unknown value type for expires_in: " + value.getClass().getName());
+                }
+            }
+            else {
+                return (PermissiveTokenResponse) super.set(fieldName, value);
+            }
+            return this;
+        }
+
+        public TokenResponse toTokenResponse() {
+            return new TokenResponse()
+                .setTokenType(tokenType)
+                .setScope(scope)
+                .setExpiresInSeconds(expiresInSeconds)
+                .setAccessToken(accessToken)
+                .setRefreshToken(refreshToken);
         }
     }
 }

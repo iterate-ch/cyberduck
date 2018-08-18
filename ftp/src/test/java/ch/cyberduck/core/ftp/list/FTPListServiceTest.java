@@ -34,15 +34,13 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPDirectoryFeature;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.ftp.FTPUnixPermissionFeature;
 import ch.cyberduck.core.ftp.FTPWorkdirService;
-import ch.cyberduck.core.ftp.FTPWriteFeature;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -72,7 +70,7 @@ public class FTPListServiceTest {
         final ListService service = new FTPListService(session, null, TimeZone.getDefault());
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        session.getFeature(Touch.class).touch(file, new TransferStatus());
         final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
         new FTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
@@ -101,7 +99,7 @@ public class FTPListServiceTest {
         service.remove(FTPListService.Command.mlsd);
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
+        session.getFeature(Touch.class).touch(file, new TransferStatus());
         final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
         new FTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {

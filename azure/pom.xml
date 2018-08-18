@@ -18,10 +18,12 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>6.6.3-SNAPSHOT</version>
+        <version>6.7.3-SNAPSHOT</version>
     </parent>
     <artifactId>azure</artifactId>
-    <packaging>jar</packaging>
+    <properties>
+        <azure-storage-version>8.0.0</azure-storage-version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -39,7 +41,7 @@
         <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure-storage</artifactId>
-            <version>7.0.0</version>
+            <version>${azure-storage-version}</version>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>

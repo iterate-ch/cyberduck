@@ -52,19 +52,18 @@ public class SwiftObjectListServiceTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
             if(p.isFile()) {
-                assertNotEquals(-1L, p.attributes().getModificationDate());
                 assertNotEquals(-1L, p.attributes().getSize());
                 assertNotNull(p.attributes().getChecksum().hash);
                 assertNull(p.attributes().getETag());
             }
             else if(p.isDirectory()) {
-                //assertFalse(p.isPlaceholder());
+                assertFalse(p.isPlaceholder());
             }
             else {
                 fail();
@@ -94,8 +93,8 @@ public class SwiftObjectListServiceTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("SYD");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
@@ -112,8 +111,8 @@ public class SwiftObjectListServiceTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("ORD");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final String name = UUID.randomUUID().toString();
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
@@ -133,8 +132,8 @@ public class SwiftObjectListServiceTest {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("SYD");
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
         final String basename = UUID.randomUUID().toString();
         final String childname = String.format("%s/%s", basename, UUID.randomUUID().toString());
         final Path base = new Path(container, basename, EnumSet.of(Path.Type.file));
