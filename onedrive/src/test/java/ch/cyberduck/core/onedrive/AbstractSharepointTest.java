@@ -29,7 +29,7 @@ public abstract class AbstractSharepointTest extends AbstractGraphTest {
 
     @Override
     protected Protocol protocol() {
-        return new OneDriveProtocol();
+        return new SharepointProtocol();
     }
 
     @Override

@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.onedrive.features.SharepointFileIdProvider;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -45,9 +46,14 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
 
     @Test
     public void testListGroups() throws Exception {
+        final AttributedList<Path> list = new SharepointGroupListService(session).list(SharepointSession.GROUPS_NAME, new DisabledListProgressListener());
     }
 
     @Test
     public void testListGroup() throws Exception {
+        final AttributedList<Path> list = new SharepointGroupDrivesListService(session)
+            .list(new Path(
+                SharepointSession.GROUPS_NAME, "bbe48dd5-3952-4940-9989-919042b8924c",
+                EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("bbe48dd5-3952-4940-9989-919042b8924c")), new DisabledListProgressListener());
     }
 }
