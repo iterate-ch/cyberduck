@@ -42,6 +42,8 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testTouch() throws Exception {
+        final OneDriveSession session = session();
+
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertNotNull(new OneDriveTouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId());
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
@@ -50,6 +52,8 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testTouchUmlaut() throws Exception {
+        final OneDriveSession session = session();
+
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%sä", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(file, new TransferStatus());
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
@@ -58,6 +62,8 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testTouchEqualSign() throws Exception {
+        final OneDriveSession session = session();
+
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%s====", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(file, new TransferStatus());
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
@@ -66,6 +72,8 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWhitespaceTouch() throws Exception {
+        final OneDriveSession session = session();
+
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));

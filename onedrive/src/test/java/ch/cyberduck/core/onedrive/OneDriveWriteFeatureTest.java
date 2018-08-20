@@ -49,6 +49,8 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWrite() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
@@ -73,6 +75,8 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteUmlaut() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(2048);
@@ -96,6 +100,8 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteUmlautZeroLength() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(0);
@@ -119,6 +125,8 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteZeroLength() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(0);
@@ -142,6 +150,8 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testWriteUnknownLength() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);

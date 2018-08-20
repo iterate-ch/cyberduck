@@ -47,6 +47,8 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWrite() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveBufferWriteFeature feature = new OneDriveBufferWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024);
@@ -75,6 +77,8 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteOverwrite() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveBufferWriteFeature feature = new OneDriveBufferWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -119,6 +123,8 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteUnknownLength() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveBufferWriteFeature feature = new OneDriveBufferWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
@@ -143,6 +149,8 @@ public class OneDriveBufferWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWriteZeroLength() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveBufferWriteFeature feature = new OneDriveBufferWriteFeature(session);
         final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(0);

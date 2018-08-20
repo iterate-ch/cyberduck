@@ -15,20 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -44,45 +31,35 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public abstract class AbstractOneDriveTest {
-
-    protected OneDriveSession session;
-
-    @After
-    public void disconnect() throws Exception {
-        session.close();
+public abstract class AbstractOneDriveTest extends AbstractGraphTest {
+    @Override
+    protected OneDriveSession session() {
+        return (OneDriveSession)super.session();
     }
 
-    @Before
-    public void setup() throws Exception {
-        final Preferences preferences = PreferencesFactory.get();
-        preferences.setDefault("connection.ssl.securerandom.algorithm", "Windows-PRNG");
-        preferences.setDefault("connection.ssl.securerandom.provider", "SunMSCAPI");
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
-        session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
+    @Override
+    protected Protocol protocol() {
+        return new OneDriveProtocol();
+    }
+
+    @Override
+    protected Local profile() {
+        return new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile");
+    }
+
+    @Override
+    protected HostPasswordStore passwordStore() {
+        return new DisabledPasswordStore() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
+            public String getPassword(Scheme scheme, int port, String hostname, String user) {
+                if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Access Token")) {
+                    return System.getProperties().getProperty("onedrive.accesstoken");
+                }
+                if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Refresh Token")) {
+                    return System.getProperties().getProperty("onedrive.refreshtoken");
+                }
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
-            new TestPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-    }
-
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Access Token")) {
-                return System.getProperties().getProperty("onedrive.accesstoken");
-            }
-            if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Refresh Token")) {
-                return System.getProperties().getProperty("onedrive.refreshtoken");
-            }
-            return null;
-        }
+        };
     }
 }

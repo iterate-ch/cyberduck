@@ -30,6 +30,8 @@ public class OneDriveQuotaFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testQuotaSimple() throws BackgroundException {
+        final OneDriveSession session = session();
+
         final Quota quota = new OneDriveQuotaFeature(session);
         Quota.Space space = quota.get();
         assertTrue(space.available > 0);

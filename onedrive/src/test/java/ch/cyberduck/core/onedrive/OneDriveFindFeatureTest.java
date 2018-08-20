@@ -33,12 +33,16 @@ public class OneDriveFindFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindFileNotFound() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveFindFeature f = new OneDriveFindFeature(session);
         assertFalse(f.find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testFindDriveNotFound() throws Exception {
+        final OneDriveSession session = session();
+
         final OneDriveFindFeature f = new OneDriveFindFeature(session);
         assertFalse(f.find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }

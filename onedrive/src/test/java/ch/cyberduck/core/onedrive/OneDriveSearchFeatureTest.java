@@ -48,6 +48,8 @@ public class OneDriveSearchFeatureTest extends AbstractOneDriveTest {
     @Test
     @Ignore
     public void testSearch() throws Exception {
+        final OneDriveSession session = session();
+
         final String name = new AlphanumericRandomStringService().random();
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path directory = new OneDriveDirectoryFeature(session).mkdir(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());

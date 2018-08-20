@@ -49,6 +49,8 @@ public class OneDriveSessionTest extends AbstractOneDriveTest {
 
     @Test
     public void testConnect() throws Exception {
+        final OneDriveSession session = session();
+
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
