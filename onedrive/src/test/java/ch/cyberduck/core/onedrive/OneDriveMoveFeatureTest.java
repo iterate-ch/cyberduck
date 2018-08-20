@@ -53,8 +53,6 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testRename() throws BackgroundException {
-        final OneDriveSession session = session();
-
         final Touch touch = new OneDriveTouchFeature(session);
         final Move move = new OneDriveMoveFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
@@ -72,8 +70,6 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMove() throws BackgroundException {
-        final OneDriveSession session = session();
-
         final Directory directory = new OneDriveDirectoryFeature(session);
         final Touch touch = new OneDriveTouchFeature(session);
         final Move move = new OneDriveMoveFeature(session);
@@ -98,8 +94,6 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveRename() throws BackgroundException {
-        final OneDriveSession session = session();
-
         final Directory directory = new OneDriveDirectoryFeature(session);
         final Touch touch = new OneDriveTouchFeature(session);
         final Move move = new OneDriveMoveFeature(session);
@@ -124,8 +118,6 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveToExistingFile() throws Exception {
-        final OneDriveSession session = session();
-
         final Path folder = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new OneDriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

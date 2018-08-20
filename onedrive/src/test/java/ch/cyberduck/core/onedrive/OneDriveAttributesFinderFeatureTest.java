@@ -43,15 +43,11 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        final OneDriveSession session = session();
-
         new OneDriveAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
     public void testFindFile() throws Exception {
-        final OneDriveSession session = session();
-
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(file);
@@ -67,8 +63,6 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindDirectory() throws Exception {
-        final OneDriveSession session = session();
-
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new OneDriveDirectoryFeature(session).mkdir(file, null, new TransferStatus());
         final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(file);

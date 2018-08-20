@@ -42,8 +42,6 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMkdir() throws Exception {
-        final OneDriveSession session = session();
-
         final Path target = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(target).getETag());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -51,8 +49,6 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testWhitespaceMkdir() throws Exception {
-        final OneDriveSession session = session();
-
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final String name = String.format("%s %s", randomStringService.random(), randomStringService.random());
         final Path target = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), name, EnumSet.of(Path.Type.directory)), null, null);

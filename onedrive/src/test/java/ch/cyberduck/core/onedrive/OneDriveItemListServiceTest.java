@@ -42,8 +42,6 @@ public class OneDriveItemListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testListLexicographically() throws Exception {
-        final OneDriveSession session = session();
-
         final Path directory = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path f2 = new OneDriveTouchFeature(session).touch(new Path(directory, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path f1 = new OneDriveTouchFeature(session).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());

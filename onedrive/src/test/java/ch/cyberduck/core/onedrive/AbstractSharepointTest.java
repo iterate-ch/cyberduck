@@ -16,16 +16,16 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 public abstract class AbstractSharepointTest extends AbstractGraphTest {
-    @Override
-    protected SharepointSession session() {
-        return (SharepointSession)super.session();
-    }
+    protected SharepointSession session;
 
     @Override
     protected Protocol protocol() {
@@ -35,6 +35,11 @@ public abstract class AbstractSharepointTest extends AbstractGraphTest {
     @Override
     protected Local profile() {
         return new Local("../profiles/default/Microsoft SharePoint.cyberduckprofile");
+    }
+
+    @Override
+    protected GraphSession session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        return (session = new SharepointSession(host, trust, key));
     }
 
     @Override

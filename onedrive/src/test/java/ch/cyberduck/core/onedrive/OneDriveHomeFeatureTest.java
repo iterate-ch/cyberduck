@@ -31,8 +31,6 @@ public class OneDriveHomeFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testHomeFeature() throws BackgroundException {
-        final OneDriveSession session = session();
-
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         assertNotNull(drive);
         assertFalse(drive.isRoot());

@@ -22,6 +22,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,10 +34,7 @@ import java.util.HashSet;
 import static org.junit.Assert.fail;
 
 public abstract class AbstractOneDriveTest extends AbstractGraphTest {
-    @Override
-    protected OneDriveSession session() {
-        return (OneDriveSession)super.session();
-    }
+    protected OneDriveSession session;
 
     @Override
     protected Protocol protocol() {
@@ -49,17 +48,24 @@ public abstract class AbstractOneDriveTest extends AbstractGraphTest {
 
     @Override
     protected HostPasswordStore passwordStore() {
-        return new DisabledPasswordStore() {
-            @Override
-            public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Access Token")) {
-                    return System.getProperties().getProperty("onedrive.accesstoken");
-                }
-                if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Refresh Token")) {
-                    return System.getProperties().getProperty("onedrive.refreshtoken");
-                }
-                return null;
+        return new TestPasswordStore();
+    }
+
+    @Override
+    protected GraphSession session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        return (session = new OneDriveSession(host, trust, key));
+    }
+
+    public final static class TestPasswordStore extends DisabledPasswordStore {
+        @Override
+        public String getPassword(Scheme scheme, int port, String hostname, String user) {
+            if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Access Token")) {
+                return System.getProperties().getProperty("onedrive.accesstoken");
             }
-        };
+            if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Refresh Token")) {
+                return System.getProperties().getProperty("onedrive.refreshtoken");
+            }
+            return null;
+        }
     }
 }

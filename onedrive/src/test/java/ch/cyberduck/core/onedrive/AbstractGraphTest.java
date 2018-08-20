@@ -35,6 +35,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,10 +48,6 @@ import static org.junit.Assert.fail;
 
 public abstract class AbstractGraphTest {
     private GraphSession session;
-
-    protected GraphSession session() {
-        return session;
-    }
 
     @After
     public void disconnect() throws Exception {
@@ -64,7 +62,7 @@ public abstract class AbstractGraphTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(profile());
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
-        session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        session = session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -80,4 +78,6 @@ public abstract class AbstractGraphTest {
     protected abstract Local profile();
 
     protected abstract HostPasswordStore passwordStore();
+
+    protected abstract GraphSession session(final Host host, final X509TrustManager trust, final X509KeyManager key);
 }

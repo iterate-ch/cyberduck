@@ -52,8 +52,6 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
-        final OneDriveSession session = session();
-
         final TransferStatus status = new TransferStatus();
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         new OneDriveReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
@@ -61,8 +59,6 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testReadInterrupt() throws Exception {
-        final OneDriveSession session = session();
-
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(test, new TransferStatus());
@@ -84,8 +80,6 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final OneDriveSession session = session();
-
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(test, new TransferStatus());
@@ -119,8 +113,6 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadInvalidRange() throws Exception {
-        final OneDriveSession session = session();
-
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(test, new TransferStatus());
@@ -131,8 +123,6 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final OneDriveSession session = session();
-
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(test, new TransferStatus());

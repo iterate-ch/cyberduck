@@ -43,8 +43,6 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
-        final OneDriveSession session = session();
-
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
@@ -59,8 +57,6 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testSetTimestampDirectory() throws Exception {
-        final OneDriveSession session = session();
-
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new OneDriveDirectoryFeature(session).mkdir(test, null, null);

@@ -40,8 +40,6 @@ public class OneDriveSharingLinkUrlProviderTest extends AbstractOneDriveTest {
 
     @Test
     public void toUrl() throws Exception {
-        final OneDriveSession session = session();
-
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotEquals(DescriptiveUrl.EMPTY, new OneDriveSharingLinkUrlProvider(session).toDownloadUrl(file, null, new DisabledPasswordCallback()));

@@ -34,8 +34,6 @@ public class OneDriveContainerListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindDrive() throws Exception {
-        final OneDriveSession session = session();
-
         final AttributedList<Path> drives = new GraphDrivesListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertFalse(drives.isEmpty());
         for(Path drive : drives) {
