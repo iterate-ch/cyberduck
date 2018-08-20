@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
 public abstract class GraphProtocol extends AbstractProtocol {
@@ -44,5 +45,15 @@ public abstract class GraphProtocol extends AbstractProtocol {
     public boolean isPasswordConfigurable() {
         // Only provide account email
         return false;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.onedrive;
+    }
+
+    @Override
+    public String disk() {
+        return "onedrive.tiff";
     }
 }
