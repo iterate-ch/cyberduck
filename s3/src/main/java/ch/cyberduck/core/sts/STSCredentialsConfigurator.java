@@ -39,6 +39,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.profile.ProfilesConfigFile;
 import com.amazonaws.auth.profile.internal.BasicProfile;
@@ -112,7 +114,7 @@ public class STSCredentialsConfigurator {
                     // If a profile defines the role_arn property then the profile is treated as an assume role profile
                     final AWSSecurityTokenService service = this.getTokenService(ProxyFactory.get().find(host),
                         host.getRegion(),
-                        sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey());
+                        sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken());
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
                     // Role using the long lived AWS credentials
                     final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
@@ -174,7 +176,7 @@ public class STSCredentialsConfigurator {
                         }
                         final AWSSecurityTokenService service = this.getTokenService(ProxyFactory.get().find(host),
                             host.getRegion(),
-                            basicProfile.getAwsAccessIdKey(), basicProfile.getAwsSecretAccessKey());
+                            basicProfile.getAwsAccessIdKey(), basicProfile.getAwsSecretAccessKey(), basicProfile.getAwsSessionToken());
                         final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest();
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Request %s from %s", sessionTokenRequest, service));
@@ -205,7 +207,7 @@ public class STSCredentialsConfigurator {
         return credentials;
     }
 
-    protected AWSSecurityTokenService getTokenService(final Proxy proxy, final String region, final String accessKey, final String secretKey) {
+    protected AWSSecurityTokenService getTokenService(final Proxy proxy, final String region, final String accessKey, final String secretKey, final String sessionToken) {
         final ClientConfiguration configuration = new ClientConfiguration();
         final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
         configuration.setConnectionTimeout(timeout);
@@ -222,7 +224,7 @@ public class STSCredentialsConfigurator {
                 configuration.setProxyPort(proxy.getPort());
         }
         return AWSSecurityTokenServiceClientBuilder.standard()
-            .withCredentials(new AWSStaticCredentialsProvider(new com.amazonaws.auth.AWSCredentials() {
+            .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new AWSCredentials() {
                 @Override
                 public String getAWSAccessKeyId() {
                     return accessKey;
@@ -231,6 +233,21 @@ public class STSCredentialsConfigurator {
                 @Override
                 public String getAWSSecretKey() {
                     return secretKey;
+                }
+            } : new AWSSessionCredentials() {
+                @Override
+                public String getAWSAccessKeyId() {
+                    return accessKey;
+                }
+
+                @Override
+                public String getAWSSecretKey() {
+                    return secretKey;
+                }
+
+                @Override
+                public String getSessionToken() {
+                    return sessionToken;
                 }
             }))
             .withClientConfiguration(configuration)
