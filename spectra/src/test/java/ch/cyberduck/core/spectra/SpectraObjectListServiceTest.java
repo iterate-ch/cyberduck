@@ -176,7 +176,7 @@ public class SpectraObjectListServiceTest {
     }
 
     @Test
-    public void testWriteOverwrite() throws Exception {
+    public void testVersioning() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
@@ -214,7 +214,6 @@ public class SpectraObjectListServiceTest {
             out.close();
         }
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
-
         final AttributedList<Path> list = new S3VersionedObjectListService(session).list(folder, new DisabledListProgressListener());
         assertEquals(2, list.size());
         new SpectraDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
