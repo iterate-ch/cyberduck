@@ -43,7 +43,15 @@ Due to Visual Studio not being able to handle Java projects it is required to fo
   prevent debugging.
 - Open the solution in Visual Studio
 - Open a .java-File and set a break point. Visual Studio breaks either on or near the line selected.
-- Debugging capabilities include Step Over, Step Into, Step Out and continue. Go To Symbol is not working due to missing Java support.
+- Debugging capabilities include
+  - Step Over
+  - Step Into
+  - Step Out
+  - Continue
+  - Local/Auto variables
+  - Immediate Window
+  
+  Go To Symbol is not working due to missing Java support.
 
 ## Running Tests
 
