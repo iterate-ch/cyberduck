@@ -32,6 +32,27 @@ Run `mvn verify -DskipTests` to build without running any tests.
 
 You will run into errors by MSBuild/Wix that are unrelated to how Cyberduck is built. You may safely ignore them.
 
+## Debugging
+
+### Windows
+
+Due to Visual Studio not being able to handle Java projects it is required to follow these steps for debugging:
+
+- Run `mvn verify -Dconfiguration=debug` which ensures that debugging symbols are generated
+  This prevents Visual Studio (or MSBuild invoked by mvn) from generating optimized assemblies which in turn may
+  prevent debugging.
+- Open the solution in Visual Studio
+- Open a .java-File and set a break point. Visual Studio breaks either on or near the line selected.
+- Debugging capabilities include
+  - Step Over
+  - Step Into
+  - Step Out
+  - Continue
+  - Local/Auto variables
+  - Immediate Window
+  
+  Go To Symbol is not working due to missing Java support.
+
 ## Running Tests
 
 After packaging, run `mvn test -DskipITs` to run unit tests but skip integration tests.
