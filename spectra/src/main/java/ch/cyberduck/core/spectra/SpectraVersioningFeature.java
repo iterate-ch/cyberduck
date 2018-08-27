@@ -81,7 +81,7 @@ public class SpectraVersioningFeature implements Versioning {
             final GetDataPolicySpectraS3Response policy = client.getDataPolicySpectraS3(
                 new GetDataPolicySpectraS3Request(bucket.getBucketResult().getDataPolicyId()));
             final VersioningConfiguration configuration = new VersioningConfiguration(
-                policy.getDataPolicyResult().getVersioning() != VersioningLevel.NONE, false);
+                policy.getDataPolicyResult().getVersioning() == VersioningLevel.KEEP_MULTIPLE_VERSIONS, false);
             cache.put(container, configuration);
             return configuration;
         }

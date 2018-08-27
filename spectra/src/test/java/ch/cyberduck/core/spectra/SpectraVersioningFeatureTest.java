@@ -32,6 +32,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -46,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 public class SpectraVersioningFeatureTest {
 
     @Test
-    public void testGetConfigurationDisabled() throws Exception {
+    public void testGetConfigurationEnabled() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {
@@ -69,6 +70,7 @@ public class SpectraVersioningFeatureTest {
     }
 
     @Test
+    @Ignore
     public void testSetConfiguration() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
