@@ -84,6 +84,14 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
         return get(prefix, size, ThreadPool.Priority.norm);
     }
 
+    public static ThreadPool get(final String prefix, final ThreadPool.Priority priority) {
+        return get(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"), priority);
+    }
+
+    public static ThreadPool get(final String prefix, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
+        return get(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"), priority, handler);
+    }
+
     public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority) {
         return get(prefix, size, priority, new LoggingUncaughtExceptionHandler());
     }

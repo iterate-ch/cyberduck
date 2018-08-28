@@ -139,6 +139,11 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
         },
         trash {
             @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Transfer");
+            }
+
+            @Override
             public Selector action() {
                 return Foundation.selector("trashButtonClicked:");
             }
@@ -149,6 +154,11 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
             }
         },
         log {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Transfer");
+            }
+
             @Override
             public Selector action() {
                 return Foundation.selector("toggleLogDrawer:");
@@ -161,13 +171,18 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
         },
         bandwidth {
             @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Preferences");
+            }
+
+            @Override
             public Selector action() {
                 return Foundation.selector("bandwidthPopupChanged:");
             }
 
             @Override
             public String tooltip() {
-                return LocaleFactory.localizedString("Bandwidth");
+                return LocaleFactory.localizedString("Bandwidth", "Preferences");
             }
 
             @Override

@@ -30,6 +30,7 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -43,19 +44,22 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
         if(log.isDebugEnabled()) {
             log.debug(String.format("Determine cause for failure %s", failure));
         }
-        if(failure instanceof ConnectionTimeoutException) {
-            return Type.network;
-        }
-        if(failure instanceof ConnectionRefusedException) {
-            return Type.network;
-        }
-        if(failure instanceof ResolveFailedException) {
-            return Type.network;
-        }
-        if(failure instanceof SSLNegotiateException) {
-            return Type.application;
-        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof ConnectionTimeoutException) {
+                return Type.network;
+            }
+            if(cause instanceof ConnectionRefusedException) {
+                return Type.network;
+            }
+            if(cause instanceof ResolveFailedException) {
+                return Type.network;
+            }
+            if(cause instanceof SSLNegotiateException) {
+                return Type.application;
+            }
+            if(cause instanceof SSLHandshakeException) {
+                return Type.application;
+            }
             if(cause instanceof SSLException) {
                 return Type.network;
             }

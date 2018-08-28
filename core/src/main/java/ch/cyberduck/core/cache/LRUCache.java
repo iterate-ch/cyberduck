@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -43,7 +44,19 @@ public class LRUCache<Key, Value> {
         return new LRUCache<>(loader, maximumSize, expireDuration);
     }
 
-    private final LoadingCache<Key, Value> delegate;
+    public static <Key, Value> LRUCache<Key, Value> build() {
+        return build(-1L, -1L);
+    }
+
+    public static <Key, Value> LRUCache<Key, Value> build(final long maximumSize) {
+        return build(maximumSize, -1L);
+    }
+
+    public static <Key, Value> LRUCache<Key, Value> build(final long maximumSize, final long expireDuration) {
+        return new LRUCache<>(null, maximumSize, expireDuration);
+    }
+
+    private final Cache<Key, Value> delegate;
 
     private LRUCache(final Function<Key, Value> loader, final long maximumSize, final long expireDuration) {
         final CacheBuilder<Key, Value> builder = CacheBuilder.newBuilder()
@@ -61,16 +74,25 @@ public class LRUCache<Key, Value> {
         if(expireDuration > 0) {
             builder.expireAfterAccess(expireDuration, TimeUnit.MILLISECONDS);
         }
-        delegate = builder.build(new CacheLoader<Key, Value>() {
-            @Override
-            public Value load(Key key) {
-                return loader.apply(key);
-            }
-        });
+
+        if(loader != null) {
+            delegate = builder.build(new CacheLoader<Key, Value>() {
+                @Override
+                public Value load(Key key) {
+                    return loader.apply(key);
+                }
+            });
+        }
+        else {
+            delegate = builder.build();
+        }
     }
 
     public Value get(final Key key) throws UncheckedExecutionException {
-        return delegate.getUnchecked(key);
+        if(delegate instanceof LoadingCache) {
+            return ((LoadingCache<Key, Value>) delegate).getUnchecked(key);
+        }
+        return delegate.getIfPresent(key);
     }
 
     public void forEach(final BiConsumer<Key, Value> function) {

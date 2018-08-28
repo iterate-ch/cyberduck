@@ -140,9 +140,6 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == IdProvider.class) {
             return (T) fileid;
         }
-        if(type == AttributesFinder.class) {
-            return (T) new B2AttributesFinderFeature(this, fileid);
-        }
         if(type == Lifecycle.class) {
             return (T) new B2LifecycleFeature(this, fileid);
         }

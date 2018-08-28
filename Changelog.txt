@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+6.7.1
+- [Bugfix] Failure uploading to OneDrive Deutschland (OneDrive)
+- [Bugfix] Updated localizations
+
 6.7.0
 - [Feature] Support display scaling (Windows) (#8961)
 - [Feature] Improve user experience for versioned buckets, e.g. properly hide folders with a delete marker (S3) (#10357)
