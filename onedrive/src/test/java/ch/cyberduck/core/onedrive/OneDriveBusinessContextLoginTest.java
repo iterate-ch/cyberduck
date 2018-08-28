@@ -36,6 +36,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -44,6 +45,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 @Category(IntegrationTest.class)
 public class OneDriveBusinessContextLoginTest {
 
@@ -51,7 +53,7 @@ public class OneDriveBusinessContextLoginTest {
     public void testLogin() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Microsoft OneDrive Business.cyberduckprofile"));
+            new Local("../profiles/default/Microsoft SharePoint.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         final OneDriveSession session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {

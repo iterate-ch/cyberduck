@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertFalse;
 @Category(IntegrationTest.class)
 public class SharepointListServiceTest extends AbstractSharepointTest {
     private SharepointListService createListService() {
-        return new SharepointListService(session, new SharepointFileIdProvider(session));
+        return new SharepointListService(session, new GraphFileIdProvider(session));
     }
 
     @Test
