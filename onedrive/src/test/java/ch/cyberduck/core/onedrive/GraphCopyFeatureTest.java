@@ -30,7 +30,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
@@ -52,7 +52,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopy() throws Exception {
-        final Directory directory = new OneDriveDirectoryFeature(session);
+        final Directory directory = new GraphDirectoryFeature(session);
         final Touch touch = new GraphTouchFeature(session);
         final Copy copy = new GraphCopyFeature(session);
         final Delete delete = new GraphDeleteFeature(session);
@@ -78,7 +78,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testCopyToExistingFile() throws Exception {
         final Path folder = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new OneDriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        new GraphDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

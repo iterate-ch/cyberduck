@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveTimestampFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
@@ -59,7 +59,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
     public void testSetTimestampDirectory() throws Exception {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new OneDriveDirectoryFeature(session).mkdir(test, null, null);
+        new GraphDirectoryFeature(session).mkdir(test, null, null);
         assertNotNull(new GraphAttributesFinderFeature(session).find(test));
 
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;

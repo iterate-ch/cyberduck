@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -29,11 +30,16 @@ import org.nuxeo.onedrive.client.OneDriveFolder;
 
 import java.io.IOException;
 
-public class OneDriveDirectoryFeature implements Directory<Void> {
+public class GraphDirectoryFeature implements Directory<Void> {
 
-    private final OneDriveSession session;
+    private final GraphSession session;
 
-    public OneDriveDirectoryFeature(OneDriveSession session) {
+    public GraphDirectoryFeature(final GraphSession session) {
+        this.session = session;
+    }
+
+    @Deprecated
+    public GraphDirectoryFeature(OneDriveSession session) {
         this.session = session;
     }
 

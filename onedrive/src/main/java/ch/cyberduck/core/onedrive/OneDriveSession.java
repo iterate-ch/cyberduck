@@ -120,7 +120,7 @@ public class OneDriveSession extends GraphSession {
             return (T) fileIdProvider;
         }
         if(type == Directory.class) {
-            return (T) new OneDriveDirectoryFeature(this);
+            return (T) new GraphDirectoryFeature(this);
         }
         if(type == Read.class) {
             return (T) new OneDriveReadFeature(this);
