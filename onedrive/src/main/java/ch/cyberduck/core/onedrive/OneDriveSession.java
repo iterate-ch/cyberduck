@@ -144,7 +144,7 @@ public class OneDriveSession extends GraphSession {
             return (T) new GraphCopyFeature(this);
         }
         if(type == Find.class) {
-            return (T) new OneDriveFindFeature(this);
+            return (T) new GraphFindFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new GraphAttributesFinderFeature(this);

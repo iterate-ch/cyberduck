@@ -37,7 +37,7 @@ import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveReadFeature;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -103,7 +103,7 @@ public class SingleTransferWorkerTest extends AbstractOneDriveTest {
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
         }.run(session, session));
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(dir1));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(dir1));
         assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

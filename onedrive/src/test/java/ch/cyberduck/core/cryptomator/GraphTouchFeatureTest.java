@@ -29,7 +29,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -63,7 +63,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
             new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(test);
         assertNotNull(attributes.getVersionId());
         assertEquals(test.attributes(), attributes);

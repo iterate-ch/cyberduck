@@ -38,7 +38,7 @@ import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
@@ -92,8 +92,8 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(source));
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(target));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(source));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(target));
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new OneDriveReadFeature(session), cryptomator).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
@@ -165,13 +165,13 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         // copy file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         new CopyWorker(Collections.singletonMap(file, fileRenamed), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback()).run(session);
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(file));
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(fileRenamed));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(file));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(fileRenamed));
         // copy folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new CopyWorker(Collections.singletonMap(folder, folderRenamed), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback()).run(session);
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(folder));
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(folderRenamed));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(folder));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
@@ -186,7 +186,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         final GraphWriteFeature write = new GraphWriteFeature(session);
         final byte[] content = RandomUtils.nextBytes(66800);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), write.write(cleartextFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()));
-        assertTrue(new OneDriveFindFeature(session).find(cleartextFile));
+        assertTrue(new GraphFindFeature(session).find(cleartextFile));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -198,8 +198,8 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFile, encryptedFile), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new OneDriveFindFeature(session).find(cleartextFile));
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new GraphFindFeature(session).find(cleartextFile));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(encryptedFile));
         assertEquals(content.length, new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(encryptedFile).getSize());
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new CryptoReadFeature(session, new OneDriveReadFeature(session), cryptomator).read(encryptedFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
@@ -217,8 +217,8 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         new GraphDirectoryFeature(session).mkdir(cleartextFolder, null, new TransferStatus());
         new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session)),
             new GraphAttributesFinderFeature(session)).touch(cleartextFile, new TransferStatus());
-        assertTrue(new OneDriveFindFeature(session).find(cleartextFolder));
-        assertTrue(new OneDriveFindFeature(session).find(cleartextFile));
+        assertTrue(new GraphFindFeature(session).find(cleartextFolder));
+        assertTrue(new GraphFindFeature(session).find(cleartextFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
@@ -230,8 +230,8 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
-        assertTrue(new OneDriveFindFeature(session).find(cleartextFolder));
-        assertTrue(new OneDriveFindFeature(session).find(cleartextFile));
+        assertTrue(new GraphFindFeature(session).find(cleartextFolder));
+        assertTrue(new GraphFindFeature(session).find(cleartextFile));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         registry.clear();
     }
@@ -257,8 +257,8 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFile, cleartextFile), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(encryptedFile));
-        assertTrue(new OneDriveFindFeature(session).find(cleartextFile));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new GraphFindFeature(session).find(cleartextFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), new DisabledProgressListener()).run(session);
         registry.clear();
     }
@@ -282,11 +282,11 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFolder, cleartextFolder), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(encryptedFolder));
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(encryptedFile));
-        assertTrue(new OneDriveFindFeature(session).find(cleartextFolder));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(encryptedFolder));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new GraphFindFeature(session).find(cleartextFolder));
         final Path fileRenamed = new Path(cleartextFolder, encryptedFile.getName(), EnumSet.of(Path.Type.file));
-        assertTrue(new OneDriveFindFeature(session).find(fileRenamed));
+        assertTrue(new GraphFindFeature(session).find(fileRenamed));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), new DisabledProgressListener()).run(session);
         registry.clear();
     }
