@@ -35,6 +35,7 @@ import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.manta.MantaProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.onedrive.OneDriveProtocol;
+import ch.cyberduck.core.onedrive.SharepointProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -90,6 +91,7 @@ public final class MainApplication {
                     new DriveProtocol(),
                     new HubicProtocol(),
                     new OneDriveProtocol(),
+                    new SharepointProtocol(),
                     new LocalProtocol(),
                     new MantaProtocol(),
                     new SDSProtocol()
