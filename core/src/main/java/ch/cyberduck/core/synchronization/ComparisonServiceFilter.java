@@ -40,15 +40,11 @@ import java.util.TimeZone;
 public class ComparisonServiceFilter implements ComparePathFilter {
 
     private Find finder;
-
     private AttributesFinder attribute;
 
     private final ComparisonService checksum;
-
     private final ComparisonService size;
-
     private final ComparisonService timestamp;
-
     private final ProgressListener progress;
 
     public ComparisonServiceFilter(final Session<?> session, final TimeZone tz, final ProgressListener listener) {
@@ -89,9 +85,9 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                     // MD5/ETag Checksum is supported
                     if(Checksum.NONE != attributes.getChecksum()) {
                         progress.message(MessageFormat.format(
-                                LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+                            LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                         local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
-                                .compute(local.getInputStream(), new TransferStatus()));
+                            .compute(local.getInputStream(), new TransferStatus()));
                         final Comparison comparison = checksum.compare(attributes, local.attributes());
                         if(!Comparison.notequal.equals(comparison)) {
                             // Decision is available
