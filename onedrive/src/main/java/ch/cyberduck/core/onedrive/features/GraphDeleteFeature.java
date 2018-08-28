@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.log4j.Logger;
@@ -32,15 +33,20 @@ import org.nuxeo.onedrive.client.OneDriveItem;
 import java.io.IOException;
 import java.util.List;
 
-public class OneDriveDeleteFeature implements Delete {
-    private static final Logger logger = Logger.getLogger(OneDriveDeleteFeature.class);
+public class GraphDeleteFeature implements Delete {
+    private static final Logger logger = Logger.getLogger(GraphDeleteFeature.class);
 
     private final PathContainerService containerService
         = new PathContainerService();
 
-    private final OneDriveSession session;
+    private final GraphSession session;
 
-    public OneDriveDeleteFeature(OneDriveSession session) {
+    public GraphDeleteFeature(GraphSession session) {
+        this.session = session;
+    }
+
+    @Deprecated
+    public GraphDeleteFeature(OneDriveSession session) {
         this.session = session;
     }
 

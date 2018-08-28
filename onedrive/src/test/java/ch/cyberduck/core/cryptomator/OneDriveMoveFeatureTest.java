@@ -30,7 +30,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
@@ -69,7 +69,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
             new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(
             new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final CryptoMoveFeature move = new CryptoMoveFeature(session, new OneDriveMoveFeature(session), new OneDriveDeleteFeature(session), cryptomator);
+        final CryptoMoveFeature move = new CryptoMoveFeature(session, new OneDriveMoveFeature(session), new GraphDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(file.attributes().getVersionId(), fileRenamed.attributes().getVersionId());
@@ -83,7 +83,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
-        new CryptoDeleteFeature(session, new OneDriveDeleteFeature(session), cryptomator).delete(Arrays.asList(
+        new CryptoDeleteFeature(session, new GraphDeleteFeature(session), cryptomator).delete(Arrays.asList(
                 fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

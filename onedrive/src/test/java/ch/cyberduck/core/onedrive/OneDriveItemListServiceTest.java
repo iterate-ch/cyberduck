@@ -22,7 +22,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
@@ -49,6 +49,6 @@ public class OneDriveItemListServiceTest extends AbstractOneDriveTest {
         assertEquals(2, list.size());
         assertEquals(new SimplePathPredicate(f1), new SimplePathPredicate(list.get(0)));
         assertEquals(new SimplePathPredicate(f2), new SimplePathPredicate(list.get(1)));
-        new OneDriveDeleteFeature(session).delete(Arrays.asList(f1, f2, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Arrays.asList(f1, f2, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

@@ -23,7 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
@@ -44,7 +44,7 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
     public void testMkdir() throws Exception {
         final Path target = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
         assertNotNull(new GraphAttributesFinderFeature(session).find(target).getETag());
-        new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -56,6 +56,6 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
         final AttributedList<Path> list = new OneDriveListService(session, new OneDriveFileIdProvider(session)).list(new OneDriveHomeFinderFeature(session).find(), new DisabledListProgressListener());
         assertTrue(list.contains(target));
         assertNotNull(new GraphAttributesFinderFeature(session).find(target).getETag());
-        new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

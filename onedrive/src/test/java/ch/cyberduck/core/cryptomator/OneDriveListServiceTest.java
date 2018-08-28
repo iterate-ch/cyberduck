@@ -31,7 +31,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.OneDriveListService;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
@@ -66,7 +66,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session)),
             new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, new OneDriveListService(session, new OneDriveFileIdProvider(session)), cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
-        new CryptoDeleteFeature(session, new OneDriveDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new GraphDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -86,6 +86,6 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session)),
             new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
-        new CryptoDeleteFeature(session, new OneDriveDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new GraphDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

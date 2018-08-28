@@ -22,7 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
@@ -58,7 +58,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributes.getETag());
         assertNotNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
-        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -73,6 +73,6 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributes.getETag());
         assertNotNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
-        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -132,7 +132,7 @@ public class OneDriveSession extends GraphSession {
             return (T) new GraphBufferWriteFeature(this);
         }
         if(type == Delete.class) {
-            return (T) new OneDriveDeleteFeature(this);
+            return (T) new GraphDeleteFeature(this);
         }
         if(type == Touch.class) {
             return (T) new GraphTouchFeature(this);

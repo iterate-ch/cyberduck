@@ -29,7 +29,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
@@ -55,7 +55,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         final Directory directory = new OneDriveDirectoryFeature(session);
         final Touch touch = new GraphTouchFeature(session);
         final Copy copy = new GraphCopyFeature(session);
-        final Delete delete = new OneDriveDeleteFeature(session);
+        final Delete delete = new GraphDeleteFeature(session);
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -88,6 +88,6 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         final AttributedList<Path> files = new OneDriveListService(session, new OneDriveFileIdProvider(session)).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new OneDriveDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -45,7 +45,7 @@ public class OneDriveMoveFeature implements Move {
 
     public OneDriveMoveFeature(OneDriveSession session) {
         this.session = session;
-        this.delete = new OneDriveDeleteFeature(session);
+        this.delete = new GraphDeleteFeature(session);
     }
 
     @Override

@@ -20,7 +20,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveTimestampFeature;
@@ -52,7 +52,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         new OneDriveTimestampFeature(session).setTimestamp(file, modified);
         assertEquals(modified, new GraphAttributesFinderFeature(session).find(file).getModificationDate());
 
-        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -66,6 +66,6 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         new OneDriveTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified, new GraphAttributesFinderFeature(session).find(test).getModificationDate());
 
-        new OneDriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
