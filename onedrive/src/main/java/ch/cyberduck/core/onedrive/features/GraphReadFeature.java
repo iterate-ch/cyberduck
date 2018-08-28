@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.onedrive.OneDriveUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -38,12 +39,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-public class OneDriveReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(OneDriveReadFeature.class);
+public class GraphReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(GraphReadFeature.class);
 
-    private final OneDriveSession session;
+    private final GraphSession session;
 
-    public OneDriveReadFeature(final OneDriveSession session) {
+    public GraphReadFeature(final GraphSession session) {
+        this.session = session;
+    }
+
+    @Deprecated
+    public GraphReadFeature(final OneDriveSession session) {
         this.session = session;
     }
 

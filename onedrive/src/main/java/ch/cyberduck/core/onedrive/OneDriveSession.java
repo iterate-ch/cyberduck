@@ -123,7 +123,7 @@ public class OneDriveSession extends GraphSession {
             return (T) new GraphDirectoryFeature(this);
         }
         if(type == Read.class) {
-            return (T) new OneDriveReadFeature(this);
+            return (T) new GraphReadFeature(this);
         }
         if(type == Write.class) {
             return (T) new GraphWriteFeature(this);

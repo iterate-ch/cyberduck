@@ -27,7 +27,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveReadFeature;
+import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -48,13 +48,13 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
+public class GraphReadFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path drive = new OneDriveHomeFinderFeature(session).find();
-        new OneDriveReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new GraphReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -66,12 +66,12 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new OneDriveReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new GraphReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new OneDriveReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new GraphReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             in.close();
         }
@@ -98,7 +98,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final OneDriveReadFeature read = new OneDriveReadFeature(session);
+        final GraphReadFeature read = new GraphReadFeature(session);
         assertTrue(read.offset(test));
         final InputStream in = read.read(test, status.length(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
@@ -116,7 +116,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(test, new TransferStatus());
-        final OneDriveReadFeature read = new OneDriveReadFeature(session);
+        final GraphReadFeature read = new GraphReadFeature(session);
         final InputStream in = read.read(test, new TransferStatus().skip(1).append(true), new DisabledConnectionCallback());
         assertNull(in);
     }
@@ -141,7 +141,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new OneDriveReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new GraphReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
