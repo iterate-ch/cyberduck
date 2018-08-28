@@ -76,7 +76,7 @@ public class OneDriveBufferWriteFeature implements MultipartWrite<Void> {
                         new OneDriveTouchFeature(session).touch(file, new TransferStatus());
                     }
                     else {
-                        final HttpResponseOutputStream<Void> out = new OneDriveWriteFeature(session).write(file,
+                        final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session).write(file,
                             range, callback);
                         IOUtils.copy(new BufferInputStream(buffer), out);
                         out.close();
