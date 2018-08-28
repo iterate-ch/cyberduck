@@ -35,15 +35,15 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class OneDriveAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(OneDriveAttributesFinderFeature.class);
+public class GraphAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(GraphAttributesFinderFeature.class);
 
     private final GraphSession session;
 
     private final PathContainerService containerService
         = new PathContainerService();
 
-    public OneDriveAttributesFinderFeature(final GraphSession session) {
+    public GraphAttributesFinderFeature(final GraphSession session) {
         this.session = session;
     }
 

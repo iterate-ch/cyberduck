@@ -72,7 +72,7 @@ public class OneDriveMoveFeature implements Move {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-            new OneDriveAttributesFinderFeature(session).find(renamed));
+            new GraphAttributesFinderFeature(session).find(renamed));
     }
 
     @Override

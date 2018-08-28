@@ -29,7 +29,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoMoveFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
-import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
@@ -66,7 +66,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new GraphWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
         final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session)),
-            new OneDriveAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(
+            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(
             new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new OneDriveMoveFeature(session), new OneDriveDeleteFeature(session), cryptomator);
@@ -75,7 +75,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         assertEquals(file.attributes().getVersionId(), fileRenamed.attributes().getVersionId());
         assertFalse(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(new Path(folder, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(fileRenamed));
-        assertEquals(fileRenamed.attributes().getModificationDate(), new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(fileRenamed).getModificationDate());
+        assertEquals(fileRenamed.attributes().getModificationDate(), new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(fileRenamed).getModificationDate());
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());

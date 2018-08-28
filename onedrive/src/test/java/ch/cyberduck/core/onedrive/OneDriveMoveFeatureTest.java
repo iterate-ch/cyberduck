@@ -28,7 +28,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
@@ -56,7 +56,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session);
         final Move move = new OneDriveMoveFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
-        final AttributesFinder attributesFinder = new OneDriveAttributesFinderFeature(session);
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
@@ -74,7 +74,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session);
         final Move move = new OneDriveMoveFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
-        final AttributesFinder attributesFinder = new OneDriveAttributesFinderFeature(session);
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
@@ -98,7 +98,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session);
         final Move move = new OneDriveMoveFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
-        final AttributesFinder attributesFinder = new OneDriveAttributesFinderFeature(session);
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);

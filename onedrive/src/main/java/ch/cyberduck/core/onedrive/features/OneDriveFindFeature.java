@@ -34,7 +34,7 @@ public class OneDriveFindFeature implements Find {
     @Override
     public boolean find(final Path file) throws BackgroundException {
         try {
-            new OneDriveAttributesFinderFeature(session).find(file);
+            new GraphAttributesFinderFeature(session).find(file);
             return true;
         }
         catch(NotfoundException | InteroperabilityException e) {

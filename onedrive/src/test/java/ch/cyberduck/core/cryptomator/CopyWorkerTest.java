@@ -35,7 +35,7 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
-import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
@@ -113,7 +113,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new GraphWriteFeature(session)),
-            new OneDriveAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(source, new TransferStatus());
+            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new GraphWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
@@ -136,7 +136,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new GraphWriteFeature(session)),
-            new OneDriveAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(source, new TransferStatus());
+            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new GraphWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
@@ -160,7 +160,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new GraphWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new GraphWriteFeature(session)),
-            new OneDriveAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(file, new TransferStatus());
+            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         // copy file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
@@ -200,7 +200,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         worker.run(session);
         assertTrue(new OneDriveFindFeature(session).find(cleartextFile));
         assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(encryptedFile));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(encryptedFile).getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session), cryptomator).find(encryptedFile).getSize());
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new CryptoReadFeature(session, new OneDriveReadFeature(session), cryptomator).read(encryptedFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
@@ -216,7 +216,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveDirectoryFeature(session).mkdir(cleartextFolder, null, new TransferStatus());
         new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session)),
-            new OneDriveAttributesFinderFeature(session)).touch(cleartextFile, new TransferStatus());
+            new GraphAttributesFinderFeature(session)).touch(cleartextFile, new TransferStatus());
         assertTrue(new OneDriveFindFeature(session).find(cleartextFolder));
         assertTrue(new OneDriveFindFeature(session).find(cleartextFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -251,7 +251,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new GraphWriteFeature(session), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new GraphWriteFeature(session)),
-            new OneDriveAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
+            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // move file outside vault
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -276,7 +276,7 @@ public class CopyWorkerTest extends AbstractOneDriveTest {
         new CryptoDirectoryFeature<Void>(session, new OneDriveDirectoryFeature(session), new GraphWriteFeature(session), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new GraphWriteFeature(session)),
-            new OneDriveAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
+            new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // copy directory outside vault
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

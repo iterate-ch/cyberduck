@@ -19,7 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
@@ -46,11 +46,11 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
+        assertNotNull(new GraphAttributesFinderFeature(session).find(file));
 
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new OneDriveTimestampFeature(session).setTimestamp(file, modified);
-        assertEquals(modified, new OneDriveAttributesFinderFeature(session).find(file).getModificationDate());
+        assertEquals(modified, new GraphAttributesFinderFeature(session).find(file).getModificationDate());
 
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -60,11 +60,11 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new OneDriveDirectoryFeature(session).mkdir(test, null, null);
-        assertNotNull(new OneDriveAttributesFinderFeature(session).find(test));
+        assertNotNull(new GraphAttributesFinderFeature(session).find(test));
 
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new OneDriveTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals(modified, new OneDriveAttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(modified, new GraphAttributesFinderFeature(session).find(test).getModificationDate());
 
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

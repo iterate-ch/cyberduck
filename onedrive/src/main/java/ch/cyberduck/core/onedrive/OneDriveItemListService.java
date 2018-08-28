@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -44,11 +44,11 @@ public class OneDriveItemListService implements ListService {
         = new PathContainerService();
 
     private final GraphSession session;
-    private final OneDriveAttributesFinderFeature attributes;
+    private final GraphAttributesFinderFeature attributes;
 
     public OneDriveItemListService(final GraphSession session) {
         this.session = session;
-        this.attributes = new OneDriveAttributesFinderFeature(session);
+        this.attributes = new GraphAttributesFinderFeature(session);
     }
 
     @Override

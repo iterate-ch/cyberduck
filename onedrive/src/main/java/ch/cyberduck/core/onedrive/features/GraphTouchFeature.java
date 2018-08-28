@@ -56,7 +56,7 @@ public class GraphTouchFeature implements Touch<Void> {
                 URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
             final OneDriveFile.Metadata metadata = oneDriveFile.create(StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
             return new Path(file.getParent(), file.getName(), file.getType(),
-                new OneDriveAttributesFinderFeature(session).toAttributes(metadata));
+                new GraphAttributesFinderFeature(session).toAttributes(metadata));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Cannot create file {0}", e, file);

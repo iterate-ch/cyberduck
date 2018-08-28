@@ -37,11 +37,11 @@ public class OneDriveSearchFeature implements Search {
     private static final Logger log = Logger.getLogger(OneDriveSearchFeature.class);
 
     private final OneDriveSession session;
-    private final OneDriveAttributesFinderFeature attributes;
+    private final GraphAttributesFinderFeature attributes;
 
     public OneDriveSearchFeature(final OneDriveSession session) {
         this.session = session;
-        this.attributes = new OneDriveAttributesFinderFeature(session);
+        this.attributes = new GraphAttributesFinderFeature(session);
     }
 
     @Override

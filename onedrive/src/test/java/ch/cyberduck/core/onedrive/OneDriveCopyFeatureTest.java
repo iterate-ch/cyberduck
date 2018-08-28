@@ -27,7 +27,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveCopyFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
@@ -56,7 +56,7 @@ public class OneDriveCopyFeatureTest extends AbstractOneDriveTest {
         final Touch touch = new GraphTouchFeature(session);
         final Copy copy = new OneDriveCopyFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
-        final AttributesFinder attributesFinder = new OneDriveAttributesFinderFeature(session);
+        final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
