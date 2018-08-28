@@ -22,7 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -66,7 +66,7 @@ public class OneDriveMoveFeature implements Move {
             item.patch(patchOperation);
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw new GraphExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);

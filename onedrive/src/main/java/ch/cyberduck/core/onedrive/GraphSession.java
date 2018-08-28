@@ -97,7 +97,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
-        final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(configuration.build()) {
+        final RequestExecutor executor = new GraphCommonsHttpRequestExecutor(configuration.build()) {
             @Override
             public void addAuthorizationHeader(final Set<RequestHeader> headers) {
                 // Placeholder
@@ -151,5 +151,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public <T> T _getFeature(final Class<T> type) {
+        return super._getFeature(type);
     }
 }

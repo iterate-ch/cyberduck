@@ -22,7 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.log4j.Logger;
@@ -60,7 +60,7 @@ public class OneDriveDeleteFeature implements Delete {
                 logger.warn(String.format("Cannot delete %s. Not found.", file));
             }
             catch(OneDriveAPIException e) {
-                throw new OneDriveExceptionMappingService().map("Cannot delete {0}", e, file);
+                throw new GraphExceptionMappingService().map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);

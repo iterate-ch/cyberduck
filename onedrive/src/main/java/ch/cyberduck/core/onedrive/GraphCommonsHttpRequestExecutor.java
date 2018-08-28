@@ -45,11 +45,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
+public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor {
 
     private final CloseableHttpClient client;
 
-    public OneDriveCommonsHttpRequestExecutor(final CloseableHttpClient client) {
+    public GraphCommonsHttpRequestExecutor(final CloseableHttpClient client) {
         this.client = client;
     }
 

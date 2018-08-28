@@ -23,7 +23,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -70,7 +70,7 @@ public class OneDriveCopyFeature implements Copy {
             return target;
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new GraphExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);

@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.onedrive.OneDriveUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -79,7 +79,7 @@ public class OneDriveReadFeature implements Read {
             }
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Download {0} failed", e, file);
+            throw new GraphExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);

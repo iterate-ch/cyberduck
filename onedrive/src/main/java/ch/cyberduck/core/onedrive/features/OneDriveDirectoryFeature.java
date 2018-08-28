@@ -20,7 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -46,7 +46,7 @@ public class OneDriveDirectoryFeature implements Directory<Void> {
                 new OneDriveAttributesFinderFeature(session).toAttributes(metadata));
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Cannot create folder {0}", e, directory);
+            throw new GraphExceptionMappingService().map("Cannot create folder {0}", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, directory);

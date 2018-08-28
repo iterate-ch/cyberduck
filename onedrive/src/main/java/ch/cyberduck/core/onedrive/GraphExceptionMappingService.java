@@ -28,7 +28,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.IOException;
 
-public class OneDriveExceptionMappingService extends AbstractExceptionMappingService<OneDriveAPIException> {
+public class GraphExceptionMappingService extends AbstractExceptionMappingService<OneDriveAPIException> {
 
     @Override
     public BackgroundException map(final OneDriveAPIException failure) {

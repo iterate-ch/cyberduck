@@ -18,7 +18,7 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
@@ -59,7 +59,7 @@ public class OneDriveHomeFinderFeature extends DefaultHomeFinderService {
                 return drive;
             }
             catch(OneDriveAPIException e) {
-                throw new OneDriveExceptionMappingService().map("Failure to read attributes of {0}", e, home);
+                throw new GraphExceptionMappingService().map("Failure to read attributes of {0}", e, home);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, home);

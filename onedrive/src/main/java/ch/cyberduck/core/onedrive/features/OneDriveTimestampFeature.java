@@ -18,7 +18,7 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
@@ -51,7 +51,7 @@ public class OneDriveTimestampFeature extends DefaultTimestampFeature {
             item.patch(patch);
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            throw new GraphExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, file);

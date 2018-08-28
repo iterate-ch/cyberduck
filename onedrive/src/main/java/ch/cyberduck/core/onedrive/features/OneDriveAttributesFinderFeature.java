@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -59,7 +59,7 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
             return this.toAttributes(metadata);
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new GraphExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);

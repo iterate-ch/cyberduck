@@ -26,15 +26,15 @@ import java.net.SocketException;
 
 import static org.junit.Assert.assertTrue;
 
-public class OneDriveExceptionMappingServiceTest {
+public class GraphExceptionMappingServiceTest {
 
     @Test
     public void map() throws Exception {
-        assertTrue(new OneDriveExceptionMappingService().map(
+        assertTrue(new GraphExceptionMappingService().map(
                 new OneDriveAPIException("The OneDrive API responded with too many redirects.")) instanceof InteroperabilityException);
-        assertTrue(new OneDriveExceptionMappingService().map(
+        assertTrue(new GraphExceptionMappingService().map(
                 new OneDriveAPIException("m", 404)) instanceof NotfoundException);
-        assertTrue(new OneDriveExceptionMappingService().map(
+        assertTrue(new GraphExceptionMappingService().map(
                 new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", new SocketException())) instanceof ConnectionRefusedException);
     }
 }
