@@ -11,7 +11,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,7 +45,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testListDrives() throws Exception {
-        final AttributedList<Path> list = new OneDriveListService(session, new OneDriveFileIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(session, new GraphFileIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
@@ -58,7 +58,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(file, new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session).find(file));
-        final OneDriveListService listService = new OneDriveListService(session, new OneDriveFileIdProvider(session));
+        final OneDriveListService listService = new OneDriveListService(session, new GraphFileIdProvider(session));
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final AttributedList<Path> list = listService.list(drive, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
@@ -79,7 +79,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
     public void testWhitespacedChild() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path target = new GraphDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
-        final AttributedList<Path> list = new OneDriveListService(session, new OneDriveFileIdProvider(session)).list(target, new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(session, new GraphFileIdProvider(session)).list(target, new DisabledListProgressListener());
         new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

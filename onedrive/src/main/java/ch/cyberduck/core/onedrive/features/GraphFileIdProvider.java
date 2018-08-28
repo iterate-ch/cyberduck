@@ -17,23 +17,31 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.onedrive.SharepointListService;
-import ch.cyberduck.core.onedrive.SharepointSession;
+import ch.cyberduck.core.onedrive.GraphSession;
+import ch.cyberduck.core.onedrive.OneDriveListService;
+import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class SharepointFileIdProvider implements IdProvider {
-    private final SharepointSession session;
-    private Cache<Path> cache;
+public class GraphFileIdProvider implements IdProvider {
 
-    public SharepointFileIdProvider(final SharepointSession session) {
+    private final GraphSession session;
+    private Cache<Path> cache = PathCache.empty();
+
+    public GraphFileIdProvider(final GraphSession session) {
+        this.session = session;
+    }
+
+    @Deprecated
+    public GraphFileIdProvider(final OneDriveSession session) {
         this.session = session;
     }
 
@@ -42,18 +50,26 @@ public class SharepointFileIdProvider implements IdProvider {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
+        if(cache.isCached(file.getParent())) {
+            final AttributedList<Path> cached = cache.get(file.getParent());
+            final String cachedVersionId = findVersionId(cached, file);
+            if(StringUtils.isNotBlank(cachedVersionId)) {
+                return cachedVersionId;
+            }
+        }
+        final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
+        cache.put(file.getParent(), list); // overwrite cache because file does not have versionId (it may have been created recently)
+        final String versionId = findVersionId(list, file);
+        if(StringUtils.isBlank(versionId)) {
+            throw new NotfoundException(file.getAbsolute());
+        }
+        return versionId;
+    }
 
-        final AttributedList<Path> list;
-        if(!cache.isCached(file.getParent())) {
-            list = new SharepointListService(session, this).list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getParent(), list);
-        }
-        else {
-            list = cache.get(file.getParent());
-        }
+    private static String findVersionId(final AttributedList<Path> list, final Path file) {
         final Path found = list.find(new SimplePathPredicate(file));
         if(null == found) {
-            throw new NotfoundException(file.getAbsolute());
+            return null;
         }
         return found.attributes().getVersionId();
     }

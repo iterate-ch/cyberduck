@@ -15,13 +15,11 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.onedrive.features.SharepointFileIdProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -37,8 +35,6 @@ public class SharepointSession extends GraphSession {
     public static final Path DEFAULT_NAME = new Path("/Default", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
     public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
 
-    private final SharepointFileIdProvider idProvider = new SharepointFileIdProvider(this);
-
     public SharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -51,7 +47,7 @@ public class SharepointSession extends GraphSession {
     @Override
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new SharepointListService(this, idProvider);
+            return (T) new SharepointListService(this, fileIdProvider());
         }
         return super._getFeature(type);
     }

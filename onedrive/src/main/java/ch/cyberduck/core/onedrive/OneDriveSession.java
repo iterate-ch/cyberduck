@@ -44,8 +44,6 @@ public class OneDriveSession extends GraphSession {
     private final PathContainerService containerService
         = new PathContainerService();
 
-    private final OneDriveFileIdProvider fileIdProvider = new OneDriveFileIdProvider(this);
-
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -55,7 +53,7 @@ public class OneDriveSession extends GraphSession {
      */
     @Override
     public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
-        final String versionId = fileIdProvider.getFileid(currentPath, new DisabledListProgressListener());
+        final String versionId = fileIdProvider().getFileid(currentPath, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
         }
@@ -95,13 +93,7 @@ public class OneDriveSession extends GraphSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new OneDriveListService(this, fileIdProvider);
-        }
-        if(type == IdProvider.class) {
-            return (T) fileIdProvider;
-        }
-        if(type == AttributesFinder.class) {
-            return (T) new GraphAttributesFinderFeature(this);
+            return (T) new OneDriveListService(this, fileIdProvider());
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();

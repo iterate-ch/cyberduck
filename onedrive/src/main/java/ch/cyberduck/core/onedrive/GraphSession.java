@@ -23,10 +23,12 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
@@ -37,10 +39,12 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphBufferWriteFeature;
 import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphMoveFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
@@ -71,6 +75,8 @@ import java.util.Set;
 
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     private OAuth2RequestInterceptor authorizationService;
+
+    private final GraphFileIdProvider fileIdProvider = new GraphFileIdProvider(this);
 
     protected GraphSession(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -106,6 +112,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         return (OneDriveFolder) item;
     }
 
+    protected IdProvider fileIdProvider() {
+        return fileIdProvider;
+    }
+
     @Override
     protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
         authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol()) {
@@ -139,10 +149,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
             @Override
             public boolean isGraphConnection() {
-                if (StringUtils.equals("graph.microsoft.com", host.getHostname())) {
+                if(StringUtils.equals("graph.microsoft.com", host.getHostname())) {
                     return true;
                 }
-                else if (StringUtils.equals("graph.microsoft.de", host.getHostname())) {
+                else if(StringUtils.equals("graph.microsoft.de", host.getHostname())) {
                     return true;
                 }
                 return false;
@@ -178,6 +188,12 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == IdProvider.class) {
+            return (T) fileIdProvider;
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new GraphAttributesFinderFeature(this);
+        }
         if(type == Directory.class) {
             return (T) new GraphDirectoryFeature(this);
         }

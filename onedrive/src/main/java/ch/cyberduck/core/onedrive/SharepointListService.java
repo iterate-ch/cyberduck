@@ -21,13 +21,13 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.onedrive.features.SharepointFileIdProvider;
+import ch.cyberduck.core.features.IdProvider;
 
 public class SharepointListService implements ListService {
     private final SharepointSession session;
-    private final SharepointFileIdProvider idProvider;
+    private final IdProvider idProvider;
 
-    public SharepointListService(final SharepointSession session, final SharepointFileIdProvider idProvider) {
+    public SharepointListService(final SharepointSession session, final IdProvider idProvider) {
         this.session = session;
         this.idProvider = idProvider;
     }
